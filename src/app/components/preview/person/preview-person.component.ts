@@ -1,6 +1,7 @@
 import { MockDataService } from '@/app/services/mock-data.service';
 import { QueryStoreService } from '@/app/services/query-store.service';
 import { buildQuery } from '@/app/services/query.service';
+import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { Component, Injector, OnDestroy, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ArticleDefaultLightSkeletonComponent } from '@mint/components/article/default-light-skeleton/article-default-light-skeleton.component';
@@ -18,12 +19,12 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-person',
   standalone: true,
-  imports: [PreviewNavbarComponent, ArticlePersonLightComponent, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent],
+  imports: [PreviewNavbarComponent, ArticlePersonLightComponent, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, WpsAuthorImageComponent],
   templateUrl: './preview-person.component.html',
   styleUrl: './preview-person.component.scss'
 })
 export class PreviewPersonComponent implements OnInit, OnDestroy {
-  public readonly person = input.required<PersonArticle | Partial<PersonArticle> | undefined>({ alias: 'article' });
+  public readonly person = input.required<PersonArticle | undefined>({ alias: 'article' });
 
   protected readonly data = inject(MockDataService);
   protected readonly queryText = signal<string>('');

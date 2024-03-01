@@ -1,3 +1,4 @@
+import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { DatePipe } from '@angular/common';
 import { Component, HostBinding, LOCALE_ID, effect, inject, input } from '@angular/core';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
@@ -6,7 +7,7 @@ import { SlideArticle } from '@mint/types/articles/slide.type';
 @Component({
   selector: 'app-article-slide-light',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, WpsAuthorComponent],
   templateUrl: './article-slide-light.component.html',
   styleUrl: './article-slide-light.component.scss',
   hostDirectives: [{

@@ -1,14 +1,14 @@
 import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { buildQuery } from '@/app/services/query.service';
 import { JsonPipe } from '@angular/common';
-import { Component, HostListener, Injector, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, HostListener, Injector, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
 import { SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
 import { PersonArticle } from '@mint/types/articles/person.type';
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { filter, map, switchMap } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { StopPropagationDirective } from 'toolkit';
 import { WpsAuthorImageComponent } from '../author-image/author-image.component';
 
@@ -44,6 +44,9 @@ export class WpsAuthorComponent {
     this.showAuthor.set(false);
   }
 
+  @HostBinding('class.not-allowed')
+  protected cursorNotAllowed = true;
+
   public readonly authorName = input.required<string>();
   public readonly strategy = input<SelectionStrategy>('stack');
 
@@ -56,7 +59,8 @@ export class WpsAuthorComponent {
           .pipe(
             map(result => (result.records?.[0] as PersonArticle)),
             filter(person => !!person),
-            map(person => Object.assign(person, { type: 'person' }) as PersonArticle)
+            map(person => Object.assign(person, { type: 'person' }) as PersonArticle),
+            tap(() => this.cursorNotAllowed = false)
           )
       )
     )

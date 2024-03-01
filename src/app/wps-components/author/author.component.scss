@@ -1,4 +1,7 @@
 :host {
-  position: relative;
-  cursor: pointer;
+  @apply relative cursor-pointer;
+
+  &.not-allowed {
+    @apply cursor-not-allowed;
+  }
 }

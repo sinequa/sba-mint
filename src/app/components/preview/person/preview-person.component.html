@@ -3,8 +3,11 @@
 
 <div class="overflow-auto h-full flex flex-col">
   <section class="flex gap-4 p-6">
-    <img class="rounded-full self-start size-20 object-cover"
-      alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture" [src]="person()?.employeePhotoURL" />
+    @if (person()) {
+    <wps-author-image [person]="person()">
+      <i class="fa-light fa-user-circle text-[5rem]"></i>
+    </wps-author-image>
+    }
 
     <section class="grow">
       <p class="flex article-title items-center">

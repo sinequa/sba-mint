@@ -1,5 +1,8 @@
-<img class="rounded-full size-12 object-cover" alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture"
-  [src]="person()?.employeePhotoURL" />
+@if (person()) {
+<wps-author-image [person]="person()">
+  <i class="fa-light fa-user-circle text-5xl"></i>
+</wps-author-image>
+}
 
 <main class="grow">
   <p class="article-title line-clamp-1">{{ person()?.employeeFullName }}</p>

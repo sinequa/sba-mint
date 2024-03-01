@@ -5,7 +5,6 @@ import { Component, HostBinding, Injector, OnDestroy, OnInit, inject, runInInjec
 import { RouterModule } from '@angular/router';
 import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
 import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
 import { PersonArticle } from '@mint/types/articles/person.type';
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -24,7 +23,7 @@ const PEOPLE_OVERVIEW_LIMIT = 3;
 export class OverviewPeopleComponent implements OnInit, OnDestroy {
   @HostBinding('class') public class = 'hidden';
 
-  protected readonly people = signal<Partial<Article>[]>([]);
+  protected readonly people = signal<PersonArticle[]>([]);
   protected readonly queryText = signal<string>('');
 
   private readonly navigationService = inject(NavigationService);
