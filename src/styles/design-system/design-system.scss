@@ -1,0 +1,64 @@
+@import "./articles";
+@import "./buttons";
+@import "./dropdowns";
+@import "./dividers";
+@import "./pills";
+@import "./lists";
+
+@layer components {
+  .text-primary {
+    @apply text-white;
+  }
+  .bg-primary {
+    @apply bg-blue-500;
+  }
+  .border-primary {
+    @apply border-blue-600;
+  }
+  .primary {
+    @apply text-primary bg-primary border-primary;
+  }
+
+  .text-secondary {
+    @apply text-blue-500;
+  }
+  .bg-secondary {
+    @apply bg-blue-50;
+  }
+  .border-secondary {
+    @apply border-blue-100;
+  }
+  .secondary {
+    @apply text-secondary bg-secondary border-secondary;
+  }
+
+  .text-active {
+    @apply text-blue-500;
+  }
+  .bg-active {
+    @apply bg-blue-50;
+  }
+  .border-active {
+    @apply border-blue-600;
+  }
+  .active {
+    @apply text-active bg-active border-active;
+  }
+
+  .text-alert {
+    @apply text-red-50;
+  }
+  .bg-alert {
+    @apply bg-red-500;
+  }
+  .border-alert {
+    @apply border-red-600;
+  }
+  .alert {
+    @apply text-alert bg-alert border-alert;
+  }
+
+  .disabled {
+    @apply opacity-75 cursor-not-allowed;
+  }
+}

@@ -1,0 +1,82 @@
+<menu
+  class="flex items-center p-4 grow justify-between gap-3 *:*:font-semibold"
+>
+  <li>
+    <button
+      class="btn btn-ghost flex items-center gap-2"
+      (click)="drawerStack.close()"
+    >
+      <i class="fa-fw far fa-arrow-left"></i>
+      Back
+    </button>
+  </li>
+
+  <li class="border-l border-gray-400 h-8 self-center"></li>
+
+  @if (navConfig.showOpenButton) {
+  <li>
+    <button class="btn btn-ghost flex items-center gap-2">
+      <i class="fa-fw far fa-arrow-up-right-from-square"></i>
+      Open
+    </button>
+  </li>
+
+  <li class="border-l border-gray-400 h-8 self-center"></li>
+  }
+
+  <li>
+    <button title="Bookmark">
+      <i class="fa-fw far fa-bookmark"></i>
+    </button>
+  </li>
+
+  <li>
+    <button title="Copy link">
+      <i class="fa-fw far fa-link"></i>
+    </button>
+  </li>
+
+  <li>
+    <button title="Download">
+      <i class="fa-fw far fa-circle-down"></i>
+    </button>
+  </li>
+
+  <li>
+    <button title="Label">
+      <i class="fa-fw far fa-tag"></i>
+    </button>
+  </li>
+
+  <li>
+    <button title="Downvote">
+      <i class="fa-fw far fa-thumbs-down"></i>
+    </button>
+  </li>
+
+  <li class="border-l border-gray-400 h-8 self-center grow"></li>
+
+  <li>
+    <button title="Previous result">
+      <i class="fa-fw far fa-chevron-up"></i>
+    </button>
+  </li>
+
+  <li>
+    <button title="Next result">
+      <i class="fa-fw far fa-chevron-down"></i>
+    </button>
+  </li>
+
+  @if (navConfig.showSearchButton) {
+  <li>
+    <button
+      class="btn btn-primary flex gap-2 items-center text-nowrap"
+      (click)="drawerStack.extend()"
+    >
+      <i class="fa-fw far fa-magnifying-glass"></i>
+      Search in document
+    </button>
+  </li>
+  }
+</menu>

@@ -1,0 +1,24 @@
+<header class="flex gap-2 items-baseline">
+  <i class="fa-fw far fa-circle-user"></i>
+
+  <p>
+    "{{ queryText() }}"
+
+    <small class="text-sm text-gray-600 me-1">in</small>
+
+    <a
+      class="text-blue-500 font-semibold underline underline-offset-2"
+      routerLink="/search/people"
+      queryParamsHandling="merge"
+      >People</a
+    >
+  </p>
+</header>
+
+<ul class="grid grid-cols-3 gap-4 mt-4">
+  @for (person of people(); track $index) {
+  <li class="grow">
+    <app-article-person-light [person]="person" [strategy]="'replace'" />
+  </li>
+  }
+</ul>

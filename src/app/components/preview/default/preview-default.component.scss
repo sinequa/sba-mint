@@ -1,0 +1,13 @@
+:host {
+  @apply grow flex flex-col overflow-hidden;
+}
+
+tr {
+  @apply grid my-1;
+
+  grid-template-columns: 25% auto;
+
+  th {
+    @apply text-start text-gray-500 font-medium text-xs self-center;
+  }
+}

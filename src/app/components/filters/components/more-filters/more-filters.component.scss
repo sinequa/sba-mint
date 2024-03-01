@@ -1,0 +1,4 @@
+/* shrinks input to leave space for filter button */
+.collapse > input[type="radio"] {
+  width: calc(100% - (24px * 2 + 16px));
+}

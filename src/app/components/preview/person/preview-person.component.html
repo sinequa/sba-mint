@@ -1,0 +1,130 @@
+<app-preview-navbar class="block border-b border-gray-300 bg-white"
+  [config]="{ showOpenButton: false, showSearchButton: false }" />
+
+<div class="overflow-auto h-full flex flex-col">
+  <section class="flex gap-4 p-6">
+    <img class="rounded-full self-start size-20 object-cover"
+      alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture" [src]="person()?.employeePhotoURL" />
+
+    <section class="grow">
+      <p class="flex article-title items-center">
+        {{ person()?.employeeFullName }}
+
+        <button class="btn btn-xs btn-ghost text-black"
+          title="Bookmark {{ person()?.employeeFullName ?? 'that person' }}">
+          <i class="fa-fw far fa-bookmark"></i>
+        </button>
+      </p>
+
+      <p class="mb-4">{{ person()?.employeeJobTitle }}</p>
+
+      @if (person()?.employeeEmail) {
+      <a class="flex gap-2 items-baseline" [href]="'mailto:' + person()?.employeeEmail">
+        <i class="fa-fw far fa-envelope"></i>
+        {{ person()?.employeeEmail }}
+      </a>
+      }
+
+      @if (person()?.employeePhone) {
+      <a class="flex gap-2 items-baseline" [href]="'tel:' + person()?.employeePhone">
+        <i class="fa-fw far fa-phone"></i>
+        {{ person()?.employeePhone }}
+      </a>
+      }
+
+      @if ((person()?.employeeLocations ?? []).length > 0 ) {
+      <p class="flex gap-2 items-baseline">
+        <i class="fa-fw far fa-location-dot"></i>
+
+        <span class="divide-x-comma divide-xs">
+          @for (location of person()!.employeeLocations; track $index) {
+          <span>{{ location }}</span>
+          }
+        </span>
+      </p>
+      }
+    </section>
+
+    <menu class="flex gap-2">
+      @for(im of ims(); track $index) {
+      <li>
+        <a class="p-2 rounded-full btn btn-secondary" [href]="im.href" [title]="im.label" stkStopPropagation>
+          <i class="fa-fw {{ im.iconClass }}"></i>
+        </a>
+      </li>
+      }
+    </menu>
+  </section>
+
+  <hr class="border-top border-gray-400 mx-6" />
+
+  <section class="p-6 bg-gray-50">
+    <header class="mb-4">Report to</header>
+
+    <app-article-person-light class="bg-white" [person]="person()" />
+  </section>
+
+  <section class="p-6 border-b border-gray-400">
+    <header class="flex justify-between items-center">
+      <p class="flex grow gap-2 items-center">
+        <i class="fa-fw far fa-magnifying-glass"></i>
+
+        Related to "{{ queryText() }}"
+      </p>
+
+      <button class="btn btn-ghost flex gap-2 items-center">
+        <i class="fa-fw far fa-user-magnifying-glass"></i>
+
+        More results
+      </button>
+    </header>
+
+    @if (!relatedTo()) {
+    <app-article-default-light-skeleton class="border-none" />
+    <app-article-default-light-skeleton class="border-none" />
+    <app-article-default-light-skeleton class="border-none" />
+    } @else if (relatedTo()!.length > 0) {
+    <ul class="flex flex-col gap-2">
+      @for (article of relatedTo(); track $index) {
+      <li class="grow">
+        <app-article-default-light [article]="article" class="border-none" />
+      </li>
+      }
+    </ul>
+    } @else {
+    <p class="text-gray-500 italic">No related articles yet</p>
+    }
+  </section>
+
+  <section class="p-6 border-b border-gray-400">
+    <header class="flex justify-between items-center">
+      <p class="flex grow gap-2 items-center">
+        <i class="fa-fw far fa-pen-to-square"></i>
+
+        Recent contributions
+      </p>
+
+      <button class="btn btn-ghost flex gap-2 items-center">
+        <i class="fa-fw far fa-user-pen"></i>
+
+        More results
+      </button>
+    </header>
+
+    @if (!recentContributions()) {
+    <app-article-default-light-skeleton class="border-none" />
+    <app-article-default-light-skeleton class="border-none" />
+    <app-article-default-light-skeleton class="border-none" />
+    } @else if (recentContributions()!.length > 0) {
+    <ul class="flex flex-col gap-2">
+      @for (article of recentContributions(); track $index) {
+      <li class="grow">
+        <app-article-default-light [article]="article" class="border-none" />
+      </li>
+      }
+    </ul>
+    } @else {
+    <p class="text-gray-500 italic">No recent contributions yet</p>
+    }
+  </section>
+</div>

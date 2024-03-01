@@ -1,0 +1,7 @@
+/* 
+ * In some case transition / animation are framed by nghost directives and
+ * are not applied to the element. This class is used to override this behavior.
+ */
+.no-transition-important {
+  transition: none !important;
+}

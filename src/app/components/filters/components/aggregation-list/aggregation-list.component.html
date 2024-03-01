@@ -1,0 +1,86 @@
+<form [formGroup]="$any(form)" (ngSubmit)="submit()">
+  <fieldset class="max-h-80 overflow-auto">
+    <legend class="w-full">
+      <div #legend>
+        <ng-content select="[header]" />
+      </div>
+
+      @if (!legend.hasChildNodes() && title) {
+      <div class="mb-2 p-2 flex items-baseline justify-between">
+        <p class="me-4">
+          @if (title.iconClass) {
+          <i class="fa-fw {{ title.iconClass }}"></i>
+          }
+
+          {{ title.label }}
+        </p>
+
+        <div class="ms-4">
+          @if (hasFilter()) {
+          <button
+            type="button"
+            class="me-2"
+            title="Clear filters"
+            (click)="clearFilters()"
+            (keydown.enter)="clearFilters()"
+          >
+            <i class="fa-fw far fa-filter-circle-xmark"></i>
+          </button>
+          }
+
+          <button
+            type="button"
+            title="Apply filters"
+            [ngClass]="{ 'ms-7': !hasFilter() }"
+            (click)="submit()"
+            (keydown.enter)="submit()"
+          >
+            <i class="fa-fw far fa-filter"></i>
+          </button>
+        </div>
+      </div>
+      }
+    </legend>
+
+    <ul class="data-list">
+      @for (control of form.controls; track $index) {
+      <li
+        class="data-list-item p-0 flex text-sm"
+        [ngClass]="{ 'data-list-item-selected': form.controls[$index].value }"
+      >
+        <input
+          #checkbox
+          type="checkbox"
+          id="{{ column + '-' + $index }}"
+          value="{{ column + '-' + $index }}"
+          [formControlName]="$index"
+        />
+
+        <div
+          class="checkbox p-1 block cursor-pointer"
+          (click)="checkbox.click()"
+          (keydown.enter)="checkbox.click()"
+          tabindex="-1"
+        ></div>
+
+        <label
+          for="{{ column + '-' + $index }}"
+          class="grow p-1 ps-0 cursor-pointer"
+          [ngClass]="{
+            'grid grid-cols-[24px_auto]': !!aggregationItems()[$index].iconClass
+          }"
+        >
+          @if (aggregationItems()[$index].iconClass) {
+          <i
+            class="fa-fw {{
+              aggregationItems()[$index].iconClass
+            }} self-center justify-self-center"
+          ></i>
+          }
+          {{ aggregationItems()[$index].label }}
+        </label>
+      </li>
+      }
+    </ul>
+  </fieldset>
+</form>

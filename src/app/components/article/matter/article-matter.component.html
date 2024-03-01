@@ -1,0 +1,56 @@
+<main class="flex gap-8">
+  <img src="https://placehold.co/150x50" alt="" />
+
+  <section class="flex flex-col gap-2">
+    <header class="flex gap-2">
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+
+      <p class="article-title">Matter {{ article?.value }}</p>
+    </header>
+
+    <p>Client name</p>
+
+    <div class="flex gap-2">
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+      <p class="text-ellipsis whitespace-nowrap overflow-hidden">
+        Matter's status /
+      </p>
+
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+      <p class="text-ellipsis whitespace-nowrap overflow-hidden">Location /</p>
+
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+      <p class="text-ellipsis whitespace-nowrap overflow-hidden">
+        Assignee, partner /
+      </p>
+
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+      <p class="text-ellipsis whitespace-nowrap overflow-hidden">Department</p>
+
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+    </div>
+  </section>
+</main>
+
+<aside>
+  <p class="flex justify-between mb-2">
+    <span>Latest contributions</span>
+
+    <a href="#" class="flex gap-2">
+      <img src="https://placehold.co/20" alt="" class="rounded-full" />
+      More result
+    </a>
+  </p>
+
+  <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
+    @for (article of articles; track $index) {
+    <li class="ps-2">
+      <app-article-default-light
+        [article]="article"
+        stkStopPropagation
+        class="border-none"
+      />
+    </li>
+    }
+  </ul>
+</aside>

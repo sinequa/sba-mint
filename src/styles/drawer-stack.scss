@@ -1,0 +1,7 @@
+app-drawer:has(+ app-drawer) {
+  transform: translateX(-5px);
+}
+
+app-drawer:has(+ app-drawer + app-drawer) {
+  transform: translateX(-8px);
+}

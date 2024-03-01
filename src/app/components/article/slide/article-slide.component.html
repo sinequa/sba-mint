@@ -1,0 +1,28 @@
+<img [src]="slide()?.thumbnailUrl" alt="" class="ratio-video rounded-t-md object-cover" />
+
+<section class="p-2 border-t">
+  <p class="article-title line-clamp-2 mb-2">{{ slide()?.title }}</p>
+
+  <div class="flex gap-1 divide-x-slash divide-xs">
+    @if ((slide()?.authors ?? []).length > 0) {
+      <p class="flex gap-1 items-baseline">
+        <i class="fa-fw far fa-user"></i>
+        {{ slide()!.authors![0] }}
+      </p>
+    }
+
+    @if (slide()?.modified) {
+      <p class="flex gap-1 items-baseline">
+        <i class="fa-fw far fa-calendar-day"></i>
+        {{ slide()!.modified!.split(" ")[0] | date : "mediumDate" }}
+      </p>
+    }
+
+    @if (slide()?.parentFolder) {
+      <p class="flex gap-1 items-baseline">
+        <i class="fa-fw far fa-folder"></i>
+        {{ slide()!.parentFolder }}
+      </p>
+    }
+  </div>
+</section>

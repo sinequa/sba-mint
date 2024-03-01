@@ -1,0 +1,8 @@
+<img class="rounded-full size-12 object-cover" alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture"
+  [src]="person()?.employeePhotoURL" />
+
+<main class="grow">
+  <p class="article-title line-clamp-1">{{ person()?.employeeFullName }}</p>
+
+  <p class="line-clamp-1">{{ person()?.employeeJobTitle }}</p>
+</main>

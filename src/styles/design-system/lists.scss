@@ -1,0 +1,72 @@
+@layer components {
+  .data-list-sm .rounded-t {
+    @apply rounded-t-sm;
+  }
+  .data-list-sm .rounded-b {
+    @apply rounded-b-sm;
+  }
+
+  .data-list .rounded-t {
+    @apply rounded-t-md;
+  }
+  .data-list .rounded-b {
+    @apply rounded-b-md;
+  }
+
+  .data-list-lg .rounded-t {
+    @apply rounded-t-lg;
+  }
+  .data-list-lg .rounded-b {
+    @apply rounded-b-lg;
+  }
+
+  .data-list-xl .rounded-t {
+    @apply rounded-t-xl;
+  }
+  .data-list-xl .rounded-b {
+    @apply rounded-b-xl;
+  }
+
+  .data-list-item:hover {
+    @apply active;
+  }
+  .data-list-item-selected {
+    @apply active;
+  }
+
+  .data-list-item-selected:first-of-type {
+    @apply rounded-t;
+  }
+  .data-list-item-selected:last-of-type {
+    @apply rounded-b;
+  }
+
+  .data-list-item:first-of-type:hover {
+    @apply rounded-t;
+  }
+  .data-list-item:last-of-type:hover {
+    @apply rounded-b;
+  }
+
+  .data-list-item:not(.data-list-item-selected, .data-list-item:hover)
+    + .data-list-item-selected {
+    @apply rounded-t;
+  }
+  .data-list-item-selected:has(+ :not(.data-list-item-selected)) {
+    @apply rounded-b;
+  }
+  .data-list-item:hover:not(.data-list-item-selected):has(
+      + :not(.data-list-item-selected)
+    ) {
+    @apply rounded-b;
+  }
+  .data-list-item:not(.data-list-item-selected) + .data-list-item:hover {
+    @apply rounded-t;
+  }
+  .data-list-item-selected:has(+ .data-list-item:hover) {
+    @apply rounded-b-none;
+  }
+  .data-list-item:hover + .data-list-item-selected {
+    @apply rounded-t-none;
+  }
+}

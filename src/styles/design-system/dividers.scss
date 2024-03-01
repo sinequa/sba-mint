@@ -1,0 +1,65 @@
+@layer components {
+  .divide-x-slash > * + *::before {
+    content: "\2f";
+    font: var(--fa-font-regular);
+    @apply mx-0;
+  }
+
+  .divide-x-chevron-right > * + *::before {
+    content: "\f054";
+    font: var(--fa-font-regular);
+    @apply mx-0;
+  }
+
+  .divide-x-slash.divide-xs,
+  .divide-x-chevron-right.divide-xs {
+    & > * + *::before {
+      @apply mx-1;
+    }
+  }
+  .divide-x-slash.divide-sm,
+  .divide-x-chevron-right.divide-sm {
+    & > * + *::before {
+      @apply mx-2;
+    }
+  }
+  .divide-x-slash.divide-normal,
+  .divide-x-chevron-right.divide-normal {
+    & > * + *::before {
+      @apply mx-3;
+    }
+  }
+  .divide-x-slash.divide-lg,
+  .divide-x-chevron-right.divide-lg {
+    & > * + *::before {
+      @apply mx-4;
+    }
+  }
+  .divide-x-slash.divide-xl,
+  .divide-x-chevron-right.divide-xl {
+    & > * + *::before {
+      @apply mx-5;
+    }
+  }
+
+  .divide-x-comma > * + *::before {
+    content: ",";
+    @apply mx-0;
+  }
+
+  .divide-x-comma.divide-xs > * + *::before {
+    @apply me-1;
+  }
+  .divide-x-comma.divide-sm > * + *::before {
+    @apply me-2;
+  }
+  .divide-x-comma.divide-normal > * + *::before {
+    @apply me-3;
+  }
+  .divide-x-comma.divide-lg > * + *::before {
+    @apply me-4;
+  }
+  .divide-x-comma.divide-xl > * + *::before {
+    @apply me-5;
+  }
+}

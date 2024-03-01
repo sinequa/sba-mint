@@ -1,0 +1,35 @@
+<i class="{{ article()?.treepath?.[0] | treepathToIconClass }} text-lg"></i>
+
+<main class="grow">
+  <div class="flex gap-2 items-baseline">
+    @if (article()?.doctype) {
+    <div>
+      <div class="pill pill-xs border-gray-900 font-bold uppercase">{{ article()!.doctype }}</div>
+    </div>
+    }
+
+    <p class="article-title">
+      {{ article()?.title }}
+    </p>
+  </div>
+
+  <section class="flex gap-1 divide-x-slash divide-xs">
+    @if ((article()?.authors ?? []).length > 0) {
+    <wps-author [authorName]="article()!.authors![0]" [strategy]="strategy()" />
+    }
+
+    @if (article()?.modified) {
+    <p class="flex gap-1 items-baseline">
+      <i class="fa-fw far fa-calendar-day"></i>
+      {{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}
+    </p>
+    }
+
+    @if (article()?.parentFolder) {
+    <p class="flex gap-1 items-baseline">
+      <i class="fa-fw far fa-folder"></i>
+      {{ article()!.parentFolder }}
+    </p>
+    }
+  </section>
+</main>

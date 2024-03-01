@@ -1,0 +1,82 @@
+<app-preview-navbar class="block border-b border-gray-300 bg-white" />
+
+<div class="overflow-auto h-full flex flex-col">
+  <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
+    <header class="flex items-center gap-4">
+      <img src="https://placehold.co/80x50" alt="" />
+
+      <p class="article-title">{{ article()?.title }}</p>
+    </header>
+    <table class="w-full">
+      <tr>
+        <th>Location</th>
+        <td class="flex items-baseline divide-x-chevron-right divide-xs">
+          <i class="fa-fw {{ article()?.treepath?.[0] | treepathToIconClass }}"></i>
+
+          @for (segment of (article()?.treepath?.[0] ?? '') | split: '/' | slice: 2:
+          -1; track $index) {
+          <span>{{ segment }}</span>
+          }
+        </td>
+      </tr>
+
+      @if ((article()?.authors ?? []).length > 0) {
+      <tr>
+        <th>Last update by</th>
+
+        <td class="flex flex-wrap gap-2">
+          @for (author of article()!.authors; track $index) {
+          <wps-author [authorName]="author" class="flex items-center" />
+          }
+        </td>
+      </tr>
+      }
+
+      @if (article()?.modified) {
+      <tr>
+        <th>Last update on</th>
+
+        <td class="flex gap-2">
+          <p>{{ article()!.modified | date : "mediumDate" }}</p>
+        </td>
+      </tr>
+      }
+
+      <tr>
+        <th>Labels</th>
+        <td class="flex gap-2">
+          @for (label of labels(); track label) {
+          <span class="pill text-sm text-bold border-black font-semibold">
+            {{ label }}
+          </span>
+          }
+        </td>
+      </tr>
+
+      <tr>
+        <th>Type</th>
+        <td>
+          <span class="pill text-sm text-bold border-black font-semibold">
+            PDF
+          </span>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="flex p-6 border-b border-gray-400 justify-between">
+    <header class="flex gap-2">
+      <img src="https://placehold.co/20" alt="" />
+
+      Summarize
+    </header>
+
+    <img src="https://placehold.co/20" alt="" />
+  </section>
+
+  <section class="grow flex flex-col gap-4">
+    @if (previewUrl()) {
+    <iframe #preview frameborder="0" class="h-full" title="Document preview" [src]="previewUrl()"></iframe>
+    }
+  </section>
+</div>

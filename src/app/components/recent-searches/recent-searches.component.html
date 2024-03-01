@@ -1,0 +1,23 @@
+<ul class="flex flex-col">
+  @for (search of recentSearches; track $index) {
+  <li
+    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
+    tabindex="0"
+    appFocusWithArrowKeys="y"
+    (click)="recentSearchClicked(search)"
+    (keydown.enter)="recentSearchClicked(search)"
+  >
+    <i class="fa-fw far fa-clock-rotate-left"></i>
+
+    <p>{{ search.label }}</p>
+
+    <p class="text-gray-500">
+      <i class="fa-fw far fa-filter"></i>
+      {{ search.filterCount }}
+      filter(s)
+    </p>
+
+    <p class="text-gray-500 ms-auto">{{ search.date }}</p>
+  </li>
+  }
+</ul>

@@ -1,0 +1,22 @@
+@layer components {
+  .pill {
+    @apply rounded-full px-2 border;
+  }
+
+  .pill-ghost {
+    @apply pill border-none;
+  }
+
+  .pill-xs {
+    @apply pill px-1 text-xs;
+  }
+  .pill-sm {
+    @apply pill px-1 text-sm;
+  }
+  .pill-lg {
+    @apply pill px-3 text-lg;
+  }
+  .pill-xl {
+    @apply pill px-4 text-xl;
+  }
+}

@@ -1,0 +1,37 @@
+<ul class="flex flex-col">
+  @for (bookmark of bookmarks; track $index) {
+  <li
+    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
+    tabindex="0"
+    appFocusWithArrowKeys="y"
+    (click)="bookmarkClicked(bookmark)"
+    (keydown.enter)="bookmarkClicked(bookmark)"
+  >
+    <i class="fa-fw far fa-bookmark"></i>
+
+    @switch (bookmark.source) { @case ('drive') {
+    <i class="fa-fw fab fa-google-drive"></i>
+    } @case ('slack') {
+    <i class="fa-fw fab fa-slack"></i>
+    } @case ('jira') {
+    <i class="fa-fw fab fa-jira"></i>
+    } @default {
+    <i class="fa-fw fab fa-folder"></i>
+    } }
+
+    <p>{{ bookmark.label }}</p>
+
+    <p class="text-gray-500">
+      <i class="fa-fw far fa-user"></i>
+      {{ bookmark.author }}
+      filter(s)
+    </p>
+
+    <p class="text-gray-500">
+      <i class="fa-fw far fa-folder"></i>
+      {{ bookmark.parentFolder }}
+      filter(s)
+    </p>
+  </li>
+  }
+</ul>

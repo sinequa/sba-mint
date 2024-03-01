@@ -1,0 +1,13 @@
+:host {
+  @apply article pointer-events-none;
+}
+
+/* Doctype icon */
+div[stkSkeleton] {
+  @apply bg-fixed;
+}
+
+/* Article content */
+div div[stkSkeleton] {
+  @apply h-4 pill pill-xs;
+}

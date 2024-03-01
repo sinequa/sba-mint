@@ -1,0 +1,34 @@
+:host {
+  --drawer-width: 46;
+  --drawer-subdrawer-width: 400px;
+
+  @apply grid justify-end absolute h-screen top-0 -right-full;
+
+  /* Makes drawer x% the size of the screen + space for subdrawer */
+  width: calc(
+    100vw / 100 * var(--drawer-width) + var(--drawer-subdrawer-width)
+  );
+
+  z-index: var(--drawer-z-index, 2000);
+  grid-template-columns: 0 1fr var(--drawer-subdrawer-width);
+
+  transition: right 300ms ease-in-out, transform 300ms ease-in-out;
+
+  &[drawer-opened="true"] {
+    @apply -right-[var(--drawer-subdrawer-width)];
+
+    & > :nth-child(2) {
+      box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &[drawer-extended="true"] {
+    @apply w-screen right-0;
+
+    grid-template-columns: 1fr calc(var(--drawer-width) * 1%) var(--drawer-subdrawer-width);
+
+    & > :nth-child(2) {
+      box-shadow: unset;
+    }
+  }
+}

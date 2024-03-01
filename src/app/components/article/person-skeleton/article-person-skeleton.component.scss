@@ -1,0 +1,11 @@
+:host {
+  @apply article items-center pointer-events-none;
+}
+
+div[stkSkeleton] {
+  @apply bg-fixed;
+}
+
+div div[stkSkeleton] {
+  @apply h-4 pill pill-xs;
+}

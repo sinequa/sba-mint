@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../node_modules/toolkit/styles/keyframes.css";
+@import "../node_modules/toolkit/styles/panel.css";
+@import "../node_modules/toolkit/styles/skeleton.css";
+
+@import "./styles/z-index.scss";
+@import "./styles/layouts.scss";
+@import "./styles/colors.scss";
+@import "./styles/collapse.scss";
+@import "./styles/texts.scss";
+@import "./styles/design-system/design-system.scss";
+@import "./styles/animations.scss";
+@import "./styles/drawer-stack.scss";
+@import "./styles/panel.scss";
+@import "./styles/dropdown.scss";
+@import "./styles/checkbox.scss";
+@import "./styles/radio.scss";
+
+html {
+  overflow-x: hidden;
+}

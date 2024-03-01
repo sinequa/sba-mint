@@ -1,0 +1,56 @@
+<header class="shrink-0">
+  <img class="rounded-full size-12 object-cover" alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture"
+    [src]="person()?.employeePhotoURL" />
+</header>
+
+<div class="grow flex flex-col gap-4">
+  <main class="flex gap-2">
+    <section class="grow">
+      <p class="article-title">{{ person()?.employeeFullName }}</p>
+
+      <p class="font-semibold">{{ person()?.employeeJobTitle }}</p>
+    </section>
+
+    <menu class="flex gap-2">
+      @for(im of ims(); track $index) {
+      <li>
+        <a class="p-2 rounded-full btn btn-secondary" [href]="im.href" [title]="im.label" stkStopPropagation>
+          <i class="fa-fw {{ im.iconClass }}"></i>
+        </a>
+      </li>
+      }
+    </menu>
+  </main>
+
+  @if (!relatedTo()) {
+  <footer class="flex flex-col gap-2">
+    <ng-container *ngTemplateOutlet="footerTitleTpl" />
+
+    <app-article-default-light-skeleton class="border-none" />
+  </footer>
+  }
+  @else if (relatedTo()!.length > 0) {
+  <footer class="flex flex-col gap-2">
+    <ng-container *ngTemplateOutlet="footerTitleTpl" />
+
+    <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
+      @for (article of relatedTo(); track $index) {
+      <li class="ps-2">
+        <app-article-default-light [article]="article" stkStopPropagation class="border-none" />
+      </li>
+      }
+    </ul>
+  </footer>
+  }
+</div>
+
+<ng-template #footerTitleTpl>
+  <p class="flex justify-between">
+    <span>Related to "<em class="font-semibold not-italic">{{ queryText() }}</em>"</span>
+
+    <a href="#" class="flex gap-2 items-baseline">
+      <i class="fa-fw far fa-user-magnifying-glass"></i>
+      More result
+    </a>
+  </p>
+</ng-template>

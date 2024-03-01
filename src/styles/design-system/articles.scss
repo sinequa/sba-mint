@@ -1,0 +1,8 @@
+@layer components {
+  .article {
+    @apply rounded-md border border-gray-400 flex p-4 gap-2;
+  }
+  .article:hover {
+    @apply border-gray-600 bg-blue-50 cursor-pointer has-[.btn:hover]:bg-white;
+  }
+}

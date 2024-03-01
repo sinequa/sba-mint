@@ -1,0 +1,13 @@
+<p class="flex gap-1 items-center">
+  <wps-author-image [person]="person()" [imgClass]="'rounded-full size-5 object-cover'">
+    <i class="fa-fw fa-regular fa-user-circle"></i>
+  </wps-author-image>
+
+  {{ authorName() }}
+</p>
+
+@if (person() && showAuthor()) {
+<div class="absolute w-max pt-1 z-[--tooltip-z-index]">
+  <app-article-person-light [person]="person()" [strategy]="strategy()" class="bg-white" />
+</div>
+}

@@ -1,0 +1,48 @@
+<a routerLink="/home" class="self-end ps-10">
+  <img src="assets/logo/large.svg" alt="" />
+</a>
+
+<div class="col-span-2 flex items-center">
+  <app-search-input class="flex grow" [showSave]="true" />
+</div>
+
+<menu class="flex justify-end gap-6 items-center pe-10">
+  @for (menu of menus; track $index) {
+  <li>
+    <button title="{{ menu.label }}">
+      <i class="fa-fw {{ menu.iconClass }}"></i>
+    </button>
+  </li>
+  }
+  <li class="flex">
+    <button title="User settings">
+      <img class="rounded-full size-8" alt="User profile picture"
+        src="https://xsgames.co/randomusers/avatar.php?g=male" />
+    </button>
+  </li>
+</menu>
+
+<div class="row-start-2">
+  <div class="grow h-full border-b border-gray-200"></div>
+</div>
+
+<nav class="col-start-2 col-span-2">
+  <ul class="col-start-2 col-span-2 flex items-end">
+    @for (tab of tabs; track $index) {
+    <li>
+      <button
+        class="py-2 px-3 select-none border-b border-gray-200 font-semibold capitalize hover:text-blue-500 hover:border-blue-500 focus:text-blue-500 focus:border-blue-500 focus:outline-none aria-selected:text-blue-500 aria-selected:border-blue-500"
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink" (click)="search(tab)">
+        <i class="fa-fw {{ tab.iconClass }}"></i>
+        {{ tab.label }}
+      </button>
+    </li>
+    }
+
+    <li class="grow border-b border-gray-200"></li>
+  </ul>
+</nav>
+
+<div class="row-start-2 col-start-4">
+  <div class="grow h-full border-b border-gray-200"></div>
+</div>

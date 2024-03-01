@@ -1,0 +1,8 @@
+[
+  {
+    "context": ["/api", "/xdownload", "/auth/redirect", "/saml/redirect", "/r"],
+    "target": "https://uggc-p4-n1.frcn-01.snqa.lan/",
+    "secure": false,
+    "changeOrigin": true
+  }
+]

@@ -1,0 +1,20 @@
+<header class="flex gap-2 items-baseline">
+  <i class="fa-fw far fa-presentation-screen"></i>
+
+  <p>
+    "{{ queryText() }}"
+
+    <small class="text-sm text-gray-600 me-1">in</small>
+
+    <a class="text-blue-500 font-semibold underline underline-offset-2" routerLink="/search/slides"
+      queryParamsHandling="merge">Slides</a>
+  </p>
+</header>
+
+<ul class="grid grid-cols-3 gap-4 mt-4">
+  @for (slide of slides(); track $index) {
+  <li class="grow">
+    <app-article-slide-light [slide]="slide" [strategy]="'replace'"/>
+  </li>
+  }
+</ul>

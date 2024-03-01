@@ -1,0 +1,6 @@
+{
+  "extends": ["development", "accessibility"],
+  "hints": {
+    "axe/structure": ["warning", { "list": "off" }]
+  }
+}

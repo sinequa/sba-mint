@@ -1,0 +1,438 @@
+<main class="p-56 flex flex-col gap-5">
+  <details open>
+    <summary>Buttons</summary>
+
+    <div class="p-2 flex flex-col gap-2">
+      <div class="*:me-2">
+        <button class="btn">Button</button>
+        <button class="btn btn-outline">Button</button>
+        <button class="btn btn-primary">Button primary</button>
+        <button class="btn btn-outline btn-primary">Button primary</button>
+        <button class="btn btn-secondary">Button secondary</button>
+        <button class="btn btn-outline btn-secondary">Button secondary</button>
+        <button class="btn btn-ghost">Button ghost</button>
+        <button class="btn btn-outline btn-ghost">Button ghost</button>
+        <button class="btn btn-alert">Button alert</button>
+        <button class="btn btn-outline btn-alert">Button alert</button>
+      </div>
+
+      <div class="*:me-2">
+        <button disabled class="btn">Button</button>
+        <button disabled class="btn btn-outline">Button</button>
+        <button disabled class="btn btn-primary">Button primary</button>
+        <button disabled class="btn btn-outline btn-primary">
+          Button primary
+        </button>
+        <button disabled class="btn btn-secondary">Button secondary</button>
+        <button disabled class="btn btn-outline btn-secondary">
+          Button secondary
+        </button>
+        <button disabled class="btn btn-ghost">Button ghost</button>
+        <button disabled class="btn btn-outline btn-ghost">Button ghost</button>
+        <button disabled class="btn btn-alert">Button alert</button>
+        <button disabled class="btn btn-outline btn-alert">Button alert</button>
+      </div>
+
+      <div class="*:me-2">
+        <button class="btn btn-primary btn-xs">Button xs</button>
+        <button class="btn btn-primary btn-sm">Button sm</button>
+        <button class="btn btn-primary">Button normal</button>
+        <button class="btn btn-primary btn-lg">Button lg</button>
+        <button class="btn btn-primary btn-xl">Button xl</button>
+        <button class="btn btn-primary btn-lg">Button lg</button>
+        <button class="btn btn-primary">Button normal</button>
+        <button class="btn btn-primary btn-sm">Button sm</button>
+        <button class="btn btn-primary btn-xs">Button xs</button>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Pills</summary>
+
+    <div class="p-2 flex flex-col gap-2">
+      <div class="*:me-2">
+        <span class="pill-xs">Pill xs</span>
+        <span class="pill-xs"><i class="far fa-user me-1"></i>Pill xs</span>
+
+        <span class="pill-sm">Pill sm</span>
+        <span class="pill-sm"><i class="far fa-user me-1"></i>Pill sm</span>
+
+        <span class="pill">Pill</span>
+        <span class="pill"><i class="far fa-user me-1"></i>Pill</span>
+
+        <span class="pill-lg">Pill lg</span>
+        <span class="pill-lg"><i class="far fa-user me-1"></i>Pill ls</span>
+
+        <span class="pill-xl">Pill xl</span>
+        <span class="pill-xl"><i class="far fa-user me-1"></i>Pill xl</span>
+      </div>
+
+      <div class="*:me-2">
+        <span class="pill primary">Pill primary</span>
+        <span class="pill primary"
+          ><i class="far fa-user me-1"></i>Pill primary</span
+        >
+
+        <span class="pill secondary">Pill secondary</span>
+        <span class="pill secondary"
+          ><i class="far fa-user me-1"></i>Pill secondary</span
+        >
+
+        <span class="pill active">Pill active</span>
+        <span class="pill active"
+          ><i class="far fa-user me-1"></i>Pill active</span
+        >
+
+        <span class="pill-ghost active">Pill ghost</span>
+        <span class="pill-ghost active"
+          ><i class="far fa-user me-1"></i>Pill ghost</span
+        >
+
+        <span class="pill alert">Pill alert</span>
+        <span class="pill alert"
+          ><i class="far fa-user me-1"></i>Pill alert</span
+        >
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Lists</summary>
+
+    <div class="p-2 grid grid-cols-5 gap-x-2">
+      <ul class="data-list-sm">
+        @for (item of list; track $index) {
+        <li
+          class="p-2 data-list-item"
+          [ngClass]="{ 'data-list-item-selected': list[$index] }"
+        >
+          <input
+            class="me-2"
+            type="checkbox"
+            id="{{ $index }}"
+            [(ngModel)]="list[$index]"
+          />
+          <label for="{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+
+      <ul class="data-list">
+        @for (item of list; track $index) {
+        <li
+          class="p-2 data-list-item"
+          [ngClass]="{ 'data-list-item-selected': list[$index] }"
+        >
+          <input
+            class="me-2"
+            type="checkbox"
+            id="{{ $index }}"
+            [(ngModel)]="list[$index]"
+          />
+          <label for="{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+
+      <ul class="data-list-lg">
+        @for (item of list; track $index) {
+        <li
+          class="p-2 data-list-item"
+          [ngClass]="{ 'data-list-item-selected': list[$index] }"
+        >
+          <input
+            class="me-2"
+            type="checkbox"
+            id="{{ $index }}"
+            [(ngModel)]="list[$index]"
+          />
+          <label for="{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+
+      <ul class="data-list-xl">
+        @for (item of list; track $index) {
+        <li
+          class="p-2 data-list-item"
+          [ngClass]="{ 'data-list-item-selected': list[$index] }"
+        >
+          <input
+            class="me-2"
+            type="checkbox"
+            id="{{ $index }}"
+            [(ngModel)]="list[$index]"
+          />
+          <label for="{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Checkbox / Radio</summary>
+
+    <div class="p-2 grid grid-cols-5 gap-x-2">
+      <ul class="data-list">
+        @for (item of list; track $index) {
+        <li class="p-2 data-list-item">
+          <input #checkbox type="checkbox" id="checkbox-{{ $index }}" />
+
+          <span
+            class="checkbox me-2"
+            (click)="checkbox.click()"
+            (keydown.enter)="checkbox.click()"
+            tabindex="-1"
+          ></span>
+
+          <label for="checkbox-{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+
+      <ul class="data-list">
+        @for (item of list; track $index) {
+        <li class="p-2 data-list-item">
+          <input
+            #radio
+            type="radio"
+            id="radio-{{ $index }}"
+            name="radio"
+            value="radio-{{ $index }}"
+          />
+
+          <span
+            class="radio me-2"
+            (click)="radio.click()"
+            (keydown.enter)="radio.click()"
+            tabindex="-1"
+          ></span>
+
+          <label for="radio-{{ $index }}">{{ $index }}</label>
+        </li>
+        }
+      </ul>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Accordion</summary>
+
+    <div class="collapse bg-base-200">
+      <input
+        type="radio"
+        name="my-accordion-2"
+        checked="checked"
+        title="Open tab 1"
+      />
+
+      <div class="collapse-title text-xl font-medium">
+        Click to open this one and close others
+      </div>
+
+      <div class="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+
+    <div class="collapse bg-base-200">
+      <input type="radio" name="my-accordion-2" title="Open tab 2" />
+
+      <div class="collapse-title text-xl font-medium">
+        Click to open this one and close others
+      </div>
+
+      <div class="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+
+    <div class="collapse bg-base-200">
+      <input type="radio" name="my-accordion-2" title="Open tab 3" />
+
+      <div class="collapse-title text-xl font-medium">
+        Click to open this one and close others
+      </div>
+
+      <div class="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Dividers</summary>
+
+    <div class="grid grid-cols-2">
+      <div>
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>No-margin</span>
+          <div class="divide-x-slash">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xs</span>
+          <div class="divide-x-slash divide-xs">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>sm</span>
+          <div class="divide-x-slash divide-sm">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>normal</span>
+          <div class="divide-x-slash divide-normal">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>lg</span>
+          <div class="divide-x-slash divide-lg">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xl</span>
+          <div class="divide-x-slash divide-xl">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>No-margin</span>
+          <div class="divide-x-comma">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xs</span>
+          <div class="divide-x-comma divide-xs">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>sm</span>
+          <div class="divide-x-comma divide-sm">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>normal</span>
+          <div class="divide-x-comma divide-normal">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>lg</span>
+          <div class="divide-x-comma divide-lg">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xl</span>
+          <div class="divide-x-comma divide-xl">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>No-margin</span>
+          <div class="divide-x-chevron-right">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xs</span>
+          <div class="divide-x-chevron-right divide-xs">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>sm</span>
+          <div class="divide-x-chevron-right divide-sm">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>normal</span>
+          <div class="divide-x-chevron-right divide-normal">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>lg</span>
+          <div class="divide-x-chevron-right divide-lg">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[100px_auto] gap-2">
+          <span>xl</span>
+          <div class="divide-x-chevron-right divide-xl">
+            @for (item of dividers; track $index) {
+            <span class="">Metadata {{ $index }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+</main>

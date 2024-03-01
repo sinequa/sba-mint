@@ -1,0 +1,5 @@
+:host {
+  @apply block;
+
+  z-index: var(--filter-z-index, 0);
+}

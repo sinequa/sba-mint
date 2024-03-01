@@ -1,0 +1,13 @@
+@layer components {
+  .layout-search {
+    @apply grid;
+
+    grid-template-columns: 25% 25% 25% 25%;
+
+    transition: 250ms ease-out;
+
+    &[drawer-opened="true"] {
+      grid-template-columns: 2% 25% 25% 48%;
+    }
+  }
+}

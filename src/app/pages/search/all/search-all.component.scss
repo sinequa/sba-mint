@@ -1,0 +1,7 @@
+:host {
+  @apply layout-search overflow-auto h-full;
+}
+
+app-overview-people:not(.hidden) + app-overview-slides {
+  @apply mt-4;
+}
