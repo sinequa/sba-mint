@@ -1,7 +1,7 @@
 [
   {
     "context": ["/api", "/xdownload", "/auth/redirect", "/saml/redirect", "/r"],
-    "target": "https://uggc-p4-n1.frcn-01.snqa.lan/",
+    "target": "https://wpsd-d1.sinequa.cloud/",
     "secure": false,
     "changeOrigin": true
   }

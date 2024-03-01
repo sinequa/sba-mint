@@ -2,6 +2,6 @@ import { Environment } from "./env.model";
 
 export const environment: Environment = {
   production: true,
-  app: 'mint-preview',
+  app: 'workplace-search-mint',
   backendUrl: window.location.origin
 };
