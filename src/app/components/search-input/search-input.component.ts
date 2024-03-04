@@ -1,6 +1,6 @@
 import { QueryStoreService } from '@/app/services/query-store.service';
 import { FALLBACK_SEARCH_ROUTE, SearchService } from '@/app/services/search.service';
-import { Component, Input, booleanAttribute, inject } from '@angular/core';
+import { Component, booleanAttribute, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -15,12 +15,11 @@ import { searchInputStore } from '../../stores/search-input.store';
   styleUrl: './search-input.component.scss'
 })
 export class SearchInputComponent {
-  @Input({ required: false, transform: booleanAttribute })
-  public showSave!: boolean;
+  public readonly showSave = input(false, { transform: booleanAttribute });
 
   public readonly input = inject(QueryStoreService).query;
   public readonly searchService = inject(SearchService);
-  public inputDebounced = toSignal(toObservable(this.input).pipe(debounceTime(250)));
+  public readonly inputDebounced = toSignal(toObservable(this.input).pipe(debounceTime(250)));
 
   private readonly router = inject(Router);
 

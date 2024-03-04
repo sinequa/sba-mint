@@ -1,7 +1,7 @@
 <div
   class="grow px-2 flex gap-2 items-center rounded-s rounded-e-none bg-gray-50"
 >
-  @if (showSave && input() !== '') {
+  @if (showSave() && input() !== '') {
   <button
     title="Save search"
     (click)="saveQuery()"
