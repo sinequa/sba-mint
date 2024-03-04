@@ -3,7 +3,8 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-  <app-search-input class="flex grow" [showSave]="true" />
+  <app-search-input class="flex grow" [showSave]="true" (validated)="validated($event)" (updated)="updated($event)"
+    (debounced)="debounced($event)" />
 </div>
 
 <menu class="flex justify-end gap-6 items-center pe-10">
@@ -32,7 +33,7 @@
     <li>
       <button
         class="py-2 px-3 select-none border-b border-gray-200 font-semibold capitalize hover:text-blue-500 hover:border-blue-500 focus:text-blue-500 focus:border-blue-500 focus:outline-none aria-selected:text-blue-500 aria-selected:border-blue-500"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink" (click)="search(tab)">
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink" (click)="changeTab(tab)">
         <i class="fa-fw {{ tab.iconClass }}"></i>
         {{ tab.label }}
       </button>

@@ -1,6 +1,6 @@
 import { NavigationService } from '@/app/services/navigation.service';
-import { QueryStoreService } from '@/app/services/query-store.service';
 import { buildQuery } from '@/app/services/query.service';
+import { searchInputStore } from '@/app/stores/search-input.store';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, inject, runInInjectionContext, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ArticleSlideLightComponent } from '@mint/components/article/slide-light/article-slide-light.component';
@@ -27,7 +27,6 @@ export class OverviewSlidesComponent implements OnInit, OnDestroy {
   protected readonly queryText = signal<string>('');
 
   private readonly navigationService = inject(NavigationService);
-  private readonly queryStoreService = inject(QueryStoreService);
   private readonly queryService = inject(QueryService);
 
   private readonly subscriptions = new Subscription();
@@ -55,7 +54,7 @@ export class OverviewSlidesComponent implements OnInit, OnDestroy {
             );
           }
 
-          this.queryText.set(this.queryStoreService.query());
+          this.queryText.set(searchInputStore.state ?? '');
         })
     );
   }

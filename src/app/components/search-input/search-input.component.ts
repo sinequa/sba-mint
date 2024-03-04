@@ -1,11 +1,9 @@
-import { QueryStoreService } from '@/app/services/query-store.service';
-import { FALLBACK_SEARCH_ROUTE, SearchService } from '@/app/services/search.service';
-import { Component, booleanAttribute, inject, input } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, input, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { debounceTime } from 'rxjs';
-import { searchInputStore } from '../../stores/search-input.store';
+import { Subscription, debounceTime, filter } from 'rxjs';
+
+const DEBOUNCE_DELAY = 300;
 
 @Component({
   selector: 'app-search-input',
@@ -14,30 +12,55 @@ import { searchInputStore } from '../../stores/search-input.store';
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss'
 })
-export class SearchInputComponent {
+export class SearchInputComponent implements OnDestroy {
+  @Output() public readonly updated = new EventEmitter<string>();
+  @Output() public readonly debounced = new EventEmitter<string>();
+  @Output() public readonly validated = new EventEmitter<string>();
+
   public readonly showSave = input(false, { transform: booleanAttribute });
 
-  public readonly input = inject(QueryStoreService).query;
-  public readonly searchService = inject(SearchService);
-  public readonly inputDebounced = toSignal(toObservable(this.input).pipe(debounceTime(250)));
+  public readonly input = signal<string | undefined>(undefined);
 
-  private readonly router = inject(Router);
+  private readonly _subscription = new Subscription();
 
-  protected executeSearch(): void {
-    if (this.input() === '') return;
+  constructor() {
+    effect(() => {
+      if (this.input() !== undefined)
+        this.updated.emit(this.input());
+    });
 
-    const commands = this.searchService.isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
-    searchInputStore.set({ text: this.input() });
-
-    this.router.navigate(commands, { queryParams: { q: this.input() } });
+    this._subscription.add(
+      toObservable(this.input)
+        .pipe(
+          filter(text => text !== undefined),
+          debounceTime(DEBOUNCE_DELAY)
+        )
+        .subscribe(text => this.debounced.emit(text))
+    )
   }
 
-  protected saveQuery(): void {
-    console.log('save query');
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+  }
+
+  public setInput(text: string | undefined, silent: boolean = true): void {
+    if (text === undefined) return;
+
+    this.input.set(text);
+
+    if (!silent) this.emitText();
+  }
+
+  protected emitText(): void {
+    this.validated.emit(this.input());
   }
 
   protected clearInput(): void {
     this.input.set('');
-    searchInputStore.set({ text: '' });
+    this.emitText();
+  }
+
+  protected saveQuery(): void {
+    console.log('save query');
   }
 }

@@ -22,12 +22,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   private readonly queryStore = inject(QueryStoreService);
 
   ngOnInit(): void {
-    searchInputStore.set({ text: this.q ?? '' });
+    searchInputStore.set(this.q ?? '');
     this.queryStore.query.set(this.q ?? '');
   }
 
   ngOnDestroy(): void {
-    searchInputStore.set({ text: '' });
+    searchInputStore.set('');
     this.queryStore.query.set('');
   }
 }
