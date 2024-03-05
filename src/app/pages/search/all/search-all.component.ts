@@ -2,6 +2,8 @@ import { NavigationService } from '@/app/services/navigation.service';
 import { QueryStoreService } from '@/app/services/query-store.service';
 import { buildFirstPageQuery } from '@/app/services/query.service';
 import { SearchService } from '@/app/services/search.service';
+import { filtersStore } from '@/app/stores/filters.store';
+import { searchInputStore } from '@/app/stores/search-input.store';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { ArticleDefaultSkeletonComponent } from '@mint/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@mint/components/article/default/article-default.component';
@@ -12,10 +14,8 @@ import { SelectArticleOnClickDirective } from '@mint/directives/select-article-o
 import { Article } from '@mint/types/articles/article.type';
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, merge, switchMap, take } from 'rxjs';
+import { Subscription, distinctUntilChanged, merge, switchMap, take } from 'rxjs';
 import { aggregationsStore } from '../../../stores/aggregations.store';
-import { filtersStore } from '../../../stores/filters.store';
-import { searchInputStore } from '../../../stores/search-input.store';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
@@ -74,7 +74,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
 
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(
-      merge(searchInputStore.next$, filtersStore.current$)
+      merge(searchInputStore.next$.pipe(distinctUntilChanged()), filtersStore.current$)
         .subscribe(() => this.articles.set(undefined))
     );
   }

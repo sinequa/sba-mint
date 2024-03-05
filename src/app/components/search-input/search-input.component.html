@@ -17,6 +17,6 @@
 </div>
 
 <button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
-  [disabled]="input() === ''" (click)="emitText()">
+  [disabled]="input() === oldInput" (click)="emitText()">
   <i class="fa-fw far fa-magnifying-glass"></i>
 </button>

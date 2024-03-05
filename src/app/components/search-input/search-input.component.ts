@@ -19,7 +19,9 @@ export class SearchInputComponent implements OnDestroy {
 
   public readonly showSave = input(false, { transform: booleanAttribute });
 
-  public readonly input = signal<string | undefined>(undefined);
+  public readonly input = signal<string>('');
+
+  protected oldInput: string = this.input();
 
   private readonly _subscription = new Subscription();
 
@@ -47,17 +49,24 @@ export class SearchInputComponent implements OnDestroy {
     if (text === undefined) return;
 
     this.input.set(text);
+    this.oldInput = text;
 
     if (!silent) this.emitText();
   }
 
   protected emitText(): void {
+    if (this.input() === this.oldInput) return;
+
+    this.oldInput = this.input();
     this.validated.emit(this.input());
   }
 
   protected clearInput(): void {
+    this.oldInput = '';
+
     this.input.set('');
-    this.emitText();
+
+    this.validated.emit('');
   }
 
   protected saveQuery(): void {
