@@ -1,6 +1,9 @@
-<header class="shrink-0">
-  <img class="rounded-full size-12 object-cover" alt="{{ person()?.employeeFullName ?? 'Person' }} profile picture"
-    [src]="person()?.employeePhotoURL" />
+<header class="shrink-0 me-1">
+  @if (person()) {
+  <wps-author-image [person]="person()!">
+    <i class="fa-light fa-user-circle text-5xl"></i>
+  </wps-author-image>
+  }
 </header>
 
 <div class="grow flex flex-col gap-4">
