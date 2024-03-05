@@ -66,6 +66,8 @@ export class HomeComponent implements OnInit {
   }
 
   public search(text: string): void {
+    if (!text) return;
+
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 }
