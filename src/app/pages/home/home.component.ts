@@ -1,6 +1,7 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApplicationsComponent } from '@mint/components/applications/applications.component';
 import { BookmarksComponent } from '@mint/components/bookmarks/bookmarks.component';
 import { RecentSearchesComponent } from '@mint/components/recent-searches/recent-searches.component';
@@ -50,6 +51,8 @@ export class HomeComponent implements OnInit {
   ];
   public selectedTabId = signal<number>(this.tabs.findIndex((tab) => !tab.disabled));
 
+  private readonly router = inject(Router);
+
   ngOnInit(): void {
     filtersStore.clear();
   }
@@ -60,5 +63,9 @@ export class HomeComponent implements OnInit {
     const index = this.tabs.indexOf(tab);
 
     this.selectedTabId.set(index);
+  }
+
+  public search(text: string): void {
+    this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 }

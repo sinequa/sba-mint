@@ -8,7 +8,7 @@
 
 <div class="grid grid-cols-[23%_auto_23%] grid-rows-[min-content_auto] gap-y-6">
   <main class="col-start-2">
-    <app-search-input class="w-full" />
+    <app-search-input class="w-full" (validated)="search($event)" />
   </main>
 
   <aside class="col-start-2 row-start-2 flex flex-col flex-wrap mt-8">
