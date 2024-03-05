@@ -1,13 +1,13 @@
 <img class="aspect-video object-cover w-full rounded-t-md" alt="Thumbnail for {{ slide()?.title }}"
   [src]="slide()?.thumbnailUrl" />
 
-<main class="flex flex-col gap-2 p-2 border-t rounded-b-md bg-white">
+<section class="flex flex-col gap-2 p-2 border-t rounded-b-md bg-white">
   <p class="article-title line-clamp-1">
     {{ slide()?.title }}
   </p>
 
   <section class="flex gap-2 items-baseline">
-    <p class="text-ellipsis whitespace-nowrap overflow-hidden divide-x-comma divide-xs">
+    <p class="divide-x-comma divide-xs">
       @if (slide()?.authors?.[0]) {
       <wps-author [authorName]="slide()!.authors![0]" />
       }
@@ -17,4 +17,4 @@
       }
     </p>
   </section>
-</main>
+</section>
