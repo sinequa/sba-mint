@@ -1,4 +1,3 @@
-import { QueryStoreService } from '@/app/services/query-store.service';
 import { SelectionService } from '@/app/services/selection.service';
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -19,15 +18,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   protected readonly selection = inject(SelectionService);
 
-  private readonly queryStore = inject(QueryStoreService);
-
   ngOnInit(): void {
     searchInputStore.set(this.q ?? '');
-    this.queryStore.query.set(this.q ?? '');
   }
 
   ngOnDestroy(): void {
     searchInputStore.set('');
-    this.queryStore.query.set('');
   }
 }

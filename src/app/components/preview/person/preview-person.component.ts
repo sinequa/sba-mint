@@ -1,6 +1,6 @@
 import { MockDataService } from '@/app/services/mock-data.service';
-import { QueryStoreService } from '@/app/services/query-store.service';
 import { buildQuery } from '@/app/services/query.service';
+import { searchInputStore } from '@/app/stores/search-input.store';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { Component, Injector, OnDestroy, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -31,7 +31,6 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
 
   protected readonly ims = computed(() => getPersonIms(this.person()));
 
-  private readonly queryStoreService = inject(QueryStoreService);
   private readonly queryService = inject(QueryService);
 
   private readonly person$ = toObservable(this.person);
@@ -52,7 +51,7 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
   constructor(private readonly injector: Injector) { }
 
   ngOnInit(): void {
-    this.queryText.set(this.queryStoreService.query());
+    this.queryText.set(searchInputStore.state ?? '');
   }
 
   ngOnDestroy(): void {

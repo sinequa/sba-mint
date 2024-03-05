@@ -1,5 +1,4 @@
 import { NavigationService } from '@/app/services/navigation.service';
-import { QueryStoreService } from '@/app/services/query-store.service';
 import { buildFirstPageQuery } from '@/app/services/query.service';
 import { SearchService } from '@/app/services/search.service';
 import { filtersStore } from '@/app/stores/filters.store';
@@ -40,7 +39,6 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   protected readonly queryText = signal<string>('');
 
   private readonly navigationService = inject(NavigationService);
-  private readonly queryStoreService = inject(QueryStoreService);
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
@@ -68,7 +66,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.searchService.result$.subscribe((result: Result) => {
         this.articles.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' }))) ?? []);
-        this.queryText.set(this.queryStoreService.query());
+        this.queryText.set(searchInputStore.state ?? '');
       })
     );
 
