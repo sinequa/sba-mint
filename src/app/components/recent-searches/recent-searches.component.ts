@@ -50,9 +50,11 @@ export class RecentSearchesComponent {
 
   public recentSearchClicked(recentSearch: RecentSearchEx): void {
     const queryParams = {
-      f: JSON.stringify(recentSearch.queryParams?.filters),
       q: recentSearch.queryParams?.text
-    }
+    } as { q: string, f?: string };
+
+    if (recentSearch.queryParams?.filters && recentSearch.queryParams?.filters?.length > 0)
+      queryParams.f = JSON.stringify(recentSearch.queryParams?.filters);
 
     this.router.navigate([recentSearch.queryParams?.path], { queryParams });
   }
