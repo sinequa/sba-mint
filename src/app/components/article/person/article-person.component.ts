@@ -1,6 +1,7 @@
 import { buildQuery } from '@/app/services/query.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, Injector, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
@@ -18,7 +19,7 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
 @Component({
   selector: 'app-article-person',
   standalone: true,
-  imports: [StopPropagationDirective, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, WpsAuthorImageComponent],
+  imports: [NgTemplateOutlet, StopPropagationDirective, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, WpsAuthorImageComponent],
   templateUrl: './article-person.component.html',
   styleUrl: './article-person.component.scss',
   hostDirectives: [{
