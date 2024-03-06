@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { NavigationService } from '@/app/services';
 import { filtersStore } from '@/app/stores/filters.store';
-import { Filter } from '@/app/utils/models';
+import { getFiltersFromQueryParams } from '@/app/utils/query-params';
 
 
 @Injectable({
@@ -18,20 +18,12 @@ export class FiltersService implements OnDestroy {
     this.subscriptions.add(
       this.navigation.navigationEnd$
         .subscribe((event: RouterEvent) => {
-          filtersStore.set(this.getFiltersFromQueryParams(event.url.split('?')[1]));
+          filtersStore.set(getFiltersFromQueryParams(event.url.split('?')[1]));
         })
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  public getFiltersFromQueryParams(queryParams: string): Filter[] {
-    const encodedFilters = queryParams?.split('&').find(value => value.startsWith('f='))?.split('=')?.[1] ?? '[]';
-    const filtersString = decodeURIComponent(encodedFilters);
-    const filters = JSON.parse(filtersString ?? '[]');
-
-    return filters;
   }
 }
