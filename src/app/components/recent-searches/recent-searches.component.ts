@@ -1,8 +1,8 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
+import { RecentSearch, UserSettings } from '@/app/types/articles/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { RecentSearch, UserSettings } from '@mint/types/articles/user-settings';
 import { fetchUserSettings } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
@@ -50,11 +50,9 @@ export class RecentSearchesComponent {
 
   public recentSearchClicked(recentSearch: RecentSearchEx): void {
     const queryParams = {
+      f: JSON.stringify(recentSearch.queryParams?.filters),
       q: recentSearch.queryParams?.text
-    } as { q: string, f?: string };
-
-    if (recentSearch.queryParams?.filters && recentSearch.queryParams?.filters?.length > 0)
-      queryParams.f = JSON.stringify(recentSearch.queryParams?.filters);
+    }
 
     this.router.navigate([recentSearch.queryParams?.path], { queryParams });
   }
