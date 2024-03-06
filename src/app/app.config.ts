@@ -7,6 +7,7 @@ import { auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorIntercep
 import { routes } from './app.routes';
 import { FiltersService } from './components/filters/filters.service';
 import { SearchInputService } from './components/search-input/search-input.service';
+import { RecentSearchesService } from './services/recent-searches.service';
 import { eagerProvider } from './utils/eager-provider';
 
 registerLocaleData(localeFr);
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     eagerProvider(FiltersService),
     eagerProvider(SearchInputService),
+    eagerProvider(RecentSearchesService),
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([

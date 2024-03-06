@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
+import { isASearchRoute } from '../app.routes';
 import { aggregationsStore } from '../stores/aggregations.store';
 import { filtersStore } from '../stores/filters.store';
 import { NavigationService } from './navigation.service';
@@ -16,9 +17,6 @@ export type SearchOptions = {
 type QueryParams = {
   f?: string;
 }
-
-export const FALLBACK_SEARCH_ROUTE = '/search/all';
-const SEARCH_ROUTES = ['/search'];
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +37,7 @@ export class SearchService implements OnDestroy {
         aggregationsStore.next$,
         this.navigationService.navigationEnd$
       ]).pipe(
-        filter(([aggregations, routerEvent]) => !!aggregations && this.isASearchRoute(routerEvent.url)),
+        filter(([aggregations, routerEvent]) => !!aggregations && isASearchRoute(routerEvent.url)),
         switchMap(() => this.getResult(filtersStore.state ?? []))
       ).subscribe((result) => {
         this._result.next(result);
@@ -66,9 +64,5 @@ export class SearchService implements OnDestroy {
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any }));
 
     return this.queryService.search(query);
-  }
-
-  public isASearchRoute(url: string): boolean {
-    return SEARCH_ROUTES.some(route => url.startsWith(route));
   }
 }

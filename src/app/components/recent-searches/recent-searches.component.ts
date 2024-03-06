@@ -1,36 +1,59 @@
-import { Component } from '@angular/core';
+import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
+import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { RecentSearch, UserSettings } from '@mint/types/articles/user-settings';
+import { fetchUserSettings } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-type RecentSearch = {
+type RecentSearchEx = RecentSearch & {
   label: string;
   filterCount?: number;
   date?: string;
+  queryParams?: QueryParams;
 }
 
 @Component({
   selector: 'app-recent-searches',
   standalone: true,
-  imports: [FocusWithArrowKeysDirective],
+  imports: [FocusWithArrowKeysDirective, RelativeDatePipe],
   templateUrl: './recent-searches.component.html',
   styleUrl: './recent-searches.component.scss'
 })
 export class RecentSearchesComponent {
-  public recentSearches: RecentSearch[] = [
-    { label: 'Duis aute irure dolor in reprehenderit in voluptate', filterCount: 2, date: '15 days ago' },
-    { label: 'Security processes', filterCount: 1, date: '8 days ago' },
-    { label: 'Nemo enim ipsam voluptatem' },
-    { label: 'Nemo enim ipsam voluptatem' },
-    { label: 'Quis autem vel eum', filterCount: 1 },
-    { label: 'Sinequa', filterCount: 2, date: 'Today' },
-    { label: 'Quis autem vel eum 1 filter' },
-    {
-      label: 'Duis aute irure dolor in reprehenderit in voluptate', filterCount: 2, date: '15 days ago'
-    },
-    { label: 'Who is the best SaaS team member ?', date: 'Yesterday' }
-  ]
+  public recentSearches = signal<RecentSearchEx[] | undefined>(undefined);
 
-  public recentSearchClicked(recentSearch: RecentSearch): void {
-    console.log(recentSearch);
+  private readonly router = inject(Router);
+
+  constructor() {
+    fetchUserSettings().then((settings: UserSettings) => {
+      const recentSearches = settings.recentSearches || [];
+
+      this.recentSearches.set(
+        recentSearches.reduce((acc, recentSearch) => {
+          const queryParams = getQueryParamsFromUrl(recentSearch.url);
+
+          acc.push(
+            Object.assign(recentSearch, {
+              label: queryParams?.text || '',
+              filterCount: queryParams?.filters?.length || 0,
+              date: recentSearch.date,
+              queryParams
+            })
+          );
+
+          return acc;
+        }, [] as RecentSearchEx[])
+      );
+    });
+  }
+
+  public recentSearchClicked(recentSearch: RecentSearchEx): void {
+    const queryParams = {
+      f: JSON.stringify(recentSearch.queryParams?.filters),
+      q: recentSearch.queryParams?.text
+    }
+
+    this.router.navigate([recentSearch.queryParams?.path], { queryParams });
   }
 }
-

@@ -1,5 +1,6 @@
+import { FALLBACK_SEARCH_ROUTE, isASearchRoute } from '@/app/app.routes';
 import { NavigationService } from '@/app/services/navigation.service';
-import { FALLBACK_SEARCH_ROUTE, SearchService } from '@/app/services/search.service';
+import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe } from '@angular/common';
 import { Component, HostBinding, ViewChild, effect, inject } from '@angular/core';
@@ -80,7 +81,7 @@ export class NavbarComponent {
   protected validated(text: string): void {
     console.log('validated', text);
 
-    const commands = this.searchService.isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
+    const commands = isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
 
     searchInputStore.set(text);
 
