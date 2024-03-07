@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +9,7 @@ const DEBOUNCE_DELAY = 300;
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [FormsModule],
+  imports: [NgClass, FormsModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss'
 })
@@ -16,11 +17,13 @@ export class SearchInputComponent implements OnDestroy {
   @Output() public readonly updated = new EventEmitter<string>();
   @Output() public readonly debounced = new EventEmitter<string>();
   @Output() public readonly validated = new EventEmitter<string>();
+  @Output() public readonly saved = new EventEmitter<void>();
 
   public readonly showSave = input(false, { transform: booleanAttribute });
 
   public readonly input = signal<string>('');
 
+  protected saveAnimation = signal<boolean>(false);
   protected oldInput: string = this.input();
 
   private readonly _subscription = new Subscription();
@@ -70,6 +73,10 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   protected saveQuery(): void {
-    console.log('save query');
+    this.saveAnimation.set(true);
+
+    setTimeout(() => this.saveAnimation.set(false), 1000);
+
+    this.saved.emit();
   }
 }

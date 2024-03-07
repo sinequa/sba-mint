@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
-import { RecentSearch, UserSettings } from '@mint/types/articles/user-settings';
+import { UserSettings } from '@mint/types/articles/user-settings';
 import { fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
 import { Subscription, filter } from 'rxjs';
 import { isASearchRoute } from '../app.routes';
@@ -37,7 +37,7 @@ export class RecentSearchesService implements OnDestroy {
       return;
     }
 
-    let recentSearches = result.recentSearches as RecentSearch[] | undefined;
+    let recentSearches = result.recentSearches;
 
     if (recentSearches === undefined)
       recentSearches = [];
