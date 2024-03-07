@@ -1,23 +1,32 @@
 <ul class="flex flex-col">
-  @for (search of savedSearches; track $index) {
+  @for (search of savedSearches(); track $index) {
   <li
-    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
-    tabindex="0"
-    appFocusWithArrowKeys="y"
-    (click)="savedSearchClicked(search)"
-    (keydown.enter)="savedSearchClicked(search)"
-  >
+    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none group"
+    tabindex="0" appFocusWithArrowKeys="y" (click)="savedSearchClicked(search)"
+    (keydown.enter)="savedSearchClicked(search)">
     <i class="fa-fw far fa-star"></i>
 
     <p>{{ search.label }}</p>
 
+    @if ((search.filterCount ?? 0) > 0) {
     <p class="text-gray-500">
       <i class="fa-fw far fa-filter"></i>
       {{ search.filterCount }}
-      filter(s)
-    </p>
 
-    <p class="text-gray-500 ms-auto">{{ search.date }}</p>
+      @if (search.filterCount! > 1) {
+      filters
+      } @else {
+      filter
+      }
+    </p>
+    }
+
+    <button class="hidden group-hover:block ms-auto btn btn-sm btn-alert" title="Remove saved search" stkStopPropagation
+      (click)="removeSavedSearch($index)">
+      <i class="fa-fw fa-regular fa-trash-can"></i>
+    </button>
   </li>
+  } @empty {
+  <li class="text-center text-gray-500 py-4">No saved searches yet</li>
   }
 </ul>

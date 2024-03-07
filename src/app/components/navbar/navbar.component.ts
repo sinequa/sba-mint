@@ -1,5 +1,6 @@
 import { FALLBACK_SEARCH_ROUTE, isASearchRoute } from '@/app/app.routes';
 import { NavigationService } from '@/app/services/navigation.service';
+import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe } from '@angular/common';
@@ -52,6 +53,7 @@ export class NavbarComponent {
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly searchService = inject(SearchService);
+  private readonly savedSearchesService = inject(SavedSearchesService);
 
   private readonly subscriptions = new Subscription();
 
@@ -102,5 +104,12 @@ export class NavbarComponent {
    */
   protected debounced(text: string): void {
     console.log('debounced', text);
+  }
+
+  /**
+   * Occurs when the user clicks on the save button
+   */
+  protected saveSearch(): void {
+    this.savedSearchesService.saveSearch();
   }
 }
