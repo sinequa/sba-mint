@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { SlideArticle } from '@mint/types/articles/slide.type';
+
+import { SelectArticleOnClickDirective } from '@/app/directives';
+import { SlideArticle } from '@/app/types/articles';
 import { StopPropagationDirective } from 'toolkit';
 
 @Component({

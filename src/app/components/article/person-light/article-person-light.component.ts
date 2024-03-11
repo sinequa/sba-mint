@@ -1,7 +1,8 @@
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { Component, HostBinding, effect, input } from '@angular/core';
-import { SelectArticleOnClickDirective, SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
-import { PersonArticle } from '@mint/types/articles/person.type';
+
+import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
+import { PersonArticle } from '@/app/types/articles';
+import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 
 @Component({
   selector: 'app-article-person-light',

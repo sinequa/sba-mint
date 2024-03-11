@@ -1,15 +1,17 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { buildQuery } from '@/app/services/query.service';
-import { searchInputStore } from '@/app/stores/search-input.store';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, inject, runInInjectionContext, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ArticleSlideLightComponent } from '@mint/components/article/slide-light/article-slide-light.component';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { SlideArticle } from '@mint/types/articles/slide.type';
+import { Subscription, switchMap } from 'rxjs';
+
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, switchMap } from 'rxjs';
-import { SLIDES_QUERY_NAME } from '../../../../config/query-names';
+
+import { ArticleSlideLightComponent } from '@/app/components/article/slide-light/article-slide-light.component';
+import { SLIDES_QUERY_NAME } from '@/app/config/query-names';
+import { SelectArticleOnClickDirective } from '@/app/directives';
+import { NavigationService, buildQuery } from '@/app/services';
+import { searchInputStore } from '@/app/stores/search-input.store';
+import { SlideArticle } from '@/app/types/articles';
+
 
 const SLIDES_OVERVIEW_LIMIT = 3;
 

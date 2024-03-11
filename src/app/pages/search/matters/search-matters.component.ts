@@ -1,8 +1,9 @@
 import { Component, HostBinding, effect, inject } from '@angular/core';
-import { ArticleMatterComponent } from '@mint/components/article/matter/article-matter.component';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
-import { FiltersComponent } from '@mint/components/filters/filters.component';
-import { Article } from '@mint/types/articles/article.type';
+
+import { ArticleMatterComponent } from '@/app/components/article/matter/article-matter.component';
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { Article } from "@/app/types/articles";
 
 @Component({
   selector: 'app-search-matters',

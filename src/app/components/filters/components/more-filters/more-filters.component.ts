@@ -1,13 +1,15 @@
-import { CustomizationService } from '@/app/services/customization.service';
-import { SearchService } from '@/app/services/search.service';
-import { Filter } from '@/app/utils/api-filter-translator';
 import { Component, EventEmitter, OnDestroy, Output, QueryList, ViewChildren, inject, signal } from '@angular/core';
-import { Aggregation } from '@sinequa/atomic';
 import { Subscription, map } from 'rxjs';
-import { aggregationsStore } from '../../../../stores/aggregations.store';
-import { filtersStore } from '../../../../stores/filters.store';
-import { FilterDropdown } from '../../filters.models';
+
+import { Aggregation } from '@sinequa/atomic';
+
+import { CustomizationService, SearchService } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { Filter } from '@/app/utils/models';
+
 import { AggregationListFilterComponent } from '../aggregation-list/aggregation-list.component';
+import { FilterDropdown } from '../../models/filter-dropdown';
 
 const AUTHORIZED_MORE_FILTERS = ['treepath', 'geo', 'company'];
 

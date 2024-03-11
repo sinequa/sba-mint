@@ -1,15 +1,17 @@
-import { MockDataService } from '@/app/services/mock-data.service';
-import { PreviewService } from '@/app/services/preview/preview.service';
-import { selectionStore } from '@/app/stores/selection.store';
-import { Extract } from '@/stores/app.state';
-import { AppStore } from '@/stores/app.store';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, OnDestroy, Output, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Article } from '@mint/types/articles/article.type';
 import { getState } from '@ngrx/signals';
-import { ReplacePipe } from '@sinequa/atomic-angular';
 import { Subscription } from 'rxjs';
+
+import { ReplacePipe } from '@sinequa/atomic-angular';
+
+import { MockDataService } from '@/app/services';
+import { PreviewService } from '@/app/services/preview';
+import { selectionStore } from '@/app/stores';
+import { Article } from "@/app/types/articles";
+import { Extract } from '@/stores/app.state';
+import { AppStore } from '@/stores/app.store';
 import { PanelDirective } from 'toolkit';
 
 @Component({

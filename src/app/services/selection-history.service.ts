@@ -1,7 +1,9 @@
 import { EventEmitter, Injectable, OnDestroy, inject } from '@angular/core';
-import { Article } from '@mint/types/articles/article.type';
 import { Subscription, filter, tap } from 'rxjs';
-import { selectionStore } from '../stores/selection.store';
+
+import { selectionStore } from '@/app/stores/selection.store';
+import { Article } from "@/app/types/articles";
+
 import { SelectionService } from './selection.service';
 
 // back is used when the user close the current selection and want to go back to the previous one

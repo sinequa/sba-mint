@@ -1,9 +1,10 @@
-import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { SelectArticleOnClickDirective, SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
-import { TreepathToIconClassPipe } from '../../../pipes/treepath-to-icon-class.pipe';
+
+import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
+import { TreepathToIconClassPipe } from '@/app/pipes';
+import { Article } from "@/app/types/articles";
+import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 
 @Component({
   selector: 'app-article-default-light',

@@ -1,4 +1,4 @@
-import { Article } from '@mint/types/articles/article.type';
+import { Article } from "@/app/types/articles";
 import { Store } from './store';
 
 export class SelectionStore extends Store<Article | Partial<Article> | undefined> { }

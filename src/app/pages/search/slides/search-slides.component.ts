@@ -1,18 +1,18 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { buildFirstPageQuery } from '@/app/services/query.service';
-import { SearchService } from '@/app/services/search.service';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { ArticleSlideSkeletonComponent } from '@mint/components/article/slide-skeleton/article-slide-skeleton.component';
-import { ArticleSlideComponent } from '@mint/components/article/slide/article-slide.component';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
-import { FiltersComponent } from '@mint/components/filters/filters.component';
-import { SelectArticleFromQueryParamsDirective } from '@mint/directives/select-article-from-query-params.directive';
+import { Subscription, merge, switchMap, take } from 'rxjs';
+
 import { Article, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, merge, switchMap, take } from 'rxjs';
-import { aggregationsStore } from '../../../stores/aggregations.store';
-import { filtersStore } from '../../../stores/filters.store';
-import { searchInputStore } from '../../../stores/search-input.store';
+
+import { ArticleSlideSkeletonComponent } from '@/app/components/article/slide-skeleton/article-slide-skeleton.component';
+import { ArticleSlideComponent } from '@/app/components/article/slide/article-slide.component';
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
+import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { searchInputStore } from '@/app/stores/search-input.store';
 
 @Component({
   selector: 'app-search-slides',

@@ -1,16 +1,18 @@
-import { MockDataService } from '@/app/services/mock-data.service';
-import { PreviewService } from '@/app/services/preview/preview.service';
-import { buildQuery } from '@/app/services/query.service';
-import { selectionStore } from '@/app/stores/selection.store';
-import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Article } from '@mint/types/articles/article.type';
+import { Subscription } from 'rxjs';
+
 import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { SplitPipe } from '@sinequa/atomic-angular';
-import { Subscription } from 'rxjs';
-import { TreepathToIconClassPipe } from '../../../pipes/treepath-to-icon-class.pipe';
+
+import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
+import { MockDataService, buildQuery } from '@/app/services';
+import { PreviewService } from '@/app/services/preview';
+import { selectionStore } from '@/app/stores/selection.store';
+import { Article } from "@/app/types/articles";
+import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
+
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({

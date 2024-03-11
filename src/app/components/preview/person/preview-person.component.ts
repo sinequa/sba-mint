@@ -1,19 +1,20 @@
-import { MockDataService } from '@/app/services/mock-data.service';
-import { buildQuery } from '@/app/services/query.service';
-import { searchInputStore } from '@/app/stores/search-input.store';
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { Component, Injector, OnDestroy, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ArticleDefaultLightSkeletonComponent } from '@mint/components/article/default-light-skeleton/article-default-light-skeleton.component';
-import { ArticleDefaultLightComponent } from '@mint/components/article/default-light/article-default-light.component';
-import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
-import { Article } from '@mint/types/articles/article.type';
-import { PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from '@mint/types/articles/person.type';
+import { EMPTY, Observable, Subscription, map, switchMap } from 'rxjs';
+
 import { Filter, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { EMPTY, Observable, Subscription, map, switchMap } from 'rxjs';
-import { aggregationsStore } from '../../../stores/aggregations.store';
-import { translateFiltersToApiFilters } from '../../../utils/api-filter-translator';
+
+import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/default-light-skeleton/article-default-light-skeleton.component';
+import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
+import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { MockDataService, buildQuery } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { searchInputStore } from '@/app/stores/search-input.store';
+import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
+import { translateFiltersToApiFilters } from '@/app/utils';
+import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({

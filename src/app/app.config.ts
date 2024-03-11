@@ -4,10 +4,11 @@ import localeFr from '@angular/common/locales/fr';
 import { ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
-import { routes } from './app.routes';
-import { FiltersService } from './components/filters/filters.service';
-import { SearchInputService } from './components/search-input/search-input.service';
-import { eagerProvider } from './utils/eager-provider';
+
+import { routes } from '@/app/app.routes';
+import { FiltersService } from '@/app/components/filters/services/filters.service';
+import { SearchInputService } from '@/app/components/search-input/search-input.service';
+import { eagerProvider } from '@/app/utils';
 
 registerLocaleData(localeFr);
 

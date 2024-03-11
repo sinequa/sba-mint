@@ -1,8 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { AggregationListItem } from '@mint/components/filters/components/aggregation-list/aggregation-list.component';
-import { Aggregation, AggregationItem } from '@sinequa/atomic';
 import { Observable, of } from 'rxjs';
-import { aggregationsStore } from '../stores/aggregations.store';
+
+import { Aggregation, AggregationItem } from '@sinequa/atomic';
+import { AggregationService } from '@sinequa/atomic-angular';
+
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+
 import { MockDataService } from './mock-data.service';
 
 export type DateFilterCode = 'last-day' | 'last-week' | 'last-month' | 'last-year' | 'last-3-years' | 'before-last-year' | 'custom-range';
@@ -13,10 +16,17 @@ export type DateFilter = {
   calculated: () => [DateFilterCode, Date | null, Date | null];
 }
 
+export type AggregationListItem = AggregationItem & {
+  iconClass?: string;
+};
+
+export type AggregationEx = Aggregation & { items: AggregationListItem[] };
+
+
 @Injectable({
   providedIn: 'root'
 })
-export class AggregationsService {
+export class AggregationsService extends AggregationService {
   public getAggregation(column: string): Aggregation | undefined {
     return aggregationsStore.state?.find((aggregation: Aggregation) => aggregation.column === column);
   }
@@ -42,9 +52,9 @@ export class AggregationsService {
     { label: 'Slack', iconClass: 'fab fa-slack' },
     { label: 'Outlook', iconClass: 'fab fa-microsoft' }
   ];
-  private readonly mockTreepaths: Array<{ label: string, iconClass: string }> = [
-    { label: '/Sharepoint/', iconClass: 'fab fa-microsoft' },
-    { label: '/iManage/', iconClass: 'fab fa-dropbox' }
+  private readonly mockTreepaths: Array<{ display: string, iconClass: string }> = [
+    { display: '/Sharepoint/', iconClass: 'fab fa-microsoft' },
+    { display: '/iManage/', iconClass: 'fab fa-dropbox' }
   ];
   private readonly mockLanguages: string[] = [
     'English',
@@ -126,25 +136,25 @@ export class AggregationsService {
 
   public getMockAggregation(name: string): AggregationListItem[] {
     switch (name) {
-      case 'authors': return this.mockData.people().map((person: string) => ({ label: person }));
-      case 'labels': return this.mockData.labels().map((label: string) => ({ label }));
-      case 'document-types': return this.mockData.doctypes().map((doctypes: string) => ({ label: doctypes }));
-      case 'treepaths': return this.mockTreepaths;
+      case 'authors': return this.mockData.people().map((person: string) => ({ display: person })) as AggregationListItem[];
+      case 'labels': return this.mockData.labels().map((display: string) => ({ display }))as AggregationListItem[];
+      case 'document-types': return this.mockData.doctypes().map((doctypes: string) => ({ display: doctypes }))as AggregationListItem[];
+      case 'treepaths': return this.mockTreepaths as AggregationListItem[];
       default: return [];
     }
   }
 
-  public getMockAggregation$(name: string): Observable<AggregationListItem[]> {
-    switch (name) {
-      case 'sources': return of(this.mockSources);
-      case 'authors': return of(this.mockData.people().map((person: string) => ({ label: person })));
-      case 'labels': return of(this.mockData.labels().map((label: string) => ({ label })));
-      case 'document-types': return of(this.mockData.doctypes().map((doctypes: string) => ({ label: doctypes })));
-      case 'languages': return of(this.mockLanguages.map((language: string) => ({ label: language })));
-      case 'mentioned': return of(this.mockData.people().map((person: string) => ({ label: person })));
-      default: return of([]);
-    }
-  }
+  // public getMockAggregation$(name: string): Observable<AggregationListItem[]> {
+  //   switch (name) {
+  //     case 'sources': return of(this.mockSources);
+  //     case 'authors': return of(this.mockData.people().map((person: string) => ({ label: person })));
+  //     case 'labels': return of(this.mockData.labels().map((label: string) => ({ label })));
+  //     case 'document-types': return of(this.mockData.doctypes().map((doctypes: string) => ({ label: doctypes })));
+  //     case 'languages': return of(this.mockLanguages.map((language: string) => ({ label: language })));
+  //     case 'mentioned': return of(this.mockData.people().map((person: string) => ({ label: person })));
+  //     default: return of([]);
+  //   }
+  // }
 
   public getMockDateAggregation$(): Observable<DateFilter[]> {
     return of(this.mockDates);

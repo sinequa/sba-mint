@@ -1,18 +1,10 @@
-import { Type } from '@angular/core';
-import { ArticleDefaultLightComponent } from '@mint/components/article/default-light/article-default-light.component';
-import { ArticleDefaultComponent } from '@mint/components/article/default/article-default.component';
-import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
-import { ArticlePersonComponent } from '@mint/components/article/person/article-person.component';
-import { PreviewDefaultComponent } from '@mint/components/preview/default/preview-default.component';
-import { PreviewPersonComponent } from '@mint/components/preview/person/preview-person.component';
-import { ArticleType } from '@mint/types/articles/article.type';
-
-export type ArticleTypeMap = {
-  articleType?: ArticleType;
-  previewComponentType?: Type<unknown>;
-  articleComponentType?: Type<unknown>;
-  articleLightComponentType?: Type<unknown>;
-};
+import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
+import { ArticleDefaultComponent } from '@/app/components/article/default/article-default.component';
+import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { ArticlePersonComponent } from '@/app/components/article/person/article-person.component';
+import { PreviewDefaultComponent } from '@/app/components/preview/default/preview-default.component';
+import { PreviewPersonComponent } from '@/app/components/preview/person/preview-person.component';
+import { ArticleType, ArticleTypeMap } from "@/app/types/articles";
 
 export const articleTypesMap: ArticleTypeMap[] = [
   {

@@ -1,8 +1,8 @@
-import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { SelectionService } from '@/app/services/selection.service';
-import { selectionStore } from '@/app/stores/selection.store';
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
-import { Article } from '@mint/types/articles/article.type';
+
+import { SelectionHistoryService, SelectionService } from '@/app/services';
+import { selectionStore } from '@/app/stores/selection.store';
+import { Article } from "@/app/types/articles";
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +56,7 @@ export class DrawerStackService {
   /**
    * Sets current drawer stack status to closed, clears history and emits event
    * to close all drawers
-   * 
+   *
    * @param keepDrawerOpen if true, do not trigger layout animation
    */
   public closeAll(keepDrawerOpen: boolean = false): void {
@@ -68,10 +68,10 @@ export class DrawerStackService {
   }
 
   /**
-   * Replace the current selection with the given article by closing all 
+   * Replace the current selection with the given article by closing all
    * drawers and opening the drawer with the new selection without triggering
    * layout animation
-   * 
+   *
    * @param article the article to replace the current selection with
    */
   public replace(article: Article | undefined): void {
@@ -88,7 +88,7 @@ export class DrawerStackService {
   /**
    * Stack the given article by setting the current selection and opening the
    * drawer
-   * 
+   *
    * @param article the article to stack
    */
   public stack(article: Article | undefined): void {

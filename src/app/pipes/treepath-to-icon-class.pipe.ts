@@ -12,6 +12,9 @@ export class TreepathToIconClassPipe implements PipeTransform {
   transform(treepath: string | undefined): string | undefined {
     if (!treepath) return undefined;
 
-    return this.aggregations.getMockAggregation('treepaths')?.find(t => treepath.startsWith(t.label))?.iconClass ?? 'far fa-file';
+    return this.aggregations.getMockAggregation('treepaths')?.find(t =>
+      treepath
+      && t.display
+      && treepath.startsWith(t.display))?.iconClass ?? 'far fa-file';
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input, inject } from '@angular/core';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;

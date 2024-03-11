@@ -1,7 +1,8 @@
+import { SelectArticleOnClickDirective } from '@/app/directives';
+import { Article } from "@/app/types/articles";
 import { Component, Input } from '@angular/core';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
 import { StopPropagationDirective } from 'toolkit';
+
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 @Component({

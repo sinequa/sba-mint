@@ -1,6 +1,6 @@
-import { Filter } from '@mint/components/filters/filters.models';
 import { Query } from '@sinequa/atomic';
 import { Store } from './store';
+import { Filter } from '../utils/models/Filter';
 
 export class QueryStore extends Store<Query> {
   public setText(text: string) {

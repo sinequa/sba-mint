@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
-import { SlideArticle } from '@mint/types/articles/slide.type';
+import { SlideArticle } from '@/app/types/articles';
+
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({

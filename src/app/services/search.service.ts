@@ -1,12 +1,16 @@
-import { Filter, translateFiltersToApiFilters } from '@/app/utils/api-filter-translator';
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
+
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
-import { aggregationsStore } from '../stores/aggregations.store';
-import { filtersStore } from '../stores/filters.store';
-import { NavigationService } from './navigation.service';
+
+import { NavigationService, } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { translateFiltersToApiFilters } from '@/app/utils';
+import { Filter } from '@/app/utils/models';
+
 import { buildQuery } from './query.service';
 
 export type SearchOptions = {
@@ -25,6 +29,7 @@ const SEARCH_ROUTES = ['/search'];
 })
 export class SearchService implements OnDestroy {
   private readonly router = inject(Router);
+  route = inject(ActivatedRoute);
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
 
@@ -34,14 +39,10 @@ export class SearchService implements OnDestroy {
   public readonly result$ = this._result.asObservable();
 
   constructor(private readonly injector: Injector) {
-    this.subscription.add(
-      combineLatest([
-        aggregationsStore.next$,
-        this.navigationService.navigationEnd$
-      ]).pipe(
-        filter(([aggregations, routerEvent]) => !!aggregations && this.isASearchRoute(routerEvent.url)),
+    this.subscription.add(this.navigationService.navigationEnd$.pipe(
+        filter((routerEvent) => this.isASearchRoute(routerEvent.url)),
         switchMap(() => this.getResult(filtersStore.state ?? []))
-      ).subscribe((result) => {
+      ).subscribe((result: Result) => {
         this._result.next(result);
       })
     );

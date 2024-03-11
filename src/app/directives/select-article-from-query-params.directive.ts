@@ -1,13 +1,14 @@
-import { buildQuery } from '@/app/services/query.service';
-import { SelectionService } from '@/app/services/selection.service';
 import { Directive, Injector, OnDestroy, OnInit, inject, input, runInInjectionContext } from '@angular/core';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
+import { Subscription, filter, map } from 'rxjs';
+
 import { Filter } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, filter, map } from 'rxjs';
-import { aggregationsStore } from '../stores/aggregations.store';
-import { filtersStore } from '../stores/filters.store';
-import { translateFiltersToApiFilters } from '../utils/api-filter-translator';
+
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { SelectionService, buildQuery } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { translateFiltersToApiFilters } from '@/app/utils';
 
 // FUTURE : Make this directive more generic and reusable and without dependencies on other services
 

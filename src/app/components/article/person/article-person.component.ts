@@ -1,18 +1,19 @@
-import { buildQuery } from '@/app/services/query.service';
-import { searchInputStore } from '@/app/stores/search-input.store';
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, Injector, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
-import { PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from '@mint/types/articles/person.type';
+import { EMPTY, Observable, map, switchMap } from 'rxjs';
+
 import { Filter, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { EMPTY, Observable, map, switchMap } from 'rxjs';
+
+import { SelectArticleOnClickDirective } from '@/app/directives';
+import { buildQuery } from '@/app/services';
+import { aggregationsStore, searchInputStore } from '@/app/stores';
+import { Article, PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
+import { translateFiltersToApiFilters } from '@/app/utils';
+import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { StopPropagationDirective } from 'toolkit';
-import { aggregationsStore } from '../../../stores/aggregations.store';
-import { translateFiltersToApiFilters } from '../../../utils/api-filter-translator';
+
 import { ArticleDefaultLightSkeletonComponent } from '../default-light-skeleton/article-default-light-skeleton.component';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 

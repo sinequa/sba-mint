@@ -1,8 +1,9 @@
 import { Location } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Article } from '@mint/types/articles/article.type';
-import { selectionStore } from '../stores/selection.store';
+
+import { selectionStore } from '@/app/stores/selection.store';
+import { Article } from "@/app/types/articles";
 
 @Injectable({
   providedIn: 'root'

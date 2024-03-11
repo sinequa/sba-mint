@@ -1,9 +1,11 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { Filter } from '@/app/utils/api-filter-translator';
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filtersStore } from '../../stores/filters.store';
+
+import { NavigationService } from '@/app/services';
+import { filtersStore } from '@/app/stores/filters.store';
+import { Filter } from '@/app/utils/models';
+
 
 @Injectable({
   providedIn: 'root'
