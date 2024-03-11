@@ -1,3 +1,4 @@
+import { BookmarksService } from '@/app/services/bookmarks.service';
 import { MockDataService } from '@/app/services/mock-data.service';
 import { PreviewService } from '@/app/services/preview/preview.service';
 import { buildQuery } from '@/app/services/query.service';
@@ -36,6 +37,7 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
+  private readonly bookmarkService = inject(BookmarksService);
 
   private readonly sub = new Subscription();
 
@@ -69,5 +71,16 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+  }
+
+  public async toggleBookmark(): Promise<void> {
+    if (this.article()?.id === undefined) return;
+
+    const isBookmarked = await this.bookmarkService.isBookmarked(this.article()!.id!);
+
+    if (isBookmarked)
+      this.bookmarkService.unbookmark(this.article()!.id!);
+    else
+      this.bookmarkService.bookmark(this.article()! as Article);
   }
 }
