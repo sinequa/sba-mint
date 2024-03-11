@@ -1,5 +1,6 @@
 import { Injectable, Type, inject, signal } from '@angular/core';
-import { ArticleType } from '@mint/types/articles/article.type';
+import { ArticleType } from "@/app/types/articles";
+
 import { BackdropService } from './components/backdrop/backdrop.service';
 
 export type ArticleTypeMap = {

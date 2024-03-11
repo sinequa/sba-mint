@@ -1,12 +1,13 @@
-import { AggregationsService } from '@/app/services/aggregations.service';
-import { CustomizationService } from '@/app/services/customization.service';
-import { Filter } from '@/app/utils/api-filter-translator';
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { AggregationItem } from '@sinequa/atomic';
 import { Subscription, take, tap } from 'rxjs';
-import { filtersStore } from '../../../../stores/filters.store';
+
+import { AggregationItem } from '@sinequa/atomic';
+
+import { AggregationsService, CustomizationService } from '@/app/services';
+import { filtersStore } from '@/app/stores/filters.store';
+import { Filter } from '@/app/utils/models';
 
 export type AggregationListItem = {
   label: string;

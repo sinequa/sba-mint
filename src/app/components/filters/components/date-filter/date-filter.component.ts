@@ -1,10 +1,12 @@
-import { AggregationsService, DateFilter, DateFilterCode } from '@/app/services/aggregations.service';
-import { Filter } from '@/app/utils/api-filter-translator';
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription, combineLatest, take, tap } from 'rxjs';
-import { filtersStore } from '../../../../stores/filters.store';
+
+import { AggregationsService, DateFilter, DateFilterCode } from '@/app/services';
+import { filtersStore } from '@/app/stores/filters.store';
+import { Filter } from '@/app/utils/models';
+
 import { AggregationListTitle } from '../aggregation-list/aggregation-list.component';
 
 @Component({

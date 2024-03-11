@@ -1,18 +1,18 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { buildFirstPageQuery } from '@/app/services/query.service';
-import { SearchService } from '@/app/services/search.service';
 import { Component, HostBinding, Injector, Input, OnDestroy, OnInit, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { ArticlePersonSkeletonComponent } from '@mint/components/article/person-skeleton/article-person-skeleton.component';
-import { ArticlePersonComponent } from '@mint/components/article/person/article-person.component';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
-import { FiltersComponent } from '@mint/components/filters/filters.component';
-import { PersonArticle } from '@mint/types/articles/person.type';
+import { Subscription, merge, switchMap, take } from 'rxjs';
+
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, merge, switchMap, take } from 'rxjs';
-import { aggregationsStore } from '../../../stores/aggregations.store';
-import { filtersStore } from '../../../stores/filters.store';
-import { searchInputStore } from '../../../stores/search-input.store';
+
+import { ArticlePersonSkeletonComponent } from '@/app/components/article/person-skeleton/article-person-skeleton.component';
+import { ArticlePersonComponent } from '@/app/components/article/person/article-person.component';
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { searchInputStore } from '@/app/stores/search-input.store';
+import { PersonArticle } from '@/app/types/articles';
 
 @Component({
   selector: 'app-search-people',

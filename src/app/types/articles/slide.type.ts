@@ -1,4 +1,4 @@
-import { Article } from "./article.type";
+import { Article } from "./Article";
 
 export type SlideArticle = Article & {
   thumbnailUrl: string;

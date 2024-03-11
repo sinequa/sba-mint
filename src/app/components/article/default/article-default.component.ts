@@ -1,10 +1,12 @@
-import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { DatePipe, NgClass } from '@angular/common';
 import { Component, input, signal } from '@angular/core';
-import { SelectArticleOnClickDirective, SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
+
+import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
+import { TreepathToIconClassPipe } from '@/app/pipes';
+import { Article } from "@/app/types/articles";
+import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { StopPropagationDirective } from 'toolkit';
-import { TreepathToIconClassPipe } from '../../../pipes/treepath-to-icon-class.pipe';
+
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';

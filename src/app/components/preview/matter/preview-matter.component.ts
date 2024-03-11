@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
-import { Article } from '@mint/types/articles/article.type';
+
+import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { Article } from "@/app/types/articles";
 import { PanelDirective } from 'toolkit';
+
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({

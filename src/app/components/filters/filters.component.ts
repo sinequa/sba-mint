@@ -1,18 +1,20 @@
-import { CustomizationService } from '@/app/services/customization.service';
-import { SearchService } from '@/app/services/search.service';
-import { Filter } from '@/app/utils/api-filter-translator';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, ViewChildren, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subscription, map } from 'rxjs';
+
 import { Aggregation } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
-import { Subscription, map } from 'rxjs';
-import { aggregationsStore } from '../../stores/aggregations.store';
-import { filtersStore } from '../../stores/filters.store';
+
+import { CustomizationService, SearchService } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { Filter } from '@/app/utils/models';
+
 import { AggregationListFilterComponent } from './components/aggregation-list/aggregation-list.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
-import { FilterDropdown } from './filters.models';
+import { FilterDropdown } from './models/filter-dropdown';
 
 const AUTHORIZED_FILTERS = ['treepath', 'doctype', 'authors', 'enginecsv1'];
 

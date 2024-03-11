@@ -1,10 +1,5 @@
 import { Aggregation, Filter as ApiFilter, ExprFilter, InFilter } from '@sinequa/atomic';
-
-export type Filter = {
-  column: string;
-  label: string | undefined;
-  values: string[];
-}
+import { Filter } from '@/app/utils/models';
 
 export function translateFiltersToApiFilters(filters: Filter[], aggregations?: Aggregation[]): ApiFilter | ApiFilter[] | undefined {
   if (filters.length === 0) return undefined;

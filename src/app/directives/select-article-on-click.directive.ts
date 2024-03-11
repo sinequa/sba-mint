@@ -1,7 +1,8 @@
-import { SelectionService } from '@/app/services/selection.service';
 import { Directive, HostListener, inject, input } from '@angular/core';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
-import { Article } from '@mint/types/articles/article.type';
+
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { SelectionService } from '@/app/services';
+import { Article } from "@/app/types/articles";
 
 export type SelectionStrategy = 'replace' | 'stack';
 

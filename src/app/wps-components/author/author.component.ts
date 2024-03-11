@@ -1,14 +1,17 @@
-import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
-import { buildQuery } from '@/app/services/query.service';
 import { Component, HostBinding, HostListener, Injector, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
-import { SelectionStrategy } from '@mint/directives/select-article-on-click.directive';
-import { PersonArticle } from '@mint/types/articles/person.type';
+import { filter, map, switchMap, tap } from 'rxjs';
+
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { filter, map, switchMap, tap } from 'rxjs';
+
+import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
+import { SelectionStrategy } from '@/app/directives';
+import { buildQuery } from '@/app/services';
+import { PersonArticle } from '@/app/types/articles';
 import { StopPropagationDirective } from 'toolkit';
+
 import { WpsAuthorImageComponent } from '../author-image/author-image.component';
 
 /**
@@ -16,7 +19,7 @@ import { WpsAuthorImageComponent } from '../author-image/author-image.component'
  * The author's name will be used as a query text to search with `PEOPLE_QUERY_NAME` query.
  * By default the ArticlePersonLightComponent will be used to display the author's information.
  * Component will be rendered on hover.
- * 
+ *
  * @example
  * ```html
  * <wps-author [authorName]="'John doe'" />

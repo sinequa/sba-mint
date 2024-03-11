@@ -1,15 +1,16 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { buildQuery } from '@/app/services/query.service';
-import { searchInputStore } from '@/app/stores/search-input.store';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, inject, runInInjectionContext, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ArticlePersonLightComponent } from '@mint/components/article/person-light/article-person-light.component';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { PersonArticle } from '@mint/types/articles/person.type';
+import { Subscription, switchMap } from 'rxjs';
+
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { Subscription, switchMap } from 'rxjs';
-import { PEOPLE_QUERY_NAME } from '../../../../config/query-names';
+
+import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
+import { SelectArticleOnClickDirective } from '@/app/directives';
+import { NavigationService, buildQuery } from '@/app/services';
+import { searchInputStore } from '@/app/stores/search-input.store';
+import { PersonArticle } from '@/app/types/articles';
 
 const PEOPLE_OVERVIEW_LIMIT = 3;
 

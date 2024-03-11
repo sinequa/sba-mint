@@ -1,4 +1,4 @@
-import { Filter } from '@/app/utils/api-filter-translator';
+import { Filter } from '@/app/utils/models';
 import { Store } from './store';
 
 export class FiltersStore extends Store<Filter[]> {

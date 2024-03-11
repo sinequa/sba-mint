@@ -2,13 +2,15 @@ import { NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApplicationsComponent } from '@mint/components/applications/applications.component';
-import { BookmarksComponent } from '@mint/components/bookmarks/bookmarks.component';
-import { RecentSearchesComponent } from '@mint/components/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@mint/components/saved-searches/saved-searches.component';
-import { SearchInputComponent } from '@mint/components/search-input/search-input.component';
+
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
-import { filtersStore } from '../../stores/filters.store';
+
+import { ApplicationsComponent } from '@/app/components/applications/applications.component';
+import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.component';
+import { RecentSearchesComponent } from '@/app/components/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
+import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
+import { filtersStore } from '@/app/stores/filters.store';
 
 type HomeTab = {
   iconClass: string;

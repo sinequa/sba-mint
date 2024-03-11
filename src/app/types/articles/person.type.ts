@@ -1,6 +1,6 @@
-import { Filter } from "@/app/utils/api-filter-translator";
 import { Article, Query } from "@sinequa/atomic";
 import { DEFAULT_QUERY_NAME } from "../../config/query-names";
+import { Filter } from "@/app/utils/models";
 
 export type PersonArticle = Article & {
   employeeDepartments?: string[];

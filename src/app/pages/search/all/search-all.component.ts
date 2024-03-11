@@ -1,20 +1,20 @@
-import { NavigationService } from '@/app/services/navigation.service';
-import { buildFirstPageQuery } from '@/app/services/query.service';
-import { SearchService } from '@/app/services/search.service';
-import { filtersStore } from '@/app/stores/filters.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { ArticleDefaultSkeletonComponent } from '@mint/components/article/default-skeleton/article-default-skeleton.component';
-import { ArticleDefaultComponent } from '@mint/components/article/default/article-default.component';
-import { DrawerStackService } from '@mint/components/drawer-stack/drawer-stack.service';
-import { FiltersComponent } from '@mint/components/filters/filters.component';
-import { SelectArticleFromQueryParamsDirective } from '@mint/directives/select-article-from-query-params.directive';
-import { SelectArticleOnClickDirective } from '@mint/directives/select-article-on-click.directive';
-import { Article } from '@mint/types/articles/article.type';
+
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
+
+import { ArticleDefaultSkeletonComponent } from '@/app/components/article/default-skeleton/article-default-skeleton.component';
+import { ArticleDefaultComponent } from '@/app/components/article/default/article-default.component';
+import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
+import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
+import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { filtersStore } from '@/app/stores/filters.store';
+import { searchInputStore } from '@/app/stores/search-input.store';
+import { Article } from "@/app/types/articles";
 import { Subscription, distinctUntilChanged, merge, switchMap, take } from 'rxjs';
-import { aggregationsStore } from '../../../stores/aggregations.store';
+
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
