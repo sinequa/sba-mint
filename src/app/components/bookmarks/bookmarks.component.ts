@@ -1,36 +1,37 @@
-import { Component } from '@angular/core';
-
-type Bookmark = {
-  label: string;
-  source: string;
-  sourceIconClass?: string;
-  author?: string;
-  parentFolder?: string;
-  parentFolderIconClass?: string;
-}
+import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
+import { BookmarksService } from '@/app/services/bookmarks.service';
+import { UserSettingsService } from '@/app/services/user-settings.service';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Bookmark } from '@mint/types/articles/user-settings';
 
 @Component({
   selector: 'app-bookmarks',
   standalone: true,
-  imports: [],
+  imports: [TreepathToIconClassPipe],
   templateUrl: './bookmarks.component.html',
   styleUrl: './bookmarks.component.scss'
 })
-export class BookmarksComponent {
-  public bookmarks: Bookmark[] = [
-    { source: 'drive', label: 'This is a document title.pdf', author: 'Caroline Halvorson', parentFolder: 'in Customer support' },
-    { source: 'jira', label: 'This is an issue title in Jira ', author: 'Ariane Cavet', parentFolder: 'in SINEQUA ES' },
-    { source: 'slack', label: 'This is a message', author: 'Eric Leibenguth', parentFolder: 'in customer-solution' },
-    { source: 'drive', label: 'This is a document title.pdf', author: 'Caroline Halvorson', parentFolder: 'in Customer support' },
-    { source: 'jira', label: 'This is an issue title in Jira', author: 'Ariane Cavet', parentFolder: 'in SINEQUA ES' },
-    { source: 'slack', label: 'This is a message', author: 'Eric Leibenguth', parentFolder: 'in customer-solution' },
-    { source: 'drive', label: 'This is a document title.pdf', author: 'Caroline Halvorson', parentFolder: 'in Customer support' },
-    { source: 'jira', label: 'This is an issue title in Jira ', author: 'Ariane Cavet', parentFolder: 'in SINEQUA ES' },
-    { source: 'slack', label: 'This is a message', author: 'Eric Leibenguth', parentFolder: 'in customer-solution' }
-  ];
+export class BookmarksComponent implements OnInit {
+  protected bookmarks = signal<Bookmark[]>([]);
+
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly bookmarksService = inject(BookmarksService);
+
+  ngOnInit(): void {
+    this.bookmarksService.getBookmarks().then((bookmarks) => {
+      this.bookmarks.set((bookmarks || []) as Bookmark[])
+    });
+  }
 
   public bookmarkClicked(bookmark: Bookmark): void {
     console.log(bookmark);
   }
-}
 
+  public removeBookmark(index: number): void {
+    this.bookmarksService.getBookmarks().then((bookmarks) => {
+      bookmarks.splice(index, 1);
+      this.userSettingsService.patchUserSettings({ bookmarks });
+      this.bookmarks.set(bookmarks);
+    });
+  }
+}

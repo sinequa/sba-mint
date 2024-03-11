@@ -7,3 +7,5 @@ export * from './recent-searches.service';
 export * from './search.service';
 export * from './selection-history.service';
 export * from './selection.service';
+export * from './user-settings.service';
+
