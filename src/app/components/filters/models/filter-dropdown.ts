@@ -1,8 +1,9 @@
+import { Aggregation } from "@sinequa/atomic";
 
 export type FilterDropdown = {
   label: string;
-  column: string;
+  aggregation: Aggregation;
   iconClass?: string;
   currentFilter?: string;
-  moreFilters?: number;
+  moreFiltersCount?: number;
 }
