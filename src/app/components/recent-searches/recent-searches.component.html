@@ -23,5 +23,7 @@
 
     <p class="text-gray-500 ms-auto">{{ search.date | relativeDate }}</p>
   </li>
+  } @empty {
+  <li class="text-center text-gray-500 py-4">No recent searches yet</li>
   }
 </ul>
