@@ -1,11 +1,12 @@
+import { SavedSearchesService } from '@/app/services/saved-searches.service';
+import { UserSettingsService } from '@/app/services/user-settings.service';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SavedSearch, UserSettings } from '@mint/types/articles/user-settings';
-import { fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
+import { SavedSearch as UserSettingsSavedSearch } from '@mint/types/articles/user-settings';
 import { StopPropagationDirective } from 'toolkit';
 
-type SavedSearchEx = SavedSearch & {
+type SavedSearch = UserSettingsSavedSearch & {
   label: string;
   filterCount?: number;
   date?: string;
@@ -19,17 +20,17 @@ type SavedSearchEx = SavedSearch & {
   templateUrl: './saved-searches.component.html',
   styleUrl: './saved-searches.component.scss'
 })
-export class SavedSearchesComponent {
-  public savedSearches = signal<SavedSearchEx[] | undefined>(undefined);
+export class SavedSearchesComponent implements OnInit {
+  protected readonly savedSearches = signal<SavedSearch[]>([]);
 
   private readonly router = inject(Router);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly savedSearchesService = inject(SavedSearchesService);
 
-  constructor() {
-    fetchUserSettings().then((settings: UserSettings) => {
-      const savedSearches = settings.savedSearches || [];
-
+  ngOnInit(): void {
+    this.savedSearchesService.getSavedSearches().then((savedSearches) => {
       this.savedSearches.set(
-        savedSearches.reduce((acc, savedSearch) => {
+        (savedSearches || []).reduce((acc, savedSearch) => {
           const queryParams = getQueryParamsFromUrl(savedSearch.url);
 
           acc.push(
@@ -41,12 +42,12 @@ export class SavedSearchesComponent {
           );
 
           return acc;
-        }, [] as SavedSearchEx[])
+        }, [] as SavedSearch[])
       );
     });
   }
 
-  public savedSearchClicked(savedSearch: SavedSearchEx): void {
+  public savedSearchClicked(savedSearch: SavedSearch): void {
     const queryParams = {
       q: savedSearch.queryParams?.text
     } as { q: string, f?: string };
@@ -64,6 +65,6 @@ export class SavedSearchesComponent {
 
     this.savedSearches.set(searches);
 
-    patchUserSettings({ savedSearches: searches });
+    this.userSettingsService.patchUserSettings({ savedSearches: searches });
   }
 }
