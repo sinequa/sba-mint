@@ -1,0 +1,30 @@
+# This action can be utilized to manually trigger the creation of a 
+# release branch from the main branch of a repository with the current date
+# as a timestamp.
+name: Manual Release Trigger
+run-name: ${{ github.actor }} manual release ${{ github.repository }}
+
+on: workflow_dispatch
+
+jobs:
+  generate-release:
+    runs-on: [self-hosted,wps-build]
+    steps:
+      - name: Get Current Date (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Add-Content -Path ${env:GITHUB_ENV} -Value "RELEASE_DATE=$(date -Format 'yyyyMMdd')"
+      - name: Get Current Date (Linux)
+        if: runner.os == 'Linux' 
+        run: |
+          echo "RELEASE_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - name: Clone Repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+      - name: Create Branch
+        run: |
+          git checkout -b release-${{ env.RELEASE_DATE }}
+      - name: Publish Branch
+        run: |
+          git push --set-upstream origin release-${{ env.RELEASE_DATE }}

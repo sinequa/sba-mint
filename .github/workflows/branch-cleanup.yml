@@ -1,0 +1,35 @@
+name: Branch Cleanup
+
+on: workflow_dispatch
+
+jobs:
+  delete_branches:
+    runs-on: [self-hosted,wps-build]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Delete Branches
+      run: |
+        git fetch --prune
+        $dateLimit = (Get-Date).AddMonths(-2)
+        $dateLimitStale = (Get-Date).AddMonths(-6)
+        $branches = git branch -r --list "origin/*" | ForEach-Object { $_.Trim() } | Where-Object { $_ -notmatch 'origin/(poc|demo|lazard|arsene|implementation|draft)' }
+        foreach ($branch in $branches) {
+            $branchName = $branch -replace 'origin/', ''
+            $branchAge = git show -s --format=%ci "origin/$branchName" | Get-Date
+            $isMerged = git branch -r --merged | Select-String $branch
+                   
+            if (($branchName -match '^release-' -or $branchName -match '^build-') -and $branchAge -lt $dateLimit) {
+                 Write-Host "Deleting branch because it is a release/build branch and older than 2 months: $branchName"
+                 git push origin --delete $branchName
+            } elseif ($isMerged -and $branchAge -lt $dateLimit) {
+                   Write-Host "Deleting branch because it is merged and older than 2 months: $branchName"
+                   git push origin --delete $branchName
+            } elseif ($branchAge -lt $dateLimitStale) {
+                   Write-Host "Deleting branch because it is older than 6 months: $branchName"
+                   git push origin --delete $branchName                  
+            }
+        }
