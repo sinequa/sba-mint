@@ -1,12 +1,12 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
+import { RecentSearchesService } from '@/app/services/recent-searches.service';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { RecentSearch, UserSettings } from '@mint/types/articles/user-settings';
-import { fetchUserSettings } from '@sinequa/atomic';
+import { RecentSearch as UserSettingsRecentSearch } from '@mint/types/articles/user-settings';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-type RecentSearchEx = RecentSearch & {
+type RecentSearch = UserSettingsRecentSearch & {
   label: string;
   filterCount?: number;
   date?: string;
@@ -20,15 +20,14 @@ type RecentSearchEx = RecentSearch & {
   templateUrl: './recent-searches.component.html',
   styleUrl: './recent-searches.component.scss'
 })
-export class RecentSearchesComponent {
-  public recentSearches = signal<RecentSearchEx[] | undefined>(undefined);
+export class RecentSearchesComponent implements OnInit {
+  public recentSearches = signal<RecentSearch[] | undefined>(undefined);
 
   private readonly router = inject(Router);
+  private readonly recentSearchesService = inject(RecentSearchesService);
 
-  constructor() {
-    fetchUserSettings().then((settings: UserSettings) => {
-      const recentSearches = settings.recentSearches || [];
-
+  ngOnInit(): void {
+    this.recentSearchesService.getRecentSearches().then((recentSearches) => {
       this.recentSearches.set(
         recentSearches.reduce((acc, recentSearch) => {
           const queryParams = getQueryParamsFromUrl(recentSearch.url);
@@ -43,12 +42,12 @@ export class RecentSearchesComponent {
           );
 
           return acc;
-        }, [] as RecentSearchEx[])
+        }, [] as RecentSearch[])
       );
     });
   }
 
-  public recentSearchClicked(recentSearch: RecentSearchEx): void {
+  public recentSearchClicked(recentSearch: RecentSearch): void {
     const queryParams = {
       q: recentSearch.queryParams?.text
     } as { q: string, f?: string };
