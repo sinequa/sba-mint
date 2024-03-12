@@ -1,7 +1,8 @@
 import { assertInInjectionContext, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Query } from '@sinequa/atomic';
-import { FALLBACK_DEFAULT_QUERY_NAME } from '../config/query-names';
+
+import { FALLBACK_DEFAULT_QUERY_NAME } from '@/app/config/query-names';
 
 export function getQueryNameFromRoute(): string | undefined {
   assertInInjectionContext(getQueryNameFromRoute);
