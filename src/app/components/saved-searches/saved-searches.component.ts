@@ -1,6 +1,8 @@
+import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { UserSettingsService } from '@/app/services/user-settings.service';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
+import { NgClass } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SavedSearch as UserSettingsSavedSearch } from '@mint/types/articles/user-settings';
@@ -16,7 +18,7 @@ type SavedSearch = UserSettingsSavedSearch & {
 @Component({
   selector: 'app-saved-searches',
   standalone: true,
-  imports: [StopPropagationDirective],
+  imports: [NgClass, StopPropagationDirective, RelativeDatePipe],
   templateUrl: './saved-searches.component.html',
   styleUrl: './saved-searches.component.scss'
 })

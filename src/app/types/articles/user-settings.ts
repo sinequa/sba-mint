@@ -11,7 +11,7 @@ export type Bookmark = {
   parentFolderIconClass?: string;
 };
 export type RecentSearch = { url: string, date: string };
-export type SavedSearch = { url: string };
+export type SavedSearch = { url: string, date: string };
 
 export type UserSettings = UserSettingsBase & {
   bookmarks?: Bookmark[],

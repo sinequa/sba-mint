@@ -21,8 +21,12 @@
     </p>
     }
 
-    <button class="hidden group-hover:block ms-auto btn btn-sm btn-alert" title="Remove saved search" stkStopPropagation
-      (click)="removeSavedSearch($index)">
+    @if (search.date) {
+    <p class="text-gray-500 ms-auto">{{ search.date | relativeDate }}</p>
+    }
+
+    <button [ngClass]="{'ms-auto': !search.date}" class="hidden group-hover:block btn btn-sm btn-alert"
+      title="Remove saved search" stkStopPropagation (click)="removeSavedSearch($index)">
       <i class="fa-fw fa-regular fa-trash-can"></i>
     </button>
   </li>
