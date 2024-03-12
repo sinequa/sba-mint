@@ -13,6 +13,7 @@ import { selectionStore } from '@/app/stores/selection.store';
 import { Article } from "@/app/types/articles";
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 
+import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({
@@ -38,6 +39,7 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
+  private readonly bookmarkService = inject(BookmarksService);
 
   private readonly sub = new Subscription();
 
@@ -71,5 +73,16 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+  }
+
+  public async toggleBookmark(): Promise<void> {
+    if (this.article()?.id === undefined) return;
+
+    const isBookmarked = await this.bookmarkService.isBookmarked(this.article()!.id!);
+
+    if (isBookmarked)
+      this.bookmarkService.unbookmark(this.article()!.id!);
+    else
+      this.bookmarkService.bookmark(this.article()! as Article);
   }
 }

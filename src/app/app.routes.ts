@@ -24,3 +24,10 @@ export const routes: Routes = [
   { path: 'debug/design-system', component: DesignSystemComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
+
+export const FALLBACK_SEARCH_ROUTE = '/search/all';
+export const SEARCH_ROUTES = ['/search'];
+
+export function isASearchRoute(url: string): boolean {
+  return SEARCH_ROUTES.some(route => url.startsWith(route));
+}

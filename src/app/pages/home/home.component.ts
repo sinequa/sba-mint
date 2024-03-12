@@ -2,7 +2,6 @@ import { NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';

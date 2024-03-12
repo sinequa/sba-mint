@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
 import { BackdropComponent } from '@/app/components/drawer/components/backdrop/backdrop.component';
 import { NavbarComponent } from '@/app/components/navbar/navbar.component';
-import { SelectionService } from '@/app/services';
+import { SelectionService, UserSettingsService } from '@/app/services';
 import { searchInputStore } from '@/app/stores/search-input.store';
 
 @Component({
@@ -19,7 +19,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   protected readonly selection = inject(SelectionService);
 
+  private readonly userSettingsService = inject(UserSettingsService);
+
   ngOnInit(): void {
+    // TODO: FUTURE: Improve first load of user settings
+    this.userSettingsService.getUserSettings();
     searchInputStore.set(this.q ?? '');
   }
 

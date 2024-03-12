@@ -1,5 +1,7 @@
+import { FALLBACK_SEARCH_ROUTE, isASearchRoute } from '@/app/app.routes';
 import { NavigationService } from '@/app/services/navigation.service';
-import { FALLBACK_SEARCH_ROUTE, SearchService } from '@/app/services/search.service';
+import { SavedSearchesService } from '@/app/services/saved-searches.service';
+import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe } from '@angular/common';
 import { Component, HostBinding, ViewChild, effect, inject } from '@angular/core';
@@ -51,6 +53,7 @@ export class NavbarComponent {
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly searchService = inject(SearchService);
+  private readonly savedSearchesService = inject(SavedSearchesService);
 
   private readonly subscriptions = new Subscription();
 
@@ -80,7 +83,7 @@ export class NavbarComponent {
   protected validated(text: string): void {
     console.log('validated', text);
 
-    const commands = this.searchService.isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
+    const commands = isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
 
     searchInputStore.set(text);
 
@@ -101,5 +104,12 @@ export class NavbarComponent {
    */
   protected debounced(text: string): void {
     console.log('debounced', text);
+  }
+
+  /**
+   * Occurs when the user clicks on the save button
+   */
+  protected saveSearch(): void {
+    this.savedSearchesService.saveSearch();
   }
 }
