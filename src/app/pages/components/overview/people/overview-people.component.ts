@@ -8,9 +8,10 @@ import { QueryService } from '@sinequa/atomic-angular';
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
 import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { SelectArticleOnClickDirective } from '@/app/directives';
-import { NavigationService, buildQuery } from '@/app/services';
+import { NavigationService } from '@/app/services';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { PersonArticle } from '@/app/types/articles';
+import { buildQuery } from '@/app/utils';
 
 const PEOPLE_OVERVIEW_LIMIT = 3;
 

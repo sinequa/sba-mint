@@ -8,11 +8,11 @@ import { QueryService } from '@sinequa/atomic-angular';
 import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/default-light-skeleton/article-default-light-skeleton.component';
 import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
-import { MockDataService, buildQuery } from '@/app/services';
+import { MockDataService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
-import { translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';

@@ -7,13 +7,14 @@ import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { SplitPipe } from '@sinequa/atomic-angular';
 
 import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
-import { MockDataService, buildQuery } from '@/app/services';
+import { MockDataService } from '@/app/services';
+import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';
 import { selectionStore } from '@/app/stores/selection.store';
 import { Article } from "@/app/types/articles";
+import { buildQuery } from '@/app/utils';
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 
-import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({

@@ -8,11 +8,12 @@ import { ArticlePersonSkeletonComponent } from '@/app/components/article/person-
 import { ArticlePersonComponent } from '@/app/components/article/person/article-person.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
-import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { filtersStore } from '@/app/stores/filters.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { PersonArticle } from '@/app/types/articles';
+import { buildFirstPageQuery } from '@/app/utils';
 
 @Component({
   selector: 'app-search-people',

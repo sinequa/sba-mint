@@ -1,4 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Subscription, distinctUntilChanged, merge, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -8,12 +9,12 @@ import { ArticleDefaultComponent } from '@/app/components/article/default/articl
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
-import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { filtersStore } from '@/app/stores/filters.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { Article } from "@/app/types/articles";
-import { Subscription, distinctUntilChanged, merge, switchMap, take } from 'rxjs';
+import { buildFirstPageQuery } from '@/app/utils';
 
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
