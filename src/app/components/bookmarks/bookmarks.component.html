@@ -4,11 +4,11 @@
     class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none group"
     tabindex="0" appFocusWithArrowKeys="y" (click)="bookmarkClicked(bookmark)"
     (keydown.enter)="bookmarkClicked(bookmark)">
-    <i class="fa-fw far fa-bookmark"></i>
+    <i class="fa-fw far fa-bookmark shrink-0"></i>
 
-    <i class="{{ bookmark.source | treepathToIconClass }}"></i>
+    <i class="{{ bookmark.source | treepathToIconClass }} shrink-0"></i>
 
-    <p>{{ bookmark.label }}</p>
+    <p class="line-clamp-1">{{ bookmark.label }}</p>
 
     @if (bookmark.author) {
     <p class="text-gray-500 line-clamp-1">
@@ -30,6 +30,6 @@
     </button>
   </li>
   } @empty {
-  <li class="text-gray-500 text-center">No bookmarks yet</li>
+  <li class="text-gray-500 text-center py-4">No bookmarks yet</li>
   }
 </ul>
