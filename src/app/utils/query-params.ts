@@ -1,4 +1,4 @@
-import { Filter } from "./api-filter-translator";
+import { Filter } from "./models";
 
 export type QueryParams = {
   path?: string;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { UserSettings } from '@mint/types/articles/user-settings';
 import { deleteUserSettings, fetchUserSettings, patchUserSettings, saveUserSettings } from '@sinequa/atomic';
 import { userSettingsStore } from '../stores/user-settings.store';
+import { UserSettings } from '../types/articles/user-settings';
 
 @Injectable({
   providedIn: 'root'

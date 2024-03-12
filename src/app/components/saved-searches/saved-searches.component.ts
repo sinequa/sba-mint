@@ -1,11 +1,11 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { UserSettingsService } from '@/app/services/user-settings.service';
+import { SavedSearch as UserSettingsSavedSearch } from '@/app/types/articles/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { NgClass } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SavedSearch as UserSettingsSavedSearch } from '@mint/types/articles/user-settings';
 import { StopPropagationDirective } from 'toolkit';
 
 type SavedSearch = UserSettingsSavedSearch & {

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { SavedSearch } from '@mint/types/articles/user-settings';
 import { searchInputStore } from '../stores/search-input.store';
+import { SavedSearch } from '../types/articles/user-settings';
 import { UserSettingsService } from './user-settings.service';
 
 @Injectable({

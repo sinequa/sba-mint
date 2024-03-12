@@ -1,8 +1,8 @@
 import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { UserSettingsService } from '@/app/services/user-settings.service';
+import { Bookmark } from '@/app/types/articles/user-settings';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Bookmark } from '@mint/types/articles/user-settings';
 
 @Component({
   selector: 'app-bookmarks',
