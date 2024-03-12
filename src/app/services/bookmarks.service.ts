@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Article } from '../types/articles';
-import { Bookmark } from '../types/articles/user-settings';
+import { Bookmark } from '../types/user-settings';
 import { UserSettingsService } from './user-settings.service';
 
 @Injectable({
