@@ -73,9 +73,8 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   protected saveQuery(): void {
-    this.saveAnimation.set(true);
-
-    setTimeout(() => this.saveAnimation.set(false), 1000);
+    // this.saveAnimation.set(true);
+    // setTimeout(() => this.saveAnimation.set(false), 1000);
 
     this.saved.emit();
   }

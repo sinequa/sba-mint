@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.component';
+import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { filtersStore } from '@/app/stores/filters.store';
 
@@ -31,11 +32,11 @@ export class HomeComponent implements OnInit {
     //   label: 'Recent searches',
     //   component: RecentSearchesComponent,
     // },
-    // {
-    //   iconClass: 'fa-regular fa-star',
-    //   label: 'Saved searches',
-    //   component: SavedSearchesComponent
-    // },
+    {
+      iconClass: 'fa-regular fa-star',
+      label: 'Saved searches',
+      component: SavedSearchesComponent
+    },
     {
       iconClass: 'fa-regular fa-bookmark',
       label: 'My bookmark',
