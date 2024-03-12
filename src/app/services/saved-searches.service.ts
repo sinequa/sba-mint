@@ -26,7 +26,7 @@ export class SavedSearchesService {
       return;
     }
 
-    const savedSearch = { url: window.location.hash.substring(1) };
+    const savedSearch = { url: window.location.hash.substring(1), date: new Date().toISOString() };
     const savedSearches = await this.getSavedSearches();
 
     savedSearches.unshift(savedSearch);
