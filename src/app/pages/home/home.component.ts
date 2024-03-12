@@ -4,7 +4,9 @@ import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, inject, s
 import { Router } from '@angular/router';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
+import { ApplicationsComponent } from '@/app/components/applications/applications.component';
 import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.component';
+import { RecentSearchesComponent } from '@/app/components/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { filtersStore } from '@/app/stores/filters.store';
@@ -27,11 +29,11 @@ export class HomeComponent implements OnInit {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
 
   public tabs: HomeTab[] = [
-    // {
-    //   iconClass: 'fa-regular fa-clock-rotate-left',
-    //   label: 'Recent searches',
-    //   component: RecentSearchesComponent,
-    // },
+    {
+      iconClass: 'fa-regular fa-clock-rotate-left',
+      label: 'Recent searches',
+      component: RecentSearchesComponent,
+    },
     {
       iconClass: 'fa-regular fa-star',
       label: 'Saved searches',
@@ -42,11 +44,11 @@ export class HomeComponent implements OnInit {
       label: 'My bookmark',
       component: BookmarksComponent
     },
-    // {
-    //   iconClass: 'fa-regular fa-grid-round-2',
-    //   label: 'Applications',
-    //   component: ApplicationsComponent
-    // }
+    {
+      iconClass: 'fa-regular fa-grid-round-2',
+      label: 'Applications',
+      component: ApplicationsComponent
+    }
   ];
   public selectedTabId = signal<number>(this.tabs.findIndex((tab) => !tab.disabled));
 
