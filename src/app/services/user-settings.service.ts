@@ -28,7 +28,7 @@ export class UserSettingsService {
   public async patchUserSettings(userSettings: Partial<UserSettings>): Promise<void> {
     await patchUserSettings(userSettings);
 
-    userSettingsStore.set(userSettings);
+    userSettingsStore.set(Object.assign({}, userSettingsStore.state, userSettings));
 
     return Promise.resolve();
   }

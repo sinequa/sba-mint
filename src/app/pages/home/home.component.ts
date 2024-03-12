@@ -3,6 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component, ElementRef, OnInit, QueryList, Type, ViewChildren, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookmarksComponent } from '@mint/components/bookmarks/bookmarks.component';
+import { SavedSearchesComponent } from '@mint/components/saved-searches/saved-searches.component';
 import { SearchInputComponent } from '@mint/components/search-input/search-input.component';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 import { filtersStore } from '../../stores/filters.store';
@@ -30,11 +31,11 @@ export class HomeComponent implements OnInit {
     //   label: 'Recent searches',
     //   component: RecentSearchesComponent,
     // },
-    // {
-    //   iconClass: 'fa-regular fa-star',
-    //   label: 'Saved searches',
-    //   component: SavedSearchesComponent
-    // },
+    {
+      iconClass: 'fa-regular fa-star',
+      label: 'Saved searches',
+      component: SavedSearchesComponent
+    },
     {
       iconClass: 'fa-regular fa-bookmark',
       label: 'My bookmark',

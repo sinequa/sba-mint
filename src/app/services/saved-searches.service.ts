@@ -1,32 +1,36 @@
-import { Injectable } from '@angular/core';
-import { UserSettings } from '@mint/types/articles/user-settings';
-import { fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
+import { Injectable, inject } from '@angular/core';
+import { SavedSearch } from '@mint/types/articles/user-settings';
 import { searchInputStore } from '../stores/search-input.store';
-
-const SAVED_SEARCHES_MAX_STORAGE = 10;
+import { UserSettingsService } from './user-settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SavedSearchesService {
-  public saveSearch(): void {
+  private readonly userSettingsService = inject(UserSettingsService);
+
+  public async getSavedSearches(): Promise<SavedSearch[]> {
+    const { savedSearches } = await this.userSettingsService.getUserSettings();
+
+    if (savedSearches === undefined) {
+      this.userSettingsService.patchUserSettings({ savedSearches: [] });
+      return [];
+    }
+
+    return savedSearches;
+  }
+
+  public async saveSearch(): Promise<void> {
     if (!searchInputStore.state) {
-      console.log('Avoid saving empty search');
+      console.error('Saving empty search is not allowed');
       return;
     }
 
-    fetchUserSettings().then((result: UserSettings) => {
-      let savedSearches = result.savedSearches;
+    const savedSearch = { url: window.location.hash.substring(1) };
+    const savedSearches = await this.getSavedSearches();
 
-      if (savedSearches === undefined)
-        savedSearches = [];
-      else if (savedSearches.length >= SAVED_SEARCHES_MAX_STORAGE)
-        savedSearches.pop();
+    savedSearches.unshift(savedSearch);
 
-      // Save only the hash part of the URL with the #
-      savedSearches.unshift({ url: window.location.hash.substring(1) });
-
-      patchUserSettings({ savedSearches });
-    })
+    await this.userSettingsService.patchUserSettings({ savedSearches });
   }
 }
