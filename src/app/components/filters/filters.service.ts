@@ -1,11 +1,9 @@
+import { NavigationService } from '@/app/services/navigation.service';
+import { getFiltersFromQueryParams } from '@/app/utils/query-params';
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-import { NavigationService } from '@/app/services';
-import { filtersStore } from '@/app/stores/filters.store';
-import { getFiltersFromQueryParams } from '@/app/utils/query-params';
-
+import { filtersStore } from '../../stores/filters.store';
 
 @Injectable({
   providedIn: 'root'

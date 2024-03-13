@@ -25,10 +25,14 @@
   }
 
   <li>
-    <button title="Bookmark">
-      <i class="fa-fw far fa-bookmark"></i>
+    <button title="Bookmark this document" (click)="bookmark.emit()" stkStopPropagation>
+      @if (isBookmarked | async) {
+      <i class="fa-fw fa-solid fa-bookmark text-sm"></i>
+      } @else {
+      <i class="fa-fw fa-regular fa-bookmark text-sm"></i>
+      }
     </button>
-  </li>
+</li>
 
   <li>
     <button title="Copy link">

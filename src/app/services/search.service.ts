@@ -1,6 +1,6 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
+import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -11,6 +11,7 @@ import { filtersStore } from '@/app/stores/filters.store';
 import { translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 
+import { isASearchRoute } from '../app.routes';
 import { buildQuery } from './query.service';
 
 export type SearchOptions = {
@@ -20,9 +21,6 @@ export type SearchOptions = {
 type QueryParams = {
   f?: string;
 }
-
-export const FALLBACK_SEARCH_ROUTE = '/search/all';
-const SEARCH_ROUTES = ['/search'];
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +37,12 @@ export class SearchService implements OnDestroy {
   public readonly result$ = this._result.asObservable();
 
   constructor(private readonly injector: Injector) {
-    this.subscription.add(this.navigationService.navigationEnd$.pipe(
-        filter((routerEvent) => this.isASearchRoute(routerEvent.url)),
+    this.subscription.add(
+      combineLatest([
+        aggregationsStore.next$,
+        this.navigationService.navigationEnd$
+      ]).pipe(
+        filter(([aggregations, routerEvent]) => !!aggregations && isASearchRoute(routerEvent.url)),
         switchMap(() => this.getResult(filtersStore.state ?? []))
       ).subscribe((result: Result) => {
         this._result.next(result);
@@ -67,9 +69,5 @@ export class SearchService implements OnDestroy {
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any }));
 
     return this.queryService.search(query);
-  }
-
-  public isASearchRoute(url: string): boolean {
-    return SEARCH_ROUTES.some(route => url.startsWith(route));
   }
 }
