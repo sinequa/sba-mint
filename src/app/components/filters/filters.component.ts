@@ -143,7 +143,7 @@ export class FiltersComponent implements OnInit {
       .map((aggregation: Aggregation) => {
         const itemCustomizations = this.customizationService.getAggregationItemsCustomization(aggregation.column);
 
-        const f = queryParamsStore.state?.filters?.find(f => f.column === aggregation.column);
+        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
@@ -153,7 +153,7 @@ export class FiltersComponent implements OnInit {
         return aggregation;
       })
       .map((aggregation) => {
-        const f = queryParamsStore.state?.filters?.find(f => f.column === aggregation.column);
+        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
         return ({
           label: aggregation.name,

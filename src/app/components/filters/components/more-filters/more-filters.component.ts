@@ -128,7 +128,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     return aggregations.map((aggregation: Aggregation) => {
-      const f = queryParamsStore.state?.filters?.find(f => f.column === aggregation.column);
+      const f = queryParamsStore.getFilterFromColumn(aggregation.column);
       const count = f?.values.length ?? undefined;
 
       return ({

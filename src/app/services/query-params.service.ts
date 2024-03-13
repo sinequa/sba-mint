@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { NavigationService } from '@/app/services';
@@ -7,7 +7,7 @@ import { queryParamsStore } from '../stores/query-params.store';
 @Injectable({
   providedIn: 'root'
 })
-export class QueryParamsService {
+export class QueryParamsService implements OnDestroy {
   private readonly navigationService = inject(NavigationService);
 
   private readonly subscriptions = new Subscription();
@@ -17,5 +17,9 @@ export class QueryParamsService {
       this.navigationService.navigationEnd$
         .subscribe(event => queryParamsStore.setFromUrl(event.url))
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

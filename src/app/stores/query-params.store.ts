@@ -36,6 +36,10 @@ export class QueryParamsStore extends Store<QueryParams> {
   public patch(params: Partial<QueryParams>): void {
     this.set({ ...this.state, ...params });
   }
+
+  public getFilterFromColumn(column: string): Filter | undefined {
+    return this.state?.filters?.find((f: Filter) => f.column === column);
+  }
 }
 
 export const queryParamsStore = new QueryParamsStore();
