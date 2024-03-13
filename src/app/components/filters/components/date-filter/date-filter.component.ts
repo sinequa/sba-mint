@@ -1,12 +1,12 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Subscription, combineLatest, take, tap } from 'rxjs';
+import { Subscription, combineLatest, map, take, tap } from 'rxjs';
 
 import { AggregationsService, DateFilter, DateFilterCode } from '@/app/services';
-import { filtersStore } from '@/app/stores/filters.store';
 import { Filter } from '@/app/utils/models';
 
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { AggregationListTitle } from '../aggregation-list/aggregation-list.component';
 
 @Component({
@@ -40,7 +40,10 @@ export class DateFilterComponent implements OnInit, OnDestroy {
   private readonly aggregations = inject(AggregationsService);
 
   ngOnInit(): void {
-    const updateState$ = combineLatest([this.aggregations.getMockDateAggregation$(), filtersStore.current$])
+    const updateState$ = combineLatest([
+      this.aggregations.getMockDateAggregation$(),
+      queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])),
+    ])
       .pipe(
         tap(([options, filters]) => {
           this.dateOptions.set(options);

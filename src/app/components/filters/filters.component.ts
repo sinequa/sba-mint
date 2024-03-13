@@ -8,9 +8,9 @@ import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { CustomizationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
 import { Filter } from '@/app/utils/models';
 
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { AggregationListFilterComponent } from './components/aggregation-list/aggregation-list.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
@@ -32,7 +32,7 @@ export class FiltersComponent {
   private readonly searchService = inject(SearchService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  protected readonly filters = toSignal(filtersStore.current$);
+  protected readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
 
   protected readonly filterDropdowns = signal<FilterDropdown[]>([]);
   protected readonly moreFiltersCount = signal<number>(0);
@@ -60,7 +60,7 @@ export class FiltersComponent {
   public filterUpdated(filter: Filter, index: number): void {
     this.updateDropdownButtons(filter, index);
 
-    filtersStore.update(filter);
+    queryParamsStore.updateFilter(filter);
     this.searchService.search([]);
   }
 
@@ -73,7 +73,7 @@ export class FiltersComponent {
   public dateFilterUpdated(filter: Filter): void {
     this.updateDateDropdownButton(filter);
 
-    filtersStore.update(filter);
+    queryParamsStore.updateFilter(filter);
     this.searchService.search([]);
   }
 
@@ -86,7 +86,7 @@ export class FiltersComponent {
       filters.map((filter: FilterDropdown) => Object.assign(filter, { currentFilter: undefined, moreFilters: undefined }))
     )
 
-    filtersStore.clear();
+    queryParamsStore.patch({ filters: [] });
     this.searchService.search([]);
   }
 

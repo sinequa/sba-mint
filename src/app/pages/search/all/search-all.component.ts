@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, distinctUntilChanged, merge, switchMap, take } from 'rxjs';
+import { Subscription, distinctUntilChanged, map, merge, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -11,11 +11,11 @@ import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
 
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
@@ -73,8 +73,10 @@ export class SearchAllComponent implements OnInit, OnDestroy {
 
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(
-      merge(searchInputStore.next$.pipe(distinctUntilChanged()), filtersStore.current$)
-        .subscribe(() => this.articles.set(undefined))
+      merge(
+        searchInputStore.next$.pipe(distinctUntilChanged()),
+        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? []))
+      ).subscribe(() => this.articles.set(undefined))
     );
   }
 

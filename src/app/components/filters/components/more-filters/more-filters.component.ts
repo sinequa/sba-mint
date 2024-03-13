@@ -5,11 +5,11 @@ import { Aggregation } from '@sinequa/atomic';
 
 import { CustomizationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
 import { Filter } from '@/app/utils/models';
 
-import { AggregationListFilterComponent } from '../aggregation-list/aggregation-list.component';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { FilterDropdown } from '../../models/filter-dropdown';
+import { AggregationListFilterComponent } from '../aggregation-list/aggregation-list.component';
 
 const AUTHORIZED_MORE_FILTERS = ['treepath', 'geo', 'company'];
 
@@ -58,14 +58,14 @@ export class MoreFiltersComponent implements OnDestroy {
       values: this.aggregationListFilters.toArray()[filterIndex].getFilters()
     };
 
-    filtersStore.update(filter);
+    queryParamsStore.updateFilter(filter);
     this.search.search([]);
   }
 
   public clearFilter(filterIndex: number): void {
     this.aggregationListFilters.toArray()[filterIndex].clearFilters();
 
-    filtersStore.update({
+    queryParamsStore.updateFilter({
       column: this.filterDropdowns()[filterIndex].column,
       label: undefined,
       values: []

@@ -1,12 +1,12 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Subscription, take, tap } from 'rxjs';
+import { Subscription, map, take, tap } from 'rxjs';
 
 import { AggregationItem } from '@sinequa/atomic';
 
 import { AggregationsService, CustomizationService } from '@/app/services';
-import { filtersStore } from '@/app/stores/filters.store';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { Filter } from '@/app/utils/models';
 
 export type AggregationListItem = {
@@ -45,8 +45,9 @@ export class AggregationListFilterComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
 
   ngOnInit(): void {
-    const updateState$ = filtersStore.current$
+    const updateState$ = queryParamsStore.current$
       .pipe(
+        map(queryParams => queryParams?.filters ?? []),
         tap((filters) => {
           const aggregationItems = this.buildAggregationItems() ?? [];
 

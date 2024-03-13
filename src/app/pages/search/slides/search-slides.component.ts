@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, merge, switchMap, take } from 'rxjs';
+import { Subscription, map, merge, switchMap, take } from 'rxjs';
 
 import { Article, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -11,7 +11,7 @@ import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { buildFirstPageQuery } from '@/app/utils';
 
@@ -69,7 +69,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(
-      merge(searchInputStore.next$, filtersStore.current$)
+      merge(searchInputStore.next$, queryParamsStore.current$.pipe(map((queryParams) => queryParams?.filters ?? [])))
         .subscribe(() => this.slides.set(undefined))
     );
   }
