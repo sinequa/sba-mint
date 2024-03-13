@@ -1,15 +1,15 @@
 /* Hides default checkbox */
-input[type="checkbox"]:has(+ .checkbox) {
-  display: none;
+input[type="checkbox"] {
+  appearance: none;
 }
 
-input[type="checkbox"] + .checkbox::before {
+input[type="checkbox"]::before {
   /* fa-square glyph code */
   content: "\f0c8";
   font: var(--fa-font-regular);
 }
 
-input[type="checkbox"]:checked + .checkbox::before {
+input[type="checkbox"]:checked::before {
   /* fa-check-square glyph code */
   content: "\f14a";
   font: var(--fa-font-regular);

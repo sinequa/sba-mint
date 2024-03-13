@@ -1,19 +1,11 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
-import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Subscription, take, tap } from 'rxjs';
+import { Component, EventEmitter, OnInit, Output, input, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AggregationItem } from '@sinequa/atomic';
-
-import { AggregationsService, CustomizationService } from '@/app/services';
-import { filtersStore } from '@/app/stores/filters.store';
+import { AggregationEx, AggregationListItem } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
-export type AggregationListItem = {
-  label: string;
-  checked?: boolean;
-  iconClass?: string;
-};
+
 
 export type AggregationListTitle = {
   label: string;
@@ -25,107 +17,62 @@ export type AggregationListTitle = {
   standalone: true,
   imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf],
   templateUrl: './aggregation-list.component.html',
-  styleUrl: './aggregation-list.component.scss'
+  styles: [`:host { display: block; }`]
 })
-export class AggregationListFilterComponent implements OnInit, OnDestroy {
-  @Input({ required: true }) public column!: string;
-  @Input({ required: false }) public title!: AggregationListTitle | undefined;
+export class AggregationListFilterComponent implements OnInit  {
+  @Output() public readonly onLoadMore = new EventEmitter<void>();
 
-  @Output() public readonly refreshed = new EventEmitter<Filter>();
-  @Output() public readonly updated = new EventEmitter<Filter>();
-  @Output() public readonly valueChanged = new EventEmitter<Filter>();
+  /**
+   * Event emitter for changes in filters.
+   * Emits a `Filter` object when the filters change (**apply** or **clear** actions).
+   */
+  @Output() public readonly onFiltersChanges = new EventEmitter<Filter>();
+  @Output() public readonly onSelect = new EventEmitter<Filter>();
 
-  protected readonly aggregationItems = signal<AggregationListItem[]>([]);
-  protected readonly hasFilter = computed(() => this.activeFilters().length > 0);
-  protected readonly form = new FormArray<FormControl<boolean | null>>([]);
+  protected readonly hasFilter = signal<boolean>(false);
 
-  private readonly customizationService = inject(CustomizationService);
-  private readonly aggregationsService = inject(AggregationsService);
-  private readonly activeFilters = signal<string[]>([]);
-  private readonly subscriptions = new Subscription();
+  title = input<AggregationListTitle>();
+  aggregation = input.required<AggregationEx>();
 
   ngOnInit(): void {
-    const updateState$ = filtersStore.current$
-      .pipe(
-        tap((filters) => {
-          const aggregationItems = this.buildAggregationItems() ?? [];
-
-          this.aggregationItems.set(aggregationItems);
-          this.activeFilters.set(filters?.find((f: Filter) => f.column === this.column)?.values ?? []);
-          this.buildForm(aggregationItems, filters?.find((f: Filter) => f.column === this.column)?.values ?? []);
-        })
-      );
-    const initialized$ = updateState$.pipe(
-      take(1)
-    );
-
-    this.subscriptions.add(
-      updateState$.subscribe(() => {
-        this.refreshed.emit({ column: this.column, label: this.getFilters()[0], values: this.getFilters() });
-      })
-    );
-    this.subscriptions.add(
-      initialized$.subscribe(() => {
-        this.refreshed.emit({ column: this.column, label: this.getFilters()[0], values: this.getFilters() });
-      })
-    );
-    this.subscriptions.add(
-      this.form.valueChanges.subscribe((values) => {
-        const current = values
-          .map(x => x ? true : false)
-          .reduce((acc: string[], value: boolean, index: number) => {
-            if (value) acc.push(this.aggregationItems()[index].label);
-            return acc;
-          }, []);
-
-        this.activeFilters.set(current);
-        this.valueChanged.emit({ column: this.column, label: current[0], values: current });
-      })
-    );
+    this.hasFilter.set(this.hasFilters());
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public select(event: Event, item: AggregationListItem): void {
+    item.$selected = !item.$selected;
+
+    const filters = this.aggregation().items
+      .filter(item => item.$selected)
+      .map((item) => item.value?.toString() || '');
+
+    this.hasFilter.set(Boolean(filters.length));
+    this.onSelect.emit({ column: this.aggregation().column, label: item.value?.toString() || '', values: filters });
   }
 
-  public submit(): void {
-    const filters = this.form.controls.reduce((acc: string[], control: FormControl, index: number) => {
-      if (control.value) acc.push(this.aggregationItems()[index].label);
+  public apply(): void {
+    const filters = this.aggregation().items
+      .filter(item => item.$selected)
+      .map((item) => item.value?.toString() || '');
 
-      return acc;
-    }, []);
-
-    this.updated.emit({ column: this.column, label: filters[0], values: filters });
-  }
-
-  public getFilters(): string[] {
-    return this.activeFilters();
+    this.onFiltersChanges.emit({ column: this.aggregation().column, label: filters[0], values: filters });
   }
 
   public clearFilters(notifyAsUpdated: boolean = true): void {
-    this.form.controls.forEach(control => control.setValue(false, { emitEvent: false }));
-    this.form.updateValueAndValidity();
+    if(this.aggregation().items) {
+      this.aggregation().items.forEach(item => item.$selected = false);
+      this.hasFilter.set(this.hasFilters());
+    }
 
-    if (notifyAsUpdated) this.updated.emit({ column: this.column, label: undefined, values: [] });
+    if (notifyAsUpdated) this.onFiltersChanges.emit({ column: this.aggregation().column, label: undefined, values: [] });
   }
 
-  private buildAggregationItems(): AggregationListItem[] {
-    const itemCustomizations = this.customizationService.getAggregationItemsCustomization(this.column);
-    const items = this.aggregationsService.getAggregationItems(this.column)
-      ?.map((value: AggregationItem) => ({
-        label: value.value,
-        iconClass: itemCustomizations?.find((item) => item.value === value.value)?.iconClass
-      })) as AggregationListItem[];
-
-    return items;
+  private hasFilters(): boolean {
+    return this.aggregation().items.some(item => item.$selected);
   }
 
-  private buildForm(aggregationItems: AggregationListItem[], filters: string[]): void {
-    if (this.form.controls.length > 0) this.form.clear();
 
-    aggregationItems.forEach((item: AggregationListItem) =>
-      this.form.push(new FormControl(filters?.includes(item.label) ?? false), { emitEvent: false })
-    );
-    this.form.updateValueAndValidity();
+  loadMore(): void {
+    this.onLoadMore.emit();
   }
+
 }

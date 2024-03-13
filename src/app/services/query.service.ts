@@ -39,6 +39,7 @@ export function buildFirstPageQuery(query?: Partial<Query>): Query {
   const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
 
   return {
+    ...query,
     name: queryName,
     isFirstPage: true
   };
@@ -49,7 +50,11 @@ export function buildPreviewQuery(query?: Partial<Query>): Query {
 
   const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
 
-  return { name: queryName, text: query?.text };
+  return {
+    ...query,
+     name: queryName,
+     text: query?.text
+  };
 }
 
 export function getQueryTextFromUrl(url: string): string {
