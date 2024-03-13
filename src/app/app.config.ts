@@ -3,6 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+
 import { auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 
 import { routes } from '@/app/app.routes';

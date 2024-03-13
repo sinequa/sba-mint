@@ -1,22 +1,24 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ViewChildren, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Subscription, map } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription, combineLatest, map, tap } from 'rxjs';
 
-import { Aggregation } from '@sinequa/atomic';
+import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-import { CustomizationService, SearchService } from '@/app/services';
+import { AggregationEx, AggregationListItem, AggregationsService, CustomizationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { Filter } from '@/app/utils/models';
 
 import { queryParamsStore } from '@/app/stores/query-params.store';
+import { buildQuery } from '@/app/utils';
 import { AggregationListFilterComponent } from './components/aggregation-list/aggregation-list.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
 import { FilterDropdown } from './models/filter-dropdown';
 
-const AUTHORIZED_FILTERS = ['treepath', 'doctype', 'authors', 'enginecsv1'];
+const AUTHORIZED_FILTERS = ['treepath', 'geo', 'person', 'doctype', 'authors', 'enginecsv1'];
 
 @Component({
   selector: 'app-filters',
@@ -25,36 +27,61 @@ const AUTHORIZED_FILTERS = ['treepath', 'doctype', 'authors', 'enginecsv1'];
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss'
 })
-export class FiltersComponent {
+export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationListFilterComponent) public aggregationListFilters!: AggregationListFilterComponent[];
 
   private readonly customizationService = inject(CustomizationService);
+  aggregationsService = inject(AggregationsService);
+
   private readonly searchService = inject(SearchService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   protected readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
+  protected readonly moreFiltersCount = signal<number>(0);
 
   protected readonly filterDropdowns = signal<FilterDropdown[]>([]);
-  protected readonly moreFiltersCount = signal<number>(0);
-  protected readonly dateFilterDropdown = signal<FilterDropdown>({ label: 'Date', column: 'date', iconClass: 'far fa-calendar-day' });
+  protected readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
 
   private readonly subscriptions = new Subscription();
 
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly injector = inject(Injector);
+
   constructor() {
     this.subscriptions.add(
-      aggregationsStore.next$
+      combineLatest([
+        aggregationsStore.next$,
+        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? []))
+      ])
         .pipe(
+          map(([aggregations,]) => {
+            return aggregations;
+          }),
+          tap((aggregations) => this.dateFilterDropdown.set({
+            label: 'Date',
+            aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
+            iconClass: 'far fa-calendar-day'
+          })),
           map((aggregations: Aggregation[] | undefined) => aggregations?.filter(a => AUTHORIZED_FILTERS.includes(a.column)) ?? []),
-          map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column)))
+          map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column))),
         )
-        .subscribe((aggregations) => this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations ?? [])))
+        .subscribe((aggregations) => {
+          console.log("filters and aggregations", aggregations);
+          this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations ?? []))
+        })
     );
   }
 
-  public filterRefreshed(filter: Filter, index: number): void {
-    this.updateDropdownButtons(filter, index);
-
-    this.cdr.detectChanges();
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.activatedRoute.queryParams.subscribe((queryParams) => {
+        let filters;
+        if (queryParams['f']) {
+          filters = JSON.parse(queryParams['f']);
+        }
+        queryParamsStore.patch({ filters });
+      })
+    );
   }
 
   public filterUpdated(filter: Filter, index: number): void {
@@ -62,6 +89,20 @@ export class FiltersComponent {
 
     queryParamsStore.updateFilter(filter);
     this.searchService.search([]);
+  }
+
+  public loadMore(aggregation: AggregationEx, index: number): void {
+    this.aggregationsService.loadMore(
+      runInInjectionContext(this.injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+      aggregation
+    ).subscribe((aggregation) => {
+      this.filterDropdowns.update((filters: FilterDropdown[]) => {
+        if (filters[index].aggregation.column === aggregation.column) {
+          filters[index].aggregation = aggregation;
+        }
+        return filters;
+      });
+    });
   }
 
   public dateFilterRefreshed(filter: Filter): void {
@@ -83,10 +124,12 @@ export class FiltersComponent {
 
     // clear dropdowns state
     this.filterDropdowns.update((filters: FilterDropdown[]) =>
-      filters.map((filter: FilterDropdown) => Object.assign(filter, { currentFilter: undefined, moreFilters: undefined }))
+      filters.map((filter: FilterDropdown) => ({ ...filter, currentFilter: undefined, moreFiltersCount: undefined }))
     )
 
+    this.moreFiltersCount.set(0);
     queryParamsStore.patch({ filters: [] });
+
     this.searchService.search([]);
   }
 
@@ -95,19 +138,37 @@ export class FiltersComponent {
   }
 
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
-    return aggregations.map((aggregation: Aggregation) => ({
-      label: aggregation.name,
-      column: aggregation.column,
-      iconClass: this.customizationService.getAggregationIconClass(aggregation.column),
-      currentFilter: undefined,
-      moreFilters: undefined
-    }));
+    const dropdowns = aggregations
+      .map((aggregation: Aggregation) => {
+        const itemCustomizations = this.customizationService.getAggregationItemsCustomization(aggregation.column);
+
+        const f = queryParamsStore.state?.filters?.find(f => f.column === aggregation.column);
+
+        aggregation?.items?.forEach((item: AggregationListItem) => {
+          item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
+          item.iconClass = itemCustomizations?.find(it => it.value === item.value)?.iconClass;
+        });
+
+        return aggregation;
+      })
+      .map((aggregation) => {
+        const f = queryParamsStore.state?.filters?.find(f => f.column === aggregation.column);
+        const more = f?.values.length ? f.values.length - 1 : undefined;
+        return ({
+          label: aggregation.name,
+          aggregation: aggregation,
+          iconClass: this.customizationService.getAggregationIconClass(aggregation.column),
+          currentFilter: f?.label,
+          moreFiltersCount: more,
+        })
+      })
+    return dropdowns
   }
 
   private updateDropdownButtons(filter: Filter, index: number): void {
     this.filterDropdowns.update((filters: FilterDropdown[]) => {
       filters[index].currentFilter = filter.values[0];
-      filters[index].moreFilters = filter.values.length - 1;
+      filters[index].moreFiltersCount = filter.values.length - 1;
 
       return filters;
     });
@@ -115,7 +176,9 @@ export class FiltersComponent {
 
   private updateDateDropdownButton(filter: Filter): void {
     this.dateFilterDropdown.update((value) => {
-      value.currentFilter = filter.label;
+      if (value) {
+        value.currentFilter = filter.label;
+      }
       return value;
     });
   }

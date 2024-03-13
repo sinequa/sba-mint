@@ -57,7 +57,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
       this.navigationService.navigationEnd$
         .pipe(
           take(1),
-          switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery())))
+          switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery({ text: searchInputStore.state }))))
         )
         .subscribe((firstPageResult: Result) => {
           aggregationsStore.set(firstPageResult.aggregations);
