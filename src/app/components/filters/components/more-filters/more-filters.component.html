@@ -1,57 +1,51 @@
 <ul class="divide-y">
-  @for (filter of filterDropdowns(); track filter.column) {
-  <li class="p-2">
-    <div class="collapse bg-base-200">
-      <input type="radio" name="more-filters" title="Open {{ filter.label }}" />
+  @for (filter of filterDropdowns(); track filter.aggregation.column) {
+    <li class="collapse mb-1 bg-base-200">
+      <!-- header -->
+      <input class="w-full" role="button" type="radio" name="more-filters" title="Open {{ filter.label }}" />
 
-      <div class="collapse-title p-2 flex items-baseline justify-between">
-        <p class="me-4 flex items-baseline text-sm">
-          @if (filter.iconClass) {
+      <div class="collapse-title p-2 flex gap-1 items-baseline justify-between">
+        <!-- aggregation's icon -->
+        @if (filter.iconClass) {
           <i class="fa-fw {{ filter.iconClass }} me-1"></i>
+        }
+
+        <!-- aggregation label -->
+        <span class="me-4 grow items-baseline text-sm">{{ filter.label }}</span>
+
+        <!-- actions buttons -->
+        <div class="flex gap-2 z-10">
+            @if (filter?.moreFiltersCount) {
+            <span class="ms-2 size-[18px] pill-xs primary flex place-content-center font-semibold">
+              {{ filter.moreFiltersCount }}
+            </span>
           }
-
-          {{ filter.label }}
-
-          @if (filterCounts()[$index] > 0) {
-          <span class="ms-2 pill-xs primary flex self-center font-semibold">
-            <p>{{ filterCounts()[$index] }}</p>
-          </span>
-          }
-        </p>
-
-        <div class="ms-4">
           @if (hasFilters()[$index]) {
-          <button
-            type="button"
-            class="me-2"
-            title="Clear filters"
-            (click)="clearFilter($index)"
-            (keydown.enter)="clearFilter($index)"
-          >
-            <i class="fa-fw far fa-filter-circle-xmark"></i>
-          </button>
+            <button
+              title="Clear filters"
+              (click)="clearFilter($index)"
+              (keydown.enter)="clearFilter($index)"
+              >
+              <i class="fa-fw far fa-filter-circle-xmark"></i>
+            </button>
           }
 
           <button
-            type="button"
             title="Apply filters"
             (click)="applyFilter($index)"
             (keydown.enter)="applyFilter($index)"
-          >
+            >
             <i class="fa-fw far fa-filter"></i>
           </button>
         </div>
       </div>
 
-      <div class="collapse-content">
-        <app-aggregation-list-filter
-          [column]="filter.column"
-          (refreshed)="filterRefreshed($event, $index)"
-          (updated)="filterUpdated($event, $index)"
-          (valueChanged)="filterValueChanged($event, $index)"
+      <!-- content -->
+      <app-aggregation class="collapse-content"
+        [aggregation]="filter.aggregation"
+        (onSelect)="filterUpdated($event, $index)"
+        (onLoadMore)="loadMore(filter.aggregation, $index)"
         />
-      </div>
-    </div>
-  </li>
+    </li>
   }
 </ul>

@@ -1,99 +1,96 @@
 <menu class="flex gap-2">
+  <!-- clear filters button -->
   @if ((filters() ?? []).length > 0) {
-  <li>
-    <button
-      class="btn btn-sm btn-alert"
-      title="Clear all filters"
-      (click)="clearFilters()"
-      (keydown.enter)="clearFilters()"
-    >
-      <i class="fa-fw far fa-trash-can"></i>
-    </button>
-  </li>
+    <li>
+      <button
+        class="btn btn-sm btn-alert"
+        title="Clear all filters"
+        (click)="clearFilters()"
+        (keydown.enter)="clearFilters()"
+        >
+        <i class="fa-fw far fa-trash-can"></i>
+      </button>
+    </li>
   }
 
-  <li class="dropdown group" tabindex="0" appFocusWithArrowKeys>
+  <!-- date filter dropdown -->
+  <li role="button" class="dropdown group" tabindex="0" appFocusWithArrowKeys>
     <div
       class="btn btn-sm flex gap-1 items-baseline"
-      [ngClass]="{ 'btn-primary': dateFilterDropdown().currentFilter }"
-    >
-      @if (dateFilterDropdown().iconClass) {
-      <i class="fa-fw {{ dateFilterDropdown().iconClass }}"></i>
-      } @if (dateFilterDropdown().currentFilter) {
-      <p>{{ dateFilterDropdown().currentFilter }}</p>
-      } @else {
-      <p>{{ dateFilterDropdown().label }}</p>
+      [ngClass]="{ 'btn-primary': dateFilterDropdown()?.currentFilter }"
+      >
+      @if (dateFilterDropdown()?.iconClass) {
+        <i class="fa-fw {{ dateFilterDropdown()?.iconClass }}"></i>
       }
+      <span>{{ dateFilterDropdown()?.currentFilter || dateFilterDropdown()?.label }}</span>
     </div>
 
     <app-date-filter
       class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
-      [column]="dateFilterDropdown().column"
+      [column]="dateFilterDropdown()?.aggregation?.column || ''"
       [title]="{
-        label: dateFilterDropdown().label,
-        iconClass: dateFilterDropdown().iconClass
+        label: dateFilterDropdown()?.label || '',
+        iconClass: dateFilterDropdown()?.iconClass
       }"
       (refreshed)="dateFilterRefreshed($event)"
       (updated)="dateFilterUpdated($event)"
     />
   </li>
 
+  <!-- other filter dropdowns -->
   @for (filterDropdown of filterDropdowns(); track $index) {
-  <li class="dropdown group" tabindex="0" appFocusWithArrowKeys>
-    <div
-      class="btn btn-sm flex gap-1 items-baseline"
-      [ngClass]="{ 'btn-primary': filterDropdown.currentFilter }"
-    >
-      @if (filterDropdown.iconClass) {
-      <i class="fa-fw {{ filterDropdown.iconClass }}"></i>
-      } @if (filterDropdown.currentFilter) {
-      <p>{{ filterDropdown.currentFilter }}</p>
-      } @else {
-      <p>{{ filterDropdown.label }}</p>
-      } @if (filterDropdown.moreFilters && filterDropdown.moreFilters > 0) {
-      <span
-        class="pill-xs pill-ghost secondary bg-white flex self-center font-semibold group-hover:text-blue-600"
-      >
-        <i class="fas fa-plus text-[0.5rem] my-auto"></i>
-        <p>{{ filterDropdown.moreFilters }}</p>
-      </span>
-      }
-    </div>
+    <li class="dropdown group" tabindex="0" role="button" appFocusWithArrowKeys>
+      <button
+        class="btn btn-sm flex gap-1 items-baseline disabled:opacity-50"
+        [disabled]="!filterDropdown.aggregation.items"
+        [ngClass]="{
+          'btn-primary': filterDropdown.currentFilter }"
+        >
+        @if (filterDropdown.iconClass) {
+          <i class="fa-fw {{ filterDropdown.iconClass }}"></i>
+        }
+        <span>{{ filterDropdown.currentFilter || filterDropdown.label }}</span>
 
-    <app-aggregation-list-filter
-      class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
-      [column]="filterDropdown.column"
-      [title]="{
-        label: filterDropdown.label,
-        iconClass: filterDropdown.iconClass
-      }"
-      (refreshed)="filterRefreshed($event, $index)"
-      (updated)="filterUpdated($event, $index)"
-    />
-  </li>
+        @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
+          <div class="pill-xs pill-ghost secondary bg-white flex place-content-center font-semibold group-hover:text-blue-600">
+            <i class="fas fa-plus text-[0.5rem] my-auto"></i>
+            <span>{{ filterDropdown.moreFiltersCount }}</span>
+          </div>
+        }
+      </button>
+
+      <app-aggregation
+        class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
+        [aggregation]="filterDropdown.aggregation"
+        [title]="{
+          label: filterDropdown.label,
+          iconClass: filterDropdown.iconClass
+        }"
+        (onFiltersChanges)="filterUpdated($event, $index)"
+        (onLoadMore)="loadMore(filterDropdown.aggregation, $index)"
+      />
+    </li>
   }
 
+  <!-- more filters dropdown -->
   <li
+    role="button"
     class="dropdown dropdown-end group ms-auto"
     tabindex="0"
     appFocusWithArrowKeys
-  >
-    <div class="btn btn-sm flex gap-1 items-baseline">
-      <p class="flex gap-1 items-baseline">
-        <i class="far fa-filters"></i>
-        More filters
+    >
+    <button class="btn btn-sm flex gap-1 items-baseline truncate">
+      <i class="far fa-filters"></i>
+      <span>More filters</span>
 
-        @if (moreFiltersCount() > 0) {
-        <span class="ms-1 pill-xs primary flex self-center font-semibold">
-          <p>{{ moreFiltersCount() }}</p>
-        </span>
-        }
-      </p>
-    </div>
+      @if (moreFiltersCount() > 0) {
+        <span class="ms-1 size-[18px] pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
+      }
+    </button>
 
     <app-more-filters
       class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
-      (count)="moreFiltersCountUpdated($event)"
+      (onCountChange)="moreFiltersCountUpdated($event)"
     />
   </li>
 </menu>
