@@ -18,24 +18,19 @@ export class QueryParamsStore extends Store<QueryParams> {
     if (!this.state) this.state = {};
     if (!this.state.filters) this.state.filters = [];
 
-    const existing = this.state?.filters?.find((f: Filter) => f.column === filter.column);
+    const existing = this.state?.filters?.findIndex((f: Filter) => f.column === filter.column);
 
     // Add filter if it doesn't exist and has values
-    if (!existing && filter.values.length > 0) {
+    if (existing === -1 && filter.values.length > 0)
       this.state.filters.push(filter);
-      this.set(this.state);
-    }
     // Remove filter if no values are selected
-    else if (existing && filter.values.length === 0)
-      this.set({
-        ...this.state,
-        filters: this.state.filters.filter((f: Filter) => f.column !== filter.column)
-      });
+    else if (existing >= 0 && filter.values.length === 0)
+      this.state.filters.splice(existing, 1);
     // Update filter values
-    else if (existing) {
-      existing.values = filter.values;
-      this.set(this.state);
-    }
+    else if (existing >= 0)
+      this.state.filters.splice(existing, 1, filter);
+
+    this.set(this.state);
   }
 
   public patch(params: Partial<QueryParams>): void {

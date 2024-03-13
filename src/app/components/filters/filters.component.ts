@@ -51,7 +51,7 @@ export class FiltersComponent implements OnInit {
     this.subscriptions.add(
       combineLatest([
         aggregationsStore.next$,
-        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? []))
+        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])),
       ])
         .pipe(
           map(([aggregations,]) => {
@@ -88,6 +88,7 @@ export class FiltersComponent implements OnInit {
     this.updateDropdownButtons(filter, index);
 
     queryParamsStore.updateFilter(filter);
+
     this.searchService.search([]);
   }
 
