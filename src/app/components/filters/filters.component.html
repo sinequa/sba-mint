@@ -44,8 +44,8 @@
         class="btn btn-sm flex gap-1 items-baseline disabled:opacity-50"
         [disabled]="!filterDropdown.aggregation.items"
         [ngClass]="{
-          'btn-primary': filterDropdown.currentFilter }"
-        >
+          'btn-primary': filterDropdown.currentFilter
+        }">
         @if (filterDropdown.iconClass) {
           <i class="fa-fw {{ filterDropdown.iconClass }}"></i>
         }
