@@ -41,7 +41,7 @@
       </div>
 
       <!-- content -->
-      <app-aggregation-list-filter class="collapse-content"
+      <app-aggregation class="collapse-content"
         [aggregation]="filter.aggregation"
         (onSelect)="filterUpdated($event, $index)"
         (onLoadMore)="loadMore(filter.aggregation, $index)"

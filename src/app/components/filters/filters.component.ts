@@ -13,7 +13,7 @@ import { Filter } from '@/app/utils/models';
 
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { buildQuery } from '@/app/utils';
-import { AggregationListFilterComponent } from './components/aggregation-list/aggregation-list.component';
+import { AggregationComponent } from './components/aggregation/aggregation.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
 import { FilterDropdown } from './models/filter-dropdown';
@@ -23,12 +23,12 @@ const AUTHORIZED_FILTERS = ['treepath', 'geo', 'person', 'doctype', 'authors', '
 @Component({
   selector: 'app-filters',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationListFilterComponent, MoreFiltersComponent, FocusWithArrowKeysDirective],
+  imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective],
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss'
 })
 export class FiltersComponent implements OnInit {
-  @ViewChildren(AggregationListFilterComponent) public aggregationListFilters!: AggregationListFilterComponent[];
+  @ViewChildren(AggregationComponent) public aggregations!: AggregationComponent[];
 
   private readonly customizationService = inject(CustomizationService);
   aggregationsService = inject(AggregationsService);
@@ -66,7 +66,6 @@ export class FiltersComponent implements OnInit {
           map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column))),
         )
         .subscribe((aggregations) => {
-          console.log("filters and aggregations", aggregations);
           this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations ?? []))
         })
     );
@@ -121,7 +120,7 @@ export class FiltersComponent implements OnInit {
 
   public clearFilters(): void {
     // clear internal filters
-    this.aggregationListFilters.forEach((filter: AggregationListFilterComponent) => filter.clearFilters(false));
+    this.aggregations.forEach((filter: AggregationComponent) => filter.clearFilters(false));
 
     // clear dropdowns state
     this.filterDropdowns.update((filters: FilterDropdown[]) =>

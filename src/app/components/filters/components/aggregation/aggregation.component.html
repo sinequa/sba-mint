@@ -40,30 +40,11 @@
 
   <ul class="data-list">
     @for (item of aggregation().items; track $index) {
-    <li
-      class="data-list-item ps-2 p-1 flex text-sm"
-      [ngClass]="{ 'data-list-item-selected': item.$selected }"
-    >
-      <label
-        role="button"
-        class="p-1 ps-0 flex grow items-center"
-        [ngClass]="{ 'grid grid-cols-[24px_auto]': !!item.iconClass }"
-        >
-        <input
-          type="checkbox"
-          value="{{ item.value }}"
-          class="pe-1"
-          (keydown.enter)="select($event, item)"
-          (click)="select($event, item)"
-          [checked]="item.$selected"
-        />
-
-        @if (item.iconClass) {
-          <i class="fa-fw {{ item.iconClass }} self-center justify-self-center"></i>
-        }
-        {{ item.display || item.value }}
-      </label>
-    </li>
+      <app-aggregation-row
+        [aggregation]="aggregation()"
+        [item]="item"
+        (onOpen)="open($event)"
+        (onSelect)="select($event)" />
     }
   </ul>
 

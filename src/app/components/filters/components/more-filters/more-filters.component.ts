@@ -10,19 +10,19 @@ import { Filter } from '@/app/utils/models';
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { buildQuery } from '@/app/utils';
 import { FilterDropdown } from '../../models/filter-dropdown';
-import { AggregationListFilterComponent } from '../aggregation-list/aggregation-list.component';
+import { AggregationComponent } from '../aggregation/aggregation.component';
 
 const AUTHORIZED_MORE_FILTERS = ['treepath', 'geo', 'company'];
 
 @Component({
   selector: 'app-more-filters',
   standalone: true,
-  imports: [AggregationListFilterComponent],
+  imports: [AggregationComponent],
   templateUrl: './more-filters.component.html',
   styleUrl: './more-filters.component.scss'
 })
 export class MoreFiltersComponent implements OnDestroy {
-  @ViewChildren(AggregationListFilterComponent) public aggregationListFilters!: QueryList<AggregationListFilterComponent>;
+  @ViewChildren(AggregationComponent) public aggregations!: QueryList<AggregationComponent>;
 
   @Output() public onCountChange = new EventEmitter<number>();
 
@@ -56,7 +56,7 @@ export class MoreFiltersComponent implements OnDestroy {
   }
 
   public applyFilter(index: number): void {
-    const filters = this.aggregationListFilters.toArray()[index].aggregation().items
+    const filters = this.aggregations.toArray()[index].aggregation().items
       .filter(item => item.$selected)
       .map((item) => item.value?.toString() || '');
 
@@ -73,9 +73,9 @@ export class MoreFiltersComponent implements OnDestroy {
   }
 
   public clearFilter(index: number): void {
-    this.aggregationListFilters.toArray()[index].clearFilters();
+    this.aggregations.toArray()[index].clearFilters();
 
-    const filters = this.aggregationListFilters.toArray()[index].aggregation().items
+    const filters = this.aggregations.toArray()[index].aggregation().items
       .filter(item => item.$selected)
       .map((item) => item.value?.toString() || '');
     const filter: Filter = {

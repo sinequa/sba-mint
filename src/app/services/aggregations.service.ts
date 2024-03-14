@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { Aggregation, AggregationItem } from '@sinequa/atomic';
+import { Aggregation, AggregationItem, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationService } from '@sinequa/atomic-angular';
 
 import { aggregationsStore } from '@/app/stores/aggregations.store';
@@ -16,12 +16,13 @@ export type DateFilter = {
   calculated: () => [DateFilterCode, Date | null, Date | null];
 }
 
-export type AggregationListItem = AggregationItem & {
+export type AggregationListItem = (AggregationItem | TreeAggregationNode) & {
   iconClass?: string;
+  hasChildren?: boolean;
 };
 
 export type AggregationEx = Aggregation & { items: AggregationListItem[] };
-
+export type AggregationTreeEx = TreeAggregation & { items: AggregationListItem[] };
 
 @Injectable({
   providedIn: 'root'

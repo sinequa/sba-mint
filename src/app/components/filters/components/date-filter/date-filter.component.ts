@@ -7,7 +7,7 @@ import { AggregationsService, DateFilter, DateFilterCode } from '@/app/services'
 import { Filter } from '@/app/utils/models';
 
 import { queryParamsStore } from '@/app/stores/query-params.store';
-import { AggregationListTitle } from '../aggregation-list/aggregation-list.component';
+import { AggregationTitle } from '../aggregation/aggregation.component';
 
 @Component({
   selector: 'app-date-filter',
@@ -18,7 +18,7 @@ import { AggregationListTitle } from '../aggregation-list/aggregation-list.compo
 })
 export class DateFilterComponent implements OnInit, OnDestroy {
   @Input({ required: true }) public column!: string;
-  @Input({ required: false }) public title!: AggregationListTitle | undefined;
+  @Input({ required: false }) public title!: AggregationTitle | undefined;
 
   @Output() public readonly refreshed = new EventEmitter<Filter>();
   @Output() public readonly updated = new EventEmitter<Filter>();

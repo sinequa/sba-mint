@@ -1,0 +1,36 @@
+<label
+  role="button"
+  class="data-list-item p-1 ps-2 gap-2 flex grow items-center text-sm"
+  [ngClass]="{
+    'data-list-item-selected': item().$selected
+  }"
+  >
+
+  @if(item().hasChildren &&  !$any(item()).items) {
+    <span (click)="open($event, item())" class="size-4">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-down"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M12 10v6"/><path d="m15 13-3 3-3-3"/></svg>
+    </span>
+  }
+
+  <input
+    type="checkbox"
+    value="{{ item().value }}"
+    (keydown.enter)="select($event, item())"
+    (click)="select($event, item())"
+    [checked]="item().$selected"
+  />
+
+  @if (item().iconClass) {
+    <i class="fa-fw {{ item().iconClass }} self-center justify-self-center"></i>
+  }
+  {{ item().display || item().value }}
+</label>
+  @if($any(item()).hasChildren) {
+    @for(item of $any(item()).items; track $index) {
+      <app-aggregation-row class="ps-4"
+        [aggregation]="aggregation()"
+        [item]="item"
+        (onOpen)="onOpen.emit($event)"
+        (onSelect)="onSelect.emit($event)" />
+    }
+  }
