@@ -9,10 +9,11 @@ import { ArticleSlideComponent } from '@/app/components/article/slide/article-sl
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
-import { NavigationService, SearchService, buildFirstPageQuery } from '@/app/services';
+import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { filtersStore } from '@/app/stores/filters.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
+import { buildFirstPageQuery } from '@/app/utils';
 
 @Component({
   selector: 'app-search-slides',

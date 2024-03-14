@@ -5,14 +5,11 @@ import { Observable, Subject, Subscription, combineLatest, filter, switchMap } f
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
+import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
-import { translateFiltersToApiFilters } from '@/app/utils';
+import { aggregationsStore, filtersStore } from '@/app/stores';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
-
-import { isASearchRoute } from '../app.routes';
-import { buildQuery } from './query.service';
 
 export type SearchOptions = {
   appendFilters?: boolean;

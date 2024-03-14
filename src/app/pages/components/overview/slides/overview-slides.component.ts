@@ -8,10 +8,10 @@ import { QueryService } from '@sinequa/atomic-angular';
 import { ArticleSlideLightComponent } from '@/app/components/article/slide-light/article-slide-light.component';
 import { SLIDES_QUERY_NAME } from '@/app/config/query-names';
 import { SelectArticleOnClickDirective } from '@/app/directives';
-import { NavigationService, buildQuery } from '@/app/services';
+import { NavigationService } from '@/app/services';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { SlideArticle } from '@/app/types/articles';
-
+import { buildQuery } from '@/app/utils';
 
 const SLIDES_OVERVIEW_LIMIT = 3;
 

@@ -5,14 +5,13 @@ import { EMPTY, Observable, map, switchMap } from 'rxjs';
 
 import { Filter, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
+import { StopPropagationDirective } from 'toolkit';
 
 import { SelectArticleOnClickDirective } from '@/app/directives';
-import { buildQuery } from '@/app/services';
 import { aggregationsStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
-import { translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
-import { StopPropagationDirective } from 'toolkit';
 
 import { ArticleDefaultLightSkeletonComponent } from '../default-light-skeleton/article-default-light-skeleton.component';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';

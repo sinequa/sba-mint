@@ -1,7 +1,7 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { UserSettingsService } from '@/app/services/user-settings.service';
-import { SavedSearch as UserSettingsSavedSearch } from '@/app/types/articles/user-settings';
+import { SavedSearch as UserSettingsSavedSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { NgClass } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
