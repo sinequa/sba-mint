@@ -1,6 +1,9 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output, input, signal } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+
+
+import { input } from '@angular/core';
 
 import { AggregationEx, AggregationListItem } from '@/app/services';
 import { Filter } from '@/app/utils/models';
@@ -19,7 +22,7 @@ export type AggregationListTitle = {
   templateUrl: './aggregation-list.component.html',
   styles: [`:host { display: block; }`]
 })
-export class AggregationListFilterComponent implements OnInit  {
+export class AggregationListFilterComponent implements OnInit {
   @Output() public readonly onLoadMore = new EventEmitter<void>();
 
   /**
@@ -58,7 +61,7 @@ export class AggregationListFilterComponent implements OnInit  {
   }
 
   public clearFilters(notifyAsUpdated: boolean = true): void {
-    if(this.aggregation().items) {
+    if (this.aggregation().items) {
       this.aggregation().items.forEach(item => item.$selected = false);
       this.hasFilter.set(this.hasFilters());
     }
@@ -74,5 +77,4 @@ export class AggregationListFilterComponent implements OnInit  {
   loadMore(): void {
     this.onLoadMore.emit();
   }
-
 }

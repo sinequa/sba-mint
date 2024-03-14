@@ -1,17 +1,18 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, ViewChildren, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, combineLatest, map, tap } from 'rxjs';
 
-import { Aggregation } from '@sinequa/atomic';
+import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListItem, AggregationsService, CustomizationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
 import { Filter } from '@/app/utils/models';
 
+import { queryParamsStore } from '@/app/stores/query-params.store';
+import { buildQuery } from '@/app/utils';
 import { AggregationListFilterComponent } from './components/aggregation-list/aggregation-list.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
@@ -35,7 +36,7 @@ export class FiltersComponent implements OnInit {
   private readonly searchService = inject(SearchService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  protected readonly filters = toSignal(filtersStore.current$);
+  protected readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
   protected readonly moreFiltersCount = signal<number>(0);
 
   protected readonly filterDropdowns = signal<FilterDropdown[]>([]);
@@ -43,12 +44,15 @@ export class FiltersComponent implements OnInit {
 
   private readonly subscriptions = new Subscription();
 
-  private readonly activatedRoute = inject(ActivatedRoute)
-
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly injector = inject(Injector);
 
   constructor() {
     this.subscriptions.add(
-      combineLatest([aggregationsStore.next$, filtersStore.next$])
+      combineLatest([
+        aggregationsStore.next$,
+        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])),
+      ])
         .pipe(
           map(([aggregations,]) => {
             return aggregations;
@@ -75,7 +79,7 @@ export class FiltersComponent implements OnInit {
         if (queryParams['f']) {
           filters = JSON.parse(queryParams['f']);
         }
-        filtersStore.set(filters);
+        queryParamsStore.patch({ filters });
       })
     );
   }
@@ -83,12 +87,16 @@ export class FiltersComponent implements OnInit {
   public filterUpdated(filter: Filter, index: number): void {
     this.updateDropdownButtons(filter, index);
 
-    filtersStore.update(filter);
+    queryParamsStore.updateFilter(filter);
+
     this.searchService.search([]);
   }
 
-  loadMore(aggregation: AggregationEx, index: number): void {
-    this.aggregationsService.loadMore(aggregation).subscribe((aggregation) => {
+  public loadMore(aggregation: AggregationEx, index: number): void {
+    this.aggregationsService.loadMore(
+      runInInjectionContext(this.injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+      aggregation
+    ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
         if (filters[index].aggregation.column === aggregation.column) {
           filters[index].aggregation = aggregation;
@@ -107,7 +115,7 @@ export class FiltersComponent implements OnInit {
   public dateFilterUpdated(filter: Filter): void {
     this.updateDateDropdownButton(filter);
 
-    filtersStore.update(filter);
+    queryParamsStore.updateFilter(filter);
     this.searchService.search([]);
   }
 
@@ -120,10 +128,8 @@ export class FiltersComponent implements OnInit {
       filters.map((filter: FilterDropdown) => ({ ...filter, currentFilter: undefined, moreFiltersCount: undefined }))
     )
 
-    console.log("clear filters", this.filterDropdowns());
-
     this.moreFiltersCount.set(0);
-    filtersStore.clear();
+    queryParamsStore.patch({ filters: [] });
 
     this.searchService.search([]);
   }
@@ -137,7 +143,7 @@ export class FiltersComponent implements OnInit {
       .map((aggregation: Aggregation) => {
         const itemCustomizations = this.customizationService.getAggregationItemsCustomization(aggregation.column);
 
-        const f = filtersStore.state?.find(f => f.column === aggregation.column);
+        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
@@ -147,7 +153,7 @@ export class FiltersComponent implements OnInit {
         return aggregation;
       })
       .map((aggregation) => {
-        const f = filtersStore.state?.find(f => f.column === aggregation.column);
+        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
         return ({
           label: aggregation.name,

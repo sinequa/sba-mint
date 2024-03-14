@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, Input, OnDestroy, OnInit, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, merge, switchMap, take } from 'rxjs';
+import { Subscription, map, merge, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -10,7 +10,7 @@ import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.s
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
@@ -65,7 +65,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
 
     // Trigger skeleton on search whether from input of from filters
     this.subscription.add(
-      merge(searchInputStore.next$, filtersStore.current$)
+      merge(searchInputStore.next$, queryParamsStore.current$.pipe(map((queryParams) => queryParams?.filters ?? [])))
         .subscribe(() => this.people.set(undefined))
     );
   }

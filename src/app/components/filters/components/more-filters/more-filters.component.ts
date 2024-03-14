@@ -1,14 +1,14 @@
-import { Component, EventEmitter, OnDestroy, Output, QueryList, ViewChildren, inject, signal } from '@angular/core';
-import { Subscription, map } from 'rxjs';
+import { Component, EventEmitter, Injector, OnDestroy, Output, QueryList, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
+import { Subscription, map, tap } from 'rxjs';
 
-import { Aggregation } from '@sinequa/atomic';
+import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
 import { AggregationEx, AggregationsService, CustomizationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
 import { Filter } from '@/app/utils/models';
 
-
+import { queryParamsStore } from '@/app/stores/query-params.store';
+import { buildQuery } from '@/app/utils';
 import { FilterDropdown } from '../../models/filter-dropdown';
 import { AggregationListFilterComponent } from '../aggregation-list/aggregation-list.component';
 
@@ -33,6 +33,7 @@ export class MoreFiltersComponent implements OnDestroy {
   private readonly search = inject(SearchService);
   private readonly customizationService = inject(CustomizationService);
   private readonly aggregationsService = inject(AggregationsService);
+  private readonly injector = inject(Injector);
 
   private readonly subscriptions = new Subscription();
 
@@ -40,6 +41,7 @@ export class MoreFiltersComponent implements OnDestroy {
     this.subscriptions.add(
       aggregationsStore.next$
         .pipe(
+          tap(() => "TRIGGERED"),
           map((aggregations: Aggregation[] | undefined) => aggregations?.filter(a => AUTHORIZED_MORE_FILTERS.includes(a.column)) ?? []),
           map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_MORE_FILTERS.indexOf(a.column) - AUTHORIZED_MORE_FILTERS.indexOf(b.column)))
         )
@@ -65,8 +67,8 @@ export class MoreFiltersComponent implements OnDestroy {
     };
 
     this.updateFiltersCount(filter, index);
+    queryParamsStore.updateFilter(filter);
 
-    filtersStore.update(filter);
     this.search.search([]);
   }
 
@@ -76,15 +78,16 @@ export class MoreFiltersComponent implements OnDestroy {
     const filters = this.aggregationListFilters.toArray()[index].aggregation().items
       .filter(item => item.$selected)
       .map((item) => item.value?.toString() || '');
-      const filter: Filter = {
-        column: this.filterDropdowns()[index].aggregation.column,
-        label: undefined,
-        values: filters
-      };
+    const filter: Filter = {
+      column: this.filterDropdowns()[index].aggregation.column,
+      label: undefined,
+      values: filters
+    };
 
     this.updateFiltersCount(filter, index);
 
-    filtersStore.update({
+
+    queryParamsStore.updateFilter({
       column: this.filterDropdowns()[index].aggregation.column,
       label: undefined,
       values: []
@@ -94,9 +97,12 @@ export class MoreFiltersComponent implements OnDestroy {
   }
 
   public loadMore(aggregation: AggregationEx, index: number): void {
-    this.aggregationsService.loadMore(aggregation).subscribe((aggregation) => {
+    this.aggregationsService.loadMore(
+      runInInjectionContext(this.injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+      aggregation
+    ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
-        if(filters[index].aggregation.column === aggregation.column) {
+        if (filters[index].aggregation.column === aggregation.column) {
           filters[index].aggregation = aggregation;
         }
         return filters;
@@ -122,7 +128,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     return aggregations.map((aggregation: Aggregation) => {
-      const f = filtersStore.state?.find(f => f.column === aggregation.column);
+      const f = queryParamsStore.getFilterFromColumn(aggregation.column);
       const count = f?.values.length ?? undefined;
 
       return ({
