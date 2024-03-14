@@ -2,10 +2,11 @@ import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Injector, OnInit, Output, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AggregationEx, AggregationListItem, AggregationTreeEx, AggregationsService, buildQuery } from '@/app/services';
+import { AggregationEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./components/aggregation-row.component";
+import { buildQuery } from '@/app/utils';
 
 
 

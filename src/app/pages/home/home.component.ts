@@ -9,7 +9,7 @@ import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.compone
 import { RecentSearchesComponent } from '@/app/components/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
-import { filtersStore } from '@/app/stores/filters.store';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 
 type HomeTab = {
   iconClass: string;
@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    filtersStore.clear();
+    queryParamsStore.patch({ filters: [] });
   }
 
   public selectTab(tab: HomeTab): void {

@@ -4,13 +4,13 @@ import { filter, map, switchMap, tap } from 'rxjs';
 
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
+import { StopPropagationDirective } from 'toolkit';
 
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
 import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { SelectionStrategy } from '@/app/directives';
-import { buildQuery } from '@/app/services';
-import { PersonArticle } from '@/app/types/articles';
-import { StopPropagationDirective } from 'toolkit';
+import { PersonArticle } from '@/app/types';
+import { buildQuery } from '@/app/utils';
 
 import { WpsAuthorImageComponent } from '../author-image/author-image.component';
 

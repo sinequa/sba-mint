@@ -1,6 +1,6 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { RecentSearchesService } from '@/app/services';
-import { RecentSearch as UserSettingsRecentSearch } from '@/app/types/articles/user-settings';
+import { RecentSearch as UserSettingsRecentSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';

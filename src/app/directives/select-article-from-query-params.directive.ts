@@ -5,10 +5,10 @@ import { Filter } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { SelectionService, buildQuery } from '@/app/services';
+import { SelectionService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
-import { translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
+import { queryParamsStore } from '../stores/query-params.store';
 
 // FUTURE : Make this directive more generic and reusable and without dependencies on other services
 
@@ -31,7 +31,7 @@ export class SelectArticleFromQueryParamsDirective implements OnInit, OnDestroy 
     if (!this.articleId()) return;
 
     const query = runInInjectionContext(this.injector, () => buildQuery());
-    const filters = [...filtersStore.state ?? []];
+    const filters = [...queryParamsStore.state?.filters ?? []];
 
     filters.push({ column: 'id', label: 'id', values: [this.articleId()!] });
 

@@ -1,12 +1,12 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
-import { isASearchRoute } from '../app.routes';
-import { searchInputStore } from '../stores/search-input.store';
-import { RecentSearch, UserSettings } from '../types/articles/user-settings';
-import { NavigationService } from './navigation.service';
-import { getQueryTextFromUrl } from './query.service';
-import { UserSettingsService } from './user-settings.service';
+
+import { isASearchRoute } from '@/app/app.routes';
+import { NavigationService, UserSettingsService } from '@/app/services';
+import { searchInputStore } from '@/app/stores';
+import { RecentSearch, UserSettings } from '@/app/types';
+import { getQueryTextFromUrl } from '@/app/utils';
 
 const RECENT_SEARCHES_MAX_STORAGE = 50;
 

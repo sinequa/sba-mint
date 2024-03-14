@@ -1,18 +1,16 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
+import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { filtersStore } from '@/app/stores/filters.store';
-import { translateFiltersToApiFilters } from '@/app/utils';
+import { aggregationsStore } from '@/app/stores';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
-
-import { isASearchRoute } from '../app.routes';
-import { buildQuery } from './query.service';
+import { queryParamsStore } from '../stores/query-params.store';
 
 export type SearchOptions = {
   appendFilters?: boolean;
@@ -27,7 +25,6 @@ type QueryParams = {
 })
 export class SearchService implements OnDestroy {
   private readonly router = inject(Router);
-  route = inject(ActivatedRoute);
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
 
@@ -43,7 +40,7 @@ export class SearchService implements OnDestroy {
         this.navigationService.navigationEnd$
       ]).pipe(
         filter(([aggregations, routerEvent]) => !!aggregations && isASearchRoute(routerEvent.url)),
-        switchMap(() => this.getResult(filtersStore.state ?? []))
+        switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
       ).subscribe((result: Result) => {
         this._result.next(result);
       })
@@ -57,8 +54,8 @@ export class SearchService implements OnDestroy {
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
 
-    if (options?.appendFilters && (filtersStore.state || [])?.length > 0)
-      queryParams['f'] = JSON.stringify(filtersStore.state);
+    if (options?.appendFilters && (queryParamsStore.state?.filters || [])?.length > 0)
+      queryParams['f'] = JSON.stringify(queryParamsStore.state?.filters);
     else queryParams['f'] = undefined;
 
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
