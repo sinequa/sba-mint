@@ -1,7 +1,6 @@
 import { Directive, HostListener, inject, input } from '@angular/core';
 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { SelectionService } from '@/app/services';
 import { Article } from "@/app/types/articles";
 
 export type SelectionStrategy = 'replace' | 'stack';
@@ -30,5 +29,4 @@ export class SelectArticleOnClickDirective {
   }
 
   private readonly drawerStack = inject(DrawerStackService);
-  private readonly selection = inject(SelectionService);
 }

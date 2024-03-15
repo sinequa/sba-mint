@@ -12,7 +12,7 @@ export class SelectionStore extends Store<Article | Partial<Article> | undefined
   public override clear(): void {
     super.clear();
 
-    queryParamsStore.set({ id: undefined });
+    queryParamsStore.patch({ id: undefined });
   }
 }
 

@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, distinctUntilChanged, map, merge, switchMap, take } from 'rxjs';
+import { Subscription, distinctUntilChanged, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -13,7 +13,7 @@ import { NavigationService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { Article } from "@/app/types/articles";
-import { buildFirstPageQuery } from '@/app/utils';
+import { QueryParams, buildFirstPageQuery } from '@/app/utils';
 
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
@@ -73,15 +73,34 @@ export class SearchAllComponent implements OnInit, OnDestroy {
 
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(
-      merge(
-        searchInputStore.next$.pipe(distinctUntilChanged()),
-        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? []))
-      ).subscribe(() => this.articles.set(undefined))
+      queryParamsStore.current$
+        .pipe(distinctUntilChanged((a, b) => this.areSearchQueryParamsEquals(a, b)))
+        .subscribe(() => this.articles.set(undefined))
     );
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
     aggregationsStore.clear();
+  }
+
+  /**
+   * Returns whether the search `QueryParams` are equals according to:
+   * - `path`
+   * - `text`
+   * - `filters`
+   * 
+   * @param previous Previous state of the search `QueryParams`
+   * @param current Current state of the search `QueryParams`
+   * @returns `true` if the search `QueryParams` are equals according to
+   * criteria, `false` otherwise
+   */
+  private areSearchQueryParamsEquals(previous: QueryParams | undefined, current: QueryParams | undefined): boolean {
+    if (previous === current) return true;
+
+    const prev = JSON.stringify({ path: previous?.path, text: previous?.text, filters: previous?.filters ?? [] });
+    const curr = JSON.stringify({ path: current?.path, text: current?.text, filters: current?.filters ?? [] });
+
+    return prev === curr;
   }
 }
