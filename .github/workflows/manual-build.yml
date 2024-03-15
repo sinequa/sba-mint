@@ -25,6 +25,7 @@ jobs:
           ((Get-Content -Path .\.gitignore -Raw) -replace '/dist','') | Set-Content -Path .\.gitignore
           ((Add-Content -Path .\.gitignore "`n.npmrc"))
           ((Add-Content -Path .\.gitignore "`nnpmrc.dl"))
+          git rm -r --cached .
           git add .
           git commit -m 'Build Process GitIgnore Update'
       - name: Run Powershell
