@@ -1,4 +1,8 @@
-<div class="grow px-2 flex gap-2 items-center rounded-s rounded-e-none bg-gray-50">
+<div
+  cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin"
+  class="grow px-2 flex gap-2 items-center rounded-s rounded-e-none bg-gray-50"
+  >
+
   @if (showSave() && input() !== '') {
   <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
     [ngClass]="{ 'animate-save': saveAnimation() }">
@@ -6,9 +10,16 @@
   </button>
   }
 
-  <input type="search" class="grow focus:outline-none bg-gray-50" aria-label="Search here"
-    placeholder="Search by keyword or ask something" [ngModel]="input()" (ngModelChange)="input.set($event)"
-    (keydown.enter)="emitText()" />
+  <input type="search"
+    id="serach-navbar"
+    class="grow focus:outline-none bg-gray-50"
+    aria-label="Search here"
+    placeholder="Search by keyword or ask something"
+    [ngModel]="input()"
+    (ngModelChange)="input.set($event)"
+    (keydown.enter)="emitText()"
+    (click)="overlayOpen.set(true)"
+    />
 
   @if (input() !== '') {
   <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
@@ -21,3 +32,14 @@
   [disabled]="input() === oldInput" (click)="emitText()">
   <i class="fa-fw far fa-magnifying-glass"></i>
 </button>
+
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="overlayPosition"
+  [cdkConnectedOverlayOpen]="overlayOpen()"
+  (overlayOutsideClick)="overlayOpen.set(false)">
+  <div [style.width.px]="overlayPosition.elementRef.nativeElement.getBoundingClientRect().width">
+    <ng-content></ng-content>
+  </div>
+</ng-template>

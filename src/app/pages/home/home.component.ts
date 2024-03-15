@@ -10,6 +10,7 @@ import { RecentSearchesComponent } from '@/app/components/recent-searches/recent
 import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { queryParamsStore } from '@/app/stores/query-params.store';
+import { SearchOverlayComponent } from "@/app/components/overlay/search-overlay.component";
 
 type HomeTab = {
   iconClass: string;
@@ -19,11 +20,11 @@ type HomeTab = {
 }
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+    selector: 'app-home',
+    standalone: true,
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss',
+    imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, SearchOverlayComponent]
 })
 export class HomeComponent implements OnInit {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
