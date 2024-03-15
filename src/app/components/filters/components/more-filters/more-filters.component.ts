@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Injector, OnDestroy, Output, QueryList, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, map, tap } from 'rxjs';
+import { Subscription, map } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
@@ -41,7 +41,6 @@ export class MoreFiltersComponent implements OnDestroy {
     this.subscriptions.add(
       aggregationsStore.next$
         .pipe(
-          tap(() => "TRIGGERED"),
           map((aggregations: Aggregation[] | undefined) => aggregations?.filter(a => AUTHORIZED_MORE_FILTERS.includes(a.column)) ?? []),
           map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_MORE_FILTERS.indexOf(a.column) - AUTHORIZED_MORE_FILTERS.indexOf(b.column)))
         )
