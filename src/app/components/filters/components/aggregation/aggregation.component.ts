@@ -3,10 +3,10 @@ import { Component, EventEmitter, Injector, OnInit, Output, inject, input, runIn
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AggregationEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
+import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./components/aggregation-row.component";
-import { buildQuery } from '@/app/utils';
 
 
 
@@ -81,7 +81,7 @@ export class AggregationComponent implements OnInit {
       // TODO: implement
       return false;
     }
-    return this.aggregation().items.some(item => item.$selected);
+    return !!(this.aggregation().items?.some(item => item.$selected));
   }
 
   private getFilters(): string[] {

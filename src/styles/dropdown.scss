@@ -40,6 +40,10 @@
   .dropdown:focus-within .dropdown-content {
     @apply visible opacity-100;
   }
+  /** Don't show dropdown content if the button is disabled */
+  .dropdown:has(button:disabled):focus-within .dropdown-content {
+    @apply invisible opacity-0;
+  }
   @media (hover: hover) {
     .dropdown.dropdown-hover:hover .dropdown-content {
       @apply visible opacity-100;
