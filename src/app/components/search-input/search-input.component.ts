@@ -1,15 +1,18 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, input, signal } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { Subscription, debounceTime, filter } from 'rxjs';
+
+import { SearchBarService } from '../overlay/search-bar.service';
 
 const DEBOUNCE_DELAY = 300;
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule],
+  imports: [NgClass, FormsModule, OverlayModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss'
 })
@@ -25,6 +28,9 @@ export class SearchInputComponent implements OnDestroy {
 
   protected saveAnimation = signal<boolean>(false);
   protected oldInput: string = this.input();
+
+  protected readonly searchBarService = inject(SearchBarService);
+  protected overlayOpen = this.searchBarService.overlayOpen;
 
   private readonly _subscription = new Subscription();
 

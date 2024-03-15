@@ -7,8 +7,10 @@ import { AsyncPipe } from '@angular/common';
 import { Component, HostBinding, ViewChild, effect, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { SearchOverlayComponent } from "../overlay/search-overlay.component";
 
 type NavbarMenu = {
   label: string;
@@ -22,11 +24,11 @@ type NavbarTab = {
 }
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  imports: [AsyncPipe, RouterModule, SearchInputComponent],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+    selector: 'app-navbar',
+    standalone: true,
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
+    imports: [AsyncPipe, RouterModule, SearchInputComponent, SearchOverlayComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
