@@ -8,13 +8,14 @@ import { appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyIntercepto
 
 import { routes } from '@/app/app.routes';
 import { SearchInputService } from '@/app/components/search-input/search-input.service';
-import { QueryParamsService, RecentSearchesService, UserSettingsService } from '@/app/services';
+import { AppService, QueryParamsService, RecentSearchesService, UserSettingsService } from '@/app/services';
 import { eagerProvider } from '@/app/utils';
 
 registerLocaleData(localeFr);
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    eagerProvider(AppService),
     eagerProvider(UserSettingsService),
     eagerProvider(QueryParamsService),
     eagerProvider(SearchInputService),

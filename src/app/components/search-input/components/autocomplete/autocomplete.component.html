@@ -1,0 +1,27 @@
+<div class="z-10 bg-white rounded-lg shadow-md mt-2 max-h-[30vh] overflow-auto">
+  <ng-container *ngIf="items$ | async as items">
+    <ul class="text-sm text-gray-700 data-list-xs" aria-labelledby="dropdownDefaultButton">
+      @for(item of items; track $index) {
+        @if (item.$isDivider) {
+          <li class="relative before:border-t before:border-gray-300 before:absolute before:top-0 before:inset-x-2">
+          </li>
+        } @else {
+        <li class="flex data-list-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
+          @switch (item.category) {
+            @case('recent-search') { <i class="fa-fw far fa-clock-rotate-left"></i> }
+            @case('saved-search') { <i class="fa-fw far fa-star"></i> }
+            @case('bookmark') { <i class="fa-fw far fa-bookmark"></i> }
+            @case('full-text') { <i class="fa-fw far fa-magnifying-glass"></i> }
+            @case('title') { <i class="fa-fw far fa-file"></i> }
+            @case('concepts') { <i class="fa-fw far fa-lightbulb"></i> }
+            @case('people') { <i class="fa-fw far fa-user-circle"></i> }
+          }
+          <p>
+            {{ item.display }}
+          </p>
+        </li>
+        }
+      }
+    </ul>
+  </ng-container>
+</div>
