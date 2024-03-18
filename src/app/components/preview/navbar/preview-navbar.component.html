@@ -78,8 +78,14 @@
       class="btn btn-primary flex gap-2 items-center text-nowrap"
       (click)="drawerStack.extend()"
     >
-      <i class="fa-fw far fa-magnifying-glass"></i>
-      Search in document
+      @if(drawerService.isExtended()) {
+        <i class="fa-fw fas fa-eye-slash"></i>
+        Hide search
+      }
+      @else {
+        <i class="fa-fw fas fa-eye"></i>
+        Search in document
+      }
     </button>
   </li>
   }
