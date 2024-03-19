@@ -1,7 +1,7 @@
 import { Injectable, Injector, inject, signal } from '@angular/core';
-import { Observable, forkJoin, from, map, of } from 'rxjs';
+import { Observable, forkJoin, from, of } from 'rxjs';
 
-import { CCWebService, Suggestion, post } from '@sinequa/atomic';
+import { CCWebService, Suggestion, fetchSuggest } from '@sinequa/atomic';
 
 import { appStore, userSettingsStore } from '@/app/stores';
 
@@ -40,17 +40,7 @@ export class AutocompleteService {
 
     const queries = (appStore.getWebServiceByType('Autocomplete') as AutocompleteWebService)?.suggestQueries?.split(',') ?? [];
     const obss = queries.reduce((acc, curr) => {
-      acc.push(
-        from(
-          post('search.suggest', {
-            app: appStore.state?.name,
-            suggestionQuery: curr,
-            text: text
-          }) as Promise<Response>
-        ).pipe(
-          map((response) => response.suggests)
-        )
-      );
+      acc.push(from(fetchSuggest(curr, text)));
       return acc;
     }, [] as Observable<Suggestion[]>[]);
 
