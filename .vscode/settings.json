@@ -2,5 +2,6 @@
   "files.associations": {
     "*.scss": "tailwindcss",
     "*.css": "tailwindcss"
-  }
+  },
+  "github-enterprise.uri": "https://github.sinequa.com"
 }

@@ -4,13 +4,14 @@ import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe } from '@angular/common';
-import { Component, HostBinding, ViewChild, effect, inject } from '@angular/core';
+import { Component, HostBinding, ViewChild, effect, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
+import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { SearchOverlayComponent } from "../overlay/search-overlay.component";
 
 type NavbarMenu = {
   label: string;
@@ -24,17 +25,19 @@ type NavbarTab = {
 }
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
-    imports: [AsyncPipe, RouterModule, SearchInputComponent, SearchOverlayComponent]
+  selector: 'app-navbar',
+  standalone: true,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
+  imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
   @ViewChild(SearchInputComponent, { static: true }) public readonly searchInput: SearchInputComponent;
+
+  protected readonly searchText = signal<string>('');
 
   protected readonly menus: NavbarMenu[] = [
     { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left' },
@@ -56,6 +59,7 @@ export class NavbarComponent {
   private readonly drawerStack = inject(DrawerStackService);
   private readonly searchService = inject(SearchService);
   private readonly savedSearchesService = inject(SavedSearchesService);
+  readonly autocompleteService = inject(AutocompleteService);
 
   private readonly subscriptions = new Subscription();
 
@@ -71,6 +75,26 @@ export class NavbarComponent {
     );
   }
 
+  autocompleteItemClicked(item: Suggestion): void {
+    if (!item.display) {
+      console.error('No display property found on item', item);
+      return;
+    }
+
+    this.autocompleteService.opened.set(false);
+
+    this.search(item.display!);
+  }
+
+  protected search(text: string): void {
+    const commands = isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
+
+    searchInputStore.set(text);
+
+    this.router.navigate(commands, { queryParams: { q: searchInputStore.state }, queryParamsHandling: 'merge' });
+
+  }
+
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
     this.searchService.search([tab.routerLink]);
@@ -83,21 +107,7 @@ export class NavbarComponent {
    * @param text The validated text
    */
   protected validated(text: string): void {
-    console.log('validated', text);
-
-    const commands = isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
-
-    searchInputStore.set(text);
-
-    this.router.navigate(commands, { queryParams: { q: searchInputStore.state }, queryParamsHandling: 'merge' });
-  }
-
-  /**
-   * Occurs when the search input is updated by the user
-   * @param text The updated text
-   */
-  protected updated(text: string): void {
-    console.log('updated', text);
+    this.search(text);
   }
 
   /**
@@ -105,7 +115,7 @@ export class NavbarComponent {
    * @param text The debounced text
    */
   protected debounced(text: string): void {
-    console.log('debounced', text);
+    this.searchText.set(text);
   }
 
   /**

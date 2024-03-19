@@ -64,7 +64,7 @@ export class RecentSearchesService implements OnDestroy {
 
     // Save only the hash part of the URL with the #
     if (currentSearch === undefined)
-      currentSearch = { url: window.location.hash.substring(1), date: new Date().toISOString() };
+      currentSearch = { url: window.location.hash.substring(1), date: new Date().toISOString(), display: searchInputStore.state };
 
     recentSearches.unshift(currentSearch);
 

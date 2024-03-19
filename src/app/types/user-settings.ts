@@ -10,8 +10,8 @@ export type Bookmark = {
   parentFolder?: string;
   parentFolderIconClass?: string;
 };
-export type RecentSearch = { url: string, date: string };
-export type SavedSearch = { url: string, date: string };
+export type RecentSearch = { url: string, date: string, display: string };
+export type SavedSearch = { url: string, date: string, display: string };
 
 export type UserSettings = UserSettingsBase & {
   bookmarks?: Bookmark[],

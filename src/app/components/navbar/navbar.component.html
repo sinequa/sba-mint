@@ -3,9 +3,9 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-  <app-search-input class="flex grow" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)" (updated)="updated($event)"
+  <app-search-input class="flex grow" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)"
     (debounced)="debounced($event)">
-    <app-search-overlay />
+    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
   </app-search-input>
 </div>
 
