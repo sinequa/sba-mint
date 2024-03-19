@@ -5,12 +5,6 @@ import { CCWebService, Suggestion, fetchSuggest } from '@sinequa/atomic';
 
 import { appStore, userSettingsStore } from '@/app/stores';
 
-type Response = {
-  methodresult: string;
-  status: string;
-  suggests: Suggestion[];
-}
-
 type AutocompleteWebService = CCWebService & {
   allowedWithAnySBA?: boolean,
   revision?: number,
