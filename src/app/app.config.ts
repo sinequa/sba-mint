@@ -7,22 +7,18 @@ import { provideRouter, withComponentInputBinding, withHashLocation } from '@ang
 import { appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 
 import { routes } from '@/app/app.routes';
-import { SearchInputService } from '@/app/components/search-input/search-input.service';
-import { AppService, QueryParamsService, RecentSearchesService, UserSettingsService } from '@/app/services';
-import { eagerProvider } from '@/app/utils';
+import { SearchInputService } from './components/search-input/search-input.service';
+import { eagerProvider } from './utils';
 
 registerLocaleData(localeFr);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    eagerProvider(AppService),
-    eagerProvider(UserSettingsService),
-    eagerProvider(QueryParamsService),
-    eagerProvider(SearchInputService),
-    eagerProvider(RecentSearchesService),
+    // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
+    eagerProvider(SearchInputService),
     provideHttpClient(withInterceptors([
       bodyInterceptorFn,
       authInterceptorFn,

@@ -1,5 +1,3 @@
-import { UserSettings as UserSettingsBase } from "@sinequa/atomic";
-
 export type Bookmark = {
   id: string,
   queryName?: string;
@@ -13,8 +11,8 @@ export type Bookmark = {
 export type RecentSearch = { url: string, date: string, display: string };
 export type SavedSearch = { url: string, date: string, display: string };
 
-export type UserSettings = UserSettingsBase & {
-  bookmarks?: Bookmark[],
-  recentSearches?: RecentSearch[],
-  savedSearches?: SavedSearch[]
+export type UserSettings = {
+  bookmarks: Bookmark[],
+  recentSearches: RecentSearch[],
+  savedSearches: SavedSearch[]
 };

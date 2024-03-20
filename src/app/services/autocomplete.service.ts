@@ -3,7 +3,8 @@ import { Observable, forkJoin, from, of } from 'rxjs';
 
 import { CCWebService, Suggestion, fetchSuggest } from '@sinequa/atomic';
 
-import { appStore, userSettingsStore } from '@/app/stores';
+import { UserSettingsStore, appStore } from '@/app/stores';
+import { getState } from '@ngrx/signals';
 
 type AutocompleteWebService = CCWebService & {
   allowedWithAnySBA?: boolean,
@@ -20,10 +21,12 @@ export class AutocompleteService {
 
   readonly injector = inject(Injector)
 
+  userSettingsStore = inject(UserSettingsStore);
+
   /**
    * Retrieves autocomplete items for the given text, max count for each
    * category handled by the service can be specified in the admin
-   * 
+   *
    * @param text Text to retrieve autocomplete items for
    * @returns An observable of an array of {@link Suggestion} arrays grouped by
    * suggestion queries configured in the admin
@@ -43,14 +46,14 @@ export class AutocompleteService {
 
   /**
    * Retrieves autocomplete items for the given text from the user settings
-   * 
+   *
    * @param text Text to retrieve autocomplete items for
    * @param maxCount Maximum number of items to retrieve
    * @returns An observable of an array of {@link Suggestion} arrays grouped by
    * `recent-searches`, `saved-searches`, `bookmarks` from the user settings
    */
   getFromUserSettingsForText(text: string, maxCount?: number): Observable<Suggestion[]> {
-    const { bookmarks, recentSearches, savedSearches } = userSettingsStore.state || {};
+    const { bookmarks, recentSearches, savedSearches } = getState(this.userSettingsStore);
     const items: Suggestion[] = [];
 
     if (recentSearches) {

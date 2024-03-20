@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnInit, inject, input, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { TreepathToIconClassPipe } from '@/app/pipes';
@@ -8,9 +8,8 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 import { StopPropagationDirective } from 'toolkit';
 
 import { BookmarksService } from '@/app/services/bookmarks.service';
-import { userSettingsStore } from '@/app/stores/user-settings.store';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { combineLatest, filter, map } from 'rxjs';
+import { UserSettingsStore } from '@/app/stores';
+import { getState } from '@ngrx/signals';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
@@ -30,20 +29,18 @@ export class ArticleDefaultComponent implements OnInit {
   public readonly article = input<Partial<Article> | undefined>();
   public readonly strategy = input<SelectionStrategy>();
 
+  bookmarksService = inject(BookmarksService);
+  userSettingsStore = inject(UserSettingsStore);
+
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';
-  protected isBookmarked = combineLatest([
-    userSettingsStore.current$,
-    toObservable(this.article)
-      .pipe(
-        filter((article) => !!article)
-      )
-  ]).pipe(
-    map(([userSettings, article]) => {
-      if (!userSettings || !article) return false;
-      return userSettings.bookmarks?.find((bookmark) => bookmark.id === article.id);
-    })
-  );
+  protected isBookmarked = computed(() => {
+    const { bookmarks } = getState(this.userSettingsStore);
+    const article = this.article();
+
+    if (!article) return false;
+    return bookmarks?.find((bookmark) => bookmark.id === article.id);
+  })
 
   protected attachments: Partial<Article>[] = [
     { value: 'X-1', type: 'default' },
@@ -58,8 +55,6 @@ export class ArticleDefaultComponent implements OnInit {
     { value: 'X-4', type: 'default' },
     { value: 'X-5', type: 'default' }
   ]
-
-  private readonly bookmarksService = inject(BookmarksService);
 
   ngOnInit(): void {
     if (!this.article()) return;
