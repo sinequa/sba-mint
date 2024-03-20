@@ -7,10 +7,11 @@ import { Subscription, combineLatest, map, tap } from 'rxjs';
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-import { AggregationEx, AggregationListItem, AggregationsService, CustomizationService, SearchService } from '@/app/services';
+import { AggregationEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { Filter } from '@/app/utils/models';
 
+import { appStore } from '@/app/stores';
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { buildQuery } from '@/app/utils';
 import { AggregationComponent } from './components/aggregation/aggregation.component';
@@ -30,7 +31,6 @@ const AUTHORIZED_FILTERS = ['treepath', 'geo', 'person', 'doctype', 'authors', '
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) public aggregations!: AggregationComponent[];
 
-  private readonly customizationService = inject(CustomizationService);
   aggregationsService = inject(AggregationsService);
 
   private readonly searchService = inject(SearchService);
@@ -140,7 +140,7 @@ export class FiltersComponent implements OnInit {
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = aggregations
       .map((aggregation: Aggregation) => {
-        const itemCustomizations = this.customizationService.getAggregationItemsCustomization(aggregation.column);
+        const itemCustomizations = appStore.getAggregationItemsCustomization(aggregation.column);
 
         const f = queryParamsStore.getFilterFromColumn(aggregation.column);
 
@@ -157,7 +157,7 @@ export class FiltersComponent implements OnInit {
         return ({
           label: aggregation.name,
           aggregation: aggregation,
-          iconClass: this.customizationService.getAggregationIconClass(aggregation.column),
+          iconClass: appStore.getAggregationIconClass(aggregation.column),
           currentFilter: f?.label,
           moreFiltersCount: more,
         })
