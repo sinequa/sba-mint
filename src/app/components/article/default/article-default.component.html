@@ -66,11 +66,14 @@
           <img src="https://placehold.co/20" alt="" class="rounded-full" />
         </button>
 
-        <button (click)="toggleTab('similars')" stkStopPropagation class="btn btn-ghost flex gap-4 items-center">
-          <img src="https://placehold.co/20" alt="" class="rounded-full" />
-          Similar documents
-          <img src="https://placehold.co/20" alt="" class="rounded-full" />
+        @if ((article()?.queryDuplicates?.length || 0) > 0) {
+        <button (click)="toggleTab('similars')" stkStopPropagation class="btn btn-ghost flex gap-1 items-baseline">
+          <i class="fa-fw fa-regular fa-files"></i>
+          {{ article()?.queryDuplicates?.length }} similar(s) document(s)
+          <i class="fa-fw fa-regular fa-chevron-down"
+            [ngClass]="{'rotate-180': currentTab === 'similars' && showTab()}"></i>
         </button>
+        }
       </menu>
 
       <div class="tab-container overflow-auto" [ngClass]="{ expanded: showTab() === true }">
@@ -82,11 +85,11 @@
           </li>
           }
         </ul>
-        } @else if (currentTab === 'similars') {
-        <ul class="mt-2 border-l-2 border-blue-400">
-          @for (similar of similars; track $index) {
+        } @else if (currentTab === 'similars' && (article()?.queryDuplicates?.length || 0) > 0) {
+        <ul class="mt-2 border-l-2 border-blue-400 similar-documents">
+          @for (similar of article()!.queryDuplicates; track $index) {
           <li>
-            <app-article-default-light [article]="similar" stkStopPropagation class="border-none" />
+            <app-article-default-light [article]="similar" stkStopPropagation class="border-none p-0" />
           </li>
           }
         </ul>

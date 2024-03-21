@@ -1,6 +1,6 @@
 import { Article as A } from "@sinequa/atomic";
-import { ArticleType } from "./ArticleType";
 import { ArticleMetadata } from "./ArticleMetadata";
+import { ArticleType } from "./ArticleType";
 
 
 export interface Article extends A {
@@ -10,4 +10,5 @@ export interface Article extends A {
   geo?: ArticleMetadata[];
   company?: ArticleMetadata[];
   person?: ArticleMetadata[];
+  queryDuplicates?: Article[];
 }
