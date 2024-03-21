@@ -1,19 +1,21 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, combineLatest, map, tap } from 'rxjs';
+import { getState } from '@ngrx/signals';
+import { Subscription, map } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
 import { Filter } from '@/app/utils/models';
 
 import { appStore } from '@/app/stores';
-import { queryParamsStore } from '@/app/stores/query-params.store';
+import { queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
+import { AggregationsStore } from '@/stores';
+
 import { AggregationComponent } from './components/aggregation/aggregation.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
@@ -35,6 +37,7 @@ export class FiltersComponent implements OnInit {
 
   private readonly searchService = inject(SearchService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly aggregationsStore = inject(AggregationsStore);
 
   protected readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
   protected readonly moreFiltersCount = signal<number>(0);
@@ -48,27 +51,20 @@ export class FiltersComponent implements OnInit {
   private readonly injector = inject(Injector);
 
   constructor() {
-    this.subscriptions.add(
-      combineLatest([
-        aggregationsStore.next$,
-        queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])),
-      ])
-        .pipe(
-          map(([aggregations,]) => {
-            return aggregations;
-          }),
-          tap((aggregations) => this.dateFilterDropdown.set({
-            label: 'Date',
-            aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
-            iconClass: 'far fa-calendar-day'
-          })),
-          map((aggregations: Aggregation[] | undefined) => aggregations?.filter(a => AUTHORIZED_FILTERS.includes(a.column)) ?? []),
-          map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column))),
-        )
-        .subscribe((aggregations) => {
-          this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations ?? []))
-        })
-    );
+    effect(() => {
+      const { aggregations } = getState(this.aggregationsStore);
+
+      this.dateFilterDropdown.set({
+        label: 'Date',
+        aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
+        iconClass: 'far fa-calendar-day'
+      })
+
+      this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations
+        .filter(a => AUTHORIZED_FILTERS.includes(a.column))
+        .sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column))
+      ));
+    }, { allowSignalWrites: true })
   }
 
   ngOnInit(): void {

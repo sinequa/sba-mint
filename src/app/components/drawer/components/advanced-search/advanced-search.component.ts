@@ -10,8 +10,8 @@ import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
 import { selectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { Extract } from '@/stores/app.state';
-import { AppStore } from '@/stores/app.store';
+import { ApplicationStore, Extract } from '@/stores';
+
 import { PanelDirective } from 'toolkit';
 
 @Component({
@@ -27,7 +27,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
 
   extracts = signal<Extract[]>([]);
-  store = inject(AppStore);
+  store = inject(ApplicationStore);
   cdr = inject(ChangeDetectorRef);
 
   readonly article = input<Partial<Article> | undefined>();

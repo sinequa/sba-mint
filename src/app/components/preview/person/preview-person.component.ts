@@ -1,5 +1,6 @@
 import { Component, Injector, OnDestroy, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { getState } from '@ngrx/signals';
 import { EMPTY, Observable, Subscription, map, switchMap } from 'rxjs';
 
 import { Filter, Result } from '@sinequa/atomic';
@@ -9,11 +10,11 @@ import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/d
 import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
 import { MockDataService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+import { AggregationsStore } from '@/stores';
 
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
@@ -33,6 +34,7 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
   protected readonly ims = computed(() => getPersonIms(this.person()));
 
   private readonly queryService = inject(QueryService);
+  private readonly aggregationsStore = inject(AggregationsStore);
 
   private readonly person$ = toObservable(this.person);
   private readonly recentContributions$ = this.person$.pipe(
@@ -64,7 +66,8 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
 
     if (!query) return EMPTY;
 
-    query.filters = translateFiltersToApiFilters(filters, aggregationsStore.state) as Filter;
+    const { aggregations } = getState(this.aggregationsStore);
+    query.filters = translateFiltersToApiFilters(filters, aggregations) as Filter;
 
     return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query)));
   }
@@ -74,7 +77,8 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
 
     if (!query) return EMPTY;
 
-    query.filters = translateFiltersToApiFilters(filters, aggregationsStore.state) as Filter;
+    const { aggregations } = getState(this.aggregationsStore);
+    query.filters = translateFiltersToApiFilters(filters, aggregations) as Filter;
 
     return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query)));
   }
