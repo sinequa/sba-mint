@@ -1,4 +1,4 @@
-import { DatePipe, SlicePipe } from '@angular/common';
+import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -20,7 +20,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [DatePipe, SlicePipe, SplitPipe, TreepathToIconClassPipe, PreviewNavbarComponent, WpsAuthorComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, TreepathToIconClassPipe, PreviewNavbarComponent, WpsAuthorComponent],
   templateUrl: './preview-default.component.html',
   styleUrl: './preview-default.component.scss'
 })
@@ -37,6 +37,8 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
   public readonly previewUrl = signal<SafeUrl | undefined>(undefined);
 
   public readonly labels = inject(MockDataService).labels;
+
+  readonly headerCollapsed = signal<boolean>(false);
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
