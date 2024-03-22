@@ -1,17 +1,18 @@
 
 
 import { Store } from '@/app/stores';
-import { QueryParams, getFiltersFromUrl, getIdFromUrl, getQueryTextFromUrl } from '@/app/utils';
+import { QueryParams, queryParamsFromUrl } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 
 export class QueryParamsStore extends Store<QueryParams> {
   public setFromUrl(url: string): void {
     const path = url.split('?')[0];
-    const text = getQueryTextFromUrl(url);
-    const filters = getFiltersFromUrl(url);
-    const id = getIdFromUrl(url);
 
-    this.set({ path, text, filters, id });
+    const { q: text, f, id, p } = queryParamsFromUrl(url);
+    const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
+    const page = parseInt(p, 10);
+
+    this.set({ path, text, filters, id, page });
   }
 
   public updateFilter(filter: Filter): void {
