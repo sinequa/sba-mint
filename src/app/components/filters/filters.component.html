@@ -19,8 +19,8 @@
       class="btn btn-sm flex gap-1 items-baseline"
       [ngClass]="{ 'btn-primary': dateFilterDropdown()?.currentFilter }"
       >
-      @if (dateFilterDropdown()?.iconClass) {
-        <i class="fa-fw {{ dateFilterDropdown()?.iconClass }}"></i>
+      @if (dateFilterDropdown()?.icon) {
+        <i class="fa-fw {{ dateFilterDropdown()?.icon }}"></i>
       }
       <span>{{ dateFilterDropdown()?.currentFilter || dateFilterDropdown()?.label }}</span>
     </div>
@@ -30,7 +30,7 @@
       [column]="dateFilterDropdown()?.aggregation?.column || ''"
       [title]="{
         label: dateFilterDropdown()?.label || '',
-        iconClass: dateFilterDropdown()?.iconClass
+        icon: dateFilterDropdown()?.icon
       }"
       (refreshed)="dateFilterRefreshed($event)"
       (updated)="dateFilterUpdated($event)"
@@ -46,8 +46,8 @@
         [ngClass]="{
           'btn-primary': filterDropdown.currentFilter
         }">
-        @if (filterDropdown.iconClass) {
-          <i class="fa-fw {{ filterDropdown.iconClass }}"></i>
+        @if (filterDropdown.icon) {
+          <i class="fa-fw {{ filterDropdown.icon }}"></i>
         }
         <span>{{ filterDropdown.currentFilter || filterDropdown.label }}</span>
 
@@ -64,7 +64,7 @@
         [aggregation]="filterDropdown.aggregation"
         [title]="{
           label: filterDropdown.label,
-          iconClass: filterDropdown.iconClass
+          icon: filterDropdown.icon
         }"
         (onFiltersChanges)="filterUpdated($event, $index)"
         (onLoadMore)="loadMore(filterDropdown.aggregation, $index)"

@@ -20,17 +20,19 @@
     [checked]="item().$selected"
   />
 
-  @if (item().iconClass) {
-    <i class="fa-fw {{ item().iconClass }} self-center justify-self-center"></i>
+  @if (item().icon) {
+    <i class="fa-fw {{ item().icon }} self-center justify-self-center"></i>
   }
+
   {{ item().display || item().value }}
 </label>
-  @if($any(item()).hasChildren) {
-    @for(item of $any(item()).items; track $index) {
-      <app-aggregation-row class="ps-4"
-        [aggregation]="aggregation()"
-        [item]="item"
-        (onOpen)="onOpen.emit($event)"
-        (onSelect)="onSelect.emit($event)" />
-    }
+
+@if($any(item()).hasChildren) {
+  @for(item of $any(item()).items; track $index) {
+    <app-aggregation-row class="ps-4"
+      [aggregation]="aggregation()"
+      [item]="item"
+      (onOpen)="onOpen.emit($event)"
+      (onSelect)="onSelect.emit($event)" />
   }
+}

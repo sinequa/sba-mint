@@ -133,7 +133,7 @@ export class MoreFiltersComponent implements OnDestroy {
         label: aggregation.name,
         aggregation: aggregation,
         column: aggregation.column,
-        iconClass: appStore.getAggregationIconClass(aggregation.column),
+        icon: appStore.getAggregationIcon(aggregation.column),
         moreFiltersCount: count
       })
     });

@@ -11,8 +11,7 @@ import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 import { AggregationEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
-import { appStore } from '@/app/stores';
-import { queryParamsStore } from '@/app/stores';
+import { appStore, queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
@@ -57,7 +56,7 @@ export class FiltersComponent implements OnInit {
       this.dateFilterDropdown.set({
         label: 'Date',
         aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
-        iconClass: 'far fa-calendar-day'
+        icon: 'far fa-calendar-day'
       })
 
       this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations
@@ -142,7 +141,7 @@ export class FiltersComponent implements OnInit {
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.iconClass = itemCustomizations?.find(it => it.value === item.value)?.iconClass;
+          item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
         });
 
         return aggregation;
@@ -153,7 +152,7 @@ export class FiltersComponent implements OnInit {
         return ({
           label: aggregation.name,
           aggregation: aggregation,
-          iconClass: appStore.getAggregationIconClass(aggregation.column),
+          icon: appStore.getAggregationIcon(aggregation.column),
           currentFilter: f?.label,
           moreFiltersCount: more,
         })

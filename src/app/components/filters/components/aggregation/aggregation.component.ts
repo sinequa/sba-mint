@@ -8,11 +8,9 @@ import { Filter } from '@/app/utils/models';
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./components/aggregation-row.component";
 
-
-
 export type AggregationTitle = {
   label: string;
-  iconClass?: string;
+  icon?: string;
 };
 
 @Component({
@@ -37,9 +35,8 @@ export class AggregationComponent implements OnInit {
   title = input<AggregationTitle>();
   aggregation = input.required<AggregationEx | AggregationTreeEx>();
 
-  aggregationsService = inject(AggregationsService);
-
-  constructor(private readonly injector: Injector) { }
+  readonly aggregationsService = inject(AggregationsService);
+  readonly injector = inject(Injector);
 
   ngOnInit(): void {
     this.hasFilter.set(this.hasFilters());
