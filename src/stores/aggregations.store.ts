@@ -1,3 +1,4 @@
+import { withDevtools } from "@angular-architects/ngrx-toolkit";
 import { getState, patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { Aggregation } from "@sinequa/atomic";
 
@@ -13,6 +14,7 @@ export const AggregationsStore = signalStore(
   // providing store at the root level
   { providedIn: 'root' },
   withState(intialState),
+  withDevtools('Aggregations'),
   withMethods((store) => ({
     update(aggregations: Aggregation[]) {
       patchState(store, (state) => {
