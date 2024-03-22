@@ -22,9 +22,7 @@ import { PanelDirective } from 'toolkit';
   styleUrl: './advanced-search.component.scss'
 })
 export class AdvancedSearchComponent implements OnDestroy {
-  @Output() public readonly close = new EventEmitter<void>();
   @Output() public readonly search = new EventEmitter<string>();
-
 
   extracts = signal<Extract[]>([]);
   store = inject(ApplicationStore);

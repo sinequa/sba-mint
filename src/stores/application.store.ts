@@ -1,6 +1,7 @@
 import { computed } from "@angular/core";
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { SafeHtml } from '@angular/platform-browser';
+import { withDevtools } from "@angular-architects/ngrx-toolkit";
 
 export type Extract = {
   id: string,
@@ -21,6 +22,7 @@ const intialState: ApplicationState = {
 export const ApplicationStore = signalStore(
   // providing store at the root level
   { providedIn: 'root' },
+  withDevtools('Application'),
   withState(intialState),
   withComputed(({extracts}) => ({
     extractsCount: computed(() => extracts().size),

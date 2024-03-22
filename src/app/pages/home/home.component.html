@@ -15,7 +15,7 @@
 
   <aside class="col-start-2 row-start-2 flex flex-col flex-wrap mt-8">
     <menu class="flex font-semibold">
-      @for (tab of tabs; track tab.label) {
+      @for (tab of tabs(); track tab.label) {
       <li>
         <button
           class="py-2 px-3 select-none border-b border-gray-200 hover:text-blue-500 hover:border-blue-500 focus:text-blue-500 focus:border-blue-500 focus:outline-none aria-selected:text-blue-500 aria-selected:border-blue-500"
@@ -34,7 +34,7 @@
       <li class="grow border-b border-gray-200"></li>
     </menu>
 
-    @for (tab of tabs; track tab.label) {
+    @for (tab of tabs(); track tab.label) {
     <div
       [ngClass]="{ hidden: selectedTabId() !== $index }"
       class="overflow-y-auto max-h-[30vh] py-4"

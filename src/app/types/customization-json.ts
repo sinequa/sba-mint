@@ -22,9 +22,21 @@ export type Autocomplete = {
   savedSearches?: number;
 }
 
+export type UserFeatures = {
+  recentSearches?: boolean;
+  savedSearches?: boolean;
+  bookmarks?: boolean;
+}
+
+export type Features = {
+  applications?: boolean;
+}
+
 // Main configuration object
 export type CustomizationJson = {
   autocomplete?: Autocomplete;
+  userFeatures?: UserFeatures;
+  features?: Features;
   //   previewMetadata?: PreviewMetadata;
   //   application?: Application;
   //   assistant?: Assistant;

@@ -17,10 +17,6 @@
         aria-label="Search" [disabled]="input() === ''" (click)="executeSearch()">
         <i class="fa-fw far fa-magnifying-glass"></i>
       </button>
-
-      <button class="btn btn-ghost" title="Close advanced search" (click)="close.emit()" (keydown.enter)="close.emit()">
-        <i class="fa-fw far fa-arrow-right"></i>
-      </button>
     </header>
 
     <ul id="panel-content" class="flex flex-col gap-6">
