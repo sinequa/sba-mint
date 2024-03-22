@@ -1,13 +1,11 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { combineLatest, filter, map } from 'rxjs';
+import { Component, EventEmitter, Input, Output, computed, inject, input } from '@angular/core';
 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { DrawerService } from '@/app/components/drawer/drawer.service';
-import { BookmarksService } from '@/app/services/bookmarks.service';
-import { userSettingsStore } from '@/app/stores/user-settings.store';
+import { UserSettingsStore } from '@/app/stores';
 import { Article } from '@/app/types/articles';
+import { getState } from '@ngrx/signals';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -37,18 +35,14 @@ export class PreviewNavbarComponent {
   protected drawerStack = inject(DrawerStackService);
   protected drawerService = inject(DrawerService);
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
-  protected isBookmarked = combineLatest([
-    userSettingsStore.current$,
-    toObservable(this.article)
-      .pipe(
-        filter((article) => !!article)
-      )
-  ]).pipe(
-    map(([userSettings, article]) => {
-      if (!userSettings || !article) return false;
-      return userSettings.bookmarks?.find((bookmark) => bookmark.id === article.id);
-    })
-  );
 
-  private readonly bookmarksService = inject(BookmarksService);
+  userSettingsStore = inject(UserSettingsStore);
+
+  protected isBookmarked =  computed(() => {
+    const { bookmarks } = getState(this.userSettingsStore);
+    const article = this.article();
+
+    if(!article) return false;
+    return bookmarks?.find((bookmark) => bookmark.id === article.id);
+  })
 }

@@ -1,10 +1,9 @@
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
-import { UserSettingsService } from '@/app/services/user-settings.service';
 import { SavedSearch as UserSettingsSavedSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { NgClass } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { StopPropagationDirective } from 'toolkit';
 
@@ -22,15 +21,15 @@ type SavedSearch = UserSettingsSavedSearch & {
   templateUrl: './saved-searches.component.html',
   styleUrl: './saved-searches.component.scss'
 })
-export class SavedSearchesComponent implements OnInit {
+export class SavedSearchesComponent {
   protected readonly savedSearches = signal<SavedSearch[]>([]);
 
   private readonly router = inject(Router);
-  private readonly userSettingsService = inject(UserSettingsService);
   private readonly savedSearchesService = inject(SavedSearchesService);
 
-  ngOnInit(): void {
-    this.savedSearchesService.getSavedSearches().then((savedSearches) => {
+  constructor() {
+    effect(() => {
+      const savedSearches = this.savedSearchesService.getSavedSearches();
       this.savedSearches.set(
         (savedSearches || []).reduce((acc, savedSearch) => {
           const queryParams = getQueryParamsFromUrl(savedSearch.url);
@@ -46,7 +45,7 @@ export class SavedSearchesComponent implements OnInit {
           return acc;
         }, [] as SavedSearch[])
       );
-    });
+    }, { allowSignalWrites: true });
   }
 
   public savedSearchClicked(savedSearch: SavedSearch): void {
@@ -66,7 +65,6 @@ export class SavedSearchesComponent implements OnInit {
     searches?.splice(index, 1);
 
     this.savedSearches.set(searches);
-
-    this.userSettingsService.patchUserSettings({ savedSearches: searches });
+    this.savedSearchesService.updateSavedSearches(searches);
   }
 }

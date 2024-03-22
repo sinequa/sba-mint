@@ -1,36 +1,33 @@
 import { Injectable, inject } from '@angular/core';
 import { searchInputStore } from '../stores/search-input.store';
 import { SavedSearch } from '../types/user-settings';
-import { UserSettingsService } from './user-settings.service';
+import { UserSettingsStore } from '../stores';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SavedSearchesService {
-  private readonly userSettingsService = inject(UserSettingsService);
+  store = inject(UserSettingsStore);
 
-  public async getSavedSearches(): Promise<SavedSearch[]> {
-    const { savedSearches } = await this.userSettingsService.getUserSettings();
-
-    if (savedSearches === undefined) {
-      this.userSettingsService.patchUserSettings({ savedSearches: [] });
-      return [];
-    }
-
-    return savedSearches;
+  public getSavedSearches(): SavedSearch[] {
+    return this.store.savedSearches()
   }
 
-  public async saveSearch(): Promise<void> {
+  public saveSearch() {
     if (!searchInputStore.state) {
       console.error('Saving empty search is not allowed');
       return;
     }
 
     const savedSearch = { url: window.location.hash.substring(1), date: new Date().toISOString(), display: searchInputStore.state };
-    const savedSearches = await this.getSavedSearches();
+    const savedSearches = this.store.savedSearches();
 
     savedSearches.unshift(savedSearch);
 
-    await this.userSettingsService.patchUserSettings({ savedSearches });
+    this.store.updateSavedSearches(savedSearches);
+  }
+
+  public updateSavedSearches(savedSearches: SavedSearch[]) {
+    this.store.updateSavedSearches(savedSearches);
   }
 }

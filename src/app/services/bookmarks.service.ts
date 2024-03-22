@@ -1,29 +1,22 @@
 import { Injectable, inject } from '@angular/core';
 import { Article } from '../types/articles';
 import { Bookmark } from '../types/user-settings';
-import { UserSettingsService } from './user-settings.service';
+import { UserSettingsStore } from '../stores';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookmarksService {
-  private readonly userSettingsService = inject(UserSettingsService);
+  store = inject(UserSettingsStore);
 
-  public async getBookmarks(): Promise<Bookmark[]> {
-    const { bookmarks } = await this.userSettingsService.getUserSettings();
-
-    if (bookmarks === undefined) {
-      this.userSettingsService.patchUserSettings({ bookmarks: [] });
-      return [];
-    }
-
-    return bookmarks;
+  public getBookmarks(): Bookmark[] {
+    return this.store.bookmarks();
   }
 
-  public async bookmark(article: Article): Promise<void> {
+  public bookmark(article: Article) {
     if (!article.id) return;
 
-    const bookmarks = await this.getBookmarks();
+    const bookmarks = this.store.bookmarks();
 
     if (bookmarks.find(b => b.id === article.id)) return;
 
@@ -35,24 +28,23 @@ export class BookmarksService {
       parentFolder: article.parentFolder
     });
 
-    this.userSettingsService.patchUserSettings({ bookmarks });
+    this.store.updateBookmarks(bookmarks);
   }
 
-  public async unbookmark(id: string): Promise<void> {
+  public unbookmark(id: string) {
     if (!id) return;
 
-    const bookmarks = await this.getBookmarks();
+    const bookmarks = this.store.bookmarks();
     const index = bookmarks?.findIndex((bookmark) => bookmark.id === id);
 
     if (index === -1) return;
 
     bookmarks.splice(index, 1);
-
-    this.userSettingsService.patchUserSettings({ bookmarks });
+    this.store.updateBookmarks(bookmarks);
   }
 
-  public async toggleBookmark(article: Bookmark | Pick<Bookmark, 'id'>): Promise<void> {
-    const isBookmarked = await this.isBookmarked(article.id);
+  public toggleBookmark(article: Bookmark | Pick<Bookmark, 'id'>) {
+    const isBookmarked = this.isBookmarked(article.id);
 
     if (isBookmarked)
       this.unbookmark(article.id);
@@ -60,15 +52,18 @@ export class BookmarksService {
       this.bookmark(article as Article);
   }
 
-  public async isBookmarked(id: string): Promise<boolean> {
-    const bookmarks = await this.getBookmarks();
+  public isBookmarked(id: string): boolean {
+    const bookmarks = this.store.bookmarks();
 
     return !!bookmarks?.find((bookmark) => bookmark.id === id);
   }
 
-  public async getBookmark(id: string): Promise<Bookmark | undefined> {
-    const bookmarks = await this.getBookmarks();
-
+  public getBookmark(id: string): Bookmark | undefined {
+    const bookmarks = this.store.bookmarks();
     return bookmarks?.find((bookmark) => bookmark.id === id);
+  }
+
+  public updateBookmarks(bookmarks: Bookmark[]) {
+    this.store.updateBookmarks(bookmarks);
   }
 }
