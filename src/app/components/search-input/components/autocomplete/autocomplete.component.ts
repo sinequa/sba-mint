@@ -6,6 +6,7 @@ import { combineLatest, filter, map, switchMap } from 'rxjs';
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
+import { appStore } from '@/app/stores';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -27,8 +28,9 @@ export class AutocompleteComponent {
 
   readonly items$ = toObservable(this.text).pipe(
     filter(text => !!text),
-    switchMap(text => combineLatest([
-      this.autocompleteService.getFromUserSettingsForText(text, 5),
+    map(text => ({ text, autocomplete: appStore.getCustomizationJson()?.autocomplete })),
+    switchMap(({ text, autocomplete }) => combineLatest([
+      this.autocompleteService.getFromUserSettingsForText(text, autocomplete ?? 5),
       this.autocompleteService.getFromSuggestQueriesForText(text)
     ])),
     map(items => items.flat(2)),

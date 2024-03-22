@@ -16,30 +16,37 @@ export type AggregationItemCustomization = {
 }
 // TODO ^^^ Remove those temporary objects ^^^
 
+export type Autocomplete = {
+  bookmarks?: number;
+  recentSearches?: number;
+  savedSearches?: number;
+}
+
 // Main configuration object
 export type CustomizationJson = {
-//   previewMetadata?: PreviewMetadata;
-//   application?: Application;
-//   assistant?: Assistant;
-//   aggregations?: Aggregation[];
-//   contentFeatures?: ContentFeature[];
-//   facets?: Facet[];
-//   globalFeatures?: GlobalFeature[];
-//   hack?: HackFeatures;
-//   preview: Preview;
-//   previewFeatures?: PreviewFeature[];
-//   searchBarFeatures?: SearchBarFeature[];
-//   searchFeatures?: SearchFeature[];
-//   searchResultsFeatures?: SearchResultsFeature[];
-//   sourcesMetadata?: SourceMetadata[];
-//   sourcesResultFilterMetadata?: SourceResultFilterMetadata[];
-//   supportFeatures?: SupportFeature;
-//   userMenuFeatures?: UserMenuFeature[];
-//   neuralFeatures?: NeuralFeature;
-//   customizedLabels?: Map<string, Map<string, string>>;
-//   bankerPreviewMetadataToDisplay?: BankerPreviewMetadataToDisplay[];
-//   dealsPreviewMetadataToDisplay?: DealsPreviewMetadataToDisplay[];
-//   documentPreviewMetadataToDisplay?: DocumentPreviewMetadataToDisplay[];
+  autocomplete?: Autocomplete;
+  //   previewMetadata?: PreviewMetadata;
+  //   application?: Application;
+  //   assistant?: Assistant;
+  //   aggregations?: Aggregation[];
+  //   contentFeatures?: ContentFeature[];
+  //   facets?: Facet[];
+  //   globalFeatures?: GlobalFeature[];
+  //   hack?: HackFeatures;
+  //   preview: Preview;
+  //   previewFeatures?: PreviewFeature[];
+  //   searchBarFeatures?: SearchBarFeature[];
+  //   searchFeatures?: SearchFeature[];
+  //   searchResultsFeatures?: SearchResultsFeature[];
+  //   sourcesMetadata?: SourceMetadata[];
+  //   sourcesResultFilterMetadata?: SourceResultFilterMetadata[];
+  //   supportFeatures?: SupportFeature;
+  //   userMenuFeatures?: UserMenuFeature[];
+  //   neuralFeatures?: NeuralFeature;
+  //   customizedLabels?: Map<string, Map<string, string>>;
+  //   bankerPreviewMetadataToDisplay?: BankerPreviewMetadataToDisplay[];
+  //   dealsPreviewMetadataToDisplay?: DealsPreviewMetadataToDisplay[];
+  //   documentPreviewMetadataToDisplay?: DocumentPreviewMetadataToDisplay[];
 }
 
 // export type FeatureName =

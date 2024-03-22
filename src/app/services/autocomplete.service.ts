@@ -5,6 +5,7 @@ import { CCWebService, Suggestion, fetchSuggest } from '@sinequa/atomic';
 
 import { UserSettingsStore, appStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
+import { Autocomplete } from '../types';
 
 type AutocompleteWebService = CCWebService & {
   allowedWithAnySBA?: boolean,
@@ -52,23 +53,26 @@ export class AutocompleteService {
    * @returns An observable of an array of {@link Suggestion} arrays grouped by
    * `recent-searches`, `saved-searches`, `bookmarks` from the user settings
    */
-  getFromUserSettingsForText(text: string, maxCount?: number): Observable<Suggestion[]> {
+  getFromUserSettingsForText(text: string, maxCount?: number | Autocomplete): Observable<Suggestion[]> {
     const { bookmarks, recentSearches, savedSearches } = getState(this.userSettingsStore);
     const items: Suggestion[] = [];
+
+    if (typeof maxCount === 'number')
+      maxCount = { recentSearches: maxCount, savedSearches: maxCount, bookmarks: maxCount };
 
     if (recentSearches) {
       const searches = recentSearches
         .filter(recentSearch => recentSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-        .slice(0, maxCount);
+        .slice(0, maxCount?.recentSearches);
 
       if (searches.length > 0)
-        items.push(...searches.map(search => ({ category: 'recent-search', ...search })).slice(0, maxCount));
+        items.push(...searches.map(search => ({ category: 'recent-search', ...search })));
     }
 
     if (savedSearches) {
       const searches = savedSearches
         .filter(savedSearch => savedSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-        .slice(0, maxCount);
+        .slice(0, maxCount?.savedSearches);
 
       if (searches.length > 0)
         items.push(...searches.map(search => ({ category: 'saved-search', ...search })));
@@ -77,7 +81,7 @@ export class AutocompleteService {
     if (bookmarks) {
       const searches = bookmarks
         .filter(bookmark => bookmark.label?.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, maxCount);
+        .slice(0, maxCount?.bookmarks);
 
       if (searches.length > 0)
         items.push(...searches.map(search => ({ category: 'bookmark', display: search.label ?? '', ...search })));
