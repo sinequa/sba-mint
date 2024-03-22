@@ -1,12 +1,24 @@
 import { computed } from "@angular/core";
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
-import { AppState, Extract } from "./app.state";
+import { SafeHtml } from '@angular/platform-browser';
 
-const intialState: AppState = {
+export type Extract = {
+  id: string,
+  text: SafeHtml, // Sanitized HTML text
+  startIndex: number, // this is the start index of the extracts within the Document Text
+  relevanceIndex: number, // 0 the most relevant to N the less relevant
+  textIndex: number // index of the extract in the text. e.g 0 is the first extract displayed in the document
+}
+
+export type ApplicationState = {
+  extracts: Map<string, Extract[]>,
+}
+
+const intialState: ApplicationState = {
   extracts: new Map(),
 };
 
-export const AppStore = signalStore(
+export const ApplicationStore = signalStore(
   // providing store at the root level
   { providedIn: 'root' },
   withState(intialState),

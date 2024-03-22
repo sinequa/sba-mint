@@ -10,10 +10,9 @@ import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.s
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { queryParamsStore } from '@/app/stores/query-params.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { queryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
+import { AggregationsStore } from '@/stores';
 
 @Component({
   selector: 'app-search-slides',
@@ -39,6 +38,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly aggregationsStore = inject(AggregationsStore);
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -56,7 +56,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
           switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery())))
         )
         .subscribe((firstPageResult: Result) => {
-          aggregationsStore.set(firstPageResult.aggregations);
+          this.aggregationsStore.update(firstPageResult.aggregations);
         })
     );
 
@@ -76,6 +76,6 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-    aggregationsStore.clear();
+    this.aggregationsStore.clear();
   }
 }

@@ -1,7 +1,7 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { Subscription, distinctUntilChanged, switchMap, take } from 'rxjs';
 
-import { Result } from '@sinequa/atomic';
+import { Aggregation, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/app/components/article/default-skeleton/article-default-skeleton.component';
@@ -10,12 +10,11 @@ import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.s
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { queryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { QueryParams, buildFirstPageQuery } from '@/app/utils';
+import { AggregationsStore } from '@/stores';
 
-import { queryParamsStore } from '@/app/stores/query-params.store';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
@@ -27,7 +26,7 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
   styleUrl: './search-all.component.scss',
   hostDirectives: [{
     directive: SelectArticleFromQueryParamsDirective,
-    inputs: ['articleId: id']
+    inputs: ['articleId: id', 'aggregations']
   }]
 })
 export class SearchAllComponent implements OnInit, OnDestroy {
@@ -43,6 +42,9 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly aggregationsStore = inject(AggregationsStore);
+
+  protected aggregations: Aggregation[];
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -60,7 +62,8 @@ export class SearchAllComponent implements OnInit, OnDestroy {
           switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery({ text: searchInputStore.state }))))
         )
         .subscribe((firstPageResult: Result) => {
-          aggregationsStore.set(firstPageResult.aggregations);
+          this.aggregations = firstPageResult.aggregations;
+          this.aggregationsStore.update(firstPageResult.aggregations);
         })
     );
 
@@ -81,7 +84,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-    aggregationsStore.clear();
+    this.aggregationsStore.clear();
   }
 
   /**
@@ -89,7 +92,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
    * - `path`
    * - `text`
    * - `filters`
-   * 
+   *
    * @param previous Previous state of the search `QueryParams`
    * @param current Current state of the search `QueryParams`
    * @returns `true` if the search `QueryParams` are equals according to

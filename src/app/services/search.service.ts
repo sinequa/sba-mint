@@ -1,16 +1,18 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
+import { getState } from '@ngrx/signals';
+import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { aggregationsStore } from '@/app/stores';
+import { queryParamsStore } from '@/app/stores/';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
-import { queryParamsStore } from '../stores/query-params.store';
+import { AggregationsStore } from '@/stores';
+
 
 export type SearchOptions = {
   appendFilters?: boolean;
@@ -33,17 +35,20 @@ export class SearchService implements OnDestroy {
   private readonly _result = new Subject<Result>();
   public readonly result$ = this._result.asObservable();
 
+  protected readonly aggregationsStore = inject(AggregationsStore);
+
   constructor(private readonly injector: Injector) {
     this.subscription.add(
-      combineLatest([
-        aggregationsStore.next$,
-        this.navigationService.navigationEnd$
-      ]).pipe(
-        filter(([aggregations, routerEvent]) => !!aggregations && isASearchRoute(routerEvent.url)),
-        switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
-      ).subscribe((result: Result) => {
-        this._result.next(result);
-      })
+      this.navigationService.navigationEnd$
+        .pipe(
+          filter((routerEvent) => isASearchRoute(routerEvent.url)),
+          switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
+        )
+        .subscribe((result: Result) => {
+          // Update the aggregations store with the new aggregations
+          this.aggregationsStore.update(result.aggregations);
+          this._result.next(result)
+        })
     );
   }
 
@@ -62,8 +67,9 @@ export class SearchService implements OnDestroy {
   }
 
   public getResult(filters: Filter[]): Observable<Result> {
-    const translatedFilters = translateFiltersToApiFilters(filters, aggregationsStore.state);
-    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any }));
+    const { aggregations } = getState(this.aggregationsStore);
+    const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
+    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any}));
 
     return this.queryService.search(query);
   }

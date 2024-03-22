@@ -9,11 +9,10 @@ import { ArticlePersonComponent } from '@/app/components/article/person/article-
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { NavigationService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { queryParamsStore } from '@/app/stores/query-params.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { queryParamsStore, searchInputStore } from '@/app/stores';
 import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
+import { AggregationsStore } from '@/stores';
 
 @Component({
   selector: 'app-search-people',
@@ -35,6 +34,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly aggregationsStore = inject(AggregationsStore);
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -52,7 +52,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
           switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery())))
         )
         .subscribe((firstPageResult: Result) => {
-          aggregationsStore.set(firstPageResult.aggregations);
+          this.aggregationsStore.update(firstPageResult.aggregations);
         })
     );
 
@@ -72,7 +72,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-    aggregationsStore.clear();
+    this.aggregationsStore.clear();
   }
 
 }

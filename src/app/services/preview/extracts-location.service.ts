@@ -1,10 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { Extract } from "@/stores/app.state";
 import { PreviewData } from '@sinequa/atomic';
 import { InlineWorker } from '@sinequa/atomic-angular';
 
+import { Extract } from "@/stores";
 
 type ExtractsLocations = Extract & {
   text: string // HTML text

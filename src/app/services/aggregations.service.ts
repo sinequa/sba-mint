@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Aggregation, AggregationItem, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationService } from '@sinequa/atomic-angular';
 
-import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { AggregationsStore } from '@/stores';
 
 import { MockDataService } from './mock-data.service';
 
@@ -28,12 +28,14 @@ export type AggregationTreeEx = TreeAggregation & { items: AggregationListItem[]
   providedIn: 'root'
 })
 export class AggregationsService extends AggregationService {
+  protected readonly aggregationsStore = inject(AggregationsStore);
+
   public getAggregation(column: string): Aggregation | undefined {
-    return aggregationsStore.state?.find((aggregation: Aggregation) => aggregation.column === column);
+    return this.aggregationsStore.getAggregation(column, "column");
   }
 
   public getAggregationItems(column: string): AggregationItem[] | undefined {
-    return aggregationsStore.state?.find((aggregation: Aggregation) => aggregation.column === column)?.items;
+    return this.getAggregation(column)?.items;
   }
 
 
