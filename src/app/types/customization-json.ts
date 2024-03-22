@@ -16,6 +16,12 @@ export type AggregationItemCustomization = {
 }
 // TODO ^^^ Remove those temporary objects ^^^
 
+export type Autocomplete = {
+  bookmarks?: number;
+  recentSearches?: number;
+  savedSearches?: number;
+}
+
 export type UserFeatures = {
   recentSearches?: boolean;
   savedSearches?: boolean;
@@ -28,9 +34,9 @@ export type Features = {
 
 // Main configuration object
 export type CustomizationJson = {
+  autocomplete?: Autocomplete;
   userFeatures?: UserFeatures;
   features?: Features;
-
   //   previewMetadata?: PreviewMetadata;
   //   application?: Application;
   //   assistant?: Assistant;
