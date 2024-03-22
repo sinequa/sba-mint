@@ -1,11 +1,13 @@
-import { selectionStore } from "@/app/stores/selection.store";
-import { Extract } from "@/stores/app.state";
-import { AppStore } from "@/stores/app.store";
 import { Inject, Injectable, inject } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { Subject } from "rxjs";
+
 import { PreviewData } from "@sinequa/atomic";
 import { HIGHLIGHTS, InlineWorker, PreviewHighlight } from "@sinequa/atomic-angular";
-import { Subject } from "rxjs";
+
+import { selectionStore } from "@/app/stores";
+import { ApplicationStore, Extract } from "@/stores";
+
 import { ExtractsLocationService } from "./extracts-location.service";
 
 type ExtractsLocations = Extract & {
@@ -14,7 +16,7 @@ type ExtractsLocations = Extract & {
 
 @Injectable()
 export class PreviewService {
-  store = inject(AppStore);
+  store = inject(ApplicationStore);
   extractsLocationService = inject(ExtractsLocationService);
   sanitizer = inject(DomSanitizer);
 

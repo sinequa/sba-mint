@@ -26,7 +26,7 @@
 
   <li>
     <button title="Bookmark this document" (click)="bookmark.emit()" stkStopPropagation>
-      @if (isBookmarked | async) {
+      @if (isBookmarked()) {
       <i class="fa-fw fa-solid fa-bookmark text-sm"></i>
       } @else {
       <i class="fa-fw fa-regular fa-bookmark text-sm"></i>

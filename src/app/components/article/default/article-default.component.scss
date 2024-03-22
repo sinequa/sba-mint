@@ -9,3 +9,11 @@ div.tab-container {
     transition: max-height 0.25s ease-in-out;
   }
 }
+
+.similar-documents li {
+  @apply ms-2;
+
+  app-article-default-light {
+    @apply px-2 py-1;
+  }
+}

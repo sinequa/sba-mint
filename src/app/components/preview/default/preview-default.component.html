@@ -6,9 +6,14 @@
     <header class="flex items-center gap-4">
       <img src="https://placehold.co/80x50" alt="" />
 
-      <p class="article-title">{{ article()?.title }}</p>
+      <p class="article-title me-auto">{{ article()?.title }}</p>
+
+      <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
+        <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
+      </button>
     </header>
-    <table class="w-full">
+
+    <table class="w-full" [ngClass]="{ hidden: headerCollapsed() }">
       <tr>
         <th>Location</th>
         <td class="flex items-baseline divide-x-chevron-right divide-xs">

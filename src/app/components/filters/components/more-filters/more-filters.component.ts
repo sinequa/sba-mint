@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Injector, OnDestroy, Output, QueryList, ViewChildren, inject, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, map } from 'rxjs';
+import { Component, EventEmitter, Injector, OnDestroy, Output, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
+import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
 import { AggregationEx, AggregationsService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { queryParamsStore } from '@/app/stores';
+import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
+import { AggregationsStore } from '@/stores';
 
 import { appStore } from '@/app/stores';
-import { queryParamsStore } from '@/app/stores/query-params.store';
-import { buildQuery } from '@/app/utils';
 import { FilterDropdown } from '../../models/filter-dropdown';
 import { AggregationComponent } from '../aggregation/aggregation.component';
 
@@ -33,21 +34,19 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private readonly search = inject(SearchService);
   private readonly aggregationsService = inject(AggregationsService);
+  private readonly aggregationsStore = inject(AggregationsStore);
   private readonly injector = inject(Injector);
 
   private readonly subscriptions = new Subscription();
 
   constructor() {
-    this.subscriptions.add(
-      aggregationsStore.next$
-        .pipe(
-          map((aggregations: Aggregation[] | undefined) => aggregations?.filter(a => AUTHORIZED_MORE_FILTERS.includes(a.column)) ?? []),
-          map((aggregations: Aggregation[]) => aggregations.sort((a, b) => AUTHORIZED_MORE_FILTERS.indexOf(a.column) - AUTHORIZED_MORE_FILTERS.indexOf(b.column)))
-        )
-        .subscribe(
-          (aggregations) => this.filterDropdowns.set(this.buildMoreFilterDropdownsFromAggregations(aggregations ?? []))
-        )
-    );
+    effect(() => {
+      const { aggregations } = getState(this.aggregationsStore);
+      this.filterDropdowns.set(this.buildMoreFilterDropdownsFromAggregations(aggregations
+        .filter(a => AUTHORIZED_MORE_FILTERS.includes(a.column))
+        .sort((a, b) => AUTHORIZED_MORE_FILTERS.indexOf(a.column) - AUTHORIZED_MORE_FILTERS.indexOf(b.column))
+      ));
+    }, { allowSignalWrites: true });
   }
 
   ngOnDestroy(): void {

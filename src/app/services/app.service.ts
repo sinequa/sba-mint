@@ -1,14 +1,29 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { fetchApp } from '@sinequa/atomic';
 
-import { appStore } from '@/app/stores';
+import { appStore, UserSettingsStore } from '@/app/stores';
+import { getState } from '@ngrx/signals';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AppService {
-  constructor() {
-    fetchApp().then((app) => appStore.set(app));
+export class ApplicationService {
+
+  userSettingsStore = inject(UserSettingsStore);
+
+  /**
+   * Initializes the application.
+   * - Fetches the application configuration.
+   * - Sets the fetched application configuration in the app store.
+   * - Loads the user settings and logs the state of the user settings store.
+   */
+  async init() {
+    // Fetch the application configuration
+    const app = await fetchApp();
+    appStore.set(app)
+
+    // Load the user settings
+    this.userSettingsStore.initialize().then(() => console.log("userSettingsStore", getState(this.userSettingsStore)));
   }
 }

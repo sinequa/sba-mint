@@ -2,7 +2,7 @@ import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { RecentSearchesService } from '@/app/services';
 import { RecentSearch as UserSettingsRecentSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
@@ -20,14 +20,15 @@ type RecentSearch = UserSettingsRecentSearch & {
   templateUrl: './recent-searches.component.html',
   styleUrl: './recent-searches.component.scss'
 })
-export class RecentSearchesComponent implements OnInit {
+export class RecentSearchesComponent {
   public recentSearches = signal<RecentSearch[] | undefined>(undefined);
 
   private readonly router = inject(Router);
   private readonly recentSearchesService = inject(RecentSearchesService);
 
-  ngOnInit(): void {
-    this.recentSearchesService.getRecentSearches().then((recentSearches) => {
+  constructor() {
+    effect(() => {
+      const recentSearches = this.recentSearchesService.getRecentSearches();
       this.recentSearches.set(
         recentSearches.reduce((acc, recentSearch) => {
           const queryParams = getQueryParamsFromUrl(recentSearch.url);
@@ -44,7 +45,7 @@ export class RecentSearchesComponent implements OnInit {
           return acc;
         }, [] as RecentSearch[])
       );
-    });
+    }, { allowSignalWrites: true })
   }
 
   public recentSearchClicked(recentSearch: RecentSearch): void {

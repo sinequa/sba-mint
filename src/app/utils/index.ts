@@ -4,3 +4,4 @@ export * from './eager-provider';
 export * from './query';
 export * from './query-params';
 
+export * from './models';

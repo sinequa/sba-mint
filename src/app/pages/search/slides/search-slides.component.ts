@@ -8,23 +8,23 @@ import { ArticleSlideSkeletonComponent } from '@/app/components/article/slide-sk
 import { ArticleSlideComponent } from '@/app/components/article/slide/article-slide.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
-import { queryParamsStore } from '@/app/stores/query-params.store';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { queryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
+import { AggregationsStore } from '@/stores';
 
 @Component({
-  selector: 'app-search-slides',
-  standalone: true,
-  imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent],
-  templateUrl: './search-slides.component.html',
-  styleUrl: './search-slides.component.scss',
-  hostDirectives: [{
-    directive: SelectArticleFromQueryParamsDirective,
-    inputs: ['articleId: id']
-  }]
+    selector: 'app-search-slides',
+    standalone: true,
+    templateUrl: './search-slides.component.html',
+    styleUrl: './search-slides.component.scss',
+    hostDirectives: [{
+            directive: SelectArticleFromQueryParamsDirective,
+            inputs: ['articleId: id']
+        }],
+    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent]
 })
 export class SearchSlidesComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -34,11 +34,13 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
   protected readonly slides = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
+  protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly aggregationsStore = inject(AggregationsStore);
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -56,15 +58,18 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
           switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery())))
         )
         .subscribe((firstPageResult: Result) => {
-          aggregationsStore.set(firstPageResult.aggregations);
+          this.aggregationsStore.update(firstPageResult.aggregations);
         })
     );
 
     this.subscription.add(
-      this.searchService.result$.subscribe((result: Result) => {
-        this.slides.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'slide' }))) ?? []);
-        this.queryText.set(searchInputStore.state ?? '');
-      })
+      this.searchService.result$
+        .subscribe((result: Result) => {
+          const { page, pageSize, rowCount } = result;
+          this.pageConfiguration.set({ page, pageSize, rowCount });
+          this.slides.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'slide' }))) ?? []);
+          this.queryText.set(searchInputStore.state ?? '');
+        })
     );
 
     // Trigger skeleton on search whether from input or from filters
@@ -76,6 +81,6 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-    aggregationsStore.clear();
+    this.aggregationsStore.clear();
   }
 }

@@ -1,14 +1,13 @@
 import { Directive, Injector, OnDestroy, OnInit, inject, input, runInInjectionContext } from '@angular/core';
 import { Subscription, filter, map } from 'rxjs';
 
-import { Filter } from '@sinequa/atomic';
+import { Aggregation, Filter } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { SelectionService } from '@/app/services';
-import { aggregationsStore } from '@/app/stores/aggregations.store';
+import { queryParamsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { queryParamsStore } from '../stores/query-params.store';
 
 // FUTURE : Make this directive more generic and reusable and without dependencies on other services
 
@@ -18,6 +17,7 @@ import { queryParamsStore } from '../stores/query-params.store';
 })
 export class SelectArticleFromQueryParamsDirective implements OnInit, OnDestroy {
   public readonly articleId = input<string | undefined>();
+  public readonly aggregations = input<Aggregation[]>();
 
   private readonly selectionService = inject(SelectionService);
   private readonly drawerStackService = inject(DrawerStackService);
@@ -35,7 +35,7 @@ export class SelectArticleFromQueryParamsDirective implements OnInit, OnDestroy 
 
     filters.push({ column: 'id', label: 'id', values: [this.articleId()!] });
 
-    query.filters = translateFiltersToApiFilters(filters, aggregationsStore.state) as Filter;
+    query.filters = translateFiltersToApiFilters(filters, this.aggregations()) as Filter;
 
     this.subscription.add(
       this.queryService.search(query)

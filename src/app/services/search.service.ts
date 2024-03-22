@@ -1,23 +1,26 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription, combineLatest, filter, switchMap } from 'rxjs';
+import { getState } from '@ngrx/signals';
+import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { aggregationsStore } from '@/app/stores';
+import { queryParamsStore } from '@/app/stores/';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
-import { queryParamsStore } from '../stores/query-params.store';
+import { AggregationsStore } from '@/stores';
+
 
 export type SearchOptions = {
   appendFilters?: boolean;
 }
 
 type QueryParams = {
-  f?: string;
+  f?: string; // filters list
+  p?: number; // page number
 }
 
 @Injectable({
@@ -33,17 +36,20 @@ export class SearchService implements OnDestroy {
   private readonly _result = new Subject<Result>();
   public readonly result$ = this._result.asObservable();
 
+  protected readonly aggregationsStore = inject(AggregationsStore);
+
   constructor(private readonly injector: Injector) {
     this.subscription.add(
-      combineLatest([
-        aggregationsStore.next$,
-        this.navigationService.navigationEnd$
-      ]).pipe(
-        filter(([aggregations, routerEvent]) => !!aggregations && isASearchRoute(routerEvent.url)),
-        switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
-      ).subscribe((result: Result) => {
-        this._result.next(result);
-      })
+      this.navigationService.navigationEnd$
+        .pipe(
+          filter((routerEvent) => isASearchRoute(routerEvent.url)),
+          switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
+        )
+        .subscribe((result: Result) => {
+          // Update the aggregations store with the new aggregations
+          this.aggregationsStore.update(result.aggregations);
+          this._result.next(result)
+        })
     );
   }
 
@@ -51,20 +57,38 @@ export class SearchService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  /**
+   * Performs a search operation.
+   * @param commands - The commands to navigate to after the search.
+   * @param options - The search options.
+   */
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
 
-    if (options?.appendFilters && (queryParamsStore.state?.filters || [])?.length > 0)
-      queryParams['f'] = JSON.stringify(queryParamsStore.state?.filters);
-    else queryParams['f'] = undefined;
+    const { filters = [], page } = queryParamsStore.state || {};
+    if (options.appendFilters){
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters): undefined;
+      queryParams.p = page;
+    }
 
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
   }
 
   public getResult(filters: Filter[]): Observable<Result> {
-    const translatedFilters = translateFiltersToApiFilters(filters, aggregationsStore.state);
-    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any }));
+    const { aggregations } = getState(this.aggregationsStore);
+    const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
+    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any}));
 
     return this.queryService.search(query);
+  }
+
+  /**
+   * Navigates to the specified page and returns the search result.
+   * @param page - The page number to navigate to.
+   * @returns A promise that resolves to the search result.
+   */
+  public gotoPage(page: number) {
+    queryParamsStore.patch({ page });
+    this.search([]);
   }
 }
