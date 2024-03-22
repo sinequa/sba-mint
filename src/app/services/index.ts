@@ -1,6 +1,5 @@
 export * from './aggregations.service';
 export * from './app.service';
-export * from './customization.service';
 export * from './mock-data.service';
 export * from './navigation.service';
 export * from './query-params.service';
