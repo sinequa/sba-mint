@@ -16,30 +16,43 @@ export type AggregationItemCustomization = {
 }
 // TODO ^^^ Remove those temporary objects ^^^
 
+export type UserFeatures = {
+  recentSearches?: boolean;
+  savedSearches?: boolean;
+  bookmarks?: boolean;
+}
+
+export type Features = {
+  applications?: boolean;
+}
+
 // Main configuration object
 export type CustomizationJson = {
-//   previewMetadata?: PreviewMetadata;
-//   application?: Application;
-//   assistant?: Assistant;
-//   aggregations?: Aggregation[];
-//   contentFeatures?: ContentFeature[];
-//   facets?: Facet[];
-//   globalFeatures?: GlobalFeature[];
-//   hack?: HackFeatures;
-//   preview: Preview;
-//   previewFeatures?: PreviewFeature[];
-//   searchBarFeatures?: SearchBarFeature[];
-//   searchFeatures?: SearchFeature[];
-//   searchResultsFeatures?: SearchResultsFeature[];
-//   sourcesMetadata?: SourceMetadata[];
-//   sourcesResultFilterMetadata?: SourceResultFilterMetadata[];
-//   supportFeatures?: SupportFeature;
-//   userMenuFeatures?: UserMenuFeature[];
-//   neuralFeatures?: NeuralFeature;
-//   customizedLabels?: Map<string, Map<string, string>>;
-//   bankerPreviewMetadataToDisplay?: BankerPreviewMetadataToDisplay[];
-//   dealsPreviewMetadataToDisplay?: DealsPreviewMetadataToDisplay[];
-//   documentPreviewMetadataToDisplay?: DocumentPreviewMetadataToDisplay[];
+  userFeatures?: UserFeatures;
+  features?: Features;
+
+  //   previewMetadata?: PreviewMetadata;
+  //   application?: Application;
+  //   assistant?: Assistant;
+  //   aggregations?: Aggregation[];
+  //   contentFeatures?: ContentFeature[];
+  //   facets?: Facet[];
+  //   globalFeatures?: GlobalFeature[];
+  //   hack?: HackFeatures;
+  //   preview: Preview;
+  //   previewFeatures?: PreviewFeature[];
+  //   searchBarFeatures?: SearchBarFeature[];
+  //   searchFeatures?: SearchFeature[];
+  //   searchResultsFeatures?: SearchResultsFeature[];
+  //   sourcesMetadata?: SourceMetadata[];
+  //   sourcesResultFilterMetadata?: SourceResultFilterMetadata[];
+  //   supportFeatures?: SupportFeature;
+  //   userMenuFeatures?: UserMenuFeature[];
+  //   neuralFeatures?: NeuralFeature;
+  //   customizedLabels?: Map<string, Map<string, string>>;
+  //   bankerPreviewMetadataToDisplay?: BankerPreviewMetadataToDisplay[];
+  //   dealsPreviewMetadataToDisplay?: DealsPreviewMetadataToDisplay[];
+  //   documentPreviewMetadataToDisplay?: DocumentPreviewMetadataToDisplay[];
 }
 
 // export type FeatureName =
