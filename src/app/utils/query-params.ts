@@ -1,4 +1,5 @@
 import { Filter } from "./models";
+import { queryParamsFromUrl } from "./query";
 
 /**
  * `path`: hash of the search without the bang in form of `/search/all`
@@ -11,44 +12,45 @@ export type QueryParams = {
   text?: string;
   filters?: Filter[];
   id?: string;
+  page?: number;
 }
 
 /**
  * Get {@link QueryParams} from url string
- * 
+ *
  * @param url string to parse
  * @returns {@link QueryParams} or undefined
  */
 export function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined {
   if (url === undefined) return undefined;
 
-  const [path, paramString] = url.split('?');
-  const params = paramString?.split('&');
+  const {q, f, p} = queryParamsFromUrl(url);
+  const [path] = url.split('?');
 
   return {
     path,
-    text: decodeURIComponent(params?.find(param => param.startsWith('q='))?.split('=')[1] ?? ''),
-    filters: getFiltersFromURI(params?.find(param => param.startsWith('f='))?.split('=')[1] ?? '[]')
+    text: decodeURIComponent(q),
+    filters: f ? getFiltersFromURI(f) : undefined,
+    page: parseInt(p, 10)
   };
 }
 
 /**
  * Get {@link Filter} array from query params string
- * 
+ *
  * @param queryParams string to parse
  * @returns {@link Filter} array
  */
 export function getFiltersFromUrl(queryParams: string | undefined): Filter[] {
   if (queryParams === undefined) return [];
 
-  const encodedFilters = queryParams?.split('&').find(value => value.startsWith('f='))?.split('=')?.[1] ?? '[]';
-
+  const {f: encodedFilters} = queryParamsFromUrl(queryParams);
   return getFiltersFromURI(encodedFilters);
 }
 
 /**
  * Get {@link Filter} array from uri string
- * 
+ *
  * @param uri string to parse
  * @returns {@link Filter} array
  */
@@ -58,3 +60,23 @@ export function getFiltersFromURI(uri: string): Filter[] {
 
   return filters;
 }
+
+  /**
+   * Returns whether the search `QueryParams` are equals according to:
+   * - `path`
+   * - `text`
+   * - `filters`
+   *
+   * @param previous Previous state of the search `QueryParams`
+   * @param current Current state of the search `QueryParams`
+   * @returns `true` if the search `QueryParams` are equals according to
+   * criteria, `false` otherwise
+   */
+  export function areSearchQueryParamsEquals(previous: QueryParams | undefined, current: QueryParams | undefined): boolean {
+    if (previous === current) return true;
+
+    const prev = JSON.stringify({ path: previous?.path, text: previous?.text, filters: previous?.filters ?? [] });
+    const curr = JSON.stringify({ path: current?.path, text: current?.text, filters: current?.filters ?? [] });
+
+    return prev === curr;
+  }

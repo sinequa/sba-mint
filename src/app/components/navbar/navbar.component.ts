@@ -12,6 +12,7 @@ import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 
 type NavbarMenu = {
   label: string;
@@ -91,12 +92,15 @@ export class NavbarComponent {
 
     searchInputStore.set(text);
 
-    this.router.navigate(commands, { queryParams: { q: searchInputStore.state }, queryParamsHandling: 'merge' });
+    // ! we need to remove the page parameter from the query params when new search is performed
+    this.router.navigate(commands, { queryParams: { q: searchInputStore.state, p: undefined }, queryParamsHandling: 'merge' });
 
   }
 
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
+    // ! we need to remove the page parameter from the query params when new search is performed
+    queryParamsStore.set({ page: undefined });
     this.searchService.search([tab.routerLink]);
   }
 

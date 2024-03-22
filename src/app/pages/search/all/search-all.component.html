@@ -6,20 +6,24 @@
   <app-overview-slides class="p-4 rounded-lg bg-gray-50" />
 
   @if (!articles()) {
-  <ul class="flex flex-col gap-2 mt-8">
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-  </ul>
-  } @else if (articles()!.length > 0) {
-  <ul class="flex flex-col gap-2 mt-8">
-    @for (article of articles(); track article.value) {
-    <li>
-      <app-article-default [article]="article" [strategy]="'replace'" />
-    </li>
-    }
-  </ul>
-  } @else {
-  <p class="mt-8 text-gray-500 italic">No result for "<em class="not-italic font-semibold">{{ queryText() }}</em>"</p>
+    <ul class="flex flex-col gap-2 mt-8">
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
+    </ul>
+  }
+  @else if (articles()!.length > 0) {
+    <ul class="flex flex-col gap-2 mt-8">
+      @for (article of articles(); track article.value) {
+      <li>
+        <app-article-default [article]="article" [strategy]="'replace'" />
+      </li>
+      }
+    </ul>
+
+    <app-pager [configuration]="pageConfiguration()"/>
+  }
+  @else {
+    <p class="mt-8 text-gray-500 italic">No result for "<em class="not-italic font-semibold">{{ queryText() }}</em>"</p>
   }
 </main>

@@ -19,7 +19,8 @@ export type SearchOptions = {
 }
 
 type QueryParams = {
-  f?: string;
+  f?: string; // filters list
+  p?: number; // page number
 }
 
 @Injectable({
@@ -56,12 +57,19 @@ export class SearchService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  /**
+   * Performs a search operation.
+   * @param commands - The commands to navigate to after the search.
+   * @param options - The search options.
+   */
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
 
-    if (options?.appendFilters && (queryParamsStore.state?.filters || [])?.length > 0)
-      queryParams['f'] = JSON.stringify(queryParamsStore.state?.filters);
-    else queryParams['f'] = undefined;
+    const { filters = [], page } = queryParamsStore.state || {};
+    if (options.appendFilters){
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters): undefined;
+      queryParams.p = page;
+    }
 
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
   }
@@ -72,5 +80,15 @@ export class SearchService implements OnDestroy {
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any}));
 
     return this.queryService.search(query);
+  }
+
+  /**
+   * Navigates to the specified page and returns the search result.
+   * @param page - The page number to navigate to.
+   * @returns A promise that resolves to the search result.
+   */
+  public gotoPage(page: number) {
+    queryParamsStore.patch({ page });
+    this.search([]);
   }
 }

@@ -1,5 +1,6 @@
 import { NavigationService } from '@/app/services/navigation.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
+import { queryParamsFromUrl } from '@/app/utils';
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -14,20 +15,14 @@ export class SearchInputService implements OnDestroy {
   constructor() {
     this.subscriptions.add(
       this.navigation.navigationEnd$
-        .subscribe((event: RouterEvent) =>
-          searchInputStore.set(this.getQueryTextFromQueryParams(event.url.split('?')[1]))
-        )
+        .subscribe((event: RouterEvent) => {
+          const { q } = queryParamsFromUrl(event.url);
+          searchInputStore.set(decodeURIComponent(q))
+        })
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  public getQueryTextFromQueryParams(queryParams: string): string {
-    const encodedQueryText = queryParams?.split('&').find(value => value.startsWith('q='))?.split('=')?.[1] ?? '';
-    const queryText = decodeURIComponent(encodedQueryText);
-
-    return queryText;
   }
 }

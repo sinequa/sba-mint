@@ -8,6 +8,7 @@ import { ArticlePersonSkeletonComponent } from '@/app/components/article/person-
 import { ArticlePersonComponent } from '@/app/components/article/person/article-person.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
+import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
 import { NavigationService, SearchService } from '@/app/services';
 import { queryParamsStore, searchInputStore } from '@/app/stores';
 import { PersonArticle } from '@/app/types/articles';
@@ -17,9 +18,9 @@ import { AggregationsStore } from '@/stores';
 @Component({
   selector: 'app-search-people',
   standalone: true,
-  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent],
   templateUrl: './search-people.component.html',
   styleUrl: './search-people.component.scss',
+  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent, PagerComponent]
 })
 export class SearchPeopleComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -29,6 +30,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
 
   protected readonly people = signal(undefined as PersonArticle[] | undefined);
   protected readonly queryText = signal<string>('');
+  protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
@@ -41,7 +43,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
   });
   private readonly subscription = new Subscription();
 
-  constructor(private readonly injector: Injector) { }
+  constructor(private readonly injector: Injector) {}
 
   ngOnInit(): void {
     // Setup aggregations for filtering mechanism
@@ -57,10 +59,13 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
     );
 
     this.subscription.add(
-      this.searchService.result$.subscribe((result: Result) => {
-        this.people.set(result.records?.map((article: PersonArticle) => (Object.assign(article, { value: article.title, type: 'person' }))) ?? []);
-        this.queryText.set(searchInputStore.state ?? '');
-      })
+      this.searchService.result$
+        .subscribe((result: Result) => {
+          const { page, pageSize, rowCount } = result;
+          this.pageConfiguration.set({ page, pageSize, rowCount });
+          this.people.set(result.records?.map((article: PersonArticle) => (Object.assign(article, { value: article.title, type: 'person' }))) ?? []);
+          this.queryText.set(searchInputStore.state ?? '');
+        })
     );
 
     // Trigger skeleton on search whether from input of from filters

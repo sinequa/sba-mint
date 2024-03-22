@@ -15,6 +15,7 @@ export class NavigationService {
   );
 
   public path$ = this.navigationEnd$.pipe(
-    map((event: RouterEvent) => event.url.split('?')[0] ?? '')
+    // create a fake URL object to extract the pathname
+    map((event: RouterEvent) => new URL(`http://localhost${event.url}`).pathname)
   );
 }
