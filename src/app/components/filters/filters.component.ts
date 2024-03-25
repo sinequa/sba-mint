@@ -18,9 +18,10 @@ import { AggregationsStore } from '@/stores';
 import { AggregationComponent } from './components/aggregation/aggregation.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
+import { getAuthorizedFilters } from './filter';
 import { FilterDropdown } from './models/filter-dropdown';
 
-const AUTHORIZED_FILTERS = ['treepath', 'geo', 'person', 'doctype', 'authors', 'enginecsv1'];
+export const FILTERS_COUNT = 4;
 
 @Component({
   selector: 'app-filters',
@@ -30,45 +31,51 @@ const AUTHORIZED_FILTERS = ['treepath', 'geo', 'person', 'doctype', 'authors', '
   styleUrl: './filters.component.scss'
 })
 export class FiltersComponent implements OnInit {
-  @ViewChildren(AggregationComponent) public aggregations!: AggregationComponent[];
+  @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
 
-  aggregationsService = inject(AggregationsService);
+  readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
+  readonly hasMoreFilters = signal<boolean>(false);
+  readonly moreFiltersCount = signal<number>(0);
+  readonly filterDropdowns = signal<FilterDropdown[]>([]);
+  readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
 
-  private readonly searchService = inject(SearchService);
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _injector = inject(Injector);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _aggregationsService = inject(AggregationsService);
+  private readonly _aggregationsStore = inject(AggregationsStore);
+  private readonly _searchService = inject(SearchService);
 
-  protected readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
-  protected readonly moreFiltersCount = signal<number>(0);
-
-  protected readonly filterDropdowns = signal<FilterDropdown[]>([]);
-  protected readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
-
-  private readonly subscriptions = new Subscription();
-
-  private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly injector = inject(Injector);
+  private readonly _subscriptions = new Subscription();
 
   constructor() {
     effect(() => {
-      const { aggregations } = getState(this.aggregationsStore);
+      const { aggregations } = getState(this._aggregationsStore);
+      const authorizedFilters = getAuthorizedFilters(this._injector);
 
-      this.dateFilterDropdown.set({
-        label: 'Date',
-        aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
-        icon: 'far fa-calendar-day'
-      })
+      if (!authorizedFilters) return;
+
+      if (authorizedFilters.length > FILTERS_COUNT)
+        this.hasMoreFilters.set(true);
+
+      if (authorizedFilters.includes("#date"))
+        this.dateFilterDropdown.set({
+          label: 'Date',
+          aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
+          iconClass: 'far fa-calendar-day'
+        });
 
       this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations
-        .filter(a => AUTHORIZED_FILTERS.includes(a.column))
-        .sort((a, b) => AUTHORIZED_FILTERS.indexOf(a.column) - AUTHORIZED_FILTERS.indexOf(b.column))
+        .filter(a => authorizedFilters.includes(a.column))
+        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
+        .splice(0, FILTERS_COUNT)
       ));
     }, { allowSignalWrites: true })
   }
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.activatedRoute.queryParams.subscribe((queryParams) => {
+    this._subscriptions.add(
+      this._activatedRoute.queryParams.subscribe((queryParams) => {
         let filters;
         if (queryParams['f']) {
           filters = JSON.parse(queryParams['f']);
@@ -83,12 +90,12 @@ export class FiltersComponent implements OnInit {
 
     queryParamsStore.updateFilter(filter);
 
-    this.searchService.search([]);
+    this._searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationEx, index: number): void {
-    this.aggregationsService.loadMore(
-      runInInjectionContext(this.injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+    this._aggregationsService.loadMore(
+      runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -103,14 +110,14 @@ export class FiltersComponent implements OnInit {
   public dateFilterRefreshed(filter: Filter): void {
     this.updateDateDropdownButton(filter);
 
-    this.cdr.detectChanges();
+    this._cdr.detectChanges();
   }
 
   public dateFilterUpdated(filter: Filter): void {
     this.updateDateDropdownButton(filter);
 
     queryParamsStore.updateFilter(filter);
-    this.searchService.search([]);
+    this._searchService.search([]);
   }
 
   public clearFilters(): void {
@@ -125,7 +132,7 @@ export class FiltersComponent implements OnInit {
     this.moreFiltersCount.set(0);
     queryParamsStore.patch({ filters: [] });
 
-    this.searchService.search([]);
+    this._searchService.search([]);
   }
 
   protected moreFiltersCountUpdated(count: number): void {

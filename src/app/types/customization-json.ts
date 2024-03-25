@@ -30,6 +30,7 @@ export type CJAggregation = Pick<Aggregation, 'column' | 'items'> & {
 export type CustomizationJson = {
   aggregations?: CJAggregation[];
   autocomplete?: Autocomplete;
+  tabs?: Record<string, string[]>;
   userFeatures?: UserFeatures;
   features?: Features;
 }

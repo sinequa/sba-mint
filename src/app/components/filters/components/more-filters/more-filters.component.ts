@@ -5,16 +5,14 @@ import { Subscription } from 'rxjs';
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
 import { AggregationEx, AggregationsService, SearchService } from '@/app/services';
-import { queryParamsStore } from '@/app/stores';
+import { appStore, queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
-
-import { appStore } from '@/app/stores';
+import { getAuthorizedFilters } from '../../filter';
+import { FILTERS_COUNT } from '../../filters.component';
 import { FilterDropdown } from '../../models/filter-dropdown';
 import { AggregationComponent } from '../aggregation/aggregation.component';
-
-const AUTHORIZED_MORE_FILTERS = ['treepath', 'geo', 'company'];
 
 @Component({
   selector: 'app-more-filters',
@@ -24,27 +22,32 @@ const AUTHORIZED_MORE_FILTERS = ['treepath', 'geo', 'company'];
   styleUrl: './more-filters.component.scss'
 })
 export class MoreFiltersComponent implements OnDestroy {
-  @ViewChildren(AggregationComponent) public aggregations!: QueryList<AggregationComponent>;
+  @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
 
-  @Output() public onCountChange = new EventEmitter<number>();
+  @Output() onCountChange = new EventEmitter<number>();
 
-  protected readonly filterDropdowns = signal<FilterDropdown[]>([]);
-  protected hasFilters = signal<boolean[]>([]);
-  protected filterCounts = signal<number[]>([]);
+  readonly filterDropdowns = signal<FilterDropdown[]>([]);
+  readonly hasFilters = signal<boolean[]>([]);
+  readonly filterCounts = signal<number[]>([]);
 
-  private readonly search = inject(SearchService);
-  private readonly aggregationsService = inject(AggregationsService);
-  private readonly aggregationsStore = inject(AggregationsStore);
-  private readonly injector = inject(Injector);
+  private readonly _search = inject(SearchService);
+  private readonly _aggregationsService = inject(AggregationsService);
+  private readonly _aggregationsStore = inject(AggregationsStore);
+  private readonly _injector = inject(Injector);
 
   private readonly subscriptions = new Subscription();
 
   constructor() {
     effect(() => {
-      const { aggregations } = getState(this.aggregationsStore);
+      const { aggregations } = getState(this._aggregationsStore);
+      const authorizedFilters = getAuthorizedFilters(this._injector);
+
+      if (!authorizedFilters) return;
+
       this.filterDropdowns.set(this.buildMoreFilterDropdownsFromAggregations(aggregations
-        .filter(a => AUTHORIZED_MORE_FILTERS.includes(a.column))
-        .sort((a, b) => AUTHORIZED_MORE_FILTERS.indexOf(a.column) - AUTHORIZED_MORE_FILTERS.indexOf(b.column))
+        .filter(a => authorizedFilters.includes(a.column))
+        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
+        .splice(FILTERS_COUNT)
       ));
     }, { allowSignalWrites: true });
   }
@@ -67,7 +70,7 @@ export class MoreFiltersComponent implements OnDestroy {
     this.updateFiltersCount(filter, index);
     queryParamsStore.updateFilter(filter);
 
-    this.search.search([]);
+    this._search.search([]);
   }
 
   public clearFilter(index: number): void {
@@ -91,12 +94,12 @@ export class MoreFiltersComponent implements OnDestroy {
       values: []
     });
 
-    this.search.search([]);
+    this._search.search([]);
   }
 
   public loadMore(aggregation: AggregationEx, index: number): void {
-    this.aggregationsService.loadMore(
-      runInInjectionContext(this.injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+    this._aggregationsService.loadMore(
+      runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
