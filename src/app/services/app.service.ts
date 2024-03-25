@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
+import { getState } from '@ngrx/signals';
 
 import { fetchApp } from '@sinequa/atomic';
 
 import { appStore, UserSettingsStore } from '@/app/stores';
-import { getState } from '@ngrx/signals';
 
 @Injectable({
   providedIn: 'root'

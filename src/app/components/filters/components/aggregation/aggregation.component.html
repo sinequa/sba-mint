@@ -6,8 +6,8 @@
 
     @if (!legend.hasChildNodes() && title()) {
     <div class="mb-2 p-2 flex items-baseline justify-between">
-      @if (title()?.iconClass) {
-        <i class="fa-fw {{ title()?.iconClass }}"></i>
+      @if (title()?.icon) {
+        <i class="fa-fw {{ title()?.icon }}"></i>
       }
       <span class="me-4 grow">{{ title()?.label }}</span>
 
