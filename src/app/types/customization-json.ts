@@ -6,16 +6,6 @@ export type Autocomplete = {
   savedSearches?: number;
 }
 
-export type UserFeatures = {
-  recentSearches?: boolean;
-  savedSearches?: boolean;
-  bookmarks?: boolean;
-}
-
-export type Features = {
-  applications?: boolean;
-}
-
 export type CJAggregationItem = {
   value?: string;
   icon?: string;
@@ -26,12 +16,27 @@ export type CJAggregation = Pick<Aggregation, 'column' | 'items'> & {
   items?: CJAggregationItem[];
 }
 
+export type Features = {
+  applications?: boolean;
+}
+
+export type SourceTagMap = {
+  sources: string[],
+  tags: string[]
+};
+
+export type UserFeatures = {
+  recentSearches?: boolean;
+  savedSearches?: boolean;
+  bookmarks?: boolean;
+}
+
 // Main configuration object
 export type CustomizationJson = {
   aggregations?: CJAggregation[];
   autocomplete?: Autocomplete;
+  features?: Features;
+  sourcesTagsMap?: SourceTagMap[];
   tabs?: Record<string, string[]>;
   userFeatures?: UserFeatures;
-  features?: Features;
 }
-

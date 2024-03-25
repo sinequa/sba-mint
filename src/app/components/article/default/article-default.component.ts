@@ -10,6 +10,7 @@ import { StopPropagationDirective } from 'toolkit';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { UserSettingsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
+import { TagListComponent } from '../../tag-list/tag-list.component';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
@@ -17,7 +18,7 @@ type Tab = 'attachments' | 'similars';
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, TreepathToIconClassPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, TreepathToIconClassPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, TagListComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
