@@ -148,7 +148,7 @@ export class FiltersComponent implements OnInit {
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.iconClass = itemCustomizations?.find(it => it.value === item.value)?.iconClass;
+          item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
         });
 
         return aggregation;
@@ -159,7 +159,7 @@ export class FiltersComponent implements OnInit {
         return ({
           label: aggregation.name,
           aggregation: aggregation,
-          iconClass: appStore.getAggregationIconClass(aggregation.column),
+          icon: appStore.getAggregationIcon(aggregation.column),
           currentFilter: f?.label,
           moreFiltersCount: more,
         })
