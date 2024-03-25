@@ -35,6 +35,7 @@ export type Features = {
 // Main configuration object
 export type CustomizationJson = {
   autocomplete?: Autocomplete;
+  tabs?: Record<string, string[]>;
   userFeatures?: UserFeatures;
   features?: Features;
   //   previewMetadata?: PreviewMetadata;

@@ -14,6 +14,7 @@
   }
 
   <!-- date filter dropdown -->
+  @if (dateFilterDropdown()) {
   <li role="button" class="dropdown group" tabindex="0" appFocusWithArrowKeys>
     <div
       class="btn btn-sm flex gap-1 items-baseline"
@@ -36,6 +37,7 @@
       (updated)="dateFilterUpdated($event)"
     />
   </li>
+  }
 
   <!-- other filter dropdowns -->
   @for (filterDropdown of filterDropdowns(); track $index) {
@@ -72,25 +74,27 @@
     </li>
   }
 
-  <!-- more filters dropdown -->
-  <li
-    role="button"
-    class="dropdown dropdown-end group ms-auto"
-    tabindex="0"
-    appFocusWithArrowKeys
-    >
-    <button class="btn btn-sm flex gap-1 items-baseline truncate">
-      <i class="far fa-filters"></i>
-      <span>More filters</span>
+  @if (hasMoreFilters()) {
+    <!-- more filters dropdown -->
+    <li
+      role="button"
+      class="dropdown dropdown-end group ms-auto"
+      tabindex="0"
+      appFocusWithArrowKeys
+      >
+      <button class="btn btn-sm flex gap-1 items-baseline truncate">
+        <i class="far fa-filters"></i>
+        <span>More filters</span>
 
-      @if (moreFiltersCount() > 0) {
-        <span class="ms-1 size-[18px] pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
-      }
-    </button>
+        @if (moreFiltersCount() > 0) {
+          <span class="ms-1 size-[18px] pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
+        }
+      </button>
 
-    <app-more-filters
-      class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
-      (onCountChange)="moreFiltersCountUpdated($event)"
-    />
-  </li>
+      <app-more-filters
+        class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
+        (onCountChange)="moreFiltersCountUpdated($event)"
+      />
+    </li>
+  }
 </menu>

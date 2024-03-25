@@ -1,5 +1,8 @@
-import { Routes } from '@angular/router';
+import { assertInInjectionContext, inject } from '@angular/core';
+import { ActivatedRoute, Routes } from '@angular/router';
+
 import { AuthGuard, LoginComponent } from '@sinequa/atomic-angular';
+
 import { DEFAULT_QUERY_NAME, PEOPLE_QUERY_NAME, SLIDES_QUERY_NAME } from './config/query-names';
 import { DesignSystemComponent } from './pages/debug/design-system/design-system.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -30,4 +33,16 @@ export const SEARCH_ROUTES = ['/search'];
 
 export function isASearchRoute(url: string): boolean {
   return SEARCH_ROUTES.some(route => url.startsWith(route));
+}
+
+/**
+ * Returns the current tab
+ * @returns The current tab
+ */
+export function getCurrentTab(): string | undefined {
+  assertInInjectionContext(getCurrentTab);
+
+  const route = inject(ActivatedRoute);
+
+  return route?.snapshot.url.toString();
 }
