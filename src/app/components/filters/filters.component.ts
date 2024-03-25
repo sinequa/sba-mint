@@ -62,7 +62,7 @@ export class FiltersComponent implements OnInit {
         this.dateFilterDropdown.set({
           label: 'Date',
           aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
-          iconClass: 'far fa-calendar-day'
+          icon: 'far fa-calendar-day'
         });
 
       this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations
