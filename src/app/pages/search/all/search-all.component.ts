@@ -85,7 +85,6 @@ export class SearchAllComponent implements OnInit, OnDestroy {
         .subscribe((result: Result) => {
           const { page, pageSize, rowCount } = result;
           this.pageConfiguration.set({ page, pageSize, rowCount });
-          console.log(result);
           this.result.set(result);
           this.articles.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' }))) ?? []);
           this.queryText.set(searchInputStore.state ?? '');
@@ -106,6 +105,9 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   }
 
   onSort(sort: SortingChoice): void {
-    console.log(sort);
+    queryParamsStore.set({ sort: sort.name });
+
+    this.articles.set(undefined);
+    this.searchService.search([]);
   }
 }

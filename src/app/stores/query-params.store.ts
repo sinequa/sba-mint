@@ -8,11 +8,11 @@ export class QueryParamsStore extends Store<QueryParams> {
   public setFromUrl(url: string): void {
     const path = url.split('?')[0];
 
-    const { q: text, f, id, p } = queryParamsFromUrl(url);
+    const { q: text, f, id, p, s: sort } = queryParamsFromUrl(url);
     const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
     const page = parseInt(p, 10);
 
-    this.set({ path, text, filters, id, page });
+    this.set({ path, text, filters, id, page, sort });
   }
 
   public updateFilter(filter: Filter): void {

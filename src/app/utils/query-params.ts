@@ -6,6 +6,8 @@ import { queryParamsFromUrl } from "./query";
  * `text`: search text of the query
  * `filters`: filters associated to the query
  * `id`: document id if there's one opened
+ * `page`: page number of the search
+ * `sort`: sorting choice name
  */
 export type QueryParams = {
   path?: string;
@@ -13,6 +15,7 @@ export type QueryParams = {
   filters?: Filter[];
   id?: string;
   page?: number;
+  sort?: string;
 }
 
 /**
@@ -24,14 +27,15 @@ export type QueryParams = {
 export function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined {
   if (url === undefined) return undefined;
 
-  const {q, f, p} = queryParamsFromUrl(url);
+  const { q, f, p, s } = queryParamsFromUrl(url);
   const [path] = url.split('?');
 
   return {
     path,
     text: decodeURIComponent(q),
     filters: f ? getFiltersFromURI(f) : undefined,
-    page: parseInt(p, 10)
+    page: parseInt(p, 10),
+    sort: s
   };
 }
 
@@ -44,7 +48,7 @@ export function getQueryParamsFromUrl(url: string | undefined): QueryParams | un
 export function getFiltersFromUrl(queryParams: string | undefined): Filter[] {
   if (queryParams === undefined) return [];
 
-  const {f: encodedFilters} = queryParamsFromUrl(queryParams);
+  const { f: encodedFilters } = queryParamsFromUrl(queryParams);
   return getFiltersFromURI(encodedFilters);
 }
 
@@ -61,22 +65,22 @@ export function getFiltersFromURI(uri: string): Filter[] {
   return filters;
 }
 
-  /**
-   * Returns whether the search `QueryParams` are equals according to:
-   * - `path`
-   * - `text`
-   * - `filters`
-   *
-   * @param previous Previous state of the search `QueryParams`
-   * @param current Current state of the search `QueryParams`
-   * @returns `true` if the search `QueryParams` are equals according to
-   * criteria, `false` otherwise
-   */
-  export function areSearchQueryParamsEquals(previous: QueryParams | undefined, current: QueryParams | undefined): boolean {
-    if (previous === current) return true;
+/**
+ * Returns whether the search `QueryParams` are equals according to:
+ * - `path`
+ * - `text`
+ * - `filters`
+ *
+ * @param previous Previous state of the search `QueryParams`
+ * @param current Current state of the search `QueryParams`
+ * @returns `true` if the search `QueryParams` are equals according to
+ * criteria, `false` otherwise
+ */
+export function areSearchQueryParamsEquals(previous: QueryParams | undefined, current: QueryParams | undefined): boolean {
+  if (previous === current) return true;
 
-    const prev = JSON.stringify({ path: previous?.path, text: previous?.text, filters: previous?.filters ?? [] });
-    const curr = JSON.stringify({ path: current?.path, text: current?.text, filters: current?.filters ?? [] });
+  const prev = JSON.stringify({ path: previous?.path, text: previous?.text, filters: previous?.filters ?? [] });
+  const curr = JSON.stringify({ path: current?.path, text: current?.text, filters: current?.filters ?? [] });
 
-    return prev === curr;
-  }
+  return prev === curr;
+}

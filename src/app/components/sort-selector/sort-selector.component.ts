@@ -42,4 +42,8 @@ export class SortSelectorComponent {
 
   readonly sort = computed(() => this.sortOptions()?.find(x => x.name === this.result()?.sort));
   readonly isSortingDesc = computed(() => this.sort()?.orderByClause?.includes('desc'));
+
+  onSortOptionClicked(sort: SortingChoice) {
+    if (sort.name !== this.sort()?.name) this.onSort.emit(sort);
+  }
 }

@@ -9,10 +9,9 @@ import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { Filter } from '@/app/utils/models';
-
 import { appStore, queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
+import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
 
 import { AggregationComponent } from './components/aggregation/aggregation.component';
