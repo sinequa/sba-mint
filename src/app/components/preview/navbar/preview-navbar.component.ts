@@ -49,6 +49,6 @@ export class PreviewNavbarComponent {
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
 
   openClicked(): void {
-    window.open(this.article()?.url1, '_blank');
+    window.open(this.article()?.url1, '_blank', 'noopener noreferrer');
   }
 }
