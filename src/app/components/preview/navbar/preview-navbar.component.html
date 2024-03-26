@@ -15,7 +15,7 @@
 
   @if (navConfig.showOpenButton) {
   <li>
-    <button class="btn btn-ghost flex items-center gap-2">
+    <button class="btn btn-ghost flex items-center gap-2" [disabled]="!hasExternalLink()" (click)="openClicked()">
       <i class="fa-fw far fa-arrow-up-right-from-square"></i>
       Open
     </button>
