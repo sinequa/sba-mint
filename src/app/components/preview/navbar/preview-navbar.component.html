@@ -35,8 +35,8 @@
 </li>
 
   <li>
-    <button title="Copy link">
-      <i class="fa-fw far fa-link"></i>
+    <button [title]="!copied? 'Copy link' : 'Successfully copied'">
+      <i class="fa-fw far" [class.fa-link]="!copied" [class.fa-circle-check]="copied" (click)="copyLink()"></i>
     </button>
   </li>
 
