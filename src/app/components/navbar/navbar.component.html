@@ -18,35 +18,81 @@
   </li>
   }
   <li>
-    <app-dropdown-trigger #dropdownTrigger>
-      <div class="flex">
+    <app-menu>
+      <app-menu-trigger>
         <button title="User settings">
           <img class="rounded-full size-8" alt="User profile picture"
             src="https://xsgames.co/randomusers/avatar.php?g=male" />
         </button>
-      </div>
-  
-      <ng-container dropdown>
-        <li (click)="onClick('contact', dropdownTrigger)">Contact administrator</li>
-        <li (click)="onClick('override', dropdownTrigger)">Override user</li>
-        <li class="flex items-center justify-between" (click)="dropdownTrigger.menu = !dropdownTrigger.menu">
-          Select language
-          <i class="far fa-chevron-right"></i>
-        </li>
-  
-        @if(dropdownTrigger.menu){
-          <app-dropdown-menu>
-            <li (click)="onClick('language_english', dropdownTrigger)">English</li>
-            <li (click)="onClick('language_french', dropdownTrigger)">Français</li>
-          </app-dropdown-menu>
-        }
-  
-        <div class="w-full border border-gray-200 my-1"></div>
-        <li (click)="onClick('logout', dropdownTrigger)">Logout</li>
-      </ng-container>
-  
-  
-    </app-dropdown-trigger>
+      </app-menu-trigger>
+      <app-menu-content>
+        <div
+          class="
+            bg-gray-800
+            rounded-md
+            p-3
+            right-0
+            min-w-[220px]
+            top-1
+            w-full
+            absolute
+            z-10
+          "
+        >
+          <ul
+            class="
+              [&>li]:text-white
+              [&>li]:text-sm
+              [&>li]:cursor-pointer
+              [&>li]:px-2
+              [&>li]:py-1
+              [&>li]:rounded-md
+              [&>li]:transition-all
+              hover:[&>li]:bg-gray-600
+              active:[&>li]:bg-gray-700 active:[&>li]:scale-[0.99]
+            "
+          >
+            <li (click)="onClick('profile')">Profile</li>
+            <li (click)="onClick('dashboard')">Dashboard</li>
+            <li (click)="onClick('settings')">Settings</li>
+            <li class="flex items-center justify-between">
+              Services
+              <i class="arrow"></i>
+            </li>
+
+            <div
+              class="
+                bg-gray-800
+                rounded-md
+                max-w-[180px]
+                w-full
+                p-3
+                absolute
+                -left-[185px]
+                -bottom-4
+                [&>li]:text-white
+                [&>li]:text-sm
+                [&>li]:cursor-pointer
+                [&>li]:px-2
+                [&>li]:py-1
+                [&>li]:rounded-md
+                [&>li]:transition-all
+                hover:[&>li]:bg-gray-600
+                active:[&>li]:bg-gray-700 active:[&>li]:scale-[0.99]
+              "
+            >
+              <li (click)="onClick('list item #1')">List Item #1</li>
+              <li>List Item #2</li>
+              <li>List Item #3</li>
+            </div>
+
+            <div class="w-full border border-gray-700 my-1"></div>
+            <li>Logout</li>
+          </ul>
+        </div>
+      </app-menu-content>
+
+    </app-menu>
   </li>
 </menu>
 

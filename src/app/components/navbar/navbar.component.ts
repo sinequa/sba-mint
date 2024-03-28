@@ -9,12 +9,13 @@ import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { MenuTriggerComponent } from "../menu/menu-trigger";
+import { MenuComponent } from '../menu/menu.component';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { queryParamsStore } from '@/app/stores/query-params.store';
-import { DropdownTriggerComponent } from '../dropdown/dropdown-trigger.component';
-import { DropdownMenuComponent } from '../dropdown/dropdown-menu/dropdown-menu.component';
+import { MenuContentComponent } from "../menu/menu-content";
 
 type NavbarMenu = {
   label: string;
@@ -28,11 +29,11 @@ type NavbarTab = {
 }
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
-  imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, DropdownTriggerComponent, DropdownMenuComponent]
+    selector: 'app-navbar',
+    standalone: true,
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
+    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, MenuComponent, MenuTriggerComponent, MenuContentComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
@@ -135,11 +136,7 @@ export class NavbarComponent {
    * Upon dropdown menu element click
    * @param e The clicked element
    */
-  onClick(e: string, dropdownTrigger: DropdownTriggerComponent) {
+  onClick(e: string) {
     console.log('on click', e);
-
-    // Close the dropdown
-    dropdownTrigger.show = false;
-    dropdownTrigger.menu = false;
   }
 }
