@@ -57,11 +57,13 @@ export class PreviewNavbarComponent {
   }
 
   public copyLink(): void {
-    const url = this.previewService.getUrl();
-    navigator.clipboard.writeText(window.location.origin + url);
-    this.copied = true;
-    setTimeout(() => {
-      this.copied = false;
-    }, 3000);
+    const url = this.article()?.url1 || this.article()?.url2;
+    if (url) {
+      navigator.clipboard.writeText(url);
+      this.copied = true;
+      setTimeout(() => {
+        this.copied = false;
+      }, 3000);
+    }
   }
 }
