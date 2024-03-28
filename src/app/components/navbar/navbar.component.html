@@ -17,22 +17,36 @@
     </button>
   </li>
   }
-  <li class="self-end dropdown">
-    <button title="User settings">
-      <img class="rounded-full size-8" alt="User profile picture"
-        src="https://xsgames.co/randomusers/avatar.php?g=male" />
-    </button>
-
-    <div class="dropdown-content right-0 w-52 p-2 mt-1 rounded-md border border-gray-300 bg-white w-max">
-      <ul>
-        <li class="p-1 hover:bg-gray-100 cursor-pointer">Contact administrator</li>
-        <li class="p-1 hover:bg-gray-100 cursor-pointer">Override user</li>
-        <li class="p-1">Select language</li>
-        <li class="p-1 pl-5 hover:bg-gray-100 cursor-pointer">English</li>
-        <li class="p-1 pl-5 hover:bg-gray-100 cursor-pointer">Français</li>
-        <li class="p-1 hover:bg-gray-100 cursor-pointer">Logout from EMAIL</li>
-      </ul>
-    </div>
+  <li>
+    <app-dropdown-trigger #dropdownTrigger>
+      <div class="flex">
+        <button title="User settings">
+          <img class="rounded-full size-8" alt="User profile picture"
+            src="https://xsgames.co/randomusers/avatar.php?g=male" />
+        </button>
+      </div>
+  
+      <ng-container dropdown>
+        <li (click)="onClick('contact', dropdownTrigger)">Contact administrator</li>
+        <li (click)="onClick('override', dropdownTrigger)">Override user</li>
+        <li class="flex items-center justify-between" (click)="dropdownTrigger.menu = !dropdownTrigger.menu">
+          Select language
+          <i class="far fa-chevron-right"></i>
+        </li>
+  
+        @if(dropdownTrigger.menu){
+          <app-dropdown-menu>
+            <li (click)="onClick('language_english', dropdownTrigger)">English</li>
+            <li (click)="onClick('language_french', dropdownTrigger)">Français</li>
+          </app-dropdown-menu>
+        }
+  
+        <div class="w-full border border-gray-200 my-1"></div>
+        <li (click)="onClick('logout', dropdownTrigger)">Logout</li>
+      </ng-container>
+  
+  
+    </app-dropdown-trigger>
   </li>
 </menu>
 
