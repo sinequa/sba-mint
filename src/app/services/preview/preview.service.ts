@@ -124,8 +124,4 @@ export class PreviewService {
 
     return _extracts;
   }
-
-  getUrl(): string {
-    return this.previewData.documentCachedContentUrl;
-  }
 }
