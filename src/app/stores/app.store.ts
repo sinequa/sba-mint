@@ -3,9 +3,15 @@ import { CCApp, CCWebService } from '@sinequa/atomic';
 import { CJAggregationItem, CustomizationJson } from '../types';
 import { Store } from './store';
 
+type CCWebServiceLabels = CCWebService & {
+  privateLabelsField: string;
+  publicLabelsField: string;
+}
+
 export class AppStore extends Store<CCApp> {
   /**
    * Returns the web service by type name
+   *
    * @param type Web service type name
    * @returns A {@link CCWebService} object or undefined if not found
    */
@@ -21,6 +27,17 @@ export class AppStore extends Store<CCApp> {
       });
 
     return webService;
+  }
+
+  /**
+   * Retrieves the private and public labels from the web service.
+   * @returns An array containing the private and public labels.
+   */
+  getLabels(): {private: string, public: string} {
+    const labels = this.getWebServiceByType('Labels') as CCWebServiceLabels;
+    if(!labels) return {private: '', public: ''};
+    const {publicLabelsField, privateLabelsField} = labels;
+    return ({private: privateLabelsField, public: publicLabelsField});
   }
 
   getCustomizationJson(): CustomizationJson | undefined {
