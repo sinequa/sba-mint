@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { Component, EventEmitter, Output, input } from "@angular/core";
 
-import { AggregationEx, AggregationListItem, AggregationTreeEx } from "@/app/services";
+import { AggregationListEx, AggregationListItem, AggregationTreeEx } from "@/app/services";
 
 @Component({
   selector: "app-aggregation-row",
@@ -15,7 +15,7 @@ export class AggregationRowComponent {
   @Output() onOpen = new EventEmitter<AggregationListItem>();
 
   item = input.required<AggregationListItem>();
-  aggregation = input.required<AggregationEx | AggregationTreeEx>();
+  aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
   select(e: Event, item: AggregationListItem) {
     e.stopImmediatePropagation();
