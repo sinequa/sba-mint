@@ -11,6 +11,10 @@ export class MenuTriggerDirective {
   menu = inject(MenuComponent);
 
   @HostListener("click", ['$event']) click(e: MouseEvent) {
+    if (this.menu.show() === false) {
+      this.menu.submenu.set(false);
+    }
+
     this.submenu ? this.menu.toggleSubmenu(e) : this.menu.toggle(e);
   }
 }
