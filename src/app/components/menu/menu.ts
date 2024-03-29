@@ -6,14 +6,23 @@ import { Component, signal } from '@angular/core';
   selector: 'app-menu',
   standalone: true,
   imports: [CommonModule, clickAwayDirective],
-  templateUrl: './menu.component.html'
+  template: `
+<div (clickAway)="show.set(false); submenu.set(false)" class="select-none" (click)="toggle($event)">
+    <ng-content></ng-content>
+</div>
+  `
 })
 export class MenuComponent {
   show = signal(false);
-  menu = false;
+  submenu = signal(false);
 
   toggle(e: Event) {
     e.stopImmediatePropagation();
-    this.show.update(()=> !this.show());
+    this.show.update(() => !this.show());
+  }
+
+  toggleSubmenu(e: Event) {
+    e.stopImmediatePropagation();
+    this.submenu.update(() => !this.submenu());
   }
 }

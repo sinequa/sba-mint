@@ -11,11 +11,12 @@ import { Subscription } from 'rxjs';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
-import { MenuTriggerComponent } from "../menu/menu-trigger";
-import { MenuComponent } from '../menu/menu.component';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { MenuComponent } from '../menu/menu';
 import { MenuContentComponent } from "../menu/menu-content";
+import { MenuSubmenuComponent } from '../menu/menu-submenu';
+import { MenuTriggerDirective } from "../menu/menu-trigger";
 
 type NavbarMenu = {
   label: string;
@@ -33,7 +34,7 @@ type NavbarTab = {
     standalone: true,
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
-    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, MenuComponent, MenuTriggerComponent, MenuContentComponent]
+    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, MenuComponent, MenuTriggerDirective, MenuContentComponent, MenuSubmenuComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')

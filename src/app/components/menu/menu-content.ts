@@ -1,5 +1,5 @@
 import { Component, inject } from "@angular/core";
-import { MenuComponent } from "./menu.component";
+import { MenuComponent } from "./menu";
 
 @Component({
   selector: "app-menu-content",

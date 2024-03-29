@@ -19,16 +19,15 @@
   }
   <li>
     <app-menu>
-      <app-menu-trigger>
-        <button title="User settings">
-          <img class="rounded-full size-8" alt="User profile picture"
-            src="https://xsgames.co/randomusers/avatar.php?g=male" />
-        </button>
-      </app-menu-trigger>
+      <button title="User settings" menuTrigger>
+        <img class="rounded-full size-8" alt="User profile picture"
+          src="https://xsgames.co/randomusers/avatar.php?g=male" />
+      </button>
       <app-menu-content>
-        <div
-          class="
-            bg-gray-800
+        <div class="
+            border
+            border-gray-300
+            bg-white
             rounded-md
             p-3
             right-0
@@ -37,32 +36,29 @@
             w-full
             absolute
             z-10
-          "
-        >
-          <ul
-            class="
-              [&>li]:text-white
+          ">
+          <ul class="
               [&>li]:text-sm
               [&>li]:cursor-pointer
               [&>li]:px-2
               [&>li]:py-1
               [&>li]:rounded-md
               [&>li]:transition-all
-              hover:[&>li]:bg-gray-600
-              active:[&>li]:bg-gray-700 active:[&>li]:scale-[0.99]
-            "
-          >
-            <li (click)="onClick('profile')">Profile</li>
-            <li (click)="onClick('dashboard')">Dashboard</li>
-            <li (click)="onClick('settings')">Settings</li>
-            <li class="flex items-center justify-between">
-              Services
-              <i class="arrow"></i>
+              hover:[&>li]:bg-gray-100
+              active:[&>li]:bg-gray-200 active:[&>li]:scale-[0.99]
+            ">
+            <li (click)="onClick('contact')">Contact administrator</li>
+            <li (click)="onClick('override')">Override user</li>
+            <li menuTrigger [submenu]="true">
+              <i class="far fa-chevron-left mr-2"></i>
+              Select language
             </li>
 
-            <div
-              class="
-                bg-gray-800
+            <app-menu-submenu>
+              <div class="
+                border
+                border-gray-300
+                bg-white
                 rounded-md
                 max-w-[180px]
                 w-full
@@ -70,23 +66,21 @@
                 absolute
                 -left-[185px]
                 -bottom-4
-                [&>li]:text-white
                 [&>li]:text-sm
                 [&>li]:cursor-pointer
                 [&>li]:px-2
                 [&>li]:py-1
                 [&>li]:rounded-md
                 [&>li]:transition-all
-                hover:[&>li]:bg-gray-600
-                active:[&>li]:bg-gray-700 active:[&>li]:scale-[0.99]
-              "
-            >
-              <li (click)="onClick('list item #1')">List Item #1</li>
-              <li>List Item #2</li>
-              <li>List Item #3</li>
-            </div>
+                hover:[&>li]:bg-gray-100
+                active:[&>li]:bg-gray-200 active:[&>li]:scale-[0.99]
+              ">
+                <li (click)="onClick('language_english')">English</li>
+                <li (click)="onClick('language_french')">Français</li>
+              </div>
+            </app-menu-submenu>
 
-            <div class="w-full border border-gray-700 my-1"></div>
+            <div class="w-full border border-gray-200 my-1"></div>
             <li>Logout</li>
           </ul>
         </div>
