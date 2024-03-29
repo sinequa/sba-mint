@@ -8,18 +8,19 @@ import { ReplacePipe } from '@sinequa/atomic-angular';
 
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
-import { selectionStore } from '@/app/stores';
+import { appStore, selectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { ApplicationStore, Extract } from '@/stores';
 
 import { PanelDirective } from 'toolkit';
+import { MetadataComponent } from "../../../metadata/metadata.component";
 
 @Component({
-  selector: 'app-advanced-search',
-  standalone: true,
-  imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe],
-  templateUrl: './advanced-search.component.html',
-  styleUrl: './advanced-search.component.scss'
+    selector: 'app-advanced-search',
+    standalone: true,
+    templateUrl: './advanced-search.component.html',
+    styleUrl: './advanced-search.component.scss',
+    imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
 })
 export class AdvancedSearchComponent implements OnDestroy {
   @Output() public readonly search = new EventEmitter<string>();
@@ -32,7 +33,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
   protected readonly input = signal('');
 
-  protected readonly labels = inject(MockDataService).labels;
+  public labels = {public: '', private: ''};
   protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
@@ -48,6 +49,13 @@ export class AdvancedSearchComponent implements OnDestroy {
         this.extracts.set([]);
       }
     }));
+
+    this.sub.add(
+      appStore.current$.subscribe(() => {
+        this.labels = appStore.getLabels();
+      })
+    )
+
 
     effect(() => {
       getState(this.store);
