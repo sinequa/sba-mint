@@ -16,6 +16,7 @@ import { Article } from "@/app/types/articles";
 import { areSearchQueryParamsEquals, buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
+import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
@@ -29,7 +30,8 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     OverviewSlidesComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
-    PagerComponent
+    PagerComponent,
+    SortSelectorComponent
   ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
@@ -44,6 +46,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
 
   public readonly id = input<string | undefined>();
 
+  readonly result = signal<Result | undefined>(undefined);
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
@@ -61,7 +64,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   });
   private readonly subscription = new Subscription();
 
-  constructor(private readonly injector: Injector) {}
+  constructor(private readonly injector: Injector) { }
 
   ngOnInit(): void {
     // Once the navigation ends, we fetch the "first page" of results but only once
@@ -82,6 +85,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
         .subscribe((result: Result) => {
           const { page, pageSize, rowCount } = result;
           this.pageConfiguration.set({ page, pageSize, rowCount });
+          this.result.set(result);
           this.articles.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' }))) ?? []);
           this.queryText.set(searchInputStore.state ?? '');
         })
@@ -98,5 +102,12 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
     this.aggregationsStore.clear();
+  }
+
+  onSort(sort: SortingChoice): void {
+    queryParamsStore.set({ sort: sort.name });
+
+    this.articles.set(undefined);
+    this.searchService.search([]);
   }
 }

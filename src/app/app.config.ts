@@ -8,6 +8,7 @@ import { appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyIntercepto
 
 import { routes } from '@/app/app.routes';
 import { SearchInputService } from './components/search-input/search-input.service';
+import { QueryParamsService } from './services';
 import { eagerProvider } from './utils';
 
 registerLocaleData(localeFr);
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
+    eagerProvider(QueryParamsService),
     eagerProvider(SearchInputService),
     provideHttpClient(withInterceptors([
       bodyInterceptorFn,

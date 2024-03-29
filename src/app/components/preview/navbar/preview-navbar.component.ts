@@ -4,6 +4,7 @@ import { Component, EventEmitter, Input, Output, computed, inject, input } from 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { DrawerService } from '@/app/components/drawer/drawer.service';
 import { UserSettingsStore } from '@/app/stores';
+import { PreviewService } from '@/app/services/preview';
 import { Article } from '@/app/types/articles';
 import { getState } from '@ngrx/signals';
 
@@ -34,6 +35,7 @@ export class PreviewNavbarComponent {
 
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly drawerService = inject(DrawerService);
+  private readonly previewService = inject(PreviewService);
   readonly userSettingsStore = inject(UserSettingsStore);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
@@ -48,7 +50,20 @@ export class PreviewNavbarComponent {
 
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
 
+  public copied: boolean = false;
+
   openClicked(): void {
     window.open(this.article()?.url1, '_blank', 'noopener noreferrer');
+  }
+
+  public copyLink(): void {
+    const url = this.article()?.url1 || this.article()?.url2;
+    if (url) {
+      navigator.clipboard.writeText(url);
+      this.copied = true;
+      setTimeout(() => {
+        this.copied = false;
+      }, 3000);
+    }
   }
 }

@@ -2,7 +2,7 @@ import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Injector, OnInit, Output, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AggregationEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
+import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
@@ -33,7 +33,7 @@ export class AggregationComponent implements OnInit {
   protected readonly hasFilter = signal<boolean>(false);
 
   title = input<AggregationTitle>();
-  aggregation = input.required<AggregationEx | AggregationTreeEx>();
+  aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
   readonly aggregationsService = inject(AggregationsService);
   readonly injector = inject(Injector);

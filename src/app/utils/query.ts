@@ -48,7 +48,7 @@ export function queryParamsFromUrl(url: string): Record<string, string> {
  * @returns The decoded query text.
  */
 export function getQueryTextFromUrl(url: string): string {
-  const {q: queryText} = queryParamsFromUrl(url);
+  const { q: queryText } = queryParamsFromUrl(url);
   return decodeURIComponent(queryText);
 }
 
@@ -58,7 +58,7 @@ export function getQueryTextFromUrl(url: string): string {
  * @returns The decoded ID.
  */
 export function getIdFromUrl(url: string): string {
-  const {id} = queryParamsFromUrl(url);
+  const { id } = queryParamsFromUrl(url);
 
   return decodeURIComponent(id);
 }
@@ -70,7 +70,7 @@ export function getIdFromUrl(url: string): string {
  * @returns The page number parsed from the query string.
  */
 export function getQueryPageFromUrl(url: string): number {
-  const {p: page} = queryParamsFromUrl(url);
+  const { p: page } = queryParamsFromUrl(url);
 
   return parseInt(page, 10);
 }
@@ -85,19 +85,19 @@ export function getQueryPageFromUrl(url: string): number {
 export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
-
-
   const name = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
   const text = query?.text ?? getQueryTextFromUrl(window.location.toString()) ?? '';
   const filters = query?.filters ?? undefined;
   const page = query?.page ?? getQueryPageFromUrl(window.location.toString()) ?? undefined;
+  const sort = query?.sort ?? undefined;
 
   return {
     ...query,
     name,
     text,
     filters,
-    page
+    page,
+    sort
   };
 }
 

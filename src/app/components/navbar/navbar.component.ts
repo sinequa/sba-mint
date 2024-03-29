@@ -98,7 +98,6 @@ export class NavbarComponent {
 
     // ! we need to remove the page parameter from the query params when new search is performed
     this.router.navigate(commands, { queryParams: { q: searchInputStore.state, p: undefined }, queryParamsHandling: 'merge' });
-
   }
 
   protected changeTab(tab: NavbarTab): void {

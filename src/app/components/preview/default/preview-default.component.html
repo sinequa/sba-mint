@@ -1,11 +1,10 @@
 <app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"
   (bookmark)="toggleBookmark()" />
 
+@if(article()){
 <div class="overflow-auto h-full flex flex-col">
   <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
     <header class="flex items-center gap-4">
-      <img src="https://placehold.co/80x50" alt="" />
-
       <p class="article-title me-auto">{{ article()?.title }}</p>
 
       <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
@@ -16,24 +15,25 @@
     <table class="w-full" [ngClass]="{ hidden: headerCollapsed() }">
       <tr>
         <th>Location</th>
-        <td class="flex items-baseline divide-x-chevron-right divide-xs">
+        <td class="flex flex-wrap items-baseline divide-x-chevron-right divide-xs">
           <i class="fa-fw {{ article()?.treepath?.[0] | treepathToIconClass }}"></i>
 
-          @for (segment of (article()?.treepath?.[0] ?? '') | split: '/' | slice: 2:
-          -1; track $index) {
-          <span>{{ segment }}</span>
+          @for (segment of (article()?.treepath?.[0] ?? '') | split: '/' | slice:1:-1; track $index) {
+            <span>{{ segment }}</span>
           }
         </td>
       </tr>
 
       @if ((article()?.authors ?? []).length > 0) {
-      <tr>
-        <th>Last update by</th>
+        <tr>
+          <th>Last update by</th>
 
-        <td class="flex flex-wrap gap-2">
-          @for (author of article()!.authors; track $index) {
-          <wps-author [authorName]="author" class="flex items-center" />
-          }
+          <td class="flex flex-wrap gap-2">
+          <app-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
+            @for (author of refAuthors.items(); track $index) {
+              <wps-author [authorName]="author.display" class="flex items-center" />
+            }
+          </app-metadata>
         </td>
       </tr>
       }
@@ -50,21 +50,16 @@
 
       <tr>
         <th>Labels</th>
-        <td class="flex gap-2">
-          @for (label of labels(); track label) {
-          <span class="pill text-sm text-bold border-black font-semibold">
-            {{ label }}
-          </span>
-          }
+        <td class="flex flex-col gap-2">
+          <app-metadata [article]="article()!" [metadata]="labels.public" className="pill pill-sm border-black font-semibold"/>
+          <app-metadata [article]="article()!" [metadata]="labels.private" className="pill pill-sm border-black font-semibold"/>
         </td>
       </tr>
 
       <tr>
         <th>Type</th>
         <td>
-          <span class="pill text-sm text-bold border-black font-semibold">
-            PDF
-          </span>
+          <span class="pill pill-sm border-black font-semibold">{{ article()?.docformat }}</span>
         </td>
       </tr>
     </table>
@@ -86,3 +81,4 @@
     }
   </section>
 </div>
+}

@@ -1,0 +1,19 @@
+<div role="button" class="dropdown dropdown-end" tabindex="0">
+  <div class="btn btn-sm">
+    <i class="fa-fw fa-regular fa-arrow-{{ sort()?.$isDesc ? 'down': 'up' }}-big-small"></i>
+    {{ sort()?.display }}
+  </div>
+
+  <div class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white">
+    @if ((sortOptions()?.length ?? 0) > 0) {
+    <ul class="data-list p-1">
+      @for (option of sortOptions(); track $index) {
+      <li class="flex gap-1 items-baseline data-list-item p-1" role="button" (click)="onSortOptionClicked(option)">
+        <i class="fa-fw fa-regular fa-arrow-{{ option.$isDesc ? 'down': 'up' }}-big-small"></i>
+        {{ option.display }}
+      </li>
+      }
+    </ul>
+    }
+  </div>
+</div>

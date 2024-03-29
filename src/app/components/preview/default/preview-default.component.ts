@@ -6,11 +6,11 @@ import { Subscription } from 'rxjs';
 import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { SplitPipe } from '@sinequa/atomic-angular';
 
+import { MetadataComponent } from '@/app/components/metadata/metadata.component';
 import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
-import { MockDataService } from '@/app/services';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';
-import { selectionStore } from '@/app/stores/selection.store';
+import { appStore, selectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildQuery } from '@/app/utils';
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
@@ -20,7 +20,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, TreepathToIconClassPipe, PreviewNavbarComponent, WpsAuthorComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, TreepathToIconClassPipe, PreviewNavbarComponent, WpsAuthorComponent, MetadataComponent],
   templateUrl: './preview-default.component.html',
   styleUrl: './preview-default.component.scss'
 })
@@ -33,10 +33,10 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
     return this.iframe?.nativeElement?.contentWindow;
   }
 
-  public readonly article = input<Partial<Article> | undefined>();
+  public readonly article = input<Partial<Article>>();
   public readonly previewUrl = signal<SafeUrl | undefined>(undefined);
 
-  public readonly labels = inject(MockDataService).labels;
+  public labels = {public: '', private: ''};
 
   readonly headerCollapsed = signal<boolean>(false);
 
@@ -60,10 +60,16 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
     this.sub.add(
       selectionStore.current$.subscribe((selection) => {
-        if (selection !== null && this.article()?.id === selection?.id)
-          this.previewService.setIframe(this.preview)
-      })
+          if (selection !== null && this.article()?.id === selection?.id)
+            this.previewService.setIframe(this.preview)
+        })
     );
+
+    this.sub.add(
+      appStore.current$.subscribe(() => {
+        this.labels = appStore.getLabels();
+      })
+    )
   }
 
   ngAfterViewInit() {
