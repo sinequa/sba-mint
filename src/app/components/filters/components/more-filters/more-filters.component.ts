@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
-import { AggregationEx, AggregationsService, SearchService } from '@/app/services';
+import { AggregationEx, AggregationListEx, AggregationsService, SearchService } from '@/app/services';
 import { appStore, queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
@@ -97,14 +97,14 @@ export class MoreFiltersComponent implements OnDestroy {
     this._search.search([]);
   }
 
-  public loadMore(aggregation: AggregationEx, index: number): void {
+  public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
       runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
         if (filters[index].aggregation.column === aggregation.column) {
-          filters[index].aggregation = aggregation;
+          filters[index].aggregation = aggregation as AggregationEx;
         }
         return filters;
       });
@@ -134,7 +134,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
       return ({
         label: aggregation.name,
-        aggregation: aggregation,
+        aggregation: aggregation as AggregationEx,
         column: aggregation.column,
         icon: appStore.getAggregationIcon(aggregation.column),
         moreFiltersCount: count

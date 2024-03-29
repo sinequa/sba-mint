@@ -15,13 +15,13 @@ export type DateFilter = {
   calculated: () => [DateFilterCode, Date | null, Date | null];
 }
 
-export type AggregationListItem = (AggregationItem | TreeAggregationNode) & {
+export type AggregationListItem = (AggregationItem & TreeAggregationNode) & {
   icon?: string;
-  hasChildren?: boolean;
 };
-
-export type AggregationEx = Aggregation & { items: AggregationListItem[] };
+// override Aggregation and TreeAggregation types
+export type AggregationListEx = Aggregation & { items: AggregationListItem[] };
 export type AggregationTreeEx = TreeAggregation & { items: AggregationListItem[] };
+export type AggregationEx = AggregationListEx | AggregationTreeEx;
 
 @Injectable({
   providedIn: 'root'

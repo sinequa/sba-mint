@@ -8,10 +8,9 @@ import { Subscription, map } from 'rxjs';
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-import { AggregationEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { appStore, queryParamsStore } from '@/app/stores';
-import { buildQuery } from '@/app/utils';
-import { Filter } from '@/app/utils/models';
+import { Filter, buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
 import { AggregationComponent } from './components/aggregation/aggregation.component';
@@ -60,7 +59,7 @@ export class FiltersComponent implements OnInit {
       if (authorizedFilters.includes("#date"))
         this.dateFilterDropdown.set({
           label: 'Date',
-          aggregation: aggregations?.find(agg => agg.name === "date") as AggregationEx || null,
+          aggregation: aggregations?.find(agg => agg.name === "date") as AggregationListEx || null,
           icon: 'far fa-calendar-day'
         });
 
@@ -92,14 +91,14 @@ export class FiltersComponent implements OnInit {
     this._searchService.search([]);
   }
 
-  public loadMore(aggregation: AggregationEx, index: number): void {
+  public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
       runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
         if (filters[index].aggregation.column === aggregation.column) {
-          filters[index].aggregation = aggregation;
+          filters[index].aggregation = aggregation as AggregationEx;
         }
         return filters;
       });
@@ -139,8 +138,8 @@ export class FiltersComponent implements OnInit {
   }
 
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
-    const dropdowns = aggregations
-      .map((aggregation: Aggregation) => {
+    const dropdowns = (aggregations as AggregationEx[])
+      .map((aggregation) => {
         const itemCustomizations = appStore.getAggregationItemsCustomization(aggregation.column);
 
         const f = queryParamsStore.getFilterFromColumn(aggregation.column);
