@@ -9,10 +9,14 @@ import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
+import { queryParamsStore } from '@/app/stores/query-params.store';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { queryParamsStore } from '@/app/stores/query-params.store';
+import { MenuComponent } from '../menu/menu';
+import { MenuContentComponent } from "../menu/menu-content";
+import { MenuSubmenuComponent } from '../menu/menu-submenu';
+import { MenuTriggerDirective } from "../menu/menu-trigger";
 
 type NavbarMenu = {
   label: string;
@@ -26,11 +30,11 @@ type NavbarTab = {
 }
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
-  imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent]
+    selector: 'app-navbar',
+    standalone: true,
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
+    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, MenuComponent, MenuTriggerDirective, MenuContentComponent, MenuSubmenuComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
@@ -94,7 +98,6 @@ export class NavbarComponent {
 
     // ! we need to remove the page parameter from the query params when new search is performed
     this.router.navigate(commands, { queryParams: { q: searchInputStore.state, p: undefined }, queryParamsHandling: 'merge' });
-
   }
 
   protected changeTab(tab: NavbarTab): void {
@@ -127,5 +130,13 @@ export class NavbarComponent {
    */
   protected saveSearch(): void {
     this.savedSearchesService.saveSearch();
+  }
+
+  /**
+   * Upon dropdown menu element click
+   * @param e The clicked element
+   */
+  onClick(e: string) {
+    console.log('on click', e);
   }
 }

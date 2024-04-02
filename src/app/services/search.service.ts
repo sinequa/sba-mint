@@ -21,6 +21,7 @@ export type SearchOptions = {
 type QueryParams = {
   f?: string; // filters list
   p?: number; // page number
+  s?: string; // sort name
 }
 
 @Injectable({
@@ -64,11 +65,12 @@ export class SearchService implements OnDestroy {
    */
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
+    const { filters = [], page, sort } = queryParamsStore.state || {};
 
-    const { filters = [], page } = queryParamsStore.state || {};
-    if (options.appendFilters){
-      queryParams.f = filters.length > 0 ? JSON.stringify(filters): undefined;
+    if (options.appendFilters) {
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
+      queryParams.s = sort;
     }
 
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
@@ -77,7 +79,8 @@ export class SearchService implements OnDestroy {
   public getResult(filters: Filter[]): Observable<Result> {
     const { aggregations } = getState(this.aggregationsStore);
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
-    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any}));
+    const sort = queryParamsStore.state?.sort;
+    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort }));
 
     return this.queryService.search(query);
   }
