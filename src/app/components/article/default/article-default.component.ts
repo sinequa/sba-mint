@@ -8,8 +8,9 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 import { StopPropagationDirective } from 'toolkit';
 
 import { BookmarksService } from '@/app/services/bookmarks.service';
-import { UserSettingsStore } from '@/app/stores';
+import { UserSettingsStore, appStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
+import { MetadataComponent } from '../../metadata/metadata.component';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
@@ -17,7 +18,7 @@ type Tab = 'attachments' | 'similars';
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, TreepathToIconClassPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, TreepathToIconClassPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -41,19 +42,18 @@ export class ArticleDefaultComponent implements OnInit {
     if (!article) return false;
     return bookmarks?.find((bookmark) => bookmark.id === article.id);
   })
+  protected articleMetadata = computed(() => {
+    const source = this.article()?.treepath?.[0]?.split('/')[1];
+    const maps = appStore.getCustomizationJson()?.sourcesTagsMap;
+    const fields = maps?.find((map) => map.sources.includes(source!));
+
+    return fields?.tags;
+  })
 
   protected attachments: Partial<Article>[] = [
     { value: 'X-1', type: 'default' },
     { value: 'X-2', type: 'default' },
     { value: 'X-3', type: 'default' }
-  ]
-
-  protected similars: Partial<Article>[] = [
-    { value: 'X-1', type: 'default' },
-    { value: 'X-2', type: 'default' },
-    { value: 'X-3', type: 'default' },
-    { value: 'X-4', type: 'default' },
-    { value: 'X-5', type: 'default' }
   ]
 
   ngOnInit(): void {

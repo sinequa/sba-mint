@@ -24,7 +24,7 @@
     "@ngrx/signals": "^17.1.1",
     "@ngrx/store": "^17.1.1",
     "@popperjs/core": "^2.11.8",
-    "@sinequa/atomic": "^0.0.7",
+    "@sinequa/atomic": "^0.0.8",
     "@sinequa/atomic-angular": "^0.0.6",
     "clsx": "^2.1.0",
     "rxjs": "~7.8.0",
