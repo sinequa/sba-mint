@@ -8,7 +8,12 @@ import { Filter } from '@/app/utils/models';
 
 import { QueryParamsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
+import { AggregationsStore } from '@/stores';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { AggregationTitle } from '../aggregation/aggregation.component';
+
+const ALLOW_CUSTOM_RANGE = true;
 
 @Component({
   selector: 'app-date-filter',
@@ -25,10 +30,13 @@ export class DateFilterComponent implements OnInit, OnDestroy {
   @Output() public readonly updated = new EventEmitter<Filter>();
   @Output() public readonly valueChanged = new EventEmitter<Filter>();
 
-  protected readonly dateOptions = signal<DateFilter[]>([]);
-  protected readonly hasFilter = computed(() => this.activeFilters().length > 0);
-  protected readonly form = new FormGroup({
-    option: new FormControl<DateFilterCode | null>(null),
+  readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
+  readonly options = signal<unknown[]>([]);
+  readonly aggregationDateOptions = toObservable(computed(() => this.translateAggregationToDateOptions(this.aggregationsStore.getAggregation('Modified', 'name') as Aggregation)));
+  readonly dateOptions = signal<DateFilter[]>([]);
+  readonly hasFilter = computed(() => this.activeFilters().length > 0);
+  readonly form = new FormGroup({
+    option: new FormControl<DateFilterCode | string | null>(null),
     customRange: new FormGroup({
       from: new FormControl<string | null>(null),
       to: new FormControl<string | null>(null)
@@ -41,14 +49,19 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
   private readonly aggregations = inject(AggregationsService);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly aggregationsStore = inject(AggregationsStore);
+
 
   ngOnInit(): void {
     const updateState$ = combineLatest([
-      this.aggregations.getMockDateAggregation$(),
+      this.aggregationDateOptions,
       of(getState(this.queryParamsStore).filters)
     ])
       .pipe(
         tap(([options, filters]) => {
+          console.log('## options', options);
+          console.log('## filters', filters);
+
           this.dateOptions.set(options);
           this.activeFilters.set(filters?.find((f: Filter) => f.column === this.column)?.values ?? []);
 
@@ -89,20 +102,18 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
   public submit(): void {
     const value = this.form.value;
-    const dateOption = this.dateOptions().find((option: DateFilter) => option.code === value.option);
-    const filter: Filter = { column: this.column, label: dateOption?.label, values: [] };
+    const dateOption = this.dateOptions().find((option: DateFilter) => option.display === value.option);
+    const filter: Filter = {
+      column: this.column,
+      label: value.option as string,
+      values: [],
+      operator: value.option === 'custom-range' ? 'between' : dateOption?.operator as FilterOperator
+    };
 
-    if (value.option !== 'custom-range') {
-      const [, from, to] = dateOption?.calculated() ?? [null, null, null];
-
+    if (value.option !== 'custom-range')
+      filter.values = [dateOption?.value ?? ''];
+    else {
       filter.values = [
-        value.option?.toString() ?? '',
-        from?.toISOString().split('T')[0] ?? '',
-        to?.toISOString().split('T')[0] ?? ''
-      ];
-    } else {
-      filter.values = [
-        value.option?.toString() ?? '',
         value.customRange?.from ?? '',
         value.customRange?.to ?? ''
       ];
@@ -133,6 +144,48 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
   protected forceFilterToCustomRange(): void {
     this.form.get('option')?.setValue('custom-range');
+  }
+
+  private translateAggregationToDateOptions(aggregation: Aggregation): DateFilter[] {
+    console.log('#', aggregation);
+    if (!aggregation?.items || aggregation?.items?.length === 0)
+      return [];
+
+    const items = aggregation.items;
+
+    console.log('## items', items);
+
+    const arr = items.reduce((acc, curr) => {
+      const value = this.parseValueAndOperatorFromItem(curr.value as string);
+
+      acc.push({
+        operator: value[0],
+        value: value[1],
+        display: curr.display
+      });
+
+      return acc;
+    }, [] as DateFilter[]);
+
+    console.log('## arr', arr);
+
+    return arr;
+  }
+
+  private parseValueAndOperatorFromItem(value: string): [string, string] {
+    const skimmed = value.split(':')[1];
+    // eslint-disable-next-line prefer-const
+    let [operator, valueStr] = skimmed.split(' ');
+
+    switch (operator) {
+      case '>=': operator = 'ge'; break;
+      case '<=': operator = 'le'; break;
+      case '>': operator = 'gt'; break;
+      case '<': operator = 'lt'; break;
+      case '=': operator = 'eq'; break;
+    }
+
+    return [operator, valueStr];
   }
 
   private updateForm(filter: Filter | undefined): void {

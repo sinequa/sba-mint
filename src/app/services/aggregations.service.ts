@@ -10,9 +10,12 @@ import { AggregationsStore } from '@/stores';
 export type DateFilterCode = 'last-day' | 'last-week' | 'last-month' | 'last-year' | 'last-3-years' | 'before-last-year' | 'custom-range';
 
 export type DateFilter = {
-  label: string;
-  code: DateFilterCode;
-  calculated: () => [DateFilterCode, Date | null, Date | null];
+  label?: string;
+  code?: DateFilterCode;
+  calculated?: () => [DateFilterCode, Date | null, Date | null];
+  operator?: string;
+  value?: string;
+  display?: string;
 }
 
 export type AggregationListItem = (AggregationItem & TreeAggregationNode) & {

@@ -4,9 +4,8 @@
       <div class="dropdown-header">
         <p class="me-4">
           @if (title?.icon) {
-          <i class="fa-fw {{ title?.icon }}"></i>
+            <i class="fa-fw {{ title?.icon }}"></i>
           }
-
           {{ title?.label }}
         </p>
 
@@ -46,51 +45,46 @@
           #radio
           type="radio"
           formControlName="option"
-          id="date-filter-{{ option.code }}"
-          value="{{ option.code }}"
-        />
+          id="date-filter-{{ option.display }}"
+          value="{{ option.display }}"/>
 
         <span
           class="fa-fw radio me-1 p-1 cursor-pointer"
           (click)="radio.click()"
           (keydown.enter)="radio.click()"
-          tabindex="-1"
-        ></span>
+          tabindex="-1"></span>
 
-        @if (option.code !== 'custom-range') {
-        <label
-          for="date-filter-{{ option.code }}"
-          class="p-1 grow cursor-pointer"
-        >
-          {{ option.label }}
-        </label>
-        } @else {
-        <div
-          class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
-          formGroupName="customRange"
-        >
-          <label for="date-filter-custom-from">From</label>
-          <input class="border-b border-gray-300"
-            type="date"
-            id="date-filter-custom-from"
-            formControlName="from"
-            [max]="form.get('customRange.to')?.value ?? today"
-            (click)="forceFilterToCustomRange()"
-          />
-
-          <label for="date-filter-custom-to">To</label>
-          <input class="border-b border-gray-300"
-            type="date"
-            id="date-filter-custom-to"
-            formControlName="to"
-            [min]="form.get('customRange.from')?.value"
-            [max]="today"
-            (click)="forceFilterToCustomRange()"
-          />
-        </div>
+        @if(allowCustomRange) {
+          <label
+            for="date-filter-{{ option.display }}"
+            class="p-1 grow cursor-pointer">{{ option.display }}</label>
         }
-      </li>
-      }
+        @else {
+          <div
+            class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
+            formGroupName="customRange">
+            <label for="date-filter-custom-from">From</label>
+            <input class="border-b border-gray-300"
+              type="date"
+              id="date-filter-custom-from"
+              formControlName="from"
+              [max]="form.get('customRange.to')?.value ?? today"
+              (click)="forceFilterToCustomRange()"
+            />
+
+            <label for="date-filter-custom-to">To</label>
+            <input class="border-b border-gray-300"
+              type="date"
+              id="date-filter-custom-to"
+              formControlName="to"
+              [min]="form.get('customRange.from')?.value"
+              [max]="today"
+              (click)="forceFilterToCustomRange()"
+            />
+          </div>
+        }
+        </li>
+        }
     </ul>
   </fieldset>
 </form>

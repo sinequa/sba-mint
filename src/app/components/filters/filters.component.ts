@@ -61,7 +61,7 @@ export class FiltersComponent implements OnInit {
       if (authorizedFilters.includes("#date"))
         this.dateFilterDropdown.set({
           label: 'Date',
-          aggregation: aggregations?.find(agg => agg.name === "date") as AggregationListEx || null,
+          aggregation: aggregations?.find(agg => agg.name === "Modified") as AggregationListEx || null,
           icon: 'far fa-calendar-day'
         });
 
