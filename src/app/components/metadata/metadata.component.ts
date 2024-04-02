@@ -1,6 +1,6 @@
 import { cn } from "@/app/utils";
 import { NgClass } from "@angular/common";
-import { Component, computed, input } from "@angular/core";
+import { Component, HostBinding, computed, input } from "@angular/core";
 import { Article, KeyOf, getMetadata } from "@sinequa/atomic";
 
 @Component({
@@ -26,15 +26,19 @@ import { Article, KeyOf, getMetadata } from "@sinequa/atomic";
 
 })
 export class MetadataComponent {
+  @HostBinding('class.hidden') public get class(): boolean {
+    return this.items().length === 0;
+  }
+
   override = input(false);
   className = input<string>();
   article = input.required<Partial<Article> | (string & Record<never, never>)>();
   metadata = input.required<KeyOf<Article> | (string & Record<never, never>)>();
 
   cn = cn;
-  default = "text-ellipsis me-1";
+  default = "text-ellipsis";
 
   items = computed(() => {
     return getMetadata(this.article(), this.metadata());
-  })
+  });
 }

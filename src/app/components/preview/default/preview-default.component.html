@@ -59,7 +59,7 @@
       <tr>
         <th>Type</th>
         <td>
-          <span class="pill pill-sm border-black font-semibold">{{ article()?.docformat }}</span>
+          <app-metadata [article]="article()!" [metadata]="'docformat'" className="pill pill-sm border-black font-semibold"/>
         </td>
       </tr>
     </table>

@@ -52,7 +52,13 @@
       <p class="line-clamp-2" [innerHTML]="article()?.relevantExtracts"></p>
     </main>
 
-    <app-tag-list [article]="article()" class="flex gap-2" />
+    @if ((articleMetadata()?.length ?? 0) > 0) {
+    <div class="flex gap-2">
+      @for (metadata of articleMetadata(); track $index) {
+      <app-metadata [article]="article()!" [metadata]="metadata" class="flex gap-2" className="pill pill-sm border-black font-semibold" />
+      }
+    </div>
+    }
 
     <footer class="flex flex-col">
       <menu class="flex">
