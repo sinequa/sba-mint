@@ -99,6 +99,8 @@ export class AggregationComponent implements OnInit {
   }
 
   private getFlattenTreeItems(): TreeAggregationNode[] {
+    if(this.aggregation().items === undefined) return [];
+
     const flattenItems = (items: TreeAggregationNode[]): TreeAggregationNode[] => {
       return items.reduce((flat, item) => {
         return flat.concat(item, item.items ? flattenItems(item.items) : []);

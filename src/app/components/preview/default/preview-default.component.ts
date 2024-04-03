@@ -4,9 +4,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
 import { PreviewData, fetchPreview } from '@sinequa/atomic';
-import { SplitPipe } from '@sinequa/atomic-angular';
+import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
-import { MetadataComponent } from '@/app/components/metadata/metadata.component';
 import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';

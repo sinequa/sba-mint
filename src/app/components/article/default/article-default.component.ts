@@ -10,8 +10,8 @@ import { StopPropagationDirective } from 'toolkit';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { UserSettingsStore, appStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
-import { MetadataComponent } from '../../metadata/metadata.component';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
+import { MetadataComponent } from '@sinequa/atomic-angular';
 
 type Tab = 'attachments' | 'similars';
 
