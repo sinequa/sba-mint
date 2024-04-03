@@ -3,90 +3,65 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-  <app-search-input class="flex grow" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)"
-    (debounced)="debounced($event)">
-    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+  <app-search-input
+    class="flex grow"
+    [showSave]="true"
+    (saved)="saveSearch()"
+    (validated)="validated($event)"
+    (debounced)="debounced($event)"
+  >
+    <app-autocomplete
+      [text]="searchText()"
+      (onClick)="autocompleteItemClicked($event)"
+    />
   </app-search-input>
 </div>
 
 <menu class="flex justify-end gap-6 items-center pe-10">
   @for (menu of menus; track $index) {
-  <li>
-    <button title="{{ menu.label }}">
-      <i class="fa-fw {{ menu.iconClass }}"></i>
-    </button>
-  </li>
+    <li>
+      <button title="{{ menu.label }}">
+        <i class="fa-fw {{ menu.iconClass }}"></i>
+      </button>
+    </li>
   }
   <li>
-    <app-menu>
-      <button title="User settings" menuTrigger>
-        <img class="rounded-full size-8" alt="User profile picture"
-          src="https://xsgames.co/randomusers/avatar.php?g=male" />
+    <sq-menu>
+      <button title="User settings">
+        <img
+          class="rounded-full size-8"
+          alt="User profile picture"
+          src="https://xsgames.co/randomusers/avatar.php?g=male"
+        />
       </button>
-      <app-menu-content>
-        <div class="
-            border
-            border-gray-300
-            bg-white
-            rounded-md
-            p-3
-            right-0
-            min-w-[220px]
-            top-1
-            w-full
-            absolute
-            z-10
-          ">
-          <ul class="
-              [&>li]:text-sm
-              [&>li]:cursor-pointer
-              [&>li]:px-2
-              [&>li]:py-1
-              [&>li]:rounded-md
-              [&>li]:transition-all
-              hover:[&>li]:bg-gray-100
-              active:[&>li]:bg-gray-200 active:[&>li]:scale-[0.99]
-            ">
-            <li (click)="onClick('contact')">Contact administrator</li>
-            <li (click)="onClick('override')">Override user</li>
-            <li menuTrigger [submenu]="true">
-              <i class="far fa-chevron-left mr-2"></i>
-              Select language
-            </li>
+      <div menu-content>
+        <sq-menu-item (click)="onClick('contact')">
+          <i class="fa-regular fa-envelope"></i>
+          Contact Administrator
+        </sq-menu-item>
+        <sq-menu-item (click)="onClick('override')">
+          <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+          Override User
+        </sq-menu-item>
+        <sq-menu position="left-start">
+          <sq-menu-item>
+            <i class="far fa-chevron-left"></i>
+            Select Language
+          </sq-menu-item>
 
-            <app-menu-submenu>
-              <div class="
-                border
-                border-gray-300
-                bg-white
-                rounded-md
-                max-w-[180px]
-                w-full
-                p-3
-                absolute
-                -left-[185px]
-                -bottom-4
-                [&>li]:text-sm
-                [&>li]:cursor-pointer
-                [&>li]:px-2
-                [&>li]:py-1
-                [&>li]:rounded-md
-                [&>li]:transition-all
-                hover:[&>li]:bg-gray-100
-                active:[&>li]:bg-gray-200 active:[&>li]:scale-[0.99]
-              ">
-                <li (click)="onClick('language_english')">English</li>
-                <li (click)="onClick('language_french')">Français</li>
-              </div>
-            </app-menu-submenu>
+          <div menu-content >
+            <sq-menu-item (click)="onClick('language_english')">English</sq-menu-item >
+            <sq-menu-item (click)="onClick('language_french')">Français</sq-menu-item >
+          </div>
+        </sq-menu>
 
-            <div class="w-full border border-gray-200 my-1"></div>
-            <li>Logout</li>
-          </ul>
-        </div>
-      </app-menu-content>
-
-    </app-menu>
+        <div class="w-full border-t border-gray-200 my-1"></div>
+        <sq-menu-item (click)="handleLogout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Logout
+        </sq-menu-item>
+      </div>
+    </sq-menu>
   </li>
 </menu>
 

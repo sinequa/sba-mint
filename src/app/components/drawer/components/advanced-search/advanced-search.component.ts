@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { ReplacePipe } from '@sinequa/atomic-angular';
+import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
@@ -13,7 +13,6 @@ import { Article } from "@/app/types/articles";
 import { ApplicationStore, Extract } from '@/stores';
 
 import { PanelDirective } from 'toolkit';
-import { MetadataComponent } from "../../../metadata/metadata.component";
 
 @Component({
     selector: 'app-advanced-search',

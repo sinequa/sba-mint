@@ -29,11 +29,11 @@
           <th>Last update by</th>
 
           <td class="flex flex-wrap gap-2">
-          <app-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
+          <sq-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
             @for (author of refAuthors.items(); track $index) {
               <wps-author [authorName]="author.display" class="flex items-center" />
             }
-          </app-metadata>
+          </sq-metadata>
         </td>
       </tr>
       }
@@ -51,15 +51,15 @@
       <tr>
         <th>Labels</th>
         <td class="flex flex-col gap-2">
-          <app-metadata [article]="article()!" [metadata]="labels.public" className="pill pill-sm border-black font-semibold"/>
-          <app-metadata [article]="article()!" [metadata]="labels.private" className="pill pill-sm border-black font-semibold"/>
+          <sq-metadata [article]="article()!" [metadata]="labels.public" className="pill pill-sm border-black font-semibold"/>
+          <sq-metadata [article]="article()!" [metadata]="labels.private" className="pill pill-sm border-black font-semibold"/>
         </td>
       </tr>
 
       <tr>
         <th>Type</th>
         <td>
-          <app-metadata [article]="article()!" [metadata]="'docformat'" className="pill pill-sm border-black font-semibold"/>
+          <sq-metadata [article]="article()!" [metadata]="'docformat'" className="pill pill-sm border-black font-semibold"/>
         </td>
       </tr>
     </table>
