@@ -3,7 +3,7 @@ import { getState } from '@ngrx/signals';
 
 import { fetchApp } from '@sinequa/atomic';
 
-import { appStore, UserSettingsStore } from '@/app/stores';
+import { appStore, PrincipalStore, UserSettingsStore } from '@/app/stores';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,7 @@ import { appStore, UserSettingsStore } from '@/app/stores';
 export class ApplicationService {
 
   userSettingsStore = inject(UserSettingsStore);
+  principalStore = inject(PrincipalStore);
 
   /**
    * Initializes the application.
@@ -22,6 +23,9 @@ export class ApplicationService {
     // Fetch the application configuration
     const app = await fetchApp();
     appStore.set(app)
+
+    // Load the principal (user information)
+    this.principalStore.initialize().then(() => console.log("principalStore", getState(this.principalStore)));
 
     // Load the user settings
     this.userSettingsStore.initialize().then(() => console.log("userSettingsStore", getState(this.userSettingsStore)));

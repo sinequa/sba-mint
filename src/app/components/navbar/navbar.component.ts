@@ -13,8 +13,7 @@ import { queryParamsStore } from '@/app/stores/query-params.store';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { MenuComponent, MenuItemComponent } from '@sinequa/atomic-angular';
-import { logout } from '@sinequa/atomic';
+import { UserMenuComponent } from "./components/user-menu";
 
 type NavbarMenu = {
   label: string;
@@ -32,7 +31,7 @@ type NavbarTab = {
     standalone: true,
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
-    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, MenuComponent, MenuItemComponent]
+    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
@@ -128,17 +127,5 @@ export class NavbarComponent {
    */
   protected saveSearch(): void {
     this.savedSearchesService.saveSearch();
-  }
-
-  /**
-   * Upon dropdown menu element click
-   * @param e The clicked element
-   */
-  onClick(e: string) {
-    console.log('on click', e);
-  }
-
-  handleLogout() {
-    logout().then(() => this.router.navigate(['/login']));
   }
 }

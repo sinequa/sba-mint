@@ -1,0 +1,38 @@
+<sq-menu>
+  <button title="User settings">
+    <img
+      class="rounded-full size-8"
+      alt="User profile picture"
+      src="https://xsgames.co/randomusers/avatar.php?g=male"
+    />
+  </button>
+  <div menu-content>
+    <sq-menu-item>
+      <a href="mailto:admin@sinequa.com">
+        <i class="fa-regular fa-envelope"></i>
+        Contact Administrator
+      </a>
+    </sq-menu-item>
+    <sq-menu-item [disabled]="true">
+      <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+      Override User
+    </sq-menu-item>
+    <sq-menu position="left-start" [disabled]="true">
+      <sq-menu-item>
+        <i class="far fa-chevron-left"></i>
+        Select Language
+      </sq-menu-item>
+
+      <div menu-content >
+        <sq-menu-item (click)="onClick('language_english')">English</sq-menu-item >
+        <sq-menu-item (click)="onClick('language_french')">Français</sq-menu-item >
+      </div>
+    </sq-menu>
+
+    <div class="w-full border-t border-gray-200 my-1"></div>
+    <sq-menu-item (click)="handleLogout()">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      Logout {{ user().fullName }}
+    </sq-menu-item>
+  </div>
+</sq-menu>
