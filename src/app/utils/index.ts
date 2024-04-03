@@ -5,5 +5,3 @@ export * from './query';
 export * from './query-params';
 
 export * from './models';
-
-export * from './tailwind-utils'

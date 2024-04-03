@@ -26,7 +26,7 @@
     </li>
   }
   <li>
-    <app-menu>
+    <sq-menu>
       <button title="User settings">
         <img
           class="rounded-full size-8"
@@ -35,33 +35,33 @@
         />
       </button>
       <div menu-content>
-        <app-menu-item (click)="onClick('contact')">
+        <sq-menu-item (click)="onClick('contact')">
           <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
           Contact Administrator
-        </app-menu-item>
-        <app-menu-item (click)="onClick('override')">
+        </sq-menu-item>
+        <sq-menu-item (click)="onClick('override')">
           <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
           Override User
-        </app-menu-item>
-        <app-menu position="left-start">
-          <app-menu-item>
+        </sq-menu-item>
+        <sq-menu position="left-start">
+          <sq-menu-item>
             <i class="far fa-chevron-left"></i>
             Select Language
-          </app-menu-item>
+          </sq-menu-item>
 
           <div menu-content >
-            <app-menu-item (click)="onClick('language_english')">English</app-menu-item >
-            <app-menu-item (click)="onClick('language_french')">Français</app-menu-item >
+            <sq-menu-item (click)="onClick('language_english')">English</sq-menu-item >
+            <sq-menu-item (click)="onClick('language_french')">Français</sq-menu-item >
           </div>
-        </app-menu>
+        </sq-menu>
 
         <div class="w-full border-t border-gray-200 my-1"></div>
-        <app-menu-item (click)="handleLogout()">
+        <sq-menu-item (click)="handleLogout()">
           <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
           Logout
-        </app-menu-item>
+        </sq-menu-item>
       </div>
-    </app-menu>
+    </sq-menu>
   </li>
 </menu>
 
