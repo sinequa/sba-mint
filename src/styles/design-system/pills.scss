@@ -6,25 +6,25 @@
     border-width: 1px;
     border-radius: theme('borderRadius.full');
 
-    &.pill-ghost {
+    &-ghost {
       border: none;
     }
 
-    &.pill-xs {
+    &-xs {
       font-size: theme('fontSize.xs');
       height: theme('spacing.5');
     }
-    &.pill-sm {
+    &-sm {
       font-size: theme('fontSize.sm');
       height: theme('spacing.6');
     }
-    &.pill-lg {
+    &-lg {
       padding-left: theme('spacing.4');
       padding-right: theme('spacing.4');
       font-size: theme('fontSize.lg');
       height: theme('spacing.8');
     }
-    &.pill-xl {
+    &-xl {
       padding-left: theme('spacing.5');
       padding-right: theme('spacing.5');
       font-size: theme('fontSize.xl');
