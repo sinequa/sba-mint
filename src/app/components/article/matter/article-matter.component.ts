@@ -1,6 +1,6 @@
 import { SelectArticleOnClickDirective } from '@/app/directives';
 import { Article } from "@/app/types/articles";
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { StopPropagationDirective } from 'toolkit';
 
 import { searchInputStore } from '@/app/stores';
@@ -17,14 +17,10 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
     inputs: ['article']
   }]
 })
-export class ArticleMatterComponent implements OnInit {
+export class ArticleMatterComponent {
   @Input() public article: Partial<Article> | undefined;
 
-  protected readonly queryText = signal<string>('');
-
-  ngOnInit(): void {
-    this.queryText.set(searchInputStore.state ?? '');
-  }
+  protected readonly queryText = signal<string>(searchInputStore.state ?? '');
 
   public articles: Partial<Article>[] = [
     { value: 'X-1', type: 'default' },

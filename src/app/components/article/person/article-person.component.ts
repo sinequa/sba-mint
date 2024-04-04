@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, Injector, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, Injector, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
 import { EMPTY, Observable, map, switchMap } from 'rxjs';
@@ -29,11 +29,11 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
     inputs: ['article: person']
   }]
 })
-export class ArticlePersonComponent implements OnInit {
+export class ArticlePersonComponent {
   public readonly person = input.required<PersonArticle | undefined>();
   public readonly ims = computed(() => getPersonIms(this.person()));
 
-  protected readonly queryText = signal<string>('');
+  protected readonly queryText = signal<string>(searchInputStore.state ?? '');
 
   private readonly queryService = inject(QueryService);
   private readonly aggregationsStore = inject(AggregationsStore);
@@ -46,10 +46,6 @@ export class ArticlePersonComponent implements OnInit {
   protected readonly relatedTo = toSignal<Article[]>(this.relatedTo$);
 
   constructor(private readonly injector: Injector) { }
-
-  ngOnInit(): void {
-    this.queryText.set(searchInputStore.state ?? '');
-  }
 
   private getRelatedTo$(person: PersonArticle | Partial<PersonArticle> | undefined): Observable<Result> {
     const [query, filters] = getPersonRelatedToQueryAndFilters(person) ?? [undefined, undefined];
