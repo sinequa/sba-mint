@@ -27,6 +27,7 @@
     "@sinequa/atomic": "^0.0.8",
     "@sinequa/atomic-angular": "^0.0.8",
     "clsx": "^2.1.0",
+    "highlight-words": "^1.2.2",
     "rxjs": "~7.8.0",
     "toolkit": "^0.0.1",
     "zone.js": "~0.14.2"

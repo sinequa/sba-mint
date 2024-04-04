@@ -1,10 +1,11 @@
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Output, inject, input } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, filter, map, switchMap } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
+import { HighlightWordPipe } from "@/app/pipes/highlight-word.pipe";
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { appStore } from '@/app/stores';
 
@@ -13,11 +14,10 @@ export type Suggestion = Partial<SuggestionBasic> & {
 }
 
 @Component({
-  selector: 'app-autocomplete',
-  standalone: true,
-  imports: [AsyncPipe, NgIf],
-  templateUrl: './autocomplete.component.html',
-  styleUrl: './autocomplete.component.scss'
+    selector: 'app-autocomplete',
+    standalone: true,
+    templateUrl: './autocomplete.component.html',
+    imports: [AsyncPipe, NgIf, NgClass, HighlightWordPipe]
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');
