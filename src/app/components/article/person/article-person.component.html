@@ -25,25 +25,30 @@
     </menu>
   </main>
 
-  @if (!relatedTo()) {
-  <footer class="flex flex-col gap-2">
-    <ng-container *ngTemplateOutlet="footerTitleTpl" />
+  @if (queryText()) {
+    @if (!relatedTo()) {
+    <footer class="flex flex-col gap-2">
+      <ng-container *ngTemplateOutlet="footerTitleTpl" />
 
-    <app-article-default-light-skeleton class="border-none" />
-  </footer>
-  }
-  @else if (relatedTo()!.length > 0) {
-  <footer class="flex flex-col gap-2">
-    <ng-container *ngTemplateOutlet="footerTitleTpl" />
+      <app-article-default-light-skeleton class="border-none" />
+    </footer>
+    } @else if (relatedTo()!.length > 0) {
+    <footer class="flex flex-col gap-2">
+      <ng-container *ngTemplateOutlet="footerTitleTpl" />
 
-    <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
-      @for (article of relatedTo(); track $index) {
-      <li class="ps-2">
-        <app-article-default-light [article]="article" stkStopPropagation class="border-none" />
-      </li>
-      }
-    </ul>
-  </footer>
+      <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
+        @for (article of relatedTo(); track $index) {
+        <li class="ps-2">
+          <app-article-default-light
+            [article]="article"
+            stkStopPropagation
+            class="border-none"
+          />
+        </li>
+        }
+      </ul>
+    </footer>
+    }
   }
 </div>
 
