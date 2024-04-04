@@ -32,25 +32,27 @@
   </section>
 </main>
 
-<aside>
-  <p class="flex justify-between mb-2">
-    <span>Latest contributions</span>
+@if (queryText()) {
+  <aside>
+    <p class="flex justify-between mb-2">
+      <span>Latest contributions</span>
 
-    <a href="#" class="flex gap-2">
-      <img src="https://placehold.co/20" alt="" class="rounded-full" />
-      More result
-    </a>
-  </p>
+      <a href="#" class="flex gap-2">
+        <img src="https://placehold.co/20" alt="" class="rounded-full" />
+        More result
+      </a>
+    </p>
 
-  <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
-    @for (article of articles; track $index) {
-    <li class="ps-2">
-      <app-article-default-light
-        [article]="article"
-        stkStopPropagation
-        class="border-none"
-      />
-    </li>
-    }
-  </ul>
-</aside>
+    <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
+      @for (article of articles; track $index) {
+      <li class="ps-2">
+        <app-article-default-light
+          [article]="article"
+          stkStopPropagation
+          class="border-none"
+        />
+      </li>
+      }
+    </ul>
+  </aside>
+}
