@@ -7,7 +7,7 @@ import highlightWords, { HighlightWords } from "highlight-words";
   pure: true
 })
 export class HighlightWordPipe implements PipeTransform {
-  transform(value: string, word: string): HighlightWords.Chunk[] {
-    return highlightWords({ text: value, query: word });
+  transform(value: string, word: string, clipBy?: number): HighlightWords.Chunk[] {
+    return highlightWords({ text: value, query: word, clipBy: clipBy }, );
   }
 }
