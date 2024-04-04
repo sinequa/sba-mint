@@ -1,12 +1,12 @@
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 
 import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
-import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
+import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';
 import { appStore, selectionStore } from '@/app/stores';
@@ -19,7 +19,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, TreepathToIconClassPipe, PreviewNavbarComponent, WpsAuthorComponent, MetadataComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, SourceIconPipe, PreviewNavbarComponent, WpsAuthorComponent, MetadataComponent],
   templateUrl: './preview-default.component.html',
   styleUrl: './preview-default.component.scss'
 })
@@ -32,10 +32,10 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
     return this.iframe?.nativeElement?.contentWindow;
   }
 
-  public readonly article = input<Partial<Article>>();
+  public readonly article = input.required<Article>();
   public readonly previewUrl = signal<SafeUrl | undefined>(undefined);
 
-  public labels = {public: '', private: ''};
+  public labels = { public: '', private: '' };
 
   readonly headerCollapsed = signal<boolean>(false);
 
@@ -55,14 +55,19 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
           this.previewService.setPreviewData(data);
           this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + data?.documentCachedContentUrl));
         });
-    }, { allowSignalWrites: true });
 
-    this.sub.add(
-      selectionStore.current$.subscribe((selection) => {
-          if (selection !== null && this.article()?.id === selection?.id)
-            this.previewService.setIframe(this.preview)
-        })
-    );
+
+      untracked(() => {
+        this.sub.add(
+          selectionStore.current$
+            .pipe(
+              filter(() => this.article() !== undefined),
+              filter((selection) => selection !== null && (selection?.id === this.article()?.id))
+            )
+            .subscribe(() =>  this.previewService.setIframe(this.preview))
+        );
+      })
+    }, { allowSignalWrites: true });
 
     this.sub.add(
       appStore.current$.subscribe(() => {

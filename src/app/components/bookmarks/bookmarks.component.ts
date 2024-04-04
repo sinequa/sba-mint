@@ -1,4 +1,4 @@
-import { TreepathToIconClassPipe } from '@/app/pipes/treepath-to-icon-class.pipe';
+import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { Bookmark } from '@/app/types/user-settings';
 import { Component, effect, inject, signal } from '@angular/core';
@@ -6,7 +6,7 @@ import { Component, effect, inject, signal } from '@angular/core';
 @Component({
   selector: 'app-bookmarks',
   standalone: true,
-  imports: [TreepathToIconClassPipe],
+  imports: [SourceIconPipe],
   templateUrl: './bookmarks.component.html',
   styleUrl: './bookmarks.component.scss'
 })

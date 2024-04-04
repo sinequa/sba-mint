@@ -16,6 +16,11 @@ export type CJAggregation = Pick<Aggregation, 'column' | 'items'> & {
   items?: CJAggregationItem[];
 }
 
+export type CJSource = {
+  name: string;
+  icon: string;
+}
+
 export type Features = {
   applications?: boolean;
 }
@@ -39,4 +44,5 @@ export type CustomizationJson = {
   sourcesTagsMap?: SourceTagMap[];
   tabs?: Record<string, string[]>;
   userFeatures?: UserFeatures;
+  sources?: CJSource[];
 }
