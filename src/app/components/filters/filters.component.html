@@ -54,7 +54,7 @@
         <span>{{ filterDropdown.currentFilter || filterDropdown.label }}</span>
 
         @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
-          <div class="pill-xs pill-ghost secondary bg-white flex place-content-center font-semibold group-hover:text-blue-600">
+          <div class="pill size-5 pill-xs pill-ghost secondary bg-white flex place-content-center font-semibold group-hover:text-blue-600">
             <i class="fas fa-plus text-[0.5rem] my-auto"></i>
             <span>{{ filterDropdown.moreFiltersCount }}</span>
           </div>
@@ -87,7 +87,7 @@
         <span>More filters</span>
 
         @if (moreFiltersCount() > 0) {
-          <span class="ms-1 size-[18px] pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
+          <span class="ms-1 size-5 pill pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
         }
       </button>
 
