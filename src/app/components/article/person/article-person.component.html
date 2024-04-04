@@ -25,14 +25,13 @@
     </menu>
   </main>
 
-  @if (queryText()) {
-    @if (!relatedTo()) {
+    @if (queryText() && !relatedTo()) {
     <footer class="flex flex-col gap-2">
       <ng-container *ngTemplateOutlet="footerTitleTpl" />
 
       <app-article-default-light-skeleton class="border-none" />
     </footer>
-    } @else if (relatedTo()!.length > 0) {
+    } @else if (queryText() && relatedTo()!.length > 0) {
     <footer class="flex flex-col gap-2">
       <ng-container *ngTemplateOutlet="footerTitleTpl" />
 
@@ -49,7 +48,7 @@
       </ul>
     </footer>
     }
-  }
+
 </div>
 
 <ng-template #footerTitleTpl>
