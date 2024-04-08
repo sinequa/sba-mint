@@ -4,6 +4,9 @@ module.exports = {
     "./src/**/*.{html,ts}",
   ],
   theme: {
+    fontFamily: {
+      sans: ['Segoe UI'],
+    },
     extend: {},
   },
   plugins: [],
