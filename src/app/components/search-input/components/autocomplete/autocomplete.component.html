@@ -18,7 +18,7 @@
           }
           <p class="text-ellipsis line-clamp-1">
           @for(chunk of item.display! | highlightWord:text():10; track $index ) {
-            <span class="font-bold" [ngClass]="{ 'font-normal': chunk.match }">{{ chunk.text }}</span>
+            <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
           }
           </p>
         </li>
