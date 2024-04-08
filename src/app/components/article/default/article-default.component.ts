@@ -8,10 +8,10 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 import { StopPropagationDirective } from 'toolkit';
 
 import { BookmarksService } from '@/app/services/bookmarks.service';
-import { UserSettingsStore, appStore } from '@/app/stores';
+import { AppStore, UserSettingsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
-import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 import { MetadataComponent } from '@sinequa/atomic-angular';
+import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
 
@@ -32,6 +32,7 @@ export class ArticleDefaultComponent implements OnInit {
 
   bookmarksService = inject(BookmarksService);
   userSettingsStore = inject(UserSettingsStore);
+  appStore = inject(AppStore);
 
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';
@@ -44,7 +45,7 @@ export class ArticleDefaultComponent implements OnInit {
   })
   protected articleMetadata = computed(() => {
     const source = this.article()?.treepath?.[0]?.split('/')[1];
-    const maps = appStore.getCustomizationJson()?.sourcesTagsMap;
+    const maps = this.appStore.customizationJson()?.sourcesTagsMap;
     const fields = maps?.find((map) => map.sources.includes(source!));
 
     return fields?.tags;

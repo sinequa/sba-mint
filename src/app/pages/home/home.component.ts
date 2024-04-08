@@ -1,8 +1,8 @@
 import { JsonPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, Type, ViewChildren, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, filter } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
@@ -14,7 +14,7 @@ import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-se
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { appStore } from '@/app/stores';
+import { AppStore } from '@/app/stores';
 import { queryParamsStore } from '@/app/stores/query-params.store';
 import { Features, UserFeatures } from '@/app/types';
 
@@ -67,29 +67,39 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly searchText = signal<string>('');
 
-  readonly tabs = signal<HomeTab[]>([]);
-  readonly selectedTabId = signal<number>(0);
+  readonly tabs = computed(() => {
+    const customJson = this.appStore.customizationJson();
+    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features };
+    const enabledFeatures = homeFeatures.reduce((acc, feature) => {
+      // add only if the feature is declared and set to true in the json
+      if (feature.name in features && features?.[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
+      return acc;
+    }, [] as HomeTab[]);
+    return enabledFeatures;
+  })
+
+  readonly selectedTabId = signal(0);
+
   readonly autocompleteService = inject(AutocompleteService);
   readonly router = inject(Router);
+  readonly appStore = inject(AppStore);
+
   readonly subscription = new Subscription();
+
+  defaultUserFeatures: UserFeatures = {
+    bookmarks: true,
+    recentSearches: true,
+    savedSearches: true,
+  }
+
+  constructor() {
+    effect(() => {
+      this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
+    }, { allowSignalWrites: true })
+   }
 
   ngOnInit(): void {
     queryParamsStore.patch({ filters: [] });
-
-    this.subscription.add(
-      appStore.current$.pipe(filter(s => !!s)).subscribe(() => {
-        const customJson = appStore.getCustomizationJson();
-        const features = { ...customJson?.userFeatures, ...customJson?.features };
-        const enabledFeatures = homeFeatures.reduce((acc, feature) => {
-          // add only if the feature is declared and set to true in the json
-          if (feature.name in features && features?.[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
-          return acc;
-        }, [] as HomeTab[]);
-
-        this.tabs.set(enabledFeatures);
-        this.selectedTabId.set(enabledFeatures.findIndex((tab) => !tab.disabled));
-      })
-    )
   }
 
   ngOnDestroy(): void {

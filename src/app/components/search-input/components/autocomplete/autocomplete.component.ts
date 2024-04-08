@@ -7,7 +7,7 @@ import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
 import { HighlightWordPipe } from "@/app/pipes/highlight-word.pipe";
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { appStore } from '@/app/stores';
+import { AppStore } from '@/app/stores';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -25,10 +25,11 @@ export class AutocompleteComponent {
   @Output() readonly onClick = new EventEmitter<Suggestion>();
 
   readonly autocompleteService = inject(AutocompleteService);
+  readonly appStore = inject(AppStore);
 
   readonly items$ = toObservable(this.text).pipe(
     filter(text => !!text),
-    map(text => ({ text, autocomplete: appStore.getCustomizationJson()?.autocomplete })),
+    map(text => ({ text, autocomplete: this.appStore.customizationJson()?.autocomplete })),
     switchMap(({ text, autocomplete }) => combineLatest([
       this.autocompleteService.getFromUserSettingsForText(text, autocomplete ?? 5),
       this.autocompleteService.getFromSuggestQueriesForText(text)

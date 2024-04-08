@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
 import { AggregationEx, AggregationListEx, AggregationsService, SearchService } from '@/app/services';
-import { appStore, queryParamsStore } from '@/app/stores';
+import { AppStore, queryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
@@ -33,6 +33,7 @@ export class MoreFiltersComponent implements OnDestroy {
   private readonly _search = inject(SearchService);
   private readonly _aggregationsService = inject(AggregationsService);
   private readonly _aggregationsStore = inject(AggregationsStore);
+  private readonly appStore = inject(AppStore);
   private readonly _injector = inject(Injector);
 
   private readonly subscriptions = new Subscription();
@@ -136,7 +137,7 @@ export class MoreFiltersComponent implements OnDestroy {
         label: aggregation.name,
         aggregation: aggregation as AggregationEx,
         column: aggregation.column,
-        icon: appStore.getAggregationIcon(aggregation.column),
+        icon: this.appStore.getAggregationIcon(aggregation.column),
         moreFiltersCount: count
       })
     });

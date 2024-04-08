@@ -8,7 +8,7 @@ import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
-import { appStore, selectionStore } from '@/app/stores';
+import { AppStore, selectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { ApplicationStore, Extract } from '@/stores';
 
@@ -32,7 +32,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
   protected readonly input = signal('');
 
-  public labels = {public: '', private: ''};
+  public labels = inject(AppStore).getLabels();
   protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
@@ -48,13 +48,6 @@ export class AdvancedSearchComponent implements OnDestroy {
         this.extracts.set([]);
       }
     }));
-
-    this.sub.add(
-      appStore.current$.subscribe(() => {
-        this.labels = appStore.getLabels();
-      })
-    )
-
 
     effect(() => {
       getState(this.store);
