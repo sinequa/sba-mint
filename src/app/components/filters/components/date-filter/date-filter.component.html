@@ -1,7 +1,7 @@
 <form [formGroup]="form">
-  <fieldset class="max-h-80 overflow-auto">
-    <legend class="w-full">
-      <div class="mb-2 p-2 flex items-baseline justify-between">
+  <fieldset class="overflow-auto">
+    <legend class="w-full px-2 pt-2">
+      <div class="flex font-semibold items-baseline justify-between">
         <p class="me-4">
           @if (title?.icon) {
           <i class="fa-fw {{ title?.icon }}"></i>
@@ -36,10 +36,10 @@
       </div>
     </legend>
 
-    <ul class="data-list">
+    <ul class="data-list pt-2">
       @for (option of dateOptions(); track $index) {
       <li
-        class="data-list-item flex text-sm"
+        class="data-list-item flex text-sm px-2 leading-7"
         [ngClass]="{
           'data-list-item-selected': form.get('option')?.value === option.code
         }"
@@ -68,11 +68,11 @@
         </label>
         } @else {
         <div
-          class="p-1 grid grid-cols-[4rem_auto] *:cursor-pointer"
+          class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
           formGroupName="customRange"
         >
           <label for="date-filter-custom-from">From</label>
-          <input
+          <input class="border-b border-gray-300"
             type="date"
             id="date-filter-custom-from"
             formControlName="from"
@@ -81,7 +81,7 @@
           />
 
           <label for="date-filter-custom-to">To</label>
-          <input
+          <input class="border-b border-gray-300"
             type="date"
             id="date-filter-custom-to"
             formControlName="to"

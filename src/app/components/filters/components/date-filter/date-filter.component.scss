@@ -1,0 +1,8 @@
+input[type=date] {
+  padding-left: 4px;
+	background-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+}
