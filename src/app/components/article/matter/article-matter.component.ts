@@ -22,9 +22,9 @@ export class ArticleMatterComponent {
 
   protected readonly queryText = signal<string>(searchInputStore.state ?? '');
 
-  public articles: Partial<Article>[] = [
+  public articles: Article[] = [
     { value: 'X-1', type: 'default' },
     { value: 'X-2', type: 'default' },
     { value: 'X-3', type: 'default' }
-  ];
+  ] as Article[];
 }
