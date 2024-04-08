@@ -1,9 +1,9 @@
-import { EventEmitter, Injectable, OnDestroy, inject } from '@angular/core';
-import { Subscription, filter, tap } from 'rxjs';
+import { EventEmitter, Injectable, effect, inject } from '@angular/core';
 
-import { selectionStore } from '@/app/stores/selection.store';
+import { SelectionStore } from '@/app/stores/selection.store';
 import { Article } from "@/app/types/articles";
 
+import { getState } from '@ngrx/signals';
 import { SelectionService } from './selection.service';
 
 // back is used when the user close the current selection and want to go back to the previous one
@@ -13,32 +13,25 @@ export type SelectionHistoryEvent = 'back' | 'new';
 @Injectable({
   providedIn: 'root'
 })
-export class SelectionHistoryService implements OnDestroy {
+export class SelectionHistoryService {
   public readonly selectionHistoryEvent = new EventEmitter<SelectionHistoryEvent>();
 
   private readonly selectionService = inject(SelectionService);
+  private readonly selectionStore = inject(SelectionStore);
 
-  private readonly newSelection$ = selectionStore.next$
-    .pipe(
-      tap((article) => console.log('-- selectionHistory - newSelection before filter: currentArticle: %o, history: %o', article, this.history)),
-      // prevent from adding the same article twice
-      filter((article) => !!article && article !== this.history[this.history.length - 1]),
-      tap((article) => {
-        console.log('-- selectionHistory - newSelection: currentArticle: %o, history: %o', article, this.history);
-        this.history.push(article!);
-        this.selectionHistoryEvent.next('new');
-      })
-    );
-
-  private readonly history: Partial<Article>[] = [];
-  private readonly subscriptions = new Subscription();
+  private readonly history: Article[] = [];
+  // private readonly subscriptions = new Subscription();
 
   constructor() {
-    this.subscriptions.add(this.newSelection$.subscribe());
-  }
+    effect(() => {
+      const {article} = getState(this.selectionStore);
+      if( !!article && article !== this.history[this.history.length - 1] ) {
+        console.log('-- selectionHistory - newSelection: currentArticle: %o, history: %o', article, this.history);
+        this.history.push(article);
+        this.selectionHistoryEvent.next('new');
+      }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    })
   }
 
   public getCurrentSelectionIndex(): number {
@@ -60,7 +53,7 @@ export class SelectionHistoryService implements OnDestroy {
     this.selectionService.clearCurrentArticle();
   }
 
-  public back(): Partial<Article> | undefined {
+  public back(): Article | undefined {
     this.history.pop();
 
     if (this.history.length === 0) return undefined;

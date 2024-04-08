@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, distinctUntilChanged, switchMap, take } from 'rxjs';
+import { Subscription, switchMap, take } from 'rxjs';
 
 import { Aggregation, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -11,12 +11,13 @@ import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from '@/app/components/pagination/pager.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { queryParamsStore, searchInputStore } from '@/app/stores';
+import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { areSearchQueryParamsEquals, buildFirstPageQuery } from '@/app/utils';
+import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
 import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
+import { getState } from '@ngrx/signals';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
@@ -40,7 +41,7 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     inputs: ['articleId: id', 'aggregations']
   }]
 })
-export class SearchAllComponent implements OnInit, OnDestroy {
+export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
@@ -56,6 +57,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   protected aggregations: Aggregation[];
 
@@ -64,9 +66,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   });
   private readonly subscription = new Subscription();
 
-  constructor(private readonly injector: Injector) { }
-
-  ngOnInit(): void {
+  constructor(private readonly injector: Injector) {
     // Once the navigation ends, we fetch the "first page" of results but only once
     this.subscription.add(
       this.navigationService.navigationEnd$
@@ -92,11 +92,10 @@ export class SearchAllComponent implements OnInit, OnDestroy {
     );
 
     // Trigger skeleton on search whether from input or from filters
-    this.subscription.add(
-      queryParamsStore.current$
-        .pipe(distinctUntilChanged((a, b) => areSearchQueryParamsEquals(a, b)))
-        .subscribe(() => this.articles.set(undefined))
-    );
+    effect(() => {
+      getState(this.queryParamsStore);
+      this.articles.set(undefined);
+    }, { allowSignalWrites: true });
   }
 
   ngOnDestroy(): void {
@@ -105,7 +104,7 @@ export class SearchAllComponent implements OnInit, OnDestroy {
   }
 
   onSort(sort: SortingChoice): void {
-    queryParamsStore.set({ sort: sort.name });
+    this.queryParamsStore.patch({ sort: sort.name });
 
     this.articles.set(undefined);
     this.searchService.search([]);

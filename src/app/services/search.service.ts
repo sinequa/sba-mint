@@ -8,7 +8,7 @@ import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { queryParamsStore } from '@/app/stores/';
+import { QueryParamsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
@@ -39,13 +39,14 @@ export class SearchService implements OnDestroy {
   public readonly result$ = this._result.asObservable();
 
   protected readonly aggregationsStore = inject(AggregationsStore);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
 
   constructor(private readonly injector: Injector) {
     this.subscription.add(
       this.navigationService.navigationEnd$
         .pipe(
           filter((routerEvent) => isASearchRoute(routerEvent.url)),
-          switchMap(() => this.getResult(queryParamsStore.state?.filters ?? []))
+          switchMap(() => this.getResult(getState(this.queryParamsStore).filters || []))
         )
         .subscribe((result: Result) => {
           // Update the aggregations store with the new aggregations
@@ -66,7 +67,7 @@ export class SearchService implements OnDestroy {
    */
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
-    const { filters = [], page, sort } = queryParamsStore.state || {};
+    const { filters = [], page, sort } = getState(this.queryParamsStore);
 
     if (options.appendFilters) {
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
@@ -80,7 +81,7 @@ export class SearchService implements OnDestroy {
   public getResult(filters: Filter[]): Observable<Result> {
     const { aggregations } = getState(this.aggregationsStore);
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
-    const sort = queryParamsStore.state?.sort;
+    const sort = getState(this.queryParamsStore).sort;
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort }));
     const queryName = query.name;
     // add the query name to records, to have it available if we bookmark one
@@ -99,7 +100,7 @@ export class SearchService implements OnDestroy {
    * @returns A promise that resolves to the search result.
    */
   public gotoPage(page: number) {
-    queryParamsStore.patch({ page });
+    this.queryParamsStore.patch({ page });
     this.search([]);
   }
 }

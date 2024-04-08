@@ -1,15 +1,14 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { Subscription, map } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { AppStore, queryParamsStore } from '@/app/stores';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 import { Filter, buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
@@ -31,12 +30,6 @@ export const FILTERS_COUNT = 4;
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
 
-  readonly filters = toSignal(queryParamsStore.current$.pipe(map(queryParams => queryParams?.filters ?? [])));
-  readonly hasMoreFilters = signal<boolean>(false);
-  readonly moreFiltersCount = signal<number>(0);
-  readonly filterDropdowns = signal<FilterDropdown[]>([]);
-  readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
-
   private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _injector = inject(Injector);
   private readonly _activatedRoute = inject(ActivatedRoute);
@@ -44,6 +37,14 @@ export class FiltersComponent implements OnInit {
   private readonly _aggregationsStore = inject(AggregationsStore);
   private readonly _searchService = inject(SearchService);
   private readonly appStore = inject(AppStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
+
+  readonly filters = this.queryParamsStore.filters || signal([]);
+  readonly hasMoreFilters = signal<boolean>(false);
+  readonly moreFiltersCount = signal<number>(0);
+  readonly filterDropdowns = signal<FilterDropdown[]>([]);
+  readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
+
 
   private readonly _subscriptions = new Subscription();
 
@@ -79,7 +80,7 @@ export class FiltersComponent implements OnInit {
         if (queryParams['f']) {
           filters = JSON.parse(queryParams['f']);
         }
-        queryParamsStore.patch({ filters });
+        this.queryParamsStore.patch({ filters });
       })
     );
   }
@@ -87,14 +88,14 @@ export class FiltersComponent implements OnInit {
   public filterUpdated(filter: Filter, index: number): void {
     this.updateDropdownButtons(filter, index);
 
-    queryParamsStore.updateFilter(filter);
+    this.queryParamsStore.updateFilter(filter);
 
     this._searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -115,7 +116,7 @@ export class FiltersComponent implements OnInit {
   public dateFilterUpdated(filter: Filter): void {
     this.updateDateDropdownButton(filter);
 
-    queryParamsStore.updateFilter(filter);
+    this.queryParamsStore.updateFilter(filter);
     this._searchService.search([]);
   }
 
@@ -129,7 +130,7 @@ export class FiltersComponent implements OnInit {
     )
 
     this.moreFiltersCount.set(0);
-    queryParamsStore.patch({ filters: [] });
+    this.queryParamsStore.patch({ filters: [] });
 
     this._searchService.search([]);
   }
@@ -143,7 +144,7 @@ export class FiltersComponent implements OnInit {
       .map((aggregation) => {
         const itemCustomizations = this.appStore.getAggregationItemsCustomization(aggregation.column);
 
-        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
+        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
@@ -153,7 +154,7 @@ export class FiltersComponent implements OnInit {
         return aggregation;
       })
       .map((aggregation) => {
-        const f = queryParamsStore.getFilterFromColumn(aggregation.column);
+        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
         return ({
           label: aggregation.name,

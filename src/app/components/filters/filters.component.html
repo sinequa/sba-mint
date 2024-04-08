@@ -1,6 +1,6 @@
 <menu class="flex gap-2">
   <!-- clear filters button -->
-  @if ((filters() ?? []).length > 0) {
+  @if ((filters() || []).length > 0) {
     <li>
       <button
         class="btn btn-sm btn-alert"

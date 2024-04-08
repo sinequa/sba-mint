@@ -8,7 +8,7 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 import { StopPropagationDirective } from 'toolkit';
 
 import { BookmarksService } from '@/app/services/bookmarks.service';
-import { AppStore, UserSettingsStore } from '@/app/stores';
+import { SelectionStore, AppStore, UserSettingsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
 import { MetadataComponent } from '@sinequa/atomic-angular';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
@@ -33,6 +33,9 @@ export class ArticleDefaultComponent implements OnInit {
   bookmarksService = inject(BookmarksService);
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
+  selectionStore = inject(SelectionStore);
+
+  selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';

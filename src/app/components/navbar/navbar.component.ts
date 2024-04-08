@@ -9,7 +9,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { queryParamsStore } from '@/app/stores/query-params.store';
+import { QueryParamsStore } from '@/app/stores/query-params.store';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
@@ -62,6 +62,7 @@ export class NavbarComponent {
   private readonly searchService = inject(SearchService);
   private readonly savedSearchesService = inject(SavedSearchesService);
   readonly autocompleteService = inject(AutocompleteService);
+  readonly queryParamsStore = inject(QueryParamsStore);
 
   private readonly subscriptions = new Subscription();
 
@@ -100,7 +101,7 @@ export class NavbarComponent {
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
     // ! we need to remove the page parameter from the query params when new search is performed
-    queryParamsStore.set({ page: undefined });
+    this.queryParamsStore.patch({ page: undefined });
     this.searchService.search([tab.routerLink]);
   }
 

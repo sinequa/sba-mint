@@ -14,8 +14,7 @@ import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-se
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { AppStore } from '@/app/stores';
-import { queryParamsStore } from '@/app/stores/query-params.store';
+import { QueryParamsStore, AppStore } from '@/app/stores';
 import { Features, UserFeatures } from '@/app/types';
 
 type HomeTab = {
@@ -84,6 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
 
+  readonly queryParamsStore = inject(QueryParamsStore);
+
   readonly subscription = new Subscription();
 
   defaultUserFeatures: UserFeatures = {
@@ -99,7 +100,7 @@ export class HomeComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit(): void {
-    queryParamsStore.patch({ filters: [] });
+    this.queryParamsStore.patch({ filters: [] });
   }
 
   ngOnDestroy(): void {
