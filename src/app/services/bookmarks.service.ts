@@ -25,7 +25,8 @@ export class BookmarksService {
       label: article.title,
       source: article.treepath?.[0],
       author: article.authors?.[0],
-      parentFolder: article.parentFolder
+      parentFolder: article.parentFolder,
+      queryName: article.$queryName
     });
 
     this.store.updateBookmarks(bookmarks);

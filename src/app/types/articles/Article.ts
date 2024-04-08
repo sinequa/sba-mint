@@ -11,4 +11,5 @@ export interface Article extends A {
   company?: ArticleMetadata[];
   person?: ArticleMetadata[];
   queryDuplicates?: Article[];
+  $queryName?: string;
 }
