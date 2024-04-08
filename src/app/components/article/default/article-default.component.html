@@ -1,14 +1,14 @@
 <article class="article group/article">
   <section class="shrink-0">
     <div class="flex justify-center items-center size-[40px] rounded-full bg-gray-100 text-blue-500">
-      <i class="{{ article()?.treepath?.[0] | treepathToIconClass }} text-lg"></i>
+      <i class="{{ article().collection | sourceIcon }} text-lg"></i>
     </div>
   </section>
 
   <section class="flex flex-col gap-2">
     <header>
       <div class="flex gap-2 items-baseline">
-        <p class="article-title line-clamp-1">{{ article()?.title }}</p>
+        <p class="article-title line-clamp-1">{{ article().title }}</p>
 
         <button title="Bookmark that document" (click)="bookmark()" stkStopPropagation>
           @if (isBookmarked()) {
@@ -20,25 +20,25 @@
       </div>
 
       <section class="flex gap-1 items-center text-gray-900">
-        @if (article()?.doctype) {
+        @if (article().doctype) {
         <div class="pill pill-xs border-gray-900 font-bold uppercase">
           {{ article()!.doctype }}
         </div>
         }
 
         <div class="flex gap-1 divide-x-slash divide-xs">
-          @if ((article()?.authors ?? []).length > 0) {
+          @if ((article().authors || []).length > 0) {
           <wps-author [authorName]="article()!.authors![0]" [strategy]="'replace'" />
           }
 
-          @if (article()?.modified) {
+          @if (article().modified) {
           <p class="flex gap-1 items-baseline">
             <i class="fa-fw far fa-calendar-day"></i>
             {{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}
           </p>
           }
 
-          @if (article()?.parentFolder) {
+          @if (article().parentFolder) {
           <p class="flex gap-1 items-baseline">
             <i class="fa-fw far fa-folder"></i>
             {{ article()!.parentFolder }}
@@ -49,7 +49,7 @@
     </header>
 
     <main>
-      <p class="line-clamp-2" [innerHTML]="article()?.relevantExtracts"></p>
+      <p class="line-clamp-2" [innerHTML]="article().relevantExtracts"></p>
     </main>
 
     @if ((articleMetadata()?.length ?? 0) > 0) {
@@ -68,10 +68,10 @@
           <img src="https://placehold.co/20" alt="" class="rounded-full" />
         </button>
 
-        @if ((article()?.queryDuplicates?.length || 0) > 0) {
+        @if ((article().queryDuplicates?.length || 0) > 0) {
         <button (click)="toggleTab('similars')" stkStopPropagation class="btn btn-ghost flex gap-1 items-baseline">
           <i class="fa-fw fa-regular fa-files"></i>
-          {{ article()?.queryDuplicates?.length }} similar(s) document(s)
+          {{ article().queryDuplicates?.length }} similar(s) document(s)
           <i class="fa-fw fa-regular fa-chevron-down"
             [ngClass]="{'rotate-180': currentTab === 'similars' && showTab()}"></i>
         </button>
@@ -86,7 +86,7 @@
           </li>
           }
         </ul>
-        } @else if (currentTab === 'similars' && (article()?.queryDuplicates?.length || 0) > 0) {
+        } @else if (currentTab === 'similars' && (article().queryDuplicates?.length || 0) > 0) {
         <ul class="mt-2 border-l-2 border-blue-400 similar-documents">
           @for (similar of article()!.queryDuplicates; track $index) {
           <li>

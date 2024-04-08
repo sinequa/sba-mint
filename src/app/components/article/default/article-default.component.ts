@@ -2,7 +2,7 @@ import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
-import { TreepathToIconClassPipe } from '@/app/pipes';
+import { SourceIconPipe } from '@/app/pipes';
 import { Article } from "@/app/types/articles";
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
 import { StopPropagationDirective } from 'toolkit';
@@ -18,7 +18,7 @@ type Tab = 'attachments' | 'similars';
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, TreepathToIconClassPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, SourceIconPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -27,7 +27,7 @@ type Tab = 'attachments' | 'similars';
   }]
 })
 export class ArticleDefaultComponent implements OnInit {
-  public readonly article = input<Partial<Article> | undefined>();
+  public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
   bookmarksService = inject(BookmarksService);
@@ -50,11 +50,11 @@ export class ArticleDefaultComponent implements OnInit {
     return fields?.tags;
   })
 
-  protected attachments: Partial<Article>[] = [
+  protected attachments: Article[] = [
     { value: 'X-1', type: 'default' },
     { value: 'X-2', type: 'default' },
     { value: 'X-3', type: 'default' }
-  ]
+  ] as Article[];
 
   ngOnInit(): void {
     if (!this.article()) return;

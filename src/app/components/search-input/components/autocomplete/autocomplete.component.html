@@ -16,9 +16,9 @@
             @case('concepts') { <i class="fa-fw far fa-lightbulb"></i> }
             @case('people') { <i class="fa-fw far fa-user-circle"></i> }
           }
-          <p>
-          @for(chunk of item.display! | highlightWord:text(); track $index ) {
-            <span class="font-bold" [ngClass]="{ 'font-normal': chunk.match }">{{ chunk.text }}</span>
+          <p class="text-ellipsis line-clamp-1">
+          @for(chunk of item.display! | highlightWord:text():10; track $index ) {
+            <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
           }
           </p>
         </li>

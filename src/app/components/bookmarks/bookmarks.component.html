@@ -6,7 +6,7 @@
     (keydown.enter)="bookmarkClicked(bookmark)">
     <i class="fa-fw far fa-bookmark shrink-0"></i>
 
-    <i class="{{ bookmark.source | treepathToIconClass }} shrink-0"></i>
+    <i class="{{ [bookmark.source || ''] | sourceIcon }} shrink-0"></i>
 
     <p class="line-clamp-1">{{ bookmark.label }}</p>
 

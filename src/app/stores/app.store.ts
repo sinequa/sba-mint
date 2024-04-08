@@ -1,6 +1,6 @@
 import { CCApp, CCWebService } from '@sinequa/atomic';
 
-import { CJAggregationItem, CustomizationJson } from '../types';
+import { CJAggregationItem, CJSource, CustomizationJson } from '../types';
 import { Store } from './store';
 
 type CCWebServiceLabels = CCWebService & {
@@ -54,6 +54,10 @@ export class AppStore extends Store<CCApp> {
     return this.getCustomizationJson()?.aggregations?.find(
       aggregation => aggregation.column === column
     )?.items;
+  }
+
+  getSourcesCustomization(): CJSource[] {
+    return this.getCustomizationJson()?.sources || [];
   }
 }
 
