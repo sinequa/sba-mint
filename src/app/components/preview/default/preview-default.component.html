@@ -16,7 +16,7 @@
       <tr>
         <th>Location</th>
         <td class="flex flex-wrap items-baseline divide-x-chevron-right divide-xs">
-          <i class="fa-fw {{ article().collection || [] | sourceIcon }}"></i>
+          <i class="fa-fw {{ article().collection | sourceIcon }}"></i>
 
           @for (segment of (article().treepath[0] || '') | split: '/' | slice:1:-1; track $index) {
             <span>{{ segment }}</span>
