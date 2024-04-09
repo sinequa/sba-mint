@@ -1,7 +1,6 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Output, inject, input } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { combineLatest, filter, map, switchMap } from 'rxjs';
+import { Component, EventEmitter, Output, effect, inject, input, signal } from '@angular/core';
+import { combineLatest, map } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
@@ -27,15 +26,19 @@ export class AutocompleteComponent {
   readonly autocompleteService = inject(AutocompleteService);
   readonly appStore = inject(AppStore);
 
-  readonly items$ = toObservable(this.text).pipe(
-    filter(text => !!text),
-    map(text => ({ text, autocomplete: this.appStore.customizationJson()?.autocomplete })),
-    switchMap(({ text, autocomplete }) => combineLatest([
+  readonly items = signal<Suggestion[]>([]);
+
+  readonly itemsEffect = effect(() => {
+
+    const text = this.text();
+    const autocomplete = this.appStore.customizationJson()?.autocomplete;
+
+    combineLatest([
       this.autocompleteService.getFromUserSettingsForText(text, autocomplete ?? 5),
       this.autocompleteService.getFromSuggestQueriesForText(text)
-    ])),
-    map(items => items.flat(2)),
-    map((items) => items.reduce<Suggestion[]>((acc, curr) => {
+    ]).pipe(
+      map(items => items.flat(2)),
+      map((items) => items.reduce<Suggestion[]>((acc, curr) => {
       if (acc.length > 0) {
         const last = acc.at(-1);
 
@@ -46,8 +49,9 @@ export class AutocompleteComponent {
       acc.push({ ...curr, $isDivider: false });
 
       return acc;
-    }, []))
-  );
+      }, []))
+    ).subscribe(items => this.items.set(items));
+  }, { allowSignalWrites: true })
 
   public itemClicked(item: Suggestion): void {
     this.onClick.emit(item);

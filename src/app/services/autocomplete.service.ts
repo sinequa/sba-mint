@@ -62,27 +62,39 @@ export class AutocompleteService {
       maxCount = { recentSearches: maxCount, savedSearches: maxCount, bookmarks: maxCount };
 
     if (recentSearches) {
-      const searches = recentSearches
-        .filter(recentSearch => recentSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-        .slice(0, maxCount?.recentSearches);
+
+      // don't filter if the text is empty
+      const matchingRecentSearches = text
+        ? recentSearches.filter(recentSearch => recentSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
+        : recentSearches;
+
+      const searches = matchingRecentSearches.slice(0, maxCount?.recentSearches);
 
       if (searches.length > 0)
         items.push(...searches.map(search => ({ category: 'recent-search', ...search })));
     }
 
     if (savedSearches) {
-      const searches = savedSearches
-        .filter(savedSearch => savedSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-        .slice(0, maxCount?.savedSearches);
+
+      // don't filter if the text is empty
+      const matchingSavedSearches = text
+        ? savedSearches.filter(savedSearch => savedSearch.display?.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
+        : savedSearches;
+
+      const searches = matchingSavedSearches.slice(0, maxCount?.savedSearches);
 
       if (searches.length > 0)
         items.push(...searches.map(search => ({ category: 'saved-search', ...search })));
     }
 
     if (bookmarks) {
-      const searches = bookmarks
-        .filter(bookmark => bookmark.label?.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, maxCount?.bookmarks);
+
+      // don't filter if the text is empty
+      const matchingBookmarks = text
+        ? bookmarks.filter(bookmark => bookmark.label?.toLowerCase().includes(text.toLowerCase()))
+        : bookmarks;
+
+      const searches = matchingBookmarks.slice(0, maxCount?.bookmarks);
 
       if (searches.length > 0)
         items.push(...searches.map(search => ({ category: 'bookmark', display: search.label ?? '', ...search })));
