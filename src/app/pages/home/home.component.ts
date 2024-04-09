@@ -7,10 +7,10 @@ import { Subscription } from 'rxjs';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
-import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.component';
+import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
 import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
-import { RecentSearchesComponent } from '@/app/components/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
+import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { AutocompleteService } from '@/app/services/autocomplete.service';

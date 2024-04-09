@@ -42,15 +42,23 @@
   }
 
   .btn-xs {
-    @apply p-1 text-xs;
+    padding: theme('spacing.1');
+    font-size: theme('fontSize.xs');
+    line-height: theme('lineHeight.4');
   }
   .btn-sm {
-    @apply p-2 text-sm;
+    padding: theme('spacing.2');
+    font-size: theme('fontSize.sm');
+    line-height: theme('lineHeight.5');
   }
   .btn-lg {
-    @apply p-3 text-lg;
+    padding: theme('spacing.3');
+    font-size: theme('fontSize.lg');
+    line-height: theme('lineHeight.7');
   }
   .btn-xl {
-    @apply p-4 text-xl;
+    padding: theme('spacing.4');
+    font-size: theme('fontSize.xl');
+    line-height: theme('lineHeight.7');
   }
 }
