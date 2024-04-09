@@ -1,8 +1,9 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
 
 import { SelectionHistoryService, SelectionService } from '@/app/services';
-import { selectionStore } from '@/app/stores/selection.store';
+import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
+import { getState } from '@ngrx/signals';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class DrawerStackService {
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
+  private readonly selectionStore = inject(SelectionStore);
 
   constructor() { }
 
@@ -75,7 +77,8 @@ export class DrawerStackService {
    * @param article the article to replace the current selection with
    */
   public replace(article: Article | undefined): void {
-    if (!article || article.id === selectionStore.state?.id) return;
+    const { id } = getState(this.selectionStore);
+    if (id && (!article || article.id === id)) return;
 
     // close everything without trigger layout animation
     this.closeAll(true);
@@ -92,7 +95,8 @@ export class DrawerStackService {
    * @param article the article to stack
    */
   public stack(article: Article | undefined): void {
-    if (!article || article.id === selectionStore.state?.id) return;
+    const { id } = getState(this.selectionStore);
+    if (id && (!article || article.id === id)) return;
 
     // set selection
     this.selection.setCurrentArticle(article);

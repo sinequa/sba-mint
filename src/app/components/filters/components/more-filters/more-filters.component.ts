@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
 import { AggregationEx, AggregationListEx, AggregationsService, SearchService } from '@/app/services';
-import { AppStore, queryParamsStore } from '@/app/stores';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
@@ -33,6 +33,8 @@ export class MoreFiltersComponent implements OnDestroy {
   private readonly _search = inject(SearchService);
   private readonly _aggregationsService = inject(AggregationsService);
   private readonly _aggregationsStore = inject(AggregationsStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
+
   private readonly appStore = inject(AppStore);
   private readonly _injector = inject(Injector);
 
@@ -69,7 +71,7 @@ export class MoreFiltersComponent implements OnDestroy {
     };
 
     this.updateFiltersCount(filter, index);
-    queryParamsStore.updateFilter(filter);
+    this.queryParamsStore.updateFilter(filter);
 
     this._search.search([]);
   }
@@ -89,7 +91,7 @@ export class MoreFiltersComponent implements OnDestroy {
     this.updateFiltersCount(filter, index);
 
 
-    queryParamsStore.updateFilter({
+    this.queryParamsStore.updateFilter({
       column: this.filterDropdowns()[index].aggregation.column,
       label: undefined,
       values: []
@@ -100,7 +102,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: queryParamsStore.state?.filters as ApiFilter })),
+      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters as ApiFilter })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -130,7 +132,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     return aggregations.map((aggregation: Aggregation) => {
-      const f = queryParamsStore.getFilterFromColumn(aggregation.column);
+      const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
       const count = f?.values.length ?? undefined;
 
       return ({

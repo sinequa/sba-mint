@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { selectionStore } from '@/app/stores/selection.store';
+import { SelectionStore } from '@/app/stores/selection.store';
 import { Article } from "@/app/types/articles";
 
 @Injectable({
@@ -12,21 +12,22 @@ export class SelectionService {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly selectionStore = inject(SelectionStore);
 
-  public setCurrentArticle(article: Article | Partial<Article> | undefined): void {
+  public setCurrentArticle(article: Article | undefined): void {
     if (!article) {
       this.clearCurrentArticle();
       return;
     }
 
-    selectionStore.set(article);
+    this.selectionStore.update(article);
 
     if (article?.id)
       this.updateArticleIdInQueryParams(article.id);
   }
 
   public clearCurrentArticle(): void {
-    selectionStore.clear();
+    this.selectionStore.clear();
 
     this.clearArticleIdFromQueryParams();
   }

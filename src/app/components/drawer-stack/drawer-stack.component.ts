@@ -10,7 +10,7 @@ const DRAWER_STACK_MAX_COUNT = 3;
   selector: 'app-drawer-stack',
   standalone: true,
   imports: [DrawerComponent],
-  templateUrl: './drawer-stack.component.html',
+  template: '',
   styleUrl: './drawer-stack.component.scss'
 })
 export class DrawerStackComponent implements OnDestroy {
@@ -83,7 +83,7 @@ export class DrawerStackComponent implements OnDestroy {
   private pushDrawer(index: number): void {
     const drawer = this.viewContainer.createComponent(DrawerComponent);
 
-    drawer.instance.selectionId.set(index);
+    drawer.instance.selectionId = index;
 
     this.drawers.push(drawer);
 
@@ -103,7 +103,7 @@ export class DrawerStackComponent implements OnDestroy {
   private unshiftDrawer(index: number): void {
     const drawer = this.viewContainer.createComponent(DrawerComponent);
 
-    drawer.instance.selectionId.set(index);
+    drawer.instance.selectionId = index;
     this.viewContainer.insert(drawer.hostView, 0);
 
     this.drawers.unshift(drawer);

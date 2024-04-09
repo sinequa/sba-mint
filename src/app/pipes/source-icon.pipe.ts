@@ -10,7 +10,7 @@ export class SourceIconPipe implements PipeTransform {
   appStore = inject(AppStore);
 
   transform(collection: string[]): string {
-    if(collection === undefined) {
+    if(collection === undefined || collection.length === 0) {
       return 'far fa-file';
     }
     const name = collection[0].split("/")[1];
