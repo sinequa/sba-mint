@@ -1,7 +1,7 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
+import { Observable, Subject, Subscription, filter, map, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -12,6 +12,7 @@ import { queryParamsStore } from '@/app/stores/';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
+import { Article } from '../types';
 
 
 export type SearchOptions = {
