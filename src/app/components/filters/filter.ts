@@ -18,7 +18,7 @@ export function getAuthorizedFilters(injector: Injector): string[] | undefined {
     tab = getCurrentTab()
   });
 
-  if (!tab || !tabs) return ['treepath','geo', 'company','person', "docformat", "sourcestr4", "#date"]; //undefined;
+  if (!tab || !tabs) return undefined;
 
   return tabs[tab];
 }

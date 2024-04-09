@@ -25,13 +25,13 @@ export class SortSelectorComponent {
 
   @Output() readonly onSort = new EventEmitter<SortingChoice>();
 
-  appSore = inject(AppStore);
+  appStore = inject(AppStore);
 
   readonly queryName = computed(() => this.result()?.queryName);
 
   // fetch the sorting choices from the queries and process if choice is desc or asc
   readonly sortOptions = computed(() => {
-    const{queries} = getState(this.appSore);
+    const{queries} = getState(this.appStore);
     if(queries === undefined) return [];
 
     const choices = queries?.[this.queryName()?.toLocaleLowerCase()]?.sortingChoices;

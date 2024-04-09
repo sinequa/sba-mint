@@ -72,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features };
     const enabledFeatures = homeFeatures.reduce((acc, feature) => {
       // add only if the feature is declared and set to true in the json
-      if (feature.name in features && features?.[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
+      if (feature.name in features && features[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
       return acc;
     }, [] as HomeTab[]);
     return enabledFeatures;
