@@ -5,7 +5,18 @@
         @if (item.$isDivider) {
           <li class="relative before:border-t before:border-gray-300 before:absolute before:top-0 before:inset-x-2">
           </li>
-        } @else {
+        }
+        @else if (!item.display) {
+          <li class="flex data-list-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
+            @switch (item.category) {
+              @case('bookmark') { <p>Bookmarks</p> }
+              @case('title') { <p>Documents</p> }
+              @case('concepts') { <p>Matters</p>}
+              @case('people') { <p>Collaborators</p> }
+            }
+          </li>
+        }
+        @else {
         <li class="flex data-list-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
           @switch (item.category) {
             @case('recent-search') { <i class="fa-fw far fa-clock-rotate-left"></i> }
