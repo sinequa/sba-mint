@@ -5,7 +5,7 @@
 <div class="overflow-auto h-full flex flex-col">
   <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
     <header class="flex items-center gap-4">
-      <p class="article-title me-auto">{{ article().title }}</p>
+      <a  [href]="article()!.url1" target="_blank" rel="noopener noreferrer"><p class="article-title me-auto">{{ article().title }}</p></a>
 
       <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
         <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
