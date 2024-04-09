@@ -8,6 +8,7 @@ import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
 import { BookmarksComponent } from '@/app/components/bookmarks/bookmarks.component';
+import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
 import { RecentSearchesComponent } from '@/app/components/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/app/components/saved-searches/saved-searches.component';
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
@@ -59,7 +60,7 @@ type FeaturesKeys = keyof UserFeatures | Features;
   standalone: true,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, AutocompleteComponent, JsonPipe]
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, AutocompleteComponent, JsonPipe, DrawerStackComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;

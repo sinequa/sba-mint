@@ -81,8 +81,15 @@ export class SearchService implements OnDestroy {
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
     const sort = queryParamsStore.state?.sort;
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort }));
-
-    return this.queryService.search(query);
+    const queryName = query.name;
+    // add the query name to records, to have it available if we bookmark one
+    return this.queryService.search(query).pipe(map((result) => {
+      (result.records as Article[]).forEach((record) => {
+        record.$queryName = queryName;
+        return record;
+      });
+      return result;
+    }));
   }
 
   /**
