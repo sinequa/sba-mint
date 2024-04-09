@@ -3,7 +3,7 @@ import { Observable, forkJoin, from, of } from 'rxjs';
 
 import { CCWebService, Suggestion, fetchSuggest } from '@sinequa/atomic';
 
-import { UserSettingsStore, appStore } from '@/app/stores';
+import { AppStore, UserSettingsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
 import { Autocomplete } from '../types';
 
@@ -23,6 +23,7 @@ export class AutocompleteService {
   readonly injector = inject(Injector)
 
   userSettingsStore = inject(UserSettingsStore);
+  appStore = inject(AppStore);
 
   /**
    * Retrieves autocomplete items for the given text, max count for each
@@ -36,7 +37,7 @@ export class AutocompleteService {
     // Do not ask for autocomplete items if the text is empty
     if (!text) return of([]);
 
-    const queries = (appStore.getWebServiceByType('Autocomplete') as AutocompleteWebService)?.suggestQueries?.split(',') ?? [];
+    const queries = (this.appStore.getWebServiceByType('Autocomplete') as AutocompleteWebService)?.suggestQueries?.split(',') ?? [];
     const obss = queries.reduce((acc, curr) => {
       acc.push(from(fetchSuggest(curr, text)));
       return acc;

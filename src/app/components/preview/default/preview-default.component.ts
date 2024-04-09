@@ -9,7 +9,7 @@ import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
 import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';
-import { appStore, selectionStore } from '@/app/stores';
+import { AppStore, selectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildQuery } from '@/app/utils';
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
@@ -35,7 +35,7 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
   public readonly article = input.required<Article>();
   public readonly previewUrl = signal<SafeUrl | undefined>(undefined);
 
-  public labels = { public: '', private: '' };
+  public labels = inject(AppStore).getLabels();
 
   readonly headerCollapsed = signal<boolean>(false);
 
@@ -68,12 +68,6 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
         );
       })
     }, { allowSignalWrites: true });
-
-    this.sub.add(
-      appStore.current$.subscribe(() => {
-        this.labels = appStore.getLabels();
-      })
-    )
   }
 
   ngAfterViewInit() {

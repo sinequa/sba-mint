@@ -9,7 +9,7 @@ import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { appStore, queryParamsStore } from '@/app/stores';
+import { AppStore, queryParamsStore } from '@/app/stores';
 import { Filter, buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
@@ -43,6 +43,7 @@ export class FiltersComponent implements OnInit {
   private readonly _aggregationsService = inject(AggregationsService);
   private readonly _aggregationsStore = inject(AggregationsStore);
   private readonly _searchService = inject(SearchService);
+  private readonly appStore = inject(AppStore);
 
   private readonly _subscriptions = new Subscription();
 
@@ -140,7 +141,7 @@ export class FiltersComponent implements OnInit {
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const itemCustomizations = appStore.getAggregationItemsCustomization(aggregation.column);
+        const itemCustomizations = this.appStore.getAggregationItemsCustomization(aggregation.column);
 
         const f = queryParamsStore.getFilterFromColumn(aggregation.column);
 
@@ -157,7 +158,7 @@ export class FiltersComponent implements OnInit {
         return ({
           label: aggregation.name,
           aggregation: aggregation,
-          icon: appStore.getAggregationIcon(aggregation.column),
+          icon: this.appStore.getAggregationIcon(aggregation.column),
           currentFilter: f?.label,
           moreFiltersCount: more,
         })
