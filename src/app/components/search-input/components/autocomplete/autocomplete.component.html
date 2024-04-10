@@ -7,14 +7,14 @@
           </li>
         }
         @else if (!item.display) {
-          <p class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
+          <li class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer">
             @switch (item.category) {
               @case('bookmark') { Bookmarks }
               @case('title') { Documents }
               @case('concepts') { Matters }
               @case('people') { Collaborators }
             }
-          </p>
+          </li>
         }
         @else {
         <li class="flex data-list-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
