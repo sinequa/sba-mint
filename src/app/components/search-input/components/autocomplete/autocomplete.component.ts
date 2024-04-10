@@ -13,6 +13,8 @@ export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
 }
 
+const titledSections = ['title', 'concepts', 'people', 'bookmark'];
+
 @Component({
     selector: 'app-autocomplete',
     standalone: true,
@@ -45,12 +47,12 @@ export class AutocompleteComponent {
         const last = acc.at(-1);
 
         // add a divider before specific categories
-        if (!last?.$isDivider && last?.category !== curr.category && ['title', 'concepts', 'people', 'bookmark'].includes(curr.category)) {
+        if (!last?.$isDivider && last?.category !== curr.category && titledSections.includes(curr.category)) {
           acc.push({ $isDivider: true });
             acc.push({category: curr.category, $isDivider: false});
         }
         // handle the case when the first item is from a titled section
-      } else if (['title', 'concepts', 'people', 'bookmark'].includes(curr.category)) {
+      } else if (titledSections.includes(curr.category)) {
         acc.push({category: curr.category, $isDivider: false});
       }
 
