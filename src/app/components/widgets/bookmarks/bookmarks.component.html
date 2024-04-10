@@ -1,7 +1,7 @@
 <ul class="flex flex-col">
   @for (bookmark of bookmarks(); track $index) {
   <li
-    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none group"
+    class="flex h-10 gap-2 px-3 py-2 items-center rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none group"
     tabindex="0" appFocusWithArrowKeys="y" (click)="bookmarkClicked(bookmark)"
     (keydown.enter)="bookmarkClicked(bookmark)">
     <i class="fa-fw far fa-bookmark shrink-0"></i>

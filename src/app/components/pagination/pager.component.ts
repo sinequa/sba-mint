@@ -34,9 +34,6 @@ export type PageConfiguration = {
         </svg>
       </button>
     }
-    @if( !hasPages() && page() === 1 ){
-      <span class="text-sm  text-slate-300">No more results</span>
-    }
   </div>
   `
 })
