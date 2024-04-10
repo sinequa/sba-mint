@@ -1,7 +1,7 @@
 <form [formGroup]="form">
   <fieldset class="overflow-auto">
     <legend class="w-full px-2 pt-2">
-      <div class="flex font-semibold items-baseline justify-between">
+      <div class="dropdown-header">
         <p class="me-4">
           @if (title?.icon) {
           <i class="fa-fw {{ title?.icon }}"></i>
@@ -40,9 +40,7 @@
       @for (option of dateOptions(); track $index) {
       <li
         class="data-list-item flex text-sm px-2 leading-7"
-        [ngClass]="{
-          'data-list-item-selected': form.get('option')?.value === option.code
-        }"
+        [ngClass]="{'selected': form.get('option')?.value === option.code}"
       >
         <input
           #radio

@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["projects/**/*"],
+  "ignorePatterns": ["**/*.js"],
   "overrides": [
     {
       "files": ["*.ts"],
@@ -16,7 +16,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": ["app", "wps"],
+            "prefix": ["app", "wps", ""],
             "style": "camelCase"
           }
         ],
