@@ -4,7 +4,7 @@ import { Bookmark } from '@/app/types/user-settings';
 import { Component, effect, inject, signal } from '@angular/core';
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
 
 @Component({
   selector: 'app-bookmarks',
