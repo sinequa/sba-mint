@@ -1,15 +1,14 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Subscription, combineLatest, of, take, tap } from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import { AggregationsService, DateFilter, DateFilterCode } from '@/app/services';
+import { DateFilter, DateFilterCode } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
 import { QueryParamsStore } from '@/app/stores';
-import { getState } from '@ngrx/signals';
 import { AggregationsStore } from '@/stores';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { getState } from '@ngrx/signals';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
@@ -22,19 +21,19 @@ const ALLOW_CUSTOM_RANGE = true;
   templateUrl: './date-filter.component.html',
   styleUrl: './date-filter.component.scss'
 })
-export class DateFilterComponent implements OnInit, OnDestroy {
-  @Input({ required: true }) public column!: string;
-  @Input({ required: false }) public title!: AggregationTitle | undefined;
+export class DateFilterComponent implements OnDestroy {
+  column = input.required<string>();
+  title = input<AggregationTitle>({label: 'Date', icon: 'fas fa-calendar'});
 
   @Output() public readonly refreshed = new EventEmitter<Filter>();
   @Output() public readonly updated = new EventEmitter<Filter>();
   @Output() public readonly valueChanged = new EventEmitter<Filter>();
 
   readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
-  readonly options = signal<unknown[]>([]);
-  readonly aggregationDateOptions = toObservable(computed(() => this.translateAggregationToDateOptions(this.aggregationsStore.getAggregation('Modified', 'name') as Aggregation)));
-  readonly dateOptions = signal<DateFilter[]>([]);
+
+  readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregationsStore.getAggregation('Modified', 'name') as Aggregation));
   readonly hasFilter = computed(() => this.activeFilters().length > 0);
+
   readonly form = new FormGroup({
     option: new FormControl<DateFilterCode | string | null>(null),
     customRange: new FormGroup({
@@ -44,45 +43,26 @@ export class DateFilterComponent implements OnInit, OnDestroy {
   });
   protected today = new Date().toISOString().split('T')[0];
 
-  private readonly activeFilters = signal<string[]>([]);
+  private readonly activeFilters = computed(() => {
+    const {filters} = getState(this.queryParamsStore);
+    if(filters) {
+      return filters.find((f: Filter) => f.column === this.column())?.values ?? [];
+    }
+    return [];
+  });
   private readonly subscriptions = new Subscription();
 
-  private readonly aggregations = inject(AggregationsService);
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly aggregationsStore = inject(AggregationsStore);
 
+  constructor() {
 
-  ngOnInit(): void {
-    const updateState$ = combineLatest([
-      this.aggregationDateOptions,
-      of(getState(this.queryParamsStore).filters)
-    ])
-      .pipe(
-        tap(([options, filters]) => {
-          console.log('## options', options);
-          console.log('## filters', filters);
-
-          this.dateOptions.set(options);
-          this.activeFilters.set(filters?.find((f: Filter) => f.column === this.column)?.values ?? []);
-
-          this.updateForm(filters?.find((f: Filter) => f.column === this.column));
-        })
-      );
-    const initialized$ = updateState$.pipe(
-      take(1)
-    );
-
-    this.subscriptions.add(
-      updateState$.subscribe(() => {
-        this.refreshed.emit({ column: this.column, label: this.getLabel(), values: this.getFilters() });
-      })
-    );
-
-    this.subscriptions.add(
-      initialized$.subscribe(() => {
-        this.refreshed.emit({ column: this.column, label: this.getLabel(), values: this.getFilters() });
-      })
-    );
+    effect(() => {
+      const {filters = []} = getState(this.queryParamsStore);
+      console.log('## filters', filters, this.column);
+      this.updateForm( filters.find((f: Filter) => f.column === this.column()));
+      // this.refreshed.emit({ column: this.column, label: this.getLabel(), values: this.getFilters() });
+    })
 
     this.subscriptions.add(
       this.form.valueChanges.subscribe((values) => {
@@ -90,8 +70,9 @@ export class DateFilterComponent implements OnInit, OnDestroy {
 
         if (current.filter((value: string) => value === '').length === 3) current.length = 0;
 
-        this.activeFilters.set(current);
-        this.valueChanged.emit({ column: this.column, label: this.getLabel(), values: current });
+        console.log("## current", current);
+        // this.activeFilters.set(current);
+        this.valueChanged.emit({ column: this.column(), label: this.getLabel(), values: current });
       })
     );
   }
@@ -104,7 +85,7 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     const value = this.form.value;
     const dateOption = this.dateOptions().find((option: DateFilter) => option.display === value.option);
     const filter: Filter = {
-      column: this.column,
+      column: this.column(),
       label: value.option as string,
       values: [],
       operator: value.option === 'custom-range' ? 'between' : dateOption?.operator as FilterOperator
@@ -122,11 +103,7 @@ export class DateFilterComponent implements OnInit, OnDestroy {
     this.updated.emit(filter);
   }
 
-  public getFilters(): string[] {
-    return this.activeFilters();
-  }
-
-  public getLabel(): string {
+  private getLabel(): string {
     return this.dateOptions().find(f => f.code === this.activeFilters()[0])?.label ?? '';
   }
 
@@ -139,7 +116,7 @@ export class DateFilterComponent implements OnInit, OnDestroy {
       }
     })
 
-    if (notifyAsUpdated) this.updated.emit({ column: this.column, label: undefined, values: [] });
+    if (notifyAsUpdated) this.updated.emit({ column: this.column(), label: undefined, values: [] });
   }
 
   protected forceFilterToCustomRange(): void {
