@@ -31,7 +31,7 @@
           <td class="flex flex-wrap gap-2">
           <sq-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
             @for (author of refAuthors.items(); track $index) {
-              <wps-author [authorName]="author.display" class="flex items-center" />
+              <wps-author [authorName]="author.display"/>
             }
           </sq-metadata>
         </td>
