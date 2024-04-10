@@ -18,8 +18,7 @@ import { AggregationComponent } from '../aggregation/aggregation.component';
   selector: 'app-more-filters',
   standalone: true,
   imports: [AggregationComponent],
-  templateUrl: './more-filters.component.html',
-  styleUrl: './more-filters.component.scss'
+  templateUrl: './more-filters.component.html'
 })
 export class MoreFiltersComponent implements OnDestroy {
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
