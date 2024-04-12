@@ -1,0 +1,7 @@
+<button title="Bookmark that document" (click)="bookmark()" stkStopPropagation>
+  @if (isBookmarked()) {
+  <i class="fa-fw fa-solid fa-bookmark text-sm"></i>
+  } @else {
+  <i class="fa-fw fa-regular fa-bookmark text-sm"></i>
+  }
+</button>
