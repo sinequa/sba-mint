@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
+import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective } from '@/app/directives';
 import { SlideArticle } from '@/app/types/articles';
 import { StopPropagationDirective } from 'toolkit';
@@ -8,7 +9,7 @@ import { StopPropagationDirective } from 'toolkit';
 @Component({
   selector: 'app-article-slide',
   standalone: true,
-  imports: [DatePipe, StopPropagationDirective],
+  imports: [DatePipe, StopPropagationDirective, BookmarkComponent],
   templateUrl: './article-slide.component.html',
   styleUrl: './article-slide.component.scss',
   hostDirectives: [{
