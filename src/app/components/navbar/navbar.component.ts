@@ -56,6 +56,7 @@ export class NavbarComponent {
   ];
 
   protected readonly navigationService = inject(NavigationService);
+  protected wasSearchClicked = false;
 
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
@@ -87,6 +88,10 @@ export class NavbarComponent {
     this.autocompleteService.opened.set(false);
 
     this.search(item.display!);
+  }
+
+  public searchClicked() {
+    this.wasSearchClicked = true;
   }
 
   protected search(text: string): void {

@@ -1,12 +1,13 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Output, effect, inject, input, signal } from '@angular/core';
-import { combineLatest, map } from 'rxjs';
+import { Component, EventEmitter, Output, inject, input } from '@angular/core';
+import { combineLatest, map, switchMap } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
 import { HighlightWordPipe } from "@/app/pipes/highlight-word.pipe";
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { AppStore } from '@/app/stores';
+import { AppStore, UserSettingsStore } from '@/app/stores';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -20,38 +21,47 @@ export type Suggestion = Partial<SuggestionBasic> & {
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');
+  readonly wasSearchClicked = input<boolean>(false);
 
   @Output() readonly onClick = new EventEmitter<Suggestion>();
 
   readonly autocompleteService = inject(AutocompleteService);
   readonly appStore = inject(AppStore);
 
-  readonly items = signal<Suggestion[]>([]);
+  private wasSearchClicked$ = toObservable(this.wasSearchClicked);
 
-  readonly itemsEffect = effect(() => {
+  private text$ = toObservable(this.text);
 
-    const text = this.text();
-    const autocomplete = this.appStore.customizationJson()?.autocomplete;
+  uss = inject(UserSettingsStore);
 
-    combineLatest([
-      this.autocompleteService.getFromUserSettingsForText(text, autocomplete ?? 5),
-      this.autocompleteService.getFromSuggestQueriesForText(text)
-    ]).pipe(
-      map(items => items.flat(2)),
-      map((items) => items.reduce<Suggestion[]>((acc, curr) => {
-      if (acc.length > 0) {
-        const last = acc.at(-1);
+  readonly items = toSignal(
+    combineLatest([this.text$, this.wasSearchClicked$])
+      .pipe(
+        switchMap(([testText]) => {
+          const autocomplete = this.appStore.customizationJson()?.autocomplete;
 
-        if (!last?.$isDivider && last?.category !== curr.category)
-          acc.push({ $isDivider: true });
-      }
+          if (!testText) {
+            return this.autocompleteService.getFromUserSettingsForText(testText, autocomplete ?? 5);
+          }
 
-      acc.push({ ...curr, $isDivider: false });
+          return combineLatest([
+            this.autocompleteService.getFromUserSettingsForText(testText, autocomplete ?? 5),
+            this.autocompleteService.getFromSuggestQueriesForText(testText)
+          ]);
+        }),
+        map(items => items.flat(2)),
+        map((items) => items.reduce<Suggestion[]>((acc, curr) => {
+          if (acc.length > 0) {
+            const last = acc.at(-1);
 
-      return acc;
-      }, []))
-    ).subscribe(items => this.items.set(items));
-  }, { allowSignalWrites: true })
+            if (!last?.$isDivider && last?.category !== curr.category)
+              acc.push({ $isDivider: true });
+          }
+
+          acc.push({ ...curr, $isDivider: false });
+          return acc;
+          }, []))
+    ));
 
   public itemClicked(item: Suggestion): void {
     this.onClick.emit(item);

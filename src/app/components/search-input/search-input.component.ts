@@ -21,6 +21,7 @@ export class SearchInputComponent implements OnDestroy {
   @Output() public readonly debounced = new EventEmitter<string>();
   @Output() public readonly validated = new EventEmitter<string>();
   @Output() public readonly saved = new EventEmitter<void>();
+  @Output() public readonly clicked = new EventEmitter<void>();
 
   public readonly showSave = input(false, { transform: booleanAttribute });
 
@@ -52,6 +53,11 @@ export class SearchInputComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+  }
+
+  public inputClicked(): void {
+    this.overlayOpen.set(true);
+    this.clicked.emit();
   }
 
   public setInput(text: string | undefined, silent: boolean = true): void {
