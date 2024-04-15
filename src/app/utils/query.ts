@@ -86,14 +86,11 @@ export function getQueryPageFromUrl(url: string): number {
 export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
-  const customization = inject(AppStore).customizationJson();
-
   const name = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
   const text = query?.text ?? getQueryTextFromUrl(window.location.toString()) ?? '';
   const filters = query?.filters ?? undefined;
   const page = query?.page ?? getQueryPageFromUrl(window.location.toString()) ?? undefined;
   const sort = query?.sort ?? undefined;
-  const globalRelevance = query?.globalRelevance ?? customization.globalRelevance;
 
   return {
     ...query,
@@ -101,7 +98,27 @@ export function buildQuery(query?: Partial<Query>): Query {
     text,
     filters,
     page,
-    sort,
+    sort
+  };
+}
+
+/**
+ * Builds a secondary query object based on the provided partial query.
+ * Adds the globalRelevance property to the query if it was missing, and calls buildQuery.
+ *
+ * @param query - The partial query object.
+ * @returns The complete query object.
+ */
+export function buildSecondaryQuery(query?: Partial<Query>): Query {
+  assertInInjectionContext(buildSecondaryQuery);
+
+  const builtQuery = buildQuery(query);
+
+  const customization = inject(AppStore).customizationJson();
+  const globalRelevance = builtQuery?.globalRelevance ?? customization.secondaryGlobalRelevance;
+
+  return {
+    ...builtQuery,
     globalRelevance
   };
 }
@@ -121,16 +138,12 @@ export function buildQuery(query?: Partial<Query>): Query {
 export function buildFirstPageQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildFirstPageQuery);
 
-  const customization = inject(AppStore).customizationJson();
-
   const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
-  const globalRelevance = query?.globalRelevance ?? customization.globalRelevance;
 
   return {
     ...query,
     name: queryName,
-    isFirstPage: true,
-    globalRelevance
+    isFirstPage: true
   };
 }
 

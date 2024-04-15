@@ -45,5 +45,5 @@ export type CustomizationJson = {
   tabs?: Record<string, string[]>;
   userFeatures?: UserFeatures;
   sources?: CJSource[];
-  globalRelevance?: number;
+  secondaryGlobalRelevance?: number;
 }
