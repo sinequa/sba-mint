@@ -5,10 +5,11 @@ import { Subject } from "rxjs";
 import { PreviewData } from "@sinequa/atomic";
 import { HIGHLIGHTS, InlineWorker, PreviewHighlight } from "@sinequa/atomic-angular";
 
-import { selectionStore } from "@/app/stores";
+import { SelectionStore } from "@/app/stores";
 import { ApplicationStore, Extract } from "@/stores";
 
 import { ExtractsLocationService } from "./extracts-location.service";
+import { getState } from "@ngrx/signals";
 
 type ExtractsLocations = Extract & {
   text: string // HTML text
@@ -16,7 +17,9 @@ type ExtractsLocations = Extract & {
 
 @Injectable()
 export class PreviewService {
-  store = inject(ApplicationStore);
+  applicationStore = inject(ApplicationStore);
+  selectionStore = inject(SelectionStore);
+
   extractsLocationService = inject(ExtractsLocationService);
   sanitizer = inject(DomSanitizer);
 
@@ -35,7 +38,7 @@ export class PreviewService {
         text: this.sanitizer.bypassSecurityTrustHtml(item.text)
       }));
 
-      this.store.updateExtracts(this.previewData.record.id, extracts);
+      this.applicationStore.updateExtracts(this.previewData.record.id, extracts);
 
     });
 
@@ -49,7 +52,7 @@ export class PreviewService {
       }
 
       if (message.type === 'get-html-results') {
-        const id = selectionStore.state?.id
+        const { id } = getState(this.selectionStore)
         if (id) {
           if (this.extractsLocationService.worker) {
             // const data = this.previewData.get(id)!;
@@ -57,7 +60,7 @@ export class PreviewService {
           } else {
             // const data = this.previewData.get(id)!;
             const extracts = this.fetchExtracts(id, message.data, this.previewData);
-            this.store.updateExtracts(this.previewData.record.id, extracts);
+            this.applicationStore.updateExtracts(this.previewData.record.id, extracts);
 
           }
         }

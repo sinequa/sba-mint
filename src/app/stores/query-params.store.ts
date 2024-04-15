@@ -1,47 +1,56 @@
 
 
-import { Store } from '@/app/stores';
 import { QueryParams, queryParamsFromUrl } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
+import { getState, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 
-export class QueryParamsStore extends Store<QueryParams> {
-  public setFromUrl(url: string): void {
-    const path = url.split('?')[0];
+const initialState: QueryParams = {
+  filters: [],
+} as QueryParams;
 
-    const { q: text, f, id, p, s: sort, c } = queryParamsFromUrl(url);
-    const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
-    const page = parseInt(p, 10);
-    const spellingCorrectionMode = c as "default" | "classic" | "smart" | "correct" | "dymonly" | "force" | "false" | undefined
+export const QueryParamsStore = signalStore(
+  { providedIn: 'root' },
+  withDevtools("QueryParams"),
+  withState(initialState),
+  withMethods((store) => ({
+    setFromUrl(url: string) {
+      const path = url.split('?')[0];
 
-    this.set({ path, text, filters, id, page, sort, spellingCorrectionMode });
-  }
+      const { q: text, f, id, p, s: sort, c } = queryParamsFromUrl(url);
+      const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
+      const page = parseInt(p, 10);
+      const spellingCorrectionMode = c as "default" | "classic" | "smart" | "correct" | "dymonly" | "force" | "false" | undefined
 
-  public updateFilter(filter: Filter): void {
-    if (!this.state) this.state = {};
-    if (!this.state.filters) this.state.filters = [];
 
-    const existing = this.state?.filters?.findIndex((f: Filter) => f.column === filter.column);
+      patchState(store, (state) => {
+        return { ...state, path, text, filters, id, page, sort, spellingCorrectionMode };
+      })
+    },
+    updateFilter(filter: Filter) {
+      patchState(store, (state) => {
+        const existing = state.filters?.findIndex((f: Filter) => f.column === filter.column) || -1;
 
-    // Add filter if it doesn't exist and has values
-    if (existing === -1 && filter.values.length > 0)
-      this.state.filters.push(filter);
-    // Remove filter if no values are selected
-    else if (existing >= 0 && filter.values.length === 0)
-      this.state.filters.splice(existing, 1);
-    // Update filter values
-    else if (existing >= 0)
-      this.state.filters.splice(existing, 1, filter);
+        // Add filter if it doesn't exist and has values
+        if (existing === -1 && filter.values.length > 0)
+          return {...state, filters: [...state.filters || [], filter]};
+        // Remove filter if no values are selected
+        else if (existing >= 0 && filter.values.length === 0)
+          return {...state, filters: (state.filters || []).splice(existing, 1)};
+        // Update filter values
+        else if (existing >= 0)
+          return {...state, filters: (state.filters|| []).splice(existing, 1, filter)};
 
-    this.set(this.state);
-  }
-
-  public patch(params: Partial<QueryParams>): void {
-    this.set({ ...this.state, ...params });
-  }
-
-  public getFilterFromColumn(column: string): Filter | undefined {
-    return this.state?.filters?.find((f: Filter) => f.column === column);
-  }
-}
-
-export const queryParamsStore = new QueryParamsStore();
+        return state;
+      });
+    },
+    patch(params: Partial<QueryParams>) {
+      patchState(store, (state) => {
+        return { ...state, ...params };
+      });
+    },
+    getFilterFromColumn(column: string) {
+      return getState(store).filters?.find((f: Filter) => f.column === column);
+    }
+  }))
+)

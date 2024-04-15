@@ -17,7 +17,15 @@ export type AggregationTitle = {
   selector: 'app-aggregation',
   standalone: true,
   templateUrl: './aggregation.component.html',
-  styles: [`:host { display: block; }`],
+  styles: [`
+  :host {
+    display: block;
+  }
+
+  fieldset {
+    scrollbar-width: thin;
+  }
+`],
   imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent]
 })
 export class AggregationComponent implements OnInit {

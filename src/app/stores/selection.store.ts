@@ -1,19 +1,28 @@
 import { Article } from "@/app/types/articles";
-import { queryParamsStore } from "./query-params.store";
-import { Store } from './store';
+import { withDevtools } from "@angular-architects/ngrx-toolkit";
+import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 
-export class SelectionStore extends Store<Article | Partial<Article> | undefined> {
-  public override set(article: Article | Partial<Article> | undefined): void {
-    super.set(article);
+type SelectionState = {
+  article: Article;
+  id: string;
+};
 
-    queryParamsStore.patch({ id: article?.id });
-  }
+const initialState: SelectionState = {} as SelectionState;
 
-  public override clear(): void {
-    super.clear();
-
-    queryParamsStore.patch({ id: undefined });
-  }
-}
-
-export const selectionStore = new SelectionStore();
+export const SelectionStore = signalStore(
+  { providedIn: 'root' },
+  withDevtools("Selection"),
+  withState(initialState),
+  withMethods((store) => ({
+    update(article: Article) {
+      patchState(store, () => {
+        return { article, id: article.id };
+      });
+    },
+    clear() {
+      patchState(store, () => {
+        return ({article: undefined, id: undefined });
+      });
+    }
+  }))
+);

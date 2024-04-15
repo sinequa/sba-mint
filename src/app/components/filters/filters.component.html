@@ -1,6 +1,6 @@
 <menu class="flex gap-2">
   <!-- clear filters button -->
-  @if ((filters() ?? []).length > 0) {
+  @if ((filters() || []).length > 0) {
     <li>
       <button
         class="btn btn-sm btn-alert"
@@ -27,7 +27,7 @@
     </div>
 
     <app-date-filter
-      class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
+      class="dropdown-content min-w-[300px] w-max"
       [column]="dateFilterDropdown()?.aggregation?.column || ''"
       [title]="{
         label: dateFilterDropdown()?.label || '',
@@ -62,7 +62,7 @@
       </button>
 
       <app-aggregation
-        class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
+        class="dropdown-content w-max"
         [aggregation]="filterDropdown.aggregation"
         [title]="{
           label: filterDropdown.label,

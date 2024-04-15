@@ -1,64 +1,83 @@
-import { CCApp, CCWebService } from '@sinequa/atomic';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { firstValueFrom, map } from 'rxjs';
 
-import { CJAggregationItem, CJSource, CustomizationJson } from '../types';
-import { Store } from './store';
+import { CCApp, CCWebService } from '@sinequa/atomic';
+import { AppService } from '@sinequa/atomic-angular';
+
+import { CJAggregation, CJAggregationItem, CustomizationJson } from '../types';
 
 type CCWebServiceLabels = CCWebService & {
   privateLabelsField: string;
   publicLabelsField: string;
 }
 
-export class AppStore extends Store<CCApp> {
+const intialState: CCApp = {
+  webServices: {},
+  data: {} as CustomizationJson,
+} as CCApp;
+
+export const AppStore = signalStore(
+  { providedIn: 'root' },
+  withDevtools('App'),
+  withState(intialState),
+  withComputed(({data}) => ({
+    customizationJson: computed(() => data() as CustomizationJson),
+    sources: computed(() => (data() as CustomizationJson).sources || []),
+  })),
+  withMethods((store, appService = inject(AppService)) => ({
+    initialize() {
+      return firstValueFrom(appService.getApp().pipe(map(app => {
+        patchState(store, (state) => {
+          return { ...state, ...app }
+        })
+      })));
+    },
+    update( app: CCApp) {
+      patchState(store, (state) => {
+        return { ...state, ...app }
+      })
+    },
   /**
    * Returns the web service by type name
    *
    * @param type Web service type name
    * @returns A {@link CCWebService} object or undefined if not found
    */
-  getWebServiceByType(type: CCWebService['webServiceType']): CCWebService | undefined {
-    if (!this.state?.webServices) return undefined;
+    getWebServiceByType(type: CCWebService['webServiceType']): CCWebService | undefined {
+      let webService = undefined;
 
-    let webService = undefined;
+      Object.keys(store.webServices())
+        .forEach((key) => {
+          const ws = store.webServices()[key];
+          if (ws.webServiceType === type) webService = ws;
+        });
 
-    Object.keys(this.state.webServices)
-      .forEach((key) => {
-        const ws = this.state!.webServices[key];
-        if (ws.webServiceType === type) webService = ws;
-      });
-
-    return webService;
-  }
+      return webService;
+    },
 
   /**
    * Retrieves the private and public labels from the web service.
    * @returns An array containing the private and public labels.
    */
-  getLabels(): {private: string, public: string} {
-    const labels = this.getWebServiceByType('Labels') as CCWebServiceLabels;
-    if(!labels) return {private: '', public: ''};
-    const {publicLabelsField, privateLabelsField} = labels;
-    return ({private: privateLabelsField, public: publicLabelsField});
-  }
+    getLabels(): {private: string, public: string} {
+      const labels = this.getWebServiceByType('Labels') as CCWebServiceLabels;
+      if(!labels) return {private: '', public: ''};
+      const {publicLabelsField, privateLabelsField} = labels;
+      return ({private: privateLabelsField, public: publicLabelsField});
+    },
 
-  getCustomizationJson(): CustomizationJson | undefined {
-    return this.state?.data;
-  }
+    getAggregationIcon(column: string): string | undefined {
+      return store.customizationJson().aggregations?.find(
+        (aggregation: CJAggregation) => aggregation.column === column
+      )?.icon;
+    },
 
-  getAggregationIcon(column: string): string | undefined {
-    return this.getCustomizationJson()?.aggregations?.find(
-      aggregation => aggregation.column === column
-    )?.icon;
-  }
-
-  getAggregationItemsCustomization(column: string): CJAggregationItem[] | undefined {
-    return this.getCustomizationJson()?.aggregations?.find(
-      aggregation => aggregation.column === column
-    )?.items;
-  }
-
-  getSourcesCustomization(): CJSource[] {
-    return this.getCustomizationJson()?.sources || [];
-  }
-}
-
-export const appStore = new AppStore();
+    getAggregationItemsCustomization(column: string): CJAggregationItem[] | undefined {
+      return store.customizationJson().aggregations?.find(
+        (aggregation: CJAggregation) => aggregation.column === column
+      )?.items || [];
+    }
+  }))
+);

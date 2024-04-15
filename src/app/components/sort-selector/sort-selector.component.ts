@@ -1,8 +1,7 @@
-import { appStore } from '@/app/stores';
-import { Component, EventEmitter, Output, computed, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { AppStore } from '@/app/stores';
+import { Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
+import { getState } from '@ngrx/signals';
 import { Result } from '@sinequa/atomic';
-import { filter, map } from 'rxjs';
 
 export type SortingChoice = {
   name: string;
@@ -26,14 +25,17 @@ export class SortSelectorComponent {
 
   @Output() readonly onSort = new EventEmitter<SortingChoice>();
 
-  readonly queryName = computed(() => this.result()?.queryName);
+  appStore = inject(AppStore);
 
-  // fetch queries from the current app state when appStore is ready
-  readonly queries = toSignal(appStore.current$.pipe(filter(x => !!x), map(x => x!.queries)));
+  readonly queryName = computed(() => this.result()?.queryName);
 
   // fetch the sorting choices from the queries and process if choice is desc or asc
   readonly sortOptions = computed(() => {
-    const choices = this.queries()?.[this.queryName()?.toLocaleLowerCase()]?.sortingChoices;
+    const{queries} = getState(this.appStore);
+    if(queries === undefined) return [];
+
+    const choices = queries?.[this.queryName()?.toLocaleLowerCase()]?.sortingChoices;
+    if(choices === undefined) return [];
     return choices?.reduce((acc, sort) => {
       acc.push({ ...sort, $isDesc: sort.orderByClause.includes('desc') });
       return acc;

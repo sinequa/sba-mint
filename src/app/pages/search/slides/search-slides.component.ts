@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, map, merge, switchMap, take } from 'rxjs';
+import { Subscription, switchMap, take } from 'rxjs';
 
 import { Article, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -11,9 +11,10 @@ import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { queryParamsStore, searchInputStore } from '@/app/stores';
+import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
+import { getState } from '@ngrx/signals';
 
 @Component({
     selector: 'app-search-slides',
@@ -41,6 +42,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -72,10 +74,14 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
         })
     );
 
+    effect(() => {
+      getState(this.queryParamsStore);
+      this.slides.set(undefined);
+    }, { allowSignalWrites: true});
+
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(
-      merge(searchInputStore.next$, queryParamsStore.current$.pipe(map((queryParams) => queryParams?.filters ?? [])))
-        .subscribe(() => this.slides.set(undefined))
+      searchInputStore.next$.subscribe(() => this.slides.set(undefined))
     );
   }
 

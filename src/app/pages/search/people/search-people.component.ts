@@ -1,5 +1,5 @@
 import { Component, HostBinding, Injector, Input, OnDestroy, OnInit, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { Subscription, map, merge, switchMap, take } from 'rxjs';
+import { Subscription, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -10,10 +10,11 @@ import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.s
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
 import { NavigationService, SearchService } from '@/app/services';
-import { queryParamsStore, searchInputStore } from '@/app/stores';
+import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
+import { getState } from '@ngrx/signals';
 
 @Component({
   selector: 'app-search-people',
@@ -37,6 +38,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   private drawerEffect = effect(() => {
     this.drawerOpened = this.drawerStack.isOpened();
@@ -68,10 +70,14 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
         })
     );
 
+    effect(() => {
+      getState(this.queryParamsStore);
+      this.people.set(undefined);
+    }, {allowSignalWrites: true});
+
     // Trigger skeleton on search whether from input of from filters
     this.subscription.add(
-      merge(searchInputStore.next$, queryParamsStore.current$.pipe(map((queryParams) => queryParams?.filters ?? [])))
-        .subscribe(() => this.people.set(undefined))
+      searchInputStore.next$.subscribe(() => this.people.set(undefined))
     );
   }
 

@@ -30,14 +30,14 @@
   .data-list-item:hover {
     @apply active;
   }
-  .data-list-item-selected {
+  .data-list-item.selected {
     @apply active;
   }
 
-  .data-list-item-selected:first-of-type {
+  .data-list-item.selected:first-of-type {
     @apply rounded-t;
   }
-  .data-list-item-selected:last-of-type {
+  .data-list-item.selected:last-of-type {
     @apply rounded-b;
   }
 
@@ -48,25 +48,25 @@
     @apply rounded-b;
   }
 
-  .data-list-item:not(.data-list-item-selected, .data-list-item:hover)
-    + .data-list-item-selected {
+  .data-list-item:not(.data-list-item.selected, .data-list-item:hover)
+    + .data-list-item.selected {
     @apply rounded-t;
   }
-  .data-list-item-selected:has(+ :not(.data-list-item-selected)) {
+  .data-list-item.selected:has(+ :not(.data-list-item.selected)) {
     @apply rounded-b;
   }
-  .data-list-item:hover:not(.data-list-item-selected):has(
-      + :not(.data-list-item-selected)
+  .data-list-item:hover:not(.data-list-item.selected):has(
+      + :not(.data-list-item.selected)
     ) {
     @apply rounded-b;
   }
-  .data-list-item:not(.data-list-item-selected) + .data-list-item:hover {
+  .data-list-item:not(.data-list-item.selected) + .data-list-item:hover {
     @apply rounded-t;
   }
-  .data-list-item-selected:has(+ .data-list-item:hover) {
+  .data-list-item.selected:has(+ .data-list-item:hover) {
     @apply rounded-b-none;
   }
-  .data-list-item:hover + .data-list-item-selected {
+  .data-list-item:hover + .data-list-item.selected {
     @apply rounded-t-none;
   }
 }

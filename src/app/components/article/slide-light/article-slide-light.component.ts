@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, HostBinding, LOCALE_ID, effect, inject, input } from '@angular/core';
 
+import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { SlideArticle } from '@/app/types/articles';
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
@@ -8,7 +9,7 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 @Component({
   selector: 'app-article-slide-light',
   standalone: true,
-  imports: [DatePipe, WpsAuthorComponent],
+  imports: [DatePipe, WpsAuthorComponent, BookmarkComponent],
   templateUrl: './article-slide-light.component.html',
   styleUrl: './article-slide-light.component.scss',
   hostDirectives: [{

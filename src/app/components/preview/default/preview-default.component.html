@@ -1,11 +1,10 @@
-<app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"
-  (bookmark)="toggleBookmark()" />
+<app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"/>
 
 @if(article()){
 <div class="overflow-auto h-full flex flex-col">
   <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
     <header class="flex items-center gap-4">
-      <p class="article-title me-auto">{{ article().title }}</p>
+      <a  [href]="article()!.url1" target="_blank" rel="noopener noreferrer"><p class="article-title me-auto">{{ article().title }}</p></a>
 
       <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
         <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
@@ -31,7 +30,7 @@
           <td class="flex flex-wrap gap-2">
           <sq-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
             @for (author of refAuthors.items(); track $index) {
-              <wps-author [authorName]="author.display" class="flex items-center" />
+              <wps-author [authorName]="author.display"/>
             }
           </sq-metadata>
         </td>

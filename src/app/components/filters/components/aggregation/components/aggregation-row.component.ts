@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { Component, EventEmitter, Output, input } from "@angular/core";
+import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
 
 import { AggregationListEx, AggregationListItem, AggregationTreeEx } from "@/app/services";
 
@@ -16,6 +16,8 @@ export class AggregationRowComponent {
 
   item = input.required<AggregationListItem>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
+
+  @HostBinding("class.selected") get selected() { return this.item().$selected }
 
   select(e: Event, item: AggregationListItem) {
     e.stopImmediatePropagation();

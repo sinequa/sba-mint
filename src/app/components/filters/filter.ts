@@ -1,7 +1,7 @@
-import { Injector, runInInjectionContext } from "@angular/core";
+import { Injector, runInInjectionContext, inject } from "@angular/core";
 
 import { getCurrentTab } from "@/app/app.routes";
-import { appStore } from "@/app/stores";
+import { AppStore } from "@/app/stores";
 
 /**
  * Returns the authorized filters for the current tab
@@ -9,10 +9,14 @@ import { appStore } from "@/app/stores";
  * @returns The authorized filters for the current tab
  */
 export function getAuthorizedFilters(injector: Injector): string[] | undefined {
-  const tabs = appStore.getCustomizationJson()?.tabs;
+  let tabs: Record<string, string[]> | undefined;
+
   let tab: string | undefined = undefined;
 
-  runInInjectionContext(injector, () => tab = getCurrentTab());
+  runInInjectionContext(injector, () => {
+    tabs = inject(AppStore).customizationJson()?.tabs;
+    tab = getCurrentTab()
+  });
 
   if (!tab || !tabs) return undefined;
 

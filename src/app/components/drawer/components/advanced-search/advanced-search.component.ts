@@ -8,7 +8,7 @@ import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
-import { appStore, selectionStore } from '@/app/stores';
+import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { ApplicationStore, Extract } from '@/stores';
 
@@ -25,14 +25,15 @@ export class AdvancedSearchComponent implements OnDestroy {
   @Output() public readonly search = new EventEmitter<string>();
 
   extracts = signal<Extract[]>([]);
-  store = inject(ApplicationStore);
+  applicationStore = inject(ApplicationStore);
+  selectionStore = inject(SelectionStore);
   cdr = inject(ChangeDetectorRef);
 
   readonly article = input<Partial<Article> | undefined>();
 
   protected readonly input = signal('');
 
-  public labels = {public: '', private: ''};
+  public labels = inject(AppStore).getLabels();
   protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
@@ -40,28 +41,22 @@ export class AdvancedSearchComponent implements OnDestroy {
   sub = new Subscription();
 
   constructor() {
-    this.sub.add(selectionStore.current$.subscribe((selection) => {
-      if (selection && selection.id) {
-        const extracts = this.store.getExtracts(selection.id)
+    effect(() => {
+      const {id} = getState(this.selectionStore);
+      if (id) {
+        const extracts = this.applicationStore.getExtracts(id)
         this.extracts.set(extracts ?? []);
       } else {
         this.extracts.set([]);
       }
-    }));
-
-    this.sub.add(
-      appStore.current$.subscribe(() => {
-        this.labels = appStore.getLabels();
-      })
-    )
-
+    }, { allowSignalWrites: true });
 
     effect(() => {
-      getState(this.store);
-      const id = selectionStore.state?.id;
+      getState(this.applicationStore);
+      const {id} = getState(this.selectionStore);
 
       if (id) {
-        const extracts = this.store.getExtracts(id);
+        const extracts = this.applicationStore.getExtracts(id);
         this.extracts.set(extracts || []);
       }
     }, { allowSignalWrites: true });
