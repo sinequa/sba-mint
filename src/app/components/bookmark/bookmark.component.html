@@ -1,7 +1,3 @@
 <button title="Bookmark that document" (click)="bookmark()" stkStopPropagation>
-  @if (isBookmarked()) {
-  <i class="fa-fw fa-solid fa-bookmark text-sm"></i>
-  } @else {
-  <i class="fa-fw fa-regular fa-bookmark text-sm"></i>
-  }
+  <i [ngClass]="cn('fa-fw fa-bookmark text-sm', isBookmarked() ? 'fa-solid' : 'fa-regular')"></i>
 </button>

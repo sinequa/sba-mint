@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
+import { cn } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
 import { UserSettingsStore } from '../../stores';
 import { Article } from '../../types';
@@ -6,11 +8,12 @@ import { Article } from '../../types';
 @Component({
   selector: 'app-bookmark',
   standalone: true,
-  imports: [StopPropagationDirective],
+  imports: [StopPropagationDirective, CommonModule],
   templateUrl: './bookmark.component.html'
 })
 export class BookmarkComponent {
   public readonly article = input.required<Partial<Article>>();
+  public readonly cn = cn;
 
   private readonly userSettingsStore = inject(UserSettingsStore);
 
