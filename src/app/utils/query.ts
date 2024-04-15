@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Query } from '@sinequa/atomic';
 
 import { FALLBACK_DEFAULT_QUERY_NAME } from '@/app/config/query-names';
+import { AppStore } from '../stores';
 
 export function getQueryNameFromRoute(): string | undefined {
   assertInInjectionContext(getQueryNameFromRoute);
@@ -85,11 +86,14 @@ export function getQueryPageFromUrl(url: string): number {
 export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
+  const customization = inject(AppStore).customizationJson();
+
   const name = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
   const text = query?.text ?? getQueryTextFromUrl(window.location.toString()) ?? '';
   const filters = query?.filters ?? undefined;
   const page = query?.page ?? getQueryPageFromUrl(window.location.toString()) ?? undefined;
   const sort = query?.sort ?? undefined;
+  const globalRelevance = query?.globalRelevance ?? customization.globalRelevance;
 
   return {
     ...query,
@@ -97,7 +101,8 @@ export function buildQuery(query?: Partial<Query>): Query {
     text,
     filters,
     page,
-    sort
+    sort,
+    globalRelevance
   };
 }
 
@@ -116,12 +121,16 @@ export function buildQuery(query?: Partial<Query>): Query {
 export function buildFirstPageQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildFirstPageQuery);
 
+  const customization = inject(AppStore).customizationJson();
+
   const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
+  const globalRelevance = query?.globalRelevance ?? customization.globalRelevance;
 
   return {
     ...query,
     name: queryName,
-    isFirstPage: true
+    isFirstPage: true,
+    globalRelevance
   };
 }
 
