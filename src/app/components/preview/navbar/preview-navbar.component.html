@@ -24,15 +24,11 @@
   <li class="border-l border-gray-400 h-8 self-center"></li>
   }
 
-  <li>
-    <button title="Bookmark this document" (click)="bookmark.emit()" stkStopPropagation>
-      @if (isBookmarked()) {
-      <i class="fa-fw fa-solid fa-bookmark text-sm"></i>
-      } @else {
-      <i class="fa-fw fa-regular fa-bookmark text-sm"></i>
-      }
-    </button>
-</li>
+  @if (canBookmark()) {
+    <li>
+      <app-bookmark [article]="article()!" />
+    </li>
+  }
 
   <li>
     <button [title]="!copied? 'Copy link' : 'Successfully copied'">

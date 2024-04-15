@@ -7,7 +7,6 @@ import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
 import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
-import { BookmarksService } from '@/app/services/bookmarks.service';
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
@@ -41,10 +40,8 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
   public labels = inject(AppStore).getLabels();
 
   readonly headerCollapsed = signal<boolean>(false);
-
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
-  private readonly bookmarkService = inject(BookmarksService);
   private readonly selectionStore = inject(SelectionStore);
 
   private readonly sub = new Subscription();
@@ -78,17 +75,5 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
-  }
-
-  public async toggleBookmark(): Promise<void> {
-    const article = this._article() || this.article();
-    if (article?.id === undefined) return;
-
-    const isBookmarked = await this.bookmarkService.isBookmarked(article.id);
-
-    if (isBookmarked)
-      this.bookmarkService.unbookmark(article.id);
-    else
-      this.bookmarkService.bookmark(article);
   }
 }

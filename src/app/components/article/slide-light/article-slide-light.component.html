@@ -2,9 +2,12 @@
   [src]="slide()?.thumbnailUrl" />
 
 <section class="flex flex-col gap-2 p-2 border-t rounded-b-md bg-white">
-  <p class="article-title line-clamp-1">
-    {{ slide()?.title }}
-  </p>
+  <div class="flex gap-2 items-baseline">
+    <p class="article-title line-clamp-1">
+      {{ slide()?.title }}
+    </p>
+    <app-bookmark [article]="slide()!"></app-bookmark>
+  </div>
 
   <section class="flex gap-2 items-baseline">
     <p class="divide-x-comma divide-xs">

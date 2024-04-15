@@ -1,16 +1,15 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 
+import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { SourceIconPipe } from '@/app/pipes';
+import { AppStore, SelectionStore, UserSettingsStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
-import { StopPropagationDirective } from 'toolkit';
-
-import { BookmarksService } from '@/app/services/bookmarks.service';
-import { SelectionStore, AppStore, UserSettingsStore } from '@/app/stores';
 import { getState } from '@ngrx/signals';
 import { MetadataComponent } from '@sinequa/atomic-angular';
+import { StopPropagationDirective } from 'toolkit';
 import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
@@ -18,7 +17,7 @@ type Tab = 'attachments' | 'similars';
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, SourceIconPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, SourceIconPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent, BookmarkComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -30,7 +29,6 @@ export class ArticleDefaultComponent implements OnInit {
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
-  bookmarksService = inject(BookmarksService);
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
@@ -39,13 +37,7 @@ export class ArticleDefaultComponent implements OnInit {
 
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';
-  protected isBookmarked = computed(() => {
-    const { bookmarks } = getState(this.userSettingsStore);
-    const article = this.article();
 
-    if (!article) return false;
-    return bookmarks?.find((bookmark) => bookmark.id === article.id);
-  })
   protected articleMetadata = computed(() => {
     const source = this.article()?.treepath?.[0]?.split('/')[1];
     const maps = this.appStore.customizationJson()?.sourcesTagsMap;
@@ -72,14 +64,5 @@ export class ArticleDefaultComponent implements OnInit {
 
     this.currentTab = tab;
     this.showTab.set(true);
-  }
-
-  public async bookmark(): Promise<void> {
-    const isBookmarked = await this.bookmarksService.isBookmarked(this.article()!.id!);
-
-    if (isBookmarked)
-      this.bookmarksService.unbookmark(this.article()!.id!);
-    else
-      this.bookmarksService.bookmark(this.article()! as Article);
   }
 }
