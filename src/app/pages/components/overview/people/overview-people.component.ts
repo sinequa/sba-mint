@@ -11,7 +11,7 @@ import { SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService } from '@/app/services';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { PersonArticle } from '@/app/types/articles';
-import { buildQuery } from '@/app/utils';
+import { buildSecondaryQuery } from '@/app/utils';
 
 const PEOPLE_OVERVIEW_LIMIT = 3;
 
@@ -40,7 +40,7 @@ export class OverviewPeopleComponent implements OnInit, OnDestroy {
       this.navigationService.navigationEnd$
         .pipe(
           switchMap(() => {
-            const query = runInInjectionContext(this.injector, () => buildQuery({ name: PEOPLE_QUERY_NAME, pageSize: PEOPLE_OVERVIEW_LIMIT }));
+            const query = runInInjectionContext(this.injector, () => buildSecondaryQuery({ name: PEOPLE_QUERY_NAME, pageSize: PEOPLE_OVERVIEW_LIMIT }));
             return this.queryService.search(query);
           })
         )

@@ -12,7 +12,7 @@ import { ArticlePersonLightComponent } from '@/app/components/article/person-lig
 import { MockDataService } from '@/app/services';
 import { searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
-import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, buildSecondaryQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
 import { AggregationsStore } from '@/stores';
 
@@ -80,6 +80,6 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     const { aggregations } = getState(this.aggregationsStore);
     query.filters = translateFiltersToApiFilters(filters, aggregations) as Filter;
 
-    return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query)));
+    return this.queryService.search(runInInjectionContext(this.injector, () => buildSecondaryQuery(query)));
   }
 }
