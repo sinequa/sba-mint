@@ -36,14 +36,18 @@
     <ul class="data-list pt-2">
       @for (option of dateOptions(); track $index) {
       <li
-        class="data-list-item flex text-sm px-2 leading-7"
-        [ngClass]="{'selected': form.get('option')?.value === option.code}"
+        [ngClass]="cn(
+          'data-list-item flex text-sm px-2 leading-7',
+          form.get('option')?.value === option.display && 'selected',
+          option.disabled && 'disabled hidden'
+        )"
       >
         <input
           #radio
           type="radio"
           formControlName="option"
           id="date-filter-{{ option.display }}"
+          [attr.disabled]="option.disabled ? true : null"
           value="{{ option.display }}"/>
 
           <span

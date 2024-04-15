@@ -3,14 +3,14 @@ import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, i
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { DateFilter, DateFilterCode } from '@/app/services';
+import { AggregationEx, DateFilter } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
 import { QueryParamsStore } from '@/app/stores';
-import { AggregationsStore } from '@/stores';
-import { getState } from '@ngrx/signals';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
+import { cn } from '@sinequa/atomic-angular';
 import { AggregationTitle } from '../aggregation/aggregation.component';
+import { getState } from '@ngrx/signals';
 
 const ALLOW_CUSTOM_RANGE = true;
 
@@ -22,7 +22,8 @@ const ALLOW_CUSTOM_RANGE = true;
   styleUrl: './date-filter.component.scss'
 })
 export class DateFilterComponent implements OnDestroy {
-  column = input.required<string>();
+  cn = cn;
+  aggregation = input.required<AggregationEx>();
   title = input<AggregationTitle>({label: 'Date', icon: 'fas fa-calendar'});
 
   @Output() public readonly refreshed = new EventEmitter<Filter>();
@@ -31,11 +32,17 @@ export class DateFilterComponent implements OnDestroy {
 
   readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
 
-  readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregationsStore.getAggregation('Modified', 'name') as Aggregation));
-  readonly hasFilter = computed(() => this.activeFilters().length > 0);
+  private readonly queryParamsStore = inject(QueryParamsStore);
+
+  readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
+  readonly hasFilter = computed(() => {
+    const {filters = []} = getState(this.queryParamsStore);
+    return filters.length > 0
+  });
+  readonly column = computed(() => this.aggregation().column);
 
   readonly form = new FormGroup({
-    option: new FormControl<DateFilterCode | string | null>(null),
+    option: new FormControl<string | null>(null),
     customRange: new FormGroup({
       from: new FormControl<string | null>(null),
       to: new FormControl<string | null>(null)
@@ -43,25 +50,16 @@ export class DateFilterComponent implements OnDestroy {
   });
   protected today = new Date().toISOString().split('T')[0];
 
-  private readonly activeFilters = computed(() => {
-    const {filters} = getState(this.queryParamsStore);
-    if(filters) {
-      return filters.find((f: Filter) => f.column === this.column())?.values ?? [];
-    }
-    return [];
-  });
-  private readonly subscriptions = new Subscription();
 
-  private readonly queryParamsStore = inject(QueryParamsStore);
-  private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly subscriptions = new Subscription();
 
   constructor() {
 
     effect(() => {
-      const {filters = []} = getState(this.queryParamsStore);
-      console.log('## filters', filters, this.column);
-      this.updateForm( filters.find((f: Filter) => f.column === this.column()));
-      // this.refreshed.emit({ column: this.column, label: this.getLabel(), values: this.getFilters() });
+      const filters  = this.queryParamsStore.filters();
+      if(filters) {
+        this.updateForm( filters.find((f: Filter) => f.column === this.column()));
+      }
     })
 
     this.subscriptions.add(
@@ -70,9 +68,11 @@ export class DateFilterComponent implements OnDestroy {
 
         if (current.filter((value: string) => value === '').length === 3) current.length = 0;
 
-        console.log("## current", current);
-        // this.activeFilters.set(current);
-        this.valueChanged.emit({ column: this.column(), label: this.getLabel(), values: current });
+        const filters = this.queryParamsStore.filters();
+        if(filters) {
+          const label = filters.find((f: Filter) => f.column === this.column())?.label;
+          this.valueChanged.emit({ column: this.column(), label, values: current });
+        }
       })
     );
   }
@@ -88,23 +88,32 @@ export class DateFilterComponent implements OnDestroy {
       column: this.column(),
       label: value.option as string,
       values: [],
-      operator: value.option === 'custom-range' ? 'between' : dateOption?.operator as FilterOperator
     };
 
-    if (value.option !== 'custom-range')
+    if (value.option !== 'custom-range') {
+      filter.operator = dateOption?.operator as FilterOperator;
       filter.values = [dateOption?.value ?? ''];
-    else {
-      filter.values = [
-        value.customRange?.from ?? '',
-        value.customRange?.to ?? ''
-      ];
+    }
+    else if(value.customRange) {
+      // if to is null, operator is gte
+      // if from is null, operator is lte
+      // if both are not null, operator is between
+
+      if (value.customRange.from && value.customRange.to) {
+        filter.operator = 'between';
+        filter.values = [value.customRange.from, value.customRange.to];
+      }
+      else if (value.customRange.from) {
+        filter.operator = 'gte';
+        filter.values = [value.customRange.from];
+      }
+      else if (value.customRange.to) {
+        filter.operator = 'lte';
+        filter.values = [value.customRange.to];
+      }
     }
 
     this.updated.emit(filter);
-  }
-
-  private getLabel(): string {
-    return this.dateOptions().find(f => f.code === this.activeFilters()[0])?.label ?? '';
   }
 
   public clearFilters(notifyAsUpdated: boolean = true): void {
@@ -124,27 +133,23 @@ export class DateFilterComponent implements OnDestroy {
   }
 
   private translateAggregationToDateOptions(aggregation: Aggregation): DateFilter[] {
-    console.log('#', aggregation);
     if (!aggregation?.items || aggregation?.items?.length === 0)
       return [];
 
     const items = aggregation.items;
-
-    console.log('## items', items);
-
     const arr = items.reduce((acc, curr) => {
       const value = this.parseValueAndOperatorFromItem(curr.value as string);
 
       acc.push({
         operator: value[0],
         value: value[1],
-        display: curr.display
+        display: curr.display,
+        disabled: curr.count === 0
       });
+
 
       return acc;
     }, [] as DateFilter[]);
-
-    console.log('## arr', arr);
 
     return arr;
   }
@@ -155,8 +160,8 @@ export class DateFilterComponent implements OnDestroy {
     let [operator, valueStr] = skimmed.split(' ');
 
     switch (operator) {
-      case '>=': operator = 'ge'; break;
-      case '<=': operator = 'le'; break;
+      case '>=': operator = 'gte'; break;
+      case '<=': operator = 'lte'; break;
       case '>': operator = 'gt'; break;
       case '<': operator = 'lt'; break;
       case '=': operator = 'eq'; break;
@@ -171,10 +176,26 @@ export class DateFilterComponent implements OnDestroy {
       return;
     }
 
-    const [code, from, to] = filter.values;
+    const operator = filter.operator;
+    const values = filter.values;
+    const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === values[0])?.display ?? "custom-range";
+
+    let from, to;
+    if(code === 'custom-range') {
+      if(operator === 'lte') {
+        to = values[0];
+      }
+      else if(operator === 'gte') {
+        from = values[0];
+      }
+      else if(operator === 'between') {
+        from = values[0];
+        to = values[1];
+      }
+    }
 
     const formValue = {
-      option: code as DateFilterCode ?? null,
+      option: code,
       customRange: {
         from: (code === 'custom-range') ? from ?? null : null,
         to: (code === 'custom-range') ? to ?? null : null
