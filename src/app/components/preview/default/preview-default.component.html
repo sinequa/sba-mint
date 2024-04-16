@@ -1,5 +1,4 @@
-<app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"
-  (bookmark)="toggleBookmark()" />
+<app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"/>
 
 @if(article()){
 <div class="overflow-auto h-full flex flex-col">
@@ -16,7 +15,7 @@
       <tr>
         <th>Location</th>
         <td class="flex flex-wrap items-baseline divide-x-chevron-right divide-xs">
-          <i class="fa-fw {{ article().collection || [] | sourceIcon }}"></i>
+          <i class="fa-fw {{ article().collection | sourceIcon }}"></i>
 
           @for (segment of (article().treepath[0] || '') | split: '/' | slice:1:-1; track $index) {
             <span>{{ segment }}</span>
@@ -31,7 +30,7 @@
           <td class="flex flex-wrap gap-2">
           <sq-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
             @for (author of refAuthors.items(); track $index) {
-              <wps-author [authorName]="author.display" class="flex items-center" />
+              <wps-author [authorName]="author.display"/>
             }
           </sq-metadata>
         </td>

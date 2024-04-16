@@ -3,9 +3,19 @@
     <ul class="text-sm text-gray-700 data-list-xs" aria-labelledby="dropdownDefaultButton">
       @for(item of items(); track $index) {
         @if (item.$isDivider) {
-          <li class="relative before:border-t before:border-gray-300 before:absolute before:top-0 before:inset-x-2">
+          <li class="bg-gray-300 h-[1px]"></li>
+        }
+        @else if (!item.display) {
+          <li class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer">
+            @switch (item.category) {
+              @case('bookmark') { Bookmarks }
+              @case('title') { Documents }
+              @case('concepts') { Matters }
+              @case('people') { Collaborators }
+            }
           </li>
-        } @else {
+        }
+        @else {
         <li class="flex data-list-item items-baseline p-2 gap-2 cursor-pointer" (click)="itemClicked(item)">
           @switch (item.category) {
             @case('recent-search') { <i class="fa-fw far fa-clock-rotate-left"></i> }

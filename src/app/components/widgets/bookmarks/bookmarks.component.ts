@@ -1,10 +1,10 @@
 import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
-import { BookmarksService } from '@/app/services/bookmarks.service';
 import { Bookmark } from '@/app/types/user-settings';
 import { Component, effect, inject, signal } from '@angular/core';
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
+import { UserSettingsStore } from '@/app/stores';
 
 @Component({
   selector: 'app-bookmarks',
@@ -16,14 +16,14 @@ import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 export class BookmarksComponent {
   private readonly drawerStack = inject(DrawerStackService);
   private readonly queryService = inject(QueryService);
+  private readonly userSettingsStore = inject(UserSettingsStore);
 
   protected bookmarks = signal<Bookmark[]>([]);
 
-  private readonly bookmarksService = inject(BookmarksService);
 
   constructor() {
     effect(() => {
-      const bookmarks = this.bookmarksService.getBookmarks();
+      const bookmarks = this.userSettingsStore.bookmarks();
       this.bookmarks.set(bookmarks);
     }, { allowSignalWrites: true });
   }
@@ -46,10 +46,7 @@ export class BookmarksComponent {
     });
   }
 
-  public removeBookmark(index: number): void {
-    const bookmarks = this.bookmarksService.getBookmarks();
-    bookmarks.splice(index, 1);
-    this.bookmarks.set(bookmarks);
-    this.bookmarksService.updateBookmarks(bookmarks);
+  public removeBookmark(bookmark: Bookmark): void {
+    this.userSettingsStore.unbookmark(bookmark.id);
   }
 }

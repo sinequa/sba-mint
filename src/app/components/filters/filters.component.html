@@ -23,12 +23,18 @@
       @if (dateFilterDropdown()?.icon) {
         <i class="fa-fw {{ dateFilterDropdown()?.icon }}"></i>
       }
-      <span>{{ dateFilterDropdown()?.currentFilter || dateFilterDropdown()?.label }}</span>
+      @if( dateFilterDropdown()?.value ) {
+        <span [innerHTML]="dateFilterDropdown()?.value?.operator"></span>
+        <span>{{ dateFilterDropdown()?.value?.text }}</span>
+      }
+      @else {
+        <span>{{ dateFilterDropdown()?.label }}</span>
+      }
     </div>
 
     <app-date-filter
-      class="dropdown-content min-w-[300px] px-2 py-2 mt-1 rounded-md border border-gray-300 bg-white w-max"
-      [column]="dateFilterDropdown()?.aggregation?.column || ''"
+      class="dropdown-content min-w-[300px] w-max"
+      [aggregation]="dateFilterDropdown()!.aggregation"
       [title]="{
         label: dateFilterDropdown()?.label || '',
         icon: dateFilterDropdown()?.icon
@@ -43,15 +49,15 @@
   @for (filterDropdown of filterDropdowns(); track $index) {
     <li class="dropdown group" tabindex="0" role="button" appFocusWithArrowKeys>
       <button
-        class="btn btn-sm flex gap-1 items-baseline disabled:opacity-50"
+        class="btn btn-sm flex gap-1 disabled:opacity-50"
         [disabled]="!filterDropdown.aggregation.items"
         [ngClass]="{
-          'btn-primary': filterDropdown.currentFilter
+          'btn-primary': filterDropdown.value?.text
         }">
         @if (filterDropdown.icon) {
           <i class="fa-fw {{ filterDropdown.icon }}"></i>
         }
-        <span>{{ filterDropdown.currentFilter || filterDropdown.label }}</span>
+        <span>{{ filterDropdown?.value?.text || filterDropdown.label }}</span>
 
         @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
           <div class="pill size-5 pill-xs pill-ghost secondary bg-white flex place-content-center font-semibold group-hover:text-blue-600">
@@ -62,7 +68,7 @@
       </button>
 
       <app-aggregation
-        class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
+        class="dropdown-content w-max"
         [aggregation]="filterDropdown.aggregation"
         [title]="{
           label: filterDropdown.label,
@@ -91,10 +97,7 @@
         }
       </button>
 
-      <app-more-filters
-        class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max"
-        (onCountChange)="moreFiltersCountUpdated($event)"
-      />
+      <app-more-filters class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max" />
     </li>
   }
 </menu>

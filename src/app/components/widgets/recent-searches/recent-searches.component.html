@@ -1,7 +1,7 @@
 <ul class="flex flex-col">
   @for (search of recentSearches(); track $index) {
   <li
-    class="flex gap-2 px-3 py-2 items-baseline rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
+    class="group flex h-10 gap-2 px-3 py-2 items-center rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
     tabindex="0" appFocusWithArrowKeys="y" (click)="recentSearchClicked(search)"
     (keydown.enter)="recentSearchClicked(search)">
     <i class="fa-fw far fa-clock-rotate-left"></i>
@@ -14,14 +14,18 @@
       {{ search.filterCount }}
 
       @if (search.filterCount! > 1) {
-      filters
+        filters
       } @else {
-      filter
+        filter
       }
     </p>
     }
 
+
     <p class="text-gray-500 ms-auto">{{ search.date | relativeDate }}</p>
+    <button class="hidden group-hover:block btn btn-sm btn-alert" title="Remove recent search" stkStopPropagation>
+      <i class="fa-fw fa-regular fa-trash-can"></i>
+    </button>
   </li>
   } @empty {
   <li class="text-center text-gray-500 py-4">No recent searches yet</li>

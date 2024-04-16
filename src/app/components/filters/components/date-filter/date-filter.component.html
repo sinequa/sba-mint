@@ -1,13 +1,10 @@
 <form [formGroup]="form">
   <fieldset class="overflow-auto">
     <legend class="w-full px-2 pt-2">
-      <div class="flex font-semibold items-baseline justify-between">
+      <div class="dropdown-header">
         <p class="me-4">
-          @if (title?.icon) {
-          <i class="fa-fw {{ title?.icon }}"></i>
-          }
-
-          {{ title?.label }}
+          <i class="fa-fw {{ title().icon }}"></i>
+          {{ title().label }}
         </p>
 
         <div class="ms-4">
@@ -39,60 +36,74 @@
     <ul class="data-list pt-2">
       @for (option of dateOptions(); track $index) {
       <li
-        class="data-list-item flex text-sm px-2 leading-7"
-        [ngClass]="{
-          'data-list-item-selected': form.get('option')?.value === option.code
-        }"
+        [ngClass]="cn(
+          'data-list-item flex text-sm px-2 leading-7',
+          form.get('option')?.value === option.display && 'selected',
+          option.disabled && 'disabled hidden'
+        )"
       >
         <input
           #radio
           type="radio"
           formControlName="option"
-          id="date-filter-{{ option.code }}"
-          value="{{ option.code }}"
-        />
+          id="date-filter-{{ option.display }}"
+          [attr.disabled]="option.disabled ? true : null"
+          value="{{ option.display }}"/>
 
-        <span
-          class="fa-fw radio me-1 p-1 cursor-pointer"
-          (click)="radio.click()"
-          (keydown.enter)="radio.click()"
-          tabindex="-1"
-        ></span>
+          <span
+            class="fa-fw radio me-1 p-1 cursor-pointer"
+            (click)="radio.click()"
+            (keydown.enter)="radio.click()"
+            tabindex="-1"></span>
 
-        @if (option.code !== 'custom-range') {
-        <label
-          for="date-filter-{{ option.code }}"
-          class="p-1 grow cursor-pointer"
-        >
-          {{ option.label }}
-        </label>
-        } @else {
-        <div
-          class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
-          formGroupName="customRange"
-        >
-          <label for="date-filter-custom-from">From</label>
-          <input class="border-b border-gray-300"
-            type="date"
-            id="date-filter-custom-from"
-            formControlName="from"
-            [max]="form.get('customRange.to')?.value ?? today"
-            (click)="forceFilterToCustomRange()"
-          />
-
-          <label for="date-filter-custom-to">To</label>
-          <input class="border-b border-gray-300"
-            type="date"
-            id="date-filter-custom-to"
-            formControlName="to"
-            [min]="form.get('customRange.from')?.value"
-            [max]="today"
-            (click)="forceFilterToCustomRange()"
-          />
-        </div>
+            <label
+            for="date-filter-{{ option.display }}"
+            class="p-1 grow cursor-pointer">{{ option.display }}</label>
+          </li>
         }
-      </li>
-      }
+        @if(allowCustomRange) {
+          <li
+          class="data-list-item flex text-sm px-2 leading-7"
+          [ngClass]="{'selected': form.get('option')?.value === 'custom-range'}">
+
+          <input
+            #radio
+            type="radio"
+            formControlName="option"
+            id="date-filter-custom-range"
+            value="custom-range"
+            />
+
+          <span
+            class="fa-fw radio me-1 p-1 cursor-pointer"
+            (click)="radio.click()"
+            (keydown.enter)="radio.click()"
+            tabindex="-1"></span>
+
+            <div
+              class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
+              formGroupName="customRange">
+              <label for="date-filter-custom-from">From</label>
+              <input class="border-b border-gray-300"
+                type="date"
+                id="date-filter-custom-from"
+                formControlName="from"
+                [max]="form.get('customRange.to')?.value ?? today"
+                (click)="forceFilterToCustomRange()"
+              />
+
+              <label for="date-filter-custom-to">To</label>
+              <input class="border-b border-gray-300"
+                type="date"
+                id="date-filter-custom-to"
+                formControlName="to"
+                [min]="form.get('customRange.from')?.value"
+                [max]="today"
+                (click)="forceFilterToCustomRange()"
+              />
+            </div>
+          </li>
+        }
     </ul>
   </fieldset>
 </form>

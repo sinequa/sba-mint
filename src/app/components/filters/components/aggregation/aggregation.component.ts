@@ -17,7 +17,15 @@ export type AggregationTitle = {
   selector: 'app-aggregation',
   standalone: true,
   templateUrl: './aggregation.component.html',
-  styles: [`:host { display: block; }`],
+  styles: [`
+  :host {
+    display: block;
+  }
+
+  fieldset {
+    scrollbar-width: thin;
+  }
+`],
   imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent]
 })
 export class AggregationComponent implements OnInit {
@@ -43,14 +51,14 @@ export class AggregationComponent implements OnInit {
   }
 
   public select(item: AggregationListItem): void {
-    const filters = this.getFilters()
+    const filters = this.getSelectedFilters()
 
     this.hasFilter.set(Boolean(filters.length));
     this.onSelect.emit({ column: this.aggregation().column, label: item.value?.toString() || '', values: filters });
   }
 
   public apply(): void {
-    const filters = this.getFilters();
+    const filters = this.getSelectedFilters();
 
     this.onFiltersChanges.emit({ column: this.aggregation().column, label: filters[0], values: filters });
   }
@@ -81,7 +89,7 @@ export class AggregationComponent implements OnInit {
     return !!(this.aggregation().items?.some(item => item.$selected));
   }
 
-  private getFilters(): string[] {
+  private getSelectedFilters(): string[] {
     let filters: string[] = [];
     if (!this.aggregation().isTree) {
       filters = this.aggregation().items

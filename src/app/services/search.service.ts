@@ -1,7 +1,7 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { Observable, Subject, Subscription, filter, map, switchMap } from 'rxjs';
+import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -12,7 +12,6 @@ import { QueryParamsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
-import { Article } from '../types';
 
 
 export type SearchOptions = {
@@ -83,15 +82,8 @@ export class SearchService implements OnDestroy {
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
     const sort = getState(this.queryParamsStore).sort;
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort }));
-    const queryName = query.name;
     // add the query name to records, to have it available if we bookmark one
-    return this.queryService.search(query).pipe(map((result) => {
-      (result.records as Article[]).forEach((record) => {
-        record.$queryName = queryName;
-        return record;
-      });
-      return result;
-    }));
+    return this.queryService.search(query);
   }
 
   /**

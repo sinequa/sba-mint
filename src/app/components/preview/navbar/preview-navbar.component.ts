@@ -1,12 +1,12 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output, computed, inject, input } from '@angular/core';
+import { Component, Input, computed, inject, input } from '@angular/core';
 
+import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { DrawerService } from '@/app/components/drawer/drawer.service';
-import { UserSettingsStore } from '@/app/stores';
 import { PreviewService } from '@/app/services/preview';
+import { UserSettingsStore } from '@/app/stores';
 import { Article } from '@/app/types/articles';
-import { getState } from '@ngrx/signals';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -21,7 +21,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, BookmarkComponent],
   templateUrl: './preview-navbar.component.html',
   styleUrl: './preview-navbar.component.scss'
 })
@@ -30,8 +30,7 @@ export class PreviewNavbarComponent {
     this.navConfig = { ...DEFAULT_CONFIG, ...config };
   }
   public readonly article = input<Partial<Article> | undefined>();
-
-  @Output() public readonly bookmark = new EventEmitter<void>();
+  public readonly canBookmark = input<boolean>(true);
 
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly drawerService = inject(DrawerService);
@@ -39,14 +38,6 @@ export class PreviewNavbarComponent {
   readonly userSettingsStore = inject(UserSettingsStore);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
-
-  protected readonly isBookmarked = computed(() => {
-    const { bookmarks } = getState(this.userSettingsStore);
-    const article = this.article();
-
-    if (!article) return false;
-    return bookmarks?.find((bookmark) => bookmark.id === article.id);
-  })
 
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
 

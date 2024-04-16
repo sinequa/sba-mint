@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Injector, OnDestroy, Output, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
 
-import { AggregationEx, AggregationListEx, AggregationsService, SearchService } from '@/app/services';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AppStore, QueryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
@@ -18,19 +18,16 @@ import { AggregationComponent } from '../aggregation/aggregation.component';
   selector: 'app-more-filters',
   standalone: true,
   imports: [AggregationComponent],
-  templateUrl: './more-filters.component.html',
-  styleUrl: './more-filters.component.scss'
+  templateUrl: './more-filters.component.html'
 })
 export class MoreFiltersComponent implements OnDestroy {
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
-
-  @Output() onCountChange = new EventEmitter<number>();
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly hasFilters = signal<boolean[]>([]);
   readonly filterCounts = signal<number[]>([]);
 
-  private readonly _search = inject(SearchService);
+  private readonly _searchService = inject(SearchService);
   private readonly _aggregationsService = inject(AggregationsService);
   private readonly _aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
@@ -47,11 +44,14 @@ export class MoreFiltersComponent implements OnDestroy {
 
       if (!authorizedFilters) return;
 
-      this.filterDropdowns.set(this.buildMoreFilterDropdownsFromAggregations(aggregations
+      // create filters with only aggregations that are authorized and not already shown
+      const agg = this.buildMoreFilterDropdownsFromAggregations(aggregations
         .filter(a => authorizedFilters.includes(a.column))
         .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
-        .splice(FILTERS_COUNT)
-      ));
+        .splice(FILTERS_COUNT));
+
+      this.filterDropdowns.set(agg);
+
     }, { allowSignalWrites: true });
   }
 
@@ -59,7 +59,9 @@ export class MoreFiltersComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public applyFilter(index: number): void {
+  public applyFilter(index: number) {
+    this.aggregations.toArray()[index].apply();
+
     const filters = this.aggregations.toArray()[index].aggregation().items
       .filter(item => item.$selected)
       .map((item) => item.value?.toString() || '');
@@ -72,11 +74,9 @@ export class MoreFiltersComponent implements OnDestroy {
 
     this.updateFiltersCount(filter, index);
     this.queryParamsStore.updateFilter(filter);
-
-    this._search.search([]);
   }
 
-  public clearFilter(index: number): void {
+  public clearFilter(index: number) {
     this.aggregations.toArray()[index].clearFilters();
 
     const filters = this.aggregations.toArray()[index].aggregation().items
@@ -90,14 +90,11 @@ export class MoreFiltersComponent implements OnDestroy {
 
     this.updateFiltersCount(filter, index);
 
-
     this.queryParamsStore.updateFilter({
       column: this.filterDropdowns()[index].aggregation.column,
       label: undefined,
       values: []
     });
-
-    this._search.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
@@ -122,27 +119,44 @@ export class MoreFiltersComponent implements OnDestroy {
    */
   protected filterUpdated(filter: Filter, index: number): void {
     this.updateHasFilters(filter, index);
+
+    this.queryParamsStore.updateFilter(filter);
+
+    this._searchService.search([]);
+
   }
 
   private updateFiltersCount(filter: Filter, index: number) {
     this.updateFilterCounts(filter, index);
-    this.updateTotalFiltersCount();
     this.updateHasFilters(filter, index);
   }
 
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
-    return aggregations.map((aggregation: Aggregation) => {
-      const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-      const count = f?.values.length ?? undefined;
+    return (aggregations as AggregationEx[])
+      .map((aggregation, index) => {
+        const itemCustomizations = this.appStore.getAggregationItemsCustomization(aggregation.column);
 
-      return ({
-        label: aggregation.name,
-        aggregation: aggregation as AggregationEx,
-        column: aggregation.column,
-        icon: this.appStore.getAggregationIcon(aggregation.column),
-        moreFiltersCount: count
-      })
-    });
+        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
+        const count = f?.values.length ?? undefined;
+
+        if (f) {
+          this.updateFiltersCount(f, index)
+        }
+
+        aggregation?.items?.forEach((item: AggregationListItem) => {
+          item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
+          item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
+        });
+
+        return ({
+          label: aggregation.name,
+          aggregation: aggregation as AggregationEx,
+          column: aggregation.column,
+          currentFilter: f,
+          icon: this.appStore.getAggregationIcon(aggregation.column),
+          moreFiltersCount: count
+        })
+      });
   }
 
   private updateHasFilters(filter: Filter, index: number): void {
@@ -157,9 +171,5 @@ export class MoreFiltersComponent implements OnDestroy {
       values[index] = filter.values.length;
       return values;
     });
-  }
-
-  private updateTotalFiltersCount(): void {
-    this.onCountChange.emit(this.filterCounts().reduce((sum: number, count: number) => sum + count, 0));
   }
 }

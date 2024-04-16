@@ -16,6 +16,10 @@ export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
 }
 
+const titledSections = ['title', 'concepts', 'people', 'bookmark'];
+const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
+
+
 @Component({
     selector: 'app-autocomplete',
     standalone: true,
@@ -51,12 +55,22 @@ export class AutocompleteComponent {
           ]);
         }),
         map(items => items.flat(2)),
+        // order the items to have full-text, recent search and saved search at the beginning
+        map(items => items.sort((a, b) => {
+          return autocompleteCategories.indexOf(a.category) - autocompleteCategories.indexOf(b.category);
+        })),
         map((items) => items.reduce<Suggestion[]>((acc, curr) => {
           if (acc.length > 0) {
             const last = acc.at(-1);
 
-            if (!last?.$isDivider && last?.category !== curr.category)
+            // add a divider before specific categories
+            if (!last?.$isDivider && last?.category !== curr.category && titledSections.includes(curr.category)) {
               acc.push({ $isDivider: true });
+                acc.push({category: curr.category, $isDivider: false});
+            }
+            // handle the case when the first item is from a titled section
+          } else if (titledSections.includes(curr.category)) {
+            acc.push({category: curr.category, $isDivider: false});
           }
 
           acc.push({ ...curr, $isDivider: false });
