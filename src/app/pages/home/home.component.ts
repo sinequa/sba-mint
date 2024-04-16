@@ -93,8 +93,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     savedSearches: true,
   }
 
-  protected wasSearchClicked = false;
-
   constructor() {
     effect(() => {
       this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
@@ -115,10 +113,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     const index = this.tabs().indexOf(tab);
 
     this.selectedTabId.set(index);
-  }
-
-  public searchClicked() {
-    this.wasSearchClicked = true;
   }
 
   public search(text: string): void {

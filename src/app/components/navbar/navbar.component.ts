@@ -56,7 +56,6 @@ export class NavbarComponent {
   ];
 
   protected readonly navigationService = inject(NavigationService);
-  protected wasSearchClicked = false;
 
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
@@ -67,11 +66,12 @@ export class NavbarComponent {
 
   private readonly subscriptions = new Subscription();
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
-
   constructor() {
+
+    effect(() => {
+      this.drawerOpened = this.drawerStack.isOpened();
+    });
+
     this.subscriptions.add(
       searchInputStore.next$.subscribe(text => {
         this.searchInput.setInput(text);
@@ -88,10 +88,6 @@ export class NavbarComponent {
     this.autocompleteService.opened.set(false);
 
     this.search(item.display!);
-  }
-
-  public searchClicked() {
-    this.wasSearchClicked = true;
   }
 
   protected search(text: string): void {

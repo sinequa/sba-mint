@@ -9,8 +9,8 @@
 
   <div class="grid grid-cols-[23%_auto_23%] grid-rows-[min-content_auto] gap-y-6">
     <main class="col-start-2">
-      <app-search-input class="w-full" (debounced)="searchText.set($event)" (validated)="search($event)" (clicked)="searchClicked()">
-        <app-autocomplete [text]="searchText()" [wasSearchClicked]="wasSearchClicked" (onClick)="autocompleteItemClicked($event)"/>
+      <app-search-input class="w-full" (debounced)="searchText.set($event)" (validated)="search($event)">
+        <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)"/>
       </app-search-input>
     </main>
 

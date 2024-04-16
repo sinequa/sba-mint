@@ -1,13 +1,16 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Output, inject, input } from '@angular/core';
-import { combineLatest, map, switchMap } from 'rxjs';
+import { Component, EventEmitter, Output, computed, inject, input, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { EventManager } from '@angular/platform-browser';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 
 import { HighlightWordPipe } from "@/app/pipes/highlight-word.pipe";
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { AppStore, UserSettingsStore } from '@/app/stores';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+
+import { SearchInputComponent } from '../../search-input.component';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -21,31 +24,29 @@ export type Suggestion = Partial<SuggestionBasic> & {
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');
-  readonly wasSearchClicked = input<boolean>(false);
+  readonly wasSearchClicked = signal(false);
 
   @Output() readonly onClick = new EventEmitter<Suggestion>();
 
   readonly autocompleteService = inject(AutocompleteService);
   readonly appStore = inject(AppStore);
 
-  private wasSearchClicked$ = toObservable(this.wasSearchClicked);
+  userSettingsStore = inject(UserSettingsStore);
 
-  private text$ = toObservable(this.text);
-
-  uss = inject(UserSettingsStore);
+  autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
 
   readonly items = toSignal(
-    combineLatest([this.text$, this.wasSearchClicked$])
+    combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)])
       .pipe(
         switchMap(([testText]) => {
-          const autocomplete = this.appStore.customizationJson()?.autocomplete;
 
+          const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 5));
           if (!testText) {
-            return this.autocompleteService.getFromUserSettingsForText(testText, autocomplete ?? 5);
+            return fromUserSettings;
           }
 
           return combineLatest([
-            this.autocompleteService.getFromUserSettingsForText(testText, autocomplete ?? 5),
+            fromUserSettings,
             this.autocompleteService.getFromSuggestQueriesForText(testText)
           ]);
         }),
@@ -62,6 +63,10 @@ export class AutocompleteComponent {
           return acc;
           }, []))
     ));
+
+  constructor({ el: { nativeElement } }: SearchInputComponent, private eventManager: EventManager) {
+    this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
+  }
 
   public itemClicked(item: Suggestion): void {
     this.onClick.emit(item);

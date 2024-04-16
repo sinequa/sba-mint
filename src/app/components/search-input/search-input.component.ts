@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subscription, debounceTime, filter } from 'rxjs';
@@ -35,7 +35,7 @@ export class SearchInputComponent implements OnDestroy {
 
   private readonly _subscription = new Subscription();
 
-  constructor() {
+  constructor(public readonly el: ElementRef) {
     effect(() => {
       if (this.input() !== undefined)
         this.updated.emit(this.input());

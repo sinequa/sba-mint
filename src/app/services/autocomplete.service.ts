@@ -54,7 +54,7 @@ export class AutocompleteService {
    * @returns An observable of an array of {@link Suggestion} arrays grouped by
    * `recent-searches`, `saved-searches`, `bookmarks` from the user settings
    */
-  getFromUserSettingsForText(text: string, maxCount?: number | Autocomplete): Observable<Suggestion[]> {
+  getFromUserSettingsForText(text: string, maxCount?: number | Autocomplete): Suggestion[] {
     const { bookmarks, recentSearches, savedSearches } = getState(this.userSettingsStore);
     const items: Suggestion[] = [];
 
@@ -100,6 +100,6 @@ export class AutocompleteService {
         items.push(...searches.map(search => ({ category: 'bookmark', display: search.label ?? '', ...search })));
     }
 
-    return of(items);
+    return items;
   }
 }

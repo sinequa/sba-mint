@@ -1,5 +1,5 @@
 <div class="z-10 bg-white rounded-lg shadow-md mt-2 max-h-[30vh] overflow-auto">
-  <ng-container *ngIf="items()">
+  @if(items()) {
     <ul class="text-sm text-gray-700 data-list-xs" aria-labelledby="dropdownDefaultButton">
       @for(item of items(); track $index) {
         @if (item.$isDivider) {
@@ -25,5 +25,5 @@
         }
       }
     </ul>
-  </ng-container>
+  }
 </div>

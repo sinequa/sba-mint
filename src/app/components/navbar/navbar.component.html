@@ -9,12 +9,10 @@
     (saved)="saveSearch()"
     (validated)="validated($event)"
     (debounced)="debounced($event)"
-    (clicked)="searchClicked()"
   >
     <app-autocomplete
       [text]="searchText()"
       (onClick)="autocompleteItemClicked($event)"
-      [wasSearchClicked]="wasSearchClicked"
     />
   </app-search-input>
 </div>
