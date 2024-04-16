@@ -4,7 +4,6 @@
       @for(item of items; track $index) {
         @if (item.$isDivider) {
           <li class="border-gray-300 h-[1px]"></li>
-          </li>
         }
         @else if (!item.display) {
           <li class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer">

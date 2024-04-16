@@ -14,6 +14,8 @@ export type Suggestion = Partial<SuggestionBasic> & {
 }
 
 const titledSections = ['title', 'concepts', 'people', 'bookmark'];
+const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
+
 
 @Component({
     selector: 'app-autocomplete',
@@ -39,8 +41,7 @@ export class AutocompleteComponent {
     map(items => items.flat(2)),
     // order the items to have full-text, recent search and saved search at the beginning
     map(items => items.sort((a, b) => {
-      const categories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
-      return categories.indexOf(a.category) - categories.indexOf(b.category);
+      return autocompleteCategories.indexOf(a.category) - autocompleteCategories.indexOf(b.category);
     })),
     map((items) => items.reduce<Suggestion[]>((acc, curr) => {
       if (acc.length > 0) {
