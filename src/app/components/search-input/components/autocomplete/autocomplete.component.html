@@ -3,7 +3,7 @@
     <ul class="text-sm text-gray-700 data-list-xs" aria-labelledby="dropdownDefaultButton">
       @for(item of items; track $index) {
         @if (item.$isDivider) {
-          <li class="relative before:border-t before:border-gray-300 before:absolute before:top-0 before:inset-x-2">
+          <li class="border-gray-300 h-[1px]"></li>
           </li>
         }
         @else if (!item.display) {
