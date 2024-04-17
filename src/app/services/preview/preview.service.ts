@@ -30,7 +30,11 @@ export class PreviewService {
   protected previewData: PreviewData;
   protected iframe: Window | null;
 
-  constructor(@Inject(HIGHLIGHTS) highlights: PreviewHighlight[]) {
+  extracts = ["matchlocations","extractslocations","matchingpassages"];
+  entities = ["company","geo","person"];
+
+  constructor(
+    @Inject(HIGHLIGHTS) public highlights: PreviewHighlight[]) {
     this.extractsLocationService.onMessage.subscribe((message) => {
       if (message.data.extracts.length === 0) return;
       const extracts: Extract[] = message.data.extracts.map((item: ExtractsLocations) => ({
@@ -127,4 +131,21 @@ export class PreviewService {
 
     return _extracts;
   }
+
+  zoomIn() {
+    this.sendMessage({ action: "zoom-in" });
+  }
+
+  zoomOut() {
+    this.sendMessage({ action: "zoom-out" });
+  }
+
+  toggle(extracts: boolean, entities: boolean) {
+    const extractsHighlights = extracts ? this.highlights.filter( h => this.extracts.includes(h.name)) : [];
+    const entitiesHighlights = entities ? this.highlights.filter( h => this.entities.includes(h.name)) : [];
+    const highlights = [...extractsHighlights, ...entitiesHighlights];
+
+    this.sendMessage({ action: "highlight", highlights });
+  }
+
 }
