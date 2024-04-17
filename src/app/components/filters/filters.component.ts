@@ -54,6 +54,7 @@ export class FiltersComponent implements OnInit {
 
     effect(() => {
       const { aggregations } = getState(this._aggregationsStore);
+      const { filters = [] } = getState(this.queryParamsStore);
       const authorizedFilters = getAuthorizedFilters(this._injector);
 
       if (!authorizedFilters) return;
@@ -89,7 +90,7 @@ export class FiltersComponent implements OnInit {
         .splice(FILTERS_COUNT).map(a => a.column);
 
       // count more filters
-      const count = this.queryParamsStore.filters()
+      const count = filters
         .filter(f => this.moreFiltersColumns.includes(f.column) )
         .reduce((acc, f) => acc + f.values.length, 0);
 
