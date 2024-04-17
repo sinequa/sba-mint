@@ -5,31 +5,6 @@
 @import "./lists";
 
 @layer components {
-  .text-primary {
-    @apply text-white;
-  }
-  .bg-primary {
-    @apply bg-blue-500;
-  }
-  .border-primary {
-    @apply border-blue-600;
-  }
-  .primary {
-    @apply text-primary bg-primary border-primary;
-  }
-
-  .text-secondary {
-    @apply text-blue-500;
-  }
-  .bg-secondary {
-    @apply bg-blue-50;
-  }
-  .border-secondary {
-    @apply border-blue-100;
-  }
-  .secondary {
-    @apply text-secondary bg-secondary border-secondary;
-  }
 
   .text-active {
     @apply text-blue-500;
