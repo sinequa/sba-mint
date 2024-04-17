@@ -24,7 +24,7 @@
           "error",
           {
             "type": "element",
-            "prefix": ["app", "wps"],
+            "prefix": ["app", "wps", ""],
             "style": "kebab-case"
           }
         ]
