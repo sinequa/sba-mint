@@ -1,6 +1,4 @@
 :host {
-  @apply flex;
-
   /* Hides cancel button from input that as type='search' */
   input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;

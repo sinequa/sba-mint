@@ -1,44 +1,46 @@
-<div
-  cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin"
-  class="grow px-2 flex gap-2 items-center rounded-s rounded-e-none bg-gray-50"
-  >
+<span cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="flex grow relative z-1001">
+  <div
+    class="grow px-2 flex gap-2 items-center focus-within:rounded-s-none rounded-s rounded-e-none bg-gray-50"
+    >
 
-  @if (showSave() && input() !== '') {
-  <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
-    [ngClass]="{ 'animate-save': saveAnimation() }">
-    <i class="fa-fw far fa-star"></i>
+    @if (showSave() && input() !== '') {
+    <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
+      [ngClass]="{ 'animate-save': saveAnimation() }">
+      <i class="fa-fw far fa-star"></i>
+    </button>
+    }
+
+    <input type="search"
+      id="serach-navbar"
+      class="grow focus:outline-none bg-gray-50"
+      aria-label="Search here"
+      placeholder="Search by keyword or ask something"
+      [ngModel]="input()"
+      (ngModelChange)="input.set($event)"
+      (keydown.enter)="emitText()"
+      (click)="overlayOpen.set(true)"
+      />
+
+    @if (input() !== '') {
+    <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
+      <i class="fa-fw far fa-circle-xmark"></i>
+    </button>
+    }
+  </div>
+
+  <button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
+    [disabled]="input() === oldInput" (click)="emitText()">
+    <i class="fa-fw far fa-magnifying-glass"></i>
   </button>
-  }
-
-  <input type="search"
-    id="serach-navbar"
-    class="grow focus:outline-none bg-gray-50"
-    aria-label="Search here"
-    placeholder="Search by keyword or ask something"
-    [ngModel]="input()"
-    (ngModelChange)="input.set($event)"
-    (keydown.enter)="emitText()"
-    (click)="overlayOpen.set(true)"
-    />
-
-  @if (input() !== '') {
-  <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
-    <i class="fa-fw far fa-circle-xmark"></i>
-  </button>
-  }
-</div>
-
-<button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
-  [disabled]="input() === oldInput" (click)="emitText()">
-  <i class="fa-fw far fa-magnifying-glass"></i>
-</button>
+</span>
 
 
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="overlayPosition"
   [cdkConnectedOverlayOpen]="overlayOpen()"
-  (overlayOutsideClick)="overlayOpen.set(false)">
+  (overlayOutsideClick)="overlayOpen.set(false)"
+  cdkConnectedOverlayHasBackdrop="true">
   <div [style.width.px]="overlayPosition.elementRef.nativeElement.getBoundingClientRect().width">
     <ng-content></ng-content>
   </div>
