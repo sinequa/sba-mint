@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { cn } from '@sinequa/atomic-angular';
+import { toast } from 'ngx-sonner';
 import { StopPropagationDirective } from 'toolkit';
 import { UserSettingsStore } from '../../stores';
 import { Article } from '../../types';
@@ -25,9 +26,13 @@ export class BookmarkComponent {
   public async bookmark(): Promise<void> {
     const isBookmarked = await this.userSettingsStore.isBookmarked(this.article()!.id!);
 
-    if (isBookmarked)
+    if (isBookmarked){
       this.userSettingsStore.unbookmark(this.article()!.id!);
-    else
+      toast.success('Article removed from bookmarks', { duration: 2000 });
+    }
+    else {
       this.userSettingsStore.bookmark(this.article()! as Article);
+      toast.success('Article added to bookmarks', { duration: 2000 });
+    }
   }
 }
