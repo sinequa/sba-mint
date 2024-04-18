@@ -1,5 +1,6 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
 import { Component, ComponentRef, OnDestroy, ViewContainerRef, inject } from '@angular/core';
+import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { DrawerStackService } from './drawer-stack.service';
@@ -28,7 +29,6 @@ export class DrawerStackComponent implements OnDestroy {
       this.selectionHistory$.subscribe((event) => {
         if (event !== 'new') return;
 
-        console.log(this.selectionHistory.getCurrentSelectionIndex());
         this.openTopDrawer(this.selectionHistory.getCurrentSelectionIndex());
       })
     );
@@ -50,7 +50,7 @@ export class DrawerStackComponent implements OnDestroy {
 
   private openTopDrawer(index: number): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
-      console.log('DrawerStackComponent: openTopDrawer: drawer stack is full');
+      toast('Drawer stack is full', { duration: 2000 });
       this.shiftDrawer();
     }
 

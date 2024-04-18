@@ -5,9 +5,13 @@ import { Filter } from '@/app/utils/models';
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { getState, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 
-const initialState: QueryParams = {
+type QueryParamsState = QueryParams & {
+  filters: Filter[];
+};
+
+const initialState: QueryParamsState = {
   filters: [],
-} as QueryParams;
+};
 
 export const QueryParamsStore = signalStore(
   { providedIn: 'root' },
@@ -19,9 +23,12 @@ export const QueryParamsStore = signalStore(
 
       const { q: text, f, id, p, s: sort, c } = queryParamsFromUrl(url);
       const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
-      const page = parseInt(p, 10);
       const spellingCorrectionMode = c as "default" | "classic" | "smart" | "correct" | "dymonly" | "force" | "false" | undefined
 
+      let page: number | undefined;
+      if(p) {
+        page = parseInt(p, 10);
+      }
 
       patchState(store, (state) => {
         return { ...state, path, text, filters, id, page, sort, spellingCorrectionMode };
@@ -29,17 +36,23 @@ export const QueryParamsStore = signalStore(
     },
     updateFilter(filter: Filter) {
       patchState(store, (state) => {
-        const existing = state.filters?.findIndex((f: Filter) => f.column === filter.column) || -1;
+        const existing = state.filters?.findIndex((f: Filter) => f.column === filter.column);
 
         // Add filter if it doesn't exist and has values
-        if (existing === -1 && filter.values.length > 0)
-          return {...state, filters: [...state.filters || [], filter]};
+        if ((existing === -1 || state.filters === undefined) && filter.values.length > 0) {
+          return ({...state, filters: [...state.filters || [], filter]});
+        }
         // Remove filter if no values are selected
-        else if (existing >= 0 && filter.values.length === 0)
-          return {...state, filters: (state.filters || []).splice(existing, 1)};
+        if (existing >= 0 && filter.values.length === 0) {
+          return ({...state, filters: (state.filters || []).filter((f: Filter) => f.column !== filter.column)});
+        }
         // Update filter values
-        else if (existing >= 0)
-          return {...state, filters: (state.filters|| []).splice(existing, 1, filter)};
+        if (existing >= 0) {
+          const filters = [...state.filters || []];
+          filters.splice(existing, 1, filter);
+
+          return ({...state, filters});
+        }
 
         return state;
       });

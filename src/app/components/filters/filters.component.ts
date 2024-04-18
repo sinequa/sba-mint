@@ -41,16 +41,20 @@ export class FiltersComponent implements OnInit {
 
   readonly filters = this.queryParamsStore.filters || signal([]);
   readonly hasMoreFilters = signal<boolean>(false);
-  readonly moreFiltersCount = signal<number>(0);
+  readonly moreFiltersCount = signal(0);
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
 
 
   private readonly _subscriptions = new Subscription();
 
+  moreFiltersColumns: string[] = [];
+
   constructor() {
+
     effect(() => {
       const { aggregations } = getState(this._aggregationsStore);
+      const { filters = [] } = getState(this.queryParamsStore);
       const authorizedFilters = getAuthorizedFilters(this._injector);
 
       if (!authorizedFilters) return;
@@ -58,18 +62,42 @@ export class FiltersComponent implements OnInit {
       if (authorizedFilters.length > FILTERS_COUNT)
         this.hasMoreFilters.set(true);
 
-      if (authorizedFilters.includes("#date"))
-        this.dateFilterDropdown.set({
-          label: 'Date',
-          aggregation: aggregations?.find(agg => agg.name === "date") as AggregationListEx || null,
-          icon: 'far fa-calendar-day'
-        });
+      if (authorizedFilters.includes("#date")) {
+        const agg = aggregations?.find(agg => agg.name === "Modified") as AggregationListEx;
+        if (agg) {
+          const filter = this.queryParamsStore.getFilterFromColumn(agg.column);
+          const value = this.getFilterValue(filter);
 
-      this.filterDropdowns.set(this.buildFilterDropdownsFromAggregations(aggregations
+          this.dateFilterDropdown.set({
+            label: 'Date',
+            aggregation: agg,
+            currentFilter: filter,
+            value,
+            icon: 'far fa-calendar-day'
+          });
+        }
+      }
+
+      const agg = this.buildFilterDropdownsFromAggregations(aggregations
         .filter(a => authorizedFilters.includes(a.column))
         .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
-        .splice(0, FILTERS_COUNT)
-      ));
+        .splice(0, FILTERS_COUNT));
+
+
+      this.moreFiltersColumns = aggregations
+        .filter(a => authorizedFilters.includes(a.column))
+        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
+        .splice(FILTERS_COUNT).map(a => a.column);
+
+      // count more filters
+      const count = filters
+        .filter(f => this.moreFiltersColumns.includes(f.column) )
+        .reduce((acc, f) => acc + f.values.length, 0);
+
+      this.moreFiltersCount.set(count)
+
+
+      this.filterDropdowns.set(agg);
     }, { allowSignalWrites: true })
   }
 
@@ -114,8 +142,6 @@ export class FiltersComponent implements OnInit {
   }
 
   public dateFilterUpdated(filter: Filter): void {
-    this.updateDateDropdownButton(filter);
-
     this.queryParamsStore.updateFilter(filter);
     this._searchService.search([]);
   }
@@ -129,15 +155,11 @@ export class FiltersComponent implements OnInit {
       filters.map((filter: FilterDropdown) => ({ ...filter, currentFilter: undefined, moreFiltersCount: undefined }))
     )
 
-    this.moreFiltersCount.set(0);
     this.queryParamsStore.patch({ filters: [] });
 
     this._searchService.search([]);
   }
 
-  protected moreFiltersCountUpdated(count: number): void {
-    this.moreFiltersCount.set(count);
-  }
 
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = (aggregations as AggregationEx[])
@@ -160,16 +182,18 @@ export class FiltersComponent implements OnInit {
           label: aggregation.name,
           aggregation: aggregation,
           icon: this.appStore.getAggregationIcon(aggregation.column),
-          currentFilter: f?.label,
+          currentFilter: f,
+          value: { text: f?.values[0]},
           moreFiltersCount: more,
         })
-      })
-    return dropdowns
+      });
+
+    return dropdowns as FilterDropdown[];
   }
 
   private updateDropdownButtons(filter: Filter, index: number): void {
     this.filterDropdowns.update((filters: FilterDropdown[]) => {
-      filters[index].currentFilter = filter.values[0];
+      filters[index].currentFilter = filter;
       filters[index].moreFiltersCount = filter.values.length - 1;
 
       return filters;
@@ -179,9 +203,21 @@ export class FiltersComponent implements OnInit {
   private updateDateDropdownButton(filter: Filter): void {
     this.dateFilterDropdown.update((value) => {
       if (value) {
-        value.currentFilter = filter.label;
+        value.currentFilter = filter;
       }
       return value;
     });
+  }
+
+  private getFilterValue(filter?: Filter): { operator?: string, text: string} | undefined {
+    if (!filter) return undefined;
+
+    if (filter.operator === 'between') return { text:`[${filter.values[0]} - ${filter.values[1]}]`};
+    if(filter.operator === 'gte') return { operator: "&#8805;", text: filter.values[0]};
+    if(filter.operator === 'lte') return { operator: "&#8804;", text: filter.values[0]};
+    if(filter.operator === 'lt') return { text: `< ${filter.values[0]}`};
+    if(filter.operator === 'gt') return { text: `> ${filter.values[0]}`};
+
+    return {text: filter.values[0]};
   }
 }
