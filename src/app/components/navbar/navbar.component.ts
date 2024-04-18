@@ -66,11 +66,12 @@ export class NavbarComponent {
 
   private readonly subscriptions = new Subscription();
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
-
   constructor() {
+
+    effect(() => {
+      this.drawerOpened = this.drawerStack.isOpened();
+    });
+
     this.subscriptions.add(
       searchInputStore.next$.subscribe(text => {
         this.searchInput.setInput(text);

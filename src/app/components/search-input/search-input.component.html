@@ -15,10 +15,11 @@
     class="grow focus:outline-none bg-gray-50"
     aria-label="Search here"
     placeholder="Search by keyword or ask something"
+    autocomplete="off"
     [ngModel]="input()"
     (ngModelChange)="input.set($event)"
     (keydown.enter)="emitText()"
-    (click)="overlayOpen.set(true)"
+    (click)="inputClicked()"
     />
 
   @if (input() !== '') {
