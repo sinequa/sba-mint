@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { toast } from 'ngx-sonner';
 
 type Application = {
   label: string;
@@ -26,10 +27,10 @@ export class ApplicationsComponent {
   ];
 
   public applicationClicked(application: Application): void {
-    console.log(application);
+    toast('Opening ' + application.label + '...', { duration: 2000 });
   }
 
   public addApplication(): void {
-    console.log('Add application');
+    toast('Adding application...', { duration: 2000 });
   }
 }

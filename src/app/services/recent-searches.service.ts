@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
+import { toast } from 'ngx-sonner';
 import { Subscription, filter } from 'rxjs';
 
 import { isASearchRoute } from '@/app/app.routes';
@@ -42,7 +43,7 @@ export class RecentSearchesService implements OnDestroy {
 
   public saveSearch(recentSearches: RecentSearch[]) {
     if (!searchInputStore.state) {
-      console.log('Avoid saving empty search');
+      toast.warning('Avoid saving empty search', { duration: 2000 });
       return;
     }
 
