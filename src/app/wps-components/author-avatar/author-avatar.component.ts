@@ -36,7 +36,7 @@ export class AuthorAvatarComponent {
   imageUrl = computed(() => this.person()?.employeePhotoURL );
   initials = computed(() => {
 
-    const { employeeFullName = '' } = this.person() as PersonArticle;
+    const { employeeFullName = '' } = this.person() as PersonArticle || {};
 
     if(employeeFullName) {
       const initials = employeeFullName
