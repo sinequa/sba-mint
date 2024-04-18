@@ -15,6 +15,7 @@ import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 import { getState } from '@ngrx/signals';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
     selector: 'app-search-slides',
@@ -25,7 +26,7 @@ import { getState } from '@ngrx/signals';
             directive: SelectArticleFromQueryParamsDirective,
             inputs: ['articleId: id']
         }],
-    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent]
+    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent, DidYouMeanComponent]
 })
 export class SearchSlidesComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')

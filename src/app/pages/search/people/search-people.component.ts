@@ -15,13 +15,14 @@ import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 import { getState } from '@ngrx/signals';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
   selector: 'app-search-people',
   standalone: true,
   templateUrl: './search-people.component.html',
   styleUrl: './search-people.component.scss',
-  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent, PagerComponent]
+  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent, PagerComponent, DidYouMeanComponent]
 })
 export class SearchPeopleComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')

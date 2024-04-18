@@ -20,6 +20,7 @@ import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-sele
 import { getState } from '@ngrx/signals';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
   selector: 'app-search-all',
@@ -32,7 +33,8 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
     PagerComponent,
-    SortSelectorComponent
+    SortSelectorComponent,
+    DidYouMeanComponent
   ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
