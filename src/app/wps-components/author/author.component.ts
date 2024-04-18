@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, Injector, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, HostListener, Injector, Signal, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, switchMap, tap } from 'rxjs';
 
@@ -12,7 +12,7 @@ import { SelectionStrategy } from '@/app/directives';
 import { PersonArticle } from '@/app/types';
 import { buildQuery } from '@/app/utils';
 
-import { WpsAuthorImageComponent } from '../author-image/author-image.component';
+import { AuthorAvatarComponent } from '../author-avatar/author-avatar.component';
 
 /**
  * Component to display an author based on its name.
@@ -28,7 +28,7 @@ import { WpsAuthorImageComponent } from '../author-image/author-image.component'
 @Component({
   selector: 'wps-author',
   standalone: true,
-  imports: [ArticlePersonLightComponent, WpsAuthorImageComponent],
+  imports: [ArticlePersonLightComponent, AuthorAvatarComponent],
   templateUrl: './author.component.html',
   styleUrl: './author.component.scss',
   hostDirectives: [{

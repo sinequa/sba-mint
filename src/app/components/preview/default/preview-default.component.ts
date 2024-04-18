@@ -15,11 +15,12 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
 
 import { getState } from '@ngrx/signals';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
+import { PreviewActionsComponent } from "../actions/preview-actions";
 
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, SourceIconPipe, PreviewNavbarComponent, WpsAuthorComponent, MetadataComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, SourceIconPipe, PreviewNavbarComponent, WpsAuthorComponent, MetadataComponent, PreviewActionsComponent],
   templateUrl: './preview-default.component.html',
   styleUrl: './preview-default.component.scss'
 })

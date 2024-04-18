@@ -45,7 +45,12 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
   });
   private readonly subscription = new Subscription();
 
-  constructor(private readonly injector: Injector) {}
+  constructor(private readonly injector: Injector) {
+    effect(() => {
+      getState(this.queryParamsStore);
+      this.people.set(undefined);
+    }, {allowSignalWrites: true});
+  }
 
   ngOnInit(): void {
     // Setup aggregations for filtering mechanism
@@ -69,11 +74,6 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
           this.queryText.set(searchInputStore.state ?? '');
         })
     );
-
-    effect(() => {
-      getState(this.queryParamsStore);
-      this.people.set(undefined);
-    }, {allowSignalWrites: true});
 
     // Trigger skeleton on search whether from input of from filters
     this.subscription.add(

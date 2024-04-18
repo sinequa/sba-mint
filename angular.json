@@ -41,8 +41,11 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss"],
+            "assets": [
+              "src/favicon.ico", "src/assets",
+              { "glob": "**/*.js", "input": "src/assets/", "output": "preview/" }
+            ],
+            "styles": ["src/styles.scss", { "input": "src/assets/preview.css", "inject": false }],
             "scripts": []
           },
           "configurations": {

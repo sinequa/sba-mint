@@ -13,7 +13,7 @@ import { MockDataService } from '@/app/services';
 import { searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
@@ -21,7 +21,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-person',
   standalone: true,
-  imports: [PreviewNavbarComponent, ArticlePersonLightComponent, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, WpsAuthorImageComponent],
+  imports: [PreviewNavbarComponent, ArticlePersonLightComponent, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, AuthorAvatarComponent],
   templateUrl: './preview-person.component.html',
   styleUrl: './preview-person.component.scss'
 })

@@ -2,12 +2,12 @@ import { Component, HostBinding, effect, input } from '@angular/core';
 
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { PersonArticle } from '@/app/types/articles';
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
 
 @Component({
   selector: 'app-article-person-light',
   standalone: true,
-  imports: [WpsAuthorImageComponent],
+  imports: [AuthorAvatarComponent],
   templateUrl: './article-person-light.component.html',
   styleUrl: './article-person-light.component.scss',
   hostDirectives: [{

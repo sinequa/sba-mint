@@ -1,6 +1,0 @@
-@if (pictureUrl() && !imgLoadFailed()) {
-<img [src]="pictureUrl()" alt="{{ person()?.employeeFullName }} profile picture" [ngClass]="imgClass()"
-  (error)="imgLoadingFailed()">
-} @else {
-<ng-content />
-}

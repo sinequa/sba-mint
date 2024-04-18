@@ -3,7 +3,7 @@
 @if(article()){
 <div class="overflow-auto h-full flex flex-col">
   <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
-    <header class="flex items-center gap-4">
+    <header class="flex items-center justify-between gap-4">
       <a  [href]="article()!.url1" target="_blank" rel="noopener noreferrer"><p class="article-title me-auto">{{ article().title }}</p></a>
 
       <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
@@ -64,9 +64,10 @@
     </table>
   </section>
 
-  <section class="grow flex flex-col gap-4">
+  <section class="grow flex flex-col gap-4 py-4 px-6">
     @if (previewUrl()) {
-    <iframe #preview frameborder="0" class="h-full" title="Document preview" [src]="previewUrl()"></iframe>
+      <preview-actions class="flex  justify-end gap-2" />
+      <iframe #preview frameborder="0" class="h-full" title="Document preview" [src]="previewUrl()"></iframe>
     }
   </section>
 </div>

@@ -8,30 +8,31 @@
       [ngClass]="{ 'animate-save': saveAnimation() }">
       <i class="fa-fw far fa-star"></i>
     </button>
-    }
+  }
 
-    <input type="search"
-      id="serach-navbar"
-      class="grow focus:outline-none bg-gray-50"
-      aria-label="Search here"
-      placeholder="Search by keyword or ask something"
-      [ngModel]="input()"
-      (ngModelChange)="input.set($event)"
-      (keydown.enter)="emitText()"
-      (click)="overlayOpen.set(true)"
-      />
+  <input type="search"
+    id="serach-navbar"
+    class="grow focus:outline-none bg-gray-50"
+    aria-label="Search here"
+    placeholder="Search by keyword or ask something"
+    autocomplete="off"
+    [ngModel]="input()"
+    (ngModelChange)="input.set($event)"
+    (keydown.enter)="emitText()"
+    (click)="inputClicked()"
+    />
 
-    @if (input() !== '') {
-    <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
-      <i class="fa-fw far fa-circle-xmark"></i>
-    </button>
-    }
-  </div>
-
-  <button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
-    [disabled]="input() === oldInput" (click)="emitText()">
-    <i class="fa-fw far fa-magnifying-glass"></i>
+  @if (input() !== '') {
+  <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
+    <i class="fa-fw far fa-circle-xmark"></i>
   </button>
+  }
+</div>
+
+<button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
+  [disabled]="input() === oldInput" (click)="emitText()">
+  <i class="fa-fw far fa-magnifying-glass"></i>
+</button>
 </span>
 
 

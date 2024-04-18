@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, Input, computed, inject, input } from '@angular/core';
+import { toast } from 'ngx-sonner';
 
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
@@ -55,6 +56,8 @@ export class PreviewNavbarComponent {
       setTimeout(() => {
         this.copied = false;
       }, 3000);
+
+      toast.success('Link copied to clipboard', { duration: 2000 });
     }
   }
 }
