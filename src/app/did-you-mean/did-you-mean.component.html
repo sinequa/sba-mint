@@ -1,11 +1,11 @@
 @switch (spellingCorrectionMode) {
   @case ('DYMOnly') {
-    <p class="text-red-600">Did you mean <button class="text-blue-500" (click)="selectCorrected()">{{correction}}</button>?</p>
+    Did you mean <button class="text-blue-500" (click)="selectCorrected()">{{correction}}</button>?
   }
   @case ('Correct') {
-    <p class="text-red-600">Showing results for <button class="text-blue-500 font-bold" (click)="selectCorrected()">{{correction}}</button>. Search instead for <button class="text-blue-500" (click)="selectOriginal()">{{original}}</button></p>
+    Showing results for <button class="text-blue-500 font-bold" (click)="selectCorrected()">{{correction}}</button>. Search instead for <button class="text-blue-500" (click)="selectOriginal()">{{original}}</button>
   }
   @case ('Smart') {
-    <p class="text-red-600">Showing results for <button class="text-blue-500" (click)="selectOriginal()">{{original}}</button> and <button class="text-blue-500 font-bold" (click)="selectCorrected()">{{correction}}</button></p>
+    Showing results for <button class="text-blue-500" (click)="selectOriginal()">{{original}}</button> and <button class="text-blue-500 font-bold" (click)="selectCorrected()">{{correction}}</button>
   }
 }

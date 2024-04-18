@@ -3,13 +3,14 @@ import { Router, RouterModule } from '@angular/router';
 import { Result } from '@sinequa/atomic';
 import { Subscription } from 'rxjs';
 import { SearchService } from '../services';
-import { queryParamsStore, searchInputStore } from '../stores';
+import { QueryParamsStore, searchInputStore } from '../stores';
 
 @Component({
   selector: 'app-did-you-mean',
   standalone: true,
   imports: [RouterModule],
-  templateUrl: './did-you-mean.component.html'
+  templateUrl: './did-you-mean.component.html',
+  styleUrl: './did-you-mean.component.scss'
 })
 export class DidYouMeanComponent implements OnInit, OnDestroy {
   protected spellingCorrectionMode?: string;
@@ -18,11 +19,9 @@ export class DidYouMeanComponent implements OnInit, OnDestroy {
 
   readonly router = inject(Router);
 
-
-
   private readonly subscription = new Subscription();
   private readonly searchService = inject(SearchService);
-
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   ngOnInit(): void {
     this.subscription.add(
@@ -36,13 +35,13 @@ export class DidYouMeanComponent implements OnInit, OnDestroy {
   }
 
   selectCorrected(): void {
-    queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
+    this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
     searchInputStore.set(this.correction!);
     this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.correction! } })
   }
 
   selectOriginal(): void {
-    queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
+    this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
     this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.original! } })
   }
 
