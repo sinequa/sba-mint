@@ -1,13 +1,13 @@
-<div
-  cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin"
-  class="grow px-2 flex gap-2 items-center rounded-s rounded-e-none bg-gray-50"
-  >
+<span cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="flex grow relative z-[1001]">
+  <div
+    class="grow px-2 flex gap-2 items-center focus-within:rounded-s-none rounded-s rounded-e-none bg-gray-50"
+    >
 
-  @if (showSave() && input() !== '') {
-  <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
-    [ngClass]="{ 'animate-save': saveAnimation() }">
-    <i class="fa-fw far fa-star"></i>
-  </button>
+    @if (showSave() && input() !== '') {
+    <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
+      [ngClass]="{ 'animate-save': saveAnimation() }">
+      <i class="fa-fw far fa-star"></i>
+    </button>
   }
 
   <input type="search"
@@ -33,13 +33,15 @@
   [disabled]="input() === oldInput" (click)="emitText()">
   <i class="fa-fw far fa-magnifying-glass"></i>
 </button>
+</span>
 
 
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="overlayPosition"
   [cdkConnectedOverlayOpen]="overlayOpen()"
-  (overlayOutsideClick)="overlayOpen.set(false)">
+  (overlayOutsideClick)="overlayOpen.set(false)"
+  cdkConnectedOverlayHasBackdrop="true">
   <div [style.width.px]="overlayPosition.elementRef.nativeElement.getBoundingClientRect().width">
     <ng-content></ng-content>
   </div>
