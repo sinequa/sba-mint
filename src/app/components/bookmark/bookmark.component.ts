@@ -23,7 +23,8 @@ export class BookmarkComponent {
     return this.article() ? this.userSettingsStore.isBookmarked(this.article()!.id!) : false;
   })
 
-  public async bookmark(): Promise<void> {
+  public async bookmark(e: Event) {
+    e.stopPropagation();
     const isBookmarked = await this.userSettingsStore.isBookmarked(this.article()!.id!);
 
     if (isBookmarked){

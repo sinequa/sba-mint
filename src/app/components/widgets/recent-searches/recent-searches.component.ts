@@ -1,10 +1,13 @@
+import { Component, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { toast } from 'ngx-sonner';
+
+import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
+
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { RecentSearchesService } from '@/app/services';
 import { RecentSearch as UserSettingsRecentSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
-import { Component, effect, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 type RecentSearch = UserSettingsRecentSearch & {
   label: string;
@@ -48,7 +51,7 @@ export class RecentSearchesComponent {
     }, { allowSignalWrites: true })
   }
 
-  public recentSearchClicked(recentSearch: RecentSearch): void {
+  onClick(recentSearch: RecentSearch): void {
     const queryParams = {
       q: recentSearch.queryParams?.text
     } as { q: string, f?: string };
@@ -57,5 +60,17 @@ export class RecentSearchesComponent {
       queryParams.f = JSON.stringify(recentSearch.queryParams?.filters);
 
     this.router.navigate([recentSearch.queryParams?.path], { queryParams });
+  }
+
+  onDelete(index: number, e: Event) {
+    e.stopPropagation();
+    const searches = this.recentSearches();
+
+    if (searches) {
+      searches?.splice(index, 1);
+      this.recentSearches.set(searches);
+      this.recentSearchesService.saveSearch(searches)
+      toast.success('Recent search deleted');
+    }
   }
 }

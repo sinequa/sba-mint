@@ -59,11 +59,13 @@ export class RecentSearchesService implements OnDestroy {
     }
 
     // Save only the hash part of the URL with the #
-    if (currentSearch === undefined){
+    if (currentSearch === undefined && searchInputStore.state !== 'undefined'){
       currentSearch = { url: window.location.hash.substring(1), date: new Date().toISOString(), display: searchInputStore.state };
     }
 
-    recentSearches.unshift(currentSearch);
+    if(currentSearch) {
+      recentSearches.unshift(currentSearch);
+    }
 
     this.store.updateRecentSearches(recentSearches);
   }

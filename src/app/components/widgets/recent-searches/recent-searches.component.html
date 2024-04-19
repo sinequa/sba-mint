@@ -1,15 +1,15 @@
 <ul class="flex flex-col">
   @for (search of recentSearches(); track $index) {
   <li
-    class="group flex h-10 gap-2 px-3 py-2 items-center rounded-md cursor-pointer hover:bg-blue-100 hover:text-blue-500 focus:bg-blue-100 focus:text-blue-500 focus:outline-none"
-    tabindex="0" appFocusWithArrowKeys="y" (click)="recentSearchClicked(search)"
-    (keydown.enter)="recentSearchClicked(search)">
+    class="group flex h-10 gap-2 px-3 py-2 items-center rounded-md cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+    tabindex="0" appFocusWithArrowKeys="y" (click)="onClick(search)"
+    (keydown.enter)="onClick(search)">
     <i class="fa-fw far fa-clock-rotate-left"></i>
 
     <p>{{ search.label }}</p>
 
     @if ((search.filterCount ?? 0) > 0) {
-    <p class="text-gray-500">
+    <p class="text-neutral-500">
       <i class="fa-fw far fa-filter"></i>
       {{ search.filterCount }}
 
@@ -22,12 +22,12 @@
     }
 
 
-    <p class="text-gray-500 ms-auto">{{ search.date | relativeDate }}</p>
-    <button class="hidden group-hover:block btn btn-sm btn-alert" title="Remove recent search" stkStopPropagation>
+    <p class="text-neutral-500 ms-auto">{{ search.date | relativeDate }}</p>
+    <button class="hidden group-hover:block text-alert hover:scale-125" title="Remove recent search" (click)="onDelete($index, $event)">
       <i class="fa-fw fa-regular fa-trash-can"></i>
     </button>
   </li>
   } @empty {
-  <li class="text-center text-gray-500 py-4">No recent searches yet</li>
+  <li class="text-center text-neutral-500 py-4">No recent searches yet</li>
   }
 </ul>

@@ -1,5 +1,4 @@
 @import "./articles";
-@import "./buttons";
 @import "./dividers";
 @import "./pills";
 @import "./lists";
@@ -18,20 +17,6 @@
   .active:not(.disabled) {
     @apply text-active bg-active border-active;
   }
-
-  .text-alert {
-    @apply text-red-50;
-  }
-  .bg-alert {
-    @apply bg-red-500;
-  }
-  .border-alert {
-    @apply border-red-600;
-  }
-  .alert {
-    @apply text-alert bg-alert border-alert;
-  }
-
   .disabled {
     @apply opacity-75 cursor-default;
   }

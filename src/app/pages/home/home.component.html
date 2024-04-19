@@ -7,7 +7,7 @@
     />
   </header>
 
-  <div class="grid grid-cols-[23%_auto_23%] grid-rows-[min-content_auto] gap-y-6">
+  <div class="grid grid-cols-[auto_750px_auto] grid-rows-[min-content_auto] gap-y-6 text-sm">
     <main class="col-start-2">
       <app-search-input class="w-full" (debounced)="searchText.set($event)" (validated)="search($event)">
         <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)"/>
@@ -19,8 +19,10 @@
         @for (tab of tabs(); track tab.label) {
         <li>
           <button
-            class="py-2 px-3 select-none border-b border-gray-200 hover:text-blue-500 hover:border-blue-500 focus:text-blue-500 focus:border-blue-500 focus:outline-none aria-selected:text-blue-500 aria-selected:border-blue-500"
-            [ngClass]="{ 'text-gray-400 pointer-events-none': tab.disabled }"
+            [ngClass]="cn(
+              'py-2 px-3 select-none text-neutral-600 font-semibold border-b border-neutral-300 hover:text-primary hover:border-primary focus:text-primary focus:border-primary focus:outline-none aria-selected:text-primary aria-selected:border-primary',
+              tab.disabled && 'text-neutral-300 pointer-events-none'
+            )"
             [attr.tabindex]="tab.disabled ? -1 : 0"
             [attr.aria-selected]="selectedTabId() === $index"
             (click)="selectTab(tab)"
@@ -32,13 +34,13 @@
         </li>
         }
 
-        <li class="grow border-b border-gray-200"></li>
+        <li class="grow border-b border-neutral-300"></li>
       </menu>
 
       @for (tab of tabs(); track tab.label) {
       <div
         [ngClass]="{ hidden: selectedTabId() !== $index }"
-        class="overflow-y-auto max-h-[30vh] py-4"
+        class="overflow-y-auto max-h-[208px] py-4"
       >
         <ng-container *ngComponentOutlet="tab.component" />
       </div>

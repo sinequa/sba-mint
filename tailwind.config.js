@@ -1,5 +1,7 @@
-const dropdown = require("./tailwind-plugin/dropdown");
 const colors = require("tailwindcss/colors");
+
+const dropdown = require("./tailwind-plugin/dropdown");
+const button = require('./tailwind-plugin/button');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -27,5 +29,5 @@ module.exports = {
       },
     },
   },
-  plugins: [dropdown],
+  plugins: [dropdown, button],
 };

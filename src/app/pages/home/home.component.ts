@@ -4,7 +4,7 @@ import { Component, ElementRef, OnDestroy, OnInit, QueryList, Type, ViewChildren
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
+import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
 import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
@@ -63,12 +63,13 @@ type FeaturesKeys = keyof UserFeatures | Features;
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
+  cn = cn;
 
   readonly searchText = signal<string>('');
 
   readonly tabs = computed(() => {
     const customJson = this.appStore.customizationJson();
-    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features };
+    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features, ...{ applications: true} };
     const enabledFeatures = homeFeatures.reduce((acc, feature) => {
       // add only if the feature is declared and set to true in the json
       if (feature.name in features && features[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
