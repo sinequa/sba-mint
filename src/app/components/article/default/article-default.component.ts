@@ -14,6 +14,8 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
 
 type Tab = 'attachments' | 'similars';
 
+const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
+
 @Component({
   selector: 'app-article-default',
   standalone: true,
@@ -45,6 +47,15 @@ export class ArticleDefaultComponent implements OnInit {
 
     return fields?.tags;
   })
+  protected docformatMetadata = computed(() => {
+    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
+      return this.article().docformat;
+
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase()))
+      return this.article().doctype;
+
+    return undefined;
+  });
 
   protected attachments: Article[] = [
     { value: 'X-1', type: 'default' },
