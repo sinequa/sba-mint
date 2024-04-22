@@ -1,6 +1,6 @@
-<article class="article group/article" [class.selected]="selected()">
+<article class="article group/article text-neutral-600" [class.selected]="selected()">
   <section class="shrink-0">
-    <div class="flex justify-center items-center size-[40px] rounded-full bg-gray-100 text-blue-500">
+    <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
       <i class="{{ article().collection | sourceIcon }} text-lg"></i>
     </div>
   </section>
@@ -8,13 +8,13 @@
   <section class="flex flex-col gap-2">
     <header>
       <div class="flex gap-2 items-baseline">
-        <p class="article-title line-clamp-1">{{ article().title }}</p>
+        <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
         <app-bookmark [article]="article()" />
       </div>
 
-      <section class="flex gap-1 items-center text-gray-900">
+      <section class="flex gap-1 items-center">
         @if (article().doctype) {
-        <div class="pill pill-xs border-gray-900 font-bold uppercase">
+        <div class="pill pill-xs border-neutral-600 font-bold uppercase">
           {{ article()!.doctype }}
         </div>
         }
