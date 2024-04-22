@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { toast } from 'ngx-sonner';
 import { Subject } from 'rxjs';
 
 import { PreviewData } from '@sinequa/atomic';
@@ -94,7 +95,8 @@ export class ExtractsLocationService implements OnDestroy {
     });
 
     this.worker.onerror().subscribe((data) => {
-      console.error("worker error:", data);
+      console.log("worker error", data);
+      toast.error("An error occurred while processing extracts", { duration: 2000 });
     });
   }
 

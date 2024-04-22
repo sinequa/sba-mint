@@ -17,10 +17,6 @@ export class DrawerService {
 
   private readonly backdrop = inject(BackdropService);
 
-  constructor() {
-    console.log('DrawerService: constructor');
-  }
-
   public open(): void {
     this.isOpened.set(true);
   }

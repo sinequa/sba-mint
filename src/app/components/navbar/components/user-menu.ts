@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
 import { logout } from "@sinequa/atomic";
 import { MenuComponent, MenuItemComponent } from "@sinequa/atomic-angular";
+import { toast } from "ngx-sonner";
 
 @Component({
   selector: "app-user-menu",
@@ -27,7 +28,7 @@ export class UserMenuComponent {
    * @param e The clicked element
    */
     onClick(e: string) {
-      console.log('on click', e);
+      toast("Clicked on " + e, { duration: 2000 });
     }
 
     handleLogout() {

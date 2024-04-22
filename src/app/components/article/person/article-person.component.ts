@@ -12,7 +12,7 @@ import { SelectArticleOnClickDirective } from '@/app/directives';
 import { searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildSecondaryQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { WpsAuthorImageComponent } from '@/app/wps-components/author-image/author-image.component';
+import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
 import { ArticleDefaultLightSkeletonComponent } from '../default-light-skeleton/article-default-light-skeleton.component';
@@ -21,7 +21,7 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
 @Component({
   selector: 'app-article-person',
   standalone: true,
-  imports: [NgTemplateOutlet, StopPropagationDirective, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, WpsAuthorImageComponent],
+  imports: [NgTemplateOutlet, StopPropagationDirective, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, AuthorAvatarComponent],
   templateUrl: './article-person.component.html',
   styleUrl: './article-person.component.scss',
   hostDirectives: [{

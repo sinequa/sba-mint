@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subscription, debounceTime, filter } from 'rxjs';
@@ -21,6 +21,7 @@ export class SearchInputComponent implements OnDestroy {
   @Output() public readonly debounced = new EventEmitter<string>();
   @Output() public readonly validated = new EventEmitter<string>();
   @Output() public readonly saved = new EventEmitter<void>();
+  @Output() public readonly clicked = new EventEmitter<void>();
 
   public readonly showSave = input(false, { transform: booleanAttribute });
 
@@ -34,7 +35,7 @@ export class SearchInputComponent implements OnDestroy {
 
   private readonly _subscription = new Subscription();
 
-  constructor() {
+  constructor(public readonly el: ElementRef) {
     effect(() => {
       if (this.input() !== undefined)
         this.updated.emit(this.input());
@@ -52,6 +53,11 @@ export class SearchInputComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+  }
+
+  public inputClicked(): void {
+    this.overlayOpen.set(true);
+    this.clicked.emit();
   }
 
   public setInput(text: string | undefined, silent: boolean = true): void {
