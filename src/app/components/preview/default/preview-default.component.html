@@ -1,10 +1,12 @@
-<app-preview-navbar class="block border-b border-gray-300 bg-white" [article]="article()"/>
+<app-preview-navbar class="block border-b border-neutral-300 bg-white" [article]="article()"/>
 
 @if(article()){
-<div class="overflow-auto h-full flex flex-col">
-  <section class="p-6 flex flex-col gap-4 border-b border-gray-400">
-    <header class="flex items-center justify-between gap-4">
-      <a  [href]="article()!.url1" target="_blank" rel="noopener noreferrer"><p class="article-title me-auto">{{ article().title }}</p></a>
+<div class="overflow-auto h-full flex flex-col text-sm">
+  <section class="p-6 flex flex-col gap-4 border-b border-neutral-300">
+    <header class="flex items-center justify-between gap-4 text-base">
+      <a  [href]="article()!.url1" target="_blank" rel="noopener noreferrer" class="overflow-auto">
+        <p class="text-primary font-bold me-auto text-ellipsis whitespace-nowrap overflow-hidden">{{ article().title }}</p>
+      </a>
 
       <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
         <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
@@ -17,7 +19,7 @@
         <td class="flex flex-wrap items-baseline divide-x-chevron-right divide-xs">
           <i class="fa-fw {{ article().collection | sourceIcon }}"></i>
 
-          @for (segment of (article().treepath[0] || '') | split: '/' | slice:1:-1; track $index) {
+          @for (segment of (article().treepath?.[0] || '') | split: '/' | slice:1:-1; track $index) {
             <span>{{ segment }}</span>
           }
         </td>
@@ -50,15 +52,15 @@
       <tr>
         <th>Labels</th>
         <td class="flex flex-col gap-2">
-          <sq-metadata [article]="article()!" [metadata]="labels.public" className="pill pill-sm border-black font-semibold"/>
-          <sq-metadata [article]="article()!" [metadata]="labels.private" className="pill pill-sm border-black font-semibold"/>
+          <sq-metadata class="empty:hidden badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.public"/>
+          <sq-metadata class="empty:hidden badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.private"/>
         </td>
       </tr>
 
       <tr>
         <th>Type</th>
         <td>
-          <sq-metadata [article]="article()!" [metadata]="'docformat'" className="pill pill-sm border-black font-semibold"/>
+          <sq-metadata class="badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="'docformat'"/>
         </td>
       </tr>
     </table>

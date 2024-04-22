@@ -1,4 +1,4 @@
-<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="group flex grow relative z-[1001]">
+<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="group flex grow relative focus-within:z-[1001]">
   <div class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50">
     @if (showSave() && input() !== '') {
     <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"

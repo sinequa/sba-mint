@@ -48,7 +48,7 @@
     @if ((articleMetadata()?.length ?? 0) > 0) {
     <div class="flex gap-2">
       @for (metadata of articleMetadata(); track $index) {
-      <sq-metadata [article]="article()!" [metadata]="metadata" class="flex gap-2" className="pill pill-sm border-black font-semibold" />
+        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="metadata" />
       }
     </div>
     }
