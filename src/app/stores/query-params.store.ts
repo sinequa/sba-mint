@@ -4,6 +4,7 @@ import { QueryParams, queryParamsFromUrl } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { getState, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { SpellingCorrectionMode } from '@sinequa/atomic';
 
 type QueryParamsState = QueryParams & {
   filters: Filter[];
@@ -23,7 +24,7 @@ export const QueryParamsStore = signalStore(
 
       const { q: text, f, id, p, s: sort, c } = queryParamsFromUrl(url);
       const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
-      const spellingCorrectionMode = c as "default" | "classic" | "smart" | "correct" | "dymonly" | "force" | "false" | undefined
+      const spellingCorrectionMode = c as SpellingCorrectionMode;
 
       let page: number | undefined;
       if(p) {

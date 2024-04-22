@@ -27,11 +27,11 @@ export class DidYouMeanComponent {
   selectCorrected(): void {
     this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
     searchInputStore.set(this.correction()!);
-    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.correction! } })
+    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.correction() } })
   }
 
   selectOriginal(): void {
     this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
-    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.original! } })
+    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.original() } })
   }
 }
