@@ -19,10 +19,8 @@
         @for (tab of tabs(); track tab.label) {
         <li>
           <button
-            [ngClass]="cn(
-              'py-2 px-3 select-none text-neutral-600 font-semibold border-b border-neutral-300 hover:text-primary hover:border-primary focus:text-primary focus:border-primary focus:outline-none aria-selected:text-primary aria-selected:border-primary',
-              tab.disabled && 'text-neutral-300 pointer-events-none'
-            )"
+            class="tab aria-selected:text-primary aria-selected:border-primary"
+            [attr.disabled]="tab.disabled ?? null"
             [attr.tabindex]="tab.disabled ? -1 : 0"
             [attr.aria-selected]="selectedTabId() === $index"
             (click)="selectTab(tab)"

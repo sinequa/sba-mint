@@ -5,7 +5,7 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
-import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
+import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
 
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AppStore, QueryParamsStore } from '@/app/stores';
@@ -29,6 +29,8 @@ export const FILTERS_COUNT = 4;
 })
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
+
+  cn = cn;
 
   private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _injector = inject(Injector);

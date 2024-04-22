@@ -1,4 +1,4 @@
-import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { Subscription, switchMap, take } from 'rxjs';
 
 import { Aggregation, Result } from '@sinequa/atomic';

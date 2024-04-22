@@ -17,10 +17,10 @@
   </app-search-input>
 </div>
 
-<menu class="flex justify-end gap-6 items-center pe-10">
+<menu class="flex justify-end gap-3 items-center pe-10">
   @for (menu of menus; track $index) {
     <li>
-      <button title="{{ menu.label }}">
+      <button class="btn btn-ghost" title="{{ menu.label }}">
         <i class="fa-fw {{ menu.iconClass }}"></i>
       </button>
     </li>
@@ -31,7 +31,7 @@
 </menu>
 
 <div class="row-start-2">
-  <div class="grow h-full border-b border-gray-200"></div>
+  <div class="grow h-full border-b border-neutral-300"></div>
 </div>
 
 <nav class="col-start-2 col-span-2">
@@ -39,7 +39,7 @@
     @for (tab of tabs; track $index) {
     <li>
       <button
-        class="py-2 px-3 select-none border-b border-gray-200 font-semibold capitalize hover:text-blue-500 hover:border-blue-500 focus:text-blue-500 focus:border-blue-500 focus:outline-none aria-selected:text-blue-500 aria-selected:border-blue-500"
+        class="capitalize tab aria-selected:text-primary aria-selected:border-primary"
         [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink" (click)="changeTab(tab)">
         <i class="fa-fw {{ tab.iconClass }}"></i>
         {{ tab.label }}
@@ -47,10 +47,10 @@
     </li>
     }
 
-    <li class="grow border-b border-gray-200"></li>
+    <li class="grow border-b border-neutral-300"></li>
   </ul>
 </nav>
 
 <div class="row-start-2 col-start-4">
-  <div class="grow h-full border-b border-gray-200"></div>
+  <div class="grow h-full border-b border-neutral-300"></div>
 </div>
