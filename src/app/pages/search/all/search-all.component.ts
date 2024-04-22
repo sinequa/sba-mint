@@ -1,4 +1,4 @@
-import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { Subscription, switchMap, take } from 'rxjs';
 
 import { Aggregation, Result } from '@sinequa/atomic';
@@ -17,10 +17,10 @@ import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
 import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 import { getState } from '@ngrx/signals';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
-import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
   selector: 'app-search-all',

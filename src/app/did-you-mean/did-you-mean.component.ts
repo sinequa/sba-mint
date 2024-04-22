@@ -1,8 +1,6 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Result } from '@sinequa/atomic';
-import { Subscription } from 'rxjs';
-import { SearchService } from '../services';
 import { QueryParamsStore, searchInputStore } from '../stores';
 
 @Component({
@@ -10,42 +8,30 @@ import { QueryParamsStore, searchInputStore } from '../stores';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './did-you-mean.component.html',
-  styleUrl: './did-you-mean.component.scss'
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
-export class DidYouMeanComponent implements OnInit, OnDestroy {
-  protected spellingCorrectionMode?: string;
-  protected correction?: string;
-  protected original?: string;
+export class DidYouMeanComponent {
+  result = input<Result>();
+
+  protected spellingCorrectionMode = computed(() => this.result()?.didYouMean?.spellingCorrectionMode);
+  protected correction = computed(() => this.result()?.didYouMean?.text.corrected);
+  protected original = computed(() => this.result()?.didYouMean?.text.original);
 
   readonly router = inject(Router);
-
-  private readonly subscription = new Subscription();
-  private readonly searchService = inject(SearchService);
   private readonly queryParamsStore = inject(QueryParamsStore);
-
-  ngOnInit(): void {
-    this.subscription.add(
-      this.searchService.result$
-        .subscribe((result: Result) => {
-          this.spellingCorrectionMode = result.didYouMean?.spellingCorrectionMode;
-          this.correction = result.didYouMean?.text.corrected;
-          this.original = result.didYouMean?.text.original;
-        })
-    );
-  }
 
   selectCorrected(): void {
     this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
-    searchInputStore.set(this.correction!);
+    searchInputStore.set(this.correction()!);
     this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.correction! } })
   }
 
   selectOriginal(): void {
     this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
     this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.original! } })
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 }

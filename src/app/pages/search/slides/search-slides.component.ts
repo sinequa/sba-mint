@@ -34,6 +34,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
   public readonly id = input<string | undefined>();
 
+  readonly result = signal<Result | undefined>(undefined);
   protected readonly slides = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
@@ -68,6 +69,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.searchService.result$
         .subscribe((result: Result) => {
+          this.result.set(result);
           const { page, pageSize, rowCount } = result;
           this.pageConfiguration.set({ page, pageSize, rowCount });
           this.slides.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'slide' }))) ?? []);
