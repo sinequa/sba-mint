@@ -2,6 +2,12 @@ const plugin = require('tailwindcss/plugin')
 const { borderWidth } = require("tailwindcss/defaultTheme")
 const colors = require("tailwindcss/colors")
 
+function toRgba(variableName) {
+  return ({ opacityValue }) => {
+    return `color-mix(in srgb, ${variableName} calc(${opacityValue} * 100%), transparent)`
+  }
+}
+
 const button = plugin(function ({ addComponents, theme }) {
   addComponents({
     '.btn': {
@@ -25,6 +31,14 @@ const button = plugin(function ({ addComponents, theme }) {
     '.btn-secondary': {
       backgroundColor: theme('colors.secondary'),
       color: theme('colors.primary')
+    },
+    '.btn-tertiary': {
+      backgroundColor: toRgba(colors.neutral[300])({ opacityValue: 0.2 }),
+      color: theme('colors.neutral.600'),
+    },
+    '.btn-ghost': {
+      backgroundColor: colors.transparent,
+      color: theme('colors.neutral.600'),
     },
     '.btn-outline': {
       borderWidth: theme('borderWidth.DEFAULT'),
