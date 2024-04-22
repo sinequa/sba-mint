@@ -10,13 +10,13 @@
   </div>
 
   <section class="flex gap-2 items-baseline">
-    <p class="divide-x-comma divide-xs">
+    <p class="flex divide-x-comma divide-xs">
       @if (slide()?.authors?.[0]) {
       <wps-author [authorName]="slide()!.authors![0]" />
       }
 
       @if (slide()?.modified) {
-      <span>{{ slide()!.modified | date : "mediumDate" }}</span>
+      <span class="text-nowrap">{{ slide()!.modified | date : "mediumDate" }}</span>
       }
     </p>
   </section>
