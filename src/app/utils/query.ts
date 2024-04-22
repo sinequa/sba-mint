@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Query } from '@sinequa/atomic';
 
 import { FALLBACK_DEFAULT_QUERY_NAME } from '@/app/config/query-names';
-import { AppStore } from '../stores';
 
 export function getQueryNameFromRoute(): string | undefined {
   assertInInjectionContext(getQueryNameFromRoute);
@@ -81,9 +80,10 @@ export function getQueryPageFromUrl(url: string): number {
  * If any properties are missing in the partial query, default values are used.
  *
  * @param query - The partial query object.
+ * @param globalRelevanceOverride - Optional global relevance override value.
  * @returns The complete query object.
  */
-export function buildQuery(query?: Partial<Query>): Query {
+export function buildQuery(query?: Partial<Query>, globalRelevanceOverride?: number): Query {
   assertInInjectionContext(buildQuery);
 
   const name = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
@@ -98,28 +98,8 @@ export function buildQuery(query?: Partial<Query>): Query {
     text,
     filters,
     page,
-    sort
-  };
-}
-
-/**
- * Builds a secondary query object based on the provided partial query.
- * Adds the globalRelevance property to the query if it was missing, and calls buildQuery.
- *
- * @param query - The partial query object.
- * @returns The complete query object.
- */
-export function buildSecondaryQuery(query?: Partial<Query>): Query {
-  assertInInjectionContext(buildSecondaryQuery);
-
-  const builtQuery = buildQuery(query);
-
-  const customization = inject(AppStore).customizationJson();
-  const globalRelevance = builtQuery?.globalRelevance ?? customization.secondaryGlobalRelevance;
-
-  return {
-    ...builtQuery,
-    globalRelevance
+    sort,
+    globalRelevance: globalRelevanceOverride
   };
 }
 

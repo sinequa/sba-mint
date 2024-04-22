@@ -10,9 +10,9 @@ import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/d
 import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
 import { MockDataService } from '@/app/services';
-import { searchInputStore } from '@/app/stores';
+import { AppStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
-import { buildQuery, buildSecondaryQuery, translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
@@ -35,6 +35,7 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
 
   private readonly queryService = inject(QueryService);
   private readonly aggregationsStore = inject(AggregationsStore);
+  private readonly appStore = inject(AppStore);
 
   private readonly person$ = toObservable(this.person);
   private readonly recentContributions$ = this.person$.pipe(
@@ -80,6 +81,6 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     const { aggregations } = getState(this.aggregationsStore);
     query.filters = translateFiltersToApiFilters(filters, aggregations) as Filter;
 
-    return this.queryService.search(runInInjectionContext(this.injector, () => buildSecondaryQuery(query)));
+    return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query, this.appStore.customizationJson()?.globalRelevanceOverride)));
   }
 }
