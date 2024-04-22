@@ -1,15 +1,15 @@
 <img class="aspect-video object-cover w-full rounded-t-md" alt="Thumbnail for {{ slide()?.title }}"
   [src]="slide()?.thumbnailUrl" />
 
-<section class="flex flex-col gap-2 p-2 border-t rounded-b-md bg-white">
-  <div class="flex gap-2 items-baseline">
-    <p class="article-title line-clamp-1">
+<section class="flex flex-col px-3 pt-2 pb-4 border-t rounded-b-md bg-white">
+  <div class="flex gap-1 items-baseline">
+    <p class="text-primary font-semibold line-clamp-1">
       {{ slide()?.title }}
     </p>
-    <app-bookmark [article]="slide()!"></app-bookmark>
+    <app-bookmark class="btn-xs" [article]="slide()!"></app-bookmark>
   </div>
 
-  <section class="flex gap-2 items-baseline">
+  <section class="flex gap-1 items-baseline">
     <p class="flex divide-x-comma divide-xs">
       @if (slide()?.authors?.[0]) {
       <wps-author [authorName]="slide()!.authors![0]" />

@@ -4,17 +4,17 @@ import { Component, ElementRef, OnDestroy, OnInit, QueryList, Type, ViewChildren
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
+import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
-import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
 import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
-import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
+import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
+import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { QueryParamsStore, AppStore } from '@/app/stores';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 import { Features, UserFeatures } from '@/app/types';
 
 type HomeTab = {
@@ -63,8 +63,6 @@ type FeaturesKeys = keyof UserFeatures | Features;
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
-  cn = cn;
-
   readonly searchText = signal<string>('');
 
   readonly tabs = computed(() => {

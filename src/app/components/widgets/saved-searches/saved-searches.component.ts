@@ -5,6 +5,7 @@ import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { NgClass } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { toast } from 'ngx-sonner';
 import { StopPropagationDirective } from 'toolkit';
 
 type SavedSearch = UserSettingsSavedSearch & {
@@ -48,7 +49,7 @@ export class SavedSearchesComponent {
     }, { allowSignalWrites: true });
   }
 
-  public savedSearchClicked(savedSearch: SavedSearch): void {
+  public onClick(savedSearch: SavedSearch) {
     const queryParams = {
       q: savedSearch.queryParams?.text
     } as { q: string, f?: string };
@@ -59,12 +60,16 @@ export class SavedSearchesComponent {
     this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }
 
-  public removeSavedSearch(index: number): void {
+  public onDelete(index: number, e: Event) {
+    e.stopPropagation();
     const searches = this.savedSearches();
 
-    searches?.splice(index, 1);
+    if (searches) {
+      searches?.splice(index, 1);
 
-    this.savedSearches.set(searches);
-    this.savedSearchesService.updateSavedSearches(searches);
+      this.savedSearches.set(searches);
+      this.savedSearchesService.updateSavedSearches(searches);
+      toast.success('Saved search deleted');
+    }
   }
 }
