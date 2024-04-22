@@ -9,7 +9,8 @@ import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author
   standalone: true,
   imports: [AuthorAvatarComponent],
   templateUrl: './article-person-light.component.html',
-  styleUrl: './article-person-light.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: { class: 'article flex' },
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article: person', 'strategy']
@@ -18,8 +19,10 @@ import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author
 export class ArticlePersonLightComponent {
   @HostBinding('attr.title') public title: string | undefined = '';
 
-  public readonly person = input.required<PersonArticle | undefined>();
+  public readonly person = input.required<Partial<PersonArticle> | undefined>();
   public readonly strategy = input<SelectionStrategy>('stack');
 
-  private personEffect = effect(() => this.title = `${this.person()?.employeeFullName}\n${this.person()?.employeeJobTitle}`);
+  constructor() {
+    effect(() => this.title = `${this.person()?.employeeFullName}\n${this.person()?.employeeJobTitle}`);
+  }
 }
