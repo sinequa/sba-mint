@@ -1,10 +1,14 @@
-import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
-import { Bookmark } from '@/app/types/user-settings';
 import { Component, effect, inject, signal } from '@angular/core';
+import { toast } from 'ngx-sonner';
+
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
+
+import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
 import { UserSettingsStore } from '@/app/stores';
+import { Bookmark } from '@/app/types/user-settings';
+
+import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
 
 @Component({
   selector: 'app-bookmarks',
@@ -28,7 +32,7 @@ export class BookmarksComponent {
     }, { allowSignalWrites: true });
   }
 
-  public bookmarkClicked(bookmark: Bookmark): void {
+  public onClick(bookmark: Bookmark): void {
 
     // if the bookmark was created before the queryName was added, don't try to open it
     if (!bookmark.queryName) return;
@@ -46,7 +50,9 @@ export class BookmarksComponent {
     });
   }
 
-  public removeBookmark(bookmark: Bookmark): void {
+  public onDelete(bookmark: Bookmark, e: Event) {
+    e.stopPropagation();
     this.userSettingsStore.unbookmark(bookmark.id);
+    toast.success('Bookmark removed', { duration: 2000 });
   }
 }

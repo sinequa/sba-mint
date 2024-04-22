@@ -1,39 +1,36 @@
-<span cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="flex grow relative z-[1001]">
-  <div
-    class="grow px-2 flex gap-2 items-center focus-within:rounded-s-none rounded-s rounded-e-none bg-gray-50"
-    >
-
+<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="group flex grow relative z-[1001]">
+  <div class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50">
     @if (showSave() && input() !== '') {
     <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
       [ngClass]="{ 'animate-save': saveAnimation() }">
-      <i class="fa-fw far fa-star"></i>
+      <i [ngClass]="{'fas': saveAnimation()}" class="fa-fw far fa-star"></i>
     </button>
-  }
+    }
 
-  <input type="search"
-    id="serach-navbar"
-    class="grow focus:outline-none bg-gray-50"
-    aria-label="Search here"
-    placeholder="Search by keyword or ask something"
-    autocomplete="off"
-    [ngModel]="input()"
-    (ngModelChange)="input.set($event)"
-    (keydown.enter)="emitText()"
-    (click)="inputClicked()"
-    />
+    <input type="search"
+      id="serach-navbar"
+      class="grow focus:outline-none bg-neutral-50"
+      aria-label="Search here"
+      placeholder="Search by keyword or ask something"
+      autocomplete="off"
+      [ngModel]="input()"
+      (ngModelChange)="input.set($event)"
+      (keydown.enter)="emitText()"
+      (click)="inputClicked()"
+      />
 
-  @if (input() !== '') {
-  <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
-    <i class="fa-fw far fa-circle-xmark"></i>
+    @if (input() !== '') {
+    <button title="Clear search" (click)="clearInput()" (keydown.enter)="clearInput()">
+      <i class="fa-fw far fa-circle-xmark"></i>
+    </button>
+    }
+  </div>
+
+  <button class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e" aria-label="Search"
+    [disabled]="input() === oldInput" (click)="emitText()">
+    <i class="fa-fw far fa-magnifying-glass"></i>
   </button>
-  }
 </div>
-
-<button class="btn btn-primary rounded-s-none rounded-e disabled:bg-blue-100 disabled:text-blue-500" aria-label="Search"
-  [disabled]="input() === oldInput" (click)="emitText()">
-  <i class="fa-fw far fa-magnifying-glass"></i>
-</button>
-</span>
 
 
 <ng-template
