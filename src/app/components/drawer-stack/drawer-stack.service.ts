@@ -11,14 +11,13 @@ import { getState } from '@ngrx/signals';
 export class DrawerStackService {
   public readonly isOpened = signal(false);
   public readonly toggleTopDrawerExtension$ = new EventEmitter<void>();
+  public readonly forceTopDrawerCollapse$ = new EventEmitter<void>();
   public readonly closeTopDrawer$ = new EventEmitter<void>();
   public readonly closeAllDrawers$ = new EventEmitter<void>();
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly selectionStore = inject(SelectionStore);
-
-  constructor() { }
 
   /**
    * Sets current drawer stack status to open
@@ -96,8 +95,11 @@ export class DrawerStackService {
    */
   public stack(article: Article | undefined): void {
     const { id } = getState(this.selectionStore);
+
     if (id && (!article || article.id === id)) return;
 
+    // force top drawer to collapse
+    this.forceTopDrawerCollapse$.next();
     // set selection
     this.selection.setCurrentArticle(article);
     // open drawer
