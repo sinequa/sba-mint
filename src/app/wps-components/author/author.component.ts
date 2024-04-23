@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, Injector, Signal, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, HostListener, Injector, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, switchMap, tap } from 'rxjs';
 
@@ -51,6 +51,7 @@ export class WpsAuthorComponent {
 
   public readonly authorName = input.required<string>();
   public readonly strategy = input<SelectionStrategy>('stack');
+  useIcon = input<boolean>(false);
 
   public readonly showAuthor = signal(false);
 
