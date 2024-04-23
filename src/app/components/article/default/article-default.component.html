@@ -27,14 +27,14 @@
           @if (article().modified) {
           <p class="flex gap-1 items-baseline">
             <i class="fa-fw far fa-calendar-day"></i>
-            {{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}
+            <span class="w-max">{{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}</span>
           </p>
           }
 
           @if (article().parentFolder) {
-          <p class="flex gap-1 items-baseline">
+          <p class="flex gap-1 items-baseline" [title]="article()!.parentFolder">
             <i class="fa-fw far fa-folder"></i>
-            {{ article()!.parentFolder }}
+            <span class="line-clamp-1">{{ article()!.parentFolder }}</span>
           </p>
           }
         </div>
