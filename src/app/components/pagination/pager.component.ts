@@ -14,7 +14,7 @@ export type PageConfiguration = {
   <div class="flex gap-2">
     @if((hasPages() && page() > 1) || (!hasPages() && page() > 1)) {
       <button type="button"
-        class="btn mt-4 text-sm text-center inline-flex items-center"
+        class="btn btn-tertiary mt-4 text-sm text-center inline-flex items-center"
         (click)="previousPage()"
         >
         <svg class="rotate-180 me-2 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
@@ -25,7 +25,7 @@ export type PageConfiguration = {
     }
     @if(hasPages()){
       <button type="button"
-        class="btn mt-4 text-sm text-center inline-flex items-center"
+        class="btn btn-tertiary mt-4 text-sm text-center inline-flex items-center"
         (click)="nextPage()"
         >
         Next page

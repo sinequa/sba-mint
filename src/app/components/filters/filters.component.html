@@ -1,9 +1,9 @@
-<menu class="flex gap-2">
+<menu class="flex items-baseline gap-2">
   <!-- clear filters button -->
   @if ((filters() || []).length > 0) {
     <li>
       <button
-        class="btn btn-sm btn-alert"
+        class="btn bg-alert/10 text-alert"
         title="Clear all filters"
         (click)="clearFilters()"
         (keydown.enter)="clearFilters()"
@@ -17,9 +17,11 @@
   @if (dateFilterDropdown()) {
   <li role="button" class="dropdown group" tabindex="0" appFocusWithArrowKeys>
     <div
-      class="btn btn-sm flex gap-1 items-baseline"
-      [ngClass]="{ 'btn-primary': dateFilterDropdown()?.currentFilter }"
-      >
+      [ngClass]="cn(
+        'btn font-semibold flex gap-1 items-baseline',
+        dateFilterDropdown()?.currentFilter ? 'btn-primary' : 'btn-tertiary'
+        )"
+    >
       @if (dateFilterDropdown()?.icon) {
         <i class="fa-fw {{ dateFilterDropdown()?.icon }}"></i>
       }
@@ -49,18 +51,18 @@
   @for (filterDropdown of filterDropdowns(); track $index) {
     <li class="dropdown group" tabindex="0" role="button" appFocusWithArrowKeys>
       <button
-        class="btn btn-sm flex gap-1 disabled:opacity-50"
-        [disabled]="!filterDropdown.aggregation.items"
-        [ngClass]="{
-          'btn-primary': filterDropdown.value?.text
-        }">
+        [ngClass]="cn(
+          'btn font-semibold flex gap-1',
+          filterDropdown.value?.text ? 'btn-primary' : 'btn-tertiary')"
+        [disabled]="!filterDropdown.aggregation.items || null"
+      >
         @if (filterDropdown.icon) {
           <i class="fa-fw {{ filterDropdown.icon }}"></i>
         }
         <span>{{ filterDropdown?.value?.text || filterDropdown.label }}</span>
 
         @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
-          <div class="pill size-5 pill-xs pill-ghost secondary bg-white flex place-content-center font-semibold group-hover:text-blue-600">
+          <div class="pill size-5 pill-xs pill-ghost bg-white flex place-content-center font-semibold text-blue-600">
             <i class="fas fa-plus text-[0.5rem] my-auto"></i>
             <span>{{ filterDropdown.moreFiltersCount }}</span>
           </div>
@@ -88,16 +90,16 @@
       tabindex="0"
       appFocusWithArrowKeys
       >
-      <button class="btn btn-sm flex gap-1 items-baseline truncate">
+      <button class="btn btn-tertiary font-semibold flex gap-1 items-baseline truncate">
         <i class="far fa-filters"></i>
         <span>More filters</span>
 
         @if (moreFiltersCount() > 0) {
-          <span class="ms-1 size-5 pill pill-xs primary flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
+          <span class="ms-1 size-5 pill pill-xs bg-primary text-white flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
         }
       </button>
 
-      <app-more-filters class="dropdown-content p-1 mt-1 rounded-md border border-gray-300 bg-white w-max" />
+      <app-more-filters class="dropdown-content p-1 mt-1 rounded-md border border-neutral-200 bg-white w-max" />
     </li>
   }
 </menu>
