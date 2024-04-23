@@ -9,6 +9,7 @@ import { ArticlePersonLightComponent } from '@/app/components/article/person-lig
 import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService } from '@/app/services';
+import { AppStore } from '@/app/stores';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { PersonArticle } from '@/app/types/articles';
 import { buildQuery } from '@/app/utils';
@@ -30,6 +31,7 @@ export class OverviewPeopleComponent implements OnInit, OnDestroy {
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
+  private readonly appStore = inject(AppStore);
 
   private readonly subscriptions = new Subscription();
 
@@ -40,7 +42,13 @@ export class OverviewPeopleComponent implements OnInit, OnDestroy {
       this.navigationService.navigationEnd$
         .pipe(
           switchMap(() => {
-            const query = runInInjectionContext(this.injector, () => buildQuery({ name: PEOPLE_QUERY_NAME, pageSize: PEOPLE_OVERVIEW_LIMIT }));
+            const query = runInInjectionContext(this.injector, () => buildQuery(
+              {
+                name: PEOPLE_QUERY_NAME,
+                pageSize: PEOPLE_OVERVIEW_LIMIT,
+                globalRelevance: this.appStore.customizationJson()?.globalRelevanceOverride
+              })
+            );
             return this.queryService.search(query);
           })
         )
