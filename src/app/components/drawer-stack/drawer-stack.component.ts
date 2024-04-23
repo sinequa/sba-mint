@@ -36,6 +36,9 @@ export class DrawerStackComponent implements OnDestroy {
       this.drawerStackService.toggleTopDrawerExtension$.subscribe(() => this.toggleTopDrawerExtension())
     );
     this.subscriptions.add(
+      this.drawerStackService.forceTopDrawerCollapse$.subscribe(() => this.collapseTopDrawer())
+    );
+    this.subscriptions.add(
       this.drawerStackService.closeTopDrawer$.subscribe(() => this.closeTopDrawer())
     );
     this.subscriptions.add(
@@ -71,6 +74,12 @@ export class DrawerStackComponent implements OnDestroy {
     this.closeAndDestroyDrawer(this.drawers.pop());
     this.drawers.forEach((drawer) => drawer.destroy());
     this.drawers.length = 0;
+  }
+
+  private collapseTopDrawer(): void {
+    const top = this.drawers[this.drawers.length - 1];
+
+    top?.instance.drawer.collapse();
   }
 
   private toggleTopDrawerExtension(): void {
