@@ -13,9 +13,9 @@
       </div>
 
       <section class="flex gap-1 items-center text-gray-900">
-        @if (article().doctype) {
+        @if (docformatMetadata()) {
         <div class="pill pill-xs border-gray-900 font-bold uppercase">
-          {{ article()!.doctype }}
+          {{ docformatMetadata() }}
         </div>
         }
 
