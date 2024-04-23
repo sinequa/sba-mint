@@ -21,7 +21,7 @@
 
         <div class="flex gap-1 divide-x-slash divide-xs">
           @if ((article().authors || []).length > 0) {
-          <wps-author [authorName]="article()!.authors![0]" [strategy]="'replace'" />
+          <wps-author [authorName]="article()!.authors![0]" [strategy]="'replace'" [useIcon]="true" />
           }
 
           @if (article().modified) {

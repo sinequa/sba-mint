@@ -52,7 +52,7 @@
     <li class="dropdown group" tabindex="0" role="button" appFocusWithArrowKeys>
       <button
         [ngClass]="cn(
-          'btn font-semibold flex gap-1',
+          'btn font-semibold flex gap-1 items-baseline',
           filterDropdown.value?.text ? 'btn-primary' : 'btn-tertiary')"
         [disabled]="!filterDropdown.aggregation.items || null"
       >

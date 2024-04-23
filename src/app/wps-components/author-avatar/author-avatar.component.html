@@ -1,9 +1,9 @@
-@if(withImage() === false) {
-  <avatar-initials class="bg-inherit text-inherit text-base" [initials]="initials()" />
-}
-@else if (imageUrl() && !imgLoadFailed()) {
+@if (imageUrl() && !imgLoadFailed()) {
   <img [src]="imageUrl()" alt="{{ person()!.employeeFullName }} profile picture" [ngClass]="className()"
     (error)="imgLoadFailed.set(true)">
+}
+@else if (initials().length > 0) {
+  <avatar-initials class="bg-inherit text-inherit text-base" [initials]="initials()" />
 }
 @else {
   <ng-content />
