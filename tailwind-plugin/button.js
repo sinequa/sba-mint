@@ -8,14 +8,9 @@ function toRgba(variableName) {
   }
 }
 
-const button = plugin(function ({ addComponents, theme }) {
-  addComponents({
-    '.btn': {
-      padding: theme('spacing.2'),
-      borderRadius: theme('borderRadius.md'),
-      backgroundColor: theme('colors.zinc.900'),
-      color: theme('colors.zinc.50'),
-      cursor: 'pointer',
+const button = plugin(function ({ addBase, addComponents, theme }) {
+  addBase({
+    [['button','.btn']]: {
       '&:hover': {
         opacity: '0.9'
       },
@@ -23,6 +18,15 @@ const button = plugin(function ({ addComponents, theme }) {
         opacity: '0.5',
         pointerEvents: 'none'
       }
+    }
+  });
+  addComponents({
+    '.btn': {
+      padding: theme('spacing.2'),
+      borderRadius: theme('borderRadius.md'),
+      backgroundColor: theme('colors.zinc.900'),
+      color: theme('colors.zinc.50'),
+      cursor: 'pointer'
     },
     '.btn-primary': {
       backgroundColor: theme('colors.primary'),

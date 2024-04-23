@@ -16,7 +16,6 @@ const article = plugin(function ({ addBase, addComponents, theme }) {
       borderRadius: theme('borderRadius.md'),
       borderWidth: borderWidth.DEFAULT,
       borderColor: theme('colors.neutral.300'),
-      backgroundColor: theme('colors.white'),
       color: theme('colors.neutral.600'),
       cursor: 'pointer',
       '&:hover': {

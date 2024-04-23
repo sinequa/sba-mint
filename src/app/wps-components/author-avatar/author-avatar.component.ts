@@ -1,6 +1,7 @@
 import { PersonArticle } from '@/app/types';
 import { NgClass } from '@angular/common';
 import { Component, computed, effect, input, signal } from '@angular/core';
+import { AvatarInitialsComponent } from "./avatar-initials";
 
 
 /**
@@ -21,16 +22,17 @@ import { Component, computed, effect, input, signal } from '@angular/core';
  * ```
  */
 @Component({
-  selector: 'author-avatar',
-  standalone: true,
-  imports: [NgClass],
-  templateUrl: './author-avatar.component.html',
-  styleUrl: './author-avatar.component.scss'
+    selector: 'author-avatar',
+    standalone: true,
+    templateUrl: './author-avatar.component.html',
+    // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+    host: { class: 'avatar' },
+    imports: [NgClass, AvatarInitialsComponent]
 })
 export class AuthorAvatarComponent {
   person = input.required<Partial<PersonArticle> | undefined>();
   className = input<string>();
-  useImage = input<boolean>(false);
+  useImage = input<boolean>(true);
 
   withImage = signal(this.useImage());
   imageUrl = computed(() => this.person()?.employeePhotoURL );

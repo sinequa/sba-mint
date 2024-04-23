@@ -4,6 +4,8 @@ const dropdown = require("./tailwind-plugin/dropdown");
 const button = require('./tailwind-plugin/button');
 const tab = require("./tailwind-plugin/tab");
 const article = require("./tailwind-plugin/article");
+const avatar = require("./tailwind-plugin/avatar");
+const pill = require("./tailwind-plugin/pill");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -31,5 +33,5 @@ module.exports = {
       },
     },
   },
-  plugins: [dropdown, button, tab, article],
+  plugins: [dropdown, button, tab, article, avatar, pill],
 };
