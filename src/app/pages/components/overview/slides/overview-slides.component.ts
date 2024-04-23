@@ -43,8 +43,11 @@ export class OverviewSlidesComponent implements OnInit, OnDestroy {
         .pipe(
           switchMap(() => {
             const query = runInInjectionContext(this.injector, () => buildQuery(
-              { name: SLIDES_QUERY_NAME, pageSize: SLIDES_OVERVIEW_LIMIT },
-              this.appStore.customizationJson()?.globalRelevanceOverride)
+              {
+                name: SLIDES_QUERY_NAME,
+                pageSize: SLIDES_OVERVIEW_LIMIT,
+                globalRelevance: this.appStore.customizationJson()?.globalRelevanceOverride
+              })
             );
             return this.queryService.search(query);
           })

@@ -80,10 +80,9 @@ export function getQueryPageFromUrl(url: string): number {
  * If any properties are missing in the partial query, default values are used.
  *
  * @param query - The partial query object.
- * @param globalRelevanceOverride - Optional global relevance override value.
  * @returns The complete query object.
  */
-export function buildQuery(query?: Partial<Query>, globalRelevanceOverride?: number): Query {
+export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
   const name = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
@@ -98,8 +97,7 @@ export function buildQuery(query?: Partial<Query>, globalRelevanceOverride?: num
     text,
     filters,
     page,
-    sort,
-    globalRelevance: globalRelevanceOverride
+    sort
   };
 }
 

@@ -81,6 +81,8 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     const { aggregations } = getState(this.aggregationsStore);
     query.filters = translateFiltersToApiFilters(filters, aggregations) as Filter;
 
-    return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query, this.appStore.customizationJson()?.globalRelevanceOverride)));
+    query.globalRelevance = this.appStore.customizationJson()?.globalRelevanceOverride;
+
+    return this.queryService.search(runInInjectionContext(this.injector, () => buildQuery(query)));
   }
 }

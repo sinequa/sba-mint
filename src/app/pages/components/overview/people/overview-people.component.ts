@@ -43,8 +43,11 @@ export class OverviewPeopleComponent implements OnInit, OnDestroy {
         .pipe(
           switchMap(() => {
             const query = runInInjectionContext(this.injector, () => buildQuery(
-              { name: PEOPLE_QUERY_NAME, pageSize: PEOPLE_OVERVIEW_LIMIT },
-              this.appStore.customizationJson()?.globalRelevanceOverride)
+              {
+                name: PEOPLE_QUERY_NAME,
+                pageSize: PEOPLE_OVERVIEW_LIMIT,
+                globalRelevance: this.appStore.customizationJson()?.globalRelevanceOverride
+              })
             );
             return this.queryService.search(query);
           })
