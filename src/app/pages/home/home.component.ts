@@ -7,14 +7,14 @@ import { Subscription } from 'rxjs';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
-import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
 import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
-import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
+import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
+import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { QueryParamsStore, AppStore } from '@/app/stores';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 import { Features, UserFeatures } from '@/app/types';
 
 type HomeTab = {
@@ -63,12 +63,11 @@ type FeaturesKeys = keyof UserFeatures | Features;
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
-
   readonly searchText = signal<string>('');
 
   readonly tabs = computed(() => {
     const customJson = this.appStore.customizationJson();
-    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features };
+    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features, ...{ applications: true} };
     const enabledFeatures = homeFeatures.reduce((acc, feature) => {
       // add only if the feature is declared and set to true in the json
       if (feature.name in features && features[feature.name as keyof FeaturesKeys] === true) acc.push(feature);

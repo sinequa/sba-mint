@@ -1,25 +1,26 @@
 <app-preview-navbar class="block border-b border-gray-300 bg-white"
   [config]="{ showOpenButton: false, showSearchButton: false }" [canBookmark]="false"/>
 
-<div class="overflow-auto h-full flex flex-col">
-  <section class="flex gap-4 p-6">
+<div class="overflow-auto p-6 h-full flex flex-col gap-6 text-sm">
+  <!-- Person details -->
+  <section class="flex gap-4 -m-6 p-6 bg-neutral-50">
     @if (person()) {
-    <author-avatar [person]="person()">
-      <i class="fa-light fa-user-circle text-[5rem]"></i>
+    <author-avatar class="avatar bg-primary text-secondary" [person]="person()">
+      <i class="fa-light fa-user-circle text-5xl"></i>
     </author-avatar>
     }
 
     <section class="grow">
-      <p class="flex article-title items-center">
+      <p class="flex text-base text-primary font-semibold items-center">
         {{ person()?.employeeFullName }}
 
-        <button class="btn btn-xs btn-ghost text-black"
+        <button class="btn-xs text-neutral-600"
           title="Bookmark {{ person()?.employeeFullName ?? 'that person' }}">
           <i class="fa-fw far fa-bookmark"></i>
         </button>
       </p>
 
-      <p class="mb-4">{{ person()?.employeeJobTitle }}</p>
+      <p class="mb-4 font-semibold text-black">{{ person()?.employeeJobTitle }}</p>
 
       @if (person()?.employeeEmail) {
       <a class="flex gap-2 items-baseline" [href]="'mailto:' + person()?.employeeEmail">
@@ -59,75 +60,78 @@
     </menu>
   </section>
 
-  <hr class="border-top border-gray-400 mx-6" />
+  <hr class="border-neutral-300" />
 
-  <section class="p-6 bg-gray-50">
-    <header class="mb-4">Report to</header>
+  <!-- Report to -->
+  <section class="bg-neutral-50 -m-6 p-6">
+    <header class="mb-2 font-semibold text-xs">Report to</header>
 
-    <app-article-person-light class="bg-white" [person]="person()" class="block bg-white group" />
+    <app-article-person-light [person]="person()" class="block bg-white text-base group" />
   </section>
 
-  <section class="p-6 border-b border-gray-400">
-    <header class="flex justify-between items-center">
-      <p class="flex grow gap-2 items-center">
-        <i class="fa-fw far fa-magnifying-glass"></i>
+  <!-- Related to -->
+  <div class="-mx-6 py-6 flex flex-col gap-6 divide-y divide-neutral-300 border-b border-neutral-300">
+    <section class="px-6">
+      <header class="flex justify-between items-center text-black text-base font-semibold">
+        <p class="flex grow gap-2 items-center">
+          <i class="fa-fw far fa-magnifying-glass"></i>
+          Related to "{{ queryText() }}"
+        </p>
 
-        Related to "{{ queryText() }}"
-      </p>
+        <button class="text-sm text-primary flex gap-2 items-center">
+          <i class="fa-fw far fa-user-magnifying-glass"></i>
+          More results
+        </button>
+      </header>
 
-      <button class="btn btn-ghost flex gap-2 items-center">
-        <i class="fa-fw far fa-user-magnifying-glass"></i>
-
-        More results
-      </button>
-    </header>
-
-    @if (!relatedTo()) {
-    <app-article-default-light-skeleton class="border-none" />
-    <app-article-default-light-skeleton class="border-none" />
-    <app-article-default-light-skeleton class="border-none" />
-    } @else if (relatedTo()!.length > 0) {
-    <ul class="flex flex-col gap-2">
-      @for (article of relatedTo(); track $index) {
-      <li class="grow">
-        <app-article-default-light [article]="article" class="border-none" />
-      </li>
+      @if (!relatedTo()) {
+        <app-article-default-light-skeleton class="border-none" />
+        <app-article-default-light-skeleton class="border-none" />
+        <app-article-default-light-skeleton class="border-none" />
       }
-    </ul>
-    } @else {
-    <p class="text-gray-500 italic">No related articles yet</p>
-    }
-  </section>
-
-  <section class="p-6 border-b border-gray-400">
-    <header class="flex justify-between items-center">
-      <p class="flex grow gap-2 items-center">
-        <i class="fa-fw far fa-pen-to-square"></i>
-
-        Recent contributions
-      </p>
-
-      <button class="btn btn-ghost flex gap-2 items-center">
-        <i class="fa-fw far fa-user-pen"></i>
-
-        More results
-      </button>
-    </header>
-
-    @if (!recentContributions()) {
-    <app-article-default-light-skeleton class="border-none" />
-    <app-article-default-light-skeleton class="border-none" />
-    <app-article-default-light-skeleton class="border-none" />
-    } @else if (recentContributions()!.length > 0) {
-    <ul class="flex flex-col gap-2">
-      @for (article of recentContributions(); track $index) {
-      <li class="grow">
-        <app-article-default-light [article]="article" class="border-none" />
-      </li>
+      @else if (relatedTo()!.length > 0) {
+        <ul class="flex flex-col gap-2">
+          @for (article of relatedTo(); track $index) {
+          <li class="grow">
+            <app-article-default-light [article]="article" class="border-none" />
+          </li>
+          }
+        </ul>
       }
-    </ul>
-    } @else {
-    <p class="text-gray-500 italic">No recent contributions yet</p>
-    }
-  </section>
+      @else {
+        <p class="text-gray-500 italic">No related articles yet</p>
+      }
+    </section>
+
+    <!-- Recent contributions -->
+    <section class="px-6 pt-6">
+      <header class="flex justify-between items-center text-black text-base font-semibold">
+        <p class="flex grow gap-2 items-center">
+          <i class="fa-fw far fa-pen-to-square"></i>
+          Recent contributions
+        </p>
+
+        <button class="text-sm text-primary flex gap-2 items-center">
+          <i class="fa-fw far fa-user-pen"></i>
+          More results
+        </button>
+      </header>
+
+      @if (!recentContributions()) {
+      <app-article-default-light-skeleton class="border-none" />
+      <app-article-default-light-skeleton class="border-none" />
+      <app-article-default-light-skeleton class="border-none" />
+      } @else if (recentContributions()!.length > 0) {
+      <ul class="flex flex-col gap-2">
+        @for (article of recentContributions(); track $index) {
+        <li class="grow">
+          <app-article-default-light [article]="article" class="border-none" />
+        </li>
+        }
+      </ul>
+      } @else {
+      <p class="text-gray-500 italic">No recent contributions yet</p>
+      }
+    </section>
+  </div>
 </div>

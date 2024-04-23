@@ -1,6 +1,8 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { Component, Input, computed, inject, input } from '@angular/core';
 import { toast } from 'ngx-sonner';
+
+import { cn } from '@sinequa/atomic-angular';
 
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
@@ -22,11 +24,13 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [AsyncPipe, BookmarkComponent],
+  imports: [NgClass, AsyncPipe, BookmarkComponent],
   templateUrl: './preview-navbar.component.html',
   styleUrl: './preview-navbar.component.scss'
 })
 export class PreviewNavbarComponent {
+  cn = cn;
+
   @Input() public set config(config: PreviewNavbarConfig) {
     this.navConfig = { ...DEFAULT_CONFIG, ...config };
   }

@@ -6,7 +6,7 @@
           <li class="bg-gray-300 h-[1px]"></li>
         }
         @else if (!item.display) {
-          <li class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer">
+          <li class="flex data-pst-item items-baseline p-2 gap-2 cursor-pointer text-gray-400 font-semibold">
             @switch (item.category) {
               @case('bookmark') { Bookmarks }
               @case('title') { Documents }

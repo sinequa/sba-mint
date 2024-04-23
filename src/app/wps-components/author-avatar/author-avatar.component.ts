@@ -1,6 +1,7 @@
 import { PersonArticle } from '@/app/types';
 import { NgClass } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
+import { AvatarInitialsComponent } from "./avatar-initials";
 
 
 /**
@@ -21,18 +22,16 @@ import { Component, computed, effect, input, signal } from '@angular/core';
  * ```
  */
 @Component({
-  selector: 'author-avatar',
-  standalone: true,
-  imports: [NgClass],
-  templateUrl: './author-avatar.component.html',
-  styleUrl: './author-avatar.component.scss'
+    selector: 'author-avatar',
+    standalone: true,
+    templateUrl: './author-avatar.component.html',
+    // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+    imports: [NgClass, AvatarInitialsComponent]
 })
 export class AuthorAvatarComponent {
   person = input.required<Partial<PersonArticle> | undefined>();
   className = input<string>();
-  useImage = input<boolean>(false);
 
-  withImage = signal(this.useImage());
   imageUrl = computed(() => this.person()?.employeePhotoURL );
   initials = computed(() => {
 
@@ -41,7 +40,7 @@ export class AuthorAvatarComponent {
     if(employeeFullName) {
       const initials = employeeFullName
         .split(' ')
-        .filter( word => word[0] === word[0].toUpperCase() )
+        .filter( word => word[0] && (word[0] === word[0].toUpperCase()) )
         .map( word => word[0] )
         .join('');
 
@@ -51,12 +50,4 @@ export class AuthorAvatarComponent {
   })
 
   protected readonly imgLoadFailed = signal(false);
-
-  constructor() {
-    effect(() => {
-      if(this.initials().length === 0) {
-        this.withImage.set(true);
-      }
-    }, {allowSignalWrites: true})
-  }
 }

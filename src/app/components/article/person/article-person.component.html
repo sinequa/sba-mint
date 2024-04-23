@@ -1,6 +1,6 @@
 <header class="shrink-0 me-1">
   @if (person()) {
-  <author-avatar [person]="person()">
+  <author-avatar class="avatar" [person]="person()">
     <i class="fa-light fa-user-circle text-5xl"></i>
   </author-avatar>
   }
@@ -9,7 +9,7 @@
 <div class="grow flex flex-col gap-4">
   <main class="flex gap-2">
     <section class="grow">
-      <p class="article-title">{{ person()?.employeeFullName }}</p>
+      <p class="text-primary font-semibold">{{ person()?.employeeFullName }}</p>
 
       <p class="font-semibold">{{ person()?.employeeJobTitle }}</p>
     </section>

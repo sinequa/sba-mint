@@ -9,12 +9,12 @@
         <i class="fa-fw {{ filter.icon || 'fas fa-list' }} me-1"></i>
 
         <!-- aggregation label -->
-        <span class="me-4 grow items-baseline text-sm">{{ filter.label }}</span>
+        <span class="me-4 grow items-baseline">{{ filter.label }}</span>
 
         <!-- actions buttons -->
         <div class="flex gap-2 z-10">
             @if (filter?.moreFiltersCount) {
-            <span class="ms-2 size-5 pill pill-xs primary flex place-content-center font-semibold">
+            <span class="ms-2 size-5 pill pill-xs bg-primary text-white flex place-content-center font-semibold">
               {{ filter.moreFiltersCount }}
             </span>
           }

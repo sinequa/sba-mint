@@ -1,13 +1,14 @@
-:host {
-  @apply grow flex flex-col overflow-hidden;
-}
-
 tr {
-  @apply grid my-1;
-
+  display: grid;
   grid-template-columns: 25% auto;
+  margin-bottom: theme('spacing.1');
 
   th {
-    @apply text-start text-gray-500 font-medium text-xs self-center;
+    text-align: start;
+    color: theme('colors.neutral.500');
+    font-weight: theme('fontWeight.medium');
+    font-size: theme('fontSize.xs');
+    line-height: theme('fontSize.xs.1.lineHeight');
+    align-self: center;
   }
 }

@@ -1,23 +1,37 @@
-const  dropdown = require('./tailwind-plugin/dropdown');
+const colors = require("tailwindcss/colors");
+
+const dropdown = require("./tailwind-plugin/dropdown");
+const button = require('./tailwind-plugin/button');
+const tab = require("./tailwind-plugin/tab");
+const article = require("./tailwind-plugin/article");
+const avatar = require("./tailwind-plugin/avatar");
+const pill = require("./tailwind-plugin/pill");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{html,ts}",
-  ],
+  content: ["./src/**/*.{html,ts}"],
   theme: {
     fontFamily: {
-      sans: ['Segoe UI'],
+      sans: ["Segoe UI"],
     },
     extend: {
       colors: {
-        'primary': 'rgb(59 130 246)',
-        'secondary': 'rgb(239 246 255)'
+        primary: "#0C75FF",
+        secondary: "#DFEDFF",
+        alert: "#FF2A1D",
+        success: "#2ED73F",
+        highlight: "#FFF7AB",
+        neutral: {
+          50: "#f8f8f8",
+          300: "#d4d4d4",
+          500: "#989898",
+          600: "#525252"
+        },
       },
       boxShadow: {
-        'dropdown': '6px 4px 20px 0px rgba(0, 0, 0, 0.2)',
+        dropdown: "6px 4px 20px 0px rgba(0, 0, 0, 0.2)",
       },
     },
   },
-  plugins: [dropdown],
+  plugins: [dropdown, button, tab, article, avatar, pill],
 };

@@ -46,12 +46,19 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
+
   private readonly subscription = new Subscription();
 
-  constructor(private readonly injector: Injector) { }
+  constructor(private readonly injector: Injector) {
+    effect(() => {
+      this.drawerOpened = this.drawerStack.isOpened();
+    });
+
+    effect(() => {
+      getState(this.queryParamsStore);
+      this.slides.set(undefined);
+    }, { allowSignalWrites: true});
+  }
 
   ngOnInit(): void {
     // Setup aggregations for filtering mechanism
@@ -76,11 +83,6 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
           this.queryText.set(searchInputStore.state ?? '');
         })
     );
-
-    effect(() => {
-      getState(this.queryParamsStore);
-      this.slides.set(undefined);
-    }, { allowSignalWrites: true});
 
     // Trigger skeleton on search whether from input or from filters
     this.subscription.add(

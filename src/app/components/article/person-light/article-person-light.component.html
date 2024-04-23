@@ -1,11 +1,10 @@
 @if (person()) {
-  <author-avatar [person]="person()">
+  <author-avatar class="avatar bg-secondary text-primary group-hover:bg-primary group-hover:text-secondary" [person]="person()">
     <i class="fa-light fa-user-circle text-5xl"></i>
   </author-avatar>
 }
 
 <main class="grow">
-  <p class="article-title line-clamp-1">{{ person()?.employeeFullName }}</p>
-
-  <p class="line-clamp-1">{{ person()?.employeeJobTitle }}</p>
+  <p class="text-primary font-semibold line-clamp-1">{{ person()?.employeeFullName }}</p>
+  <p class="text-sm text-neutral-600 font-semibold line-clamp-1">{{ person()?.employeeJobTitle }}</p>
 </main>

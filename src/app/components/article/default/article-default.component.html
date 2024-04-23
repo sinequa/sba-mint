@@ -1,6 +1,6 @@
-<article class="article group/article" [class.selected]="selected()">
+<article class="article group/article text-neutral-600" [class.selected]="selected()">
   <section class="shrink-0">
-    <div class="flex justify-center items-center size-[40px] rounded-full bg-gray-100 text-blue-500">
+    <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
       <i class="{{ article().collection | sourceIcon }} text-lg"></i>
     </div>
   </section>
@@ -8,33 +8,33 @@
   <section class="flex flex-col gap-2">
     <header>
       <div class="flex gap-2 items-baseline">
-        <p class="article-title line-clamp-1">{{ article().title }}</p>
+        <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
         <app-bookmark [article]="article()" />
       </div>
 
-      <section class="flex gap-1 items-center text-gray-900">
-        @if (article().doctype) {
-        <div class="pill pill-xs border-gray-900 font-bold uppercase">
-          {{ article()!.doctype }}
+      <section class="flex gap-1 items-center">
+        @if (docformatMetadata()) {
+        <div class="pill pill-xs border-neutral-600 font-bold uppercase">
+          {{ docformatMetadata() }}
         </div>
         }
 
         <div class="flex gap-1 divide-x-slash divide-xs">
           @if ((article().authors || []).length > 0) {
-          <wps-author [authorName]="article()!.authors![0]" [strategy]="'replace'" />
+          <wps-author [authorName]="article()!.authors![0]" [strategy]="'replace'" [useIcon]="true" />
           }
 
           @if (article().modified) {
           <p class="flex gap-1 items-baseline">
             <i class="fa-fw far fa-calendar-day"></i>
-            {{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}
+            <span class="w-max">{{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}</span>
           </p>
           }
 
           @if (article().parentFolder) {
-          <p class="flex gap-1 items-baseline">
+          <p class="flex gap-1 items-baseline" [title]="article()!.parentFolder">
             <i class="fa-fw far fa-folder"></i>
-            {{ article()!.parentFolder }}
+            <span class="line-clamp-1">{{ article()!.parentFolder }}</span>
           </p>
           }
         </div>
@@ -48,7 +48,7 @@
     @if ((articleMetadata()?.length ?? 0) > 0) {
     <div class="flex gap-2">
       @for (metadata of articleMetadata(); track $index) {
-      <sq-metadata [article]="article()!" [metadata]="metadata" class="flex gap-2" className="pill pill-sm border-black font-semibold" />
+        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="metadata" />
       }
     </div>
     }

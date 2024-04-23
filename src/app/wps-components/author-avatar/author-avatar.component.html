@@ -1,11 +1,9 @@
-@if(withImage() === false) {
-  <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-secondary rounded-full group-hover:bg-primary">
-    <span class="font-medium text-gray-600 group-hover:text-secondary">{{ initials() }}</span>
-  </div>
-}
-@else if (imageUrl() && !imgLoadFailed()) {
+@if (imageUrl() && !imgLoadFailed()) {
   <img [src]="imageUrl()" alt="{{ person()!.employeeFullName }} profile picture" [ngClass]="className()"
     (error)="imgLoadFailed.set(true)">
+}
+@else if (initials().length > 0) {
+  <avatar-initials class="bg-inherit text-inherit text-base" [initials]="initials()" />
 }
 @else {
   <ng-content />
