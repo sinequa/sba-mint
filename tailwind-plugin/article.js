@@ -18,9 +18,6 @@ const article = plugin(function ({ addBase, addComponents, theme }) {
       borderColor: theme('colors.neutral.300'),
       color: theme('colors.neutral.600'),
       cursor: 'pointer',
-      '&:hover': {
-        opacity: '0.9'
-      },
       '&:disabled': {
         opacity: '0.5',
         pointerEvents: 'none'

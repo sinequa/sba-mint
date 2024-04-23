@@ -7,6 +7,7 @@ const avatar = plugin(function ({ addBase, addComponents, theme }) {
     '.badge': {
       display: 'flex',
       flexWrap: 'wrap',
+      backgroundClip: 'text',
       gap: theme('spacing.2'),
       '> span': {
         paddingLeft: theme('spacing.2'),
@@ -14,30 +15,31 @@ const avatar = plugin(function ({ addBase, addComponents, theme }) {
         display: 'inline-block',
         borderWidth: '1px',
         borderRadius: theme('borderRadius.full'),
-        borderColor: theme('colors.inherit'),
+        borderColor: 'inherit',
+        backgroundColor: 'inherit',
       },
       '&-ghost > span': {
         borderWidth: '0',
       },
       '&-xs > span': {
         fontSize: theme('fontSize.xs'),
-        height: theme('spacing.5')
+        lineHeight: theme('spacing.5')
       },
       '&-sm > span': {
         fontSize: theme('fontSize.sm'),
-        height: theme('spacing.6'),
+        lineHeight: theme('spacing.6'),
       },
       '&-lg > span': {
         paddingLeft: theme('spacing.4'),
         paddingRight: theme('spacing.4'),
         fontSize: theme('fontSize.lg'),
-        height: theme('spacing.8')
+        lineHeight: theme('spacing.8')
       },
       '&-xl > span': {
         paddingLeft: theme('spacing.5'),
         paddingRight: theme('spacing.5'),
         fontSize: theme('fontSize.xl'),
-        height: theme('spacing.9')
+        lineHeight: theme('spacing.9')
       }
     },
     '.pill': {
@@ -52,23 +54,23 @@ const avatar = plugin(function ({ addBase, addComponents, theme }) {
       },
       '&-xs': {
         fontSize: theme('fontSize.xs'),
-        height: theme('spacing.5')
+        lineHeight: theme('spacing.5')
       },
       '&-sm': {
         fontSize: theme('fontSize.sm'),
-        height: theme('spacing.6'),
+        lineHeight: theme('spacing.6'),
       },
       '&-lg': {
         paddingLeft: theme('spacing.4'),
         paddingRight: theme('spacing.4'),
         fontSize: theme('fontSize.lg'),
-        height: theme('spacing.8')
+        lineHeight: theme('spacing.8')
       },
       '&-xl': {
         paddingLeft: theme('spacing.5'),
         paddingRight: theme('spacing.5'),
         fontSize: theme('fontSize.xl'),
-        height: theme('spacing.9')
+        lineHeight: theme('spacing.9')
       }
     }
   })
