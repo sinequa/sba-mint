@@ -1,6 +1,8 @@
 <main class="col-start-2 col-span-2 mb-8">
   <app-filters class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white" />
 
+  <app-did-you-mean class="text-alert py-1" [result]="result()"></app-did-you-mean>
+
   @if (!people()) {
     <ul class="flex flex-col gap-2 mt-8">
       <li><app-article-person-skeleton /></li>

@@ -15,13 +15,14 @@ import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 import { getState } from '@ngrx/signals';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
   selector: 'app-search-people',
   standalone: true,
   templateUrl: './search-people.component.html',
   styleUrl: './search-people.component.scss',
-  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent, PagerComponent]
+  imports: [FiltersComponent, ArticlePersonComponent, ArticlePersonSkeletonComponent, PagerComponent, DidYouMeanComponent]
 })
 export class SearchPeopleComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -29,6 +30,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
 
   @Input() public r: string | undefined;
 
+  readonly result = signal<Result | undefined>(undefined);
   protected readonly people = signal(undefined as PersonArticle[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
@@ -68,6 +70,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.searchService.result$
         .subscribe((result: Result) => {
+          this.result.set(result);
           const { page, pageSize, rowCount } = result;
           this.pageConfiguration.set({ page, pageSize, rowCount });
           this.people.set(result.records?.map((article: PersonArticle) => (Object.assign(article, { value: article.title, type: 'person' }))) ?? []);

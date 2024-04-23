@@ -1,3 +1,4 @@
+import { SpellingCorrectionMode } from "@sinequa/atomic";
 import { Filter } from "./models";
 import { queryParamsFromUrl } from "./query";
 
@@ -16,6 +17,7 @@ export type QueryParams = {
   id?: string;
   page?: number;
   sort?: string;
+  spellingCorrectionMode?: SpellingCorrectionMode;
 }
 
 /**

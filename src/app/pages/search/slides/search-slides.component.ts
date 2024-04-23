@@ -15,6 +15,7 @@ import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 import { getState } from '@ngrx/signals';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
     selector: 'app-search-slides',
@@ -25,7 +26,7 @@ import { getState } from '@ngrx/signals';
             directive: SelectArticleFromQueryParamsDirective,
             inputs: ['articleId: id']
         }],
-    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent]
+    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent, DidYouMeanComponent]
 })
 export class SearchSlidesComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -33,6 +34,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
 
   public readonly id = input<string | undefined>();
 
+  readonly result = signal<Result | undefined>(undefined);
   protected readonly slides = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
@@ -74,6 +76,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.searchService.result$
         .subscribe((result: Result) => {
+          this.result.set(result);
           const { page, pageSize, rowCount } = result;
           this.pageConfiguration.set({ page, pageSize, rowCount });
           this.slides.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'slide' }))) ?? []);

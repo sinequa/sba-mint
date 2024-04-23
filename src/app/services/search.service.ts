@@ -81,7 +81,8 @@ export class SearchService implements OnDestroy {
     const { aggregations } = getState(this.aggregationsStore);
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
     const sort = getState(this.queryParamsStore).sort;
-    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort }));
+    const spellingCorrectionMode = getState(this.queryParamsStore).spellingCorrectionMode;
+    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort, spellingCorrectionMode }));
     // add the query name to records, to have it available if we bookmark one
     return this.queryService.search(query);
   }

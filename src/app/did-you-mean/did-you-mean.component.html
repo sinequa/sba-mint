@@ -1,0 +1,11 @@
+@switch (spellingCorrectionMode()?.toLowerCase()) {
+  @case ('dymonly') {
+    Did you mean <button class="text-primary" (click)="selectCorrected()">{{correction()}}</button>?
+  }
+  @case ('correct') {
+    Showing results for <button class="text-primary font-bold" (click)="selectCorrected()">{{correction()}}</button>. Search instead for <button class="text-primary" (click)="selectOriginal()">{{original()}}</button>
+  }
+  @case ('smart') {
+    Showing results for <button class="text-primary" (click)="selectOriginal()">{{original()}}</button> and <button class="text-primary font-bold" (click)="selectCorrected()">{{correction()}}</button>
+  }
+}
