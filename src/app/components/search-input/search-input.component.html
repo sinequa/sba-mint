@@ -1,5 +1,7 @@
-<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin" class="group flex grow relative focus-within:z-[1001]">
-  <div class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50">
+<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin"
+  class="group flex grow relative rounded focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary focus-within:rounded-b-none">
+
+  <div class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50 group-hover:bg-white">
     @if (showSave() && input() !== '') {
     <button title="Save search" (click)="saveQuery()" (keydown.enter)="saveQuery()"
       [ngClass]="{ 'animate-save': saveAnimation() }">
@@ -9,10 +11,11 @@
 
     <input type="search"
       id="serach-navbar"
-      class="grow focus:outline-none bg-neutral-50"
+      class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
       aria-label="Search here"
       placeholder="Search by keyword or ask something"
       autocomplete="off"
+      spellcheck="false"
       [ngModel]="input()"
       (ngModelChange)="input.set($event)"
       (keydown.enter)="emitText()"

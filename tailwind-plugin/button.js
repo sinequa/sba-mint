@@ -57,22 +57,22 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
     '.btn-xs': {
       padding: theme('spacing.1'),
       fontSize: theme('fontSize.xs'),
-      lineHeight: theme('lineHeight.4')
+      lineHeight: theme('fontSize.xs.1.lineHeight')
     },
     '.btn-sm': {
       padding: theme('spacing.2'),
       fontSize: theme('fontSize.sm'),
-      lineHeight: theme('lineHeight.5')
+      lineHeight: theme('fontSize.sm.1.lineHeight')
     },
     '.btn-lg': {
       padding: theme('spacing.3'),
       fontSize: theme('fontSize.lg'),
-      lineHeight: theme('lineHeight.7')
+      lineHeight: theme('fontSize.lg.1.lineHeight')
     },
     '.btn-xl': {
       padding: theme('spacing.4'),
       fontSize: theme('fontSize.xl'),
-      lineHeight: theme('lineHeight.7')
+      lineHeight: theme('fontSize.xl.1.lineHeight')
     }
   })
 })

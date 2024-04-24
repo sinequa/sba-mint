@@ -33,7 +33,7 @@
       </div>
     </legend>
 
-    <ul class="data-list pt-2">
+    <ul class="data-list pt-2 text-neutral-600">
       @for (option of dateOptions(); track $index) {
       <li
         [ngClass]="cn(
@@ -84,7 +84,7 @@
               class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
               formGroupName="customRange">
               <label for="date-filter-custom-from">From</label>
-              <input class="border-b border-gray-300"
+              <input class="border-b border-neutral-300 text-neutral-300"
                 type="date"
                 id="date-filter-custom-from"
                 formControlName="from"
@@ -93,7 +93,7 @@
               />
 
               <label for="date-filter-custom-to">To</label>
-              <input class="border-b border-gray-300"
+              <input class="border-b border-neutral-300 text-neutral-300"
                 type="date"
                 id="date-filter-custom-to"
                 formControlName="to"

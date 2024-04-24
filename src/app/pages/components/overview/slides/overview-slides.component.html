@@ -13,7 +13,7 @@
 
 <ul class="grid grid-cols-3 gap-4 mt-4">
   @for (slide of slides(); track $index) {
-  <li class="grow">
+  <li class="grow group">
     <app-article-slide-light [slide]="slide" [strategy]="'replace'"/>
   </li>
   }

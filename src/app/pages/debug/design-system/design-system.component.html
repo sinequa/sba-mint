@@ -1,51 +1,62 @@
-<main class="p-56 flex flex-col gap-5">
-  <details open>
-    <summary>Buttons</summary>
+<main class="p-56 flex flex-col gap-5 bg-neutral-50">
+  <h3>Buttons</h3>
+  <div class="grid grid-cols-6 gap-8">
 
-    <div class="p-2 flex flex-col gap-2">
-      <div class="*:me-2">
-        <button class="btn">Button</button>
-        <button class="btn btn-outline">Button</button>
-        <button class="btn btn-primary">Button primary</button>
-        <button class="btn btn-outline btn-primary">Button primary</button>
-        <button class="btn btn-secondary">Button secondary</button>
-        <button class="btn btn-outline btn-secondary">Button secondary</button>
-        <button class="btn btn-ghost">Button ghost</button>
-        <button class="btn btn-outline btn-ghost">Button ghost</button>
-        <button class="btn btn-alert">Button alert</button>
-        <button class="btn btn-outline btn-alert">Button alert</button>
-      </div>
-
-      <div class="*:me-2">
-        <button disabled class="btn">Button</button>
-        <button disabled class="btn btn-outline">Button</button>
-        <button disabled class="btn btn-primary">Button primary</button>
-        <button disabled class="btn btn-outline btn-primary">
-          Button primary
-        </button>
-        <button disabled class="btn btn-secondary">Button secondary</button>
-        <button disabled class="btn btn-outline btn-secondary">
-          Button secondary
-        </button>
-        <button disabled class="btn btn-ghost">Button ghost</button>
-        <button disabled class="btn btn-outline btn-ghost">Button ghost</button>
-        <button disabled class="btn btn-alert">Button alert</button>
-        <button disabled class="btn btn-outline btn-alert">Button alert</button>
-      </div>
-
-      <div class="*:me-2">
-        <button class="btn btn-primary btn-xs">Button xs</button>
-        <button class="btn btn-primary btn-sm">Button sm</button>
-        <button class="btn btn-primary">Button normal</button>
-        <button class="btn btn-primary btn-lg">Button lg</button>
-        <button class="btn btn-primary btn-xl">Button xl</button>
-        <button class="btn btn-primary btn-lg">Button lg</button>
-        <button class="btn btn-primary">Button normal</button>
-        <button class="btn btn-primary btn-sm">Button sm</button>
-        <button class="btn btn-primary btn-xs">Button xs</button>
-      </div>
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - flat</h3>
+      <button class="btn">Default</button>
+      <button class="btn opacity-90">Hover</button>
+      <button class="btn" disabled>Disabled</button>
     </div>
-  </details>
+
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - flat primary</h3>
+      <button class="btn btn-primary">Default</button>
+      <button class="btn btn-primary opacity-90">Hover</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - flat secondary</h3>
+      <button class="btn btn-secondary">Default</button>
+      <button class="btn btn-secondary opacity-90">Hover</button>
+      <button class="btn btn-secondary" disabled>Disabled</button>
+    </div>
+
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - tertiary</h3>
+      <button class="btn btn-tertiary">Default</button>
+      <button class="btn btn-tertiary opacity-90">Hover</button>
+      <button class="btn btn-tertiary" disabled>Disabled</button>
+    </div>
+
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - outline</h3>
+      <button class="btn btn-outline">Default</button>
+      <button class="btn btn-outline bg-primary text-white opacity-90">Hover</button>
+      <button class="btn btn-outline" disabled>Disabled</button>
+    </div>
+
+    <div class="p-2 flex flex-col gap-2 border rounded-lg shadow-md bg-white">
+      <h3 class="font-medium">Button - outline alert</h3>
+      <button class="btn btn-outline text-alert border-alert hover:bg-alert">Default</button>
+      <button class="btn btn-outline bg-alert border-alert text-white opacity-90 hover:bg-alert">Hover</button>
+      <button class="btn btn-outline text-alert border-alert" disabled>Disabled</button>
+    </div>
+
+    <div class="p-2 col-span-2 flex justify-around gap-2 items-center border rounded-lg shadow-md  bg-white">
+      <button class="btn btn-primary btn-xs">xs</button>
+      <button class="btn btn-primary btn-sm">sm</button>
+      <button class="btn btn-primary">default</button>
+      <button class="btn btn-primary btn-lg">lg</button>
+      <button class="btn btn-primary btn-xl">xl</button>
+      <button class="btn btn-primary btn-lg">lg</button>
+      <button class="btn btn-primary">normal</button>
+      <button class="btn btn-primary btn-sm">sm</button>
+      <button class="btn btn-primary btn-xs">xs</button>
+    </div>
+
+    </div>
 
   <details open>
     <summary>Pills</summary>
