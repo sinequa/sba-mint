@@ -72,7 +72,7 @@
       </menu>
       <div class="tab-container overflow-auto" [ngClass]="{ expanded: showTab() === true }">
         @if (currentTab === 'attachments') {
-        <ul class="mt-2 border-l-2 border-blue-400">
+        <ul class="mt-2 border-l-2 border-primary">
           @for (attachment of attachments; track $index) {
           <li>
             <app-article-default-light [article]="attachment" stkStopPropagation class="border-none" />
@@ -80,7 +80,7 @@
           }
         </ul>
         } @else if (currentTab === 'similars' && (article().queryDuplicates?.length || 0) > 0) {
-        <ul class="mt-2 border-l-2 border-blue-400 similar-documents">
+        <ul class="mt-2 border-l-2 border-primary similar-documents">
           @for (similar of article()!.queryDuplicates; track $index) {
           <li>
             <app-article-default-light [article]="similar" stkStopPropagation class="border-none p-0" />
