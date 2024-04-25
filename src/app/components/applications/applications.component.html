@@ -2,7 +2,7 @@
   @for (application of applications; track $index) {
   <li>
     <button
-      class="size-full py-3 px-2 flex flex-col items-center justify-between rounded-md group hover:bg-secondary"
+      class="size-full py-3 px-2 flex flex-col items-center justify-between rounded group hover:bg-secondary"
       (click)="applicationClicked(application)"
       (keydown.enter)="applicationClicked(application)"
     >
@@ -21,7 +21,7 @@
 
   <li>
     <button
-      class="size-full py-3 px-2 flex flex-col items-center justify-between rounded-md hover:bg-secondary"
+      class="size-full py-3 px-2 flex flex-col items-center justify-between rounded hover:bg-secondary"
       (click)="addApplication()"
       (keydown.enter)="addApplication()"
     >

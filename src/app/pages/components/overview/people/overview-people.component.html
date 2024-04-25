@@ -18,7 +18,7 @@
 <ul class="grid grid-cols-3 gap-4 mt-4">
   @for (person of people(); track $index) {
   <li class="grow">
-    <app-article-person-light [person]="person" [strategy]="'replace'" class="bg-white group block" />
+    <app-article-person-light [person]="person" [strategy]="'replace'" class="bg-white group" />
   </li>
   }
 </ul>
