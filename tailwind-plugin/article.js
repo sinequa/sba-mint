@@ -13,7 +13,7 @@ const article = plugin(function ({ addBase, addComponents, theme }) {
       display: 'flex',
       gap: theme('spacing.2'),
       padding: theme('spacing.4'),
-      borderRadius: theme('borderRadius.md'),
+      borderRadius: theme('borderRadius.lg'),
       borderWidth: borderWidth.DEFAULT,
       borderColor: theme('colors.neutral.300'),
       color: theme('colors.neutral.600'),
