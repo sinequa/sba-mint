@@ -1,4 +1,4 @@
-<article class="article group/article text-neutral-600" [class.selected]="selected()">
+<article class="article group/article" [class.selected]="selected()">
   <section class="shrink-0">
     <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
       <i class="{{ article().collection | sourceIcon }} text-lg"></i>
@@ -48,7 +48,7 @@
     @if ((articleMetadata()?.length ?? 0) > 0) {
     <div class="flex gap-2">
       @for (metadata of articleMetadata(); track $index) {
-        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 text-neutral-600 font-semibold" [article]="article()!" [metadata]="metadata" />
+        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 font-semibold" [article]="article()!" [metadata]="metadata" />
       }
     </div>
     }

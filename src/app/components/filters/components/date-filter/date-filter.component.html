@@ -33,11 +33,11 @@
       </div>
     </legend>
 
-    <ul class="data-list pt-2 text-neutral-600">
+    <ul class="data-list pt-2">
       @for (option of dateOptions(); track $index) {
       <li
         [ngClass]="cn(
-          'data-list-item flex text-sm px-2 leading-7',
+          'data-list-item flex px-2 leading-7',
           form.get('option')?.value === option.display && 'selected',
           option.disabled && 'disabled hidden'
         )"
@@ -63,7 +63,7 @@
         }
         @if(allowCustomRange) {
           <li
-          class="data-list-item flex text-sm px-2 leading-7"
+          class="data-list-item flex px-2 leading-7"
           [ngClass]="{'selected': form.get('option')?.value === 'custom-range'}">
 
           <input
