@@ -7,7 +7,7 @@
     />
   </header>
 
-  <div class="grid grid-cols-[auto_750px_auto] grid-rows-[min-content_auto] gap-y-6 text-sm">
+  <div class="grid grid-cols-[auto_750px_auto] grid-rows-[min-content_auto] gap-y-6">
     <main class="col-start-2">
       <app-search-input class="w-full" (debounced)="searchText.set($event)" (validated)="search($event)">
         <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)"/>

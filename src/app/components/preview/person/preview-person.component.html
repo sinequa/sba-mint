@@ -1,7 +1,7 @@
 <app-preview-navbar class="block border-b border-neutral-300 bg-white"
   [config]="{ showOpenButton: false, showSearchButton: false }" [canBookmark]="false"/>
 
-<div class="overflow-auto p-6 h-full flex flex-col gap-6 text-sm">
+<div class="overflow-auto p-6 h-full flex flex-col gap-6">
   <!-- Person details -->
   <section class="flex gap-4 -m-6 p-6 bg-neutral-50">
     @if (person()) {
@@ -78,7 +78,7 @@
           Related to "{{ queryText() }}"
         </p>
 
-        <button class="text-sm text-primary flex gap-2 items-center">
+        <button class="text-primary flex gap-2 items-center">
           <i class="fa-fw far fa-user-magnifying-glass"></i>
           More results
         </button>
@@ -111,7 +111,7 @@
           Recent contributions
         </p>
 
-        <button class="text-sm text-primary flex gap-2 items-center">
+        <button class="text-primary flex gap-2 items-center">
           <i class="fa-fw far fa-user-pen"></i>
           More results
         </button>
