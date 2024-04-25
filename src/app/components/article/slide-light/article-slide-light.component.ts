@@ -11,7 +11,6 @@ import { WpsAuthorComponent } from '@/app/wps-components/author/author.component
   standalone: true,
   imports: [DatePipe, WpsAuthorComponent, BookmarkComponent],
   templateUrl: './article-slide-light.component.html',
-  styleUrl: './article-slide-light.component.scss',
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article: slide', 'strategy']

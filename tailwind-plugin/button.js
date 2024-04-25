@@ -23,7 +23,7 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
   addComponents({
     '.btn': {
       padding: theme('spacing.2'),
-      borderRadius: theme('borderRadius.md'),
+      borderRadius: theme('borderRadius.DEFAULT'),
       backgroundColor: theme('colors.zinc.900'),
       color: theme('colors.zinc.50'),
       cursor: 'pointer'

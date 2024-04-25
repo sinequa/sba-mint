@@ -11,7 +11,6 @@ import { StopPropagationDirective } from 'toolkit';
   standalone: true,
   imports: [DatePipe, StopPropagationDirective, BookmarkComponent],
   templateUrl: './article-slide.component.html',
-  styleUrl: './article-slide.component.scss',
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article: slide']

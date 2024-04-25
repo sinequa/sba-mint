@@ -1,4 +1,4 @@
-<sq-menu className="dropdown-content min-w-fit z-50 text-neutral-600">
+<sq-menu className="dropdown-content min-w-fit z-50 text-neutral-600 border-neutral-300 rounded-lg">
   <button title="User settings">
     <img
       class="rounded-full size-8"
@@ -18,7 +18,7 @@
       Override User
     </sq-menu-item>
     <sq-menu position="left-start" className="dropdown-content" [disabled]="true">
-      <sq-menu-item>
+      <sq-menu-item [disabled]="true">
         <i class="far fa-chevron-left"></i>
         Select Language
       </sq-menu-item>

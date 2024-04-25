@@ -1,7 +1,7 @@
 <ul class="flex flex-col">
   @for (search of recentSearches(); track $index) {
   <li
-    class="group flex h-10 gap-2 px-3 py-2 items-center rounded-md cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+    class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
     tabindex="0" appFocusWithArrowKeys="y" (click)="onClick(search)"
     (keydown.enter)="onClick(search)">
     <i class="fa-fw far fa-clock-rotate-left"></i>
