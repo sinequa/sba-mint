@@ -1,8 +1,8 @@
 import { JsonPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, ElementRef, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
+import { EventType, Router } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
@@ -32,7 +32,7 @@ const homeFeatures = [
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
     label: 'Recent searches',
-    component: RecentSearchesComponent,
+    component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
@@ -66,7 +66,7 @@ type FeaturesKeys = keyof UserFeatures | Features;
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
 
-  @ViewChildren('componentContainer') public components!: QueryList<ElementRef>;
+  @ViewChildren(RecentSearchesComponent) widgets!: QueryList<RecentSearchesComponent[]>;
 
   readonly searchText = signal<string>('');
 
@@ -79,14 +79,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       return acc;
     }, [] as HomeTab[]);
     return enabledFeatures;
-  })
+  });
 
   readonly selectedTabId = signal(0);
 
   readonly autocompleteService = inject(AutocompleteService);
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
-  private readonly drawerStack = inject(DrawerStackService);
+  readonly drawerStack = inject(DrawerStackService);
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
@@ -98,14 +98,23 @@ export class HomeComponent implements OnInit, OnDestroy {
     savedSearches: true,
   }
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
-
   constructor() {
+    // react to tab changes
     effect(() => {
       this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
-    }, { allowSignalWrites: true })
+    }, { allowSignalWrites: true });
+
+    // react to drawer stack status changes
+    effect(() => {
+      this.drawerOpened = this.drawerStack.isOpened();
+    });
+
+    this.subscription.add(
+      // on navigation, close all tabs
+      this.router.events
+        .pipe(filter(event => event.type === EventType.NavigationStart))
+        .subscribe(() => this.drawerStack.closeAll())
+    );
   }
 
   ngOnInit(): void {
@@ -127,6 +136,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public search(text: string): void {
     if (!text) return;
 
+    this.drawerStack.closeAll();
+
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 
@@ -137,6 +148,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.autocompleteService.opened.set(false);
+
     this.search(item.display!);
   }
 }
