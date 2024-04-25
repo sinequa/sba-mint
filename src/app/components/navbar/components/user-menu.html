@@ -1,4 +1,4 @@
-<sq-menu className="dropdown-content min-w-fit z-50">
+<sq-menu className="dropdown-content min-w-fit z-50 text-neutral-600">
   <button title="User settings">
     <img
       class="rounded-full size-8"
@@ -29,7 +29,7 @@
       </div>
     </sq-menu>
 
-    <div class="w-full border-t border-gray-200 my-1"></div>
+    <div class="w-full bg-neutral-300 h-[1px] my-1"></div>
     <sq-menu-item (click)="handleLogout()">
       <i class="fa-solid fa-arrow-right-from-bracket"></i>
       Logout {{ user().fullName }}

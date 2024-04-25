@@ -6,9 +6,9 @@ const dropdown = plugin(function ({ addComponents, theme }) {
       end: theme('end.0')
     },
     ['.dropdown:focus-within > *:not(.dropdown-content, .btn-primary)']: {
-      color: theme('colors.blue.500'),
-      backgroundColor: theme('colors.blue.50'),
-      borderColor: theme('colors.blue.600'),
+      color: theme('colors.primary'),
+      backgroundColor: theme('colors.secondary'),
+      borderColor: theme('colors.primary'),
     },
     '.dropdown-content': {
       zIndex: theme('zIndex.10'),
@@ -17,7 +17,7 @@ const dropdown = plugin(function ({ addComponents, theme }) {
       marginTop: theme('spacing.1'),
       borderRadius: theme('borderRadius.md'),
       borderWidth: theme('borderWidth.1'),
-      borderColor: theme('colors.gray.300'),
+      borderColor: theme('colors.neutral.300'),
       backgroundColor: theme('colors.white'),
       'min-width': '200px',
     },

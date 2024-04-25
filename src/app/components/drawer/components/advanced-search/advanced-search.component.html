@@ -1,9 +1,13 @@
 @if(article()){
   <div class="max-h-screen flex flex-col p-6 gap-4 overflow-auto">
     <section class="w-full flex flex-col gap-6">
-      <header id="panel-control" class="flex rounded focus-within:outline focus-within:outline-1 focus-within:outline-primary">
-        <div class="bg-neutral-50 grow px-2 flex gap-2 items-center rounded-s rounded-e-none">
-          <input type="search" class="grow focus:outline-none bg-neutral-50" aria-label="Search here"
+      <header id="panel-control" class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary ">
+        <div class="bg-neutral-50 grow px-2 flex gap-2 items-center rounded-s rounded-e-none group-hover:bg-white ">
+          <input type="search"
+            class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
+            aria-label="Search here"
+            autocomplete="off"
+            spellcheck="false"
             placeholder="Search by keyword or ask something" [ngModel]="input()" (ngModelChange)="input.set($event)"
             (keydown.enter)="executeSearch()" />
 

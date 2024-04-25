@@ -1,4 +1,6 @@
 const colors = require("tailwindcss/colors");
+const theme = require("tailwindcss/defaultTheme");
+const plugin = require("tailwindcss/plugin");
 
 const dropdown = require("./tailwind-plugin/dropdown");
 const button = require('./tailwind-plugin/button');
@@ -33,5 +35,16 @@ module.exports = {
       },
     },
   },
-  plugins: [dropdown, button, tab, article, avatar, pill],
+  plugins: [
+    dropdown, button, tab, article, avatar, pill,
+    plugin(function ({ addUtilities, addComponents, theme }) {
+      addComponents({
+        '.active:not([disabled])': {
+          color: theme('colors.primary'),
+          borderColor: theme('colors.primary'),
+          backgroundColor: theme('colors.secondary')
+        }
+      })
+    })
+  ],
 };

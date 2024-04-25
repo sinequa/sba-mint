@@ -35,7 +35,7 @@
     <footer class="flex flex-col gap-2">
       <ng-container *ngTemplateOutlet="footerTitleTpl" />
 
-      <ul class="flex flex-col gap-1 border-l-2 border-blue-500">
+      <ul class="flex flex-col gap-1 border-l-2 border-primary">
         @for (article of relatedTo(); track $index) {
         <li class="ps-2">
           <app-article-default-light

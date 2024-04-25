@@ -19,6 +19,10 @@ import { PanelDirective } from 'toolkit';
     standalone: true,
     templateUrl: './advanced-search.component.html',
     styleUrl: './advanced-search.component.scss',
+    // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+    host: {
+      class: 'border-l border-neutral-300 bg-white'
+    },
     imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
 })
 export class AdvancedSearchComponent implements OnDestroy {
