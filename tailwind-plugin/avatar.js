@@ -11,6 +11,7 @@ const avatar = plugin(function ({ addBase, addComponents, theme }) {
       justifyContent: 'center',
       width: theme('spacing.10'),
       height: theme('spacing.10'),
+      flexShrink: 0,
       overflow: 'hidden',
       borderRadius: theme('borderRadius.full'),
       backgroundColor: theme('colors.primary'),

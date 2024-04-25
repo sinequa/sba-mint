@@ -43,6 +43,9 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
     '.btn-ghost': {
       backgroundColor: colors.transparent,
       color: theme('colors.neutral.600'),
+      '&:hover': {
+        backgroundColor: toRgba(colors.neutral[300])({ opacityValue: 0.2 })
+      }
     },
     '.btn-outline': {
       borderWidth: theme('borderWidth.DEFAULT'),
