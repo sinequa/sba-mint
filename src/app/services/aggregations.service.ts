@@ -9,6 +9,7 @@ export type DateFilter = {
   label?: string;
   operator?: string;
   value?: string;
+  range?: [string, string];
   display?: string;
   disabled?: boolean;
 }

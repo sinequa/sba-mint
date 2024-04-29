@@ -24,7 +24,7 @@ const ALLOW_CUSTOM_RANGE = true;
 export class DateFilterComponent implements OnDestroy {
   cn = cn;
   aggregation = input.required<AggregationEx>();
-  title = input<AggregationTitle>({label: 'Date', icon: 'fas fa-calendar'});
+  title = input<AggregationTitle>({ label: 'Date', icon: 'fas fa-calendar' });
 
   @Output() public readonly refreshed = new EventEmitter<Filter>();
   @Output() public readonly updated = new EventEmitter<Filter>();
@@ -36,7 +36,7 @@ export class DateFilterComponent implements OnDestroy {
 
   readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
   readonly hasFilter = computed(() => {
-    const {filters = []} = getState(this.queryParamsStore);
+    const { filters = [] } = getState(this.queryParamsStore);
     return filters.length > 0
   });
   readonly column = computed(() => this.aggregation().column);
@@ -56,9 +56,9 @@ export class DateFilterComponent implements OnDestroy {
   constructor() {
 
     effect(() => {
-      const filters  = this.queryParamsStore.filters();
-      if(filters) {
-        this.updateForm( filters.find((f: Filter) => f.column === this.column()));
+      const filters = this.queryParamsStore.filters();
+      if (filters) {
+        this.updateForm(filters.find((f: Filter) => f.column === this.column()));
       }
     })
 
@@ -69,7 +69,7 @@ export class DateFilterComponent implements OnDestroy {
         if (current.filter((value: string) => value === '').length === 3) current.length = 0;
 
         const filters = this.queryParamsStore.filters();
-        if(filters) {
+        if (filters) {
           const label = filters.find((f: Filter) => f.column === this.column())?.label;
           this.valueChanged.emit({ column: this.column(), label, values: current });
         }
@@ -92,9 +92,13 @@ export class DateFilterComponent implements OnDestroy {
 
     if (value.option !== 'custom-range') {
       filter.operator = dateOption?.operator as FilterOperator;
-      filter.values = [dateOption?.value ?? ''];
+      if(filter.operator === "between") {
+        filter.values = dateOption?.range ?? [];
+      } else {
+        filter.values = [dateOption?.value ?? ''];
+      }
     }
-    else if(value.customRange) {
+    else if (value.customRange) {
       // if to is null, operator is gte
       // if from is null, operator is lte
       // if both are not null, operator is between
@@ -138,15 +142,30 @@ export class DateFilterComponent implements OnDestroy {
 
     const items = aggregation.items;
     const arr = items.reduce((acc, curr) => {
-      const value = this.parseValueAndOperatorFromItem(curr.value as string);
+      if (curr.value === '') return acc;
 
-      acc.push({
-        operator: value[0],
-        value: value[1],
-        display: curr.display,
-        disabled: curr.count === 0
-      });
-
+      if((curr.value as string).includes('-')) {
+        // if the value contains "-" returns [operator: "between", {from, to}]
+        // where from is the first day of the month and to is the last day of the month
+        const [year, month] = (curr.value as string).split('-');
+        const from = `${year}-${month}-01`;
+        const to = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
+        acc.push({
+          operator: 'between',
+          range: [from, to],
+          display: curr.value as string,
+          disabled: curr.count === 0
+        });
+      }
+      else {
+        const value = this.parseValueAndOperatorFromItem(curr.value as string);
+        acc.push({
+          operator: value[0],
+          value: value[1],
+          display: curr.display,
+          disabled: curr.count === 0
+        });
+      }
 
       return acc;
     }, [] as DateFilter[]);
@@ -181,14 +200,14 @@ export class DateFilterComponent implements OnDestroy {
     const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === values[0])?.display ?? "custom-range";
 
     let from, to;
-    if(code === 'custom-range') {
-      if(operator === 'lte') {
+    if (code === 'custom-range') {
+      if (operator === 'lte') {
         to = values[0];
       }
-      else if(operator === 'gte') {
+      else if (operator === 'gte') {
         from = values[0];
       }
-      else if(operator === 'between') {
+      else if (operator === 'between') {
         from = values[0];
         to = values[1];
       }
