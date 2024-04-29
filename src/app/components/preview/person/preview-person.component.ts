@@ -13,7 +13,7 @@ import { MockDataService } from '@/app/services';
 import { AppStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
+import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';

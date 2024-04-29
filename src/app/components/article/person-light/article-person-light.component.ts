@@ -2,7 +2,7 @@ import { Component, HostBinding, effect, input } from '@angular/core';
 
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { PersonArticle } from '@/app/types/articles';
-import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
+import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
 
 @Component({
   selector: 'app-article-person-light',

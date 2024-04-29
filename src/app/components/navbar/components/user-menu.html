@@ -1,11 +1,6 @@
 <sq-menu className="dropdown-content min-w-fit z-50 border-neutral-300 rounded-lg">
-  <button title="User settings">
-    <img
-      class="rounded-full size-8"
-      alt="User profile picture"
-      src="https://xsgames.co/randomusers/avatar.php?g=male"
-    />
-  </button>
+  <author-avatar role="button" class="avatar" [person]="person()"  />
+
   <div menu-content>
     <sq-menu-item>
       <a href="mailto:admin@sinequa.com">
@@ -13,10 +8,18 @@
         Contact Administrator
       </a>
     </sq-menu-item>
-    <sq-menu-item [disabled]="true">
+    @if(allowUserOverride() && !isOverridingUser()) {
+    <sq-menu-item>
       <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
       Override User
     </sq-menu-item>
+    }
+    @else if(isOverridingUser()) {
+      <sq-menu-item (click)="handleOverrideUser()">
+        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+        Revert Override User
+      </sq-menu-item>
+      }
     <sq-menu position="left-start" className="dropdown-content" [disabled]="true">
       <sq-menu-item [disabled]="true">
         <i class="far fa-chevron-left"></i>
@@ -29,10 +32,12 @@
       </div>
     </sq-menu>
 
-    <div class="w-full bg-neutral-300 h-[1px] my-1"></div>
-    <sq-menu-item (click)="handleLogout()">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i>
-      Logout {{ user().fullName }}
-    </sq-menu-item>
+    @if(!isOverridingUser()) {
+      <div class="w-full bg-neutral-300 h-[1px] my-1"></div>
+      <sq-menu-item (click)="handleLogout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Logout {{ user().fullName }}
+      </sq-menu-item>
+    }
   </div>
 </sq-menu>
