@@ -26,8 +26,7 @@ export class DropdownComponent implements AfterViewInit{
 
   @ViewChild('dropdownWrapper') dropdown!: ElementRef;
   @ViewChild('trigger') trigger!: ElementRef;
-  x = 0;
-  y = 0;
+
   width = 0;
 
   constructor(private el: ElementRef) {}

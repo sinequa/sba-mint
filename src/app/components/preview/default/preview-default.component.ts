@@ -62,7 +62,7 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
       if (article?.id)
         fetchPreview(
           article.id ?? '',
-          runInInjectionContext(this.injector, () => buildQuery())
+          runInInjectionContext(this.injector, () => buildQuery({ name: article.$queryName }))
         ).then((data: PreviewData) => {
           this.previewService.setPreviewData(data);
           this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + data?.documentCachedContentUrl));
