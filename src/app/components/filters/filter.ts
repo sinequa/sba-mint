@@ -1,7 +1,7 @@
-import { Injector, runInInjectionContext, inject } from "@angular/core";
+import { Injector, inject, runInInjectionContext } from "@angular/core";
 
-import { getCurrentTab } from "@/app/app.routes";
 import { AppStore } from "@/app/stores";
+import { ActivatedRoute } from "@angular/router";
 
 /**
  * Returns the authorized filters for the current tab
@@ -15,7 +15,7 @@ export function getAuthorizedFilters(injector: Injector): string[] | undefined {
 
   runInInjectionContext(injector, () => {
     tabs = inject(AppStore).customizationJson()?.tabs;
-    tab = getCurrentTab()
+    tab = inject(ActivatedRoute)?.snapshot.url.toString();
   });
 
   if (!tab || !tabs) return undefined;

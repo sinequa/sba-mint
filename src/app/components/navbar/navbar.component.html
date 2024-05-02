@@ -20,9 +20,21 @@
 <menu class="flex justify-end gap-3 items-center pe-10">
   @for (menu of menus; track $index) {
     <li>
-      <button class="btn btn-ghost" title="{{ menu.label }}">
-        <i class="fa-fw {{ menu.iconClass }}"></i>
-      </button>
+      @if(menu.component){
+        <sq-dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
+          <button class="btn btn-ghost" title="{{ menu.label }}">
+            <i class="fa-fw {{ menu.iconClass }}"></i>
+          </button>
+          <div dropdown-content class="absolute min-w-[340px] w-max dropdown-content">
+            <ng-container [ngComponentOutlet]="menu.component"></ng-container>
+          </div>
+        </sq-dropdown>
+      }
+      @else {
+        <button class="btn btn-ghost" title="{{ menu.label }}">
+          <i class="fa-fw {{ menu.iconClass }}"></i>
+        </button>
+      }
     </li>
   }
   <li class="shrink-0">
@@ -30,12 +42,10 @@
   </li>
 </menu>
 
-<div class="row-start-2">
-  <div class="grow h-full border-b border-neutral-300"></div>
-</div>
+<div class="row-start-2"></div>
 
 <nav class="col-start-2 col-span-2">
-  <ul class="col-start-2 col-span-2 flex items-end">
+  <ul class="col-start-2 col-span-2 flex items-end absolute pt-1">
     @for (tab of tabs; track $index) {
     <li>
       <button
@@ -46,11 +56,7 @@
       </button>
     </li>
     }
-
-    <li class="grow border-b border-neutral-300"></li>
   </ul>
 </nav>
 
-<div class="row-start-2 col-start-4">
-  <div class="grow h-full border-b border-neutral-300"></div>
-</div>
+<div class="row-start-2 col-start-4"></div>

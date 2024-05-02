@@ -1,3 +1,5 @@
+import { QueryParams } from "../utils";
+
 export type Bookmark = {
   id: string,
   queryName?: string;
@@ -8,7 +10,15 @@ export type Bookmark = {
   parentFolder?: string;
   parentFolderIconClass?: string;
 };
-export type RecentSearch = { url: string, date: string, display: string };
+export type RecentSearch = {
+  url: string,
+  display: string
+  label?: string;
+  filterCount?: number;
+  date: string;
+  queryParams?: QueryParams;
+
+};
 export type SavedSearch = { url: string, date: string, display: string };
 
 export type UserSettings = {
