@@ -4,12 +4,12 @@ import { Component, HostBinding, LOCALE_ID, effect, inject, input } from '@angul
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { SlideArticle } from '@/app/types/articles';
-import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
+import { AuthorComponent } from '@/app/components/author/author.component';
 
 @Component({
   selector: 'app-article-slide-light',
   standalone: true,
-  imports: [DatePipe, WpsAuthorComponent, BookmarkComponent],
+  imports: [DatePipe, AuthorComponent, BookmarkComponent],
   templateUrl: './article-slide-light.component.html',
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,

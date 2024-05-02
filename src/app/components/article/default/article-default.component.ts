@@ -6,7 +6,7 @@ import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directiv
 import { SourceIconPipe } from '@/app/pipes';
 import { AppStore, SelectionStore, UserSettingsStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { WpsAuthorComponent } from '@/app/wps-components/author/author.component';
+import { AuthorComponent } from '@/app/components/author/author.component';
 import { getState } from '@ngrx/signals';
 import { MetadataComponent } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
@@ -19,7 +19,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, SourceIconPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, WpsAuthorComponent, MetadataComponent, BookmarkComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, SourceIconPipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, AuthorComponent, MetadataComponent, BookmarkComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{

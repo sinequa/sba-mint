@@ -12,7 +12,7 @@ import { SelectionStrategy } from '@/app/directives';
 import { PersonArticle } from '@/app/types';
 import { buildQuery } from '@/app/utils';
 
-import { AuthorAvatarComponent } from '../author-avatar/author-avatar.component';
+import { AuthorAvatarComponent } from './author-avatar/author-avatar.component';
 
 /**
  * Component to display an author based on its name.
@@ -22,11 +22,11 @@ import { AuthorAvatarComponent } from '../author-avatar/author-avatar.component'
  *
  * @example
  * ```html
- * <wps-author [authorName]="'John doe'" />
+ * <app-author [authorName]="'John doe'" />
  * ```
  */
 @Component({
-  selector: 'wps-author',
+  selector: 'app-author',
   standalone: true,
   imports: [ArticlePersonLightComponent, AuthorAvatarComponent],
   templateUrl: './author.component.html',
@@ -35,7 +35,7 @@ import { AuthorAvatarComponent } from '../author-avatar/author-avatar.component'
     directive: StopPropagationDirective
   }]
 })
-export class WpsAuthorComponent {
+export class AuthorComponent {
   @HostListener('mouseenter')
   public mouseEnter(): void {
     this.showAuthor.set(true);

@@ -28,11 +28,7 @@ export const AppStore = signalStore(
   })),
   withMethods((store, appService = inject(AppService)) => ({
     initialize() {
-      return firstValueFrom(appService.getApp().pipe(map(app => {
-        patchState(store, (state) => {
-          return { ...state, ...app }
-        })
-      })));
+      return firstValueFrom(appService.getApp().pipe(map(app => patchState(store, app))));
     },
     update( app: CCApp) {
       patchState(store, (state) => {

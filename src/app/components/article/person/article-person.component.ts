@@ -12,7 +12,7 @@ import { SelectArticleOnClickDirective } from '@/app/directives';
 import { AppStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { AuthorAvatarComponent } from '@/app/wps-components/author-avatar/author-avatar.component';
+import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
 import { ArticleDefaultLightSkeletonComponent } from '../default-light-skeleton/article-default-light-skeleton.component';

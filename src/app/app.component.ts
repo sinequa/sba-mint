@@ -24,11 +24,11 @@ export class AppComponent {
   constructor() {
     // Login and initialize the application when the user is logged in
     login().then(value => {
-      if(value) {
+      if (value) {
         this.appService.init().then(() => {
-          const { fullName } = getState(this.principalStore);
-          toast(`Welcome back ${fullName}!` , { duration: 2000 })
-      });
+          const { fullName } = getState(this.principalStore).principal;
+          toast(`Welcome back ${fullName}!`, { duration: 2000 })
+        });
       }
     });
   }
