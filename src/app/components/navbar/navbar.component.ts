@@ -13,7 +13,6 @@ import { QueryParamsStore } from '@/app/stores/query-params.store';
 import { ApplicationsComponent } from '../applications/applications.component';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { DropdownComponent } from '../dropdown/dropdown';
-import { ModalDirective } from "../modal/modal.directive";
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { BookmarksComponent } from '../widgets/bookmarks/bookmarks.component';
@@ -38,7 +37,7 @@ type NavbarTab = {
     standalone: true,
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
-    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, ModalDirective, DropdownComponent, ApplicationsComponent]
+    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent, ApplicationsComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
