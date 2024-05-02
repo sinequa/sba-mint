@@ -3,21 +3,28 @@ import { NavigationService } from '@/app/services/navigation.service';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
-import { AsyncPipe } from '@angular/common';
-import { Component, HostBinding, ViewChild, effect, inject, signal } from '@angular/core';
+import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
+import { Component, HostBinding, Type, ViewChild, effect, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { QueryParamsStore } from '@/app/stores/query-params.store';
+import { ApplicationsComponent } from '../applications/applications.component';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { DropdownComponent } from '../dropdown/dropdown';
+import { ModalDirective } from "../modal/modal.directive";
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { BookmarksComponent } from '../widgets/bookmarks/bookmarks.component';
+import { RecentSearchesComponent } from '../widgets/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '../widgets/saved-searches/saved-searches.component';
 import { UserMenuComponent } from "./components/user-menu";
 
 type NavbarMenu = {
   label: string;
   iconClass: string;
+  component?: Type<unknown>;
 };
 
 type NavbarTab = {
@@ -31,7 +38,7 @@ type NavbarTab = {
     standalone: true,
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
-    imports: [AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent]
+    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, ModalDirective, DropdownComponent, ApplicationsComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
@@ -42,10 +49,10 @@ export class NavbarComponent {
   protected readonly searchText = signal<string>('');
 
   protected readonly menus: NavbarMenu[] = [
-    { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left' },
-    { label: 'Bookmarks', iconClass: 'far fa-star' },
-    { label: 'Saved queries', iconClass: 'far fa-bookmark' },
-    { label: 'Applications', iconClass: 'far fa-grid-round-2' }
+    { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
+    { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
+    { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
+    { label: 'Applications', iconClass: 'far fa-grid-round-2', component: ApplicationsComponent },
   ];
 
   protected readonly tabs: NavbarTab[] = [

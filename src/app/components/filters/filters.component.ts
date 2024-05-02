@@ -17,15 +17,16 @@ import { DateFilterComponent } from './components/date-filter/date-filter.compon
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
 import { getAuthorizedFilters } from './filter';
 import { FilterDropdown } from './models/filter-dropdown';
+import { DropdownComponent } from "../dropdown/dropdown";
 
 export const FILTERS_COUNT = 4;
 
 @Component({
-  selector: 'app-filters',
-  standalone: true,
-  imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective],
-  templateUrl: './filters.component.html',
-  styleUrl: './filters.component.scss'
+    selector: 'app-filters',
+    standalone: true,
+    templateUrl: './filters.component.html',
+    styleUrl: './filters.component.scss',
+    imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective, DropdownComponent]
 })
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];

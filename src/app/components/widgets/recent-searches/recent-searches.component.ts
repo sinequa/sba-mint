@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 
@@ -6,15 +6,8 @@ import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { RecentSearchesService } from '@/app/services';
-import { RecentSearch as UserSettingsRecentSearch } from '@/app/types/user-settings';
-import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
-
-type RecentSearch = UserSettingsRecentSearch & {
-  label: string;
-  filterCount?: number;
-  date?: string;
-  queryParams?: QueryParams;
-}
+import { RecentSearch } from '@/app/types';
+import { QueryParams } from '@/app/utils';
 
 @Component({
   selector: 'app-recent-searches',
@@ -24,40 +17,21 @@ type RecentSearch = UserSettingsRecentSearch & {
   styleUrl: './recent-searches.component.scss'
 })
 export class RecentSearchesComponent {
-  public recentSearches = signal<RecentSearch[] | undefined>(undefined);
 
   private readonly router = inject(Router);
   private readonly recentSearchesService = inject(RecentSearchesService);
 
-  constructor() {
-    effect(() => {
-      const recentSearches = this.recentSearchesService.getRecentSearches();
-      this.recentSearches.set(
-        recentSearches.reduce((acc, recentSearch) => {
-          const queryParams = getQueryParamsFromUrl(recentSearch.url);
+  public recentSearches = signal<RecentSearch[]>(this.recentSearchesService.getRecentSearches() || [])
 
-          acc.push(
-            Object.assign(recentSearch, {
-              label: queryParams?.text || '',
-              filterCount: queryParams?.filters?.length || 0,
-              date: recentSearch.date,
-              queryParams
-            })
-          );
-
-          return acc;
-        }, [] as RecentSearch[])
-      );
-    }, { allowSignalWrites: true })
-  }
+  constructor() {  }
 
   onClick(recentSearch: RecentSearch): void {
-    const queryParams = {
-      q: recentSearch.queryParams?.text
-    } as { q: string, f?: string };
+    const { text, filters = [] } = recentSearch.queryParams || {} as QueryParams;
 
-    if (recentSearch.queryParams?.filters && recentSearch.queryParams?.filters?.length > 0)
-      queryParams.f = JSON.stringify(recentSearch.queryParams?.filters);
+    const queryParams = {
+      q: text,
+      f: filters.length > 0 ? JSON.stringify(filters) : undefined
+    };
 
     this.router.navigate([recentSearch.queryParams?.path], { queryParams });
   }

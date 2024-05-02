@@ -6,8 +6,8 @@ import { Subscription, filter } from 'rxjs';
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService } from '@/app/services';
 import { UserSettingsStore, searchInputStore } from '@/app/stores';
-import { RecentSearch } from '@/app/types';
-import { getQueryTextFromUrl } from '@/app/utils';
+import { RecentSearch } from '@/app/types/user-settings';
+import { getQueryParamsFromUrl, getQueryTextFromUrl } from '@/app/utils';
 
 const RECENT_SEARCHES_MAX_STORAGE = 50;
 
@@ -37,8 +37,25 @@ export class RecentSearchesService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  /**
+   * Retrieves the recent searches from the store and transforms them into an array of RecentSearch objects.
+   * @returns An array of RecentSearch objects.
+   */
   public getRecentSearches(): RecentSearch[] {
-    return this.store.recentSearches();
+    return this.store.recentSearches().reduce((acc, recentSearch) => {
+      const queryParams = getQueryParamsFromUrl(recentSearch.url);
+
+      acc.push(
+        Object.assign(recentSearch, {
+          label: queryParams?.text || '',
+          filterCount: queryParams?.filters?.length || 0,
+          date: recentSearch.date,
+          queryParams
+        })
+      );
+
+      return acc;
+    }, [] as RecentSearch[]);
   }
 
   public saveSearch(recentSearches: RecentSearch[]) {
