@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { QueryParamsStore } from '@/app/stores/query-params.store';
+
 import { ApplicationsComponent } from '../applications/applications.component';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { DropdownComponent } from '../dropdown/dropdown';
@@ -51,7 +52,7 @@ export class NavbarComponent {
     { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
     { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
     { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
-    { label: 'Applications', iconClass: 'far fa-grid-round-2', component: ApplicationsComponent },
+    { label: 'Applications', iconClass: 'far fa-grid-round-2', component: ApplicationsComponent }
   ];
 
   protected readonly tabs: NavbarTab[] = [

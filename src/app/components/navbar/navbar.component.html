@@ -25,7 +25,7 @@
           <button class="btn btn-ghost" title="{{ menu.label }}">
             <i class="fa-fw {{ menu.iconClass }}"></i>
           </button>
-          <div dropdown-content class="absolute min-w-[340px] w-max dropdown-content">
+          <div dropdown-content class="absolute min-w-[340px] dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
         </sq-dropdown>

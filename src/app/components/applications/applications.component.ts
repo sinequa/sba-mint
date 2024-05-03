@@ -12,7 +12,10 @@ type Application = {
   standalone: true,
   imports: [],
   templateUrl: './applications.component.html',
-  styleUrl: './applications.component.scss'
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    class: "block w-max"
+  }
 })
 export class ApplicationsComponent {
   public applications: Application[] = [
