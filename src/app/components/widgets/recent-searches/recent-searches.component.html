@@ -4,12 +4,12 @@
       class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
       tabindex="0" appFocusWithArrowKeys="y" (click)="onClick(search)"
       (keydown.enter)="onClick(search)">
-      <i class="fa-fw far fa-clock-rotate-left"></i>
+      <i class="fa-fw far fa-clock-rotate-left " aria-hidden="true"></i>
 
       <p>{{ search.label }}</p>
 
       @if (search.filterCount && search.filterCount > 0) {
-        <p class="text-neutral-500">
+        <p class="text-neutral-500" aria-hidden="true">
           <i class="fa-fw far fa-filter"></i>
           {{ search.filterCount }}
           {{ search.filterCount > 1 ? 'filters' : 'filter' }}
@@ -18,8 +18,12 @@
 
 
       <p class="text-neutral-500 ms-auto">{{ search.date | relativeDate }}</p>
-      <button class="hidden group-hover:block text-alert hover:scale-125" title="Remove recent search" (click)="onDelete($index, $event)">
-        <i class="fa-fw fa-regular fa-trash-can"></i>
+      <button class="hidden group-hover:block text-alert hover:scale-125"
+        title="Remove recent search"
+        (click)="onDelete($index, $event)"
+        aria-label="Remove recent search"
+        >
+        <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
       </button>
     </li>
   }

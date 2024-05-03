@@ -9,7 +9,7 @@
     <p>{{ search.label }}</p>
 
     @if ((search.filterCount ?? 0) > 0) {
-    <p class="text-neutral-500">
+    <p class="text-neutral-500" aria-hidden="true">
       <i class="fa-fw far fa-filter"></i>
       {{ search.filterCount }}
 
@@ -25,8 +25,13 @@
     <p class="text-neutral-500 ms-auto">{{ search.date | relativeDate }}</p>
     }
 
-    <button [ngClass]="{'ms-auto': !search.date}" class="hidden group-hover:block text-alert hover:scale-125" title="Remove saved search" (click)="onDelete($index, $event)">
-      <i class="fa-fw fa-regular fa-trash-can"></i>
+    <button [ngClass]="{'ms-auto': !search.date}"
+      class="hidden group-hover:block text-alert hover:scale-125"
+      title="Remove saved search"
+      (click)="onDelete($index, $event)"
+      aria-label="Remove saved search"
+      >
+      <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
     </button>
   </li>
   } @empty {

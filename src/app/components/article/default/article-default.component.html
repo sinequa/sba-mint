@@ -14,7 +14,7 @@
 
       <section class="flex gap-1 items-center">
         @if (docformatMetadata()) {
-        <div class="pill pill-xs border-neutral-600 font-bold uppercase">
+        <div class="pill pill-xs border-neutral-600 hover:bg-neutral-600 hover:text-white font-bold uppercase">
           {{ docformatMetadata() }}
         </div>
         }
@@ -48,7 +48,7 @@
     @if ((articleMetadata()?.length ?? 0) > 0) {
     <div class="flex gap-2">
       @for (metadata of articleMetadata(); track $index) {
-        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 font-semibold" [article]="article()!" [metadata]="metadata" />
+        <sq-metadata class="flex gap-2 badge badge-sm border-neutral-600 hover:bg-neutral-600 hover:text-white font-semibold" [article]="article()!" [metadata]="metadata" />
       }
     </div>
     }
