@@ -9,7 +9,7 @@ import { QueryService } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
 
 import { SelectArticleOnClickDirective } from '@/app/directives';
-import { AppStore, searchInputStore } from '@/app/stores';
+import { AppStore, SelectionStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
@@ -24,6 +24,11 @@ import { ArticleDefaultLightComponent } from '../default-light/article-default-l
   imports: [NgTemplateOutlet, StopPropagationDirective, ArticleDefaultLightComponent, ArticleDefaultLightSkeletonComponent, AuthorAvatarComponent],
   templateUrl: './article-person.component.html',
   styleUrl: './article-person.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    'class': 'article',
+    '[class.selected]': 'selected()'
+  },
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article: person']
@@ -38,6 +43,9 @@ export class ArticlePersonComponent {
   private readonly queryService = inject(QueryService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly appStore = inject(AppStore);
+  selectionStore = inject(SelectionStore);
+
+  selected = computed(() => this.person()?.id === getState(this.selectionStore).id);
 
   private readonly person$ = toObservable(this.person);
   private readonly relatedTo$ = this.person$.pipe(

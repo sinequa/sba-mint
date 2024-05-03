@@ -9,13 +9,13 @@ import { ArticleSlideComponent } from '@/app/components/article/slide/article-sl
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 import { SelectArticleFromQueryParamsDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
 import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 import { getState } from '@ngrx/signals';
-import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
     selector: 'app-search-slides',
