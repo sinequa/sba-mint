@@ -1,5 +1,5 @@
 <a routerLink="/home" class="self-end ps-10">
-  <img src="assets/logo/large.svg" alt="" />
+  <img src="assets/logo/large.svg" alt="sinequa logo" />
 </a>
 
 <div class="col-span-2 flex items-center">
@@ -22,8 +22,8 @@
     <li>
       @if(menu.component){
         <sq-dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
-          <button class="btn btn-ghost" title="{{ menu.label }}">
-            <i class="fa-fw {{ menu.iconClass }}"></i>
+          <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
+            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
           <div dropdown-content class="absolute min-w-[340px] dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
@@ -31,8 +31,8 @@
         </sq-dropdown>
       }
       @else {
-        <button class="btn btn-ghost" title="{{ menu.label }}">
-          <i class="fa-fw {{ menu.iconClass }}"></i>
+        <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
+          <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
         </button>
       }
     </li>
@@ -50,8 +50,11 @@
     <li>
       <button
         class="capitalize tab aria-selected:text-primary aria-selected:border-primary"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink" (click)="changeTab(tab)">
-        <i class="fa-fw {{ tab.iconClass }}"></i>
+        (click)="changeTab(tab)"
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink"
+        [attr.aria-label]="tab.label"
+        >
+        <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
         {{ tab.label }}
       </button>
     </li>

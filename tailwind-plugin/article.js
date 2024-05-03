@@ -22,9 +22,12 @@ const article = plugin(function ({ addBase, addComponents, theme }) {
         opacity: '0.5',
         pointerEvents: 'none'
       },
-      [['&.selected','&:hover']]: {
+      '&.selected': {
         backgroundColor: theme('colors.secondary'),
         borderColor: theme('colors.primary')
+      },
+      '&:hover:not(.selected)': {
+        boxShadow: '4px 4px 12px 0px #00000026'
       }
     },
   })

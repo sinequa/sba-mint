@@ -1,32 +1,37 @@
 <ul class="flex flex-col">
   @for (bookmark of bookmarks(); track $index) {
-  <li
+  <li appFocusWithArrowKeys="y"
     class="flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none group"
-    tabindex="0" appFocusWithArrowKeys="y" (click)="onClick(bookmark)"
-    (keydown.enter)="onClick(bookmark)">
-    <i class="fa-fw far fa-bookmark shrink-0"></i>
+    tabindex="0"
+    (click)="onClick(bookmark)"
+    (keydown.enter)="onClick(bookmark)"
+    >
+    <i class="fa-fw far fa-bookmark shrink-0 " aria-hidden="true"></i>
 
-    <i class="{{ [bookmark.source || ''] | sourceIcon }} shrink-0"></i>
+    <i class="{{ [bookmark.source || ''] | sourceIcon }} shrink-0 " aria-hidden="true"></i>
 
     <p class="line-clamp-1">{{ bookmark.label }}</p>
 
     @if (bookmark.author) {
     <p class="text-neutral-500 line-clamp-1">
-      <i class="fa-fw far fa-user"></i>
+      <i class="fa-fw far fa-user " aria-hidden="true"></i>
       {{ bookmark.author }}
     </p>
     }
 
     @if (bookmark.parentFolder) {
     <p class="text-neutral-500 line-clamp-1">
-      <i class="fa-fw far fa-folder"></i>
+      <i class="fa-fw far fa-folder " aria-hidden="true"></i>
       {{ bookmark.parentFolder }}
     </p>
     }
 
-    <button class="hidden group-hover:block ms-auto text-alert hover:scale-125" title="Remove saved search"
-      (click)="onDelete(bookmark, $event)">
-      <i class="fa-fw fa-regular fa-trash-can"></i>
+    <button class="hidden group-hover:block ms-auto text-alert hover:scale-125"
+      title="Remove bookmark"
+      (click)="onDelete(bookmark, $event)"
+      aria-label="Remove bookmark"
+      >
+      <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
     </button>
   </li>
   } @empty {
