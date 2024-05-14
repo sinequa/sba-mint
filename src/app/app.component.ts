@@ -8,6 +8,7 @@ import { login } from '@sinequa/atomic';
 
 import { ApplicationService } from '@/app/services';
 
+import { ComponentWithLogin } from '@sinequa/core/login';
 import { PrincipalStore } from './stores';
 
 @Component({
@@ -17,11 +18,14 @@ import { PrincipalStore } from './stores';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent extends ComponentWithLogin{
   appService = inject(ApplicationService);
   principalStore = inject(PrincipalStore);
 
+  // myLoginService = inject(myLoginService);
+
   constructor() {
+    super()
     // Login and initialize the application when the user is logged in
     login().then(value => {
       if (value) {
@@ -30,6 +34,7 @@ export class AppComponent {
           toast(`Welcome back ${fullName}!`, { duration: 2000 })
         });
       }
+      // this.myLoginService.login();
     });
   }
 }

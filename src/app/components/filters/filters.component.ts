@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
@@ -22,11 +22,11 @@ import { DropdownComponent } from "../dropdown/dropdown";
 export const FILTERS_COUNT = 4;
 
 @Component({
-    selector: 'app-filters',
-    standalone: true,
-    templateUrl: './filters.component.html',
-    styleUrl: './filters.component.scss',
-    imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective, DropdownComponent]
+  selector: 'app-filters',
+  standalone: true,
+  templateUrl: './filters.component.html',
+  styleUrl: './filters.component.scss',
+  imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective, DropdownComponent]
 })
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
@@ -44,9 +44,17 @@ export class FiltersComponent implements OnInit {
 
   readonly filters = this.queryParamsStore.filters || signal([]);
   readonly hasMoreFilters = signal<boolean>(false);
-  readonly moreFiltersCount = signal(0);
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
+
+  readonly moreFiltersCount = computed(() => {
+    const { filters = [] } = getState(this.queryParamsStore);
+
+    // count more filters
+    return filters
+      .filter(f => this.moreFiltersColumns.includes(f.column))
+      .reduce((acc, f) => acc + f.values.length, 0);
+  });
 
 
   private readonly _subscriptions = new Subscription();
@@ -57,7 +65,6 @@ export class FiltersComponent implements OnInit {
 
     effect(() => {
       const { aggregations } = getState(this._aggregationsStore);
-      const { filters = [] } = getState(this.queryParamsStore);
       const authorizedFilters = getAuthorizedFilters(this._injector);
 
       if (!authorizedFilters) return;
@@ -91,14 +98,6 @@ export class FiltersComponent implements OnInit {
         .filter(a => authorizedFilters.includes(a.column))
         .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
         .splice(FILTERS_COUNT).map(a => a.column);
-
-      // count more filters
-      const count = filters
-        .filter(f => this.moreFiltersColumns.includes(f.column) )
-        .reduce((acc, f) => acc + f.values.length, 0);
-
-      this.moreFiltersCount.set(count)
-
 
       this.filterDropdowns.set(agg);
     }, { allowSignalWrites: true })
@@ -181,12 +180,30 @@ export class FiltersComponent implements OnInit {
       .map((aggregation) => {
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
+
+        const {items} = aggregation;
+        if(items) {
+          // filter out items that are not selected
+          // find the selected items who is the first values of filter
+          const item = items.filter((item) => item.$selected).find((item) => f?.values[0] === item.value);
+          if(item) {
+            return ({
+              label: aggregation.name,
+              aggregation: aggregation,
+              icon: this.appStore.getAggregationIcon(aggregation.column),
+              currentFilter: f,
+              value: { text: f?.values[0], display: item.display || item.value },
+              moreFiltersCount: more,
+            })
+          }
+        }
+
         return ({
           label: aggregation.name,
           aggregation: aggregation,
           icon: this.appStore.getAggregationIcon(aggregation.column),
           currentFilter: f,
-          value: { text: f?.values[0]},
+          value: { text: f?.values[0] },
           moreFiltersCount: more,
         })
       });
@@ -212,15 +229,15 @@ export class FiltersComponent implements OnInit {
     });
   }
 
-  private getFilterValue(filter?: Filter): { operator?: string, text: string} | undefined {
+  private getFilterValue(filter?: Filter): { operator?: string, text: string } | undefined {
     if (!filter) return undefined;
 
-    if (filter.operator === 'between') return { text:`[${filter.values[0]} - ${filter.values[1]}]`};
-    if(filter.operator === 'gte') return { operator: "&#8805;", text: filter.values[0]};
-    if(filter.operator === 'lte') return { operator: "&#8804;", text: filter.values[0]};
-    if(filter.operator === 'lt') return { text: `< ${filter.values[0]}`};
-    if(filter.operator === 'gt') return { text: `> ${filter.values[0]}`};
+    if (filter.operator === 'between') return { text: `[${filter.values[0]} - ${filter.values[1]}]` };
+    if (filter.operator === 'gte') return { operator: "&#8805;", text: filter.values[0] };
+    if (filter.operator === 'lte') return { operator: "&#8804;", text: filter.values[0] };
+    if (filter.operator === 'lt') return { text: `< ${filter.values[0]}` };
+    if (filter.operator === 'gt') return { text: `> ${filter.values[0]}` };
 
-    return {text: filter.values[0]};
+    return { text: filter.values[0] };
   }
 }
