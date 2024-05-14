@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Injector, ViewEncapsulation, inject, input, runInInjectionContext, signal } from "@angular/core";
+import { ChangeDetectorRef, Component, Injector, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
 import { filter } from "rxjs";
 
 import { isASearchRoute } from "@/app/app.routes";
@@ -60,9 +60,13 @@ type AssistantMode = 'prompt' | 'query';
 export class AssistantComponent {
   // ...
   open = signal(false);
-  mode = input<AssistantMode>("prompt");
 
-  instanceId = input("my-first-chat");
+  // If we use the component without inputs, we need to initialize the default values using computed()
+  // This is because the input() function is not called when the component is used without inputs
+  _mode = input<AssistantMode>("prompt", {alias: "mode"});
+  _instanceId = input<string>("my-first-chat", {alias: "instanceId"});
+  mode = computed(() => this._mode() || 'prompt');
+  instanceId = computed(() => this._instanceId() || 'my-first-chat');
 
   loginService = inject(LoginService);
   navigationService = inject(NavigationService);
@@ -73,8 +77,8 @@ export class AssistantComponent {
   query = new Q('assistant');
 
   constructor(private readonly injector: Injector) {
+    console.log("Assistant component initialized", this.query, this.mode(), this.instanceId());
     this.loginService.events.pipe(filter(e => e.type === 'login-complete')).subscribe(() => {
-      console.log("Assistant component initialized", this.query);
       Object.assign(this.query, runInInjectionContext(this.injector, () => buildQuery()));
     })
 
