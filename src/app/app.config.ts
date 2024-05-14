@@ -50,6 +50,7 @@ import { BsSearchModule } from '@sinequa/components/search';
 import { LoginModule } from '@sinequa/core/login';
 import { ModalModule } from '@sinequa/core/modal';
 import { StartConfig, StartConfigWebService, WebServicesModule } from '@sinequa/core/web-services';
+import { environment } from '@/environments/environment';
 import enLocale from './locales/en';
 export class AppLocalesConfig implements LocalesConfig {
   defaultLocale: Locale;
@@ -66,8 +67,8 @@ export function StartConfigInitializer(startConfigWebService: StartConfigWebServ
 }
 
 export const startConfig: StartConfig = {
-  app: 'kiwai',
-  autoOAuthProvider: 'google'
+  app: environment.app,
+  autoOAuthProvider: environment.autoOAuthProvider
 };
 
 export const appConfig: ApplicationConfig = {

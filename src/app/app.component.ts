@@ -5,10 +5,10 @@ import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { login } from '@sinequa/atomic';
+import { LoginService } from '@sinequa/core/login';
 
 import { ApplicationService } from '@/app/services';
 
-import { ComponentWithLogin } from '@sinequa/core/login';
 import { PrincipalStore } from './stores';
 
 @Component({
@@ -18,14 +18,13 @@ import { PrincipalStore } from './stores';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent extends ComponentWithLogin{
+export class AppComponent{
   appService = inject(ApplicationService);
   principalStore = inject(PrincipalStore);
 
-  // myLoginService = inject(myLoginService);
+  loginService = inject(LoginService);
 
   constructor() {
-    super()
     // Login and initialize the application when the user is logged in
     login().then(value => {
       if (value) {
@@ -33,8 +32,8 @@ export class AppComponent extends ComponentWithLogin{
           const { fullName } = getState(this.principalStore).principal;
           toast(`Welcome back ${fullName}!`, { duration: 2000 })
         });
+        this.loginService.login().subscribe(values => console.log("Login successful!", values));
       }
-      // this.myLoginService.login();
     });
   }
 }
