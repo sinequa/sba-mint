@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, Injector, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
-import { filter } from "rxjs";
+import { ChangeDetectorRef, Component, Injector, OnDestroy, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
+import { Subscription, filter } from "rxjs";
 
 import { isASearchRoute } from "@/app/app.routes";
 import { NavigationService } from "@/app/services";
@@ -57,7 +57,7 @@ type AssistantMode = 'prompt' | 'query';
   styleUrl: './assistant.css',
   encapsulation: ViewEncapsulation.None
 })
-export class AssistantComponent {
+export class AssistantComponent implements OnDestroy {
   // ...
   open = signal(false);
 
@@ -76,13 +76,15 @@ export class AssistantComponent {
 
   query = new Q('assistant');
 
+  subs = new Subscription();
+
   constructor(private readonly injector: Injector) {
     console.log("Assistant component initialized", this.query, this.mode(), this.instanceId());
     this.loginService.events.pipe(filter(e => e.type === 'login-complete')).subscribe(() => {
       Object.assign(this.query, runInInjectionContext(this.injector, () => buildQuery()));
     })
 
-    this.navigationService.navigationEnd$
+    this.subs.add(this.navigationService.navigationEnd$
       .pipe(
         filter((routerEvent) => isASearchRoute(routerEvent.url)),
       )
@@ -90,7 +92,13 @@ export class AssistantComponent {
         const q = runInInjectionContext(this.injector, () => buildQuery());
         console.log("Assistant component navigationEnd", q);
         this.query = { ...this.query, ...q } as Q;
-      });
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    console.log("Assistant component destroyed");
+    this.subs.unsubscribe();
   }
 
   handleCancel(event: ChatConfig) {
