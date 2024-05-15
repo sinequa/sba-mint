@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Injector, OnDestroy, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
+import { Component, Injector, OnDestroy, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
 import { Subscription, filter } from "rxjs";
 
 import { isASearchRoute } from "@/app/app.routes";
@@ -7,9 +7,11 @@ import { UserSettingsStore } from "@/app/stores";
 import { buildQuery } from "@/app/utils";
 
 import { NgTemplateOutlet } from "@angular/common";
-import { ChatComponent, ChatConfig, ChatSettingsV3Component } from "@sinequa/assistant/chat";
+import { ChatComponent, ChatConfig, ChatContextAttachment, ChatSettingsV3Component } from "@sinequa/assistant/chat";
+import { Article } from "@sinequa/atomic";
 import { Query as Q } from "@sinequa/core/app-utils";
 import { LoginService } from "@sinequa/core/login";
+import { DrawerStackService } from "../drawer-stack/drawer-stack.service";
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -26,7 +28,9 @@ type AssistantMode = 'prompt' | 'query';
       class="block"
       #sqChat
       [query]="query"
-      [instanceId]="instanceId()"/>
+      [instanceId]="instanceId()"
+      (openPreview)="handlePreview($event)"
+    />
 
     <dialog class="fixed top-[50px] z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
@@ -71,8 +75,8 @@ export class AssistantComponent implements OnDestroy {
   loginService = inject(LoginService);
   navigationService = inject(NavigationService);
   userSettingsStore = inject(UserSettingsStore);
+  drawerStack = inject(DrawerStackService);
 
-  cdr = inject(ChangeDetectorRef);
 
   query = new Q('assistant');
 
@@ -113,5 +117,10 @@ export class AssistantComponent implements OnDestroy {
 
     this.userSettingsStore.updateAssistantSettings(assistants)
     this.open.set(false)
+  }
+
+  handlePreview(event: ChatContextAttachment) {
+    console.log("Preview event: ", event);
+    this.drawerStack.stack(event.record as Article);
   }
 }

@@ -15,7 +15,7 @@ sq-chat-v3 ul {
   padding-right: 2rem;
 }
 sq-chat-v3 .ast-input-container {
-  padding: .25rem;;
+  padding: 0.25rem;
 }
 
 sq-chat-v3 .ast-input-container input {
@@ -26,10 +26,23 @@ sq-chat-v3 sq-chat-message {
   position: relative;
 }
 
+sq-chat-v3 remark ol,
+sq-chat-v3 remark ul {
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 40px;
+  unicode-bidi: isolate;
+  list-style: disc;
+}
+
+sq-chat-v3 remark p {
+	margin-top: .5rem;
+}
+
 .sq-chat-settings .buttons-panel {
   display: flex;
   justify-content: end;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .sq-chat-message-action {
@@ -43,12 +56,12 @@ sq-chat-v3 sq-chat-message {
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.2;
-  color: theme('colors.neutral.900');
+  color: theme("colors.neutral.900");
   margin-bottom: 1rem;
 }
 .settings-panel div {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 .settings-panel hr {
   margin-top: 1rem;
@@ -57,11 +70,12 @@ sq-chat-v3 sq-chat-message {
 .settings-panel details div {
   padding-top: 1rem;
 }
-.settings-panel select, textarea {
+.settings-panel select,
+textarea {
   border: 1px solid;
-  border-color: theme('colors.neutral.300');
-  border-radius: theme('borderRadius.DEFAULT');
-  padding: theme('spacing.1');
+  border-color: theme("colors.neutral.300");
+  border-radius: theme("borderRadius.DEFAULT");
+  padding: theme("spacing.1");
 }
 
 .settings-panel .form-check {
