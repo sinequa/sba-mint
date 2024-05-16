@@ -32,7 +32,7 @@ type AssistantMode = 'prompt' | 'query';
       (openPreview)="handlePreview($event)"
     />
 
-    <dialog class="fixed top-[50px] z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
+    <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
     </dialog>
   }
@@ -42,7 +42,7 @@ type AssistantMode = 'prompt' | 'query';
       #sqChat
       [instanceId]="instanceId()"/>
 
-    <dialog class="fixed top-[50px] z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
+    <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
     </dialog>
   }

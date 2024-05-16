@@ -56,11 +56,10 @@
     "prismjs-components-importer": "^0.2.0",
     "remark": "^14.0.3",
     "remark-gfm": "^3.0.1",
-    "remark-parse": "^11.0.0",
+    "remark-parse": "^10.0.2",
     "rxjs": "~7.8.0",
     "safecolor": "^1.0.1",
     "toolkit": "^0.0.1",
-    "unified": "^11.0.4",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
@@ -79,6 +78,7 @@
     "@types/d3-time": "^3.0.3",
     "@types/d3-time-format": "^4.0.3",
     "@types/jasmine": "~5.1.0",
+    "@types/unist": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "@typescript-eslint/parser": "6.13.1",
     "autoprefixer": "^10.4.16",
