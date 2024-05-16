@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -7,10 +7,10 @@ import { AggregationEx, DateFilter } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
 import { QueryParamsStore } from '@/app/stores';
+import { getState } from '@ngrx/signals';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { cn } from '@sinequa/atomic-angular';
 import { AggregationTitle } from '../aggregation/aggregation.component';
-import { getState } from '@ngrx/signals';
 
 const ALLOW_CUSTOM_RANGE = true;
 
@@ -53,6 +53,8 @@ export class DateFilterComponent implements OnDestroy {
 
   private readonly subscriptions = new Subscription();
 
+  hasDateFilter = signal<boolean>(false);
+
   constructor() {
 
     effect(() => {
@@ -65,13 +67,10 @@ export class DateFilterComponent implements OnDestroy {
     this.subscriptions.add(
       this.form.valueChanges.subscribe((values) => {
         const current = [values.option?.toString() ?? '', values.customRange?.from ?? '', values.customRange?.to ?? ''];
-
-        if (current.filter((value: string) => value === '').length === 3) current.length = 0;
-
-        const filters = this.queryParamsStore.filters();
-        if (filters) {
-          const label = filters.find((f: Filter) => f.column === this.column())?.label;
-          this.valueChanged.emit({ column: this.column(), label, values: current });
+        if (current.some((value: string) => !!value)) {
+          this.hasDateFilter.set(true);
+        } else {
+          this.hasDateFilter.set(false);
         }
       })
     );
@@ -169,7 +168,6 @@ export class DateFilterComponent implements OnDestroy {
 
       return acc;
     }, [] as DateFilter[]);
-
     return arr;
   }
 
