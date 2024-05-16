@@ -67,11 +67,10 @@ export class DateFilterComponent implements OnDestroy {
     this.subscriptions.add(
       this.form.valueChanges.subscribe((values) => {
         const current = [values.option?.toString() ?? '', values.customRange?.from ?? '', values.customRange?.to ?? ''];
-
-        if (current.filter((value: string) => value === '').length === 3) {
-          this.hasDateFilter.set(false);
-        } else {
+        if (current.some((value: string) => !!value)) {
           this.hasDateFilter.set(true);
+        } else {
+          this.hasDateFilter.set(false);
         }
       })
     );
