@@ -46,3 +46,15 @@ export function getCurrentTab(): string | undefined {
 
   return route?.snapshot.url.toString();
 }
+
+/**
+ * Returns the current query name
+ * @returns The current query name
+ */
+export function getCurrentQueryName(): string | undefined {
+  assertInInjectionContext(getCurrentQueryName);
+
+  const tab = getCurrentTab();
+
+  return routes.find(r => r.path === 'search')?.children?.find(r => r.path === tab)?.data?.['queryName'];
+}
