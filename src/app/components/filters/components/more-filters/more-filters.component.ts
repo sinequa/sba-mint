@@ -2,8 +2,9 @@ import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
+import { Aggregation, Filter as ApiFilter, resolveToColumnName } from '@sinequa/atomic';
 
+import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AppStore, QueryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
@@ -39,18 +40,30 @@ export class MoreFiltersComponent implements OnDestroy {
 
   constructor() {
     effect(() => {
-      const { aggregations } = getState(this._aggregationsStore);
       const authorizedFilters = getAuthorizedFilters(this._injector);
 
       if (!authorizedFilters) return;
 
-      // create filters with only aggregations that are authorized and not already shown
-      const agg = this.buildMoreFilterDropdownsFromAggregations(aggregations
-        .filter(a => authorizedFilters.includes(a.column))
-        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
-        .splice(FILTERS_COUNT));
+      const { aggregations } = getState(this._aggregationsStore);
 
-      this.filterDropdowns.set(agg);
+      const resolvedAggregations = authorizedFilters.reduce((acc, name) => {
+        let aggregation = aggregations.find(agg => agg.column === name);
+
+        if (!aggregation) {
+          const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore), getCurrentQueryName()))
+
+          aggregation = aggregations.find(agg => agg.column === aggColumn);
+        }
+
+        if (aggregation) acc.push(aggregation);
+
+        return acc;
+      }, [] as Aggregation[]);
+
+      // create filters with only aggregations that are authorized and not already shown
+      const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(resolvedAggregations.splice(FILTERS_COUNT));
+
+      this.filterDropdowns.set(filterDropdowns);
 
     }, { allowSignalWrites: true });
   }
