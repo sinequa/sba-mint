@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Injector, OnInit, Output, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
@@ -42,6 +42,12 @@ export class AggregationComponent implements OnInit {
 
   title = input<AggregationTitle>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
+
+  items = computed<AggregationListItem[]>(() => {
+    return this.aggregation().items ?
+      [...(this.aggregation().items)].sort((a, b) => b.$selected && !a.$selected ? 1 : -1)
+      : [];
+  });
 
   readonly aggregationsService = inject(AggregationsService);
   readonly injector = inject(Injector);
