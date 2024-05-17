@@ -10,7 +10,7 @@
       <span class="ms-1 me-4 grow">{{ title()?.label }}</span>
 
       <div class="ms-4">
-        @if (hasFilter()) {
+        @if (hasAppliedFilters()) {
         <button
           type="button"
           class="me-2"
@@ -20,7 +20,9 @@
         >
           <i class="fa-fw far fa-filter-circle-xmark"></i>
         </button>
+      }
 
+      @if (hasFilter()) {
         <button
           type="button"
           title="Apply filters"

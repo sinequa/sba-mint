@@ -3,6 +3,7 @@ import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, in
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@/app/services';
+import { QueryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
@@ -38,6 +39,8 @@ export class AggregationComponent implements OnInit {
   @Output() public readonly onFiltersChanges = new EventEmitter<Filter>();
   @Output() public readonly onSelect = new EventEmitter<Filter>();
 
+  private queryParamsStore = inject(QueryParamsStore);
+
   protected readonly hasFilter = signal<boolean>(false);
 
   title = input<AggregationTitle>();
@@ -51,6 +54,10 @@ export class AggregationComponent implements OnInit {
 
   readonly aggregationsService = inject(AggregationsService);
   readonly injector = inject(Injector);
+
+  hasAppliedFilters = computed(() => {
+    return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
+  });
 
   ngOnInit(): void {
     this.hasFilter.set(this.hasFilters());

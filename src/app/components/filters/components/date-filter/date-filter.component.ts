@@ -7,7 +7,6 @@ import { AggregationEx, DateFilter } from '@/app/services';
 import { Filter } from '@/app/utils/models';
 
 import { QueryParamsStore } from '@/app/stores';
-import { getState } from '@ngrx/signals';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { cn } from '@sinequa/atomic-angular';
 import { AggregationTitle } from '../aggregation/aggregation.component';
@@ -35,11 +34,12 @@ export class DateFilterComponent implements OnDestroy {
   private readonly queryParamsStore = inject(QueryParamsStore);
 
   readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
-  readonly hasFilter = computed(() => {
-    const { filters = [] } = getState(this.queryParamsStore);
-    return filters.length > 0
-  });
+
   readonly column = computed(() => this.aggregation().column);
+
+  readonly hasAppliedFilter = computed(() => {
+    return this.column() ? !!this.queryParamsStore.getFilterFromColumn(this.column()) : false;
+  });
 
   readonly form = new FormGroup({
     option: new FormControl<string | null>(null),
