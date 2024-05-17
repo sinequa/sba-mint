@@ -1,9 +1,9 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
 
 import { SelectionHistoryService, SelectionService } from '@/app/services';
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { getState } from '@ngrx/signals';
 
 @Injectable({
   providedIn: 'root'

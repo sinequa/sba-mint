@@ -1,5 +1,5 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { Component, ComponentRef, OnDestroy, ViewContainerRef, inject } from '@angular/core';
+import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, effect, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawerAssistantComponent } from '../drawer/components/assistant/assistant.component';
 import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
@@ -12,10 +12,13 @@ const DRAWER_STACK_MAX_COUNT = 3;
   selector: 'app-drawer-stack',
   standalone: true,
   imports: [DrawerComponent],
-  template: '',
+  templateUrl: './drawer-stack.component.html',
   styleUrl: './drawer-stack.component.scss'
 })
 export class DrawerStackComponent implements OnDestroy {
+  @HostBinding('attr.drawer-opened')
+  public drawerOpened: boolean = false;
+
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly drawerStackService = inject(DrawerStackService);
@@ -26,6 +29,9 @@ export class DrawerStackComponent implements OnDestroy {
   private readonly subscriptions = new Subscription();
 
   constructor() {
+    // drawer stack animation on drawer stack toggle
+    effect(() => this.drawerOpened = this.drawerStackService.isOpened());
+
     this.subscriptions.add(
       this.selectionHistory$.subscribe((event) => {
         if (event !== 'new') return;
@@ -56,6 +62,10 @@ export class DrawerStackComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public toggleAssistant(): void {
+    this.drawerStackService.toggleAssistant();
   }
 
   private openTopDrawer(index: number): void {
