@@ -22,7 +22,7 @@ type AssistantMode = 'prompt' | 'query';
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: { class: 'block p-4' },
   template: `
-  <i role="button" class="far fa-gears" (click)="open.set(true)"></i>
+  <!-- <i role="button" class="far fa-gears" (click)="open.set(true)"></i> -->
   @if(mode() === 'query' && instanceId()) {
     <sq-chat-v3
       class="block"
@@ -32,9 +32,9 @@ type AssistantMode = 'prompt' | 'query';
       (openPreview)="handlePreview($event)"
     />
 
-    <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
+    <!-- <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
-    </dialog>
+    </dialog> -->
   }
   @else if(instanceId()){
     <sq-chat-v3
@@ -44,9 +44,9 @@ type AssistantMode = 'prompt' | 'query';
       (openPreview)="handlePreview($event)"
     />
 
-    <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
+    <!-- <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
-    </dialog>
+    </dialog> -->
   }
 
   <ng-template #sqChatSettings>
