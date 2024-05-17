@@ -22,6 +22,9 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
   });
   addComponents({
     '.btn': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       padding: theme('spacing.2'),
       borderRadius: theme('borderRadius.DEFAULT'),
       backgroundColor: theme('colors.zinc.900'),

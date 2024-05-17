@@ -5,6 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css";
 
 @import "../node_modules/toolkit/styles/keyframes.css";
 @import "../node_modules/toolkit/styles/panel.css";
@@ -22,7 +23,6 @@
 @import "./styles/checkbox.scss";
 @import "./styles/radio.scss";
 
-@import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css";
 
 html {
   overflow-x: hidden;

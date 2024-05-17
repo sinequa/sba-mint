@@ -1,4 +1,5 @@
-import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, computed, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
 import { Subscription, switchMap, take } from 'rxjs';
 
 import { Aggregation, Result } from '@sinequa/atomic';
@@ -9,39 +10,40 @@ import { ArticleDefaultComponent } from '@/app/components/article/default/articl
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from '@/app/components/pagination/pager.component';
+import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
 import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
-import { AggregationsStore } from '@/stores';
+import { AggregationsStore, ApplicationStore } from '@/stores';
 
-import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
-import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
-import { getState } from '@ngrx/signals';
+import { AssistantComponent } from "../../../components/assistant/assistant";
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
 @Component({
-  selector: 'app-search-all',
-  standalone: true,
-  imports: [
-    SelectArticleOnClickDirective,
-    FiltersComponent,
-    OverviewPeopleComponent,
-    OverviewSlidesComponent,
-    ArticleDefaultComponent,
-    ArticleDefaultSkeletonComponent,
-    PagerComponent,
-    SortSelectorComponent,
-    DidYouMeanComponent
-  ],
-  templateUrl: './search-all.component.html',
-  styleUrl: './search-all.component.scss',
-  hostDirectives: [{
-    directive: SelectArticleFromQueryParamsDirective,
-    inputs: ['articleId: id', 'aggregations']
-  }]
+    selector: 'app-search-all',
+    standalone: true,
+    templateUrl: './search-all.component.html',
+    styleUrl: './search-all.component.scss',
+    hostDirectives: [{
+            directive: SelectArticleFromQueryParamsDirective,
+            inputs: ['articleId: id', 'aggregations']
+        }],
+    imports: [
+        SelectArticleOnClickDirective,
+        FiltersComponent,
+        OverviewPeopleComponent,
+        OverviewSlidesComponent,
+        ArticleDefaultComponent,
+        ArticleDefaultSkeletonComponent,
+        PagerComponent,
+        SortSelectorComponent,
+        DidYouMeanComponent,
+        AssistantComponent
+    ]
 })
 export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -60,6 +62,9 @@ export class SearchAllComponent implements OnDestroy {
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly applicationStore = inject(ApplicationStore);
+
+  isAssistantReady = computed(() => this.applicationStore.assistantReady());
 
   protected aggregations: Aggregation[];
 

@@ -6,7 +6,8 @@ import { fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
 const initialState: UserSettings = {
   bookmarks: [],
   recentSearches: [],
-  savedSearches: []
+  savedSearches: [],
+  assistants: {}
 };
 
 export const UserSettingsStore = signalStore(
@@ -34,6 +35,11 @@ export const UserSettingsStore = signalStore(
       await patchUserSettings({ savedSearches });
       patchState(store, (state) => {
         return { ...state, savedSearches };
+      })
+    },
+    async updateAssistantSettings(assistantSettings: UserSettings['assistants']) {
+      patchState(store, (state) => {
+        return { ...state, assistants: assistantSettings };
       })
     },
     async bookmark(article: Article) {
