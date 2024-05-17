@@ -1,0 +1,15 @@
+<div
+  (click)="drawer.toggleExtension()"
+  (keydown.escape)="drawer.toggleExtension()"
+  [attr.aria-hidden]="true"
+></div>
+
+<div class="flex overflow-auto bg-white">
+  <div
+    #drawerHandle
+    class="w-[5px] h-full fixed hover:cursor-ew-resize"
+    [ngClass]="{ hidden: !drawer.isExtended() }"
+  ></div>
+
+  <p>Assistant Drawer</p>
+</div>

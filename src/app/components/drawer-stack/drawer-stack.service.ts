@@ -14,6 +14,9 @@ export class DrawerStackService {
   public readonly forceTopDrawerCollapse$ = new EventEmitter<void>();
   public readonly closeTopDrawer$ = new EventEmitter<void>();
   public readonly closeAllDrawers$ = new EventEmitter<void>();
+  public readonly isChatOpened = signal(false);
+  public readonly openChatDrawer$ = new EventEmitter<void>();
+  public readonly closeChatDrawer$ = new EventEmitter<void>();
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
@@ -104,5 +107,29 @@ export class DrawerStackService {
     this.selection.setCurrentArticle(article);
     // open drawer
     this.open();
+  }
+
+  public toggleAssistant(): void {
+    if (this.isChatOpened())
+      this.closeAssistant();
+    else
+      this.openAssistant();
+  }
+
+  public openAssistant(): void {
+    console.log('Open assistant');
+    this.isChatOpened.set(true);
+    this.isOpened.set(true);
+    this.openChatDrawer$.next();
+  }
+
+  public closeAssistant(): void {
+    console.log('Close assistant');
+    this.isChatOpened.set(false);
+
+    if (this.selectionHistory.getCurrentSelectionIndex() === -1)
+      this.isOpened.set(false);
+
+    this.closeChatDrawer$.next();
   }
 }

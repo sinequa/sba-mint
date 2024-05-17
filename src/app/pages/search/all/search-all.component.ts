@@ -24,26 +24,26 @@ import { OverviewPeopleComponent } from '../../components/overview/people/overvi
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
 @Component({
-    selector: 'app-search-all',
-    standalone: true,
-    templateUrl: './search-all.component.html',
-    styleUrl: './search-all.component.scss',
-    hostDirectives: [{
-            directive: SelectArticleFromQueryParamsDirective,
-            inputs: ['articleId: id', 'aggregations']
-        }],
-    imports: [
-        SelectArticleOnClickDirective,
-        FiltersComponent,
-        OverviewPeopleComponent,
-        OverviewSlidesComponent,
-        ArticleDefaultComponent,
-        ArticleDefaultSkeletonComponent,
-        PagerComponent,
-        SortSelectorComponent,
-        DidYouMeanComponent,
-        AssistantComponent
-    ]
+  selector: 'app-search-all',
+  standalone: true,
+  templateUrl: './search-all.component.html',
+  styleUrl: './search-all.component.scss',
+  hostDirectives: [{
+    directive: SelectArticleFromQueryParamsDirective,
+    inputs: ['articleId: id', 'aggregations']
+  }],
+  imports: [
+    SelectArticleOnClickDirective,
+    FiltersComponent,
+    OverviewPeopleComponent,
+    OverviewSlidesComponent,
+    ArticleDefaultComponent,
+    ArticleDefaultSkeletonComponent,
+    PagerComponent,
+    SortSelectorComponent,
+    DidYouMeanComponent,
+    AssistantComponent
+  ]
 })
 export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -115,5 +115,10 @@ export class SearchAllComponent implements OnDestroy {
 
     this.articles.set(undefined);
     this.searchService.search([]);
+  }
+
+  toggleAssistant(): void {
+    console.log("Toggle assistant");
+    this.drawerStack.toggleAssistant();
   }
 }

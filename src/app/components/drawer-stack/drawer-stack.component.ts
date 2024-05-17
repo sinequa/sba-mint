@@ -1,6 +1,7 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
 import { Component, ComponentRef, OnDestroy, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { DrawerAssistantComponent } from '../drawer/components/assistant/assistant.component';
 import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { DrawerStackService } from './drawer-stack.service';
@@ -44,6 +45,12 @@ export class DrawerStackComponent implements OnDestroy {
     );
     this.subscriptions.add(
       this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers())
+    );
+    this.subscriptions.add(
+      this.drawerStackService.openChatDrawer$.subscribe(() => this.openChatDrawer())
+    );
+    this.subscriptions.add(
+      this.drawerStackService.closeChatDrawer$.subscribe(() => this.closeChatDrawer())
     );
   }
 
@@ -126,5 +133,33 @@ export class DrawerStackComponent implements OnDestroy {
     setTimeout(() => {
       drawer?.destroy();
     }, 250);
+  }
+
+  private openChatDrawer(): void {
+    console.log('Open chat drawer');
+
+    const drawer = this.viewContainer.createComponent(DrawerAssistantComponent);
+
+    this.drawers.push(drawer);
+
+    setTimeout(() => {
+      drawer.instance.drawer.open();
+    });
+  }
+
+  private closeChatDrawer(): void {
+    console.log('Close chat drawer');
+
+    const drawer = this.drawers[this.drawers.length - 1];
+
+    if (drawer && drawer.instance instanceof DrawerAssistantComponent) {
+      drawer.instance.drawer.close();
+
+      setTimeout(() => {
+        drawer.destroy();
+      }, 250);
+
+      this.drawers.pop();
+    }
   }
 }
