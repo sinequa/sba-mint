@@ -20,17 +20,15 @@ export class SelectionHistoryService {
   private readonly selectionStore = inject(SelectionStore);
 
   private readonly history: Article[] = [];
-  // private readonly subscriptions = new Subscription();
 
   constructor() {
     effect(() => {
-      const {article} = getState(this.selectionStore);
-      if( !!article && article !== this.history[this.history.length - 1] ) {
-        console.log('-- selectionHistory - newSelection: currentArticle: %o, history: %o', article, this.history);
+      const { article } = getState(this.selectionStore);
+
+      if (!!article && article !== this.history[this.history.length - 1]) {
         this.history.push(article);
         this.selectionHistoryEvent.next('new');
       }
-
     })
   }
 

@@ -1,6 +1,7 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
 import { Component, ComponentRef, OnDestroy, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { DrawerStackService } from './drawer-stack.service';
 
@@ -89,7 +90,7 @@ export class DrawerStackComponent implements OnDestroy {
   }
 
   private pushDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerComponent);
+    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
     drawer.instance.selectionId = index;
 
@@ -109,7 +110,7 @@ export class DrawerStackComponent implements OnDestroy {
   }
 
   private unshiftDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerComponent);
+    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
     drawer.instance.selectionId = index;
     this.viewContainer.insert(drawer.hostView, 0);
