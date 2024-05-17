@@ -1,6 +1,6 @@
 import { ApplicationService } from "@/app/services";
-import { PrincipalStore } from "@/app/stores";
-import { Component, computed, inject } from "@angular/core";
+import { PrincipalStore, UserSettingsStore } from "@/app/stores";
+import { Component, computed, inject, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
 import { login, logout, setGlobalConfig } from "@sinequa/atomic";
@@ -17,11 +17,13 @@ import { PersonArticle } from "@/app/types";
   templateUrl: "./user-menu.html"
 })
 export class UserMenuComponent {
+  menu = viewChild(MenuComponent);
 
   private readonly router = inject(Router);
 
   appService = inject(ApplicationService);
   principalStore = inject(PrincipalStore);
+  userSettingsStore = inject(UserSettingsStore);
 
   person = computed(() => ({employeeFullName: this.user().fullName}) as PersonArticle )
   user = computed(() => {
@@ -64,6 +66,14 @@ export class UserMenuComponent {
         });
       }
     });
+  }
+
+  handleResetUserSettings() {
+    console.log("Resetting user settings");
+    this.userSettingsStore.reset().then(() => {
+      toast("User settings have been reset", { duration: 2000 });
+    });
+    this.menu()?.toggle(new MouseEvent('click'));
   }
 
 }
