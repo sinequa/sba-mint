@@ -1,4 +1,4 @@
-import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, computed, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { Subscription, switchMap, take } from 'rxjs';
 
@@ -17,7 +17,7 @@ import { NavigationService, SearchService } from '@/app/services';
 import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
-import { AggregationsStore } from '@/stores';
+import { AggregationsStore, ApplicationStore } from '@/stores';
 
 import { AssistantComponent } from "../../../components/assistant/assistant";
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
@@ -62,6 +62,9 @@ export class SearchAllComponent implements OnDestroy {
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly applicationStore = inject(ApplicationStore);
+
+  isAssistantReady = computed(() => this.applicationStore.assistantReady());
 
   protected aggregations: Aggregation[];
 

@@ -10,6 +10,7 @@ import { LoginService } from '@sinequa/core/login';
 import { ApplicationService } from '@/app/services';
 
 import { PrincipalStore } from './stores';
+import { ApplicationStore } from '@/stores';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ import { PrincipalStore } from './stores';
 export class AppComponent{
   appService = inject(ApplicationService);
   principalStore = inject(PrincipalStore);
+applicationStore = inject(ApplicationStore);
 
   loginService = inject(LoginService);
 
@@ -32,7 +34,10 @@ export class AppComponent{
           const { fullName } = getState(this.principalStore).principal;
           toast(`Welcome back ${fullName}!`, { duration: 2000 })
         });
-        this.loginService.login().subscribe(values => console.log("Login successful!", values));
+        this.loginService.login().subscribe(values => {
+          console.log("Login successful!", values);
+          this.applicationStore.updateAssistantReady();
+        });
       }
     });
   }

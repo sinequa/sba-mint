@@ -40,7 +40,9 @@ type AssistantMode = 'prompt' | 'query';
     <sq-chat-v3
       class="block"
       #sqChat
-      [instanceId]="instanceId()"/>
+      [instanceId]="instanceId()"
+      (openPreview)="handlePreview($event)"
+    />
 
     <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
