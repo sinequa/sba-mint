@@ -2,6 +2,6 @@ import { Environment } from "./env.model";
 
 export const environment: Environment = {
   production: false,
-  app: 'vanilla-search',
+  app: 'workplace-search-mint',
   autoOAuthProvider: 'azure_mfa_dev'
 }
