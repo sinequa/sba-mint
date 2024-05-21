@@ -8,7 +8,7 @@
         </p>
 
         <div class="ms-4">
-          @if (hasDateFilter()) {
+          @if (hasAppliedFilter()) {
           <button
             type="button"
             class="me-2"
@@ -19,7 +19,9 @@
           >
             <i class="fa-fw far fa-filter-circle-xmark " aria-hidden="true"></i>
           </button>
+        }
 
+          @if (hasDateFilter()) {
 
           <button
             type="button"
