@@ -146,13 +146,17 @@ export class DateFilterComponent implements OnDestroy {
       if((curr.value as string).includes('-')) {
         // if the value contains "-" returns [operator: "between", {from, to}]
         // where from is the first day of the month and to is the last day of the month
-        const [year, month] = (curr.value as string).split('-');
+        const [yearSection, month] = (curr.value as string).split('-');
+
+        // options from a distribution start with a keyword (e.g.: 'thisMonth:=> [DATE]). Only keep the date
+        const yearSectionSplit = yearSection.split(' ');
+        const year = yearSectionSplit[yearSectionSplit.length - 1];
         const from = `${year}-${month}-01`;
         const to = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
         acc.push({
           operator: 'between',
           range: [from, to],
-          display: curr.value as string,
+          display: (curr.display ?? curr.value) as string,
           disabled: curr.count === 0
         });
       }
