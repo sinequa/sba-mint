@@ -73,6 +73,7 @@ export class SearchInputComponent implements OnDestroy {
     if (this.input() === this.oldInput) return;
 
     this.oldInput = this.input();
+    this.overlayOpen.set(false);
     this.validated.emit(this.input());
   }
 
