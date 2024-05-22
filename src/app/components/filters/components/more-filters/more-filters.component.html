@@ -18,7 +18,7 @@
               {{ filter.moreFiltersCount }}
             </span>
           }
-          @if (hasFilters()[$index]) {
+          @if (hasAppliedFilters()[$index]) {
             <button
               title="Clear filters"
               (click)="clearFilter($index)"
@@ -26,23 +26,25 @@
               >
               <i class="fa-fw far fa-filter-circle-xmark"></i>
             </button>
+          }
 
+          @if (hasFilters()[$index]) {
 
-          <button
-            title="Apply filters"
-            (click)="applyFilter($index)"
-            (keydown.enter)="applyFilter($index)"
-            >
-            <i class="fa-fw far fa-filter"></i>
-          </button>
-        }
+            <button
+              title="Apply filters"
+              (click)="applyFilter($index)"
+              (keydown.enter)="applyFilter($index)"
+              >
+              <i class="fa-fw far fa-filter"></i>
+            </button>
+          }
         </div>
       </div>
 
       <!-- content -->
       <app-aggregation class="collapse-content"
         [aggregation]="filter.aggregation"
-        (onFiltersChanges)="filterUpdated($event, $index)"
+        (onSelect)="updateHasFilters($event, $index)"
         (onLoadMore)="loadMore(filter.aggregation, $index)"
         />
     </li>
