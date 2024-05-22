@@ -44,7 +44,7 @@ export const UserSettingsStore = signalStore(
       const bookmark = {
         id: article.id,
         label: article.title,
-        source: article.treepath?.[0],
+        source: article.collection[0],
         author: article.authors?.[0],
         parentFolder: article.parentFolder,
         queryName: article.$queryName

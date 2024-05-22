@@ -1,0 +1,8 @@
+@if (iconPath()) {
+  <img
+    [src]="iconPath()"
+    [alt]="collection()?.[0] || 'Source'"
+    >
+} @else {
+  <i class="{{ (collection() || []) | sourceIcon }}"></i>
+}
