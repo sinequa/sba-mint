@@ -1,8 +1,8 @@
 @if (iconPath()) {
   <img
     [src]="iconPath()"
-    [alt]="collection()?.[0] || 'Source'"
+    [alt]="collection()?.[0] || 'Source Icon'"
     >
 } @else {
-  <i class="{{ (collection() || []) | sourceIcon }}"></i>
+  <i class="{{ (collection() || []) | sourceIcon }}" aria-label="source icon"></i>
 }
