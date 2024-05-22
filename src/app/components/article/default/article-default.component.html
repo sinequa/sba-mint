@@ -1,7 +1,7 @@
 <article class="article group/article" [class.selected]="selected()">
   <section class="shrink-0">
     <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
-      <i class="{{ article().collection | sourceIcon }} text-lg"></i>
+      <app-source-icon [collection]="article().collection" class="text-lg max-w-7" />
     </div>
   </section>
 

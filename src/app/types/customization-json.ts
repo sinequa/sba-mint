@@ -18,7 +18,8 @@ export type CJAggregation = Pick<Aggregation, 'column' | 'items'> & {
 
 export type CJSource = {
   name: string;
-  icon: string;
+  icon?: string;
+  iconPath?: string;
 }
 
 export type Features = {

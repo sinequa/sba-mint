@@ -7,20 +7,20 @@ import { Subscription } from 'rxjs';
 import { PreviewData, fetchPreview } from '@sinequa/atomic';
 import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
-import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
+import { AuthorComponent } from '@/app/components/author/author.component';
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildQuery } from '@/app/utils';
-import { AuthorComponent } from '@/app/components/author/author.component';
 
+import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from "../actions/preview-actions";
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, SourceIconPipe, PreviewNavbarComponent, AuthorComponent, MetadataComponent, PreviewActionsComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, PreviewNavbarComponent, AuthorComponent, MetadataComponent, PreviewActionsComponent, SourceIconComponent],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {

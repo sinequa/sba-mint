@@ -8,7 +8,7 @@
     >
     <i class="fa-fw far fa-bookmark shrink-0 " aria-hidden="true"></i>
 
-    <i class="{{ [bookmark.source || ''] | sourceIcon }} shrink-0 " aria-hidden="true"></i>
+    <app-source-icon [collection]="[bookmark.source ?? '']" class="shrink-0 max-w-4" aria-hidden="true" />
 
     <p class="line-clamp-1">{{ bookmark.label }}</p>
 

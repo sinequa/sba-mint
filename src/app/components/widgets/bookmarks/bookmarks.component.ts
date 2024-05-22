@@ -4,16 +4,16 @@ import { toast } from 'ngx-sonner';
 import { Query } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
-import { SourceIconPipe } from '@/app/pipes/source-icon.pipe';
 import { UserSettingsStore } from '@/app/stores';
 import { Bookmark } from '@/app/types/user-settings';
 
 import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
+import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 @Component({
   selector: 'app-bookmarks',
   standalone: true,
-  imports: [SourceIconPipe],
+  imports: [SourceIconComponent],
   templateUrl: './bookmarks.component.html',
   styleUrl: './bookmarks.component.scss'
 })

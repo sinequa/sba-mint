@@ -16,8 +16,8 @@
     <table class="w-full" [ngClass]="{ hidden: headerCollapsed() }">
       <tr>
         <th>Location</th>
-        <td class="flex flex-wrap items-baseline divide-x-chevron-right divide-xs">
-          <i class="fa-fw {{ article().collection | sourceIcon }}"></i>
+        <td class="flex flex-wrap items-center divide-x-chevron-right divide-xs">
+          <app-source-icon [collection]="article().collection" class="fa-fw" />
 
           @for (segment of (article().treepath?.[0] || '') | split: '/' | slice:1:-1; track $index) {
             <span>{{ segment }}</span>
