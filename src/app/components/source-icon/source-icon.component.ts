@@ -1,6 +1,6 @@
 import { SourceIconPipe } from '@/app/pipes';
 import { AppStore } from '@/app/stores';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-source-icon',
@@ -12,7 +12,6 @@ export class SourceIconComponent {
   collection = input<string[]>();
   appStore = inject(AppStore);
 
-  faIcon = signal<string>('');
   iconPath = computed(() => {
     const collections = this.collection();
     if (!collections) return undefined;
