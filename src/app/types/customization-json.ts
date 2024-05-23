@@ -37,9 +37,17 @@ export type UserFeatures = {
   bookmarks?: boolean;
 }
 
+export type CJApplication = {
+  name: string;
+  icon?: string;
+  iconPath?: string;
+  url?: string;
+};
+
 // Main configuration object
 export type CustomizationJson = {
   aggregations?: CJAggregation[];
+  applications?: CJApplication[];
   autocomplete?: Autocomplete;
   features?: Features;
   sourcesTagsMap?: SourceTagMap[];
