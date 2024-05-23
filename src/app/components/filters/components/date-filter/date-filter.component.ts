@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -10,7 +10,6 @@ import { QueryParamsStore } from '@/app/stores';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { cn } from '@sinequa/atomic-angular';
 import { AggregationTitle } from '../aggregation/aggregation.component';
-import { getState } from '@ngrx/signals';
 
 const ALLOW_CUSTOM_RANGE = true;
 
@@ -35,11 +34,12 @@ export class DateFilterComponent implements OnDestroy {
   private readonly queryParamsStore = inject(QueryParamsStore);
 
   readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
-  readonly hasFilter = computed(() => {
-    const { filters = [] } = getState(this.queryParamsStore);
-    return filters.length > 0
-  });
+
   readonly column = computed(() => this.aggregation().column);
+
+  readonly hasAppliedFilter = computed(() => {
+    return this.column() ? !!this.queryParamsStore.getFilterFromColumn(this.column()) : false;
+  });
 
   readonly form = new FormGroup({
     option: new FormControl<string | null>(null),
@@ -53,6 +53,8 @@ export class DateFilterComponent implements OnDestroy {
 
   private readonly subscriptions = new Subscription();
 
+  hasDateFilter = signal<boolean>(false);
+
   constructor() {
 
     effect(() => {
@@ -65,13 +67,10 @@ export class DateFilterComponent implements OnDestroy {
     this.subscriptions.add(
       this.form.valueChanges.subscribe((values) => {
         const current = [values.option?.toString() ?? '', values.customRange?.from ?? '', values.customRange?.to ?? ''];
-
-        if (current.filter((value: string) => value === '').length === 3) current.length = 0;
-
-        const filters = this.queryParamsStore.filters();
-        if (filters) {
-          const label = filters.find((f: Filter) => f.column === this.column())?.label;
-          this.valueChanged.emit({ column: this.column(), label, values: current });
+        if (current.some((value: string) => !!value)) {
+          this.hasDateFilter.set(true);
+        } else {
+          this.hasDateFilter.set(false);
         }
       })
     );
@@ -147,13 +146,17 @@ export class DateFilterComponent implements OnDestroy {
       if((curr.value as string).includes('-')) {
         // if the value contains "-" returns [operator: "between", {from, to}]
         // where from is the first day of the month and to is the last day of the month
-        const [year, month] = (curr.value as string).split('-');
+        const [yearSection, month] = (curr.value as string).split('-');
+
+        // options from a distribution start with a keyword (e.g.: 'thisMonth:=> [DATE]). Only keep the date
+        const yearSectionSplit = yearSection.split(' ');
+        const year = yearSectionSplit[yearSectionSplit.length - 1];
         const from = `${year}-${month}-01`;
         const to = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
         acc.push({
           operator: 'between',
           range: [from, to],
-          display: curr.value as string,
+          display: (curr.display ?? curr.value) as string,
           disabled: curr.count === 0
         });
       }
@@ -169,7 +172,6 @@ export class DateFilterComponent implements OnDestroy {
 
       return acc;
     }, [] as DateFilter[]);
-
     return arr;
   }
 

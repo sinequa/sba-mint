@@ -10,7 +10,7 @@
       <span class="ms-1 me-4 grow">{{ title()?.label }}</span>
 
       <div class="ms-4">
-        @if (hasFilter()) {
+        @if (hasAppliedFilters()) {
         <button
           type="button"
           class="me-2"
@@ -20,8 +20,9 @@
         >
           <i class="fa-fw far fa-filter-circle-xmark"></i>
         </button>
-        }
+      }
 
+      @if (hasFilter()) {
         <button
           type="button"
           title="Apply filters"
@@ -31,13 +32,14 @@
         >
           <i class="fa-fw far fa-filter"></i>
         </button>
+      }
       </div>
     </div>
     }
   </legend>
 
   <ul class="data-list pt-2 snap-start">
-    @for (item of aggregation().items; track $index) {
+    @for (item of items(); track $index) {
       <app-aggregation-row class="ps-1" [ngClass]="{'data-list-item': !item.hasChildren}"
         [aggregation]="aggregation()"
         [item]="item"

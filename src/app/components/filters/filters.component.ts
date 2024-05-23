@@ -4,22 +4,26 @@ import { ActivatedRoute } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, Filter as ApiFilter } from '@sinequa/atomic';
+import { Aggregation, Filter as ApiFilter, resolveToColumnName } from '@sinequa/atomic';
 import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
 
+import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AppStore, QueryParamsStore } from '@/app/stores';
 import { Filter, buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
+import { DropdownComponent } from "../dropdown/dropdown";
 import { AggregationComponent } from './components/aggregation/aggregation.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
 import { getAuthorizedFilters } from './filter';
 import { FilterDropdown } from './models/filter-dropdown';
-import { DropdownComponent } from "../dropdown/dropdown";
 
 export const FILTERS_COUNT = 4;
+
+const DATE_FILTER_NAME = "#date";
+const DATE_FILTER_COLUMN = "Modified";
 
 @Component({
   selector: 'app-filters',
@@ -64,42 +68,52 @@ export class FiltersComponent implements OnInit {
   constructor() {
 
     effect(() => {
-      const { aggregations } = getState(this._aggregationsStore);
       const authorizedFilters = getAuthorizedFilters(this._injector);
 
       if (!authorizedFilters) return;
 
+      const { aggregations } = getState(this._aggregationsStore);
+      const { filters = [] } = getState(this.queryParamsStore);
+
       if (authorizedFilters.length > FILTERS_COUNT)
         this.hasMoreFilters.set(true);
 
-      if (authorizedFilters.includes("#date")) {
-        const agg = aggregations?.find(agg => agg.name === "Modified") as AggregationListEx;
-        if (agg) {
-          const filter = this.queryParamsStore.getFilterFromColumn(agg.column);
-          const value = this.getFilterValue(filter);
+      let modifiedAggregation: AggregationEx | undefined;
 
-          this.dateFilterDropdown.set({
-            label: 'Date',
-            aggregation: agg,
-            currentFilter: filter,
-            value,
-            icon: 'far fa-calendar-day'
-          });
-        }
+      if (authorizedFilters.includes(DATE_FILTER_NAME) && (modifiedAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_COLUMN) as AggregationListEx)) {
+        const filter = this.queryParamsStore.getFilterFromColumn(modifiedAggregation.column);
+        const value = this.getFilterValue(filter);
+
+        this.dateFilterDropdown.set({
+          label: 'Date',
+          aggregation: modifiedAggregation,
+          currentFilter: filter,
+          value,
+          icon: 'far fa-calendar-day'
+        });
       }
 
-      const agg = this.buildFilterDropdownsFromAggregations(aggregations
-        .filter(a => authorizedFilters.includes(a.column))
-        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
-        .splice(0, FILTERS_COUNT));
+      const resolvedAggregations = authorizedFilters.reduce((acc, name) => {
+        let aggregation = aggregations.find(agg => agg.column === name);
 
+        if (!aggregation) {
+          const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore), getCurrentQueryName()))
 
-      this.moreFiltersColumns = aggregations
-        .filter(a => authorizedFilters.includes(a.column))
-        .sort((a, b) => authorizedFilters.indexOf(a.column) - authorizedFilters.indexOf(b.column))
-        .splice(FILTERS_COUNT).map(a => a.column);
+          aggregation = aggregations.find(agg => agg.column === aggColumn);
+        }
 
-      this.filterDropdowns.set(agg);
+        if (aggregation) acc.push(aggregation);
+
+        return acc;
+      }, [] as Aggregation[]);
+
+      const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
+
+      this.moreFiltersColumns = resolvedAggregations
+        .slice(FILTERS_COUNT)
+        .map(a => a.column);
+
+      this.filterDropdowns.set(filterDropdowns);
     }, { allowSignalWrites: true })
   }
 
@@ -181,12 +195,12 @@ export class FiltersComponent implements OnInit {
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
 
-        const {items} = aggregation;
-        if(items) {
+        const { items } = aggregation;
+        if (items) {
           // filter out items that are not selected
           // find the selected items who is the first values of filter
           const item = items.filter((item) => item.$selected).find((item) => f?.values[0] === item.value);
-          if(item) {
+          if (item) {
             return ({
               label: aggregation.name,
               aggregation: aggregation,
