@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective } from '@/app/directives';
-import { SlideArticle } from '@/app/types/articles';
-import { StopPropagationDirective } from 'toolkit';
-import { getState } from '@ngrx/signals';
+import { ShowBookmarkDirective } from '@/app/directives/show-bookmark.directive';
 import { SelectionStore } from '@/app/stores';
+import { SlideArticle } from '@/app/types/articles';
+import { getState } from '@ngrx/signals';
+import { StopPropagationDirective } from 'toolkit';
 
 @Component({
   selector: 'app-article-slide',
@@ -20,12 +21,23 @@ import { SelectionStore } from '@/app/stores';
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article: slide']
+  }, {
+    directive: ShowBookmarkDirective,
+    inputs: ['article: slide']
   }]
 })
-export class ArticleSlideComponent {
+export class ArticleSlideComponent implements OnDestroy {
   public readonly slide = input.required<SlideArticle | Partial<SlideArticle> | undefined>();
+
+  showBookmark = signal(false);
+  showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
+    this.showBookmark.set(value);
+  });
 
   selectionStore = inject(SelectionStore);
   selected = computed(() => this.slide()?.id === getState(this.selectionStore).id);
 
+  ngOnDestroy(): void {
+    this.showBookmarkOutputSubscription.unsubscribe();
+  }
 }

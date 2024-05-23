@@ -3,7 +3,9 @@
 <section class="p-2 border-t">
   <div class="flex gap-2 items-baseline">
     <p class="text-primary font-semibold line-clamp-2 mb-2">{{ slide()?.title }}</p>
-    <app-bookmark [article]="slide()!"></app-bookmark>
+    @if (showBookmark()) {
+      <app-bookmark [article]="slide()!"></app-bookmark>
+    }
   </div>
   <div class="flex gap-1 divide-x-slash divide-xs">
     @if ((slide()?.authors ?? []).length > 0) {

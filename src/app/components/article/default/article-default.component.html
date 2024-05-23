@@ -9,7 +9,9 @@
     <header>
       <div class="flex gap-2 items-baseline">
         <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
-        <app-bookmark [article]="article()" />
+        @if (showBookmark()) {
+          <app-bookmark [article]="article()" />
+        }
       </div>
 
       <section class="flex gap-1 items-center">
