@@ -1,4 +1,4 @@
-import { Component, Injector, OnDestroy, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
+import { Component, Injector, OnDestroy, ViewChild, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
 import { Subscription, filter } from "rxjs";
 
 import { isASearchRoute } from "@/app/app.routes";
@@ -64,13 +64,15 @@ type AssistantMode = 'prompt' | 'query';
   encapsulation: ViewEncapsulation.None
 })
 export class AssistantComponent implements OnDestroy {
+  @ViewChild('sqChat') sqChat: ChatComponent;
+
   // ...
   open = signal(false);
 
   // If we use the component without inputs, we need to initialize the default values using computed()
   // This is because the input() function is not called when the component is used without inputs
-  _mode = input<AssistantMode>("prompt", {alias: "mode"});
-  _instanceId = input<string>("my-first-chat", {alias: "instanceId"});
+  _mode = input<AssistantMode>("prompt", { alias: "mode" });
+  _instanceId = input<string>("my-first-chat", { alias: "instanceId" });
   mode = computed(() => this._mode() || 'prompt');
   instanceId = computed(() => this._instanceId() || 'my-first-chat');
 
@@ -78,7 +80,6 @@ export class AssistantComponent implements OnDestroy {
   navigationService = inject(NavigationService);
   userSettingsStore = inject(UserSettingsStore);
   drawerStack = inject(DrawerStackService);
-
 
   query = new Q('assistant');
 
@@ -124,5 +125,9 @@ export class AssistantComponent implements OnDestroy {
   handlePreview(event: ChatContextAttachment) {
     console.log("Preview event: ", event);
     this.drawerStack.stack(event.record as Article);
+  }
+
+  public newChat(): void {
+    this.sqChat?.newChat();
   }
 }

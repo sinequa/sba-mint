@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, ViewChild, computed, inject } from '@angular/core';
 
 import { AssistantComponent } from '@/app/components/assistant/assistant';
 import { ApplicationStore } from '@/stores';
@@ -16,7 +16,13 @@ import { DrawerService } from '../../drawer.service';
   styleUrls: ['../../drawer.component.scss', './assistant.component.scss']
 })
 export class DrawerAssistantComponent extends DrawerComponent {
+  @ViewChild('assistant') assistant: AssistantComponent;
+
   protected isAssistantReady = computed(() => this.applicationStore.assistantReady());
 
   private applicationStore = inject(ApplicationStore);
+
+  public newChat(): void {
+    this.assistant?.newChat();
+  }
 }
