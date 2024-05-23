@@ -1,8 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
-import { BackdropComponent } from '@/app/components/drawer/components/backdrop/backdrop.component';
 import { NavbarComponent } from '@/app/components/navbar/navbar.component';
 import { SelectionService } from '@/app/services';
 import { searchInputStore } from '@/app/stores/search-input.store';
@@ -10,7 +8,7 @@ import { searchInputStore } from '@/app/stores/search-input.store';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, BackdropComponent, DrawerStackComponent],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })

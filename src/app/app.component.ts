@@ -9,20 +9,22 @@ import { LoginService } from '@sinequa/core/login';
 
 import { ApplicationService } from '@/app/services';
 
-import { PrincipalStore } from './stores';
 import { ApplicationStore } from '@/stores';
+import { DrawerStackComponent } from './components/drawer-stack/drawer-stack.component';
+import { BackdropComponent } from './components/drawer/components/backdrop/backdrop.component';
+import { PrincipalStore } from './stores';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NgxSonnerToaster],
+  imports: [CommonModule, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent{
+export class AppComponent {
   appService = inject(ApplicationService);
   principalStore = inject(PrincipalStore);
-applicationStore = inject(ApplicationStore);
+  applicationStore = inject(ApplicationStore);
 
   loginService = inject(LoginService);
 
