@@ -1,7 +1,29 @@
+@if (!drawerStackService.isChatOpened()) {
 <button
-  class="h-10 w-8 bg-ai-500 border-ai-700 rounded-s-md"
+  class="h-10 w-8 bg-ai-500 border-ai-700 border rounded-s-md"
   title="Open assistant chat"
   (click)="toggleAssistant()"
 >
   <i class="fa-regular fa-sparkles text-white font-normal text-base"></i>
 </button>
+} @else if (drawerStackService.isChatOpened() && drawersLength > 0) {
+<button
+  class="h-10 w-8 bg-white border-blue-700 border rounded-s-md"
+  title="Back to preview"
+  (click)="toggleAssistant()"
+>
+  <i
+    class="fa-regular fa-rectangle-vertical-history text-blue-500 font-normal text-base"
+  ></i>
+</button>
+} @else {
+<button
+  class="h-10 w-8 bg-white border-ai-700 border rounded-s-md"
+  title="Close assistant chat"
+  (click)="toggleAssistant()"
+>
+  <i
+    class="fa-regular fa-arrow-right-to-line text-ai-500 font-normal text-base"
+  ></i>
+</button>
+}

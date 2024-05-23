@@ -20,14 +20,16 @@ export class DrawerStackComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
+  readonly drawerStackService = inject(DrawerStackService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly drawerStackService = inject(DrawerStackService);
   private readonly navigationService = inject(NavigationService);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
   private readonly drawers: ComponentRef<DrawerComponent>[] = [];
+  get drawersLength() { return this.drawers.length; }
+
   private readonly subscriptions = new Subscription();
   private chatDrawer: ComponentRef<DrawerAssistantComponent> | undefined = undefined;
 
