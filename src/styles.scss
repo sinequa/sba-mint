@@ -28,3 +28,8 @@
 html {
   overflow-x: hidden;
 }
+
+/* Override to hide bootstrap spinner */
+.spinner-grow {
+  display: none !important;
+}
