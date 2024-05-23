@@ -73,7 +73,6 @@ export class FiltersComponent implements OnInit {
       if (!authorizedFilters) return;
 
       const { aggregations } = getState(this._aggregationsStore);
-      const { filters = [] } = getState(this.queryParamsStore);
 
       if (authorizedFilters.length > FILTERS_COUNT)
         this.hasMoreFilters.set(true);
