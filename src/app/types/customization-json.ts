@@ -22,6 +22,7 @@ export type CJSource = {
 }
 
 export type Features = {
+  allowChatDrawer?: boolean;
   applications?: boolean;
 }
 

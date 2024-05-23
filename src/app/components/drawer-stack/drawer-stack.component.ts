@@ -1,7 +1,10 @@
-import { NavigationService } from '@/app/services';
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, effect, inject } from '@angular/core';
+import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, computed, effect, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+
+import { NavigationService } from '@/app/services';
+import { AppStore } from '@/app/stores';
+
 import { DrawerAssistantComponent } from '../drawer/components/assistant/assistant.component';
 import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
 import { DrawerComponent } from '../drawer/drawer.component';
@@ -24,6 +27,7 @@ export class DrawerStackComponent implements OnDestroy {
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly navigationService = inject(NavigationService);
+  private readonly appStore = inject(AppStore);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
@@ -32,6 +36,8 @@ export class DrawerStackComponent implements OnDestroy {
 
   private readonly subscriptions = new Subscription();
   private chatDrawer: ComponentRef<DrawerAssistantComponent> | undefined = undefined;
+
+  readonly allowChatDrawer = computed(() => this.appStore.customizationJson().features?.allowChatDrawer);
 
   constructor() {
     // drawer stack animation on drawer stack toggle
