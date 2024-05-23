@@ -1,3 +1,4 @@
+import { NavigationService } from '@/app/services';
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
 import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, effect, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -22,11 +23,13 @@ export class DrawerStackComponent implements OnDestroy {
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly drawerStackService = inject(DrawerStackService);
+  private readonly navigationService = inject(NavigationService);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
   private readonly drawers: ComponentRef<DrawerComponent>[] = [];
   private readonly subscriptions = new Subscription();
+  private chatDrawer: ComponentRef<DrawerAssistantComponent> | undefined = undefined;
 
   constructor() {
     // drawer stack animation on drawer stack toggle
@@ -57,6 +60,10 @@ export class DrawerStackComponent implements OnDestroy {
     );
     this.subscriptions.add(
       this.drawerStackService.closeChatDrawer$.subscribe(() => this.closeChatDrawer())
+    );
+    // on new search start a new chat
+    this.subscriptions.add(
+      this.navigationService.navigationEnd$.subscribe(() => this.chatDrawer?.instance?.newChat())
     );
   }
 
@@ -146,30 +153,15 @@ export class DrawerStackComponent implements OnDestroy {
   }
 
   private openChatDrawer(): void {
-    console.log('Open chat drawer');
-
-    const drawer = this.viewContainer.createComponent(DrawerAssistantComponent);
-
-    this.drawers.push(drawer);
+    if (!this.chatDrawer)
+      this.chatDrawer = this.viewContainer.createComponent(DrawerAssistantComponent);
 
     setTimeout(() => {
-      drawer.instance.drawer.open();
+      this.chatDrawer?.instance.drawer.open();
     });
   }
 
   private closeChatDrawer(): void {
-    console.log('Close chat drawer');
-
-    const drawer = this.drawers[this.drawers.length - 1];
-
-    if (drawer && drawer.instance instanceof DrawerAssistantComponent) {
-      drawer.instance.drawer.close();
-
-      setTimeout(() => {
-        drawer.destroy();
-      }, 250);
-
-      this.drawers.pop();
-    }
+    this.chatDrawer?.instance.drawer.close();
   }
-}
+} 
