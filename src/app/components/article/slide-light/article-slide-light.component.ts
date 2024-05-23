@@ -33,12 +33,18 @@ export class ArticleSlideLightComponent implements OnDestroy {
 
   private readonly datePipe = new DatePipe(inject(LOCALE_ID));
 
-  private slideEffect = effect(
-    () => {
-      const metadata = [
-        this.slide()?.authors?.[0] ?? undefined,
-        this.slide()?.modified ? this.datePipe.transform(this.slide()?.modified, 'mediumDate') : undefined,
-      ];
+  constructor() {
+    effect(
+      () => {
+        const metadata = [
+          this.slide()?.authors?.[0] ?? undefined,
+          this.slide()?.modified ? this.datePipe.transform(this.slide()?.modified, 'mediumDate') : undefined,
+        ];
+
+        this.title = `${this.slide()?.title}\n${metadata.join(', ')}`
+      }
+    );
+  }
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
