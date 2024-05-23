@@ -36,7 +36,7 @@ sq-chat-v3 remark ul {
 }
 
 sq-chat-v3 remark p {
-	margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .sq-chat-settings .buttons-panel {
@@ -82,4 +82,37 @@ textarea {
   display: inline-flex;
   flex-direction: row;
   gap: 1rem;
+}
+
+.message-assistant .small {
+  font-size: theme("fontSize.xs");
+  line-height: theme("fontSize.xs.1.lineHeight");
+}
+.message-assistant .text-success {
+  color: theme("colors.success");
+}
+.spinner-grow .visually-hidden {
+  visibility: hidden;
+}
+
+.spinner-grow {
+  width: 16px;
+  height: 16px;
+  border: 3px solid;
+  border-color: theme("colors.primary");
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

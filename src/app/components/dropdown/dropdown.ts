@@ -37,6 +37,10 @@ export class DropdownComponent implements AfterViewInit{
     this.calculatePosition();
   }
 
+  close() {
+    this.isOpen.set(false);
+  }
+
   calculatePosition() {
     computePosition(this.trigger.nativeElement, this.dropdown.nativeElement, {
       placement: this.position(),

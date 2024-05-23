@@ -1,7 +1,9 @@
 import { AppStore } from '@/app/stores';
-import { Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
+import { Component, EventEmitter, Output, computed, inject, input, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { Result } from '@sinequa/atomic';
+import { IntlModule } from '@sinequa/core/intl';
+import { DropdownComponent } from "../dropdown/dropdown";
 
 export type SortingChoice = {
   name: string;
@@ -14,13 +16,14 @@ export type SortingChoice = {
 }
 
 @Component({
-  selector: 'app-sort-selector',
-  standalone: true,
-  imports: [],
-  templateUrl: './sort-selector.component.html',
-  styleUrl: './sort-selector.component.scss'
+    selector: 'app-sort-selector',
+    standalone: true,
+    templateUrl: './sort-selector.component.html',
+    styleUrl: './sort-selector.component.scss',
+    imports: [IntlModule, DropdownComponent]
 })
 export class SortSelectorComponent {
+  dropdown = viewChild(DropdownComponent);
   readonly result = input.required<Result>();
 
   @Output() readonly onSort = new EventEmitter<SortingChoice>();
@@ -46,6 +49,9 @@ export class SortSelectorComponent {
   readonly isSortingDesc = computed(() => this.sort()?.orderByClause?.includes('desc'));
 
   onSortOptionClicked(sort: SortingChoice) {
-    if (sort.name !== this.sort()?.name) this.onSort.emit(sort);
+    if (sort.name !== this.sort()?.name) {
+      this.dropdown()?.close();
+      this.onSort.emit(sort);
+    }
   }
 }
