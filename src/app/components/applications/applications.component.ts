@@ -24,7 +24,7 @@ export class ApplicationsComponent {
       toast('Opening ' + application.name + '...', { duration: 2000 });
       window.open(application.url, '_blank');
     } else {
-      toast('No url defined for  ' + application.name, { duration: 2000 });
+      toast.warning('No url defined for  ' + application.name, { duration: 2000 });
 
     }
   }
