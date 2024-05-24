@@ -20,12 +20,12 @@ export class BookmarkComponent {
 
 
   protected isBookmarked = computed(() => {
-    return this.article() ? this.userSettingsStore.isBookmarked(this.article()!.id!) : false;
+    return this.userSettingsStore.isBookmarked(this.article());
   })
 
   public async bookmark(e: Event) {
     e.stopPropagation();
-    const isBookmarked = await this.userSettingsStore.isBookmarked(this.article()!.id!);
+    const isBookmarked = await this.userSettingsStore.isBookmarked(this.article());
 
     if (isBookmarked){
       this.userSettingsStore.unbookmark(this.article()!.id!);

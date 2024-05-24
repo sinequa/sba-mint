@@ -6,7 +6,9 @@
     <p class="text-primary font-semibold line-clamp-1">
       {{ slide()?.title }}
     </p>
-    <app-bookmark class="btn-xs" [article]="slide()!"></app-bookmark>
+    @if (showBookmark()) {
+      <app-bookmark class="btn-xs p-0" [article]="slide()!"></app-bookmark>
+    }
   </div>
 
   <section class="flex gap-1 items-baseline">

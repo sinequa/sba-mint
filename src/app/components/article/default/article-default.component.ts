@@ -1,9 +1,10 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 
 import { AuthorComponent } from '@/app/components/author/author.component';
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
+import { ShowBookmarkDirective } from '@/app/directives/show-bookmark.directive';
 import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { getState } from '@ngrx/signals';
@@ -25,14 +26,22 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
     inputs: ['article', 'strategy']
+  }, {
+    directive: ShowBookmarkDirective,
+    inputs: ['article']
   }]
 })
-export class ArticleDefaultComponent implements OnInit {
+export class ArticleDefaultComponent implements OnDestroy {
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
+
+  showBookmark = signal(false);
+  showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
+    this.showBookmark.set(value);
+  });
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
@@ -62,8 +71,8 @@ export class ArticleDefaultComponent implements OnInit {
     { value: 'X-3', type: 'default' }
   ] as Article[];
 
-  ngOnInit(): void {
-    if (!this.article()) return;
+  ngOnDestroy(): void {
+    this.showBookmarkOutputSubscription.unsubscribe();
   }
 
   public toggleTab(tab: Tab): void {
