@@ -26,6 +26,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly hasFilters = signal<boolean[]>([]);
+  readonly hasAppliedFilters = signal<boolean[]>([]);
   readonly filterCounts = signal<number[]>([]);
 
   private readonly _searchService = inject(SearchService);
@@ -87,27 +88,27 @@ export class MoreFiltersComponent implements OnDestroy {
 
     this.updateFiltersCount(filter, index);
     this.queryParamsStore.updateFilter(filter);
+    this._searchService.search([]);
   }
 
   public clearFilter(index: number) {
     this.aggregations.toArray()[index].clearFilters();
-
-    const filters = this.aggregations.toArray()[index].aggregation().items
-      .filter(item => item.$selected)
-      .map((item) => item.value?.toString() || '');
     const filter: Filter = {
       column: this.filterDropdowns()[index].aggregation.column,
       label: undefined,
-      values: filters
+      values: []
     };
 
     this.updateFiltersCount(filter, index);
+    this.updateHasFilters(filter, index);
+
 
     this.queryParamsStore.updateFilter({
       column: this.filterDropdowns()[index].aggregation.column,
       label: undefined,
       values: []
     });
+    this._searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
@@ -122,21 +123,6 @@ export class MoreFiltersComponent implements OnDestroy {
         return filters;
       });
     });
-  }
-
-  /**
-   * Updates the selected filter and triggers the updateHasFilters method.
-   *
-   * @param filter - The filter to be selected.
-   * @param index - The index of the filter.
-   */
-  protected filterUpdated(filter: Filter, index: number): void {
-    this.updateHasFilters(filter, index);
-
-    this.queryParamsStore.updateFilter(filter);
-
-    this._searchService.search([]);
-
   }
 
   private updateFiltersCount(filter: Filter, index: number) {
@@ -156,6 +142,11 @@ export class MoreFiltersComponent implements OnDestroy {
           this.updateFiltersCount(f, index)
         }
 
+        this.hasAppliedFilters.update((values) => {
+          values[index] = !!f;
+          return values;
+        });
+
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
           item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
@@ -172,7 +163,7 @@ export class MoreFiltersComponent implements OnDestroy {
       });
   }
 
-  private updateHasFilters(filter: Filter, index: number): void {
+  protected updateHasFilters(filter: Filter, index: number): void {
     this.hasFilters.update((values) => {
       values[index] = filter.values.length > 0;
       return values;
