@@ -28,6 +28,7 @@ export class SavedSearchesComponent {
   public range = signal<number>(SAVED_SEARCHES_ITEMS_PER_PAGE);
   protected readonly savedSearches = signal<SavedSearch[]>([]);
   public paginatedSearches = computed<SavedSearch[]>(() => this.savedSearches().slice(0, this.range()));
+  public hasMore = computed<boolean>(() => this.savedSearches().length > 0 && this.range() < this.savedSearches().length);
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
