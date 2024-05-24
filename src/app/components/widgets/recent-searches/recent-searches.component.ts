@@ -26,6 +26,7 @@ export class RecentSearchesComponent {
   public range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
   public recentSearches = computed<RecentSearch[]>(() => (this.recentSearchesService.getRecentSearches() || []).slice(0, this.range()));
   public totalSearches = computed<number>(() => (this.recentSearchesService.getRecentSearches() || []).length);
+  public hasMore = computed<boolean>(() => this.totalSearches() > 0 && this.range() < this.totalSearches());
 
   constructor() { }
 
