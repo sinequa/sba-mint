@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 
@@ -8,6 +8,8 @@ import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
 import { RecentSearchesService } from '@/app/services';
 import { RecentSearch } from '@/app/types';
 import { QueryParams } from '@/app/utils';
+
+const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
 
 @Component({
   selector: 'app-recent-searches',
@@ -21,9 +23,11 @@ export class RecentSearchesComponent {
   private readonly router = inject(Router);
   private readonly recentSearchesService = inject(RecentSearchesService);
 
-  public recentSearches = signal<RecentSearch[]>(this.recentSearchesService.getRecentSearches() || [])
+  public range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
+  public recentSearches = computed<RecentSearch[]>(() => (this.recentSearchesService.getRecentSearches() || []).slice(0, this.range()));
+  public totalSearches = computed<number>(() => (this.recentSearchesService.getRecentSearches() || []).length);
 
-  constructor() {  }
+  constructor() { }
 
   onClick(recentSearch: RecentSearch): void {
     const { text, filters = [] } = recentSearch.queryParams || {} as QueryParams;
@@ -42,9 +46,12 @@ export class RecentSearchesComponent {
 
     if (searches) {
       searches?.splice(index, 1);
-      this.recentSearches.set(searches);
       this.recentSearchesService.saveSearch(searches)
       toast.success('Recent search deleted');
     }
+  }
+
+  loadMore() {
+    this.range.set(this.range() + RECENT_SEARCHES_ITEMS_PER_PAGE);
   }
 }
