@@ -9,7 +9,7 @@ import { UserSettingsStore, searchInputStore } from '@/app/stores';
 import { RecentSearch } from '@/app/types/user-settings';
 import { getQueryParamsFromUrl, getQueryTextFromUrl } from '@/app/utils';
 
-const RECENT_SEARCHES_MAX_STORAGE = 50;
+const RECENT_SEARCHES_MAX_STORAGE = 100;
 
 @Injectable({
   providedIn: 'root'
