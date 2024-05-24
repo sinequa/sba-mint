@@ -7,6 +7,6 @@ export type FilterDropdown = {
   aggregation: AggregationEx;
   icon?: string;
   currentFilter?: Filter;
-  value?: { operator?: string, text: string };
+  value?: { operator?: string, text: string, display?: string };
   moreFiltersCount?: number;
 }

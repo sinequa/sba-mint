@@ -29,6 +29,10 @@ module.exports = {
           500: "#989898",
           600: "#525252"
         },
+        ai: {
+          500: "#FF7A00",
+          700: "#FF5C00"
+        }
       },
       boxShadow: {
         dropdown: "6px 4px 20px 0px rgba(0, 0, 0, 0.2)",

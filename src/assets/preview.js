@@ -116,19 +116,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function selectPassage(elements) {
         passageHighlighter.style.display = 'none';
-        var box = getBoundingBox(elements);
-        if (box) {
-            var margin = 4;
-            var left = Math.max(0, box.left - margin);
-            var top_1 = Math.max(0, box.top - margin);
-            var right = box.right + margin;
-            var bottom = box.bottom + margin;
-            passageHighlighter.style.left = "".concat(window.scrollX + left, "px");
-            passageHighlighter.style.top = "".concat(window.scrollY + top_1, "px");
-            passageHighlighter.style.width = (right - left) + 'px';
-            passageHighlighter.style.height = (bottom - top_1) + 'px';
-            passageHighlighter.style.display = 'block';
-        }
+        elements[0].style.position = 'relative';
+        elements[0].append(passageHighlighter);
+        passageHighlighter.style.top = 0;
+        passageHighlighter.style.left = 0;
+        passageHighlighter.style.width = "100%";
+        passageHighlighter.style.height = "100%";
+        passageHighlighter.style.zIndex = "1";
+        passageHighlighter.style.display = 'block';        // var box = getBoundingBox(elements);
     }
     function selectHighlight(elements) {
         elements.forEach(function (el, i) {

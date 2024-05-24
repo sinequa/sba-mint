@@ -1,6 +1,12 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { Component, ComponentRef, OnDestroy, ViewContainerRef, inject } from '@angular/core';
+import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, computed, effect, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+
+import { NavigationService } from '@/app/services';
+import { AppStore } from '@/app/stores';
+
+import { DrawerAssistantComponent } from '../drawer/components/assistant/assistant.component';
+import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { DrawerStackService } from './drawer-stack.service';
 
@@ -10,20 +16,33 @@ const DRAWER_STACK_MAX_COUNT = 3;
   selector: 'app-drawer-stack',
   standalone: true,
   imports: [DrawerComponent],
-  template: '',
+  templateUrl: './drawer-stack.component.html',
   styleUrl: './drawer-stack.component.scss'
 })
 export class DrawerStackComponent implements OnDestroy {
+  @HostBinding('attr.drawer-opened')
+  public drawerOpened: boolean = false;
+
+  readonly drawerStackService = inject(DrawerStackService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly drawerStackService = inject(DrawerStackService);
+  private readonly navigationService = inject(NavigationService);
+  private readonly appStore = inject(AppStore);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
   private readonly drawers: ComponentRef<DrawerComponent>[] = [];
+  get drawersLength() { return this.drawers.length; }
+
   private readonly subscriptions = new Subscription();
+  private chatDrawer: ComponentRef<DrawerAssistantComponent> | undefined = undefined;
+
+  readonly allowChatDrawer = computed(() => this.appStore.customizationJson().features?.allowChatDrawer);
 
   constructor() {
+    // drawer stack animation on drawer stack toggle
+    effect(() => this.drawerOpened = this.drawerStackService.isOpened());
+
     this.subscriptions.add(
       this.selectionHistory$.subscribe((event) => {
         if (event !== 'new') return;
@@ -44,10 +63,24 @@ export class DrawerStackComponent implements OnDestroy {
     this.subscriptions.add(
       this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers())
     );
+    this.subscriptions.add(
+      this.drawerStackService.openChatDrawer$.subscribe(() => this.openChatDrawer())
+    );
+    this.subscriptions.add(
+      this.drawerStackService.closeChatDrawer$.subscribe(() => this.closeChatDrawer())
+    );
+    // on new search start a new chat
+    this.subscriptions.add(
+      this.navigationService.navigationEnd$.subscribe(() => this.chatDrawer?.instance?.newChat())
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public toggleAssistant(): void {
+    this.drawerStackService.toggleAssistant();
   }
 
   private openTopDrawer(index: number): void {
@@ -89,7 +122,7 @@ export class DrawerStackComponent implements OnDestroy {
   }
 
   private pushDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerComponent);
+    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
     drawer.instance.selectionId = index;
 
@@ -109,7 +142,7 @@ export class DrawerStackComponent implements OnDestroy {
   }
 
   private unshiftDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerComponent);
+    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
     drawer.instance.selectionId = index;
     this.viewContainer.insert(drawer.hostView, 0);
@@ -126,4 +159,17 @@ export class DrawerStackComponent implements OnDestroy {
       drawer?.destroy();
     }, 250);
   }
-}
+
+  private openChatDrawer(): void {
+    if (!this.chatDrawer)
+      this.chatDrawer = this.viewContainer.createComponent(DrawerAssistantComponent);
+
+    setTimeout(() => {
+      this.chatDrawer?.instance.drawer.open();
+    });
+  }
+
+  private closeChatDrawer(): void {
+    this.chatDrawer?.instance.drawer.close();
+  }
+} 

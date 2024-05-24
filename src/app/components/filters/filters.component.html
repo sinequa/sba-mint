@@ -20,7 +20,7 @@
     <sq-dropdown>
       <button tabindex="-1"
         [ngClass]="cn(
-          'btn font-semibold flex gap-1 items-baseline',
+          'btn font-semibold gap-1',
           dateFilterDropdown()?.currentFilter ? 'btn-primary' : 'btn-tertiary'
           )"
           aria-label="Date filter"
@@ -55,10 +55,10 @@
   <!-- other filter dropdowns -->
   @for (filterDropdown of filterDropdowns(); track $index) {
     <li tabindex="0" appFocusWithArrowKeys>
-      <sq-dropdown>
+      <sq-dropdown [disabled]="!filterDropdown.aggregation.items">
         <button tabindex="-1"
           [ngClass]="cn(
-            'btn font-semibold flex gap-1 items-baseline',
+            'btn font-semibold gap-1',
             filterDropdown.value?.text ? 'btn-primary' : 'btn-tertiary')"
           [disabled]="!filterDropdown.aggregation.items || null"
           [attr.aria-disabled]="!filterDropdown.aggregation.items"
@@ -68,7 +68,7 @@
           @if (filterDropdown.icon) {
             <i class="fa-fw {{ filterDropdown.icon }} " aria-hidden="true"></i>
           }
-          <span class="line-clamp-1">{{ filterDropdown?.value?.text || filterDropdown.label }}</span>
+          <span class="truncate">{{ filterDropdown?.value?.display || filterDropdown?.value?.text || filterDropdown.label }}</span>
 
           @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
             <div class="pill size-5 pill-xs pill-ghost bg-white flex place-content-center font-semibold text-blue-600">
@@ -99,7 +99,7 @@
       appFocusWithArrowKeys
       >
       <sq-dropdown class="dropdown-end">
-        <button class="btn btn-tertiary font-semibold flex gap-1 items-baseline truncate" tabindex="-1" aria-label="more filters">
+        <button class="btn btn-tertiary font-semibold gap-1 truncate" tabindex="-1" aria-label="more filters">
           <i class="far fa-filters"></i>
           <span>More filters</span>
 

@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
@@ -48,9 +48,17 @@ export class FiltersComponent implements OnInit {
 
   readonly filters = this.queryParamsStore.filters || signal([]);
   readonly hasMoreFilters = signal<boolean>(false);
-  readonly moreFiltersCount = signal(0);
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
+
+  readonly moreFiltersCount = computed(() => {
+    const { filters = [] } = getState(this.queryParamsStore);
+
+    // count more filters
+    return filters
+      .filter(f => this.moreFiltersColumns.includes(f.column))
+      .reduce((acc, f) => acc + f.values.length, 0);
+  });
 
 
   private readonly _subscriptions = new Subscription();
@@ -65,7 +73,6 @@ export class FiltersComponent implements OnInit {
       if (!authorizedFilters) return;
 
       const { aggregations } = getState(this._aggregationsStore);
-      const { filters = [] } = getState(this.queryParamsStore);
 
       if (authorizedFilters.length > FILTERS_COUNT)
         this.hasMoreFilters.set(true);
@@ -105,12 +112,6 @@ export class FiltersComponent implements OnInit {
         .slice(FILTERS_COUNT)
         .map(a => a.column);
 
-      // count more filters
-      const count = filters
-        .filter(f => this.moreFiltersColumns.includes(f.column))
-        .reduce((acc, f) => acc + f.values.length, 0);
-
-      this.moreFiltersCount.set(count)
       this.filterDropdowns.set(filterDropdowns);
     }, { allowSignalWrites: true })
   }
@@ -192,6 +193,24 @@ export class FiltersComponent implements OnInit {
       .map((aggregation) => {
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
+
+        const { items } = aggregation;
+        if (items) {
+          // filter out items that are not selected
+          // find the selected items who is the first values of filter
+          const item = items.filter((item) => item.$selected).find((item) => f?.values[0] === item.value);
+          if (item) {
+            return ({
+              label: aggregation.name,
+              aggregation: aggregation,
+              icon: this.appStore.getAggregationIcon(aggregation.column),
+              currentFilter: f,
+              value: { text: f?.values[0], display: item.display || item.value },
+              moreFiltersCount: more,
+            })
+          }
+        }
+
         return ({
           label: aggregation.name,
           aggregation: aggregation,

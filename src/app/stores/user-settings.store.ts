@@ -1,12 +1,13 @@
 import { Article, UserSettings } from '@/app/types';
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
+import { deleteUserSettings, fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
 
 const initialState: UserSettings = {
   bookmarks: [],
   recentSearches: [],
-  savedSearches: []
+  savedSearches: [],
+  assistants: {}
 };
 
 export const UserSettingsStore = signalStore(
@@ -17,6 +18,10 @@ export const UserSettingsStore = signalStore(
     async initialize(): Promise<void> {
       const settings = await fetchUserSettings<UserSettings>();
       patchState(store, settings);
+    },
+    async reset(): Promise<void> {
+      await deleteUserSettings();
+      patchState(store, initialState);
     },
     async updateBookmarks(bookmarks: UserSettings['bookmarks']) {
       await patchUserSettings({ bookmarks });
@@ -34,6 +39,11 @@ export const UserSettingsStore = signalStore(
       await patchUserSettings({ savedSearches });
       patchState(store, (state) => {
         return { ...state, savedSearches };
+      })
+    },
+    async updateAssistantSettings(assistantSettings: UserSettings['assistants']) {
+      patchState(store, (state) => {
+        return { ...state, assistants: assistantSettings };
       })
     },
     async bookmark(article: Article) {

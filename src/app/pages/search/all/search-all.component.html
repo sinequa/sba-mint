@@ -1,35 +1,49 @@
-<main class="col-start-2 col-span-2 mb-8 z-0" >
-  <app-filters class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white" />
+<main class="col-start-2 col-span-2 mb-8 z-0">
+  <app-filters
+    class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
+  />
 
-  <app-did-you-mean class="text-alert py-1" [result]="result()"></app-did-you-mean>
+  <app-did-you-mean
+    class="text-alert py-1"
+    [result]="result()"
+  ></app-did-you-mean>
 
   <app-overview-people class="p-4 rounded-lg bg-neutral-50" />
 
   <app-overview-slides class="p-4 rounded-lg bg-neutral-50" />
 
+  @if(isAssistantReady()) {
+  <app-assistant mode="query" instanceId="search-results-assistant" />
+  }
+
   <div class="flex mt-4">
-    <app-sort-selector class="ms-auto" [result]="result()!" (onSort)="onSort($event)"/>
+    <app-sort-selector
+      class="ms-auto"
+      [result]="result()!"
+      (onSort)="onSort($event)"
+    />
   </div>
 
   @if (!articles()) {
-    <ul class="flex flex-col gap-2 mt-4">
-      <li><app-article-default-skeleton /></li>
-      <li><app-article-default-skeleton /></li>
-      <li><app-article-default-skeleton /></li>
-    </ul>
-  }
-  @else if (articles()!.length > 0) {
-    <ul class="flex flex-col gap-2 mt-4">
-      @for (article of articles(); track article.value) {
-      <li>
-        <app-article-default [article]="article" [strategy]="'replace'" />
-      </li>
-      }
-    </ul>
+  <ul class="flex flex-col gap-2 mt-4">
+    <li><app-article-default-skeleton /></li>
+    <li><app-article-default-skeleton /></li>
+    <li><app-article-default-skeleton /></li>
+  </ul>
+  } @else if (articles()!.length > 0) {
+  <ul class="flex flex-col gap-2 mt-4">
+    @for (article of articles(); track article.value) {
+    <li>
+      <app-article-default [article]="article" [strategy]="'replace'" />
+    </li>
+    }
+  </ul>
 
-    <app-pager [configuration]="pageConfiguration()"/>
-  }
-  @else {
-    <p class="mt-8 text-neutral-500 italic">No result for "<em class="not-italic font-semibold">{{ queryText() }}</em>"</p>
+  <app-pager [configuration]="pageConfiguration()" />
+  } @else {
+  <p class="mt-8 text-neutral-500 italic">
+    No result for "<em class="not-italic font-semibold">{{ queryText() }}</em
+    >"
+  </p>
   }
 </main>

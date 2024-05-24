@@ -3,10 +3,12 @@ import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SavedSearch as UserSettingsSavedSearch } from '@/app/types/user-settings';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils/query-params';
 import { NgClass } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { StopPropagationDirective } from 'toolkit';
+
+const SAVED_SEARCHES_ITEMS_PER_PAGE = 10;
 
 type SavedSearch = UserSettingsSavedSearch & {
   label: string;
@@ -23,7 +25,10 @@ type SavedSearch = UserSettingsSavedSearch & {
   styleUrl: './saved-searches.component.scss'
 })
 export class SavedSearchesComponent {
+  public range = signal<number>(SAVED_SEARCHES_ITEMS_PER_PAGE);
   protected readonly savedSearches = signal<SavedSearch[]>([]);
+  public paginatedSearches = computed<SavedSearch[]>(() => this.savedSearches().slice(0, this.range()));
+  public hasMore = computed<boolean>(() => this.savedSearches().length > 0 && this.range() < this.savedSearches().length);
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
@@ -71,5 +76,9 @@ export class SavedSearchesComponent {
       this.savedSearchesService.updateSavedSearches(searches);
       toast.success('Saved search deleted');
     }
+  }
+
+  loadMore() {
+    this.range.set(this.range() + SAVED_SEARCHES_ITEMS_PER_PAGE);
   }
 }

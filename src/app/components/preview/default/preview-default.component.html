@@ -69,7 +69,7 @@
   <section class="grow flex flex-col gap-4 py-4 px-6">
     @if (previewUrl()) {
       <preview-actions class="flex  justify-end gap-2" />
-      <iframe #preview frameborder="0" class="h-full" title="Document preview" [src]="previewUrl()"></iframe>
+      <iframe #preview frameborder="0" class="h-full" title="Document preview" [src]="previewUrl()" aria-label="document preview"></iframe>
     }
   </section>
 </div>

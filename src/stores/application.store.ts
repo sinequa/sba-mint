@@ -12,10 +12,12 @@ export type Extract = {
 }
 
 export type ApplicationState = {
+  assistantReady: boolean,
   extracts: Map<string, Extract[]>,
 }
 
 const intialState: ApplicationState = {
+  assistantReady: false,
   extracts: new Map(),
 };
 
@@ -28,6 +30,9 @@ export const ApplicationStore = signalStore(
     extractsCount: computed(() => extracts().size),
   })),
   withMethods((store) => ({
+    updateAssistantReady() {
+      patchState(store, (state) => ({ ...state, assistantReady: true }));
+    },
     updateExtracts(id: string, extracts: Extract[]) {
       patchState(store, (state) => {
         const extractsMap = state.extracts;

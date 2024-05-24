@@ -1,4 +1,4 @@
-import { JsonPipe, NgClass, NgComponentOutlet } from '@angular/common';
+import { NgClass, NgComponentOutlet } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
@@ -7,9 +7,7 @@ import { Subscription, filter } from 'rxjs';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { ApplicationsComponent } from '@/app/components/applications/applications.component';
-import { DrawerStackComponent } from '@/app/components/drawer-stack/drawer-stack.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { BackdropComponent } from '@/app/components/drawer/components/backdrop/backdrop.component';
 import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
 import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
@@ -61,7 +59,7 @@ type FeaturesKeys = keyof UserFeatures | Features;
   standalone: true,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, AutocompleteComponent, JsonPipe, DrawerStackComponent, BackdropComponent]
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, AutocompleteComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
