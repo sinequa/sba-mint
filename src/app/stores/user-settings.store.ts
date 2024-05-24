@@ -39,7 +39,7 @@ export const UserSettingsStore = signalStore(
     async bookmark(article: Article) {
       if (!article.id) return;
 
-      if(this.isBookmarked(article.id)) return;
+      if(this.isBookmarked(article)) return;
 
       const bookmark = {
         id: article.id,
@@ -62,13 +62,14 @@ export const UserSettingsStore = signalStore(
       bookmarks.splice(index, 1);
       this.updateBookmarks([...bookmarks]);
     },
-    isBookmarked(id: string): boolean {
+    isBookmarked(article?: Partial<Article>): boolean {
+      if (!article || !article.id) return false;
       const bookmarks = store.bookmarks();
 
-      return !!bookmarks?.find((bookmark) => bookmark.id === id);
+      return !!bookmarks?.find((bookmark) => bookmark.id === article.id);
     },
     async toggleBookmark(article: Article) {
-      const isBookmarked = await this.isBookmarked(article.id);
+      const isBookmarked = await this.isBookmarked(article);
 
       if (isBookmarked)
         this.unbookmark(article.id);

@@ -21,7 +21,7 @@ export class ShowBookmarkDirective {
   userSettingsStore = inject(UserSettingsStore);
 
   protected isBookmarked = computed(() => {
-    return this.article() && this.article()!.id ? this.userSettingsStore.isBookmarked(this.article()!.id!) : false;
+    return this.userSettingsStore.isBookmarked(this.article());
   });
 
   public readonly article = input.required<Article | Partial<Article> | undefined>();
