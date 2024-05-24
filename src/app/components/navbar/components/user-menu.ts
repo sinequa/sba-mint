@@ -1,6 +1,6 @@
 import { ApplicationService } from "@/app/services";
 import { PrincipalStore, UserSettingsStore } from "@/app/stores";
-import { Component, computed, inject, viewChild } from "@angular/core";
+import { Component, ElementRef, computed, inject, model, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
 import { login, logout, setGlobalConfig } from "@sinequa/atomic";
@@ -9,11 +9,12 @@ import { toast } from "ngx-sonner";
 
 import { AuthorAvatarComponent } from "../../author/author-avatar/author-avatar.component";
 import { PersonArticle } from "@/app/types";
+import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: "app-user-menu",
   standalone: true,
-  imports: [MenuComponent, MenuItemComponent, AuthorAvatarComponent],
+  imports: [FormsModule, MenuComponent, MenuItemComponent, AuthorAvatarComponent],
   templateUrl: "./user-menu.html"
 })
 export class UserMenuComponent {
@@ -39,6 +40,9 @@ export class UserMenuComponent {
     return this.principalStore.isOverridingUser();
   })
 
+  overrideUser = model<{username: string; domain: string}>({username: '', domain: ''});
+  overrideUserDialog = viewChild<ElementRef>('overrideUserDialog');
+
   /**
  * Upon dropdown menu element click
  * @param e The clicked element
@@ -49,6 +53,13 @@ export class UserMenuComponent {
 
   handleLogout() {
     logout().then(() => this.router.navigate(['/login']));
+  }
+
+  override() {
+    if (!!this.overrideUser().domain && !!this.overrideUser().username) {
+      this.handleOverrideUser(this.overrideUser().username, this.overrideUser().domain);
+      this.overrideUserDialog()!.nativeElement.close();
+    }
   }
 
   handleOverrideUser(username?: string, domain?: string) {
