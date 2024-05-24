@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toast } from 'ngx-sonner';
 
 import { Query } from '@sinequa/atomic';
@@ -9,6 +9,8 @@ import { Bookmark } from '@/app/types/user-settings';
 
 import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
+
+const BOOKMARKS_ITEMS_PER_PAGE = 10;
 
 @Component({
   selector: 'app-bookmarks',
@@ -22,8 +24,10 @@ export class BookmarksComponent {
   private readonly queryService = inject(QueryService);
   private readonly userSettingsStore = inject(UserSettingsStore);
 
+  public range = signal<number>(BOOKMARKS_ITEMS_PER_PAGE);
   protected bookmarks = signal<Bookmark[]>([]);
-
+  public paginatedBookmarks = computed<Bookmark[]>(() => this.bookmarks().slice(0, this.range()));
+  public hasMore = computed<boolean>(() => this.bookmarks().length > 0 && this.range() < this.bookmarks().length);
 
   constructor() {
     effect(() => {
@@ -54,5 +58,11 @@ export class BookmarksComponent {
     e.stopPropagation();
     this.userSettingsStore.unbookmark(bookmark.id);
     toast.success('Bookmark removed', { duration: 2000 });
+  }
+
+  
+
+  loadMore() {
+    this.range.set(this.range() + BOOKMARKS_ITEMS_PER_PAGE);
   }
 }
