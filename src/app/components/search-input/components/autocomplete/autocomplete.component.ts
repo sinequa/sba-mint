@@ -16,7 +16,7 @@ export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
 }
 
-const titledSections = ['title', 'concepts', 'people', 'bookmark'];
+const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-search', 'saved-search'];
 const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
 
 
