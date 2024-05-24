@@ -1,21 +1,22 @@
 import { Component, Injector, OnDestroy, OnInit, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
-import { EMPTY, Observable, Subscription, map, switchMap } from 'rxjs';
+import { EMPTY, Observable, Subscription, filter, map, switchMap } from 'rxjs';
 
-import { Filter, Result } from '@sinequa/atomic';
+import { Filter, Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/default-light-skeleton/article-default-light-skeleton.component';
 import { ArticleDefaultLightComponent } from '@/app/components/article/default-light/article-default-light.component';
 import { ArticlePersonLightComponent } from '@/app/components/article/person-light/article-person-light.component';
+import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
 import { MockDataService } from '@/app/services';
 import { AppStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { AuthorAvatarComponent } from '@/app/components/author/author-avatar/author-avatar.component';
 import { AggregationsStore } from '@/stores';
 
+import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({
@@ -46,6 +47,29 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     switchMap((person) => this.getRelatedTo$(person)),
     map((result: Result) => result.records)
   );
+
+  protected readonly manager = toSignal(
+    this.person$.pipe(
+      filter(person => !!person),
+      switchMap((name) =>
+        this.queryService.search(this.buildManagerQuery(name!))
+          .pipe(
+            map(result => (result.records?.[0] as PersonArticle)),
+            filter(person => !!person),
+            map(person => Object.assign(person, { type: 'person' }) as PersonArticle),
+          )
+      )
+    )
+  );
+
+  private buildManagerQuery(author: PersonArticle): Query {
+    return runInInjectionContext(this.injector, () => buildQuery({ name: PEOPLE_QUERY_NAME, pageSize: 1, filters:
+      {
+        field: 'id',
+        value: author.collection[0] + '|' + author.employeeManagerId, // the ID is a combination of the mapping and the collection name
+      } as Filter
+    }));
+  }
 
   protected readonly recentContributions = toSignal<Article[]>(this.recentContributions$);
   protected readonly relatedTo = toSignal<Article[]>(this.relatedTo$);
