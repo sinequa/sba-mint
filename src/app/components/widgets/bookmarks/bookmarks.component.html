@@ -1,5 +1,5 @@
 <ul class="flex flex-col">
-  @for (bookmark of bookmarks(); track $index) {
+  @for (bookmark of paginatedBookmarks(); track $index) {
   <li appFocusWithArrowKeys="y"
     class="flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none group"
     tabindex="0"
@@ -36,5 +36,12 @@
   </li>
   } @empty {
   <li class="text-neutral-500 text-center py-4">No bookmarks yet</li>
+  }
+  @if (hasMore()) {
+    <li
+      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+      tabindex="0" appFocusWithArrowKeys="y" (click)="loadMore()">
+      <span class="m-auto">Load more</span>
+    </li>
   }
 </ul>
