@@ -1,5 +1,6 @@
+@if (applications()?.length) {
 <ul class="grid grid-cols-6 auto-rows-fr gap-4">
-  @for (application of applications; track $index) {
+  @for (application of applications(); track $index) {
   <li>
     <button
       class="size-full py-3 px-2 flex flex-col items-center justify-between rounded group hover:bg-secondary"
@@ -7,27 +8,24 @@
       (keydown.enter)="applicationClicked(application)"
     >
       <span class="p-2 rounded-full text-primary bg-neutral-50">
-        <i class="fa-fw {{ application.iconClass }}"></i>
+        @if (application.iconPath) {
+          <img
+          class="max-w-5"
+          [src]="application.iconPath"
+          [alt]="application.name"
+          >
+        } @else {
+          <i class="fa-fw {{ application.icon }}"></i>
+        }
       </span>
 
       <p class="font-semibold group-hover:text-primary">
-        {{ application.label }}
+        {{ application.name }}
       </p>
     </button>
   </li>
   }
-
-  <li>
-    <button
-      class="size-full py-3 px-2 flex flex-col items-center justify-between rounded hover:bg-secondary"
-      (click)="addApplication()"
-      (keydown.enter)="addApplication()"
-    >
-      <span class="p-2 rounded-full text-primary bg-neutral-50">
-        <i class="fa-fw far fa-plus"></i>
-      </span>
-
-      <p class="font-semibold group-hover:text-primary">Add</p>
-    </button>
-  </li>
 </ul>
+} @else {
+  <p class="text-center text-neutral-500 py-4 w-100">No application has been added</p>
+}
