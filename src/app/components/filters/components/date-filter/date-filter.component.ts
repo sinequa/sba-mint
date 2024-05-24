@@ -165,7 +165,7 @@ export class DateFilterComponent implements OnDestroy {
         acc.push({
           operator: value[0],
           value: value[1],
-          display: curr.display,
+          display: curr.display || value[1],
           disabled: curr.count === 0
         });
       }
@@ -176,6 +176,8 @@ export class DateFilterComponent implements OnDestroy {
   }
 
   private parseValueAndOperatorFromItem(value: string): [string, string] {
+    if(!value.includes(':')) return ['eq', value];
+
     const skimmed = value.split(':')[1];
     // eslint-disable-next-line prefer-const
     let [operator, valueStr] = skimmed.split(' ');

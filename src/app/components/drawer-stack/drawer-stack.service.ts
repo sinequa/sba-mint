@@ -1,23 +1,46 @@
-import { EventEmitter, Injectable, inject, signal } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
 
-import { SelectionHistoryService, SelectionService } from '@/app/services';
+import { NavigationService, SelectionHistoryService, SelectionService } from '@/app/services';
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { getState } from '@ngrx/signals';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DrawerStackService {
+export class DrawerStackService implements OnDestroy {
   public readonly isOpened = signal(false);
   public readonly toggleTopDrawerExtension$ = new EventEmitter<void>();
   public readonly forceTopDrawerCollapse$ = new EventEmitter<void>();
   public readonly closeTopDrawer$ = new EventEmitter<void>();
   public readonly closeAllDrawers$ = new EventEmitter<void>();
 
+  public readonly isChatOpened = signal(false);
+  public readonly openChatDrawer$ = new EventEmitter<void>();
+  public readonly closeChatDrawer$ = new EventEmitter<void>();
+
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly navigationService = inject(NavigationService);
+
+  private readonly subscriptions = new Subscription();
+
+  constructor() {
+    // on new search, close all drawers including chat drawer
+    this.subscriptions.add(
+      this.navigationService.navigationEnd$.subscribe(() => {
+        console.log('Navigation end');
+        this.closeAssistant();
+        this.closeAll();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   /**
    * Sets current drawer stack status to open
@@ -104,5 +127,29 @@ export class DrawerStackService {
     this.selection.setCurrentArticle(article);
     // open drawer
     this.open();
+  }
+
+  public toggleAssistant(): void {
+    if (this.isChatOpened())
+      this.closeAssistant();
+    else
+      this.openAssistant();
+  }
+
+  public openAssistant(): void {
+    console.log('Open assistant');
+    this.isChatOpened.set(true);
+    this.isOpened.set(true);
+    this.openChatDrawer$.next();
+  }
+
+  public closeAssistant(): void {
+    console.log('Close assistant');
+    this.isChatOpened.set(false);
+
+    if (this.selectionHistory.getCurrentSelectionIndex() === -1)
+      this.isOpened.set(false);
+
+    this.closeChatDrawer$.next();
   }
 }

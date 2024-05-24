@@ -1,26 +1,16 @@
-import { ExtractsLocationService } from '@/app/services/preview/extracts-location.service';
-import { PreviewService } from '@/app/services/preview/preview.service';
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild, computed, effect, inject } from '@angular/core';
-import { Article } from '@sinequa/atomic';
-import { getTypeMapForArticleType } from '../../utils/article-type-registry';
-import { PreviewDefaultComponent } from '../preview/default/preview-default.component';
-import { PreviewPersonComponent } from '../preview/person/preview-person.component';
-import { PreviewSlideComponent } from '../preview/slide/preview-slide.component';
-import { AdvancedSearchComponent } from './components/advanced-search/advanced-search.component';
+import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild, effect, inject } from '@angular/core';
 import { DrawerService } from './drawer.service';
 
 /**
- * Each Drawer component has it's own preview service as extracts location service
- * Each Drawer knows how to handle the preview of the selected article
+ * Each Drawer component has it's own drawer service to handle its state and link it to the drawer stack.
  */
 
 @Component({
   selector: 'app-drawer',
   standalone: true,
-  imports: [NgClass, NgComponentOutlet, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent],
-  providers: [DrawerService, PreviewService, ExtractsLocationService],
+  imports: [],
+  providers: [DrawerService],
   templateUrl: './drawer.component.html',
   styleUrl: './drawer.component.scss'
 })
@@ -63,29 +53,13 @@ export class DrawerComponent implements OnInit {
   @ViewChild('drawerHandle', { static: true })
   public drawerHandle: ElementRef | undefined;
 
-  public selectionId:number = -1;
 
   public readonly drawer = inject(DrawerService);
 
   protected readonly element = inject(ElementRef);
   protected readonly selectionHistory = inject(SelectionHistoryService);
 
-  protected previewType = computed(() => {
-    const id = this.selectionId;
 
-    if (id === undefined) return undefined;
-
-    return this.selectionHistory.getSelection(id)?.type;
-  });
-  protected previewTypeMap = computed(() => getTypeMapForArticleType(this.previewType() ?? 'default'));
-
-  protected article: Article | Partial<Article> | undefined;
-  protected inputs = { 'article': this.selectionHistory.getSelection(this.selectionId ?? -1) };
-
-  private selectionIdEffect = effect(() => {
-    this.inputs = { 'article': this.selectionHistory.getSelection(this.selectionId ?? -1) };
-    this.article = this.selectionHistory.getSelection(this.selectionId ?? -1);
-  });
   private drawerOpenEffect = effect(() => {
     this.drawerOpened = this.drawer.isOpened();
 

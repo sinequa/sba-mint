@@ -1,3 +1,16 @@
-div {
-  background-color: blue !important;
+:host {
+  position: absolute;
+  top: 50%;
+  right: 0;
+
+  --drawer-width: 46;
+  --drawer-subdrawer-width: 400px;
+
+  z-index: var(--drawer-z-index, 2000);
+
+  transition: right 300ms linear;
+
+  &[drawer-opened="true"] {
+    right: calc(1% * var(--drawer-width));
+  }
 }

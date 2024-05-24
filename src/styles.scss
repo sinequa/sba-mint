@@ -5,6 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css";
 
 @import "../node_modules/toolkit/styles/keyframes.css";
 @import "../node_modules/toolkit/styles/panel.css";
@@ -12,6 +13,7 @@
 
 @import "./styles/z-index.scss";
 @import "./styles/layouts.scss";
+@import "./styles/box-shadows.scss";
 @import "./styles/colors.scss";
 @import "./styles/collapse.scss";
 @import "./styles/design-system/design-system.scss";
@@ -22,8 +24,12 @@
 @import "./styles/checkbox.scss";
 @import "./styles/radio.scss";
 
-@import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css";
 
 html {
   overflow-x: hidden;
+}
+
+/* Override to hide bootstrap spinner */
+.spinner-grow {
+  display: none !important;
 }

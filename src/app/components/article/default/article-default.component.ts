@@ -4,7 +4,7 @@ import { Component, OnInit, computed, inject, input, signal } from '@angular/cor
 import { AuthorComponent } from '@/app/components/author/author.component';
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
-import { AppStore, SelectionStore, UserSettingsStore } from '@/app/stores';
+import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { getState } from '@ngrx/signals';
 import { MetadataComponent } from '@sinequa/atomic-angular';
@@ -31,7 +31,6 @@ export class ArticleDefaultComponent implements OnInit {
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
-  userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
 

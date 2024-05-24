@@ -1,0 +1,17 @@
+:host {
+  overflow-y: auto;
+
+  z-index: var(--drawer-chat-z-index, 2000);
+
+  background-color: theme("colors.white");
+
+  box-shadow: var(--drawer-box-shadow);
+
+  ::ng-deep sq-chat-v3 {
+    flex-grow: 1;
+
+    & > div {
+      height: 100%;
+    }
+  }
+}
