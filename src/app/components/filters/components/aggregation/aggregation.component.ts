@@ -46,10 +46,10 @@ export class AggregationComponent implements OnInit {
   title = input<AggregationTitle>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
-  items = computed<AggregationListItem[]>(() => {
-    return this.aggregation().items ?
-      [...(this.aggregation().items)].sort((a, b) => b.$selected && !a.$selected ? 1 : -1)
-      : [];
+  items = computed(() => this.aggregation().items || []);
+
+  selected = computed<AggregationListItem[]>(() => {
+    return this.items().sort((a, b) => b.$selected && !a.$selected ? 1 : -1)
   });
 
   readonly aggregationsService = inject(AggregationsService);
