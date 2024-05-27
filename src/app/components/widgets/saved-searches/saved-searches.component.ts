@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { StopPropagationDirective } from 'toolkit';
 
-const SAVED_SEARCHES_ITEMS_PER_PAGE = 10;
+const SAVED_SEARCHES_ITEMS_PER_PAGE = 5;
 
 type SavedSearch = UserSettingsSavedSearch & {
   label: string;
@@ -22,7 +22,11 @@ type SavedSearch = UserSettingsSavedSearch & {
   standalone: true,
   imports: [NgClass, StopPropagationDirective, RelativeDatePipe],
   templateUrl: './saved-searches.component.html',
-  styleUrl: './saved-searches.component.scss'
+  styleUrl: './saved-searches.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    class: 'block overflow-auto max-h-[460px]'
+  }
 })
 export class SavedSearchesComponent {
   public range = signal<number>(SAVED_SEARCHES_ITEMS_PER_PAGE);
@@ -78,7 +82,8 @@ export class SavedSearchesComponent {
     }
   }
 
-  loadMore() {
+  loadMore(e: Event) {
+    e.stopPropagation();
     this.range.set(this.range() + SAVED_SEARCHES_ITEMS_PER_PAGE);
   }
 }

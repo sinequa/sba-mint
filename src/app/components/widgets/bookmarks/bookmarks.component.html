@@ -37,11 +37,11 @@
   } @empty {
   <li class="text-neutral-500 text-center py-4">No bookmarks yet</li>
   }
-  @if (hasMore()) {
-    <li
-      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-      tabindex="0" appFocusWithArrowKeys="y" (click)="loadMore()">
-      <span class="m-auto">Load more</span>
-    </li>
-  }
 </ul>
+@if (hasMore()) {
+  <button
+    class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+    tabindex="0" (click)="loadMore($event)">
+    Load more
+  </button>
+}
