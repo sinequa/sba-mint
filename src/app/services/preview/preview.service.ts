@@ -1,15 +1,15 @@
 import { Inject, Injectable, inject } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { Subject } from "rxjs";
+import { getState } from "@ngrx/signals";
+import { Subject, tap } from "rxjs";
 
-import { PreviewData } from "@sinequa/atomic";
-import { HIGHLIGHTS, InlineWorker, PreviewHighlight } from "@sinequa/atomic-angular";
+import { PreviewData, Query } from "@sinequa/atomic";
+import { HIGHLIGHTS, InlineWorker, PreviewHighlight, QueryService } from "@sinequa/atomic-angular";
 
 import { SelectionStore } from "@/app/stores";
 import { ApplicationStore, Extract } from "@/stores";
 
 import { ExtractsLocationService } from "./extracts-location.service";
-import { getState } from "@ngrx/signals";
 
 type ExtractsLocations = Extract & {
   text: string // HTML text
@@ -22,6 +22,8 @@ export class PreviewService {
 
   extractsLocationService = inject(ExtractsLocationService);
   sanitizer = inject(DomSanitizer);
+
+  queryService = inject(QueryService);
 
   // ! worker
   onMessage = new Subject<unknown>();
@@ -36,7 +38,11 @@ export class PreviewService {
   constructor(
     @Inject(HIGHLIGHTS) public highlights: PreviewHighlight[]) {
     this.extractsLocationService.onMessage.subscribe((message) => {
-      if (message.data.extracts.length === 0) return;
+      if (message.data.extracts.length === 0) {
+        this.applicationStore.updateExtracts(this.previewData.record.id, []);
+        return;
+      }
+
       const extracts: Extract[] = message.data.extracts.map((item: ExtractsLocations) => ({
         ...item,
         text: this.sanitizer.bypassSecurityTrustHtml(item.text)
@@ -70,6 +76,19 @@ export class PreviewService {
         }
       }
     });
+  }
+
+  /**
+   * Previews the data for a given ID and query.
+   * @param id - The ID to preview.
+   * @param query - The query parameters for the preview.
+   * @returns An Observable that emits the preview data.
+   */
+  preview(id: string, query: Partial<Query>) {
+    return this.queryService.preview(
+      id ?? '',
+      query
+    ).pipe(tap((data: PreviewData) => this.setPreviewData(data)));
   }
 
   setIframe(iframe: Window | null) {

@@ -1,9 +1,11 @@
 import { Location } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getState } from '@ngrx/signals';
 
 import { SelectionStore } from '@/app/stores/selection.store';
 import { Article } from "@/app/types/articles";
+import { QueryParamsStore } from '../stores';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +15,7 @@ export class SelectionService {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly selectionStore = inject(SelectionStore);
+  queryParamsStore = inject(QueryParamsStore);
 
   public setCurrentArticle(article: Article | undefined): void {
     if (!article) {
@@ -20,7 +23,9 @@ export class SelectionService {
       return;
     }
 
-    this.selectionStore.update(article);
+    // update selection store with query text
+    const { text } = getState(this.queryParamsStore);
+    this.selectionStore.update(article, text);
 
     if (article?.id)
       this.updateArticleIdInQueryParams(article.id);

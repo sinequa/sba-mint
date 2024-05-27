@@ -1,10 +1,10 @@
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { AfterViewInit, Component, ElementRef, Injector, OnDestroy, QueryList, ViewChild, ViewChildren, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest, map, switchMap } from 'rxjs';
 
-import { PreviewData, fetchPreview } from '@sinequa/atomic';
+import { PreviewData } from '@sinequa/atomic';
 import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
 import { AuthorComponent } from '@/app/components/author/author.component';
@@ -13,6 +13,7 @@ import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildQuery } from '@/app/utils';
 
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from "../actions/preview-actions";
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
@@ -34,13 +35,29 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
   @ViewChild('preview') public readonly iframe: ElementRef<HTMLIFrameElement>;
 
   public get preview(): Window | null {
-    return this.iframe?.nativeElement?.contentWindow;
+    return this.iframe.nativeElement?.contentWindow;
   }
 
   public _article = input.required<Article>({ alias: 'article' });
-  protected article = signal<Article>({treepath: [] as string[] } as Article);
+  protected article = computed(() => {
+    const { article = { treepath: ['/'] } } = getState(this.selectionStore) || this._article();
+    return article as Article;
+  })
 
-  public readonly previewUrl = signal<SafeUrl | undefined>(undefined);
+  qureryText = computed(() => {
+    const { queryText } = getState(this.selectionStore);
+    return queryText;
+  })
+
+  public readonly previewUrl = toSignal(
+    combineLatest(toObservable(this.article), toObservable(this.qureryText)).pipe(
+      switchMap(([article, text]) => this.previewService.preview(
+        article.id ?? '',
+        runInInjectionContext(this.injector, () => buildQuery({ name: article.$queryName, text}))
+      )),
+      map((data: PreviewData) => this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + data?.documentCachedContentUrl))
+    ), { initialValue: undefined }
+  )
 
   public labels = inject(AppStore).getLabels();
 
@@ -51,24 +68,7 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   private readonly sub = new Subscription();
 
-  constructor(private readonly injector: Injector) {
-    effect(() => {
-      const {article} = getState(this.selectionStore) || this._article();
-      if(article) {
-        this.article.set(article);
-        this.previewService.setIframe(this.preview);
-      }
-
-      if (article?.id)
-        fetchPreview(
-          article.id ?? '',
-          runInInjectionContext(this.injector, () => buildQuery({ name: article.$queryName }))
-        ).then((data: PreviewData) => {
-          this.previewService.setPreviewData(data);
-          this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + data?.documentCachedContentUrl));
-        });
-    }, { allowSignalWrites: true });
-  }
+  constructor(private readonly injector: Injector) { }
 
   ngAfterViewInit() {
     this.sub.add(
