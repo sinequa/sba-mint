@@ -6,7 +6,7 @@
   --drawer-width: 46;
   --drawer-subdrawer-width: 400px;
 
-  z-index: var(--drawer-z-index, 2000);
+  z-index: theme('zIndex.drawer');
 
   transition: right 300ms linear;
 

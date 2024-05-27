@@ -12,7 +12,7 @@
 </p>
 
 @if (person() && showAuthor()) {
-  <div class="absolute w-max pt-1 z-[--tooltip-z-index]">
+  <div class="absolute w-max pt-1 z-tooltip">
     <app-article-person-light class="group bg-white" [person]="person()" [strategy]="strategy()" />
   </div>
 }
