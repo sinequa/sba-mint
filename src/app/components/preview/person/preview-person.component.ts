@@ -66,7 +66,7 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     return runInInjectionContext(this.injector, () => buildQuery({ name: PEOPLE_QUERY_NAME, pageSize: 1, filters:
       {
         field: 'id',
-        value: author.collection[0] + '|' + author.employeeManagerId, // the ID is a combination of the mapping and the collection name
+        value: author.employeeManagerId,
       } as Filter
     }));
   }
