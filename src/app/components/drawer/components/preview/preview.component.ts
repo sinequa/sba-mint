@@ -28,7 +28,7 @@ export class DrawerPreviewComponent extends DrawerComponent {
   });
   protected previewTypeMap = computed(() => getTypeMapForArticleType(this.previewType() ?? 'default'));
 
-  protected article: Article | Partial<Article> | undefined;
+  protected article: Article | undefined;
   protected inputs = { 'article': this.selectionHistory.getSelection(this.selectionId ?? -1) };
 
   private selectionIdEffect = effect(() => {

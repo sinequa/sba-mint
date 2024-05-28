@@ -36,7 +36,7 @@ export class SelectionHistoryService {
     return this.history.length - 1;
   }
 
-  public getSelection(index: number): Article | Partial<Article> | undefined {
+  public getSelection(index: number): Article | undefined {
     if (index < 0 || index >= this.history.length) return undefined;
 
     return this.history[index];

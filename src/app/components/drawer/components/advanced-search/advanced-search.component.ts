@@ -1,8 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, OnDestroy, Output, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { getState } from '@ngrx/signals';
-import { Subscription } from 'rxjs';
 
 import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
@@ -25,58 +24,35 @@ import { PanelDirective } from 'toolkit';
     },
     imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
 })
-export class AdvancedSearchComponent implements OnDestroy {
-  @Output() public readonly search = new EventEmitter<string>();
+export class AdvancedSearchComponent {
 
-  extracts = signal<Extract[]>([]);
+  extracts = computed(() => {
+    getState(this.applicationStore);
+    if(!this.article()) return [];
+    return this.applicationStore.getExtracts(this.article()!.id)
+  });
   applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
-  cdr = inject(ChangeDetectorRef);
 
-  readonly article = input<Partial<Article> | undefined>();
+  readonly article = input.required<Article | undefined>();
 
-  protected readonly input = signal('');
+  protected readonly input = signal(getState(this.selectionStore).queryText || '');
 
   public labels = inject(AppStore).getLabels();
   protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
 
-  sub = new Subscription();
 
-  constructor() {
-    effect(() => {
-      const {id} = getState(this.selectionStore);
-      if (id) {
-        const extracts = this.applicationStore.getExtracts(id)
-        this.extracts.set(extracts ?? []);
-      } else {
-        this.extracts.set([]);
-      }
-    }, { allowSignalWrites: true });
-
-    effect(() => {
-      getState(this.applicationStore);
-      const {id} = getState(this.selectionStore);
-
-      if (id) {
-        const extracts = this.applicationStore.getExtracts(id);
-        this.extracts.set(extracts || []);
-      }
-    }, { allowSignalWrites: true });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+  constructor() { }
 
   protected executeSearch(): void {
-    this.search.emit(this.input());
+    this.applicationStore.updateExtracts(this.article()!.id, []);
+    this.selectionStore.updateQueryText(this.input());
   }
 
   protected clearInput(): void {
     this.input.set('');
-    this.search.emit(this.input());
   }
 
   scrollTo(extract: Extract) {
