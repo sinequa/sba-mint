@@ -19,6 +19,7 @@ export class DrawerStackService implements OnDestroy {
   public readonly isChatOpened = signal(false);
   public readonly openChatDrawer$ = new EventEmitter<void>();
   public readonly closeChatDrawer$ = new EventEmitter<void>();
+  public readonly askAI$ = new EventEmitter<string>();
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
@@ -147,9 +148,17 @@ export class DrawerStackService implements OnDestroy {
     console.log('Close assistant');
     this.isChatOpened.set(false);
 
-    if (this.selectionHistory.getCurrentSelectionIndex() === -1)
+    if (this.selectionHistory.getCurrentSelectionIndex() === -1) {
       this.isOpened.set(false);
+      this.closeAllDrawers$.next();
+    }
 
     this.closeChatDrawer$.next();
   }
+
+  public askAI(text: string): void {
+    this.openAssistant();
+    this.askAI$.next(text);
+  }
 }
+ 

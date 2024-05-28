@@ -1,19 +1,29 @@
-<div cdkOverlayOrigin #overlayPosition="cdkOverlayOrigin"
-  class="group flex grow relative rounded focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary focus-within:rounded-b-none">
-
-  <div class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50 group-hover:bg-white">
+<div
+  cdkOverlayOrigin
+  #overlayPosition="cdkOverlayOrigin"
+  class="group flex grow relative rounded focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary focus-within:rounded-b-none"
+>
+  <div
+    class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50 group-hover:bg-white"
+  >
     @if (showSave() && input() !== '') {
-    <button title="Save search"
+    <button
+      title="Save search"
       (click)="saveQuery()"
       (keydown.enter)="saveQuery()"
       [ngClass]="{ 'animate-save': saveAnimation() }"
       aria-label="Save search"
-      >
-      <i [ngClass]="{'fas': saveAnimation()}" class="fa-fw far fa-star " aria-hidden="true"></i>
+    >
+      <i
+        [ngClass]="{ fas: saveAnimation() }"
+        class="fa-fw far fa-star"
+        aria-hidden="true"
+      ></i>
     </button>
     }
 
-    <input type="search"
+    <input
+      type="search"
       id="serach-navbar"
       class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
       aria-label="Search here"
@@ -24,37 +34,56 @@
       (ngModelChange)="input.set($event)"
       (keydown.enter)="emitText()"
       (click)="inputClicked()"
-      />
+    />
 
     @if (input() !== '') {
-    <button title="Clear search"
+    <button
+      title="Clear search"
+      aria-label="Clear search"
       (click)="clearInput()"
       (keydown.enter)="clearInput()"
-      aria-label="Clear search"
-      >
-      <i class="fa-fw far fa-circle-xmark " aria-hidden="true"></i>
+    >
+      <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
+    </button>
+    }
+
+    @if (input() !== '' && allowChatDrawer()) {
+    <button
+      class="btn btn-xs my-1 bg-blue-100 rounded-sm text-sm text-primary"
+      title="Ask AI"
+      aria-label="Ask AI"
+      (click)="askAI()"
+      (keydown.enter)="askAI()"
+    >
+      <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+      Ask AI
     </button>
     }
   </div>
 
-  <button class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
+  <button
+    class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
     (click)="emitText()"
     [disabled]="input() === oldInput"
     [attr.aria-disabled]="input() === oldInput"
     aria-label="Search"
-    >
-    <i class="fa-fw far fa-magnifying-glass " aria-hidden="true"></i>
+  >
+    <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
   </button>
 </div>
-
 
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="overlayPosition"
   [cdkConnectedOverlayOpen]="overlayOpen()"
   (overlayOutsideClick)="overlayOpen.set(false)"
-  cdkConnectedOverlayHasBackdrop="true">
-  <div [style.width.px]="overlayPosition.elementRef.nativeElement.getBoundingClientRect().width">
+  cdkConnectedOverlayHasBackdrop="true"
+>
+  <div
+    [style.width.px]="
+      overlayPosition.elementRef.nativeElement.getBoundingClientRect().width
+    "
+  >
     <ng-content></ng-content>
   </div>
 </ng-template>

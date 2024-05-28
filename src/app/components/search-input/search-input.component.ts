@@ -1,11 +1,13 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, effect, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subscription, debounceTime, filter } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
+import { AppStore } from '@/app/stores';
+import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -31,6 +33,9 @@ export class SearchInputComponent implements OnDestroy {
   protected oldInput: string = this.input();
 
   protected readonly autocompleteService = inject(AutocompleteService);
+  private readonly drawerStack = inject(DrawerStackService);
+  private readonly customization = inject(AppStore).customizationJson;
+  protected readonly allowChatDrawer = computed(() => this.customization().features?.allowChatDrawer);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   private readonly _subscription = new Subscription();
@@ -67,6 +72,10 @@ export class SearchInputComponent implements OnDestroy {
     this.oldInput = text;
 
     if (!silent) this.emitText();
+  }
+
+  public askAI(): void {
+    this.drawerStack.askAI(this.input());
   }
 
   protected emitText(): void {
