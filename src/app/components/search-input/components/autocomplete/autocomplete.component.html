@@ -10,7 +10,9 @@
       @else if (!item.display) {
         <li class="p-2 cursor-pointer text-xs text-neutral-500 font-semibold">
           @switch (item.category) {
-            @case('bookmark') { Bookmarks }
+            @case('recent-search') { Recent searches }
+            @case('saved-search') { Last saved searches }
+            @case('bookmark') { Last bookmarks }
             @case('title') { Documents }
             @case('concepts') { Matters }
             @case('people') { Collaborators }

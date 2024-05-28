@@ -16,7 +16,7 @@ export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
 }
 
-const titledSections = ['title', 'concepts', 'people', 'bookmark'];
+const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-search', 'saved-search'];
 const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
 
 
@@ -44,7 +44,7 @@ export class AutocompleteComponent {
       .pipe(
         switchMap(([testText]) => {
 
-          const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 5));
+          const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
           if (!testText) {
             return fromUserSettings;
           }
