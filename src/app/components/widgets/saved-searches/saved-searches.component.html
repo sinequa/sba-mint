@@ -6,7 +6,7 @@
     (keydown.enter)="onClick(search)">
     <i class="fa-fw far fa-star"></i>
 
-    <p>{{ search.label }}</p>
+    <p class="truncate">{{ search.label }}</p>
 
     @if ((search.filterCount ?? 0) > 0) {
     <p class="text-neutral-500" aria-hidden="true">
@@ -37,11 +37,11 @@
   } @empty {
   <li class="text-center text-neutral-500 py-4">No saved searches yet</li>
   }
-  @if (hasMore()) {
-    <li
-      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-      tabindex="0" appFocusWithArrowKeys="y" (click)="loadMore()">
-      <span class="m-auto">Load more</span>
-    </li>
-  }
 </ul>
+@if (hasMore()) {
+  <button
+    class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+    tabindex="0" appFocusWithArrowKeys="y" (click)="loadMore($event)">
+    Load more
+  </button>
+}

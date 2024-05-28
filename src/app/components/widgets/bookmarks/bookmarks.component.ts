@@ -10,14 +10,18 @@ import { Bookmark } from '@/app/types/user-settings';
 import { DrawerStackService } from '../../drawer-stack/drawer-stack.service';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
-const BOOKMARKS_ITEMS_PER_PAGE = 10;
+const BOOKMARKS_ITEMS_PER_PAGE = 5;
 
 @Component({
   selector: 'app-bookmarks',
   standalone: true,
   imports: [SourceIconComponent],
   templateUrl: './bookmarks.component.html',
-  styleUrl: './bookmarks.component.scss'
+  styleUrl: './bookmarks.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    class: 'block overflow-auto max-h-[460px]'
+  }
 })
 export class BookmarksComponent {
   private readonly drawerStack = inject(DrawerStackService);
@@ -60,9 +64,8 @@ export class BookmarksComponent {
     toast.success('Bookmark removed', { duration: 2000 });
   }
 
-  
-
-  loadMore() {
+  loadMore(e: Event) {
+    e.stopPropagation();
     this.range.set(this.range() + BOOKMARKS_ITEMS_PER_PAGE);
   }
 }

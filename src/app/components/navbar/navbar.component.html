@@ -25,7 +25,7 @@
           <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
-          <div dropdown-content class="absolute min-w-[340px] dropdown-content">
+          <div dropdown-content class="absolute min-w-[360px] dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
         </sq-dropdown>

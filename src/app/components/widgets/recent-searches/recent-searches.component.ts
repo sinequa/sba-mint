@@ -9,14 +9,18 @@ import { RecentSearchesService } from '@/app/services';
 import { RecentSearch } from '@/app/types';
 import { QueryParams } from '@/app/utils';
 
-const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
+const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
 
 @Component({
   selector: 'app-recent-searches',
   standalone: true,
   imports: [FocusWithArrowKeysDirective, RelativeDatePipe],
   templateUrl: './recent-searches.component.html',
-  styleUrl: './recent-searches.component.scss'
+  styleUrl: './recent-searches.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    class: 'block overflow-auto max-h-[460px]'
+  }
 })
 export class RecentSearchesComponent {
 
@@ -52,7 +56,8 @@ export class RecentSearchesComponent {
     }
   }
 
-  loadMore() {
+  loadMore(e: Event) {
+    e.stopPropagation();
     this.range.set(this.range() + RECENT_SEARCHES_ITEMS_PER_PAGE);
   }
 }
