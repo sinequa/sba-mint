@@ -19,19 +19,14 @@ import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore, ApplicationStore } from '@/stores';
 
-import { AssistantComponent } from "../../../components/assistant/assistant";
+import { AssistantComponent } from '@/app/components/assistant/assistant';
+import { CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
 @Component({
   selector: 'app-search-all',
   standalone: true,
-  templateUrl: './search-all.component.html',
-  styleUrl: './search-all.component.scss',
-  hostDirectives: [{
-    directive: SelectArticleFromQueryParamsDirective,
-    inputs: ['articleId: id', 'aggregations']
-  }],
   imports: [
     SelectArticleOnClickDirective,
     FiltersComponent,
@@ -42,12 +37,22 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     PagerComponent,
     SortSelectorComponent,
     DidYouMeanComponent,
-    AssistantComponent
-  ]
+    AssistantComponent,
+    CdkVirtualScrollViewport,
+    CdkVirtualForOf
+  ],
+  templateUrl: './search-all.component.html',
+  styleUrl: './search-all.component.scss',
+  hostDirectives: [{
+    directive: SelectArticleFromQueryParamsDirective,
+    inputs: ['articleId: id', 'aggregations']
+  }]
 })
 export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
+
+  items = Array.from({ length: 100000 }).map((_, i) => `Item #${i}`);
 
   public readonly id = input<string | undefined>();
 
