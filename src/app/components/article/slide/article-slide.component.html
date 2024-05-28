@@ -1,4 +1,6 @@
-<img [src]="slide()?.thumbnailUrl" alt="" class="ratio-video rounded-t-lg object-cover w-full h-48" />
+@if (slide()?.thumbnailUrl) {
+  <img [src]="slide()!.thumbnailUrl" alt="" class="ratio-video rounded-t-lg object-cover w-full h-48" />
+}
 
 <section class="p-2 border-t">
   <div class="flex gap-2 items-baseline">
