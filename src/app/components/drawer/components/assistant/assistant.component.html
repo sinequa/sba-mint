@@ -27,11 +27,15 @@
     </li>
   </menu>
 
-  <app-assistant
-    class="flex flex-col grow"
-    #assistant
-    mode="prompt"
-    instanceId="search-results-assistant"
-  />
+  <!-- TODO: remove fieldset when assistant input focus is an input -->
+  <!-- https://sinequa.atlassian.net/browse/ES-22815 -->
+  <fieldset class="h-full" [disabled]="!isDrawerOpened()">
+    <!-- remove h-full with fieldset -->
+    <app-assistant
+      class="flex flex-col grow h-full"
+      #assistant
+      instanceId="chat-drawer"
+    />
+  </fieldset>
 </div>
 }

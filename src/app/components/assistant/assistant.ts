@@ -7,7 +7,7 @@ import { UserSettingsStore } from "@/app/stores";
 import { buildQuery } from "@/app/utils";
 
 import { NgTemplateOutlet } from "@angular/common";
-import { ChatComponent, ChatConfig, ChatContextAttachment, ChatSettingsV3Component } from "@sinequa/assistant/chat";
+import { ChatComponent, ChatConfig, ChatContextAttachment, ChatSettingsV3Component, InitChat, RawMessage } from "@sinequa/assistant/chat";
 import { Article } from "@sinequa/atomic";
 import { Query as Q } from "@sinequa/core/app-utils";
 import { LoginService } from "@sinequa/core/login";
@@ -28,6 +28,7 @@ type AssistantMode = 'prompt' | 'query';
       class="block"
       #sqChat
       [query]="query"
+      [chat]="initChat"
       [instanceId]="instanceId()"
       (openPreview)="handlePreview($event)"
     />
@@ -40,6 +41,7 @@ type AssistantMode = 'prompt' | 'query';
     <sq-chat-v3
       class="block"
       #sqChat
+      [chat]="initChat"
       [instanceId]="instanceId()"
       (openPreview)="handlePreview($event)"
     />
@@ -80,6 +82,7 @@ export class AssistantComponent implements OnDestroy {
   navigationService = inject(NavigationService);
   userSettingsStore = inject(UserSettingsStore);
   drawerStack = inject(DrawerStackService);
+  initChat: InitChat | undefined = undefined;
 
   query = new Q('assistant');
 
@@ -114,7 +117,6 @@ export class AssistantComponent implements OnDestroy {
   }
 
   handleUpdate(event: ChatConfig) {
-
     const assistants = this.userSettingsStore.assistants();
     assistants[this.instanceId()] = event;
 
@@ -128,6 +130,10 @@ export class AssistantComponent implements OnDestroy {
   }
 
   public newChat(): void {
-    this.sqChat?.newChat();
+    this.sqChat.newChat();
+  }
+
+  public askAI(messages: RawMessage[]): void {
+    this.initChat = { messages } as InitChat;
   }
 }

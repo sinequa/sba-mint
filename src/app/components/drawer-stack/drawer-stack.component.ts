@@ -73,6 +73,10 @@ export class DrawerStackComponent implements OnDestroy {
     this.subscriptions.add(
       this.navigationService.navigationEnd$.subscribe(() => this.chatDrawer?.instance?.newChat())
     );
+    // on new askAI, start new chat with first message as the text
+    this.subscriptions.add(
+      this.drawerStackService.askAI$.subscribe((text) => this.chatDrawer?.instance?.askAI(text))
+    );
   }
 
   ngOnDestroy(): void {
