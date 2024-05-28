@@ -9,7 +9,7 @@
     100vw / 100 * var(--drawer-width) + var(--drawer-subdrawer-width)
   );
 
-  z-index: var(--drawer-z-index, 2000);
+  z-index: theme('zIndex.drawer');
   grid-template-columns: 0 1fr var(--drawer-subdrawer-width);
 
   transition: right 300ms ease-in-out, transform 300ms ease-in-out;

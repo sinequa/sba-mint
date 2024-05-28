@@ -17,6 +17,13 @@ module.exports = {
       sans: ["Segoe UI"],
     },
     extend: {
+      zIndex: {
+        filter: 100,
+        backdrop: 1000,
+        drawer: 2000,
+        drawerChat: 2500,
+        tooltip: 3000,
+      },
       colors: {
         primary: "#0C75FF",
         secondary: "#DFEDFF",
@@ -41,7 +48,7 @@ module.exports = {
   },
   plugins: [
     dropdown, button, tab, article, avatar, pill,
-    plugin(function ({ addUtilities, addComponents, theme }) {
+    plugin(function ({ addComponents, theme }) {
       addComponents({
         '.active:not([disabled])': {
           color: theme('colors.primary'),

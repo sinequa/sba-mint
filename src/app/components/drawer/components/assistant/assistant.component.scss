@@ -1,7 +1,7 @@
 :host {
   overflow-y: auto;
 
-  z-index: var(--drawer-chat-z-index, 2000);
+  z-index: theme('zIndex.drawerChat');
 
   background-color: theme("colors.white");
 
