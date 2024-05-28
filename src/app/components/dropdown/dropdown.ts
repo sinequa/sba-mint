@@ -11,7 +11,7 @@ import { Placement, autoUpdate, computePosition, flip, offset, shift } from '@fl
     <ng-content></ng-content>
 </div>
 <div #dropdownWrapper
-  class="absolute text-sm min-w-fit z-[1000]"
+  class="absolute text-sm min-w-fit z-backdrop"
   [style.display]="isOpen() ? 'block' : 'none'"
   [style.width]="width + 'px'"
   >
