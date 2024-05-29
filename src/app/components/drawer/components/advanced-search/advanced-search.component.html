@@ -28,7 +28,7 @@
         <!-- extracts comes from the HTML document not from the Article object -->
         @for (extract of extracts(); track $index) {
         <li class="rounded px-2 py-1 hover:bg-highlight">
-          <p role="button" [id]="'extract-' + extract.relevanceIndex" [innerHTML]="extract.text" (click)="scrollTo(extract)"></p>
+          <p role="button" [id]="'extract-' + extract.relevanceIndex" [innerHTML]="extract.text" (click)="scrollTo('extractslocations', extract.textIndex)"></p>
         </li>
         }
         @empty {
@@ -63,7 +63,9 @@
     <ng-container *ngTemplateOutlet="metadataPanel; context: {
       metadata: article()!.geo,
       name: 'Location',
-      iconClass: 'far fa-location-dot'
+      iconClass: 'far fa-location-dot',
+      scrollType: 'geo',
+      navigationIndex: geoIndex
     }"></ng-container>
     }
 
@@ -71,7 +73,9 @@
     <ng-container *ngTemplateOutlet="metadataPanel; context: {
       metadata: article()!.company,
       name: 'Companies',
-      iconClass: 'far fa-buildings'
+      iconClass: 'far fa-buildings',
+      scrollType: 'company',
+      navigationIndex: companyIndex
     }"></ng-container>
     }
 
@@ -79,13 +83,16 @@
     <ng-container *ngTemplateOutlet="metadataPanel; context: {
       metadata: article()!.person,
       name: 'Mentioned',
-      iconClass: 'far fa-at'
+      iconClass: 'far fa-at',
+      scrollType: 'person',
+      navigationIndex: personIndex
     }"></ng-container>
     }
   </div>
 }
 
-<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass">
+<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass"
+  let-scrollType="scrollType" let-navigationIndex="navigationIndex">
   <section class="px-2 py-3 border-b border-neutral-300" stkPanel>
     <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
       <p class="flex gap-2 font-semibold items-baseline">
@@ -97,6 +104,13 @@
     </header>
 
     <div id="panel-content">
+      @if (metadata?.length) {
+      <p class="flex flex-row-reverse gap-2 text-sm items-center">
+        <i class="fa-light fa-chevron-right" (click)="navigateNext(scrollType, navigationIndex, metadata)"></i>
+        <span>{{ navigationIndex() }} / {{ metadata?.length }}</span>
+        <i class="fa-light fa-chevron-left" (click)="navigatePrev(scrollType, navigationIndex, metadata)"></i>
+      </p>
+      }
       <ul id="panel-content" class="p-2">
         @for (data of metadata; track $index) {
         <li class="flex justify-between">
