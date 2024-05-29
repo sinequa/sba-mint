@@ -5,6 +5,7 @@ import { NavigationService, SelectionHistoryService, SelectionService } from '@/
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { Subscription } from 'rxjs';
+import { BackdropService } from '../drawer/components/backdrop/backdrop.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class DrawerStackService implements OnDestroy {
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly selectionStore = inject(SelectionStore);
   private readonly navigationService = inject(NavigationService);
+  private readonly backdropService = inject(BackdropService);
 
   private readonly subscriptions = new Subscription();
 
@@ -131,10 +133,13 @@ export class DrawerStackService implements OnDestroy {
   }
 
   public toggleAssistant(): void {
-    if (this.isChatOpened())
+    if (this.isChatOpened()){
+      this.backdropService.hide();
       this.closeAssistant();
-    else
+    } else {
+      this.backdropService.show();
       this.openAssistant();
+    }
   }
 
   public openAssistant(): void {
@@ -142,6 +147,7 @@ export class DrawerStackService implements OnDestroy {
     this.isChatOpened.set(true);
     this.isOpened.set(true);
     this.openChatDrawer$.next();
+    this.backdropService.show();
   }
 
   public closeAssistant(): void {
@@ -154,6 +160,7 @@ export class DrawerStackService implements OnDestroy {
     }
 
     this.closeChatDrawer$.next();
+    this.backdropService.hide();
   }
 
   public askAI(text: string): void {
@@ -161,4 +168,3 @@ export class DrawerStackService implements OnDestroy {
     this.askAI$.next(text);
   }
 }
- 
