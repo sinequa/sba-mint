@@ -5,3 +5,49 @@
 app-overview-people:not(.hidden) + app-overview-slides {
   @apply mt-4;
 }
+
+.assistant-container {
+  position: relative;
+  &.collapsed::after {
+    content: "";
+    bottom: 0;
+    height: 15px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  ::ng-deep app-assistant {
+    padding: 0 !important;
+    padding-left: 28px !important;
+
+    sq-chat-v3 ul {
+      padding: 0 !important;
+      padding-right: 0.5rem !important;
+
+      sq-chat-message {
+        & > span.message-icon {
+          display: none;
+        }
+
+        /* hide view progress */
+        & > div.message-assistant > div.small {
+          display: none;
+        }
+
+        div.message-content {
+          background: none !important;
+        }
+      }
+
+      remark p {
+        margin-top: 0;
+      }
+    }
+  }
+}

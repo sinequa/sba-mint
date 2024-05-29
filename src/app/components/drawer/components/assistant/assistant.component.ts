@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ViewChild, computed, inject, output, signal } from '@angular/core';
 
 import { AssistantComponent } from '@/app/components/assistant/assistant';
 import { ApplicationStore } from '@/stores';
@@ -21,6 +21,8 @@ import { DrawerService } from '../../drawer.service';
 export class DrawerAssistantComponent extends DrawerComponent {
   @ViewChild('assistant') assistant: AssistantComponent;
 
+  isStreaming = output<boolean>();
+
   protected isAssistantReady = computed(() => this.applicationStore.assistantReady());
   protected assistantQuery = signal<Query | undefined>(undefined);
 
@@ -39,5 +41,10 @@ export class DrawerAssistantComponent extends DrawerComponent {
 
   public newChat(): void {
     this.assistant?.newChat();
+  }
+
+  public onStreaming(event: boolean): void {
+    console.log("isStreaming", event)
+    this.isStreaming.emit(event);
   }
 }

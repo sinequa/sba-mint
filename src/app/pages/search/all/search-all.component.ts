@@ -19,6 +19,7 @@ import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore, ApplicationStore } from '@/stores';
 
+import { NgClass } from '@angular/common';
 import { AssistantComponent } from "../../../components/assistant/assistant";
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
@@ -33,6 +34,7 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     inputs: ['articleId: id', 'aggregations']
   }],
   imports: [
+    NgClass,
     SelectArticleOnClickDirective,
     FiltersComponent,
     OverviewPeopleComponent,
@@ -55,6 +57,7 @@ export class SearchAllComponent implements OnDestroy {
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
+  protected readonly assistantCollapsed = signal<boolean>(true);
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
@@ -65,6 +68,7 @@ export class SearchAllComponent implements OnDestroy {
   private readonly applicationStore = inject(ApplicationStore);
 
   isAssistantReady = computed(() => this.applicationStore.assistantReady());
+  isStreaming = signal<boolean>(false);
 
   protected aggregations: Aggregation[];
 
@@ -120,5 +124,9 @@ export class SearchAllComponent implements OnDestroy {
   toggleAssistant(): void {
     console.log("Toggle assistant");
     this.drawerStack.toggleAssistant();
+  }
+
+  streaming(state: boolean): void {
+    this.isStreaming.set(state);
   }
 }
