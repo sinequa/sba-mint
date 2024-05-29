@@ -8,7 +8,9 @@
     [result]="result()"
   ></app-did-you-mean>
 
+  @if (queryText()) {
   <app-overview-people class="p-4 rounded-lg bg-neutral-50" />
+  }
 
   <app-overview-slides class="p-4 rounded-lg bg-neutral-50" />
 
