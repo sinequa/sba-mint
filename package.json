@@ -32,6 +32,7 @@
     "@sinequa/atomic-angular": "^0.0.17",
     "@sinequa/components": "^11.11.0",
     "@sinequa/core": "^11.11.0",
+    "@tanstack/angular-query-experimental": "^5.40.0",
     "@types/node": "^16.18.11",
     "atomicjs": "^4.4.1",
     "clsx": "^2.1.0",

@@ -3,14 +3,13 @@ import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
 
-import { Result } from '@sinequa/atomic';
+import { Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
 import { QueryParamsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { Filter } from '@/app/utils/models';
 import { AggregationsStore } from '@/stores';
 
 
@@ -45,7 +44,7 @@ export class SearchService implements OnDestroy {
       this.navigationService.navigationEnd$
         .pipe(
           filter((routerEvent) => isASearchRoute(routerEvent.url)),
-          switchMap(() => this.getResult(getState(this.queryParamsStore).filters || []))
+          switchMap(() => this.getResult())
         )
         .subscribe((result: Result) => {
           // Update the aggregations store with the new aggregations
@@ -77,14 +76,28 @@ export class SearchService implements OnDestroy {
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
   }
 
-  public getResult(filters: Filter[]): Observable<Result> {
+  /**
+   * Retrieves the search result based on the current query.
+   * @returns An Observable that emits the search result.
+   */
+  public getResult(): Observable<Result> {
+    const query = this.getQuery();
+    // add the query name to records, to have it available if we bookmark one
+    return this.queryService.search(query);
+  }
+
+  /**
+   * Retrieves the query object based on the current state of the queryParamsStore and aggregationsStore.
+   * @returns The query object.
+   */
+  public getQuery(): Query {
+    const { filters = [] } = getState(this.queryParamsStore);
     const { aggregations } = getState(this.aggregationsStore);
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
     const sort = getState(this.queryParamsStore).sort;
     const spellingCorrectionMode = getState(this.queryParamsStore).spellingCorrectionMode;
     const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort, spellingCorrectionMode }));
-    // add the query name to records, to have it available if we bookmark one
-    return this.queryService.search(query);
+    return query;
   }
 
   /**
