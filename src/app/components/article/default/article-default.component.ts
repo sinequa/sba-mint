@@ -45,6 +45,13 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
+  protected extract = computed(() => {
+    if (!this.article().matchingpassages) return this.article().relevantExtracts;
+    
+    const topPassage = this.article().matchingpassages!.passages.sort((a, b) => a.score > b.score ? -1 : 1)[0];
+    return topPassage.highlightedText;
+  })
+
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';
 
