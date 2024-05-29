@@ -44,7 +44,7 @@
     </header>
 
     <main>
-      <p class="line-clamp-2" [innerHTML]="article().relevantExtracts"></p>
+      <p class="line-clamp-2" [innerHTML]="extract()"></p>
     </main>
 
     @if ((articleMetadata()?.length ?? 0) > 0) {
