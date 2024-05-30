@@ -59,8 +59,8 @@ export class AdvancedSearchComponent {
     this.input.set('');
   }
 
-  scrollTo(type: string, index: number) {
-    this.previewService.sendMessage({ action: 'select', id: `${type}_${index}`, usePassageHighlighter: true });
+  scrollTo(type: string, index: number, usePassageHighlighter: boolean = false) {
+    this.previewService.sendMessage({ action: 'select', id: `${type}_${index}`, usePassageHighlighter });
   }
 
   navigateNext(scrollType: string, navigationIndex: WritableSignal<number>, metadata: ArticleMetadata[]) {
@@ -71,7 +71,7 @@ export class AdvancedSearchComponent {
 
   navigatePrev(scrollType: string, navigationIndex: WritableSignal<number>, metadata: ArticleMetadata[]) {
     if (navigationIndex() <= 1) navigationIndex.set(metadata.length);
-    else if (navigationIndex() > 1) navigationIndex.set(this.companyIndex() - 1);
+    else if (navigationIndex() > 1) navigationIndex.set(navigationIndex() - 1);
     this.scrollTo(scrollType, navigationIndex() - 1);
   }
 }
