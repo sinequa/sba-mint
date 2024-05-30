@@ -104,6 +104,20 @@ export class PreviewService {
     }
   }
 
+  /**
+   * Get preview id for an entity value for an index
+   * @param entity the entity type (i.e. "geo")
+   * @param value the entity value (i.e. "AUSTRALIA")
+   * @param index the entity index from its list
+   * @returns the html id
+   */
+  getEntityId(entity: string, value: string, index: number): number | undefined {
+    if (!this.previewData) return undefined;
+
+    return this.previewData.highlightsPerLocation
+        .filter(h => h.values.find(v => v === value))[index].positionInCategories[entity];
+  }
+
   getHtml(highlight: string, data: PreviewData) {
     // Generate the list of items we want to retrieve
     const ids = data.highlightsPerCategory[highlight]?.values[0]?.locations.map(

@@ -64,8 +64,7 @@
       metadata: article()!.geo,
       name: 'Location',
       iconClass: 'far fa-location-dot',
-      scrollType: 'geo',
-      navigationIndex: geoIndex
+      entity: 'geo'
     }"></ng-container>
     }
 
@@ -74,8 +73,7 @@
       metadata: article()!.company,
       name: 'Companies',
       iconClass: 'far fa-buildings',
-      scrollType: 'company',
-      navigationIndex: companyIndex
+      entity: 'company'
     }"></ng-container>
     }
 
@@ -84,15 +82,13 @@
       metadata: article()!.person,
       name: 'Mentioned',
       iconClass: 'far fa-at',
-      scrollType: 'person',
-      navigationIndex: personIndex
+      entity: 'person'
     }"></ng-container>
     }
   </div>
 }
 
-<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass"
-  let-scrollType="scrollType" let-navigationIndex="navigationIndex">
+<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
   <section class="px-2 py-3 border-b border-neutral-300" stkPanel>
     <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
       <p class="flex gap-2 font-semibold items-baseline">
@@ -104,18 +100,20 @@
     </header>
 
     <div id="panel-content">
-      @if (metadata?.length) {
-      <p class="flex flex-row-reverse gap-2 text-sm items-center">
-        <i class="fa-light fa-chevron-right" (click)="navigateNext(scrollType, navigationIndex, metadata)"></i>
-        <span>{{ navigationIndex() }} / {{ metadata?.length }}</span>
-        <i class="fa-light fa-chevron-left" (click)="navigatePrev(scrollType, navigationIndex, metadata)"></i>
-      </p>
-      }
       <ul id="panel-content" class="p-2">
         @for (data of metadata; track $index) {
-        <li class="flex justify-between">
+        <li class="flex justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
           <p>{{ data.display }}</p>
-          <p>{{ data.count }}</p>
+          <p class="flex items-center gap-2">
+            @if (hovering() === data.value) {
+              <i class="fa-light fa-chevron-left" (click)="navigatePrev(entity, data)" role="button"></i>
+              <span>{{ hoverIndex() }} / {{ data.count }}</span>
+              <i class="fa-light fa-chevron-right" (click)="navigateNext(entity, data)" role="button"></i>
+            }
+            @else {
+              {{ data.count }}
+            }
+          </p>
         </li>
         }
       </ul>
