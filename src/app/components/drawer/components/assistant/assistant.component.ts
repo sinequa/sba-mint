@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, ViewChild, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, computed, inject, output, signal } from '@angular/core';
 
 import { AssistantComponent } from '@/app/components/assistant/assistant';
 import { ApplicationStore } from '@/stores';
@@ -19,14 +19,25 @@ import { DrawerService } from '../../drawer.service';
   styleUrls: ['../../drawer.component.scss', './assistant.component.scss']
 })
 export class DrawerAssistantComponent extends DrawerComponent {
-  @ViewChild('assistant') assistant: AssistantComponent;
+  @ViewChild('assistant') set assistant(assistant: AssistantComponent) {
+    this.assistantComponent = assistant;
+
+    // if there are pending messages, give them to the assistant
+    if (this.pendingMessage) {
+      this.assistantComponent.askAI(this.pendingMessage);
+      this.pendingMessage = undefined;
+    }
+  }
 
   isStreaming = output<boolean>();
 
+  protected assistantComponent: AssistantComponent | undefined = undefined;
   protected isAssistantReady = computed(() => this.applicationStore.assistantReady());
   protected assistantQuery = signal<Query | undefined>(undefined);
 
   private applicationStore = inject(ApplicationStore);
+  private cdr = inject(ChangeDetectorRef);
+  private pendingMessage: RawMessage[] | undefined = undefined;
 
   // TODO: remove once assistant input focus issue is fixed
   // https://sinequa.atlassian.net/browse/ES-22815 
@@ -36,11 +47,18 @@ export class DrawerAssistantComponent extends DrawerComponent {
   public askAI(text: string): void {
     const messages: RawMessage[] = [{ role: 'user', content: text, additionalProperties: { display: true } }];
 
-    this.assistant?.askAI(messages);
+    // if assistant exist, give it the messages
+    if (this.assistantComponent)
+      this.assistantComponent.askAI(messages);
+    // else, queue the messages
+    else {
+      this.pendingMessage = messages;
+      this.cdr.detectChanges();
+    }
   }
 
   public newChat(): void {
-    this.assistant?.newChat();
+    this.assistantComponent?.newChat();
   }
 
   public onStreaming(event: boolean): void {
