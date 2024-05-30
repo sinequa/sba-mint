@@ -3,6 +3,12 @@
   --ast-chat-padding-bottom: 1rem;
 }
 
+:host {
+  &[no-progress="true"] {
+    background-color: brown;
+  }
+}
+
 sq-chat-v3 > div {
   display: flex;
   flex-direction: column;
@@ -106,7 +112,6 @@ textarea {
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
 }
-
 
 @keyframes rotation {
   0% {
