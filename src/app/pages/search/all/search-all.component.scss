@@ -3,7 +3,7 @@
 }
 
 app-overview-people:not(.hidden) + app-overview-slides {
-  @apply mt-4;
+  margin-top: 1rem;
 }
 
 .assistant-container {
