@@ -13,7 +13,8 @@ import { routes } from '@/app/app.routes';
 import { SearchInputService } from './components/search-input/search-input.service';
 import { QueryParamsService } from './services';
 import { eagerProvider } from './utils';
-import { queryNameInterceptorFn } from './utils/queryname.interceptor';
+import { queryNameInterceptorFn, toastInterceptorFn } from './utils';
+
 
 
 registerLocaleData(localeFr);
@@ -95,7 +96,8 @@ export const appConfig: ApplicationConfig = {
       authInterceptorFn,
       auditInterceptorFn,
       errorInterceptorFn,
-      queryNameInterceptorFn
+      queryNameInterceptorFn,
+      toastInterceptorFn
     ])),
     provideAngularQuery(new QueryClient({
       defaultOptions: {
