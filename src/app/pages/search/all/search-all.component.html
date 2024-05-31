@@ -67,22 +67,21 @@
     </ul>
   }
   @else {
-    @for(page of query.data()?.pages; track page) {
-      <ul class="flex flex-col gap-2 mt-4">
+    <ul class="flex flex-col gap-2 mt-4">
+      @for(page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id) {
-        <li>
-          <app-article-default [article]="article" [strategy]="'replace'" />
-        </li>
+          <li>
+            <app-article-default [article]="article" [strategy]="'replace'" />
+          </li>
         }
-      </ul>
+        @if(page.records.length === 0){
+          <li class="mt-8 text-neutral-500 italic">
+            No result for &quot;<em class="not-italic font-semibold">{{ queryText() }}</em>&quot;
+          </li>
+        }
+      }
+    </ul>
     }
-    @empty {
-    <p class="mt-8 text-neutral-500 italic">
-      No result for "<em class="not-italic font-semibold">{{ queryText() }}</em
-      >"
-    </p>
-    }
-  }
 
   <div infinity-scroll (loadMore)="nextPage()"></div>
 </main>
