@@ -41,6 +41,8 @@ export class AppComponent {
           this.applicationStore.updateAssistantReady();
         });
       }
+    }).catch(error => {
+      toast.error("An error occured while logging in", { description: error, duration: 2000 });
     });
   }
 }
