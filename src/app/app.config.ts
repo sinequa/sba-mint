@@ -4,6 +4,7 @@ import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, importProvidersFrom } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
 
 import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 import { IntlModule, Locale, LocalesConfig } from '@sinequa/core/intl';
@@ -82,8 +83,6 @@ export const appConfig: ApplicationConfig = {
     // { provide: LoginService, useClass: myLoginService },
 
     { provide: APP_INITIALIZER, useFactory: StartConfigInitializer, deps: [StartConfigWebService], multi: true },
-
-
     // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
@@ -97,6 +96,14 @@ export const appConfig: ApplicationConfig = {
       auditInterceptorFn,
       errorInterceptorFn,
       queryNameInterceptorFn
-    ]))
+    ])),
+    provideAngularQuery(new QueryClient({
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: false,
+          gcTime:0
+        }
+      }
+    }))
   ]
 };
