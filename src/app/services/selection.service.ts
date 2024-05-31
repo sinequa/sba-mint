@@ -17,7 +17,7 @@ export class SelectionService {
   private readonly selectionStore = inject(SelectionStore);
   queryParamsStore = inject(QueryParamsStore);
 
-  public setCurrentArticle(article: Article | undefined): void {
+  public setCurrentArticle(article: Article | undefined, withQueryText: boolean = true): void {
     if (!article) {
       this.clearCurrentArticle();
       return;
@@ -25,7 +25,7 @@ export class SelectionService {
 
     // update selection store with query text
     const { text } = getState(this.queryParamsStore);
-    this.selectionStore.update(article, text);
+    this.selectionStore.update(article, withQueryText ? text : undefined );
 
     if (article?.id)
       this.updateArticleIdInQueryParams(article.id);

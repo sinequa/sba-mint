@@ -47,12 +47,8 @@ type AssistantMode = 'prompt' | 'query';
       #sqChat
       [chat]="initChat"
       [instanceId]="instanceId()"
-      (openPreview)="handlePreview($event)"
-    >
-      <!-- <ng-template #loadingTpl>
-        <i class="fa-regular fa-spinner animate-spin"></i>
-      </ng-template> -->
-    </sq-chat-v3>
+      (openPreview)="handlePreview($event, false)"
+    />
 
     <!-- <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
@@ -144,11 +140,11 @@ export class AssistantComponent implements AfterViewInit, OnDestroy {
     this.open.set(false)
   }
 
-  handlePreview(event: ChatContextAttachment) {
+  handlePreview(event: ChatContextAttachment, withQueryText = true) {
     console.log("Preview event: ", event);
 
     this.drawerStack.closeAssistant(true);
-    this.drawerStack.stack(event.record as Article);
+    this.drawerStack.stack(event.record as Article, withQueryText);
   }
 
   public newChat(): void {

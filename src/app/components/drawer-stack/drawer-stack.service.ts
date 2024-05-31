@@ -122,7 +122,7 @@ export class DrawerStackService implements OnDestroy {
    *
    * @param article the article to stack
    */
-  public stack(article: Article | undefined): void {
+  public stack(article: Article | undefined, withQueryText?: boolean): void {
     const { id } = getState(this.selectionStore);
 
     if (id && (!article || article.id === id)) return;
@@ -130,7 +130,7 @@ export class DrawerStackService implements OnDestroy {
     // force top drawer to collapse
     this.forceTopDrawerCollapse$.next();
     // set selection
-    this.selection.setCurrentArticle(article);
+    this.selection.setCurrentArticle(article, withQueryText);
     // open drawer
     this.open();
   }

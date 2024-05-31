@@ -21,8 +21,8 @@ export const SelectionStore = signalStore(
       });
     },
     updateQueryText(queryText: string) {
-      patchState(store, () => {
-        return { queryText };
+      patchState(store, (state) => {
+        return { ...state, queryText };
       });
     },
     clear() {
