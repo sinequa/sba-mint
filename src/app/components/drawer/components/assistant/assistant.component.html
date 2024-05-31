@@ -29,10 +29,10 @@
 
   <!-- TODO: remove fieldset when assistant input focus is an input -->
   <!-- https://sinequa.atlassian.net/browse/ES-22815 -->
-  <fieldset class="h-full" [disabled]="!isDrawerOpened()">
+  <fieldset class="h-full relative w-full" [disabled]="!isDrawerOpened()">
     <!-- remove h-full with fieldset -->
     <app-assistant
-      class="flex flex-col grow h-full"
+      class="flex flex-col grow h-full absolute w-full top-0 left-0"
       #assistant
       instanceId="chat-drawer"
       (isStreaming)="onStreaming($event)"
