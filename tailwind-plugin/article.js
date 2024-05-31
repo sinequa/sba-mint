@@ -27,7 +27,7 @@ const article = plugin(function ({ addBase, addComponents, theme }) {
         borderColor: theme('colors.primary')
       },
       '&:hover:not(.selected)': {
-        boxShadow: '4px 4px 12px 0px #00000026'
+        boxShadow: theme('boxShadow.article')
       }
     },
   })
