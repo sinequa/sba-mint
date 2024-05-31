@@ -56,6 +56,6 @@ export class AdvancedSearchComponent {
   }
 
   scrollTo(extract: Extract) {
-    this.previewService.sendMessage({ action: 'select', id: `extractslocations_${extract.textIndex}`, usePassageHighlighter: true });
+    this.previewService.sendMessage({ action: 'select', id: extract.id, usePassageHighlighter: false });
   }
 }
