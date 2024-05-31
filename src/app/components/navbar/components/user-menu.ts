@@ -7,9 +7,9 @@ import { login, logout, setGlobalConfig } from "@sinequa/atomic";
 import { MenuComponent, MenuItemComponent } from "@sinequa/atomic-angular";
 import { toast } from "ngx-sonner";
 
-import { AuthorAvatarComponent } from "../../author/author-avatar/author-avatar.component";
 import { PersonArticle } from "@/app/types";
 import { FormsModule } from "@angular/forms";
+import { AuthorAvatarComponent } from "../../author/author-avatar/author-avatar.component";
 
 @Component({
   selector: "app-user-menu",
@@ -53,6 +53,11 @@ export class UserMenuComponent {
 
   handleLogout() {
     logout().then(() => this.router.navigate(['/login']));
+  }
+
+  handleOverride() {
+    this.menu()?.toggle(new MouseEvent('click'));
+    this.overrideUserDialog()!.nativeElement.showModal();
   }
 
   override() {
