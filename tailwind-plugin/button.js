@@ -24,7 +24,7 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
     '.btn': {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      placeContent: 'center',
       padding: theme('spacing.2'),
       borderRadius: theme('borderRadius.DEFAULT'),
       backgroundColor: theme('colors.zinc.900'),
