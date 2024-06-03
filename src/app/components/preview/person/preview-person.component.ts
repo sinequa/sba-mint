@@ -3,7 +3,9 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
 import { EMPTY, Observable, Subscription, filter, map, switchMap } from 'rxjs';
 
+import { Filter as ApiFilter } from '@/app/utils/models';
 import { Filter, Query, Result } from '@sinequa/atomic';
+
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultLightSkeletonComponent } from '@/app/components/article/default-light-skeleton/article-default-light-skeleton.component';
@@ -14,7 +16,7 @@ import { PEOPLE_QUERY_NAME } from '@/app/config/query-names';
 import { MockDataService } from '@/app/services';
 import { AppStore, searchInputStore } from '@/app/stores';
 import { Article, PersonArticle, getPersonIms, getPersonRecentContributionsQueryAndFilters, getPersonRelatedToQueryAndFilters } from "@/app/types/articles";
-import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
+import { buildQuery, translateFiltersToApiFilters, translateFiltersToOrFilters } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
@@ -50,10 +52,9 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
 
   protected readonly manager = toSignal(
     this.person$.pipe(
-      map((person) => person?.employeeManagerId),
-      filter(employeeManagerId => !!employeeManagerId),
-      switchMap(employeeManagerId =>
-        this.queryService.search(this.buildManagerQuery(employeeManagerId!))
+      filter(person => !!(person?.employeeManagerEmail || person?.employeeManagerId || person?.employeeManagerName)),
+      switchMap(person =>
+        this.queryService.search(this.buildManagerQuery(person!))
           .pipe(
             map(result => (result.records?.[0] as PersonArticle)),
             filter(person => !!person),
@@ -63,13 +64,32 @@ export class PreviewPersonComponent implements OnInit, OnDestroy {
     )
   );
 
-  private buildManagerQuery(managerId: string): Query {
+  private buildManagerQuery(person: PersonArticle): Query {
+    const filtersList = [];
+
+    if (person.employeeManagerId) {
+      filtersList.push({
+        column: 'id',
+        values: [this.person()?.employeeManagerId],
+      } as ApiFilter);
+    }
+    if (person.employeeManagerName) {
+      filtersList.push({
+        column: 'employeeFullName',
+        values: [this.person()?.employeeManagerName],
+      } as ApiFilter);
+    }
+    if (person.employeeManagerEmail) {
+      filtersList.push({
+        column: 'employeeEmail',
+        values: [this.person()?.employeeManagerEmail],
+      } as ApiFilter);
+    }
+
+    const filters = translateFiltersToOrFilters(filtersList);
+
     return runInInjectionContext(this.injector, () => buildQuery({
-      name: PEOPLE_QUERY_NAME, pageSize: 1, filters:
-        {
-          field: 'id',
-          value: managerId,
-        } as Filter
+      name: PEOPLE_QUERY_NAME, pageSize: 1, filters
     }));
   }
 
