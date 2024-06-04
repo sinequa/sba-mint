@@ -64,7 +64,7 @@
 
             <label
             for="date-filter-{{ option.display }}"
-            class="p-1 grow cursor-pointer">{{ option.display }}</label>
+            class="p-1 grow cursor-pointer">{{ option.display | sqMessage }}</label>
           </li>
         }
         @if(allowCustomRange) {

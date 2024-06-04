@@ -72,7 +72,7 @@ export class SearchAllComponent implements OnDestroy {
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly applicationStore = inject(ApplicationStore);
 
-  isAssistantReady = computed(() => this.applicationStore.assistantReady());
+  isAssistantReady = computed(() => this.applicationStore.assistantReady() && false);
   isStreaming = signal<boolean>(false);
 
   protected aggregations: Aggregation[];

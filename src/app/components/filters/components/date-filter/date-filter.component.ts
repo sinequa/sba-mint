@@ -10,13 +10,14 @@ import { QueryParamsStore } from '@/app/stores';
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { cn } from '@sinequa/atomic-angular';
 import { AggregationTitle } from '../aggregation/aggregation.component';
+import { IntlModule } from '@sinequa/core/intl';
 
 const ALLOW_CUSTOM_RANGE = true;
 
 @Component({
   selector: 'app-date-filter',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule],
+  imports: [NgClass, ReactiveFormsModule, IntlModule],
   templateUrl: './date-filter.component.html',
   styleUrl: './date-filter.component.scss'
 })

@@ -55,11 +55,9 @@ export class NavbarComponent {
     { label: 'Applications', iconClass: 'far fa-grid-round-2', component: ApplicationsComponent }
   ];
 
+  // TODO: ici on peut faire quelque chose avec les "tabs" des "queries" définis dans l'admin
   protected readonly tabs: NavbarTab[] = [
-    { label: 'all results', routerLink: '/search/all', iconClass: 'far fa-globe' },
-    { label: 'people', routerLink: '/search/people', iconClass: 'far fa-circle-user' },
-    { label: 'slides', routerLink: '/search/slides', iconClass: 'far fa-presentation-screen' },
-    { label: 'matters', routerLink: '/search/matters', iconClass: 'far fa-briefcase' },
+    { label: 'all results', routerLink: '/search/all', iconClass: 'far fa-globe' }
   ];
 
   protected readonly navigationService = inject(NavigationService);

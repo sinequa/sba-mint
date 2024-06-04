@@ -3,14 +3,11 @@ import { ActivatedRoute, Routes } from '@angular/router';
 
 import { AuthGuard, LoginComponent } from '@sinequa/atomic-angular';
 
-import { DEFAULT_QUERY_NAME, PEOPLE_QUERY_NAME, SLIDES_QUERY_NAME } from './config/query-names';
+import { DEFAULT_QUERY_NAME } from './config/query-names';
 import { DesignSystemComponent } from './pages/debug/design-system/design-system.component';
 import { HomeComponent } from './pages/home/home.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SearchMattersComponent } from './pages/search/matters/search-matters.component';
-import { SearchPeopleComponent } from './pages/search/people/search-people.component';
 import { SearchComponent } from './pages/search/search.component';
-import { SearchSlidesComponent } from './pages/search/slides/search-slides.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,9 +15,6 @@ export const routes: Routes = [
   {
     path: 'search', component: SearchComponent, canActivate: [AuthGuard()], children: [
       { path: 'all', component: SearchAllComponent, data: { queryName: DEFAULT_QUERY_NAME } },
-      { path: 'people', component: SearchPeopleComponent, data: { queryName: PEOPLE_QUERY_NAME } },
-      { path: 'slides', component: SearchSlidesComponent, data: { queryName: SLIDES_QUERY_NAME } },
-      { path: 'matters', component: SearchMattersComponent, data: { queryName: DEFAULT_QUERY_NAME } },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },
