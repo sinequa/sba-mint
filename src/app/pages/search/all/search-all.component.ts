@@ -21,7 +21,6 @@ import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore, ApplicationStore } from '@/stores';
-import { CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
@@ -43,8 +42,6 @@ type R = Result & { nextPage?: number, previousPage?: number };
     SortSelectorComponent,
     DidYouMeanComponent,
     AssistantComponent,
-    CdkVirtualScrollViewport,
-    CdkVirtualForOf,
     InfinityScrollDirective
   ],
   templateUrl: './search-all.component.html',
