@@ -40,7 +40,10 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   public _article = input.required<Article>({ alias: 'article' });
   protected article = computed(() => {
-    const { article = { treepath: ['/'] } } = getState(this.selectionStore) || this._article();
+    const { article } = getState(this.selectionStore) || this._article();
+    if(article && !article.treepath) {
+      article.treepath = ['/'];
+    }
     return article as Article;
   })
 
@@ -72,9 +75,12 @@ export class PreviewDefaultComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.sub.add(
-      this.iframes.changes.subscribe(
-        (iframes: QueryList<ElementRef<HTMLIFrameElement>>) => this.previewService.setIframe(iframes.first.nativeElement.contentWindow)
-      )
+      this.iframes.changes
+        .subscribe((iframes: QueryList<ElementRef<HTMLIFrameElement>>) => {
+          if(iframes.first) {
+            this.previewService.setIframe(iframes.first.nativeElement.contentWindow);
+          }
+        })
     );
   }
 

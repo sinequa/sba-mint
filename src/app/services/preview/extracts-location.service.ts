@@ -38,7 +38,7 @@ export class ExtractsLocationService implements OnDestroy {
           return;
         }
 
-        const type = "extractslocations";
+        const type = data?.highlightsPerCategory?.['matchingpassages']?.values.length ? "matchingpassages" : "extractslocations";
 
         // extracts contains the html of extracts in chronological order
         // locations contains the list of start positions sorted by score

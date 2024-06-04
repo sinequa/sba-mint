@@ -11,6 +11,8 @@ export type PersonArticle = Article & {
   employeeLastName?: string;
   employeeLocations?: string[];
   employeeManagerId?: string;
+  employeeManagerName?: string;
+  employeeManagerEmail?: string;
   employeePhone?: string;
   employeePhotoURL?: string;
 }

@@ -7,18 +7,53 @@
     class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
   />
 
-  <app-did-you-mean
-    class="text-alert py-1"
-    [result]="result()"
-  ></app-did-you-mean>
+  @if (isAssistantReady()) {
+  <div
+    class="assistant-container bg-orange-50 border border-orange-100 p-2 rounded-md"
+    [ngClass]="{ 'max-h-[80px] overflow-hidden collapsed': assistantCollapsed() }"
+  >
+    <h2 class="flex gap-2 text-ai-500 font-bold text-base items-baseline">
+      <div
+        class="flex items-center justify-center rounded-full bg-white size-8"
+      >
+        <i
+          class="fa-solid size-4"
+          [ngClass]="{
+            'fa-spinner animate-spin': isStreaming(),
+            'fa-sparkles': !isStreaming()
+          }"
+        ></i>
+      </div>
 
+      AI Overview
+
+      <button
+        class="btn btn-ghost rounded-full ms-auto text-ai-500 hover:bg-white"
+        (click)="assistantCollapsed.set(!assistantCollapsed())"
+      >
+        <i
+          class="fa-regular fa-chevron-down"
+          [ngClass]="{ 'rotate-180': !assistantCollapsed() }"
+        ></i>
+      </button>
+    </h2>
+
+    <app-assistant
+      mode="query"
+      instanceId="search-results-assistant"
+      (isStreaming)="streaming($event)"
+    />
+    <!-- class="pointer-events-none" -->
+  </div>
+  }
+
+  <app-did-you-mean class="text-alert py-1" [result]="result()" />
+
+  @if (queryText()) {
   <app-overview-people class="p-4 rounded-lg bg-neutral-50" />
+  }
 
   <app-overview-slides class="p-4 rounded-lg bg-neutral-50" />
-
-  @if(isAssistantReady()) {
-  <app-assistant mode="query" instanceId="search-results-assistant" />
-  }
 
   <div class="flex mt-4">
     <app-sort-selector
@@ -28,26 +63,29 @@
     />
   </div>
 
-  @if (!articles()) {
-  <ul class="flex flex-col gap-2 mt-4">
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-  </ul>
-  } @else if (articles()!.length > 0) {
-  <ul class="flex flex-col gap-2 mt-4">
-    @for (article of articles(); track article.value) {
-    <li>
-      <app-article-default [article]="article" [strategy]="'replace'" />
-    </li>
-    }
-  </ul>
-
-  <app-pager [configuration]="pageConfiguration()" />
-  } @else {
-  <p class="mt-8 text-neutral-500 italic">
-    No result for "<em class="not-italic font-semibold">{{ queryText() }}</em
-    >"
-  </p>
+  @if (query.isPending()) {
+    <ul class="flex flex-col gap-2 mt-4">
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
+    </ul>
   }
+  @else {
+    <ul class="flex flex-col gap-2 mt-4">
+      @for(page of query.data()?.pages; track page) {
+        @for (article of page.records; track article.id) {
+          <li>
+            <app-article-default [article]="article" [strategy]="'replace'" />
+          </li>
+        }
+        @if(page.records.length === 0){
+          <li class="mt-8 text-neutral-500 italic">
+            No result for &quot;<em class="not-italic font-semibold">{{ queryText() }}</em>&quot;
+          </li>
+        }
+      }
+    </ul>
+    }
+
+  <div infinity-scroll (loadMore)="nextPage()"></div>
 </main>

@@ -43,6 +43,7 @@ module.exports = {
       },
       boxShadow: {
         dropdown: "6px 4px 20px 0px rgba(0, 0, 0, 0.2)",
+        article: "4px 4px 12px 0px rgba(0, 0, 0, 0.15)",
       },
     },
   },

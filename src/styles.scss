@@ -32,3 +32,13 @@ html {
 .spinner-grow {
   display: none !important;
 }
+
+/* Override tooltip z-index when in the drawer */
+.cdk-overlay-container {
+  z-index: 3000;
+}
+
+/* allow multi-line text in the taost description */
+[data-description] {
+  white-space: pre-line;
+}
