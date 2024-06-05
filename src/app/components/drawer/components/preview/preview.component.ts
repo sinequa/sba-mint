@@ -1,5 +1,4 @@
 import { PreviewDefaultComponent } from '@/app/components/preview/default/preview-default.component';
-import { PreviewPersonComponent } from '@/app/components/preview/person/preview-person.component';
 import { PreviewSlideComponent } from '@/app/components/preview/slide/preview-slide.component';
 import { ExtractsLocationService, PreviewService } from '@/app/services/preview';
 import { Article } from '@/app/types';
@@ -13,7 +12,7 @@ import { AdvancedSearchComponent } from '../advanced-search/advanced-search.comp
 @Component({
   selector: 'app-drawer-preview',
   standalone: true,
-  imports: [NgClass, NgComponentOutlet, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent],
+  imports: [NgClass, NgComponentOutlet, AdvancedSearchComponent, PreviewDefaultComponent, PreviewSlideComponent],
   providers: [DrawerService, PreviewService, ExtractsLocationService],
   templateUrl: './preview.component.html',
   styleUrls: ['../../drawer.component.scss', './preview.component.scss']

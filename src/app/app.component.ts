@@ -5,11 +5,10 @@ import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { login } from '@sinequa/atomic';
-import { LoginService } from '@sinequa/core/login';
 
 import { ApplicationService } from '@/app/services';
+import { ApplicationStore } from '@/app/stores';
 
-import { ApplicationStore } from '@/stores';
 import { DrawerStackComponent } from './components/drawer-stack/drawer-stack.component';
 import { BackdropComponent } from './components/drawer/components/backdrop/backdrop.component';
 import { PrincipalStore } from './stores';
@@ -26,8 +25,6 @@ export class AppComponent {
   principalStore = inject(PrincipalStore);
   applicationStore = inject(ApplicationStore);
 
-  loginService = inject(LoginService);
-
   constructor() {
     // Login and initialize the application when the user is logged in
     login().then(value => {
@@ -35,10 +32,6 @@ export class AppComponent {
         this.appService.init().then(() => {
           const { fullName } = getState(this.principalStore).principal;
           toast(`Welcome back ${fullName}!`, { duration: 2000 })
-        });
-        this.loginService.login().subscribe(values => {
-          console.log("Login successful!", values);
-          this.applicationStore.updateAssistantReady();
         });
       }
     }).catch(error => {

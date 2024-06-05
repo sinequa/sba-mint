@@ -1,20 +1,18 @@
 import { ApplicationService } from "@/app/services";
 import { PrincipalStore, UserSettingsStore } from "@/app/stores";
 import { Component, ElementRef, computed, inject, model, viewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
 import { login, logout, setGlobalConfig } from "@sinequa/atomic";
 import { MenuComponent, MenuItemComponent } from "@sinequa/atomic-angular";
 import { toast } from "ngx-sonner";
 
-import { PersonArticle } from "@/app/types";
-import { FormsModule } from "@angular/forms";
-import { AuthorAvatarComponent } from "../../author/author-avatar/author-avatar.component";
 
 @Component({
   selector: "app-user-menu",
   standalone: true,
-  imports: [FormsModule, MenuComponent, MenuItemComponent, AuthorAvatarComponent],
+  imports: [FormsModule, MenuComponent, MenuItemComponent],
   templateUrl: "./user-menu.html"
 })
 export class UserMenuComponent {
@@ -26,11 +24,16 @@ export class UserMenuComponent {
   principalStore = inject(PrincipalStore);
   userSettingsStore = inject(UserSettingsStore);
 
-  person = computed(() => ({employeeFullName: this.user().fullName}) as PersonArticle )
   user = computed(() => {
     const principal = getState(this.principalStore).principal;
     return principal;
   })
+
+  initials = computed(() => {
+    const principal = this.user();
+    const separator = principal.fullName ? ' ' : '.';
+    return (principal.fullName || principal.id || '').split(separator).filter( word => word[0] && (word[0] === word[0].toUpperCase()) ).map( word => word[0] ).join('').slice(0,3);
+  });
 
   allowUserOverride = computed(() => {
     return this.principalStore.allowUserOverride();

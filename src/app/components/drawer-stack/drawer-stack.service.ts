@@ -5,7 +5,6 @@ import { NavigationService, SelectionHistoryService, SelectionService } from '@/
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { Subscription } from 'rxjs';
-import { BackdropService } from '../drawer/components/backdrop/backdrop.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,13 +19,11 @@ export class DrawerStackService implements OnDestroy {
   public readonly isChatOpened = signal(false);
   public readonly openChatDrawer$ = new EventEmitter<void>();
   public readonly closeChatDrawer$ = new EventEmitter<void>();
-  public readonly askAI$ = new EventEmitter<string>();
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly selectionStore = inject(SelectionStore);
   private readonly navigationService = inject(NavigationService);
-  private readonly backdropService = inject(BackdropService);
 
   private readonly subscriptions = new Subscription();
 
@@ -35,7 +32,6 @@ export class DrawerStackService implements OnDestroy {
     this.subscriptions.add(
       this.navigationService.navigationEnd$.subscribe(() => {
         console.log('Navigation end');
-        this.closeAssistant();
         this.closeAll();
       })
     );
@@ -101,14 +97,12 @@ export class DrawerStackService implements OnDestroy {
    *
    * @param article the article to replace the current selection with
    */
-  public replace(article: Article | undefined, closeAssistant: boolean = false): void {
+  public replace(article: Article | undefined): void {
     const { id } = getState(this.selectionStore);
     if (id && (!article || article.id === id)) return;
 
     // close everything without trigger layout animation
     this.closeAll(true);
-
-    if (closeAssistant) this.closeAssistant(true);
 
     // set selection
     this.selection.setCurrentArticle(article);
@@ -133,41 +127,5 @@ export class DrawerStackService implements OnDestroy {
     this.selection.setCurrentArticle(article, withQueryText);
     // open drawer
     this.open();
-  }
-
-  public toggleAssistant(): void {
-    if (this.isChatOpened()){
-      this.backdropService.hide();
-      this.closeAssistant();
-    } else {
-      this.backdropService.show();
-      this.openAssistant();
-    }
-  }
-
-  public openAssistant(): void {
-    console.log('Open assistant');
-    this.isChatOpened.set(true);
-    this.isOpened.set(true);
-    this.openChatDrawer$.next();
-    this.backdropService.show();
-  }
-
-  public closeAssistant(keepDrawerOpen: boolean = false): void {
-    console.log('Close assistant');
-    this.isChatOpened.set(false);
-
-    if (!keepDrawerOpen && this.selectionHistory.getCurrentSelectionIndex() === -1) {
-      this.isOpened.set(false);
-      this.closeAllDrawers$.next();
-    }
-
-    this.closeChatDrawer$.next();
-    this.backdropService.hide();
-  }
-
-  public askAI(text: string): void {
-    this.openAssistant();
-    this.askAI$.next(text);
   }
 }

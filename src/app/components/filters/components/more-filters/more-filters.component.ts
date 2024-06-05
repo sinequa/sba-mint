@@ -6,10 +6,9 @@ import { Aggregation, Filter as ApiFilter, resolveToColumnName } from '@sinequa/
 
 import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { AppStore, QueryParamsStore } from '@/app/stores';
+import { AggregationsStore, AppStore, QueryParamsStore } from '@/app/stores';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
-import { AggregationsStore } from '@/stores';
 import { getAuthorizedFilters } from '../../filter';
 import { FILTERS_COUNT } from '../../filters.component';
 import { FilterDropdown } from '../../models/filter-dropdown';

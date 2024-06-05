@@ -14,11 +14,11 @@
   <section class="flex gap-1 items-baseline">
     <p class="flex divide-x-comma divide-xs">
       @if (slide()?.authors?.[0]) {
-      <app-author [authorName]="slide()!.authors![0]" [useIcon]="true"/>
+        <span>slide().authors![0]</span>
       }
 
       @if (slide()?.modified) {
-      <span class="text-nowrap">{{ slide()!.modified | date : "mediumDate" }}</span>
+        <span class="text-nowrap">{{ slide()!.modified | date : "mediumDate" }}</span>
       }
     </p>
   </section>

@@ -1,7 +1,7 @@
 <sq-dropdown>
   <button tabindex="0" class="btn btn-tertiary font-semibold">
     <i class="fa-fw fa-regular fa-arrow-{{ sort()?.$isDesc ? 'down': 'up' }}-big-small me-1"></i>
-    {{ sort()?.display | sqMessage }}
+    {{ sort()?.display }}
   </button>
 
   <div dropdown-content class="dropdown-content p-1 mt-1">
@@ -10,7 +10,7 @@
       @for (option of sortOptions(); track $index) {
       <li class="flex gap-1 items-baseline data-list-item p-1" role="button" (click)="onSortOptionClicked(option)">
         <i class="fa-fw fa-regular fa-arrow-{{ option.$isDesc ? 'down': 'up' }}-big-small"></i>
-        {{ option.display | sqMessage }}
+        {{ option.display }}
       </li>
       }
     </ul>

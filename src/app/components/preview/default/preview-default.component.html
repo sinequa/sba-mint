@@ -30,11 +30,7 @@
           <th>Last update by</th>
 
           <td class="flex flex-wrap gap-2">
-          <sq-metadata #refAuthors [article]="article()!" metadata="authors" [override]="true">
-            @for (author of refAuthors.items(); track $index) {
-              <app-author [authorName]="author.display" [useIcon]="true"/>
-            }
-          </sq-metadata>
+          <sq-metadata class="empty:hidden badge badge-sm" [article]="article()!" metadata="authors"/>
         </td>
       </tr>
       }

@@ -46,19 +46,6 @@
       <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
     </button>
     }
-
-    @if (input() !== '' && allowChatDrawer()) {
-    <button
-      class="btn btn-xs my-1 bg-blue-100 rounded-sm text-sm text-primary"
-      title="Ask AI"
-      aria-label="Ask AI"
-      (click)="askAI()"
-      (keydown.enter)="askAI()"
-    >
-      <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
-      Ask AI
-    </button>
-    }
   </div>
 
   <button

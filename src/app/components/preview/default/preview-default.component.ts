@@ -7,7 +7,6 @@ import { Subscription, combineLatest, map, switchMap } from 'rxjs';
 import { PreviewData } from '@sinequa/atomic';
 import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
-import { AuthorComponent } from '@/app/components/author/author.component';
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
@@ -21,7 +20,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, PreviewNavbarComponent, AuthorComponent, MetadataComponent, PreviewActionsComponent, SourceIconComponent],
+  imports: [NgClass, DatePipe, SlicePipe, SplitPipe, PreviewNavbarComponent, MetadataComponent, PreviewActionsComponent, SourceIconComponent],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {

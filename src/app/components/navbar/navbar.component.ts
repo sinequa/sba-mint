@@ -11,7 +11,6 @@ import { Subscription } from 'rxjs';
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { QueryParamsStore } from '@/app/stores/query-params.store';
 
-import { ApplicationsComponent } from '../applications/applications.component';
 import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
 import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
@@ -38,7 +37,7 @@ type NavbarTab = {
     standalone: true,
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
-    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent, ApplicationsComponent]
+    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent]
 })
 export class NavbarComponent {
   @HostBinding('attr.drawer-opened')
@@ -51,8 +50,7 @@ export class NavbarComponent {
   protected readonly menus: NavbarMenu[] = [
     { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
     { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
-    { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
-    { label: 'Applications', iconClass: 'far fa-grid-round-2', component: ApplicationsComponent }
+    { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
   ];
 
   // TODO: ici on peut faire quelque chose avec les "tabs" des "queries" définis dans l'admin

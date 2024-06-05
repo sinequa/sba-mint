@@ -8,9 +8,8 @@ import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { QueryParamsStore } from '@/app/stores';
+import { AggregationsStore, QueryParamsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
-import { AggregationsStore } from '@/stores';
 
 
 export type SearchOptions = {

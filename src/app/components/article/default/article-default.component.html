@@ -22,8 +22,8 @@
         }
 
         <div class="flex gap-1 divide-x-slash divide-xs">
-          @if ((article().authors || []).length > 0) {
-          <app-author [authorName]="article()!.authors![0]" [strategy]="'replace'" [useIcon]="true" />
+          @if ((article().authors || { authors: ['']}).length > 0) {
+          <span>{{ article().authors[0] }}</span>
           }
 
           @if (article().modified) {
@@ -54,44 +54,5 @@
       }
     </div>
     }
-<!--  TODO: Implement the following code later
-    <footer class="flex flex-col">
-      <menu class="flex">
-        <button (click)="toggleTab('attachments')" stkStopPropagation class="btn btn-ghost p-2 flex gap-4 items-center">
-          <img src="https://placehold.co/20" alt="" class="rounded-full" />
-          Attachments
-          <img src="https://placehold.co/20" alt="" class="rounded-full" />
-        </button>
-
-        @if ((article().queryDuplicates?.length || 0) > 0) {
-        <button (click)="toggleTab('similars')" stkStopPropagation class="btn btn-ghost flex gap-1 items-baseline">
-          <i class="fa-fw fa-regular fa-files"></i>
-          {{ article().queryDuplicates?.length }} similar(s) document(s)
-          <i class="fa-fw fa-regular fa-chevron-down"
-            [ngClass]="{'rotate-180': currentTab === 'similars' && showTab()}"></i>
-        </button>
-        }
-      </menu>
-      <div class="tab-container overflow-auto" [ngClass]="{ expanded: showTab() === true }">
-        @if (currentTab === 'attachments') {
-        <ul class="mt-2 border-l-2 border-primary">
-          @for (attachment of attachments; track $index) {
-          <li>
-            <app-article-default-light [article]="attachment" stkStopPropagation class="border-none" />
-          </li>
-          }
-        </ul>
-        } @else if (currentTab === 'similars' && (article().queryDuplicates?.length || 0) > 0) {
-        <ul class="mt-2 border-l-2 border-primary similar-documents">
-          @for (similar of article()!.queryDuplicates; track $index) {
-          <li>
-            <app-article-default-light [article]="similar" stkStopPropagation class="border-none p-0" />
-          </li>
-          }
-        </ul>
-        }
-      </div>
-    </footer>
--->
   </section>
 </article>

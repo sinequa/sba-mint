@@ -1,7 +1,6 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 
-import { AuthorComponent } from '@/app/components/author/author.component';
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { ShowBookmarkDirective } from '@/app/directives/show-bookmark.directive';
@@ -11,7 +10,6 @@ import { getState } from '@ngrx/signals';
 import { MetadataComponent } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
-import { ArticleDefaultLightComponent } from '../default-light/article-default-light.component';
 
 type Tab = 'attachments' | 'similars';
 
@@ -20,7 +18,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, SelectArticleOnClickDirective, StopPropagationDirective, ArticleDefaultLightComponent, AuthorComponent, MetadataComponent, BookmarkComponent, SourceIconComponent],
+  imports: [NgClass, AsyncPipe, DatePipe, SelectArticleOnClickDirective, StopPropagationDirective, MetadataComponent, BookmarkComponent, SourceIconComponent],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -47,7 +45,7 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
-    
+
     const topPassage = this.article().matchingpassages!.passages.sort((a, b) => a.score > b.score ? -1 : 1)[0];
     return topPassage.highlightedText;
   })

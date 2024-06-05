@@ -2,10 +2,8 @@ import { SelectionHistoryService } from '@/app/services/selection-history.servic
 import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, computed, effect, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { NavigationService } from '@/app/services';
 import { AppStore } from '@/app/stores';
 
-import { DrawerAssistantComponent } from '../drawer/components/assistant/assistant.component';
 import { DrawerPreviewComponent } from '../drawer/components/preview/preview.component';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { DrawerStackService } from './drawer-stack.service';
@@ -26,7 +24,6 @@ export class DrawerStackComponent implements OnDestroy {
   readonly drawerStackService = inject(DrawerStackService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly navigationService = inject(NavigationService);
   private readonly appStore = inject(AppStore);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
@@ -35,7 +32,6 @@ export class DrawerStackComponent implements OnDestroy {
   get drawersLength() { return this.drawers.length; }
 
   private readonly subscriptions = new Subscription();
-  private chatDrawer: ComponentRef<DrawerAssistantComponent> | undefined = undefined;
 
   readonly allowChatDrawer = computed(() => this.appStore.customizationJson().features?.allowChatDrawer);
 
@@ -63,28 +59,10 @@ export class DrawerStackComponent implements OnDestroy {
     this.subscriptions.add(
       this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers())
     );
-    this.subscriptions.add(
-      this.drawerStackService.openChatDrawer$.subscribe(() => this.openChatDrawer())
-    );
-    this.subscriptions.add(
-      this.drawerStackService.closeChatDrawer$.subscribe(() => this.closeChatDrawer())
-    );
-    // on new search start a new chat
-    this.subscriptions.add(
-      this.navigationService.navigationEnd$.subscribe(() => this.chatDrawer?.instance?.newChat())
-    );
-    // on new askAI, start new chat with first message as the text
-    this.subscriptions.add(
-      this.drawerStackService.askAI$.subscribe((text) => this.chatDrawer?.instance?.askAI(text))
-    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  public toggleAssistant(): void {
-    this.drawerStackService.toggleAssistant();
   }
 
   private openTopDrawer(index: number): void {
@@ -163,17 +141,4 @@ export class DrawerStackComponent implements OnDestroy {
       drawer?.destroy();
     }, 250);
   }
-
-  private openChatDrawer(): void {
-    if (!this.chatDrawer)
-      this.chatDrawer = this.viewContainer.createComponent(DrawerAssistantComponent);
-
-    setTimeout(() => {
-      this.chatDrawer?.instance.drawer.open();
-    });
-  }
-
-  private closeChatDrawer(): void {
-    this.chatDrawer?.instance.drawer.close();
-  }
-} 
+}

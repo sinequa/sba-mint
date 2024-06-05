@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, HostBinding, LOCALE_ID, OnDestroy, effect, inject, input, signal } from '@angular/core';
 
-import { AuthorComponent } from '@/app/components/author/author.component';
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { SelectArticleOnClickDirective, SelectionStrategy } from '@/app/directives';
 import { ShowBookmarkDirective } from '@/app/directives/show-bookmark.directive';
@@ -10,7 +9,7 @@ import { SlideArticle } from '@/app/types/articles';
 @Component({
   selector: 'app-article-slide-light',
   standalone: true,
-  imports: [DatePipe, AuthorComponent, BookmarkComponent],
+  imports: [DatePipe, BookmarkComponent],
   templateUrl: './article-slide-light.component.html',
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,

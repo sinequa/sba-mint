@@ -7,9 +7,8 @@ import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
-import { AppStore, SelectionStore } from '@/app/stores';
+import { AppStore, SelectionStore, Extract, ApplicationStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { ApplicationStore, Extract } from '@/stores';
 
 import { PanelDirective } from 'toolkit';
 

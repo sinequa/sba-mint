@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly tabs = computed(() => {
     const customJson = this.appStore.customizationJson();
-    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features, ...{ applications: true } };
+    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features, ...{ applications: false } };
     const enabledFeatures = homeFeatures.reduce((acc, feature) => {
       // add only if the feature is declared and set to true in the json
       if (feature.name in features && features[feature.name as keyof FeaturesKeys] === true) acc.push(feature);

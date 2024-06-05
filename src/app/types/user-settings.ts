@@ -1,4 +1,3 @@
-import { ChatConfig } from "@sinequa/assistant/chat";
 import { QueryParams } from "../utils";
 
 export type Bookmark = {
@@ -26,5 +25,5 @@ export type UserSettings = {
   bookmarks: Bookmark[],
   recentSearches: RecentSearch[],
   savedSearches: SavedSearch[],
-  assistants: Record<string, ChatConfig>
+  assistants: Record<string, unknown>
 };

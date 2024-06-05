@@ -2,7 +2,6 @@ import { AppStore } from '@/app/stores';
 import { Component, EventEmitter, Output, computed, inject, input, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { Result } from '@sinequa/atomic';
-import { IntlModule } from '@sinequa/core/intl';
 import { DropdownComponent } from "../dropdown/dropdown";
 
 export type SortingChoice = {
@@ -20,7 +19,7 @@ export type SortingChoice = {
     standalone: true,
     templateUrl: './sort-selector.component.html',
     styleUrl: './sort-selector.component.scss',
-    imports: [IntlModule, DropdownComponent]
+    imports: [DropdownComponent]
 })
 export class SortSelectorComponent {
   dropdown = viewChild(DropdownComponent);

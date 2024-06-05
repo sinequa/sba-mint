@@ -9,9 +9,8 @@ import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
 
 import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
-import { AppStore, QueryParamsStore } from '@/app/stores';
+import { AggregationsStore, AppStore, QueryParamsStore } from '@/app/stores';
 import { Filter, buildQuery } from '@/app/utils';
-import { AggregationsStore } from '@/stores';
 
 import { DropdownComponent } from "../dropdown/dropdown";
 import { AggregationComponent } from './components/aggregation/aggregation.component';
@@ -98,7 +97,9 @@ export class FiltersComponent implements OnInit {
         if (!aggregation) {
           const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore), getCurrentQueryName()))
 
-          aggregation = aggregations.find(agg => agg.column === aggColumn);
+          if(aggColumn) {
+            aggregation = aggregations.find(agg => agg.column === aggColumn);
+          }
         }
 
         if (aggregation) acc.push(aggregation);

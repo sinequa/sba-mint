@@ -6,8 +6,7 @@ import { Subject, tap } from "rxjs";
 import { PreviewData, Query } from "@sinequa/atomic";
 import { HIGHLIGHTS, InlineWorker, PreviewHighlight, QueryService } from "@sinequa/atomic-angular";
 
-import { SelectionStore } from "@/app/stores";
-import { ApplicationStore, Extract } from "@/stores";
+import { ApplicationStore, SelectionStore, Extract } from "@/app/stores";
 
 import { ExtractsLocationService } from "./extracts-location.service";
 

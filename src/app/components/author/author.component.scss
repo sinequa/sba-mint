@@ -1,7 +1,0 @@
-:host {
-  @apply relative cursor-pointer;
-
-  &.not-allowed {
-    @apply cursor-not-allowed;
-  }
-}

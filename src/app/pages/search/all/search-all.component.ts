@@ -1,5 +1,6 @@
-import { Component, HostBinding, Injector, OnDestroy, computed, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
+import { NgClass } from '@angular/common';
 import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, switchMap, take, tap } from 'rxjs';
 
@@ -15,15 +16,11 @@ import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-sele
 import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
-import { QueryParamsStore, searchInputStore } from '@/app/stores';
+import { AggregationsStore, QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
-import { AggregationsStore, ApplicationStore } from '@/stores';
-
-import { NgClass } from '@angular/common';
 import { InfinityScrollDirective } from '@/app/directives';
-import { AssistantComponent } from "../../../components/assistant/assistant";
-import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
+
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
 type R = Result & { nextPage?: number, previousPage?: number };
@@ -41,14 +38,12 @@ type R = Result & { nextPage?: number, previousPage?: number };
     NgClass,
     SelectArticleOnClickDirective,
     FiltersComponent,
-    OverviewPeopleComponent,
     OverviewSlidesComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
     PagerComponent,
     SortSelectorComponent,
     DidYouMeanComponent,
-    AssistantComponent,
     InfinityScrollDirective
   ]
 })
@@ -62,7 +57,6 @@ export class SearchAllComponent implements OnDestroy {
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
-  protected readonly assistantCollapsed = signal<boolean>(true);
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
@@ -70,10 +64,6 @@ export class SearchAllComponent implements OnDestroy {
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
-  private readonly applicationStore = inject(ApplicationStore);
-
-  isAssistantReady = computed(() => this.applicationStore.assistantReady() && false);
-  isStreaming = signal<boolean>(false);
 
   protected aggregations: Aggregation[];
 
@@ -138,15 +128,6 @@ export class SearchAllComponent implements OnDestroy {
 
     this.articles.set(undefined);
     this.searchService.search([]);
-  }
-
-  toggleAssistant(): void {
-    console.log("Toggle assistant");
-    this.drawerStack.toggleAssistant();
-  }
-
-  streaming(state: boolean): void {
-    this.isStreaming.set(state);
   }
 
   nextPage() {

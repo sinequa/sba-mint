@@ -3,8 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Query } from '@sinequa/atomic';
 
-import { FALLBACK_DEFAULT_QUERY_NAME } from '@/app/config/query-names';
-
 export function getQueryNameFromRoute(): string | undefined {
   assertInInjectionContext(getQueryNameFromRoute);
 
@@ -85,7 +83,7 @@ export function getQueryPageFromUrl(url: string): number {
 export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
-  const name = query?.name || getQueryNameFromRoute() || FALLBACK_DEFAULT_QUERY_NAME;
+  const name = query?.name || getQueryNameFromRoute() || '_query';
   const text = query?.text || getQueryTextFromUrl(window.location.toString());
   const filters = query?.filters;
   const page = query?.page || getQueryPageFromUrl(window.location.toString());
@@ -116,7 +114,7 @@ export function buildQuery(query?: Partial<Query>): Query {
 export function buildFirstPageQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildFirstPageQuery);
 
-  const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
+  const queryName = query?.name ?? getQueryNameFromRoute() ?? '_query';
 
   return {
     ...query,
@@ -135,7 +133,7 @@ export function buildFirstPageQuery(query?: Partial<Query>): Query {
 export function buildPreviewQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildPreviewQuery);
 
-  const queryName = query?.name ?? getQueryNameFromRoute() ?? FALLBACK_DEFAULT_QUERY_NAME;
+  const queryName = query?.name ?? getQueryNameFromRoute() ?? '_query';
 
   return {
     ...query,

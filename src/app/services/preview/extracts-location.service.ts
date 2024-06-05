@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { PreviewData } from '@sinequa/atomic';
 import { InlineWorker } from '@sinequa/atomic-angular';
 
-import { Extract } from "@/stores";
+import { Extract } from "@/app/stores";
 
 type ExtractsLocations = Extract & {
   text: string // HTML text

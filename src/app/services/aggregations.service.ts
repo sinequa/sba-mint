@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Aggregation, AggregationItem, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationService } from '@sinequa/atomic-angular';
 
-import { AggregationsStore } from '@/stores';
+import { AggregationsStore } from '@/app/stores';
 
 export type DateFilter = {
   label?: string;

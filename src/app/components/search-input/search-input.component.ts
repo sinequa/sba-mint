@@ -74,10 +74,6 @@ export class SearchInputComponent implements OnDestroy {
     if (!silent) this.emitText();
   }
 
-  public askAI(): void {
-    this.drawerStack.askAI(this.input());
-  }
-
   protected emitText(): void {
     if (this.input() === this.oldInput) return;
 
