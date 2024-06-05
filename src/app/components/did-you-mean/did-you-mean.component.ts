@@ -1,7 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Result } from '@sinequa/atomic';
-import { QueryParamsStore, searchInputStore } from '../stores';
+import { QueryParamsStore, searchInputStore } from '../../stores';
 
 @Component({
   selector: 'app-did-you-mean',

@@ -5,9 +5,8 @@ import { getState } from '@ngrx/signals';
 
 import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
-import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
-import { AppStore, SelectionStore, Extract, ApplicationStore } from '@/app/stores';
+import { AppStore, ApplicationStore, Extract, SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 
 import { PanelDirective } from 'toolkit';
@@ -38,7 +37,6 @@ export class AdvancedSearchComponent {
   protected readonly input = signal(getState(this.selectionStore).queryText || '');
 
   public labels = inject(AppStore).getLabels();
-  protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
 

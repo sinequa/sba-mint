@@ -1,6 +1,6 @@
+import { NgClass } from '@angular/common';
 import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { NgClass } from '@angular/common';
 import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, switchMap, take, tap } from 'rxjs';
 
@@ -9,19 +9,17 @@ import { QueryService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/app/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/app/components/article/default/article-default.component';
+import { DidYouMeanComponent } from '@/app/components/did-you-mean/did-you-mean.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from '@/app/components/pagination/pager.component';
 import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
-import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
-import { SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
+import { InfinityScrollDirective, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
 import { NavigationService, SearchService } from '@/app/services';
 import { AggregationsStore, QueryParamsStore, searchInputStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
-import { InfinityScrollDirective } from '@/app/directives';
 
-import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
 
 type R = Result & { nextPage?: number, previousPage?: number };
 
@@ -38,7 +36,6 @@ type R = Result & { nextPage?: number, previousPage?: number };
     NgClass,
     SelectArticleOnClickDirective,
     FiltersComponent,
-    OverviewSlidesComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
     PagerComponent,
