@@ -8,7 +8,7 @@
       "/r",
       "/endpoints"
     ],
-    "target": "https://su-sba.demo.sinequa.com",
+    "target": "http://localhost",
     "secure": false,
     "changeOrigin": true,
     "ws": true

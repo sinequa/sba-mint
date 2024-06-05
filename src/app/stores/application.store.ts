@@ -13,11 +13,13 @@ export type Extract = {
 
 export type ApplicationState = {
   assistantReady: boolean,
+  ready: boolean,
   extracts: Map<string, Extract[]>,
 }
 
 const intialState: ApplicationState = {
   assistantReady: false,
+  ready: false,
   extracts: new Map(),
 };
 
@@ -32,6 +34,9 @@ export const ApplicationStore = signalStore(
   withMethods((store) => ({
     updateAssistantReady() {
       patchState(store, (state) => ({ ...state, assistantReady: true }));
+    },
+    updateReadyState() {
+      patchState(store, (state) => ({ ...state, ready: true }));
     },
     updateExtracts(id: string, extracts: Extract[]) {
       patchState(store, (state) => {

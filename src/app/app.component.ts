@@ -32,6 +32,7 @@ export class AppComponent {
         this.appService.init().then(() => {
           const { fullName } = getState(this.principalStore).principal;
           toast(`Welcome back ${fullName}!`, { duration: 2000 })
+          this.applicationStore.updateReadyState();
         });
       }
     }).catch(error => {

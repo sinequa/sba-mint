@@ -3,19 +3,23 @@ import { ActivatedRoute, Routes } from '@angular/router';
 
 import { AuthGuard, LoginComponent } from '@sinequa/atomic-angular';
 
+import { InitializationGuard } from './guards/initializationGuard';
+import { LoadingComponent } from './guards/loading.component';
 import { HomeComponent } from './pages/home/home.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
+import { queryNameResolver } from './resolvers/query-name-resolver';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard()] },
   {
-    path: 'search', component: SearchComponent, canActivate: [AuthGuard()], children: [
-      { path: 'all', component: SearchAllComponent, data: { queryName: 'WPS_Query' } },
+    path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], children: [
+      { path: 'all', component: SearchAllComponent, resolve: { queryName: queryNameResolver } },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },
+  { path: 'loading', component: LoadingComponent  },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
 
