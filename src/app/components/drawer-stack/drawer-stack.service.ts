@@ -5,6 +5,7 @@ import { NavigationService, SelectionHistoryService, SelectionService } from '@/
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 import { Subscription } from 'rxjs';
+import { BackdropService } from '../drawer/components/backdrop/backdrop.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class DrawerStackService implements OnDestroy {
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly selectionStore = inject(SelectionStore);
   private readonly navigationService = inject(NavigationService);
+  private readonly backdropService = inject(BackdropService);
 
   private readonly subscriptions = new Subscription();
 
@@ -99,12 +101,15 @@ export class DrawerStackService implements OnDestroy {
    *
    * @param article the article to replace the current selection with
    */
-  public replace(article: Article | undefined): void {
+  public replace(article: Article | undefined, closeAssistant: boolean = false): void {
     const { id } = getState(this.selectionStore);
     if (id && (!article || article.id === id)) return;
 
     // close everything without trigger layout animation
     this.closeAll(true);
+
+    if (closeAssistant) this.closeAssistant(true);
+
     // set selection
     this.selection.setCurrentArticle(article);
     // open drawer
@@ -117,7 +122,7 @@ export class DrawerStackService implements OnDestroy {
    *
    * @param article the article to stack
    */
-  public stack(article: Article | undefined): void {
+  public stack(article: Article | undefined, withQueryText?: boolean): void {
     const { id } = getState(this.selectionStore);
 
     if (id && (!article || article.id === id)) return;
@@ -125,16 +130,19 @@ export class DrawerStackService implements OnDestroy {
     // force top drawer to collapse
     this.forceTopDrawerCollapse$.next();
     // set selection
-    this.selection.setCurrentArticle(article);
+    this.selection.setCurrentArticle(article, withQueryText);
     // open drawer
     this.open();
   }
 
   public toggleAssistant(): void {
-    if (this.isChatOpened())
+    if (this.isChatOpened()){
+      this.backdropService.hide();
       this.closeAssistant();
-    else
+    } else {
+      this.backdropService.show();
       this.openAssistant();
+    }
   }
 
   public openAssistant(): void {
@@ -142,18 +150,20 @@ export class DrawerStackService implements OnDestroy {
     this.isChatOpened.set(true);
     this.isOpened.set(true);
     this.openChatDrawer$.next();
+    this.backdropService.show();
   }
 
-  public closeAssistant(): void {
+  public closeAssistant(keepDrawerOpen: boolean = false): void {
     console.log('Close assistant');
     this.isChatOpened.set(false);
 
-    if (this.selectionHistory.getCurrentSelectionIndex() === -1) {
+    if (!keepDrawerOpen && this.selectionHistory.getCurrentSelectionIndex() === -1) {
       this.isOpened.set(false);
       this.closeAllDrawers$.next();
     }
 
     this.closeChatDrawer$.next();
+    this.backdropService.hide();
   }
 
   public askAI(text: string): void {
@@ -161,4 +171,3 @@ export class DrawerStackService implements OnDestroy {
     this.askAI$.next(text);
   }
 }
- 

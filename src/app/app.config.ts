@@ -1,9 +1,10 @@
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, importProvidersFrom } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, importProvidersFrom, isDevMode } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
 
 import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 import { IntlModule, Locale, LocalesConfig } from '@sinequa/core/intl';
@@ -12,7 +13,8 @@ import { routes } from '@/app/app.routes';
 import { SearchInputService } from './components/search-input/search-input.service';
 import { QueryParamsService } from './services';
 import { eagerProvider } from './utils';
-import { queryNameInterceptorFn } from './utils/queryname.interceptor';
+import { queryNameInterceptorFn, toastInterceptorFn } from './utils';
+
 
 
 registerLocaleData(localeFr);
@@ -66,10 +68,13 @@ export function StartConfigInitializer(startConfigWebService: StartConfigWebServ
   return () => startConfigWebService.fetchPreLoginAppConfig();
 }
 
-export const startConfig: StartConfig = {
-  app: environment.app,
-  autoOAuthProvider: environment.autoOAuthProvider
-};
+let startConfig: StartConfig = {};
+if( isDevMode() ) {
+  startConfig = {
+    app: environment.app,
+    autoOAuthProvider: environment.autoOAuthProvider
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -82,8 +87,6 @@ export const appConfig: ApplicationConfig = {
     // { provide: LoginService, useClass: myLoginService },
 
     { provide: APP_INITIALIZER, useFactory: StartConfigInitializer, deps: [StartConfigWebService], multi: true },
-
-
     // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
@@ -96,7 +99,16 @@ export const appConfig: ApplicationConfig = {
       authInterceptorFn,
       auditInterceptorFn,
       errorInterceptorFn,
-      queryNameInterceptorFn
-    ]))
+      queryNameInterceptorFn,
+      toastInterceptorFn
+    ])),
+    provideAngularQuery(new QueryClient({
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: false,
+          gcTime:0
+        }
+      }
+    }))
   ]
 };

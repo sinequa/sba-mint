@@ -1,9 +1,9 @@
-import { Component, Injector, OnDestroy, ViewChild, ViewEncapsulation, computed, inject, input, runInInjectionContext, signal } from "@angular/core";
+import { AfterViewInit, Component, HostBinding, Injector, OnDestroy, ViewChild, ViewEncapsulation, computed, effect, inject, input, output, runInInjectionContext, signal } from "@angular/core";
 import { Subscription, filter } from "rxjs";
 
 import { isASearchRoute } from "@/app/app.routes";
 import { NavigationService } from "@/app/services";
-import { UserSettingsStore } from "@/app/stores";
+import { SelectionStore, UserSettingsStore } from "@/app/stores";
 import { buildQuery } from "@/app/utils";
 
 import { NgTemplateOutlet } from "@angular/common";
@@ -31,19 +31,23 @@ type AssistantMode = 'prompt' | 'query';
       [chat]="initChat"
       [instanceId]="instanceId()"
       (openPreview)="handlePreview($event)"
-    />
+      >
+      <!-- <ng-template #loadingTpl>
+        <i class="fa-regular fa-spinner animate-spin"></i>
+      </ng-template> -->
+    </sq-chat-v3>
 
     <!-- <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
       <ng-container *ngTemplateOutlet="sqChatSettings"></ng-container>
     </dialog> -->
   }
-  @else if(instanceId()){
+  @else if (instanceId()) {
     <sq-chat-v3
       class="block"
       #sqChat
       [chat]="initChat"
       [instanceId]="instanceId()"
-      (openPreview)="handlePreview($event)"
+      (openPreview)="handlePreview($event, false)"
     />
 
     <!-- <dialog popover class="z-[1000] p-4 border border-neutral-300 rounded-lg shadow-lg" [open]="open()">
@@ -60,12 +64,11 @@ type AssistantMode = 'prompt' | 'query';
         >
     </sq-chat-settings-v3>
   </ng-template>
-
   `,
   styleUrl: './assistant.css',
   encapsulation: ViewEncapsulation.None
 })
-export class AssistantComponent implements OnDestroy {
+export class AssistantComponent implements AfterViewInit, OnDestroy {
   @ViewChild('sqChat') sqChat: ChatComponent;
 
   // ...
@@ -78,9 +81,16 @@ export class AssistantComponent implements OnDestroy {
   mode = computed(() => this._mode() || 'prompt');
   instanceId = computed(() => this._instanceId() || 'my-first-chat');
 
+  isStreaming = output<boolean>();
+
+  showProgress = input<boolean>(false);
+  _progress = effect(() => this.noProgress = !this.showProgress());
+  @HostBinding('attr.no-progress') noProgress = false;
+
   loginService = inject(LoginService);
   navigationService = inject(NavigationService);
   userSettingsStore = inject(UserSettingsStore);
+  selectionStore = inject(SelectionStore);
   drawerStack = inject(DrawerStackService);
   initChat: InitChat | undefined = undefined;
 
@@ -106,6 +116,12 @@ export class AssistantComponent implements OnDestroy {
     );
   }
 
+  ngAfterViewInit(): void {
+    this.subs.add(
+      this.sqChat?.chatService?.streaming$.subscribe((streaming) => this.isStreaming.emit(streaming))
+    );
+  }
+
   ngOnDestroy(): void {
     console.log("Assistant component destroyed");
     this.subs.unsubscribe();
@@ -124,9 +140,11 @@ export class AssistantComponent implements OnDestroy {
     this.open.set(false)
   }
 
-  handlePreview(event: ChatContextAttachment) {
+  handlePreview(event: ChatContextAttachment, withQueryText = true) {
     console.log("Preview event: ", event);
-    this.drawerStack.stack(event.record as Article);
+
+    this.drawerStack.closeAssistant(true);
+    this.drawerStack.stack(event.record as Article, withQueryText);
   }
 
   public newChat(): void {
@@ -134,6 +152,11 @@ export class AssistantComponent implements OnDestroy {
   }
 
   public askAI(messages: RawMessage[]): void {
+    console.log("Ask AI: ", messages);
     this.initChat = { messages } as InitChat;
+
+    // const q = runInInjectionContext(this.injector, () => buildQuery());
+    // console.log("Assistant component navigationEnd", q);
+    // this.query = { ...this.query, ...q, text: messages[0].content } as Q;
   }
 }

@@ -59,10 +59,8 @@ export class RecentSearchesService implements OnDestroy {
   }
 
   public saveSearch(recentSearches: RecentSearch[]) {
-    if (!searchInputStore.state) {
-      toast.warning('Avoid saving empty search', { duration: 2000 });
-      return;
-    }
+    // avoid saving empty search
+    if (!searchInputStore.state) return;
 
     let currentSearch: RecentSearch | undefined = undefined;
 

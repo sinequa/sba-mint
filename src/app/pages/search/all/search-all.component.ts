@@ -1,8 +1,9 @@
 import { Component, HostBinding, Injector, OnDestroy, computed, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { Subscription, switchMap, take } from 'rxjs';
+import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
+import { Subscription, lastValueFrom, map, switchMap, take, tap } from 'rxjs';
 
-import { Aggregation, Result } from '@sinequa/atomic';
+import { Aggregation, Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/app/components/article/default-skeleton/article-default-skeleton.component';
@@ -19,9 +20,13 @@ import { Article } from "@/app/types/articles";
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore, ApplicationStore } from '@/stores';
 
+import { NgClass } from '@angular/common';
+import { InfinityScrollDirective } from '@/app/directives';
 import { AssistantComponent } from "../../../components/assistant/assistant";
 import { OverviewPeopleComponent } from '../../components/overview/people/overview-people.component';
 import { OverviewSlidesComponent } from '../../components/overview/slides/overview-slides.component';
+
+type R = Result & { nextPage?: number, previousPage?: number };
 
 @Component({
   selector: 'app-search-all',
@@ -33,6 +38,7 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     inputs: ['articleId: id', 'aggregations']
   }],
   imports: [
+    NgClass,
     SelectArticleOnClickDirective,
     FiltersComponent,
     OverviewPeopleComponent,
@@ -42,7 +48,8 @@ import { OverviewSlidesComponent } from '../../components/overview/slides/overvi
     PagerComponent,
     SortSelectorComponent,
     DidYouMeanComponent,
-    AssistantComponent
+    AssistantComponent,
+    InfinityScrollDirective
   ]
 })
 export class SearchAllComponent implements OnDestroy {
@@ -55,6 +62,7 @@ export class SearchAllComponent implements OnDestroy {
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
   protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
+  protected readonly assistantCollapsed = signal<boolean>(true);
 
   private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
@@ -65,6 +73,7 @@ export class SearchAllComponent implements OnDestroy {
   private readonly applicationStore = inject(ApplicationStore);
 
   isAssistantReady = computed(() => this.applicationStore.assistantReady());
+  isStreaming = signal<boolean>(false);
 
   protected aggregations: Aggregation[];
 
@@ -72,6 +81,31 @@ export class SearchAllComponent implements OnDestroy {
     this.drawerOpened = this.drawerStack.isOpened();
   });
   private readonly subscription = new Subscription();
+
+
+  // tanstack query
+  queryClient = injectQueryClient();
+  query = injectInfiniteQuery<R>(() => ({
+    queryKey: ["search-all", getState(this.queryParamsStore)],
+    queryFn: ({pageParam}) => {
+      const query = {...this.searchService.getQuery(), page: pageParam} as Query;
+      return lastValueFrom(this.queryService.search(query).pipe(
+        tap(result => this.result.set(result)),
+        tap(() => this.queryText.set(searchInputStore.state ?? '')),
+        map(result => {
+          result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
+          return result;
+        }),
+        map(result => {
+          const r = ({ ...result, nextPage: result.page < Math.ceil(result.rowCount/result.pageSize) ? result.page +1 : undefined, previousPage: result.page > 1 ? result.page - 1 : undefined})
+          return r;
+        })
+      ));
+    },
+    initialPageParam: 1,
+    getPreviousPageParam: (firstPage) => (firstPage.previousPage ?? undefined),
+    getNextPageParam: (lastPage) => (lastPage.nextPage ?? undefined),
+  }));
 
   constructor(private readonly injector: Injector) {
     // Once the navigation ends, we fetch the "first page" of results but only once
@@ -84,17 +118,6 @@ export class SearchAllComponent implements OnDestroy {
         .subscribe((firstPageResult: Result) => {
           this.aggregations = firstPageResult.aggregations;
           this.aggregationsStore.update(firstPageResult.aggregations);
-        })
-    );
-
-    this.subscription.add(
-      this.searchService.result$
-        .subscribe((result: Result) => {
-          const { page, pageSize, rowCount } = result;
-          this.pageConfiguration.set({ page, pageSize, rowCount });
-          this.result.set(result);
-          this.articles.set(result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' }))) ?? []);
-          this.queryText.set(searchInputStore.state ?? '');
         })
     );
 
@@ -120,5 +143,13 @@ export class SearchAllComponent implements OnDestroy {
   toggleAssistant(): void {
     console.log("Toggle assistant");
     this.drawerStack.toggleAssistant();
+  }
+
+  streaming(state: boolean): void {
+    this.isStreaming.set(state);
+  }
+
+  nextPage() {
+    this.query.fetchNextPage();
   }
 }

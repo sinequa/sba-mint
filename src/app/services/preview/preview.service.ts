@@ -32,6 +32,8 @@ export class PreviewService {
   protected previewData: PreviewData;
   protected iframe: Window | null;
 
+  protected type = "extractslocations";
+
   extracts = ["matchlocations","extractslocations","matchingpassages"];
   entities = ["company","geo","person"];
 
@@ -57,7 +59,7 @@ export class PreviewService {
       if (message.type === 'ready') {
         this.sendMessage({ action: "init", highlights: highlights });
         if (this.previewData) {
-          this.getHtml("extractslocations", this.previewData);
+          this.getHtml(this.type, this.previewData);
         }
       }
 
@@ -96,6 +98,9 @@ export class PreviewService {
   }
   setPreviewData(data: PreviewData) {
     this.previewData = data;
+    if(data) {
+      this.type = data.highlightsPerCategory?.['matchingpassages']?.values.length ? "matchingpassages" : "extractslocations";
+    }
   }
 
   sendMessage(message: unknown) {
@@ -130,11 +135,9 @@ export class PreviewService {
   }
 
   private fetchExtracts(id: string, extracts: string[], data: PreviewData): Extract[] {
-    const type = "extractslocations";
-
     // extracts contains the html of extracts in chronological order
     // locations contains the list of start positions sorted by score
-    const locations = data.highlightsPerCategory["extractslocations"]?.values[0]?.locations || [];
+    const locations = data.highlightsPerCategory[this.type]?.values[0]?.locations || [];
 
     // first extract all the extracts locations
     let extractslocations = locations.map((l, relevanceIndex) => ({
@@ -150,7 +153,7 @@ export class PreviewService {
       ...ex,
       textIndex: textIndex,
       text: extracts[textIndex] || "",
-      id: `${type}_${textIndex}`,
+      id: `${this.type}_${textIndex}`,
     }));
 
     // then sanitize the text and remove empty extracts
