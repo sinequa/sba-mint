@@ -8,27 +8,32 @@ import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
-import { Article } from "@/app/types/articles";
-import { ApplicationStore, Extract } from '@/stores';
+import { Article, ArticleMetadata } from "@/app/types/articles";
+import { ApplicationStore } from '@/stores';
 
 import { PanelDirective } from 'toolkit';
 
+interface MetadataNavigation {
+  index: number;
+  value: string;
+}
+
 @Component({
-    selector: 'app-advanced-search',
-    standalone: true,
-    templateUrl: './advanced-search.component.html',
-    styleUrl: './advanced-search.component.scss',
-    // eslint-disable-next-line @angular-eslint/no-host-metadata-property
-    host: {
-      class: 'border-l border-neutral-300 bg-white'
-    },
-    imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
+  selector: 'app-advanced-search',
+  standalone: true,
+  templateUrl: './advanced-search.component.html',
+  styleUrl: './advanced-search.component.scss',
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    class: 'border-l border-neutral-300 bg-white'
+  },
+  imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
 })
 export class AdvancedSearchComponent {
 
   extracts = computed(() => {
     getState(this.applicationStore);
-    if(!this.article()) return [];
+    if (!this.article()) return [];
     return this.applicationStore.getExtracts(this.article()!.id)
   });
   applicationStore = inject(ApplicationStore);
@@ -38,11 +43,14 @@ export class AdvancedSearchComponent {
 
   protected readonly input = signal(getState(this.selectionStore).queryText || '');
 
+  public navigation = signal<MetadataNavigation | undefined>(undefined);
+  public hovering = signal<string | undefined>(undefined);
+  public hoverIndex = computed(() => this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0);
+
   public labels = inject(AppStore).getLabels();
   protected readonly people = inject(MockDataService).people;
 
   previewService = inject(PreviewService);
-
 
   constructor() { }
 
@@ -55,7 +63,39 @@ export class AdvancedSearchComponent {
     this.input.set('');
   }
 
-  scrollTo(extract: Extract) {
-    this.previewService.sendMessage({ action: 'select', id: extract.id, usePassageHighlighter: false });
+  scrollTo(type: string, index: number, usePassageHighlighter: boolean = false) {
+    this.previewService.sendMessage({ action: 'select', id: `${type}_${index}`, usePassageHighlighter });
+  }
+
+  navigateNext(entity: string, data: ArticleMetadata) {
+    const index = this.navigation()?.value === data.value
+      ? this.navigation()!.index < data.count! ? this.navigation()!.index + 1 : 1
+      : 1;
+
+    this.navigation.set({
+      value: data.value,
+      index
+    });
+
+    const id = this.previewService.getEntityId(entity, data.value, index - 1);
+    if (id !== undefined) {
+      this.scrollTo(entity, id);
+    }
+  }
+
+  navigatePrev(entity: string, data: ArticleMetadata) {
+    const index = this.navigation()?.value === data.value
+      ? this.navigation()!.index <= 1 ? data.count! : this.navigation()!.index - 1
+      : data.count!;
+
+    this.navigation.set({
+      value: data.value,
+      index
+    });
+
+    const id = this.previewService.getEntityId(entity, data.value, index - 1);
+    if (id !== undefined) {
+      this.scrollTo(entity, id);
+    }
   }
 }
