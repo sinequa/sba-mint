@@ -33,8 +33,8 @@ export class AppComponent {
     login().then(value => {
       if (value) {
         this.appService.init().then(() => {
-          const { fullName } = getState(this.principalStore).principal;
-          toast(`Welcome back ${fullName}!`, { duration: 2000 })
+          const { fullName, name } = getState(this.principalStore).principal;
+          toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
         });
         this.loginService.login().subscribe(values => {
           console.log("Login successful!", values);

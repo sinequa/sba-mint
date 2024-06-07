@@ -26,7 +26,7 @@ export class UserMenuComponent {
   principalStore = inject(PrincipalStore);
   userSettingsStore = inject(UserSettingsStore);
 
-  person = computed(() => ({employeeFullName: this.user().fullName}) as PersonArticle )
+  person = computed(() => ({employeeFullName: this.user().fullName || this.user().name }) as PersonArticle )
   user = computed(() => {
     const principal = getState(this.principalStore).principal;
     return principal;

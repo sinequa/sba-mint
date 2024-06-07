@@ -36,10 +36,11 @@ export class AuthorAvatarComponent {
   initials = computed(() => {
 
     const { employeeFullName = '' } = this.person() as PersonArticle || {};
+    const separator = employeeFullName.includes('@') ? '.' : ' ';
 
     if(employeeFullName) {
       const initials = employeeFullName
-        .split(' ')
+        .split(separator)
         .filter( word => word[0] && (word[0] === word[0].toUpperCase()) )
         .map( word => word[0] )
         .join('');
