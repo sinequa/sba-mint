@@ -74,6 +74,17 @@ export const AppStore = signalStore(
       return store.customizationJson().aggregations?.find(
         (aggregation: CJAggregation) => aggregation.column === column
       )?.items || [];
+    },
+
+    /**
+     * Retrieves the customization for a specific aggregation column.
+     * @param column - The column name for which to retrieve the customization.
+     * @returns The customization object for the specified column, or undefined if not found.
+     */
+    getAggregationCustomization(column: string): CJAggregation | undefined {
+      return store.customizationJson().aggregations?.find(
+        (aggregation: CJAggregation) => aggregation.column === column
+      );
     }
   }))
 );
