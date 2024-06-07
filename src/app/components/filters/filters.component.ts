@@ -186,7 +186,7 @@ export class FiltersComponent implements OnInit {
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const { items = [], display } = this.appStore.getAggregationCustomization(aggregation.column) as CJAggregation;
+        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CJAggregation || aggregation;
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
@@ -194,7 +194,7 @@ export class FiltersComponent implements OnInit {
           item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
         });
 
-        return [aggregation, display || aggregation.name] as [AggregationEx, string];
+        return [aggregation, display] as [AggregationEx, string];
       })
       .map(([aggregation, display]) => {
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
