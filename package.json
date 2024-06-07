@@ -29,7 +29,7 @@
     "@popperjs/core": "^2.11.8",
     "@sinequa/assistant": "^3.2.0-DEV.27",
     "@sinequa/atomic": "^0.0.14",
-    "@sinequa/atomic-angular": "^0.0.17",
+    "@sinequa/atomic-angular": "^0.0.19",
     "@sinequa/components": "^11.11.0",
     "@sinequa/core": "^11.11.0",
     "@tanstack/angular-query-experimental": "^5.40.0",
