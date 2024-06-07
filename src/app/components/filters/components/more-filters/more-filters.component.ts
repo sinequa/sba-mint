@@ -7,6 +7,7 @@ import { Aggregation, Filter as ApiFilter, resolveToColumnName } from '@sinequa/
 import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AggregationsStore, AppStore, QueryParamsStore } from '@/app/stores';
+import { CJAggregation, CJAggregationItem } from '@/app/types';
 import { buildQuery } from '@/app/utils';
 import { Filter } from '@/app/utils/models';
 import { getAuthorizedFilters } from '../../filter';
@@ -132,7 +133,7 @@ export class MoreFiltersComponent implements OnDestroy {
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     return (aggregations as AggregationEx[])
       .map((aggregation, index) => {
-        const itemCustomizations = this.appStore.getAggregationItemsCustomization(aggregation.column);
+        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CJAggregation || aggregation;
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const count = f?.values.length ?? undefined;
@@ -148,11 +149,11 @@ export class MoreFiltersComponent implements OnDestroy {
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
+          item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
         });
 
         return ({
-          label: aggregation.name,
+          label: display,
           aggregation: aggregation as AggregationEx,
           column: aggregation.column,
           currentFilter: f,

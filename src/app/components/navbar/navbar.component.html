@@ -3,18 +3,18 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-  <app-search-input
-    class="flex grow"
-    [showSave]="true"
-    (saved)="saveSearch()"
-    (validated)="validated($event)"
-    (debounced)="debounced($event)"
-  >
-    <app-autocomplete
-      [text]="searchText()"
-      (onClick)="autocompleteItemClicked($event)"
-    />
-  </app-search-input>
+    <app-search-input
+      class="flex grow"
+      [showSave]="true"
+      (saved)="saveSearch()"
+      (validated)="validated($event)"
+      (debounced)="debounced($event)"
+    >
+      <app-autocomplete
+        [text]="searchText()"
+        (onClick)="autocompleteItemClicked($event)"
+      />
+    </app-search-input>
 </div>
 
 <menu class="flex justify-end gap-3 items-center pe-10">
@@ -44,12 +44,12 @@
 
 <div class="row-start-2"></div>
 
-<nav class="col-start-2 col-span-2 absolute -bottom-[1px]">
+<nav class="col-start-2 col-span-2 absolute -bottom-[1px] w-full overflow-x-auto">
   <ul class="col-start-2 col-span-2 flex">
     @for (tab of tabs; track $index) {
     <li>
       <button
-        class="capitalize tab aria-selected:text-primary aria-selected:border-primary"
+        class="capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
         (click)="changeTab(tab)"
         [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink"
         [attr.aria-label]="tab.label"
@@ -61,5 +61,6 @@
     }
   </ul>
 </nav>
+
 
 <div class="row-start-2 col-start-4"></div>
