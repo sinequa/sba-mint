@@ -45,6 +45,7 @@ type AssistantMode = 'prompt' | 'query';
     <sq-chat-v3
       class="block"
       #sqChat
+      [query]="query"
       [chat]="initChat"
       [instanceId]="instanceId()"
       (openPreview)="handlePreview($event, false)"

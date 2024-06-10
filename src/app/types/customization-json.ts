@@ -12,6 +12,8 @@ export type CJAggregationItem = {
 }
 
 export type CJAggregation = Pick<Aggregation, 'column' | 'items'> & {
+  column: string;   // The column name
+  display?: string; // The display name who is shown in the UI
   icon?: string;
   items?: CJAggregationItem[];
 }

@@ -7,10 +7,15 @@ import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
-import { Article } from "@/app/types/articles";
-import { ApplicationStore, Extract } from '@/stores';
+import { Article, ArticleMetadata } from "@/app/types/articles";
+import { ApplicationStore } from '@/stores';
 
 import { PanelDirective } from 'toolkit';
+
+interface MetadataNavigation {
+  index: number;
+  value: string;
+}
 
 @Component({
   selector: 'app-advanced-search',
@@ -41,6 +46,11 @@ export class AdvancedSearchComponent {
     return this.applicationStore.getExtracts(this.article()!.id)
   });
 
+  public navigation = signal<MetadataNavigation | undefined>(undefined);
+  public hovering = signal<string | undefined>(undefined);
+  public hoverIndex = computed(() => this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0);
+
+
   protected executeSearch(): void {
     this.textChanged.emit(this.input());
   }
@@ -49,7 +59,39 @@ export class AdvancedSearchComponent {
     this.input.set('');
   }
 
-  public scrollTo(extract: Extract): void {
-    this.previewService.sendMessage({ action: 'select', id: extract.id, usePassageHighlighter: false });
+  scrollTo(type: string, index: number, usePassageHighlighter: boolean = false) {
+    this.previewService.sendMessage({ action: 'select', id: `${type}_${index}`, usePassageHighlighter });
+  }
+
+  navigateNext(entity: string, data: ArticleMetadata) {
+    const index = this.navigation()?.value === data.value
+      ? this.navigation()!.index < data.count! ? this.navigation()!.index + 1 : 1
+      : 1;
+
+    this.navigation.set({
+      value: data.value,
+      index
+    });
+
+    const id = this.previewService.getEntityId(entity, data.value, index - 1);
+    if (id !== undefined) {
+      this.scrollTo(entity, id);
+    }
+  }
+
+  navigatePrev(entity: string, data: ArticleMetadata) {
+    const index = this.navigation()?.value === data.value
+      ? this.navigation()!.index <= 1 ? data.count! : this.navigation()!.index - 1
+      : data.count!;
+
+    this.navigation.set({
+      value: data.value,
+      index
+    });
+
+    const id = this.previewService.getEntityId(entity, data.value, index - 1);
+    if (id !== undefined) {
+      this.scrollTo(entity, id);
+    }
   }
 }

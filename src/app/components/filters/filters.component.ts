@@ -10,6 +10,7 @@ import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
 import { getCurrentQueryName } from '@/app/app.routes';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@/app/services';
 import { AppStore, QueryParamsStore } from '@/app/stores';
+import { CJAggregation, CJAggregationItem } from '@/app/types';
 import { Filter, buildQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
 
@@ -176,21 +177,26 @@ export class FiltersComponent implements OnInit {
   }
 
 
+  /**
+   * Builds an array of filter dropdowns from the given aggregations.
+   *
+   * @param aggregations - An array of aggregations.
+   * @returns An array of filter dropdowns.
+   */
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const itemCustomizations = this.appStore.getAggregationItemsCustomization(aggregation.column);
-
+        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CJAggregation || aggregation;
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.icon = itemCustomizations?.find(it => it.value === item.value)?.icon;
+          item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
         });
 
-        return aggregation;
+        return [aggregation, display] as [AggregationEx, string];
       })
-      .map((aggregation) => {
+      .map(([aggregation, display]) => {
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.values.length ? f.values.length - 1 : undefined;
 
@@ -201,7 +207,7 @@ export class FiltersComponent implements OnInit {
           const item = items.filter((item) => item.$selected).find((item) => f?.values[0] === item.value);
           if (item) {
             return ({
-              label: aggregation.name,
+              label: display,
               aggregation: aggregation,
               icon: this.appStore.getAggregationIcon(aggregation.column),
               currentFilter: f,
@@ -212,7 +218,7 @@ export class FiltersComponent implements OnInit {
         }
 
         return ({
-          label: aggregation.name,
+          label: display,
           aggregation: aggregation,
           icon: this.appStore.getAggregationIcon(aggregation.column),
           currentFilter: f,
