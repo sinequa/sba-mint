@@ -7,8 +7,6 @@ import { cn } from '@sinequa/atomic-angular';
 import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { DrawerService } from '@/app/components/drawer/drawer.service';
-import { PreviewService } from '@/app/services/preview';
-import { UserSettingsStore } from '@/app/stores';
 import { Article } from '@/app/types/articles';
 
 export type PreviewNavbarConfig = {
@@ -39,8 +37,6 @@ export class PreviewNavbarComponent {
 
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly drawerService = inject(DrawerService);
-  private readonly previewService = inject(PreviewService);
-  readonly userSettingsStore = inject(UserSettingsStore);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
 

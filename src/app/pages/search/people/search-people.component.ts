@@ -1,4 +1,5 @@
 import { Component, HostBinding, Injector, Input, OnDestroy, OnInit, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
 import { Subscription, switchMap, take } from 'rxjs';
 
 import { Result } from '@sinequa/atomic';
@@ -9,13 +10,12 @@ import { ArticlePersonComponent } from '@/app/components/article/person/article-
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { PageConfiguration, PagerComponent } from "@/app/components/pagination/pager.component";
+import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 import { NavigationService, SearchService } from '@/app/services';
 import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { PersonArticle } from '@/app/types/articles';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
-import { getState } from '@ngrx/signals';
-import { DidYouMeanComponent } from '@/app/did-you-mean/did-you-mean.component';
 
 @Component({
   selector: 'app-search-people',
@@ -42,21 +42,22 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
-  private readonly subscription = new Subscription();
+  private readonly sub = new Subscription();
 
   constructor(private readonly injector: Injector) {
+    this.sub.add(
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    );
+
     effect(() => {
       getState(this.queryParamsStore);
       this.people.set(undefined);
-    }, {allowSignalWrites: true});
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
     // Setup aggregations for filtering mechanism
-    this.subscription.add(
+    this.sub.add(
       this.navigationService.navigationEnd$
         .pipe(
           take(1),
@@ -67,7 +68,7 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
         })
     );
 
-    this.subscription.add(
+    this.sub.add(
       this.searchService.result$
         .subscribe((result: Result) => {
           this.result.set(result);
@@ -79,13 +80,13 @@ export class SearchPeopleComponent implements OnInit, OnDestroy {
     );
 
     // Trigger skeleton on search whether from input of from filters
-    this.subscription.add(
+    this.sub.add(
       searchInputStore.next$.subscribe(() => this.people.set(undefined))
     );
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
     this.aggregationsStore.clear();
   }
 

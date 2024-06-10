@@ -88,7 +88,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
-  readonly subscription = new Subscription();
+  readonly sub = new Subscription();
 
   defaultUserFeatures: UserFeatures = {
     bookmarks: true,
@@ -102,12 +102,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
     }, { allowSignalWrites: true });
 
-    // react to drawer stack status changes
-    effect(() => {
-      this.drawerOpened = this.drawerStack.isOpened();
-    });
+    this.sub.add(
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    );
 
-    this.subscription.add(
+    this.sub.add(
       // on navigation, close all tabs
       this.router.events
         .pipe(filter(event => event.type === EventType.NavigationStart))
@@ -120,7 +119,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
   }
 
   public selectTab(tab: HomeTab): void {

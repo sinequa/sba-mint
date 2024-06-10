@@ -36,3 +36,7 @@ export const articleTypesMap: ArticleTypeMap[] = [
 export function getTypeMapForArticleType(articleType: ArticleType): ArticleTypeMap {
   return articleTypesMap.find((typeMap) => typeMap.articleType === articleType)!;
 }
+
+export function getTypeMapForArticleSTab(tab: string): ArticleTypeMap | undefined {
+  return articleTypesMap.find((typeMap) => typeMap.articleType === tab);
+}

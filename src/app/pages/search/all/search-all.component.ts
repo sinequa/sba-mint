@@ -78,10 +78,7 @@ export class SearchAllComponent implements OnDestroy {
 
   protected aggregations: Aggregation[];
 
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
-  private readonly subscription = new Subscription();
+  private readonly sub = new Subscription();
 
 
   // tanstack query
@@ -109,8 +106,12 @@ export class SearchAllComponent implements OnDestroy {
   }));
 
   constructor(private readonly injector: Injector) {
+    this.sub.add(
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    );
+
     // Once the navigation ends, we fetch the "first page" of results but only once
-    this.subscription.add(
+    this.sub.add(
       this.navigationService.navigationEnd$
         .pipe(
           take(1),
@@ -130,7 +131,7 @@ export class SearchAllComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
     this.aggregationsStore.clear();
   }
 

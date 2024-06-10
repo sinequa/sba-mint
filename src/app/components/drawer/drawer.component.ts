@@ -1,5 +1,8 @@
+import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild, effect, inject } from '@angular/core';
+
 import { DrawerService } from './drawer.service';
 
 /**
@@ -59,21 +62,26 @@ export class DrawerComponent implements OnInit {
   protected readonly element = inject(ElementRef);
   protected readonly selectionHistory = inject(SelectionHistoryService);
 
-
-  private drawerOpenEffect = effect(() => {
-    this.drawerOpened = this.drawer.isOpened();
-
-    if (!this.drawerOpened) this.resetGridTemplateColumns();
-  });
-
-  private drawerExtendEffect = effect(() => {
-    this.drawerExtended = this.drawer.isExtended();
-
-    if (!this.drawerExtended) this.resetGridTemplateColumns();
-  });
-
   private isSliding = false;
   private defaultDrawerGridTemplate = '';
+
+  private readonly sub = new Subscription();
+
+  constructor() {
+    this.sub.add(
+      this.drawer.isOpened.subscribe(state => {
+        this.drawerOpened = state;
+        if (!state) this.resetGridTemplateColumns();
+      })
+    );
+
+    this.sub.add(
+      this.drawer.isExtended.subscribe(state => {
+        this.drawerExtended = state;
+        if (!state) this.resetGridTemplateColumns();
+      })
+    );
+  }
 
   ngOnInit(): void {
     this.defaultDrawerGridTemplate = this.element.nativeElement.style.gridTemplateColumns;

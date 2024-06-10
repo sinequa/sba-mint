@@ -55,11 +55,11 @@
     <button
       [ngClass]="cn(
         'btn flex gap-2 items-center text-nowrap ',
-        drawerService.isExtended() ? 'btn-secondary' : 'btn-primary'
+        (drawerService.isExtended | async) ? 'btn-secondary' : 'btn-primary'
         )"
       (click)="drawerStack.extend()"
     >
-      @if(drawerService.isExtended()) {
+      @if (drawerService.isExtended | async) {
         <i class="fa-fw far fa-eye-slash"></i>
         Hide search
       }

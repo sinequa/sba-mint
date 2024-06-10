@@ -1,12 +1,13 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, ViewChild, computed, inject, output, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { RawMessage } from '@sinequa/assistant/chat';
+import { Query } from '@sinequa/atomic';
 
 import { AssistantComponent } from '@/app/components/assistant/assistant';
 import { ApplicationStore } from '@/stores';
 
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { RawMessage } from '@sinequa/assistant/chat';
-import { Query } from '@sinequa/atomic';
 import { DrawerComponent } from '../../drawer.component';
 import { DrawerService } from '../../drawer.service';
 
@@ -42,7 +43,7 @@ export class DrawerAssistantComponent extends DrawerComponent {
   // TODO: remove once assistant input focus issue is fixed
   // https://sinequa.atlassian.net/browse/ES-22815 
   private drawerStack = inject(DrawerStackService);
-  protected isDrawerOpened = computed(() => this.drawerStack.isChatOpened());
+  protected isDrawerOpened = toSignal(this.drawerStack.isChatOpened);
 
   public askAI(text: string): void {
     const messages: RawMessage[] = [{ role: 'user', content: text, additionalProperties: { display: true } }];
