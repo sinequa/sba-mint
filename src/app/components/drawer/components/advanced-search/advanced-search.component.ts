@@ -1,11 +1,10 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { getState } from '@ngrx/signals';
 
 import { MetadataComponent, ReplacePipe } from '@sinequa/atomic-angular';
 
-import { MockDataService } from '@/app/services';
 import { PreviewService } from '@/app/services/preview';
 import { AppStore, SelectionStore } from '@/app/stores';
 import { Article, ArticleMetadata } from "@/app/types/articles";
@@ -30,33 +29,30 @@ interface MetadataNavigation {
   imports: [NgTemplateOutlet, FormsModule, PanelDirective, ReplacePipe, MetadataComponent]
 })
 export class AdvancedSearchComponent {
+  public readonly article = input<Article | undefined>();
+  public readonly textChanged = output<string>();
 
-  extracts = computed(() => {
-    getState(this.applicationStore);
-    if (!this.article()) return [];
-    return this.applicationStore.getExtracts(this.article()!.id)
-  });
-  applicationStore = inject(ApplicationStore);
-  selectionStore = inject(SelectionStore);
-
-  readonly article = input.required<Article | undefined>();
+  public readonly labels = inject(AppStore).getLabels();
+  private readonly applicationStore = inject(ApplicationStore);
+  private readonly selectionStore = inject(SelectionStore);
+  private readonly previewService = inject(PreviewService);
 
   protected readonly input = signal(getState(this.selectionStore).queryText || '');
+  protected readonly extracts = computed(() => {
+    getState(this.applicationStore);
+
+    if (!this.article()) return [];
+
+    return this.applicationStore.getExtracts(this.article()!.id)
+  });
 
   public navigation = signal<MetadataNavigation | undefined>(undefined);
   public hovering = signal<string | undefined>(undefined);
   public hoverIndex = computed(() => this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0);
 
-  public labels = inject(AppStore).getLabels();
-  protected readonly people = inject(MockDataService).people;
-
-  previewService = inject(PreviewService);
-
-  constructor() { }
 
   protected executeSearch(): void {
-    this.applicationStore.updateExtracts(this.article()!.id, []);
-    this.selectionStore.updateQueryText(this.input());
+    this.textChanged.emit(this.input());
   }
 
   protected clearInput(): void {

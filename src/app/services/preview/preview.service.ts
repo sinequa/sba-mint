@@ -34,8 +34,8 @@ export class PreviewService {
 
   protected type = "extractslocations";
 
-  extracts = ["matchlocations","extractslocations","matchingpassages"];
-  entities = ["company","geo","person"];
+  extracts = ["matchlocations", "extractslocations", "matchingpassages"];
+  entities = ["company", "geo", "person"];
 
   constructor(
     @Inject(HIGHLIGHTS) public highlights: PreviewHighlight[]) {
@@ -56,8 +56,10 @@ export class PreviewService {
 
     window.addEventListener('message', (event: MessageEvent) => {
       const message = event.data;
+
       if (message.type === 'ready') {
         this.sendMessage({ action: "init", highlights: highlights });
+
         if (this.previewData) {
           this.getHtml(this.type, this.previewData);
         }
@@ -65,6 +67,7 @@ export class PreviewService {
 
       if (message.type === 'get-html-results') {
         const { id } = getState(this.selectionStore)
+
         if (id) {
           if (this.extractsLocationService.worker) {
             // const data = this.previewData.get(id)!;
@@ -73,7 +76,6 @@ export class PreviewService {
             // const data = this.previewData.get(id)!;
             const extracts = this.fetchExtracts(id, message.data, this.previewData);
             this.applicationStore.updateExtracts(this.previewData.record.id, extracts);
-
           }
         }
       }
@@ -98,7 +100,8 @@ export class PreviewService {
   }
   setPreviewData(data: PreviewData) {
     this.previewData = data;
-    if(data) {
+
+    if (data) {
       this.type = data.highlightsPerCategory?.['matchingpassages']?.values.length ? "matchingpassages" : "extractslocations";
     }
   }
@@ -177,8 +180,8 @@ export class PreviewService {
   }
 
   toggle(extracts: boolean, entities: boolean) {
-    const extractsHighlights = extracts ? this.highlights.filter( h => this.extracts.includes(h.name)) : [];
-    const entitiesHighlights = entities ? this.highlights.filter( h => this.entities.includes(h.name)) : [];
+    const extractsHighlights = extracts ? this.highlights.filter(h => this.extracts.includes(h.name)) : [];
+    const entitiesHighlights = entities ? this.highlights.filter(h => this.entities.includes(h.name)) : [];
     const highlights = [...extractsHighlights, ...entitiesHighlights];
 
     this.sendMessage({ action: "highlight", highlights });

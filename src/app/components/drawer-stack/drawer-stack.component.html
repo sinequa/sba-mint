@@ -1,6 +1,6 @@
 @if (allowChatDrawer())
 {
-  @if (!drawerStackService.isChatOpened()) {
+  @if (!(drawerStackService.isChatOpened | async)) {
   <button
     class="h-10 w-8 bg-ai-500 border-ai-700 border rounded-s-md"
     title="Open assistant chat"
@@ -8,7 +8,7 @@
   >
     <i class="fa-regular fa-sparkles text-white font-normal text-base"></i>
   </button>
-  } @else if (drawerStackService.isChatOpened() && drawersLength > 0) {
+  } @else if ((drawerStackService.isChatOpened | async) && drawersLength > 0) {
   <button
     class="h-10 w-8 bg-white border-blue-700 border rounded-s-md"
     title="Back to preview"

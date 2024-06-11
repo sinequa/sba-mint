@@ -16,11 +16,11 @@ export type SortingChoice = {
 }
 
 @Component({
-    selector: 'app-sort-selector',
-    standalone: true,
-    templateUrl: './sort-selector.component.html',
-    styleUrl: './sort-selector.component.scss',
-    imports: [IntlModule, DropdownComponent]
+  selector: 'app-sort-selector',
+  standalone: true,
+  templateUrl: './sort-selector.component.html',
+  styleUrl: './sort-selector.component.scss',
+  imports: [IntlModule, DropdownComponent]
 })
 export class SortSelectorComponent {
   dropdown = viewChild(DropdownComponent);
@@ -34,11 +34,14 @@ export class SortSelectorComponent {
 
   // fetch the sorting choices from the queries and process if choice is desc or asc
   readonly sortOptions = computed(() => {
-    const{queries} = getState(this.appStore);
-    if(queries === undefined) return [];
+    const { queries } = getState(this.appStore);
+    if (queries === undefined) return [];
 
     const choices = queries?.[this.queryName()?.toLocaleLowerCase()]?.sortingChoices;
-    if(choices === undefined) return [];
+
+    // choices can be an empty string when nothing is defined in the configuration
+    if (choices === undefined || (choices as unknown as string) === '') return [];
+
     return choices?.reduce((acc, sort) => {
       acc.push({ ...sort, $isDesc: sort.orderByClause.includes('desc') });
       return acc;

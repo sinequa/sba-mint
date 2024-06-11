@@ -1,4 +1,5 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { getState } from '@ngrx/signals';
 import { Subscription, switchMap, take } from 'rxjs';
 
 import { Article, Result } from '@sinequa/atomic';
@@ -15,18 +16,17 @@ import { NavigationService, SearchService } from '@/app/services';
 import { QueryParamsStore, searchInputStore } from '@/app/stores';
 import { buildFirstPageQuery } from '@/app/utils';
 import { AggregationsStore } from '@/stores';
-import { getState } from '@ngrx/signals';
 
 @Component({
-    selector: 'app-search-slides',
-    standalone: true,
-    templateUrl: './search-slides.component.html',
-    styleUrl: './search-slides.component.scss',
-    hostDirectives: [{
-            directive: SelectArticleFromQueryParamsDirective,
-            inputs: ['articleId: id']
-        }],
-    imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent, DidYouMeanComponent]
+  selector: 'app-search-slides',
+  standalone: true,
+  templateUrl: './search-slides.component.html',
+  styleUrl: './search-slides.component.scss',
+  hostDirectives: [{
+    directive: SelectArticleFromQueryParamsDirective,
+    inputs: ['articleId: id']
+  }],
+  imports: [FiltersComponent, ArticleSlideComponent, ArticleSlideSkeletonComponent, PagerComponent, DidYouMeanComponent]
 })
 export class SearchSlidesComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -46,23 +46,22 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
-
-  private readonly subscription = new Subscription();
+  private readonly sub = new Subscription();
 
   constructor(private readonly injector: Injector) {
-    effect(() => {
-      this.drawerOpened = this.drawerStack.isOpened();
-    });
+    this.sub.add(
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    );
 
     effect(() => {
       getState(this.queryParamsStore);
       this.slides.set(undefined);
-    }, { allowSignalWrites: true});
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
     // Setup aggregations for filtering mechanism
-    this.subscription.add(
+    this.sub.add(
       this.navigationService.navigationEnd$
         .pipe(
           take(1),
@@ -73,7 +72,7 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
         })
     );
 
-    this.subscription.add(
+    this.sub.add(
       this.searchService.result$
         .subscribe((result: Result) => {
           this.result.set(result);
@@ -85,13 +84,13 @@ export class SearchSlidesComponent implements OnInit, OnDestroy {
     );
 
     // Trigger skeleton on search whether from input or from filters
-    this.subscription.add(
+    this.sub.add(
       searchInputStore.next$.subscribe(() => this.slides.set(undefined))
     );
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
     this.aggregationsStore.clear();
   }
 }

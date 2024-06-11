@@ -1,7 +1,6 @@
-import { Component, HostBinding, effect, inject } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 
 import { ArticleMatterComponent } from '@/app/components/article/matter/article-matter.component';
-import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
 import { Article } from "@/app/types/articles";
 
@@ -23,10 +22,4 @@ export class SearchMattersComponent {
     { value: '4', type: 'matter' },
     { value: '5', type: 'matter' }
   ];
-
-  private readonly drawerStack = inject(DrawerStackService);
-
-  private drawerEffect = effect(() => {
-    this.drawerOpened = this.drawerStack.isOpened();
-  });
 }

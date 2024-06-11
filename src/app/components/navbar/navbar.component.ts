@@ -4,7 +4,7 @@ import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SearchService } from '@/app/services/search.service';
 import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
-import { Component, HostBinding, Type, ViewChild, effect, inject, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -19,7 +19,7 @@ import { SearchInputComponent } from '../search-input/search-input.component';
 import { BookmarksComponent } from '../widgets/bookmarks/bookmarks.component';
 import { RecentSearchesComponent } from '../widgets/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '../widgets/saved-searches/saved-searches.component';
-import { UserMenuComponent } from "./components/user-menu";
+import { UserMenuComponent } from './components/user-menu';
 
 type NavbarMenu = {
   label: string;
@@ -34,13 +34,13 @@ type NavbarTab = {
 }
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
-    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent, ApplicationsComponent]
+  selector: 'app-navbar',
+  standalone: true,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
+  imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent, ApplicationsComponent]
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
@@ -71,19 +71,22 @@ export class NavbarComponent {
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
 
-  private readonly subscriptions = new Subscription();
+  private readonly sub = new Subscription();
 
   constructor() {
+    this.sub.add(
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    );
 
-    effect(() => {
-      this.drawerOpened = this.drawerStack.isOpened();
-    });
-
-    this.subscriptions.add(
+    this.sub.add(
       searchInputStore.next$.subscribe(text => {
         this.searchInput.setInput(text);
       })
     );
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   autocompleteItemClicked(item: Suggestion): void {

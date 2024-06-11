@@ -1,5 +1,6 @@
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
-import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, computed, effect, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, computed, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { NavigationService } from '@/app/services';
@@ -15,7 +16,7 @@ const DRAWER_STACK_MAX_COUNT = 3;
 @Component({
   selector: 'app-drawer-stack',
   standalone: true,
-  imports: [DrawerComponent],
+  imports: [AsyncPipe, DrawerComponent],
   templateUrl: './drawer-stack.component.html',
   styleUrl: './drawer-stack.component.scss'
 })
@@ -40,8 +41,9 @@ export class DrawerStackComponent implements OnDestroy {
   readonly allowChatDrawer = computed(() => this.appStore.customizationJson().features?.allowChatDrawer);
 
   constructor() {
-    // drawer stack animation on drawer stack toggle
-    effect(() => this.drawerOpened = this.drawerStackService.isOpened());
+    this.subscriptions.add(
+      this.drawerStackService.isOpened.subscribe((state) => this.drawerOpened = state)
+    );
 
     this.subscriptions.add(
       this.selectionHistory$.subscribe((event) => {
@@ -128,7 +130,7 @@ export class DrawerStackComponent implements OnDestroy {
   private pushDrawer(index: number): void {
     const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
-    drawer.instance.selectionId = index;
+    drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
 
     this.drawers.push(drawer);
 
@@ -148,7 +150,8 @@ export class DrawerStackComponent implements OnDestroy {
   private unshiftDrawer(index: number): void {
     const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
 
-    drawer.instance.selectionId = index;
+    drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
+
     this.viewContainer.insert(drawer.hostView, 0);
 
     this.drawers.unshift(drawer);

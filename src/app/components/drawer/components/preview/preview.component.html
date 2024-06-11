@@ -8,14 +8,22 @@
   <div
     #drawerHandle
     class="w-[5px] h-full fixed hover:cursor-ew-resize"
-    [ngClass]="{ hidden: !drawer.isExtended() }"
+    [ngClass]="{ hidden: (drawer.isExtended | async) === false }"
   ></div>
 
-  @if (previewTypeMap() !== undefined) {
+  @if (!previewType()) {
+  <div class="w-full h-full flex items-center justify-center">
+    <i
+      class="fa-regular fa-spinner-third animate-spin text-[12rem] text-neutral-200"
+    ></i>
+  </div>
+  } @else {
   <ng-container
-    *ngComponentOutlet="previewTypeMap().previewComponentType!; inputs: inputs"
+    *ngComponentOutlet="previewType()!.previewComponentType!; inputs: inputs()"
   />
   }
 </div>
 
-<app-advanced-search [article]="article" (close)="drawer.collapse()"/>
+@if (article()) {
+<app-advanced-search [article]="article()" (textChanged)="onTextChanged($event)" (close)="drawer.collapse()" />
+}

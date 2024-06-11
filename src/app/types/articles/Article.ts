@@ -12,4 +12,5 @@ export interface Article extends A {
   person?: ArticleMetadata[];
   queryDuplicates?: Article[];
   $queryName?: string;
+  s_tab?: string;
 }
