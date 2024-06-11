@@ -42,7 +42,7 @@
       <hr class="my-1" />
       <sq-menu-item (click)="handleLogout()">
         <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        Logout {{ user().fullName }}
+        Logout {{ user().fullName || user().name }}
       </sq-menu-item>
     }
   </div>

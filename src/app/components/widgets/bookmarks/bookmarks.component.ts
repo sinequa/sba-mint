@@ -43,7 +43,10 @@ export class BookmarksComponent {
   public onClick(bookmark: Bookmark): void {
 
     // if the bookmark was created before the queryName was added, don't try to open it
-    if (!bookmark.queryName) return;
+    if (!bookmark.queryName) {
+      toast.warning('This bookmark is outdated and cannot be opened', { description: 'No query name!', duration: 2000 });
+      return;
+    }
 
     const query: Partial<Query> = {
       name: bookmark.queryName,
@@ -52,8 +55,11 @@ export class BookmarksComponent {
         value: bookmark.id
       }
     }
-    this.queryService.search(query).subscribe((result) => {
-      if (!result.records) return;
+    this.queryService.search(query, false).subscribe((result) => {
+      if (!result.records || result.records.length === 0) {
+        toast.warning('This bookmark is outdated and cannot be opened', { description: 'no record found!', duration: 2000 });
+        return;
+      }
       this.drawerStack.replace(result.records[0]);
     });
   }
