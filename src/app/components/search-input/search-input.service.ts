@@ -17,7 +17,7 @@ export class SearchInputService implements OnDestroy {
       this.navigation.navigationEnd$
         .subscribe((event: RouterEvent) => {
           const { q } = queryParamsFromUrl(event.url);
-          searchInputStore.set(decodeURIComponent(q))
+          searchInputStore.set(q);
         })
     );
   }

@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { RouterEvent } from '@angular/router';
-import { toast } from 'ngx-sonner';
 import { Subscription, filter } from 'rxjs';
 
 import { isASearchRoute } from '@/app/app.routes';

@@ -49,7 +49,7 @@ export function queryParamsFromUrl(url: string): Record<string, string> {
  */
 export function getQueryTextFromUrl(url: string): string {
   const { q: queryText = '' } = queryParamsFromUrl(url);
-  return decodeURIComponent(queryText);
+  return queryText;
 }
 
 /**

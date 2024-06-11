@@ -34,7 +34,7 @@ export function getQueryParamsFromUrl(url: string | undefined): QueryParams | un
 
   return {
     path,
-    text: decodeURIComponent(q),
+    text: q,
     filters: f ? getFiltersFromURI(f) : undefined,
     page: parseInt(p, 10),
     sort: s
