@@ -1,4 +1,4 @@
-import { DatePipe, JsonPipe, NgClass, SlicePipe } from '@angular/common';
+import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
