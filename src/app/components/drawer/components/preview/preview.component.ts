@@ -1,4 +1,4 @@
-import { AsyncPipe, JsonPipe, NgClass, NgComponentOutlet } from '@angular/common';
+import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, combineLatest, map, shareReplay, switchMap } from 'rxjs';
@@ -20,7 +20,7 @@ import { AdvancedSearchComponent } from '../advanced-search/advanced-search.comp
 @Component({
   selector: 'app-drawer-preview',
   standalone: true,
-  imports: [NgClass, NgComponentOutlet, AsyncPipe, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent, JsonPipe],
+  imports: [NgClass, NgComponentOutlet, AsyncPipe, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent],
   providers: [DrawerService, PreviewService, ExtractsLocationService],
   templateUrl: './preview.component.html',
   styleUrls: ['../../drawer.component.scss', './preview.component.scss']

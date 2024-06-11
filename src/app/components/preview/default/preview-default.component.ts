@@ -1,4 +1,4 @@
-import { DatePipe, JsonPipe, NgClass, SlicePipe } from '@angular/common';
+import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -27,8 +27,7 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
     AuthorComponent,
     MetadataComponent,
     PreviewActionsComponent,
-    SourceIconComponent,
-    JsonPipe
+    SourceIconComponent
   ],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
