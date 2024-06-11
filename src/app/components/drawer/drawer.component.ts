@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { SelectionHistoryService } from '@/app/services/selection-history.service';
@@ -17,7 +17,7 @@ import { DrawerService } from './drawer.service';
   templateUrl: './drawer.component.html',
   styleUrl: './drawer.component.scss'
 })
-export class DrawerComponent implements OnInit {
+export class DrawerComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
@@ -85,6 +85,10 @@ export class DrawerComponent implements OnInit {
 
   ngOnInit(): void {
     this.defaultDrawerGridTemplate = this.element.nativeElement.style.gridTemplateColumns;
+  }
+  
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   private disableAnimation(): void {
