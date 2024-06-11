@@ -64,7 +64,8 @@
     <li><app-article-default-skeleton /></li>
     <li><app-article-default-skeleton /></li>
   </ul>
-  } @else {
+  }
+  @else {
   <ul class="flex flex-col gap-2 mt-4">
     @for(page of query.data()?.pages; track page) {
       @for (article of page.records; track article.id) {

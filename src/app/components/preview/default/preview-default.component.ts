@@ -1,7 +1,6 @@
 import { DatePipe, JsonPipe, NgClass, SlicePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { PreviewData } from '@sinequa/atomic';
@@ -9,7 +8,7 @@ import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
 
 import { AuthorComponent } from '@/app/components/author/author.component';
 import { PreviewService } from '@/app/services/preview';
-import { AppStore, SelectionStore } from '@/app/stores';
+import { AppStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
@@ -49,17 +48,11 @@ export class PreviewDefaultComponent implements OnDestroy {
       undefined
   );
 
-  queryText = computed(() => {
-    const { queryText } = getState(this.selectionStore);
-    return queryText;
-  })
-
   public labels = inject(AppStore).getLabels();
 
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
-  private readonly selectionStore = inject(SelectionStore);
 
   private readonly sub = new Subscription();
 

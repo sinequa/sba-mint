@@ -8,6 +8,7 @@ import { BookmarkComponent } from '@/app/components/bookmark/bookmark.component'
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { DrawerService } from '@/app/components/drawer/drawer.service';
 import { Article } from '@/app/types/articles';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -41,6 +42,7 @@ export class PreviewNavbarComponent {
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
 
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
+  readonly isExtended = toSignal(this.drawerService.isExtended);
 
   public copied: boolean = false;
 
