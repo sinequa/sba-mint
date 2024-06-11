@@ -20,7 +20,7 @@ import { AdvancedSearchComponent } from '../advanced-search/advanced-search.comp
 @Component({
   selector: 'app-drawer-preview',
   standalone: true,
-  imports: [NgClass, NgComponentOutlet, AsyncPipe, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent, JsonPipe],
+  imports: [NgClass, NgComponentOutlet, AsyncPipe, AdvancedSearchComponent, PreviewDefaultComponent, PreviewPersonComponent, PreviewSlideComponent],
   providers: [DrawerService, PreviewService, ExtractsLocationService],
   templateUrl: './preview.component.html',
   styleUrls: ['../../drawer.component.scss', './preview.component.scss']
