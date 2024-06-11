@@ -1,4 +1,4 @@
-import { AsyncPipe, JsonPipe, NgClass, NgComponentOutlet } from '@angular/common';
+import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, combineLatest, map, shareReplay, switchMap } from 'rxjs';
