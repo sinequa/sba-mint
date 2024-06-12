@@ -1,7 +1,7 @@
 import { assertInInjectionContext, inject } from '@angular/core';
 import { ActivatedRoute, Routes } from '@angular/router';
 
-import { AuthGuard, LoginComponent } from '@sinequa/atomic-angular';
+import { AuthGuard } from '@sinequa/atomic-angular';
 
 import { InitializationGuard } from './guards/initializationGuard';
 import { LoadingComponent } from './guards/loading.component';
@@ -11,8 +11,8 @@ import { SearchComponent } from './pages/search/search.component';
 import { queryNameResolver } from './resolvers/query-name-resolver';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard()] },
+  { path: 'login', component: LoadingComponent },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   {
     path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], children: [
       { path: 'all', component: SearchAllComponent, resolve: { queryName: queryNameResolver } },

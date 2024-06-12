@@ -1,7 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { globalConfig, isAuthenticated } from '@sinequa/atomic';
-import { AppStore, ApplicationStore } from '../stores';
+import { ApplicationStore } from '../stores';
 
 /**
  * Returns a guard function that checks if the user is authenticated.

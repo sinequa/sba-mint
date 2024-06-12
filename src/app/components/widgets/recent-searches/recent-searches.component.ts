@@ -1,13 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
-import { RecentSearchesService } from '@/app/services';
+import { UserSettingsStore } from '@/app/stores';
 import { RecentSearch } from '@/app/types';
-import { QueryParams } from '@/app/utils';
+import { QueryParams, getQueryParamsFromUrl } from '@/app/utils';
 
 const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
 
@@ -23,17 +23,26 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
   }
 })
 export class RecentSearchesComponent {
-
+  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly router = inject(Router);
-  private readonly recentSearchesService = inject(RecentSearchesService);
 
   public range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
-  public recentSearches = computed<RecentSearch[]>(() => (this.recentSearchesService.getRecentSearches() || []).slice(0, this.range()));
-  public totalSearches = computed<number>(() => (this.recentSearchesService.getRecentSearches() || []).length);
-  public hasMore = computed<boolean>(() => this.totalSearches() > 0 && this.range() < this.totalSearches());
+  public recentSearches = signal<RecentSearch[]>([]);
+  public paginatedRecentSearches = computed<RecentSearch[]>(() => this.recentSearches().slice(0, this.range()));
+  public hasMore = computed<boolean>(() => this.recentSearches().length > 0 && this.range() < this.recentSearches().length);
 
-  constructor() { }
+  constructor() {
+    effect(() => {
+      const searches = this.userSettingsStore.recentSearches();
+      this.recentSearches.set(searches);
+    }, { allowSignalWrites: true });
+   }
 
+  /**
+   * Handles the click event for a recent search item.
+   * Navigates to the specified path with the query parameters from the recent search.
+   * @param recentSearch - The recent search item that was clicked.
+   */
   onClick(recentSearch: RecentSearch): void {
     const { text, filters = [] } = recentSearch.queryParams || {} as QueryParams;
 
@@ -45,13 +54,18 @@ export class RecentSearchesComponent {
     this.router.navigate([recentSearch.queryParams?.path], { queryParams });
   }
 
+  /**
+   * Deletes a recent search item at the specified index.
+   * @param index - The index of the item to delete.
+   * @param e - The event object.
+   */
   onDelete(index: number, e: Event) {
     e.stopPropagation();
     const searches = this.recentSearches();
 
     if (searches) {
       searches?.splice(index, 1);
-      this.recentSearchesService.saveSearch(searches)
+      this.userSettingsStore.updateRecentSearches(searches);
       toast.success('Recent search deleted');
     }
   }

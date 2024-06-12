@@ -1,7 +1,8 @@
-import { Article, UserSettings } from '@/app/types';
+import { Article, RecentSearch, UserSettings } from '@/app/types';
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { deleteUserSettings, fetchUserSettings, patchUserSettings } from '@sinequa/atomic';
+import { QueryParams } from '../utils';
 
 const initialState: UserSettings = {
   bookmarks: [],
@@ -85,6 +86,18 @@ export const UserSettingsStore = signalStore(
         this.unbookmark(article.id);
       else
         this.bookmark(article);
+    },
+    async addCurrentSearch(queryParams: QueryParams) {
+      const recentSearch = {
+        url: window.location.hash.substring(1),
+        display: queryParams.text,
+        label: queryParams.text,
+        filterCount: queryParams.filters?.length,
+        date: new Date().toISOString(),
+        queryParams
+      } as RecentSearch;
+
+      this.updateRecentSearches([recentSearch, ...store.recentSearches()]);
     }
   }))
 );
