@@ -15,7 +15,7 @@ export const toastInterceptorFn: HttpInterceptorFn = (request: HttpRequest<unkno
 
     return next(request).pipe(catchError((err) => {
         const { status, statusText, error } = err;
-        if ([401, 403, 500].includes(status)) {
+        if ([401, 403, 500, 503].includes(status)) {
             const { errorMessage = err.statusText, errorCodeText } = error;
             console.log("toast interceptor", err);
             toast.error(statusText, { description: `${errorCodeText}: ${errorMessage}`, closeButton: true, duration: 5000 });
