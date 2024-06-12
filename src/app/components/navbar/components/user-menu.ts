@@ -32,7 +32,7 @@ export class UserMenuComponent {
   initials = computed(() => {
     const principal = this.user();
     const separator = principal.fullName ? ' ' : '.';
-    return (principal.fullName || principal.id || '').split(separator).filter( word => word[0] && (word[0] === word[0].toUpperCase()) ).map( word => word[0] ).join('').slice(0,3);
+    return (principal.fullName || principal.name || '').split(separator).filter( word => word[0] && (word[0] === word[0].toUpperCase()) ).map( word => word[0] ).join('').slice(0,3);
   });
 
   allowUserOverride = computed(() => {

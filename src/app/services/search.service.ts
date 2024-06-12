@@ -8,7 +8,7 @@ import { QueryService } from '@sinequa/atomic-angular';
 
 import { isASearchRoute } from '@/app/app.routes';
 import { NavigationService, } from '@/app/services';
-import { AggregationsStore, QueryParamsStore } from '@/app/stores';
+import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 
 
@@ -37,6 +37,7 @@ export class SearchService implements OnDestroy {
 
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
+  protected readonly userSettingsStore = inject(UserSettingsStore);
 
   constructor(private readonly injector: Injector) {
     this.subscription.add(
@@ -48,6 +49,11 @@ export class SearchService implements OnDestroy {
         .subscribe((result: Result) => {
           // Update the aggregations store with the new aggregations
           this.aggregationsStore.update(result.aggregations);
+
+          // Update the search query here
+          const queryParams = getState(this.queryParamsStore);
+          this.userSettingsStore.addCurrentSearch(queryParams);
+
           this._result.next(result)
         })
     );
