@@ -150,6 +150,7 @@ export class MoreFiltersComponent implements OnDestroy {
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
           item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
         });
 
         return ({

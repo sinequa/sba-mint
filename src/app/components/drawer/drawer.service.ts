@@ -1,6 +1,7 @@
-import { Injectable, Type, inject, signal } from '@angular/core';
 import { ArticleType } from "@/app/types/articles";
+import { Injectable, Type, inject } from '@angular/core';
 
+import { BehaviorSubject } from 'rxjs';
 import { BackdropService } from './components/backdrop/backdrop.service';
 
 export type ArticleTypeMap = {
@@ -12,35 +13,35 @@ export type ArticleTypeMap = {
 
 @Injectable()
 export class DrawerService {
-  public readonly isOpened = signal(false);
-  public readonly isExtended = signal(false);
+  public readonly isOpened = new BehaviorSubject<boolean>(false);
+  public readonly isExtended = new BehaviorSubject<boolean>(false);
 
   private readonly backdrop = inject(BackdropService);
 
   public open(): void {
-    this.isOpened.set(true);
+    this.isOpened.next(true);
   }
 
   public close(): void {
     this.collapse();
-    this.isOpened.set(false);
+    this.isOpened.next(false);
   }
 
   public toggle(): void {
-    this.isOpened() ? this.close() : this.open();
+    this.isOpened.getValue() ? this.close() : this.open();
   }
 
   public extend(): void {
-    this.isExtended.set(true);
+    this.isExtended.next(true);
     this.backdrop.show();
   }
 
   public collapse(): void {
     this.backdrop.hide();
-    this.isExtended.set(false);
+    this.isExtended.next(false);
   }
 
   public toggleExtension(): void {
-    this.isExtended() ? this.collapse() : this.extend();
+    this.isExtended.getValue() ? this.collapse() : this.extend();
   }
 }

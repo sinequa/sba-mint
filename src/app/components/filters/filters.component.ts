@@ -184,6 +184,12 @@ export class FiltersComponent implements OnInit {
    * @param aggregations - An array of aggregations.
    * @returns An array of filter dropdowns.
    */
+  /**
+   * Builds an array of filter dropdowns from the given aggregations.
+   *
+   * @param aggregations - An array of aggregations.
+   * @returns An array of filter dropdowns.
+   */
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
@@ -193,8 +199,10 @@ export class FiltersComponent implements OnInit {
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
           item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it:CJAggregationItem) => it.value === item.value)?.icon;
         });
 
+        return [aggregation, display] as [AggregationEx, string];
         return [aggregation, display] as [AggregationEx, string];
       })
       .map(([aggregation, display]) => {

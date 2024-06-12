@@ -1,7 +1,7 @@
 import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { Observable, Subject, Subscription, filter, switchMap } from 'rxjs';
+import { Observable, Subject, Subscription, catchError, filter, of, switchMap } from 'rxjs';
 
 import { Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -88,7 +88,7 @@ export class SearchService implements OnDestroy {
   public getResult(): Observable<Result> {
     const query = this.getQuery();
     // add the query name to records, to have it available if we bookmark one
-    return this.queryService.search(query);
+    return this.queryService.search(query).pipe(catchError(() => of({} as Result)));
   }
 
   /**

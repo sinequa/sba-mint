@@ -1,6 +1,7 @@
-import { Article } from "@/app/types/articles";
 import { withDevtools } from "@angular-architects/ngrx-toolkit";
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
+
+import { Article } from "@/app/types/articles";
 
 type SelectionState = {
   article: Article;

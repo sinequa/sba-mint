@@ -1,24 +1,20 @@
-import { EventEmitter, Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, inject } from '@angular/core';
 import { getState } from '@ngrx/signals';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { NavigationService, SelectionHistoryService, SelectionService } from '@/app/services';
 import { SelectionStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DrawerStackService implements OnDestroy {
-  public readonly isOpened = signal(false);
+  public readonly isOpened = new BehaviorSubject<boolean>(false);
   public readonly toggleTopDrawerExtension$ = new EventEmitter<void>();
   public readonly forceTopDrawerCollapse$ = new EventEmitter<void>();
   public readonly closeTopDrawer$ = new EventEmitter<void>();
   public readonly closeAllDrawers$ = new EventEmitter<void>();
-
-  public readonly isChatOpened = signal(false);
-  public readonly openChatDrawer$ = new EventEmitter<void>();
-  public readonly closeChatDrawer$ = new EventEmitter<void>();
 
   private readonly selection = inject(SelectionService);
   private readonly selectionHistory = inject(SelectionHistoryService);
@@ -31,7 +27,6 @@ export class DrawerStackService implements OnDestroy {
     // on new search, close all drawers including chat drawer
     this.subscriptions.add(
       this.navigationService.navigationEnd$.subscribe(() => {
-        console.log('Navigation end');
         this.closeAll();
       })
     );
@@ -45,7 +40,7 @@ export class DrawerStackService implements OnDestroy {
    * Sets current drawer stack status to open
    */
   public open(): void {
-    this.isOpened.set(true);
+    this.isOpened.next(true);
   }
 
   /**
@@ -64,7 +59,7 @@ export class DrawerStackService implements OnDestroy {
     this.closeTopDrawer$.next();
 
     if (this.selectionHistory.getCurrentSelectionIndex() === -1) {
-      this.isOpened.set(false);
+      this.isOpened.next(false);
       this.selectionHistory.clearHistory();
     }
   }
@@ -83,7 +78,7 @@ export class DrawerStackService implements OnDestroy {
    * @param keepDrawerOpen if true, do not trigger layout animation
    */
   public closeAll(keepDrawerOpen: boolean = false): void {
-    if (!keepDrawerOpen) this.isOpened.set(false);
+    if (!keepDrawerOpen) this.isOpened.next(false);
 
     this.selectionHistory.clearHistory();
 
@@ -99,6 +94,7 @@ export class DrawerStackService implements OnDestroy {
    */
   public replace(article: Article | undefined): void {
     const { id } = getState(this.selectionStore);
+
     if (id && (!article || article.id === id)) return;
 
     // close everything without trigger layout animation
