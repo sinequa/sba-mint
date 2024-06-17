@@ -1,13 +1,11 @@
-import { Injectable, Injector, OnDestroy, inject, runInInjectionContext } from '@angular/core';
+import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { Observable, Subject, Subscription, catchError, filter, of, switchMap } from 'rxjs';
+import { Observable, Subject, catchError, of } from 'rxjs';
 
 import { Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
 
-import { isASearchRoute } from '@/app/app.routes';
-import { NavigationService, } from '@/app/services';
 import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@/app/stores';
 import { buildQuery, translateFiltersToApiFilters } from '@/app/utils';
 
@@ -20,17 +18,15 @@ type QueryParams = {
   f?: string; // filters list
   p?: number; // page number
   s?: string; // sort name
+  t?: string; // tab name
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class SearchService implements OnDestroy {
+export class SearchService {
   private readonly router = inject(Router);
-  private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
-
-  private readonly subscription = new Subscription();
 
   private readonly _result = new Subject<Result>();
   public readonly result$ = this._result.asObservable();
@@ -38,44 +34,18 @@ export class SearchService implements OnDestroy {
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly userSettingsStore = inject(UserSettingsStore);
+  protected readonly injector = inject(Injector);
 
-  constructor(private readonly injector: Injector) {
-    this.subscription.add(
-      this.navigationService.navigationEnd$
-        .pipe(
-          filter((routerEvent) => isASearchRoute(routerEvent.url)),
-          switchMap(() => this.getResult())
-        )
-        .subscribe((result: Result) => {
-          // Update the aggregations store with the new aggregations
-          this.aggregationsStore.update(result.aggregations);
 
-          // Update the search query here
-          const queryParams = getState(this.queryParamsStore);
-          this.userSettingsStore.addCurrentSearch(queryParams);
-
-          this._result.next(result)
-        })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  /**
-   * Performs a search operation.
-   * @param commands - The commands to navigate to after the search.
-   * @param options - The search options.
-   */
   public search(commands: string[], options: SearchOptions = { appendFilters: true }): void {
     const queryParams: QueryParams = {};
-    const { filters = [], page, sort } = getState(this.queryParamsStore);
+    const { filters = [], page, sort, tab } = getState(this.queryParamsStore);
 
     if (options.appendFilters) {
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
       queryParams.s = sort;
+      queryParams.t = tab;
     }
 
     this.router.navigate(commands, { queryParamsHandling: 'merge', queryParams });
@@ -96,12 +66,11 @@ export class SearchService implements OnDestroy {
    * @returns The query object.
    */
   public getQuery(): Query {
-    const { filters = [] } = getState(this.queryParamsStore);
+    const { filters = [], sort, tab, text, queryName } = getState(this.queryParamsStore);
     const { aggregations } = getState(this.aggregationsStore);
     const translatedFilters = translateFiltersToApiFilters(filters, aggregations);
-    const sort = getState(this.queryParamsStore).sort;
     const spellingCorrectionMode = getState(this.queryParamsStore).spellingCorrectionMode;
-    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, sort, spellingCorrectionMode }));
+    const query = runInInjectionContext(this.injector, () => buildQuery({ filters: translatedFilters as any, name: queryName, sort, spellingCorrectionMode, tab, text }));
     return query;
   }
 

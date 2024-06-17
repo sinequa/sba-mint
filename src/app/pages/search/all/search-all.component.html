@@ -21,21 +21,21 @@
   </ul>
   }
   @else {
-  <ul class="flex flex-col gap-2 mt-4">
-    @for(page of query.data()?.pages; track page) {
-      @for (article of page.records; track article.id) {
-      <li>
-        <app-article-default [article]="article" [strategy]="'replace'" />
-      </li>
+    <ul class="flex flex-col gap-2 mt-4">
+      @for(page of query.data()?.pages; track page) {
+        @for (article of page.records; track article.id + $index) {
+          <li>
+            <app-article-default [article]="article" [strategy]="'replace'" />
+          </li>
+        }
+        @if(page.records.length === 0){
+          <li class="mt-8 text-neutral-500 italic">
+            No result for &quot;<em class="not-italic font-semibold">{{ queryText() }}</em>&quot;
+          </li>
+        }
       }
-      @if (page.records.length === 0) {
-      <li class="mt-8 text-neutral-500 italic">
-        No result for &quot;<em class="not-italic font-semibold">{{ queryText() }}</em>&quot;
-      </li>
-      }
+    </ul>
     }
-  </ul>
-  }
 
   <div infinity-scroll (loadMore)="nextPage()"></div>
 </main>

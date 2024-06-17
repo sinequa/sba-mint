@@ -88,6 +88,18 @@ export const UserSettingsStore = signalStore(
         this.bookmark(article);
     },
     async addCurrentSearch(queryParams: QueryParams) {
+      // fist search if the search is already in the recent searches with the same label
+      const recentSearches = store.recentSearches();
+      const existingSearch = recentSearches.find((search) => search.label === queryParams.text);
+
+      if (existingSearch) {
+        this.updateRecentSearches([
+          { ...existingSearch, date: new Date().toISOString(), queryParams, filterCount: queryParams.filters?.length },
+          ...recentSearches.filter((search) => search.label !== queryParams.text),
+        ]);
+        return;
+      }
+
       const recentSearch = {
         url: window.location.hash.substring(1),
         display: queryParams.text,

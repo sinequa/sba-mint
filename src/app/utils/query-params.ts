@@ -18,6 +18,8 @@ export type QueryParams = {
   page?: number;
   sort?: string;
   spellingCorrectionMode?: SpellingCorrectionMode;
+  tab?: string;
+  queryName?: string;
 }
 
 /**
@@ -29,15 +31,16 @@ export type QueryParams = {
 export function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined {
   if (url === undefined) return undefined;
 
-  const { q, f, p, s } = queryParamsFromUrl(url);
+  const { q, f, p, s, t } = queryParamsFromUrl(url);
   const [path] = url.split('?');
 
   return {
     path,
     text: q,
     filters: f ? getFiltersFromURI(f) : undefined,
-    page: parseInt(p, 10),
-    sort: s
+    page: p ? parseInt(p, 10) : undefined,
+    sort: s,
+    tab: t
   };
 }
 

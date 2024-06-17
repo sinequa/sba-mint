@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { searchInputStore } from '../stores/search-input.store';
-import { SavedSearch } from '../types/user-settings';
-import { UserSettingsStore } from '../stores';
 import { toast } from 'ngx-sonner';
+import { getState } from '@ngrx/signals';
+
+import { SavedSearch } from '../types/user-settings';
+import { QueryParamsStore, UserSettingsStore } from '../stores';
 
 const SAVED_SEARCHES_MAX_STORAGE = 100;
 
@@ -10,20 +11,22 @@ const SAVED_SEARCHES_MAX_STORAGE = 100;
   providedIn: 'root'
 })
 export class SavedSearchesService {
-  store = inject(UserSettingsStore);
+  userSettingsStore = inject(UserSettingsStore);
+  queryParamsStore = inject(QueryParamsStore);
 
   public getSavedSearches(): SavedSearch[] {
-    return this.store.savedSearches()
+    return this.userSettingsStore.savedSearches()
   }
 
   public saveSearch() {
-    if (!searchInputStore.state) {
+    const  { text } = getState(this.queryParamsStore);
+    if (!text) {
       console.error('Saving empty search is not allowed');
       return;
     }
 
-    const savedSearch = { url: window.location.hash.substring(1), date: new Date().toISOString(), display: searchInputStore.state };
-    const savedSearches = this.store.savedSearches();
+    const savedSearch = { url: window.location.hash.substring(1), date: new Date().toISOString(), display: text };
+    const savedSearches = this.userSettingsStore.savedSearches();
 
     if (savedSearches.length >= SAVED_SEARCHES_MAX_STORAGE){
       savedSearches.pop();
@@ -31,12 +34,12 @@ export class SavedSearchesService {
 
     savedSearches.unshift(savedSearch);
 
-    this.store.updateSavedSearches(savedSearches);
+    this.userSettingsStore.updateSavedSearches(savedSearches);
 
     toast.success('Search successfully saved');
   }
 
   public updateSavedSearches(savedSearches: SavedSearch[]) {
-    this.store.updateSavedSearches(savedSearches);
+    this.userSettingsStore.updateSavedSearches(savedSearches);
   }
 }

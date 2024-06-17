@@ -6,7 +6,7 @@
       (keydown.enter)="onClick(search)">
       <i class="fa-fw far fa-clock-rotate-left " aria-hidden="true"></i>
 
-      <p>{{ search.label }}</p>
+      <p>{{ search.display || search.label }}</p>
 
       @if (search.filterCount && search.filterCount > 0) {
         <p class="text-neutral-500" aria-hidden="true">

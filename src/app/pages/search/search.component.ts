@@ -1,9 +1,9 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, effect, inject, input } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { NavbarComponent } from '@/app/components/navbar/navbar.component';
 import { SelectionService } from '@/app/services';
-import { searchInputStore } from '@/app/stores/search-input.store';
+import { QueryParamsStore } from '@/app/stores';
 
 @Component({
   selector: 'app-search',
@@ -12,16 +12,21 @@ import { searchInputStore } from '@/app/stores/search-input.store';
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
-export class SearchComponent implements OnInit, OnDestroy {
-  @Input() public q: string | undefined;
+export class SearchComponent {
+  protected readonly queryParamsStore = inject(QueryParamsStore);
 
-  protected readonly selection = inject(SelectionService);
+  // input url bindings
+  q = input<string>(); // text
+  t = input<string>(); // tab
+  s = input<string>(); // sort
+  f = input<string>(); // filters
 
-  ngOnInit(): void {
-    searchInputStore.set(this.q ?? '');
-  }
-
-  ngOnDestroy(): void {
-    searchInputStore.set('');
+  constructor() {
+    // Update the query params store with the filters from the query params
+    effect(() => {
+      const filters = JSON.parse(this.f() ?? '[]'); // Parse the filters from the query params
+      this.queryParamsStore.updateFilter(filters);
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s() });
+    }, { allowSignalWrites: true });
   }
 }

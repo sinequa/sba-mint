@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
 import { RelativeDatePipe } from '@/app/pipes/relative-date.pipe';
-import { UserSettingsStore } from '@/app/stores';
+import { QueryParamsStore, UserSettingsStore } from '@/app/stores';
 import { RecentSearch } from '@/app/types';
 import { QueryParams, getQueryParamsFromUrl } from '@/app/utils';
 
@@ -24,6 +24,7 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
 })
 export class RecentSearchesComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly router = inject(Router);
 
   public range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
@@ -44,14 +45,16 @@ export class RecentSearchesComponent {
    * @param recentSearch - The recent search item that was clicked.
    */
   onClick(recentSearch: RecentSearch): void {
-    const { text, filters = [] } = recentSearch.queryParams || {} as QueryParams;
+    const { text, filters = [], tab, page } = recentSearch.queryParams || {} as QueryParams;
 
     const queryParams = {
       q: text,
-      f: filters.length > 0 ? JSON.stringify(filters) : undefined
+      f: filters.length > 0 ? JSON.stringify(filters) : undefined,
+      t: tab,
+      p: page
     };
-
-    this.router.navigate([recentSearch.queryParams?.path], { queryParams });
+    this.queryParamsStore.setFromUrl(recentSearch.url);
+    this.router.navigate([recentSearch.url], { queryParams });
   }
 
   /**
