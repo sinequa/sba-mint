@@ -1,8 +1,8 @@
 import { NgClass } from '@angular/common';
-import { Component, HostBinding, Injector, OnDestroy, effect, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
-import { Subscription, lastValueFrom, map, switchMap, take, tap } from 'rxjs';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
 import { Aggregation, Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
@@ -12,13 +12,12 @@ import { ArticleDefaultComponent } from '@/app/components/article/default/articl
 import { DidYouMeanComponent } from '@/app/components/did-you-mean/did-you-mean.component';
 import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
 import { FiltersComponent } from '@/app/components/filters/filters.component';
-import { PageConfiguration, PagerComponent } from '@/app/components/pagination/pager.component';
+import { PagerComponent } from '@/app/components/pagination/pager.component';
 import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
 import { InfinityScrollDirective, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
-import { NavigationService, SearchService } from '@/app/services';
-import { AggregationsStore, QueryParamsStore, searchInputStore } from '@/app/stores';
+import { SearchService } from '@/app/services';
+import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@/app/stores';
 import { Article } from "@/app/types/articles";
-import { buildFirstPageQuery } from '@/app/utils';
 
 
 type R = Result & { nextPage?: number, previousPage?: number };
@@ -55,29 +54,47 @@ export class SearchAllComponent implements OnDestroy {
   readonly result = signal<Result | undefined>(undefined);
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
-  protected readonly pageConfiguration = signal<PageConfiguration>({ page: 1, rowCount: 0, pageSize: 10 });
 
-  private readonly navigationService = inject(NavigationService);
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly userSettingsStore = inject(UserSettingsStore);
 
   protected aggregations: Aggregation[];
 
   private readonly sub = new Subscription();
 
+  // track the query params store changes
+  keys = computed(() =>
+    {
+      const state = getState(this.queryParamsStore)
+      const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
+      return r;
+    });
 
   // tanstack query
-  queryClient = injectQueryClient();
   query = injectInfiniteQuery<R>(() => ({
-    queryKey: ["search-all", getState(this.queryParamsStore)],
-    queryFn: ({ pageParam }) => {
-      const query = { ...this.searchService.getQuery(), page: pageParam } as Query;
+    queryKey: ["search-all", this.keys()],
+    queryFn: ({pageParam}) => {
+
+      const q = this.searchService.getQuery();
+      const query = {...q, page: pageParam} as Query;
+
       return lastValueFrom(this.queryService.search(query).pipe(
+        tap(() => this.queryText.set(this.keys().text ?? '')),
         tap(result => this.result.set(result)),
-        tap(() => this.queryText.set(searchInputStore.state ?? '')),
+        tap(result => {
+          // Update the aggregations store with the new aggregations
+          this.aggregationsStore.update(result.aggregations);
+
+          const queryParams = getState(this.queryParamsStore);
+          // Add the current search to the user settings only if there is a text query
+          if(queryParams.text) {
+            this.userSettingsStore.addCurrentSearch(queryParams);
+          }
+        }),
         map(result => {
           result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
           return result;
@@ -93,22 +110,9 @@ export class SearchAllComponent implements OnDestroy {
     getNextPageParam: (lastPage) => (lastPage.nextPage ?? undefined),
   }));
 
-  constructor(private readonly injector: Injector) {
+  constructor() {
     this.sub.add(
       this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
-    );
-
-    // Once the navigation ends, we fetch the "first page" of results but only once
-    this.sub.add(
-      this.navigationService.navigationEnd$
-        .pipe(
-          take(1),
-          switchMap(() => this.queryService.search(runInInjectionContext(this.injector, () => buildFirstPageQuery({ text: searchInputStore.state }))))
-        )
-        .subscribe((firstPageResult: Result) => {
-          this.aggregations = firstPageResult.aggregations;
-          this.aggregationsStore.update(firstPageResult.aggregations);
-        })
     );
 
     // Trigger skeleton on search whether from input or from filters

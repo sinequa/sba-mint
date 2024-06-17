@@ -22,7 +22,7 @@ export const QueryParamsStore = signalStore(
     setFromUrl(url: string) {
       const path = url.split('?')[0];
 
-      const { q: text, f, id, p, s: sort, c } = queryParamsFromUrl(url);
+      const { q: text, f, id, p, s: sort, c, t: tab } = queryParamsFromUrl(url);
       const filters = f ? JSON.parse(decodeURIComponent(f)) : [];
       const spellingCorrectionMode = c as SpellingCorrectionMode;
 
@@ -32,7 +32,7 @@ export const QueryParamsStore = signalStore(
       }
 
       patchState(store, (state) => {
-        return { ...state, path, text, filters, id, page, sort, spellingCorrectionMode };
+        return { ...state, path, text, filters, id, page, sort, spellingCorrectionMode, tab };
       })
     },
     updateFilter(filter: Filter) {

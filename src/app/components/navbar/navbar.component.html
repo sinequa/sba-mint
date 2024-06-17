@@ -25,7 +25,7 @@
           <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
-          <div dropdown-content class="absolute min-w-[360px] max-w-md dropdown-content">
+          <div dropdown-content class="absolute w-[380px] max-w-md dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
         </sq-dropdown>
@@ -51,7 +51,7 @@
       <button
         class="capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
         (click)="changeTab(tab)"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.routerLink"
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.label"
         [attr.aria-label]="tab.label"
         >
         <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>

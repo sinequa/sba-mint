@@ -2,11 +2,9 @@ import { FALLBACK_SEARCH_ROUTE, isASearchRoute } from '@/app/app.routes';
 import { NavigationService } from '@/app/services/navigation.service';
 import { SavedSearchesService } from '@/app/services/saved-searches.service';
 import { SearchService } from '@/app/services/search.service';
-import { searchInputStore } from '@/app/stores/search-input.store';
 import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
 import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
 import { QueryParamsStore } from '@/app/stores/query-params.store';
@@ -19,6 +17,7 @@ import { BookmarksComponent } from '../widgets/bookmarks/bookmarks.component';
 import { RecentSearchesComponent } from '../widgets/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '../widgets/saved-searches/saved-searches.component';
 import { UserMenuComponent } from './components/user-menu';
+import { Subscription } from 'rxjs';
 
 type NavbarMenu = {
   label: string;
@@ -30,14 +29,15 @@ type NavbarTab = {
   label: string;
   iconClass: string;
   routerLink: string;
+  queryName?: string;
 }
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
-    imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent]
+  selector: 'app-navbar',
+  standalone: true,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
+  imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent]
 })
 export class NavbarComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -53,11 +53,6 @@ export class NavbarComponent implements OnDestroy {
     { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
   ];
 
-  // TODO: ici on peut faire quelque chose avec les "tabs" des "queries" définis dans l'admin
-  protected readonly tabs: NavbarTab[] = [
-    { label: 'all results', routerLink: '/search/all', iconClass: 'far fa-globe' }
-  ];
-
   protected readonly navigationService = inject(NavigationService);
 
   private readonly router = inject(Router);
@@ -69,15 +64,19 @@ export class NavbarComponent implements OnDestroy {
 
   private readonly sub = new Subscription();
 
+  // create tabs from the search routes
+  protected readonly tabs: NavbarTab[] = this.router.config.find(item => item.path === "search")?.children?.filter(c => c.path !== "**")
+    .map(child => ({
+      label: child.path,
+      routerLink: `search/${child.path}/`,
+      iconClass: child.data?.['iconClass'],
+      queryName: child.data?.['queryName']
+    }) as NavbarTab) ?? [];
+
+
   constructor() {
     this.sub.add(
       this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
-    );
-
-    this.sub.add(
-      searchInputStore.next$.subscribe(text => {
-        this.searchInput.setInput(text);
-      })
     );
   }
 
@@ -99,16 +98,16 @@ export class NavbarComponent implements OnDestroy {
   protected search(text: string): void {
     const commands = isASearchRoute(this.router.url) ? [] : [FALLBACK_SEARCH_ROUTE];
 
-    searchInputStore.set(text);
+    this.queryParamsStore.patch({ text });
 
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.router.navigate(commands, { queryParams: { q: searchInputStore.state, p: undefined }, queryParamsHandling: 'merge' });
+    this.router.navigate(commands, { queryParams: { q: text, p: undefined }, queryParamsHandling: 'merge' });
   }
 
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.queryParamsStore.patch({ page: undefined });
+    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.label, filters: undefined, sort: undefined, id: undefined });
     this.searchService.search([tab.routerLink]);
   }
 

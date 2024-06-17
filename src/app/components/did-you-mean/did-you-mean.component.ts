@@ -1,7 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Result } from '@sinequa/atomic';
-import { QueryParamsStore, searchInputStore } from '../../stores';
+import { QueryParamsStore } from '../../stores';
 
 @Component({
   selector: 'app-did-you-mean',
@@ -25,8 +25,7 @@ export class DidYouMeanComponent {
   private readonly queryParamsStore = inject(QueryParamsStore);
 
   selectCorrected(): void {
-    this.queryParamsStore.patch({spellingCorrectionMode: "dymonly"});
-    searchInputStore.set(this.correction()!);
+    this.queryParamsStore.patch({spellingCorrectionMode: "dymonly", text: this.correction()!});
     this.router.navigate([], { queryParamsHandling: 'merge', queryParams: {c: "dymonly", q: this.correction() } })
   }
 

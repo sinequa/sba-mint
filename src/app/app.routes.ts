@@ -3,19 +3,20 @@ import { ActivatedRoute, Routes } from '@angular/router';
 
 import { AuthGuard } from '@sinequa/atomic-angular';
 
+import { LoginComponent } from './components/login/login.component';
 import { InitializationGuard } from './guards/initializationGuard';
 import { LoadingComponent } from './guards/loading.component';
 import { HomeComponent } from './pages/home/home.component';
-import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 import { queryNameResolver } from './resolvers/query-name-resolver';
 
 export const routes: Routes = [
   { path: 'login', component: LoadingComponent },
+  { path: 'logout', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   {
     path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], children: [
-      { path: 'all', component: SearchAllComponent, resolve: { queryName: queryNameResolver } },
+      { path: 'all', component: LoadingComponent, resolve: { queryName: queryNameResolver } },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },

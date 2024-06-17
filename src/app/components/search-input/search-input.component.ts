@@ -3,11 +3,11 @@ import { NgClass } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { getState } from '@ngrx/signals';
 import { Subscription, debounceTime, filter } from 'rxjs';
 
 import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { AppStore } from '@/app/stores';
-import { DrawerStackService } from '../drawer-stack/drawer-stack.service';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -19,7 +19,7 @@ const DEBOUNCE_DELAY = 300;
   styleUrl: './search-input.component.scss'
 })
 export class SearchInputComponent implements OnDestroy {
-  @Output() public readonly updated = new EventEmitter<string>();
+
   @Output() public readonly debounced = new EventEmitter<string>();
   @Output() public readonly validated = new EventEmitter<string>();
   @Output() public readonly saved = new EventEmitter<void>();
@@ -33,18 +33,20 @@ export class SearchInputComponent implements OnDestroy {
   protected oldInput: string = this.input();
 
   protected readonly autocompleteService = inject(AutocompleteService);
-  private readonly drawerStack = inject(DrawerStackService);
   private readonly customization = inject(AppStore).customizationJson;
+  protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly allowChatDrawer = computed(() => this.customization().features?.allowChatDrawer);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   private readonly _subscription = new Subscription();
 
   constructor(public readonly el: ElementRef) {
+
     effect(() => {
-      if (this.input() !== undefined)
-        this.updated.emit(this.input());
-    });
+      const { text } = getState(this.queryParamsStore);
+      this.setInput(text);
+    }, { allowSignalWrites: true })
+
 
     this._subscription.add(
       toObservable(this.input)

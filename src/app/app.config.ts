@@ -9,9 +9,7 @@ import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experi
 import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 
 import { routes } from '@/app/app.routes';
-import { SearchInputService } from './components/search-input/search-input.service';
-import { QueryParamsService } from './services';
-import { eagerProvider, queryNameInterceptorFn, toastInterceptorFn } from './utils';
+import { queryNameInterceptorFn, toastInterceptorFn } from './utils';
 
 
 
@@ -54,8 +52,6 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS},
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    eagerProvider(QueryParamsService),
-    eagerProvider(SearchInputService),
     provideHttpClient(withInterceptors([
       bodyInterceptorFn,
       authInterceptorFn,

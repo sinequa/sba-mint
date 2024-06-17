@@ -55,7 +55,7 @@ export class UserMenuComponent {
   }
 
   handleLogout() {
-    logout().then(() => this.router.navigate(['/login']));
+    logout().then(() => this.router.navigate(['/logout']));
   }
 
   handleOverride() {

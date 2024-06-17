@@ -2,6 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { NavigationEnd, Router, RouterEvent } from "@angular/router";
 import { filter, map, shareReplay } from "rxjs";
 
+import { getQueryParamsFromUrl } from "../utils";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,6 +18,11 @@ export class NavigationService {
 
   public path$ = this.navigationEnd$.pipe(
     // create a fake URL object to extract the pathname
-    map((event: RouterEvent) => new URL(`http://localhost${event.url}`).pathname)
+    map((event: RouterEvent) => {
+      const url = new URL(`http://localhost${event.url}`)
+      // extract the tab from the URL pathname or use the last part of the URL
+      const { tab = url.pathname.split('/').pop() } = getQueryParamsFromUrl(event.url) || {};
+      return tab;
+    })
   );
 }

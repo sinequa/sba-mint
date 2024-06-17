@@ -1,15 +1,26 @@
 import { assertInInjectionContext, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Query } from '@sinequa/atomic';
+import { getQueryParamsFromUrl } from './query-params';
 
 export function getQueryNameFromRoute(): string | undefined {
   assertInInjectionContext(getQueryNameFromRoute);
 
   const route = inject(ActivatedRoute);
+  const routes = inject(Router)
 
   const recursive = (route: ActivatedRoute): string | undefined => {
     if (route?.firstChild) return recursive(route.firstChild);
+
+    // Get query name from route data
+    const { t } = route.snapshot.queryParams;
+    // ! This is a workaround for the case where the queryName is not defined in the route data
+    // "search" is the parent route of the search results, and "t" is the query parameter for the tab
+    const { queryName } = routes.config.filter(p => p.path === "search")[0].children?.find(route => route.path === t)?.data || {};
+    if (queryName) return queryName;
+
+    // fallback to queryName from route data
     if (route?.snapshot.data['queryName']) return route.snapshot.data['queryName'];
 
     return undefined;
@@ -73,6 +84,12 @@ export function getQueryPageFromUrl(url: string): number {
   return parseInt(page, 10);
 }
 
+export function getQueryTabFromUrl(url: string): string {
+  const { t: tab } = queryParamsFromUrl(url);
+
+  return tab;
+}
+
 /**
  * Builds a query object based on the provided partial query.
  * If any properties are missing in the partial query, default values are used.
@@ -83,20 +100,14 @@ export function getQueryPageFromUrl(url: string): number {
 export function buildQuery(query?: Partial<Query>): Query {
   assertInInjectionContext(buildQuery);
 
-  const name = query?.name || getQueryNameFromRoute() || '_query';
-  const text = query?.text || getQueryTextFromUrl(window.location.toString());
-  const filters = query?.filters;
-  const page = query?.page || getQueryPageFromUrl(window.location.toString());
-  const sort = query?.sort;
-
-  return ({
+  const name = query?.name || getQueryNameFromRoute();
+  const params = getQueryParamsFromUrl(window.location.toString());
+  return  ({
+    ...params,
     ...query,
     name,
-    text,
-    filters,
-    page: page > 0 ? page : undefined,
-    sort
-  });
+  } as Query)
+
 }
 
 /**

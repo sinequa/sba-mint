@@ -8,7 +8,7 @@ import { QueryService } from '@sinequa/atomic-angular';
 import { PreviewDefaultComponent } from '@/app/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/app/components/preview/slide/preview-slide.component';
 import { ExtractsLocationService, PreviewService } from '@/app/services/preview';
-import { AppStore, searchInputStore } from '@/app/stores';
+import { AppStore, QueryParamsStore } from '@/app/stores';
 import { Article } from '@/app/types';
 import { articleTypesMap, getTypeMapForArticleSTab } from '@/app/utils';
 import { DrawerComponent } from '../../drawer.component';
@@ -38,8 +38,11 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
   styleUrls: ['../../drawer.component.scss', './preview.component.scss']
 })
 export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
+  queryParamsStore = inject(QueryParamsStore);
+  queryText = computed(() => getState(this.queryParamsStore).text ?? '');
+
   public readonly articleId = input.required<string>();
-  public readonly text = new BehaviorSubject<string>(searchInputStore.state ?? '');
+  public readonly text = new BehaviorSubject<string>(this.queryText());
 
   public readonly previewData$ = combineLatest([toObservable(this.articleId), this.text])
     .pipe(

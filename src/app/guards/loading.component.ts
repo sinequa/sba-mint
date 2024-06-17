@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
-import { ApplicationStore } from "../stores";
+import { ApplicationStore, QueryParamsStore } from "../stores";
 
 @Component({
   selector: "app-wait",
@@ -10,7 +10,7 @@ import { ApplicationStore } from "../stores";
 <div class="flex h-[100dvh] w-full items-center justify-center">
   <div class="flex flex-col items-center space-y-4">
      <span class="loader"></span>
-    <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Loading...</p>
+    <p class="text-lg font-medium text-neutral-500 dark:text-neutral-400">Loading...</p>
   </div>
 </div>
 `,
@@ -24,7 +24,7 @@ import { ApplicationStore } from "../stores";
   border-radius: 50%;
   width: var(--w);
   height: var(--h);
-  color: #0040bf;
+  color: #0040bf; /* Sinequa blue */
 }
 .loader:before,
 .loader:after {
@@ -40,7 +40,7 @@ import { ApplicationStore } from "../stores";
     animation: 1s spin linear infinite;
   }
   .loader:after {
-    color: #FF3D00;
+    color: #FF854a; /* Sinequa orange */
     transform: rotateY(70deg);
     animation-delay: .4s;
   }
@@ -94,6 +94,7 @@ import { ApplicationStore } from "../stores";
 })
 export class LoadingComponent {
   application = inject(ApplicationStore);
+  queryParamsStore = inject(QueryParamsStore);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -109,6 +110,10 @@ export class LoadingComponent {
         setTimeout(() => {
           const url = this.route.snapshot.queryParams['returnUrl'] || null;
           this.router.navigateByUrl(url);
+
+          // ! we need to set the query params from the url once only
+          this.queryParamsStore.setFromUrl(url);
+
         }, 700);
       }
     })
