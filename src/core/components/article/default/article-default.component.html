@@ -1,0 +1,44 @@
+<article class="article group/article" [class.selected]="selected()">
+  <section class="shrink-0">
+    <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
+      <app-source-icon [collection]="article().collection" class="text-lg max-w-7" />
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-2 overflow-auto">
+    <header>
+      <div class="flex gap-2 items-baseline">
+        <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
+        @if (showBookmark()) {
+          <app-bookmark-button [article]="article()" />
+        }
+      </div>
+
+      <section class="flex gap-1 items-center">
+        @if (docformatMetadata()) {
+        <div class="pill pill-xs border-neutral-600 hover:bg-neutral-600 hover:text-white font-bold uppercase">
+          {{ docformatMetadata() }}
+        </div>
+        }
+
+        <div class="flex gap-1 divide-x-slash divide-xs">
+          @if ((article().authors || { authors: ['']}).length > 0) {
+          <span>{{ article().authors[0] }}</span>
+          }
+
+          @if (article().modified) {
+          <p class="flex gap-1 items-baseline">
+            <i class="fa-fw far fa-calendar-day"></i>
+            <span class="w-max">{{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}</span>
+          </p>
+          }
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <p class="line-clamp-2" [innerHTML]="extract()"></p>
+    </main>
+
+  </section>
+</article>

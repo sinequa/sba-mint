@@ -1,0 +1,82 @@
+<menu
+  class="flex items-center p-4 grow justify-between gap-2 *:*:font-semibold btn-sm"
+>
+  <li>
+    <button
+      class="btn btn-ghost flex items-center gap-2"
+      (click)="drawerStack.close()"
+    >
+      <i class="fa-fw far fa-arrow-left"></i>
+      Back
+    </button>
+  </li>
+
+  <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
+
+  @if (navConfig.showOpenButton) {
+  <li>
+    <button
+      class="btn btn-ghost flex items-center gap-2"
+      [disabled]="!hasExternalLink()"
+      (click)="openClicked()"
+    >
+      <i class="fa-fw far fa-arrow-up-right-from-square"></i>
+      Open
+    </button>
+  </li>
+
+  <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
+  } @if (canBookmark()) {
+  <li>
+    <app-bookmark-button class="btn btn-ghost" [article]="article()!" />
+  </li>
+  }
+
+  <li>
+    <button
+      class="btn btn-ghost"
+      [title]="!copied ? 'Copy link' : 'Successfully copied'"
+    >
+      <i
+        class="fa-fw far"
+        [class.fa-link]="!copied"
+        [class.fa-circle-check]="copied"
+        (click)="copyLink()"
+      ></i>
+    </button>
+  </li>
+
+  <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
+
+  <li>
+    <button class="btn btn-ghost" title="Previous result">
+      <i class="fa-fw far fa-chevron-up"></i>
+    </button>
+  </li>
+
+  <li class="me-auto">
+    <button class="btn btn-ghost" title="Next result">
+      <i class="fa-fw far fa-chevron-down"></i>
+    </button>
+  </li>
+
+  @if (navConfig.showSearchButton) {
+  <li>
+    <button
+      [ngClass]="
+        cn(
+          'btn flex gap-2 items-center text-nowrap',
+          isExtended() ? 'btn-secondary' : 'btn-primary'
+        )
+      "
+      (click)="drawerStack.extend()"
+    >
+      @if (isExtended()) {
+      <i class="fa-fw far fa-eye-slash"></i>
+      Hide search } @else {
+      <i class="fa-fw far fa-eye"></i>
+      Search in document }
+    </button>
+  </li>
+  }
+</menu>
