@@ -8,8 +8,9 @@ import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experi
 
 import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 
+import { toastInterceptorFn } from '@sinequa/atomic-angular';
+
 import { routes } from '@/app/app.routes';
-import { queryNameInterceptorFn, toastInterceptorFn } from './utils';
 
 
 
@@ -57,7 +58,6 @@ export const appConfig: ApplicationConfig = {
       authInterceptorFn,
       auditInterceptorFn,
       errorInterceptorFn,
-      queryNameInterceptorFn,
       toastInterceptorFn
     ])),
     provideAngularQuery(new QueryClient({

@@ -4,15 +4,16 @@ import { Router, RouterOutlet } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { login } from '@sinequa/atomic';
+import { CCApp, login } from '@sinequa/atomic';
 import { AuthGuard } from '@sinequa/atomic-angular';
 
-import { ApplicationService, NavigationService } from '@/app/services';
-import { AppStore, ApplicationStore, PrincipalStore, QueryParamsStore } from '@/app/stores';
+import { DrawerStackComponent } from '@/core/components/drawer-stack/drawer-stack.component';
+import { BackdropComponent } from '@/core/components/drawer/components/backdrop/backdrop.component';
 
-import { DrawerStackComponent } from './components/drawer-stack/drawer-stack.component';
-import { BackdropComponent } from './components/drawer/components/backdrop/backdrop.component';
-import { InitializationGuard } from './guards/initializationGuard';
+import { InitializationGuard } from '@sinequa/atomic-angular';
+import { ApplicationService, NavigationService } from '@sinequa/atomic-angular';
+import { AppStore, ApplicationStore, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
+
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
@@ -20,8 +21,7 @@ import { SearchComponent } from './pages/search/search.component';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   appService = inject(ApplicationService);
@@ -57,7 +57,7 @@ export class AppComponent {
    */
   private createRoutes() {
     // Now we can create the dynamic routes based on the Queries's tabs
-    const { queries } = getState(this.appStore);
+    const { queries } = getState(this.appStore) as CCApp;
     const array = Object.entries(queries).map(([key, value]) => ({ key, ...value }));
 
     // We need to create a route for each tab in each query

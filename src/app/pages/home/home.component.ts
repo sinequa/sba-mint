@@ -1,21 +1,20 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 
 import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
 
-import { ApplicationsComponent } from '@/app/components/applications/applications.component';
-import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { AutocompleteComponent, Suggestion } from '@/app/components/search-input/components/autocomplete/autocomplete.component';
-import { SearchInputComponent } from '@/app/components/search-input/search-input.component';
-import { BookmarksComponent } from '@/app/components/widgets/bookmarks/bookmarks.component';
-import { RecentSearchesComponent } from '@/app/components/widgets/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/app/components/widgets/saved-searches/saved-searches.component';
-import { AutocompleteService } from '@/app/services/autocomplete.service';
-import { AppStore, QueryParamsStore } from '@/app/stores';
-import { Features, UserFeatures } from '@/app/types';
+import { RecentSearchesComponent } from '@/core/components/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/core/components/saved-searches/saved-searches.component';
+import { BookmarksComponent } from '@/core/components/bookmarks/bookmarks.component';
+import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
+import { AutocompleteComponent, Suggestion } from '@/core/components/autocomplete/autocomplete.component';
+
+import { AutocompleteService } from '@sinequa/atomic-angular';
+import { AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
+import { DrawerStackService } from '@sinequa/atomic-angular';
+
 
 type HomeTab = {
   name: string;
@@ -25,7 +24,7 @@ type HomeTab = {
   disabled?: boolean;
 }
 
-const homeFeatures = [
+const homeFeatures: HomeTab[] = [
   {
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
@@ -43,23 +42,17 @@ const homeFeatures = [
     iconClass: 'fa-regular fa-bookmark',
     label: 'My bookmark',
     component: BookmarksComponent
-  },
-  {
-    name: 'applications',
-    iconClass: 'fa-regular fa-grid-round-2',
-    label: 'Applications',
-    component: ApplicationsComponent
   }
 ];
-
-type FeaturesKeys = keyof UserFeatures | Features;
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, HttpClientModule, AutocompleteComponent]
+  host: {
+    "class": "layout-search h-screen"
+  },
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, AutocompleteComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
@@ -68,16 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly searchText = signal<string>('');
 
-  readonly tabs = computed(() => {
-    const customJson = this.appStore.customizationJson();
-    const features = { ...customJson?.userFeatures || this.defaultUserFeatures, ...customJson?.features, ...{ applications: false } };
-    const enabledFeatures = homeFeatures.reduce((acc, feature) => {
-      // add only if the feature is declared and set to true in the json
-      if (feature.name in features && features[feature.name as keyof FeaturesKeys] === true) acc.push(feature);
-      return acc;
-    }, [] as HomeTab[]);
-    return enabledFeatures;
-  });
+  readonly tabs = signal(homeFeatures);
 
   readonly selectedTabId = signal(0);
 
@@ -90,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly sub = new Subscription();
 
-  defaultUserFeatures: UserFeatures = {
+  defaultUserFeatures = {
     bookmarks: true,
     recentSearches: true,
     savedSearches: true,

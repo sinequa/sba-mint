@@ -4,20 +4,18 @@ import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
-import { Aggregation, Query, Result } from '@sinequa/atomic';
+import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
+import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
+import { FiltersComponent } from '@/core/components/filters/filters.component';
+import { SortSelectorComponent, SortingChoice } from '@/core/components/sort-selector/sort-selector.component';
+import { InfinityScrollDirective, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@sinequa/atomic-angular';
+import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
 import { QueryService } from '@sinequa/atomic-angular';
+import { DidYouMeanComponent } from '@/core/components/did-you-mean/did-you-mean.component';
+import { SearchService } from '@sinequa/atomic-angular';
+import { DrawerStackService } from '@sinequa/atomic-angular';
+import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
 
-import { ArticleDefaultSkeletonComponent } from '@/app/components/article/default-skeleton/article-default-skeleton.component';
-import { ArticleDefaultComponent } from '@/app/components/article/default/article-default.component';
-import { DidYouMeanComponent } from '@/app/components/did-you-mean/did-you-mean.component';
-import { DrawerStackService } from '@/app/components/drawer-stack/drawer-stack.service';
-import { FiltersComponent } from '@/app/components/filters/filters.component';
-import { PagerComponent } from '@/app/components/pagination/pager.component';
-import { SortSelectorComponent, SortingChoice } from '@/app/components/sort-selector/sort-selector.component';
-import { InfinityScrollDirective, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@/app/directives';
-import { SearchService } from '@/app/services';
-import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@/app/stores';
-import { Article } from "@/app/types/articles";
 
 
 type R = Result & { nextPage?: number, previousPage?: number };
@@ -31,13 +29,15 @@ type R = Result & { nextPage?: number, previousPage?: number };
     FiltersComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
-    PagerComponent,
     SortSelectorComponent,
     DidYouMeanComponent,
     InfinityScrollDirective
   ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
+  host: {
+    class: 'layout-search overflow-auto h-full'
+  },
   hostDirectives: [{
     directive: SelectArticleFromQueryParamsDirective,
     inputs: ['articleId: id', 'aggregations']
