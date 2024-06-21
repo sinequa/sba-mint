@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Sinequa>
+    <ZipFile>sba-mint</ZipFile>
+    <Title>Mint Angular Workspace</Title>
+    <Description>This is the Mint SBA workspace for Sinequa ES.</Description>
     <AlphaBetaOnly>alpha</AlphaBetaOnly>
 </Sinequa>
