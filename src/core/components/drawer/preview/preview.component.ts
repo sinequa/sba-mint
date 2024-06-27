@@ -11,8 +11,8 @@ import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore } f
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
-import { DrawerComponent } from '../../drawer.component';
-import { DrawerService } from '../../drawer.service';
+import { DrawerComponent } from '../drawer.component';
+import { DrawerService } from '../drawer.service';
 import { AdvancedSearchComponent } from '../advanced-search/advanced-search.component';
 
 const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
@@ -41,7 +41,7 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
   ],
   providers: [DrawerService, PreviewService, ExtractsLocationService],
   templateUrl: './preview.component.html',
-  styleUrls: ['../../drawer.component.scss']
+  styleUrls: ['../drawer.component.scss']
 })
 export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
   queryParamsStore = inject(QueryParamsStore);

@@ -6,12 +6,12 @@ import { Subscription } from 'rxjs';
 import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, Filter, FilterDropdown, QueryParamsStore, SearchService, buildQuery, getCurrentQueryName } from '@sinequa/atomic-angular';
 
-import { getAuthorizedFilters } from '../../filter';
-import { FILTERS_COUNT } from '../../filters.component';
+import { getAuthorizedFilters } from '../filter';
+import { FILTERS_COUNT } from '../filters.component';
 import { AggregationComponent } from '../aggregation/aggregation.component';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../../i18n/${lang}.json`);
+  acc[lang] = () => import(`../i18n/${lang}.json`);
   return acc;
 }, {} as HashMap<() => Promise<Translation>>);
 

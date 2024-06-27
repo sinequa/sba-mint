@@ -8,7 +8,7 @@ import { combineLatest, map, of, switchMap } from 'rxjs';
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 import { AppStore, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
 
-import { SearchInputComponent } from '../../search-input.component';
+import { SearchInputComponent } from '../search-input.component';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -18,7 +18,7 @@ const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-searc
 const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../../i18n/${lang}.json`);
+  acc[lang] = () => import(`../i18n/${lang}.json`);
   return acc;
 }, {} as HashMap<() => Promise<Translation>>)
 

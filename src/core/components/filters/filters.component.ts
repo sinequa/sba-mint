@@ -9,9 +9,9 @@ import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@s
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, Filter, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { DropdownComponent } from '../dropdown';
-import { AggregationComponent } from './components/aggregation/aggregation.component';
-import { DateFilterComponent } from './components/date-filter/date-filter.component';
-import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
+import { AggregationComponent } from './aggregation/aggregation.component';
+import { DateFilterComponent } from './date-filter/date-filter.component';
+import { MoreFiltersComponent } from './more-filters/more-filters.component';
 import { getAuthorizedFilters } from './filter';
 
 export const FILTERS_COUNT = 4;

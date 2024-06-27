@@ -7,8 +7,8 @@ import { NgxSonnerToaster, toast } from 'ngx-sonner';
 import { CCApp, globalConfig, login } from '@sinequa/atomic';
 import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { DrawerStackComponent } from '@/core/components/drawers/drawer-stack.component';
-import { BackdropComponent } from '@/core/components/drawers/drawer/components/backdrop/backdrop.component';
+import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
+import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
