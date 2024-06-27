@@ -11,6 +11,7 @@ import { SearchInputComponent } from '@/core/components/search-input/search-inpu
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 
 
 type HomeTab = {
@@ -55,6 +56,7 @@ const homeFeatures: HomeTab[] = [
     SearchInputComponent,
     FocusWithArrowKeysDirective,
     AutocompleteComponent,
+    UserMenuComponent,
     TranslocoPipe
   ],
 })
