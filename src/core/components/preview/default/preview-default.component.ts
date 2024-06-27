@@ -1,17 +1,16 @@
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Article, PreviewData } from '@sinequa/atomic';
-import { MetadataComponent, SplitPipe } from '@sinequa/atomic-angular';
-
-import { AppStore } from '@sinequa/atomic-angular';
-import { PreviewService } from '@sinequa/atomic-angular';
+import { AppStore, MetadataComponent, PreviewService, SplitPipe } from '@sinequa/atomic-angular';
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
-import { PreviewActionsComponent } from "../actions/preview-actions";
+import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
+
 
 @Component({
   selector: 'app-preview-default',
@@ -24,7 +23,8 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
     PreviewNavbarComponent,
     MetadataComponent,
     PreviewActionsComponent,
-    SourceIconComponent
+    SourceIconComponent,
+    TranslocoPipe
   ],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property

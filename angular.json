@@ -3,9 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   },
   "projects": {
@@ -42,10 +40,18 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico", "src/assets",
-              { "glob": "**/*.js", "input": "src/assets/", "output": "preview/" }
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*.js",
+                "input": "src/assets/",
+                "output": "preview/"
+              }
             ],
-            "styles": ["src/styles.scss", { "input": "src/assets/preview.css", "inject": false }],
+            "styles": [
+              "src/styles.scss",
+              { "input": "src/assets/preview.css", "inject": false }
+            ],
             "scripts": []
           },
           "configurations": {
@@ -89,12 +95,6 @@
             }
           },
           "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "sinequa-mint:build"
-          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

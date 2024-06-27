@@ -1,17 +1,17 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
 import { AppStore, AutocompleteService, DrawerStackService, FocusWithArrowKeysDirective, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { AutocompleteComponent, Suggestion } from '@/core/components/autocomplete/autocomplete.component';
-import { BookmarksComponent } from '@/core/components/bookmarks/bookmarks.component';
-import { RecentSearchesComponent } from '@/core/components/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/core/components/saved-searches/saved-searches.component';
+import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { UserMenuComponent } from '@/core/components/user-menu/user-menu';
-
+import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
+import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 
 
 type HomeTab = {
@@ -39,18 +39,26 @@ const homeFeatures: HomeTab[] = [
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
     label: 'My bookmark',
-    component: BookmarksComponent
+    component: BookmarksListComponent
   }
 ];
 
 @Component({
-    selector: 'app-home',
-    standalone: true,
-    templateUrl: './home.component.html',
-    host: {
-        "class": "layout-search h-screen"
-    },
-    imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, AutocompleteComponent, UserMenuComponent]
+  selector: 'app-home',
+  standalone: true,
+  templateUrl: './home.component.html',
+  host: {
+    "class": "layout-search h-screen"
+  },
+  imports: [
+    NgClass,
+    NgComponentOutlet,
+    SearchInputComponent,
+    FocusWithArrowKeysDirective,
+    AutocompleteComponent,
+    UserMenuComponent,
+    TranslocoPipe
+  ],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
@@ -77,6 +85,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     recentSearches: true,
     savedSearches: true,
   }
+
+  readonly translateService = inject(TranslocoService);
 
   constructor() {
     // react to tab changes

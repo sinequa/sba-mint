@@ -5,4 +5,20 @@
   grid-template-rows: repeat(2, minmax(0, 1fr));
 
   @apply layout-search;
+
+  #navbar-logo {
+    opacity: 1;
+    transition: 0.2s ease-in;
+  }
+
+  /**
+   * Styles for the navbar logo when the drawer is opened.
+   *
+   * When the `drawer-opened` attribute is set to `true` on the parent element,
+   * the `#navbar-logo` element will have an opacity of 0 and a transition of 0.2s ease-out.
+   */
+  &[drawer-opened="true"] #navbar-logo {
+    opacity: 0;
+    transition: 0.2s ease-out;
+  }
 }
