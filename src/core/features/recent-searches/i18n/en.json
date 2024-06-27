@@ -1,5 +1,5 @@
 {
   "filterCount": "{count} {count, plural, one {filter} other {filters}}",
-  "removeRecentSearches": "Remove recent searches",
+  "removeRecentSearch": "Remove recent search",
   "noRecentSearches": "No recent searches yet"
 }

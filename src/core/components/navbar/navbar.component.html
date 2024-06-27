@@ -50,7 +50,7 @@
     @for (tab of tabs; track $index) {
     <li>
       <button
-        class="capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
+        class="first-letter:capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
         (click)="changeTab(tab)"
         [attr.aria-selected]="(navigationService.path$ | async) === tab.label"
         [attr.aria-label]="tab.label"
