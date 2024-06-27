@@ -1,0 +1,3 @@
+<button [attr.title]="'bookmark.bookmarkDocument' | transloco" (click)="bookmark($event)">
+  <i [ngClass]="cn('fa-fw fa-bookmark', isBookmarked() ? 'fa-solid' : 'fa-regular')"></i>
+</button>

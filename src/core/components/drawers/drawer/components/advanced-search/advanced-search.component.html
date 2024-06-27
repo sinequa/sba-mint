@@ -1,0 +1,137 @@
+@if (article()) {
+  <div class="max-h-screen flex flex-col p-6 gap-4 overflow-auto">
+    <section class="w-full flex flex-col gap-6">
+      <header
+        id="panel-control"
+        class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary"
+      >
+        <div class="bg-neutral-50 grow px-2 flex gap-2 items-center rounded-s rounded-e-none group-hover:bg-white">
+          <input
+            type="search"
+            class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
+            autocomplete="off"
+            spellcheck="false"
+            [attr.placeholder]="'drawers.inputPlaceholder' | transloco"
+            [attr.aria-label]="'drawers.inputPlaceholder' | transloco"
+            [ngModel]="input()"
+            (ngModelChange)="input.set($event)"
+            (keydown.enter)="executeSearch()"
+          />
+
+          @if (input() !== '') {
+            <button
+              [attr.title]="'clear' | transloco"
+              [attr.aria-label]="'clear' | transloco"
+              (click)="clearInput()"
+              (keydown.enter)="clearInput()"
+            >
+              <i class="fa-fw far fa-circle-xmark"></i>
+            </button>
+          }
+        </div>
+
+        <button
+          class="btn btn-primary rounded-s-none rounded-e"
+          [disabled]="input() === '' || null"
+          [attr.title]="'search' | transloco"
+          [attr.aria-label]="'search' | transloco"
+          (click)="executeSearch()"
+        >
+          <i class="fa-fw far fa-magnifying-glass"></i>
+        </button>
+      </header>
+    </section>
+
+    <section class="w-full flex flex-col grow overflow-auto">
+      <ul id="panel-content" class="flex flex-col gap-2">
+        <!-- extracts comes from the HTML document not from the Article object -->
+        @for (extract of extracts(); track $index) {
+          <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
+            <p
+              role="button"
+              [id]="'extract-' + extract.id"
+              [innerHTML]="extract.text"
+              (click)="scrollTo('extractslocations', extract.textIndex, true)"
+            ></p>
+          </li>
+
+          <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
+        }
+
+        @empty {
+          <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
+        }
+      </ul>
+    </section>
+
+    <section>
+      <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
+        <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
+          <p class="flex gap-2 font-semibold items-baseline">
+            <i class="fa-fw far fa-tags"></i>
+            {{ 'labels' | transloco }}
+          </p>
+
+          <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
+        </header>
+
+        <div id="panel-content">
+          <ul class="mt-4 flex flex-col flex-wrap gap-2">
+            <li>
+              <sq-metadata
+                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+                [article]="article()!"
+                [metadata]="labels.public"
+              />
+            </li>
+    
+            <li>
+              <sq-metadata
+                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+                [article]="article()!"
+                [metadata]="labels.private"
+              />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+}
+
+<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
+  <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
+    <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
+      <p class="flex gap-2 font-semibold items-baseline">
+        <i class="fa-fw {{ iconClass }}"></i>
+        {{ name }}
+      </p>
+
+      <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
+    </header>
+
+    <div id="panel-content">
+      <ul id="panel-content" class="p-2">
+        @for (data of metadata; track $index) {
+          <li class="flex justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
+            <p>{{ data.display }}</p>
+
+            <p class="flex items-center gap-2">
+              @if (hovering() === data.value) {
+                <i class="fa-light fa-chevron-left" role="button" (click)="navigatePrev(entity, data)"></i>
+
+                <span>{{ hoverIndex() }} / {{ data.count }}</span>
+
+                <i class="fa-light fa-chevron-right" role="button" (click)="navigateNext(entity, data)"></i>
+              }
+
+              @else {
+                {{ data.count }}
+              }
+            </p>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</ng-template>

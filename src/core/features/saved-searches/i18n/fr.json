@@ -1,0 +1,5 @@
+{
+  "filterCount": "{count} {count, plural, one {filtre} other {filtres}}",
+  "removeSavedSearches": "Supprimer les recherches enregistrées",
+  "noSavedSearches": "Aucune recherche enregistrée"
+}

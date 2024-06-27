@@ -2,7 +2,14 @@
   @for (filter of filterDropdowns(); track filter.aggregation.column) {
     <li class="collapse mb-1 bg-base-200">
       <!-- header -->
-      <input class="w-full" role="button" type="radio" name="more-filters" title="Open {{ filter.label }}" />
+      <input
+        class="w-full"
+        role="button"
+        type="radio"
+        name="more-filters"
+        [attr.title]="'filters.openFilter' | transloco: { filter: filter.label }"
+        [attr.aria-label]="'filters.openFilter' | transloco: { filter: filter.label }"
+      />
 
       <div class="collapse-title dropdown-header p-2 flex gap-1 items-baseline justify-between">
         <!-- aggregation's icon -->
@@ -20,10 +27,11 @@
           }
           @if (hasAppliedFilters()[$index]) {
             <button
-              title="Clear filters"
+              [attr.title]="'filters.clearFilters' | transloco"
+              [attr.aria-label]="'filters.clearFilters' | transloco"
               (click)="clearFilter($index)"
               (keydown.enter)="clearFilter($index)"
-              >
+            >
               <i class="fa-fw far fa-filter-circle-xmark"></i>
             </button>
           }
@@ -31,10 +39,11 @@
           @if (hasFilters()[$index]) {
 
             <button
-              title="Apply filters"
+              [attr.title]="'filtrs.applyFilters' | transloco"
+              [attr.aria-label]="'filters.applyFilters' | transloco"
               (click)="applyFilter($index)"
               (keydown.enter)="applyFilter($index)"
-              >
+            >
               <i class="fa-fw far fa-filter"></i>
             </button>
           }
@@ -42,14 +51,17 @@
       </div>
 
       <!-- content -->
-      <app-aggregation class="collapse-content"
+      <app-aggregation 
+        class="collapse-content"
         [aggregation]="filter.aggregation"
         (onSelect)="updateHasFilters($event, $index)"
         (onLoadMore)="loadMore(filter.aggregation, $index)"
-        />
+      />
     </li>
   }
   @empty {
-    <li class="p-2 text-center">No filters available</li>
+    <li class="p-2 text-center">
+      {{ 'filters.noFiltersAvailable' | transloco }}
+    </li>
   }
 </ul>

@@ -1,13 +1,10 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-
-import { Filter } from '@sinequa/atomic-angular';
-import { QueryParamsStore } from '@sinequa/atomic-angular';
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService } from '@sinequa/atomic-angular';
-import { buildQuery } from '@sinequa/atomic-angular';
+import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, Filter, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
 import { AggregationRowComponent } from "./components/aggregation-row.component";
 
@@ -16,20 +13,26 @@ export type AggregationTitle = {
   icon?: string;
 };
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-aggregation',
   standalone: true,
   templateUrl: './aggregation.component.html',
   styles: [`
-  :host {
-    display: block;
-  }
+    :host {
+      display: block;
+    }
 
-  fieldset {
-    scrollbar-width: thin;
-  }
-`],
-  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent]
+    fieldset {
+      scrollbar-width: thin;
+    }
+  `],
+  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, TranslocoPipe],
+  providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class AggregationComponent implements OnInit {
   @Output() public readonly onLoadMore = new EventEmitter<void>();

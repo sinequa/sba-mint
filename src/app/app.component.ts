@@ -5,15 +5,10 @@ import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { CCApp, login } from '@sinequa/atomic';
-import { AuthGuard } from '@sinequa/atomic-angular';
+import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { DrawerStackComponent } from '@/core/components/drawer-stack/drawer-stack.component';
-import { BackdropComponent } from '@/core/components/drawer/components/backdrop/backdrop.component';
-
-import { InitializationGuard } from '@sinequa/atomic-angular';
-import { ApplicationService, NavigationService } from '@sinequa/atomic-angular';
-import { AppStore, ApplicationStore, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
-
+import { DrawerStackComponent } from '@/core/components/drawers/drawer-stack.component';
+import { BackdropComponent } from '@/core/components/drawers/drawer/components/backdrop/backdrop.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
@@ -62,7 +57,7 @@ export class AppComponent {
 
     // We need to create a route for each tab in each query
     // if a query has no tabs, we create a route with the query name as the tab name
-    const tabs = array.map(item => ({ tabs: item.tabSearch.tabs || [{name: item.name}], queryName: item.name }));
+    const tabs = array.map(item => ({ tabs: item.tabSearch.tabs || [{ name: item.name }], queryName: item.name }));
 
     // We need to remove the current search route from the router config
     // the route exists in the router config because it was created in the app-routing.module.ts and we need it
