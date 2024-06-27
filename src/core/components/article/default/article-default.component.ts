@@ -1,14 +1,12 @@
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
-
-import { MetadataComponent } from '@sinequa/atomic-angular';
-import { SelectArticleOnClickDirective, SelectionStrategy, ShowBookmarkDirective } from '@sinequa/atomic-angular';
-import { AppStore, SelectionStore } from '@sinequa/atomic-angular';
-
 import { StopPropagationDirective } from 'toolkit';
-import { BookmarkButtonComponent } from '../../bookmark/bookmark-button.component';
+
 import { Article } from '@sinequa/atomic';
+import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, SelectionStrategy, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 type Tab = 'attachments' | 'similars';
@@ -18,7 +16,16 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'app-article-default',
   standalone: true,
-  imports: [NgClass, AsyncPipe, DatePipe, SelectArticleOnClickDirective, StopPropagationDirective, MetadataComponent, BookmarkButtonComponent, SourceIconComponent],
+  imports: [
+    NgClass,
+    AsyncPipe,
+    DatePipe,
+    SelectArticleOnClickDirective,
+    StopPropagationDirective,
+    MetadataComponent,
+    BookmarkButtonComponent,
+    SourceIconComponent
+  ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{

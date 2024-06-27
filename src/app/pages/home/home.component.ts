@@ -1,19 +1,16 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
-import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, DrawerStackService, FocusWithArrowKeysDirective, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { RecentSearchesComponent } from '@/core/components/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/core/components/saved-searches/saved-searches.component';
-import { BookmarksComponent } from '@/core/components/bookmarks/bookmarks.component';
+import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { AutocompleteComponent, Suggestion } from '@/core/components/autocomplete/autocomplete.component';
-
-import { AutocompleteService } from '@sinequa/atomic-angular';
-import { AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '@sinequa/atomic-angular';
+import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
+import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
 
 
 type HomeTab = {
@@ -41,7 +38,7 @@ const homeFeatures: HomeTab[] = [
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
     label: 'My bookmark',
-    component: BookmarksComponent
+    component: BookmarksListComponent
   }
 ];
 
@@ -52,7 +49,14 @@ const homeFeatures: HomeTab[] = [
   host: {
     "class": "layout-search h-screen"
   },
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, AutocompleteComponent]
+  imports: [
+    NgClass,
+    NgComponentOutlet,
+    SearchInputComponent,
+    FocusWithArrowKeysDirective,
+    AutocompleteComponent,
+    TranslocoPipe
+  ],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
@@ -79,6 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     recentSearches: true,
     savedSearches: true,
   }
+
+  readonly translateService = inject(TranslocoService);
 
   constructor() {
     // react to tab changes

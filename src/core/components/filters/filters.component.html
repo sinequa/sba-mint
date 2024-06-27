@@ -4,10 +4,10 @@
     <li>
       <button
         class="btn bg-alert/10 text-alert"
-        title="Clear all filters"
+        [attr.title]="'filters.clearAllFilters' | transloco"
+        [attr.aria-label]="'filters.clearAllFilters' | transloco"
         (click)="clearFilters()"
         (keydown.enter)="clearFilters()"
-        aria-label="Clear all filters"
         >
         <i class="fa-fw far fa-trash-can " aria-hidden="true"></i>
       </button>
@@ -23,7 +23,8 @@
           'btn font-semibold gap-1',
           dateFilterDropdown()?.currentFilter ? 'btn-primary' : 'btn-tertiary'
           )"
-          aria-label="Date filter"
+          [attr.title]="'filters.dateFilter' | transloco"
+          [attr.aria-label]="'filters.dateFilter' | transloco"
         >
 
         @if (dateFilterDropdown()?.icon) {
@@ -63,7 +64,7 @@
           [disabled]="!filterDropdown.aggregation.items || null"
           [attr.aria-disabled]="!filterDropdown.aggregation.items"
           [attr.aria-label]="filterDropdown?.value?.text || filterDropdown.label"
-          >
+        >
 
           @if (filterDropdown.icon) {
             <i class="fa-fw {{ filterDropdown.icon }} " aria-hidden="true"></i>
@@ -101,7 +102,7 @@
       <sq-dropdown class="dropdown-end">
         <button class="btn btn-tertiary font-semibold gap-1 truncate" tabindex="-1" aria-label="more filters">
           <i class="far fa-filters"></i>
-          <span>More filters</span>
+          <span>{{ 'filters.moreFilters' | transloco }}</span>
 
           @if (moreFiltersCount() > 0) {
             <span class="ms-1 size-5 pill pill-xs bg-primary text-white flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>

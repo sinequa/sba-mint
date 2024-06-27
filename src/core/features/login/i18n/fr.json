@@ -1,0 +1,8 @@
+{
+  "forgotYourPassword": "Mot de passe oublié ?",
+  "loginDescription": "Saisissez votre adresse email pour vous connecter",
+  "loginWith": "Se connecter avec { provider }",
+  "or": "Ou",
+  "welcomeBack": "Bienvenue{ name, select, other { , {name}} undefined {}} !",
+  "youAreLoggedIn": "Vous êtes connecté"
+}

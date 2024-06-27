@@ -4,17 +4,14 @@ import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
+import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
+import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, QueryService, SearchService, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective, UserSettingsStore } from '@sinequa/atomic-angular';
+
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
 import { FiltersComponent } from '@/core/components/filters/filters.component';
-import { SortSelectorComponent, SortingChoice } from '@/core/components/sort-selector/sort-selector.component';
-import { InfinityScrollDirective, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective } from '@sinequa/atomic-angular';
-import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
-import { QueryService } from '@sinequa/atomic-angular';
-import { DidYouMeanComponent } from '@/core/components/did-you-mean/did-you-mean.component';
-import { SearchService } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '@sinequa/atomic-angular';
-import { AggregationsStore, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
+import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
 
 
 
@@ -67,20 +64,19 @@ export class SearchAllComponent implements OnDestroy {
   private readonly sub = new Subscription();
 
   // track the query params store changes
-  keys = computed(() =>
-    {
-      const state = getState(this.queryParamsStore)
-      const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
-      return r;
-    });
+  keys = computed(() => {
+    const state = getState(this.queryParamsStore)
+    const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
+    return r;
+  });
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
     queryKey: ["search-all", this.keys()],
-    queryFn: ({pageParam}) => {
+    queryFn: ({ pageParam }) => {
 
       const q = this.searchService.getQuery();
-      const query = {...q, page: pageParam} as Query;
+      const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.queryService.search(query).pipe(
         tap(() => this.queryText.set(this.keys().text ?? '')),
@@ -91,7 +87,7 @@ export class SearchAllComponent implements OnDestroy {
 
           const queryParams = getState(this.queryParamsStore);
           // Add the current search to the user settings only if there is a text query
-          if(queryParams.text) {
+          if (queryParams.text) {
             this.userSettingsStore.addCurrentSearch(queryParams);
           }
         }),

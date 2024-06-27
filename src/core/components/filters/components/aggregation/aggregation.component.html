@@ -14,7 +14,8 @@
         <button
           type="button"
           class="me-2"
-          title="Clear filters"
+          [attr.title]="'filters.clearFilters' | transloco"
+          [attr.aria-label]="'filters.clearFilters' | transloco"
           (click)="clearFilters()"
           (keydown.enter)="clearFilters()"
         >
@@ -25,8 +26,9 @@
       @if (hasFilter()) {
         <button
           type="button"
-          title="Apply filters"
           [ngClass]="{ 'ms-7': !hasFilter() }"
+          [attr.title]="'filters.applyFilters' | transloco"
+          [attr.aria-label]="'filters.applyFilters' | transloco"
           (click)="apply()"
           (keydown.enter)="apply()"
         >
@@ -50,6 +52,12 @@
 
 </fieldset>
 
-@if(aggregation().$hasMore) {
-  <button class="btn btn-tertiary mt-1 w-full flex justify-center" (click)="loadMore()">load more</button>
+@if (aggregation().$hasMore) {
+  <button
+    class="btn btn-tertiary mt-1 w-full flex justify-center"
+    [attr.aria-label]="'loadMore' | transloco"
+    (click)="loadMore()"
+  >
+    {{ 'loadMore' | transloco }}
+  </button>
 }

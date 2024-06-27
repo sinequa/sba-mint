@@ -1,18 +1,14 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
-import { FocusWithArrowKeysDirective, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, Filter, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
-import { CAggregation, CAggregationItem, Filter, FilterDropdown } from '@sinequa/atomic-angular';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@sinequa/atomic-angular';
-import { AggregationsStore, AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
-import { buildQuery } from '@sinequa/atomic-angular';
-
-import { DropdownComponent } from "../dropdown/dropdown";
+import { DropdownComponent } from '../dropdown';
 import { AggregationComponent } from './components/aggregation/aggregation.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { MoreFiltersComponent } from './components/more-filters/more-filters.component';
@@ -23,12 +19,27 @@ export const FILTERS_COUNT = 4;
 const DATE_FILTER_NAME = "#date";
 const DATE_FILTER_COLUMN = "Modified";
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`./i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-filters',
   standalone: true,
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss',
-  imports: [NgClass, AsyncPipe, DateFilterComponent, AggregationComponent, MoreFiltersComponent, FocusWithArrowKeysDirective, DropdownComponent]
+  imports: [
+    NgClass,
+    AsyncPipe,
+    DateFilterComponent,
+    AggregationComponent,
+    MoreFiltersComponent,
+    FocusWithArrowKeysDirective,
+    DropdownComponent,
+    TranslocoPipe
+  ],
+  providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent implements OnInit {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
@@ -96,7 +107,7 @@ export class FiltersComponent implements OnInit {
         if (!aggregation) {
           const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore) as CCApp, this._activatedRoute.snapshot.data['queryName']))
 
-          if(aggColumn) {
+          if (aggColumn) {
             aggregation = aggregations.find(agg => agg.column === aggColumn);
           }
         }
@@ -196,7 +207,7 @@ export class FiltersComponent implements OnInit {
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it:CAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
         });
 
         return [aggregation, display] as [AggregationEx, string];
