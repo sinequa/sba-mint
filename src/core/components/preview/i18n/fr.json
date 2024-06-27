@@ -1,0 +1,13 @@
+{
+  "copyPreviewLink": "Copier le lien de prévisualisation",
+  "previousResult": "Résultat précédent",
+  "nextResult": "Résultat suivant",
+  "hideSearch": "Masquer la recherche",
+  "searchInDocument": "Rechercher dans le document",
+  "linkCopiedToClipboard": "Lien copié dans le presse-papiers",
+  "documentPreview": "Prévisualisation du document",
+  "zoomIn": "Zoomer",
+  "zoomOut": "Dézoomer",
+  "toggleExtracts": "Afficher les extraits",
+  "toggleEntities": "Afficher les entités"
+}

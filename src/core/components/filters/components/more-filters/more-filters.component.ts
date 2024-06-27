@@ -1,25 +1,26 @@
 import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, AggregationItem, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
-
-import { FilterDropdown } from '@sinequa/atomic-angular';
-
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, SearchService } from '@sinequa/atomic-angular';
-import { AggregationsStore, AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
-import { buildQuery, getCurrentQueryName } from '@sinequa/atomic-angular';
-import { Filter } from '@sinequa/atomic-angular';
+import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, Filter, FilterDropdown, QueryParamsStore, SearchService, buildQuery, getCurrentQueryName } from '@sinequa/atomic-angular';
 
 import { getAuthorizedFilters } from '../../filter';
 import { FILTERS_COUNT } from '../../filters.component';
 import { AggregationComponent } from '../aggregation/aggregation.component';
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-more-filters',
   standalone: true,
-  imports: [AggregationComponent],
-  templateUrl: './more-filters.component.html'
+  imports: [AggregationComponent, TranslocoPipe],
+  templateUrl: './more-filters.component.html',
+  providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class MoreFiltersComponent implements OnDestroy {
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;

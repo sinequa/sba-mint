@@ -3,17 +3,15 @@ import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } fr
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { DrawerStackService } from '@sinequa/atomic-angular';
-import { AutocompleteService, NavigationService, SavedSearchesService, SearchService } from '@sinequa/atomic-angular';
-import { QueryParamsStore } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService, SearchService } from '@sinequa/atomic-angular';
 
+import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
+import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { DropdownComponent } from '../dropdown/dropdown';
+import { AutocompleteComponent, Suggestion } from '../search-input/components/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { UserMenuComponent } from '../user-menu/user-menu';
-import { AutocompleteComponent, Suggestion } from '../autocomplete/autocomplete.component';
-import { RecentSearchesComponent } from '../recent-searches/recent-searches.component';
-import { BookmarksComponent } from '../bookmarks/bookmarks.component';
-import { SavedSearchesComponent } from '../saved-searches/saved-searches.component';
 
 type NavbarMenu = {
   label: string;
@@ -33,7 +31,16 @@ type NavbarTab = {
   standalone: true,
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [CommonModule, NgClass, AsyncPipe, RouterModule, SearchInputComponent, AutocompleteComponent, UserMenuComponent, DropdownComponent]
+  imports: [
+    CommonModule,
+    NgClass,
+    AsyncPipe,
+    RouterModule,
+    SearchInputComponent,
+    AutocompleteComponent,
+    UserMenuComponent,
+    DropdownComponent
+  ]
 })
 export class NavbarComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -45,7 +52,7 @@ export class NavbarComponent implements OnDestroy {
 
   protected readonly menus: NavbarMenu[] = [
     { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
-    { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
+    { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
     { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
   ];
 

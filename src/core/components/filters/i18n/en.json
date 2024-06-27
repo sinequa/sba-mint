@@ -1,0 +1,9 @@
+{
+  "applyFilters": "Apply filters",
+  "clearAllFilters": "Clear all filters",
+  "clearFilters": "Clear filters",
+  "dateFilter": "Date filter",
+  "moreFilters": "More filters",
+  "noFiltersAvailable": "No filters available",
+  "openFilter": "Open{filter, select, other { {filter} } undefined { filter } }"
+}
