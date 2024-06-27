@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 
-import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 import { Article } from '@sinequa/atomic';
+import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
 @Component({
   selector: 'app-preview-slide',

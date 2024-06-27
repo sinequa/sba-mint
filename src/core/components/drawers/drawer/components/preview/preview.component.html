@@ -1,0 +1,23 @@
+<div
+  (click)="drawer.toggleExtension()"
+  (keydown.escape)="drawer.toggleExtension()"
+  [attr.aria-hidden]="true"
+></div>
+
+<div class="flex overflow-auto bg-white">
+  <div
+    #drawerHandle
+    class="w-[5px] h-full fixed hover:cursor-ew-resize"
+    [ngClass]="{ hidden: (drawer.isExtended | async) === false }"
+  ></div>
+
+  <ng-container *ngComponentOutlet="previewType; inputs: inputs()" />
+</div>
+
+@if (article()) {
+  <app-advanced-search
+    [article]="article()"
+    (textChanged)="onTextChanged($event)"
+    (close)="drawer.collapse()"
+  />
+}

@@ -2,16 +2,15 @@ import { Routes } from '@angular/router';
 
 import { AuthGuard } from '@sinequa/atomic-angular';
 
+import { LoadingComponent } from '@/core/features/loading.component';
+import { LoginComponent } from '@/core/features/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { SearchComponent } from './pages/search/search.component';
-import { LoadingComponent } from '@/core/components/loading.component';
-import { LoginComponent } from '@/core/components/login/login.component';
 
-import { InitializationGuard } from '@sinequa/atomic-angular';
-import { queryNameResolver } from '@sinequa/atomic-angular';
+import { InitializationGuard, queryNameResolver } from '@sinequa/atomic-angular';
 
 export const routes: Routes = [
-  { path: 'login', component: LoadingComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'logout', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   {

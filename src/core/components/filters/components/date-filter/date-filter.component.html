@@ -12,10 +12,10 @@
           <button
             type="button"
             class="me-2"
-            title="Clear filters"
+            [attr.title]="'filters.clearFilters' | transloco"
+            [attr.aria-label]="'filters.clearFilters' | transloco"
             (click)="clearFilters()"
             (keydown.enter)="clearFilters()"
-            aria-label="Clear filters"
           >
             <i class="fa-fw far fa-filter-circle-xmark " aria-hidden="true"></i>
           </button>
@@ -25,10 +25,10 @@
 
           <button
             type="button"
-            title="Apply filters"
+            [attr.title]="'filters.applyFilters' | transloco"
+            [attr.aria-label]="'filters.applyFilters' | transloco"
             (click)="submit()"
             (keydown.enter)="submit()"
-            aria-label="Apply filters"
           >
             <i class="fa-fw far fa-filter " aria-hidden="true"></i>
           </button>
@@ -54,7 +54,8 @@
           id="date-filter-{{ option.display }}"
           [attr.disabled]="option.disabled ? true : null"
           [attr.aria-disabled]="option.disabled"
-          value="{{ option.display }}"/>
+          value="{{ option.display }}"
+        />
 
           <span
             class="fa-fw radio me-1 p-1 cursor-pointer"
@@ -63,14 +64,18 @@
             tabindex="-1"></span>
 
             <label
-            for="date-filter-{{ option.display }}"
-            class="p-1 grow cursor-pointer">{{ option.display }}</label>
+              for="date-filter-{{ option.display }}"
+              class="p-1 grow cursor-pointer"
+            >
+              {{ option.display }}
+            </label>
           </li>
         }
         @if(allowCustomRange) {
           <li
-          class="data-list-item flex px-2 leading-7"
-          [ngClass]="{'selected': form.get('option')?.value === 'custom-range'}">
+            class="data-list-item flex px-2 leading-7"
+            [ngClass]="{'selected': form.get('option')?.value === 'custom-range'}"
+          >
 
           <input
             #radio
@@ -78,18 +83,21 @@
             formControlName="option"
             id="date-filter-custom-range"
             value="custom-range"
-            />
+          />
 
           <span
             class="fa-fw radio me-1 p-1 cursor-pointer"
             (click)="radio.click()"
             (keydown.enter)="radio.click()"
-            tabindex="-1"></span>
+            tabindex="-1"
+          ></span>
 
             <div
               class="p-1 grow grid grid-cols-[4rem_auto] *:cursor-pointer"
-              formGroupName="customRange">
-              <label for="date-filter-custom-from">From</label>
+              formGroupName="customRange"
+            >
+              <label for="date-filter-custom-from">{{ 'from' | transloco }}</label>
+
               <input class="border-b border-neutral-300 text-neutral-300"
                 type="date"
                 id="date-filter-custom-from"
@@ -98,7 +106,8 @@
                 (click)="forceFilterToCustomRange()"
               />
 
-              <label for="date-filter-custom-to">To</label>
+              <label for="date-filter-custom-to">{{ 'to' | transloco }}</label>
+
               <input class="border-b border-neutral-300 text-neutral-300"
                 type="date"
                 id="date-filter-custom-to"

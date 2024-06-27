@@ -4,16 +4,11 @@ import { Router, RouterOutlet } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { CCApp, login } from '@sinequa/atomic';
-import { AuthGuard } from '@sinequa/atomic-angular';
+import { CCApp, globalConfig, login } from '@sinequa/atomic';
+import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { DrawerStackComponent } from '@/core/components/drawer-stack/drawer-stack.component';
-import { BackdropComponent } from '@/core/components/drawer/components/backdrop/backdrop.component';
-
-import { InitializationGuard } from '@sinequa/atomic-angular';
-import { ApplicationService, NavigationService } from '@sinequa/atomic-angular';
-import { AppStore, ApplicationStore, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
-
+import { DrawerStackComponent } from '@/core/components/drawers/drawer-stack.component';
+import { BackdropComponent } from '@/core/components/drawers/drawer/components/backdrop/backdrop.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
@@ -24,17 +19,17 @@ import { SearchComponent } from './pages/search/search.component';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  appService = inject(ApplicationService);
-  principalStore = inject(PrincipalStore);
-  appStore = inject(AppStore);
-  applicationStore = inject(ApplicationStore);
-  queryParamsStore = inject(QueryParamsStore);
+  private readonly appService = inject(ApplicationService);
+  private readonly principalStore = inject(PrincipalStore);
+  private readonly appStore = inject(AppStore);
+  private readonly applicationStore = inject(ApplicationStore);
 
-  router = inject(Router);
-  navigationService = inject(NavigationService);
+  private readonly router = inject(Router);
 
   constructor() {
     // Login and initialize the application when the user is logged in
+    const { useCredentials } = globalConfig;
+
     login().then(value => {
       if (value) {
         this.appService.init().then(() => {
@@ -48,7 +43,10 @@ export class AppComponent {
         });
       }
     }).catch(error => {
-      toast.error("An error occured while logging in", { description: error, duration: 2000 });
+      console.warn("An error occured while logging in", error);
+      if (useCredentials) {
+        this.router.navigate(['/login'])
+      }
     });
   }
 
@@ -62,7 +60,7 @@ export class AppComponent {
 
     // We need to create a route for each tab in each query
     // if a query has no tabs, we create a route with the query name as the tab name
-    const tabs = array.map(item => ({ tabs: item.tabSearch.tabs || [{name: item.name}], queryName: item.name }));
+    const tabs = array.map(item => ({ tabs: item.tabSearch.tabs || [{ name: item.name }], queryName: item.name }));
 
     // We need to remove the current search route from the router config
     // the route exists in the router config because it was created in the app-routing.module.ts and we need it
