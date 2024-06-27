@@ -4,7 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { CCApp, login } from '@sinequa/atomic';
+import { CCApp, globalConfig, login } from '@sinequa/atomic';
 import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
 
 import { DrawerStackComponent } from '@/core/components/drawers/drawer-stack.component';
@@ -19,17 +19,17 @@ import { SearchComponent } from './pages/search/search.component';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  appService = inject(ApplicationService);
-  principalStore = inject(PrincipalStore);
-  appStore = inject(AppStore);
-  applicationStore = inject(ApplicationStore);
-  queryParamsStore = inject(QueryParamsStore);
+  private readonly appService = inject(ApplicationService);
+  private readonly principalStore = inject(PrincipalStore);
+  private readonly appStore = inject(AppStore);
+  private readonly applicationStore = inject(ApplicationStore);
 
-  router = inject(Router);
-  navigationService = inject(NavigationService);
+  private readonly router = inject(Router);
 
   constructor() {
     // Login and initialize the application when the user is logged in
+    const { useCredentials } = globalConfig;
+
     login().then(value => {
       if (value) {
         this.appService.init().then(() => {
@@ -43,7 +43,10 @@ export class AppComponent {
         });
       }
     }).catch(error => {
-      toast.error("An error occured while logging in", { description: error, duration: 2000 });
+      console.warn("An error occured while logging in", error);
+      if (useCredentials) {
+        this.router.navigate(['/login'])
+      }
     });
   }
 
