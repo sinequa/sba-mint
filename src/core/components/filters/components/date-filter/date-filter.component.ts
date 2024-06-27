@@ -1,23 +1,25 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { HashMap, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
-import { cn } from '@sinequa/atomic-angular';
-
-import { AggregationEx, DateFilter } from '@sinequa/atomic-angular';
-import { Filter } from '@sinequa/atomic-angular';
-import { QueryParamsStore } from '@sinequa/atomic-angular';
+import { AggregationEx, DateFilter, Filter, QueryParamsStore, cn } from '@sinequa/atomic-angular';
 
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
 const ALLOW_CUSTOM_RANGE = true;
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-date-filter',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule],
+  imports: [NgClass, ReactiveFormsModule, TranslocoPipe],
   templateUrl: './date-filter.component.html',
   styleUrl: './date-filter.component.scss'
 })

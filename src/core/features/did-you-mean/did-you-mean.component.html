@@ -1,0 +1,27 @@
+@switch (spellingCorrectionMode()?.toLowerCase()) {
+  @case ('dymonly') {
+    <p>
+      <span class="me-1">{{ 'didYouMean.didYouMean' | transloco }}</span>
+      <a class="text-primary" role="button" (click)="selectCorrected()">{{ correction() }}</a>
+      <span>?</span>
+    </p>
+  }
+  @case ('correct') {
+    <p>
+      <span class="me-1">{{ 'didYouMean.showingResultsFor' | transloco }}</span>
+      <a class="text-primary font-bold" role="button" (click)="selectCorrected()">{{ correction() }}</a>
+
+      <span class="me-1">. {{ 'didYouMean.searchInsteadFor' | transloco }}</span>
+      <a class="text-primary" role="button" (click)="selectOriginal()">{{ original() }}</a>
+    </p>
+  }
+  @case ('smart') {
+    <p>
+      <span class="me-1">{{ 'didYouMean.showingResultsFor' | transloco }}</span>
+      <a class="text-primary" role="button" (click)="selectOriginal()">{{ original() }}</a>
+
+      <span class="mx-1">and</span>
+      <a class="text-primary font-bold" role="button" (click)="selectCorrected()">{{ correction() }}</a>
+    </p>
+  }
+}

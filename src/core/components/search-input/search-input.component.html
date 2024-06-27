@@ -8,11 +8,11 @@
   >
     @if (showSave() && input() !== '') {
     <button
-      title="Save search"
+      [ngClass]="{ 'animate-save': saveAnimation() }"
+      [attr.title]="'searchInput.saveSearch' | transloco"
+      [attr.aria-label]="'searchInput.saveSearch' | transloco"
       (click)="saveQuery()"
       (keydown.enter)="saveQuery()"
-      [ngClass]="{ 'animate-save': saveAnimation() }"
-      aria-label="Save search"
     >
       <i
         [ngClass]="{ fas: saveAnimation() }"
@@ -26,8 +26,8 @@
       type="search"
       id="serach-navbar"
       class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
-      aria-label="Search here"
-      placeholder="Search by keyword or ask something"
+      [attr.placeholder]="'searchInput.placeholder' | transloco"
+      [attr.aria-label]="'searchInput.placeholder' | transloco"
       autocomplete="off"
       spellcheck="false"
       [ngModel]="input()"
@@ -38,8 +38,8 @@
 
     @if (input() !== '') {
     <button
-      title="Clear search"
-      aria-label="Clear search"
+      [attr.title]="'searchInput.clearSearch' | transloco"
+      [attr.aria-label]="'searchInput.clearSearch' | transloco"
       (click)="clearInput()"
       (keydown.enter)="clearInput()"
     >
@@ -50,10 +50,11 @@
 
   <button
     class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
-    (click)="emitText()"
-    [disabled]="input() === oldInput"
+    [attr.title]="'search' | transloco"
+    [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="input() === oldInput"
-    aria-label="Search"
+    [disabled]="input() === oldInput"
+    (click)="emitText()"
   >
     <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
   </button>

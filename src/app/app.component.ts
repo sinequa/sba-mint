@@ -5,13 +5,10 @@ import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { CCApp, globalConfig, login } from '@sinequa/atomic';
-import { AuthGuard } from '@sinequa/atomic-angular';
+import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { DrawerStackComponent } from '@/core/components/drawer-stack/drawer-stack.component';
-import { BackdropComponent } from '@/core/components/drawer/components/backdrop/backdrop.component';
-
-import { AppStore, ApplicationService, ApplicationStore, InitializationGuard, PrincipalStore } from '@sinequa/atomic-angular';
-
+import { DrawerStackComponent } from '@/core/components/drawers/drawer-stack.component';
+import { BackdropComponent } from '@/core/components/drawers/drawer/components/backdrop/backdrop.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
