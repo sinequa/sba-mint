@@ -1,19 +1,17 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 
-import { FocusWithArrowKeysDirective } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, DrawerStackService, FocusWithArrowKeysDirective, QueryParamsStore } from '@sinequa/atomic-angular';
 
+import { AutocompleteComponent, Suggestion } from '@/core/components/autocomplete/autocomplete.component';
+import { BookmarksComponent } from '@/core/components/bookmarks/bookmarks.component';
 import { RecentSearchesComponent } from '@/core/components/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/components/saved-searches/saved-searches.component';
-import { BookmarksComponent } from '@/core/components/bookmarks/bookmarks.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { AutocompleteComponent, Suggestion } from '@/core/components/autocomplete/autocomplete.component';
+import { UserMenuComponent } from '@/core/components/user-menu/user-menu';
 
-import { AutocompleteService } from '@sinequa/atomic-angular';
-import { AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
-import { DrawerStackService } from '@sinequa/atomic-angular';
 
 
 type HomeTab = {
@@ -46,13 +44,13 @@ const homeFeatures: HomeTab[] = [
 ];
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  templateUrl: './home.component.html',
-  host: {
-    "class": "layout-search h-screen"
-  },
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, AutocompleteComponent]
+    selector: 'app-home',
+    standalone: true,
+    templateUrl: './home.component.html',
+    host: {
+        "class": "layout-search h-screen"
+    },
+    imports: [NgClass, NgComponentOutlet, SearchInputComponent, FocusWithArrowKeysDirective, AutocompleteComponent, UserMenuComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
