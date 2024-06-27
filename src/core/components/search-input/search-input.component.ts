@@ -3,23 +3,28 @@ import { NgClass } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription, debounceTime, filter } from 'rxjs';
 
-import { AutocompleteService } from '@sinequa/atomic-angular';
-import { AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AutocompleteService, QueryParamsStore } from '@sinequa/atomic-angular';
 
 const DEBOUNCE_DELAY = 300;
+
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`./i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>)
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, OverlayModule],
+  imports: [NgClass, FormsModule, OverlayModule, TranslocoPipe],
   templateUrl: './search-input.component.html',
-  styleUrl: './search-input.component.scss'
+  styleUrl: './search-input.component.scss',
+  providers: [provideTranslocoScope({ scope: 'search-input', loader })]
 })
 export class SearchInputComponent implements OnDestroy {
-
   @Output() public readonly debounced = new EventEmitter<string>();
   @Output() public readonly validated = new EventEmitter<string>();
   @Output() public readonly saved = new EventEmitter<void>();
@@ -33,9 +38,8 @@ export class SearchInputComponent implements OnDestroy {
   protected oldInput: string = this.input();
 
   protected readonly autocompleteService = inject(AutocompleteService);
-  private readonly customization = inject(AppStore).customizationJson;
   protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly allowChatDrawer = computed(() => false );
+  protected readonly allowChatDrawer = computed(() => false);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   private readonly _subscription = new Subscription();

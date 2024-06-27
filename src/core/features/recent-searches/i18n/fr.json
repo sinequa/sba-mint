@@ -1,0 +1,5 @@
+{
+  "filterCount": "{count} {count, plural, one {filtre} other {filtres}}",
+  "removeRecentSearches": "Supprimer les recherches récentes",
+  "noRecentSearches": "Aucune recherche récente"
+}

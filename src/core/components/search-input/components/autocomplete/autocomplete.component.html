@@ -1,0 +1,66 @@
+@if (items()) {
+  <ul
+    class="data-list-xs z-10 px-2 py-4 text-black bg-white rounded-b-lg shadow-md max-h-80 overflow-auto"
+    aria-labelledby="dropdownDefaultButton">
+
+    @for (item of items(); track $index) {
+      @if (item.$isDivider) {
+        <li class="m-2 bg-neutral-300 h-[1px]"></li>
+      }
+
+      @else if (!item.display) {
+        <li class="p-2 cursor-pointer text-xs text-neutral-500 font-semibold">
+          @switch (item.category) {
+            @case('recent-search') {
+              {{ 'recentSearches' | transloco }}
+            }
+            @case('saved-search') {
+              {{ 'savedSearches' | transloco }}
+            }
+            @case('bookmark') {
+              {{ 'bookmarks' | transloco }}
+            }
+            @case('title') {
+              {{ 'documents' | transloco }}
+            }
+            @case('concepts') {
+              {{ 'matters' | transloco }}
+            }
+            @case('people') {
+              {{ 'collaborators' | transloco }}
+            }
+          }
+        </li>
+      }
+      
+      @else {
+      <li
+        class="p-2 flex data-list-item items-baseline gap-2 cursor-pointer"
+        (click)="itemClicked(item)"
+      >
+        @switch (item.category) {
+          @case('recent-search') { <i class="fa-fw far fa-clock-rotate-left"></i> }
+          @case('saved-search') { <i class="fa-fw far fa-star"></i> }
+          @case('bookmark') { <i class="fa-fw far fa-bookmark"></i> }
+          @case('full-text') { <i class="fa-fw far fa-magnifying-glass"></i> }
+          @case('title') { <i class="fa-fw far fa-file"></i> }
+          @case('concepts') { <i class="fa-fw far fa-lightbulb"></i> }
+          @case('people') { <i class="fa-fw far fa-user-circle"></i> }
+        }
+      
+        <p class="text-ellipsis line-clamp-1">
+          @for(chunk of item.display! | highlightWord:text():10; track $index ) {
+            <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
+          }
+        </p>
+      </li>
+      }
+    }
+
+    @empty {
+      <span>
+        {{ 'searchInput.noSuggestions' | transloco }}
+      </span>
+    }
+  </ul>
+}

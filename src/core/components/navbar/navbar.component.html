@@ -20,11 +20,12 @@
 <menu class="flex justify-end gap-3 items-center pe-10">
   @for (menu of menus; track $index) {
     <li>
-      @if(menu.component){
+      @if (menu.component) {
         <sq-dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
           <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
+
           <div dropdown-content class="absolute w-[380px] max-w-md dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
@@ -61,6 +62,5 @@
     }
   </ul>
 </nav>
-
 
 <div class="row-start-2 col-start-4"></div>

@@ -1,0 +1,56 @@
+<ul class="flex flex-col">
+  @for (search of recentSearches(); track $index) {
+    <li
+      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+      tabindex="0"
+      appFocusWithArrowKeys="y"
+      (click)="onClick(search)"
+      (keydown.enter)="onClick(search)"
+    >
+      <i class="fa-fw far fa-clock-rotate-left " aria-hidden="true"></i>
+
+      <p>{{ search.display || search.label }}</p>
+
+      @if ((search.filterCount ?? 0) > 0) {
+        <p class="text-neutral-500" aria-hidden="true">
+          <i class="fa-fw far fa-filter"></i>
+          
+          {{ "recentSearches.filterCount" | transloco : { count: search.filterCount } }}
+        </p>
+      }
+
+      @if (search.date) {
+        <p class="text-neutral-500 ms-auto capitalize">
+          {{ getRelativeDate(transloco.getActiveLang(), search.date) }}
+        </p>
+      }
+
+      <button 
+        class="hidden group-hover:block text-alert hover:scale-125"
+        [attr.title]="'recentSearches.removeRecentSearch' | transloco"
+        [attr.aria-label]="'recentSearches.removeRecentSearch' | transloco"
+        (click)="onDelete($index, $event)"
+      >
+        <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
+      </button>
+    </li>
+  }
+
+  @empty {
+    <li class="text-center text-neutral-500 py-4">
+      {{ 'recentSearches.noRecentSearches' | transloco }}
+    </li>
+  }
+</ul>
+
+@if (hasMore()) {
+  <button
+    class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+    tabindex="0"
+    appFocusWithArrowKeys="y"
+    [attr.title]="'loadMore' | transloco"
+    (click)="loadMore($event)"
+  >
+    {{ 'loadMore' | transloco }}
+  </button>
+}

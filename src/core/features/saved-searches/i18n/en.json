@@ -1,0 +1,5 @@
+{
+  "filterCount": "{count} {count, plural, one {filter} other {filters}}",
+  "removeSavedSearches": "Remove saved searches",
+  "noSavedSearches": "No saved searches yet"
+}

@@ -1,16 +1,14 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import { Component, Input, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { cn } from '@sinequa/atomic-angular';
 import { Article } from '@sinequa/atomic';
+import { DrawerStackService, cn } from '@sinequa/atomic-angular';
 
-import { DrawerStackService } from '@sinequa/atomic-angular';
-
-import { BookmarkButtonComponent } from '../../bookmark/bookmark-button.component';
-import { DrawerService } from '../../drawer/drawer.service';
-
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
+import { DrawerService } from '../../drawers/drawer/drawer.service';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -22,12 +20,18 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
   showSearchButton: true
 }
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [NgClass, AsyncPipe, BookmarkButtonComponent],
+  imports: [NgClass, AsyncPipe, BookmarkButtonComponent, TranslocoPipe],
   templateUrl: './preview-navbar.component.html',
-  styleUrl: './preview-navbar.component.scss'
+  styleUrl: './preview-navbar.component.scss',
+  providers: [provideTranslocoScope({ scope: 'preview', loader })]
 })
 export class PreviewNavbarComponent {
   cn = cn;
@@ -48,20 +52,25 @@ export class PreviewNavbarComponent {
 
   public copied: boolean = false;
 
+  private readonly transloco = inject(TranslocoService);
+
   openClicked(): void {
     window.open(this.article()?.url1, '_blank', 'noopener noreferrer');
   }
 
   public copyLink(): void {
     const url = this.article()?.url1 || this.article()?.url2;
+
     if (url) {
       navigator.clipboard.writeText(url);
+
       this.copied = true;
+
       setTimeout(() => {
         this.copied = false;
       }, 3000);
 
-      toast.success('Link copied to clipboard', { duration: 2000 });
+      toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
     }
   }
 }
