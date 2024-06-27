@@ -138,13 +138,4 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.search(item.display!);
   }
-
-  changLang(): void {
-    const lang = this.translateService.getActiveLang();
-    if (lang === 'fr') {
-      this.translateService.setActiveLang('en');
-    } else {
-      this.translateService.setActiveLang('fr');
-    }
-  }
 }
