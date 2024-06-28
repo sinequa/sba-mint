@@ -4,8 +4,11 @@ import { Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { Credentials, Principal, authenticated$, globalConfig, isAuthenticated, login, logout } from '@sinequa/atomic';
-import { PrincipalService } from '@sinequa/atomic-angular';
+import { ApplicationService, ApplicationStore, PrincipalService, PrincipalStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
+import { SearchComponent } from '@/app/pages/search/search.component';
+import { SearchAllComponent } from '@/app/pages/search/all/search-all.component';
+import { getState } from '@ngrx/signals';
 
 /**
  * Represents the LoginComponent class, which is responsible for handling the login functionality.
@@ -47,6 +50,11 @@ export class LoginComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly principalService = inject(PrincipalService);
+  protected readonly appService = inject(ApplicationService);
+  protected readonly applicationStore = inject(ApplicationStore);
+  protected readonly principalStore = inject(PrincipalStore);
+
+
 
   private sub = new Subscription();
 
@@ -83,6 +91,8 @@ export class LoginComponent implements OnDestroy {
       if (isAuthenticated()) {
         if (url !== null) {
           this.router.navigateByUrl(url);
+        } else {
+          this.router.navigateByUrl("/");
         }
       }
     }));
@@ -111,7 +121,6 @@ export class LoginComponent implements OnDestroy {
    */
   async handleLogin() {
     await login();
-
   }
 
   /**
@@ -119,7 +128,23 @@ export class LoginComponent implements OnDestroy {
    * Calls the login function with the provided credentials and handles any errors that occur.
    */
   async handleLoginWithCredentials() {
-    login(this.credentials())
+    if(!this.valid()) return;
+
+    login(this.credentials()).then( value => {
+      if (value) {
+        this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
+          const { fullName, name } = getState(this.principalStore).principal;
+
+          toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
+          this.applicationStore.updateReadyState();
+
+          this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
+
+        }).catch((error:Error) => {
+          toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
+        });
+      }
+    })
       .catch(e => {
         if (e instanceof Error) {
           toast.error(e.message);
