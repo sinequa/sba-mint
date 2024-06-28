@@ -12,15 +12,18 @@ import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 type NavbarMenu = {
-  label: string;
+  display: string;
   iconClass: string;
   component?: Type<unknown>;
 };
 
 type NavbarTab = {
-  label: string;
+  display: string;
+  tab: string;
+  path: string;
   iconClass: string;
   routerLink: string;
   queryName?: string;
@@ -39,7 +42,8 @@ type NavbarTab = {
     SearchInputComponent,
     AutocompleteComponent,
     UserMenuComponent,
-    DropdownComponent
+    DropdownComponent,
+    TranslocoPipe
   ]
 })
 export class NavbarComponent implements OnDestroy {
@@ -51,9 +55,9 @@ export class NavbarComponent implements OnDestroy {
   protected readonly searchText = signal<string>('');
 
   protected readonly menus: NavbarMenu[] = [
-    { label: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
-    { label: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
-    { label: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
+    { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
+    { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
+    { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
   ];
 
   protected readonly navigationService = inject(NavigationService);
@@ -70,7 +74,9 @@ export class NavbarComponent implements OnDestroy {
   // create tabs from the search routes
   protected readonly tabs: NavbarTab[] = this.router.config.find(item => item.path === "search")?.children?.filter(c => c.path !== "**")
     .map(child => ({
-      label: child.path,
+      display: child.data?.['display'] || child.path,
+      tab: child.data?.['wsQueryTab'] || child.path,
+      path: child.path,
       routerLink: `search/${child.path}/`,
       iconClass: child.data?.['iconClass'],
       queryName: child.data?.['queryName']
@@ -108,7 +114,7 @@ export class NavbarComponent implements OnDestroy {
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.label, filters: undefined, sort: undefined, id: undefined });
+    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.tab, filters: undefined, sort: undefined, id: undefined });
     this.searchService.search([tab.routerLink]);
   }
 
