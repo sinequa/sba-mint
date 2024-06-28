@@ -14,7 +14,7 @@ interface MetadataNavigation {
 }
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../../../i18n/${lang}.json`);
+  acc[lang] = () => import(`../i18n/${lang}.json`);
   return acc;
 }, {} as HashMap<() => Promise<Translation>>);
 

@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs';
 
 import { AppStore, DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
 
-import { DrawerPreviewComponent } from './drawer/components/preview/preview.component';
-import { DrawerComponent } from './drawer/drawer.component';
+import { DrawerPreviewComponent } from '../preview/preview.component';
+import { DrawerComponent } from '../drawer.component';
 
 const DRAWER_STACK_MAX_COUNT = 3;
 
@@ -40,7 +40,6 @@ export class DrawerStackComponent implements OnDestroy {
   readonly drawerStackService = inject(DrawerStackService);
   private readonly selectionHistory = inject(SelectionHistoryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly appStore = inject(AppStore);
 
   private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
@@ -48,8 +47,6 @@ export class DrawerStackComponent implements OnDestroy {
   get drawersLength() { return this.drawers.length; }
 
   private readonly subscriptions = new Subscription();
-
-  readonly allowChatDrawer = false;
 
   constructor() {
     this.subscriptions.add(
