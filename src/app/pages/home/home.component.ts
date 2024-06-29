@@ -6,11 +6,12 @@ import { Subscription, filter } from 'rxjs';
 
 import { AppStore, AutocompleteService, DrawerStackService, FocusWithArrowKeysDirective, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/components/autocomplete/autocomplete.component';
+import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 
 
 type HomeTab = {
@@ -55,6 +56,7 @@ const homeFeatures: HomeTab[] = [
     SearchInputComponent,
     FocusWithArrowKeysDirective,
     AutocompleteComponent,
+    UserMenuComponent,
     TranslocoPipe
   ],
 })

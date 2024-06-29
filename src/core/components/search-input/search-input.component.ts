@@ -7,7 +7,7 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 import { Subscription, debounceTime, filter } from 'rxjs';
 
-import { AutocompleteService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, CJson, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -38,13 +38,22 @@ export class SearchInputComponent implements OnDestroy {
   protected oldInput: string = this.input();
 
   protected readonly autocompleteService = inject(AutocompleteService);
+  private readonly drawerStack = inject(DrawerStackService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly allowChatDrawer = computed(() => false);
+  private readonly appStore = inject(AppStore);
+  protected readonly allowChatDrawer = signal<boolean>(false);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   private readonly _subscription = new Subscription();
 
   constructor(public readonly el: ElementRef) {
+
+    effect(() => {
+      const {data} = getState(this.appStore);
+      const { features = { allowChatDrawer: false} } = data as CJson;
+
+      this.allowChatDrawer.set(features.allowChatDrawer);
+    }, { allowSignalWrites: true })
 
     effect(() => {
       const { text } = getState(this.queryParamsStore);
@@ -78,6 +87,10 @@ export class SearchInputComponent implements OnDestroy {
     this.oldInput = text;
 
     if (!silent) this.emitText();
+  }
+
+  public askAI(): void {
+    this.drawerStack.askAI(this.input());
   }
 
   protected emitText(): void {

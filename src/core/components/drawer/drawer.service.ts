@@ -1,7 +1,7 @@
 import { Injectable, Type, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { BackdropService } from './components/backdrop/backdrop.service';
+import { BackdropService } from './backdrop/backdrop.service';
 
 export type ArticleTypeMap = {
   articleType: "default";

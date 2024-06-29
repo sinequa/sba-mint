@@ -1,5 +1,5 @@
 <menu
-  class="flex items-center p-4 grow justify-between gap-2 *:*:font-semibold btn-sm"
+  class="flex items-center p-4 gap-2 *:*:font-semibold btn-sm"
 >
   <li>
     <button
@@ -29,7 +29,6 @@
 
     <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
   }
-  
   @if (canBookmark()) {
     <li>
       <app-bookmark-button class="btn btn-ghost" [article]="article()!" />
@@ -50,47 +49,27 @@
     </button>
   </li>
 
-  <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
-
-  <li>
-    <button
-      class="btn btn-ghost"
-      [attr.title]="'preview.previousResult' | transloco"
-    >
-      <i class="fa-fw far fa-chevron-up"></i>
-    </button>
-  </li>
-
-  <li class="me-auto">
-    <button
-      class="btn btn-ghost"
-      [attr.title]="'preview.nextResult' | transloco"
-    >
-      <i class="fa-fw far fa-chevron-down"></i>
-    </button>
-  </li>
-
   @if (navConfig.showSearchButton) {
-    <li>
-      <button
-        [ngClass]="
-          cn(
-            'btn flex gap-2 items-center text-nowrap',
-            isExtended() ? 'btn-secondary' : 'btn-primary'
-          )
-        "
-        (click)="drawerStack.extend()"
-      >
-        @if (isExtended()) {
-          <i class="fa-fw far fa-eye-slash"></i>
-          {{ 'preview.hideSearch' | transloco }}
-        }
-        
-        @else {
-          <i class="fa-fw far fa-eye"></i>
-          {{ 'preview.searchInDocument' | transloco }}
-        }
-      </button>
-    </li>
+  <li class="ml-auto">
+    <button
+      [ngClass]="
+        cn(
+          'btn flex gap-2 items-center text-nowrap',
+          isExtended() ? 'btn-secondary' : 'btn-primary'
+        )
+      "
+      (click)="drawerStack.extend()"
+    >
+      @if (isExtended()) {
+        <i class="fa-fw far fa-eye-slash"></i>
+        {{ 'preview.hideSearch' | transloco }}
+      }
+
+      @else {
+        <i class="fa-fw far fa-eye"></i>
+        {{ 'preview.searchInDocument' | transloco }}
+      }
+    </button>
+  </li>
   }
 </menu>
