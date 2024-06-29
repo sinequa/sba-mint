@@ -5,9 +5,9 @@
     </div>
   </section>
 
-  <section class="flex flex-col gap-2 overflow-auto">
+  <section class="flex flex-col gap-2">
     <header>
-      <div class="flex gap-2 items-baseline">
+      <div class="flex gap-2 items-baseline overflow-auto">
         <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
         @if (showBookmark()) {
           <app-bookmark-button [article]="article()" />

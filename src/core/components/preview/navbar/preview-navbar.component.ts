@@ -8,7 +8,7 @@ import { Article } from '@sinequa/atomic';
 import { DrawerStackService, cn } from '@sinequa/atomic-angular';
 
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
-import { DrawerService } from '../../drawers/drawer/drawer.service';
+import { DrawerService } from '../../drawer/drawer.service';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;

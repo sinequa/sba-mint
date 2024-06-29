@@ -1,4 +1,4 @@
-<div class="rounded-lg border bg-card text-card-foreground shadow-sm mx-auto">
+<div class="rounded-lg border bg-card text-card-foreground shadow-sm mx-auto min-w-96">
   <div class="flex flex-col space-y-1.5 p-6">
     <a href="#" title="Logo">
       <svg
@@ -110,111 +110,77 @@
         />
       </svg>
     </a>
-
-    @if (!authenticated()) {
+    @if(authenticated()) {
       <h3 class="font-semibold whitespace-nowrap tracking-tight text-2xl">
-        {{ 'login' | transloco }}
+        Welcome back, {{ user()?.fullName }}
       </h3>
-
-      <p class="text-sm text-muted-foreground">
-        {{ 'login.loginDescription' | transloco }}
-      </p>
-    }
-    
-    @else {
-      <h3 class="font-semibold whitespace-nowrap tracking-tight text-2xl">
-        {{ 'login.welcomeBack' | transloco: {name: user()?.fullName } }}
-      </h3>
-
-      <p class="text-sm text-muted-foreground">
-        {{ 'login.youAreLoggedIn' | transloco }}
-      </p>
+      <p class="text-sm text-muted-foreground">You are logged in</p>
     }
   </div>
 
   <div class="p-6">
-    @if (!authenticated()) {
+    @if(!authenticated()){
       <div class="grid gap-4">
-        <div class="grid gap-2">
-          <label
-            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="email"
-          >
-            {{ 'email' | transloco }}
-          </label>
-        
-          <input
-            type="email"
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            id="email"
-            placeholder="m@example.com"
-            required=""
-            [attr.aria-label]="'email' | transloco"
-          />
-        </div>
-  
-        <div class="grid gap-2">
-  
-        <div class="flex items-center">
-          <label
-            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="password"
-          >
-            {{ 'password' | transloco }}
-          </label>
-          
-          <a class="ml-auto inline-block text-sm underline" href="#" rel="ugc">
-            {{ 'login.forgotYourPassword' | transloco }}
-          </a>
-        </div>
+        @if(!config.autoOAuthProvider && !config.autoSAMLProvider) {
+          <div class="grid gap-2">
+            <label
+              class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="email"
+              >Login</label>
 
-        <input
-          type="password"
-          class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-slate-400 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          id="password"
-          required=""
-          [attr.aria-label]="'password' | transloco"
-        />
+            <input
+              type="text"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="login"
+              required
+              [ngModel]="credentials().username"
+              (ngModelChange)="updateCredentials({ username: $event })"
+            />
+          </div>
+          <div class="grid gap-2">
+            <div class="flex items-center">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="password"
+                >Password</label>
+            </div>
+            <input
+              type="password"
+              class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-slate-400 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="password"
+              required
+              [ngModel]="credentials().password"
+              (ngModelChange)="updateCredentials({ password: $event })"
+            />
+          </div>
+          <button
+            class="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-slate/90 h-10 px-4 py-2 w-full"
+            [disabled]="!valid()"
+            (click)="handleLoginWithCredentials()"
+          >
+            Login
+          </button>
+        }
+        @else {
+          <button
+            (click)="handleLogin()"
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input h-10 px-4 py-2 w-full"
+          >
+            Login with {{ config.autoOAuthProvider ? "OAuth" : "SAML" }}
+          </button>
+        }
       </div>
-
-      <button
-        class="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-slate/90 h-10 px-4 py-2 w-full"
-        type="submit"
-      >
-        {{ 'login' | transloco }}
-      </button>
-
-      <p class="flex justify-center">
-        {{ 'login.or' | transloco }}
-      </p>
-
-      <button
-        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input h-10 px-4 py-2 w-full"
-        (click)="handleLogin()"
-      >
-        {{ 'login.loginWith' | transloco: { provider: config.autoOAuthProvider ? 'OAuth' : 'SAML' } }}
-      </button>
-    </div>
     }
-    
     @else {
       <button
-        type="submit"
-        class="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-slate/90 h-10 px-4 py-2 w-full"
         (click)="handleLogout()"
-        [attr.aria-label]="'logout' | transloco"
-      >
-        {{ 'logout' | transloco }}
-      </button>
-
+        class="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-slate/90 h-10 px-4 py-2 w-full"
+        type="submit">Logout</button>
       <a
         role="button"
         routerLink="window.history.back()"
         class="mt-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input h-10 px-4 py-2 w-full"
-        [attr.aria-label]="'back' | transloco"
-      >
-        {{ 'back' | transloco }}
-      </a>
+      >Back</a>
     }
   </div>
 </div>
