@@ -26,5 +26,11 @@
   "documents": "Documents",
   "matters": "Matters",
   "collaborators": "Collaborators",
-  "clear": "Clear"
+  "clear": "Clear",
+  "msg#sort": {
+    "relevance": "Relevance",
+    "date": "Date",
+    "filename": "Filename",
+    "title": "Title"
+  }
 }

@@ -3,6 +3,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
+import { ActivatedRoute } from '@angular/router';
 import { Article } from '@sinequa/atomic';
 import { cn, UserSettingsStore } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
@@ -25,6 +26,7 @@ export class BookmarkButtonComponent {
 
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly route = inject(ActivatedRoute);
 
   protected isBookmarked = computed(() => {
     return this.userSettingsStore.isBookmarked(this.article());
@@ -39,7 +41,8 @@ export class BookmarkButtonComponent {
       toast.success(this.transloco.translate('bookmark.bookmarkRemoved'), { duration: 2000 });
     }
     else {
-      this.userSettingsStore.bookmark(this.article()! as Article);
+      const { queryName } = this.route.snapshot.data
+      this.userSettingsStore.bookmark(this.article()! as Article, queryName);
       toast.success(this.transloco.translate('bookmark.bookmarkAdded'), { duration: 2000 });
     }
   }
