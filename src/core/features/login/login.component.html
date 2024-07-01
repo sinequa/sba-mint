@@ -135,6 +135,7 @@
               required
               [ngModel]="credentials().username"
               (ngModelChange)="updateCredentials({ username: $event })"
+              (keydown.enter)="handleLoginWithCredentials()"
             />
           </div>
           <div class="grid gap-2">
@@ -151,6 +152,7 @@
               required
               [ngModel]="credentials().password"
               (ngModelChange)="updateCredentials({ password: $event })"
+              (keydown.enter)="handleLoginWithCredentials()"
             />
           </div>
           <button

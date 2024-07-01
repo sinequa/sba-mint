@@ -98,19 +98,16 @@ import { toast } from "ngx-sonner";
 `]
 })
 export class LoadingComponent {
-  appService = inject(ApplicationService);
-  principalStore = inject(PrincipalStore);
-  appStore = inject(AppStore);
-  applicationStore = inject(ApplicationStore);
+  protected readonly appService = inject(ApplicationService);
+  protected readonly principalStore = inject(PrincipalStore);
+  protected readonly appStore = inject(AppStore);
+  protected readonly applicationStore = inject(ApplicationStore);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
 
+  protected readonly route = inject(ActivatedRoute);
+  protected readonly router = inject(Router);
 
-  application = inject(ApplicationStore);
-  queryParamsStore = inject(QueryParamsStore);
-
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-
-  state = computed(() => getState(this.application))
+  state = computed(() => getState(this.applicationStore))
 
   constructor() {
     effect(() => {
@@ -133,53 +130,23 @@ export class LoadingComponent {
 
     login().then(value => {
       if (value) {
-        this.appService.init().then(() => {
+        this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
           const { fullName, name } = getState(this.principalStore).principal;
-
-          this.createRoutes();
 
           toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
           this.applicationStore.updateReadyState();
 
+        }).catch((error:Error) => {
+          toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
         });
       }
     })
     .catch(error => {
-    //   toast.error("An error occured while logging in", { description: error, duration: 2000 });
-    // toast.error("An error occured while logging in", { description: error, duration: 2000 });
-    console.error("An error occured while logging in", error)
-    if(useCredentials) {
-        const url = this.route.snapshot.queryParams['returnUrl'] || null;
-        this.router.navigate(['/login'], { queryParams: { returnUrl: url } })
+      console.error("An error occured while logging in", error)
+      if(useCredentials) {
+          const url = this.route.snapshot.queryParams['returnUrl'] || null;
+          this.router.navigate(['/login'], { queryParams: { returnUrl: url } })
       }
     });
-  }
-
-
-  private createRoutes() {
-    // Now we can create the dynamic routes based on the Queries's tabs
-    const { queries } = getState(this.appStore) as CCApp;
-    const array = Object.entries(queries).map(([key, value]) => ({ key, ...value }));
-
-    // We need to create a route for each tab in each query
-    // if a query has no tabs, we create a route with the query name as the tab name
-    const tabs = array.map(item => ({ tabs: item.tabSearch.tabs || [{name: item.name}], queryName: item.name }));
-
-    // We need to remove the current search route from the router config
-    // the route exists in the router config because it was created in the app-routing.module.ts and we need it
-    // to be able to navigate to the search page. We will recreate it with the new tabs
-    const currentConfig = this.router.config.filter(route => route.path !== 'search');
-
-    // create the children routes for the search route
-    const children = tabs.map(item => item.tabs.map(tab => ({ path: tab.name, component: SearchAllComponent, data: { queryName: item.queryName, display: tab.name } }))).flat();
-    const searchPath = this.router.config.find(route => route.path === 'search')
-      || { path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], children: [] };
-
-    searchPath.component = SearchComponent;
-    searchPath.children = [...children, { path: '**', redirectTo: 'all', pathMatch: 'full' }];
-
-    const newConfig = [searchPath, ...currentConfig];
-    // finally we reset the router config with the new routes
-    this.router.resetConfig(newConfig);
   }
 }

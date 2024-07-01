@@ -52,8 +52,10 @@ export class UserMenuComponent {
   readonly overrideUserDialog = viewChild<ElementRef>('overrideUserDialog');
 
   changeLanguage(lang: string) {
-    if (this.transloco.getActiveLang() !== lang)
+    if (this.transloco.getActiveLang() !== lang){
       this.transloco.setActiveLang(lang);
+    }
+    this.menu()?.close();
   }
 
   handleLogout() {
@@ -61,7 +63,7 @@ export class UserMenuComponent {
   }
 
   handleOverride() {
-    this.menu()?.toggle(new MouseEvent('click'));
+    this.menu()?.close();
     this.overrideUserDialog()!.nativeElement.showModal();
   }
 
@@ -94,7 +96,7 @@ export class UserMenuComponent {
     this.userSettingsStore.reset().then(() => {
       toast("User settings have been reset", { duration: 2000 });
     });
-    this.menu()?.toggle(new MouseEvent('click'));
+    this.menu()?.close();
   }
 
 }

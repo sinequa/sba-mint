@@ -5,7 +5,7 @@
     [attr.title]="'sortSelector.selectSort'"
   >
     <i class="fa-fw fa-regular fa-arrow-{{ sort()?.$isDesc ? 'down': 'up' }}-big-small me-1"></i>
-    <span>{{ sort()?.display }}</span>
+    <span>{{ sort()?.display | transloco }}</span>
   </button>
 
   <div dropdown-content class="dropdown-content p-1 mt-1">
@@ -13,12 +13,12 @@
       <ul class="data-list p-1">
         @for (option of sortOptions(); track $index) {
           <li
-            class="flex gap-1 items-baseline data-list-item p-1"
+            class="flex gap-2 items-baseline data-list-item p-1"
             role="button"
             (click)="onSortOptionClicked(option)"
           >
             <i class="fa-fw fa-regular fa-arrow-{{ option.$isDesc ? 'down': 'up' }}-big-small"></i>
-            <span>{{ option.display }}</span>
+            <span>{{ option.display | transloco }}</span>
           </li>
         }
       </ul>
