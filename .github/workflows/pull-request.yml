@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: build
+    runs-on: Build
 
     strategy:
       matrix:
