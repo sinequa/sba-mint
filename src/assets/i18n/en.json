@@ -32,5 +32,8 @@
     "date": "Date",
     "filename": "Filename",
     "title": "Title"
+  },
+  "msg#results": {
+    "results_all_tab": "All"
   }
 }

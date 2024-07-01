@@ -26,5 +26,14 @@
   "documents": "Documents",
   "matters": "Concepts",
   "collaborators": "Collaborateurs",
-  "clear": "Effacer"
+  "clear": "Effacer",
+  "msg#sort": {
+    "relevance": "Pertinence",
+    "date": "Date",
+    "filename": "Nom de fichier",
+    "title": "Titre"
+  },  
+  "msg#results": {
+    "results_all_tab": "Tous"
+  }
 }
