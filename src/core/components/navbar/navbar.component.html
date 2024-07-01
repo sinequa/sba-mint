@@ -22,7 +22,7 @@
     <li>
       @if (menu.component) {
         <sq-dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
-          <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
+          <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
 
@@ -32,7 +32,7 @@
         </sq-dropdown>
       }
       @else {
-        <button class="btn btn-ghost" title="{{ menu.label }}" role="button" [attr.aria-label]="menu.label">
+        <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
           <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
         </button>
       }
@@ -52,11 +52,11 @@
       <button
         class="first-letter:capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
         (click)="changeTab(tab)"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.label"
-        [attr.aria-label]="tab.label"
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.path"
+        [attr.aria-label]="tab.display"
         >
         <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
-        {{ tab.label }}
+        {{ tab.display | transloco }}
       </button>
     </li>
     }
