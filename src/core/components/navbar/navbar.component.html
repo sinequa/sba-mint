@@ -52,7 +52,7 @@
       <button
         class="first-letter:capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
         (click)="changeTab(tab)"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.path"
+        [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
         [attr.aria-label]="tab.display"
         >
         <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
