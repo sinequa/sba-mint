@@ -36,6 +36,7 @@
       (click)="inputClicked()"
     />
 
+    <!-- Clear search button -->
     @if (input() !== '') {
     <button
       [attr.title]="'searchInput.clearSearch' | transloco"
@@ -46,6 +47,8 @@
       <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
     </button>
     }
+
+    <!-- Ask AI button -->
     @if (input() !== '' && allowChatDrawer()) {
       <button
         class="btn btn-xs my-1 bg-blue-100 rounded-sm text-sm text-primary"
@@ -60,12 +63,13 @@
     }
   </div>
 
+  <!-- Search button -->
   <button
     class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
-    [attr.aria-disabled]="input() === oldInput"
-    [disabled]="input() === oldInput"
+    [attr.aria-disabled]="!allowEmptySearch()"
+    [disabled]="!allowEmptySearch()"
     (click)="emitText()"
   >
     <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
