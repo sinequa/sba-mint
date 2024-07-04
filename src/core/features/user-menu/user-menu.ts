@@ -40,7 +40,7 @@ export class UserMenuComponent {
     return (principal.fullName || principal.name || '').split(separator).filter(word => word[0] && (word[0] === word[0].toUpperCase())).map(word => word[0]).join('').slice(0, 3);
   });
 
-  readonly isAdmin = computed(() => this.principalStore.principal.isAdministrator() || this.principalStore.principal.isDelegatedAdmin());
+  readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 
   readonly allowUserOverride = computed(() => {
     return this.principalStore.allowUserOverride();
