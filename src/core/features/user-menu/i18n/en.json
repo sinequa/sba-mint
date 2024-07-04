@@ -1,12 +1,14 @@
 {
- "contactAdmin": "Contact administrator",
- "domainToOverride": "Domain to override",
- "english": "English",
- "french": "French",
- "override": "Override",
- "overrideUser": "Override user",
- "resetUserSettings": "Reset user settings",
- "revertOverride": "Revert override user",
- "selectLanguage": "Select language",
- "usernameToOverride": "Username to override"
+  "aboutSinequa": "About Sinequa",
+  "administration": "Administration",
+  "contactAdmin": "Contact administrator",
+  "domainToOverride": "Domain to override",
+  "english": "English",
+  "french": "French",
+  "override": "Override",
+  "overrideUser": "Override user",
+  "resetUserSettings": "Reset user settings",
+  "revertOverride": "Revert override user",
+  "selectLanguage": "Select language",
+  "usernameToOverride": "Username to override"
 }
