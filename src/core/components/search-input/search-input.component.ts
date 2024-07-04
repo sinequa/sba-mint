@@ -3,11 +3,13 @@ import { NgClass } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { ActivatedRoute } from '@angular/router';
+import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription, debounceTime, filter } from 'rxjs';
 
 import { AppStore, AutocompleteService, CJson, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { toast } from 'ngx-sonner';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -22,7 +24,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   imports: [NgClass, FormsModule, OverlayModule, TranslocoPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
-  providers: [provideTranslocoScope({ scope: 'search-input', loader })]
+  providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
 })
 export class SearchInputComponent implements OnDestroy {
   @Output() public readonly debounced = new EventEmitter<string>();
@@ -30,19 +32,25 @@ export class SearchInputComponent implements OnDestroy {
   @Output() public readonly saved = new EventEmitter<void>();
   @Output() public readonly clicked = new EventEmitter<void>();
 
-  public readonly showSave = input(false, { transform: booleanAttribute });
-
-  public readonly input = signal<string>('');
-
-  protected saveAnimation = signal<boolean>(false);
-  protected oldInput: string = this.input();
-
   protected readonly autocompleteService = inject(AutocompleteService);
   private readonly drawerStack = inject(DrawerStackService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   private readonly appStore = inject(AppStore);
-  protected readonly allowChatDrawer = signal<boolean>(false);
+  private readonly route = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
+
   protected readonly overlayOpen = this.autocompleteService.opened;
+  public readonly showSave = input(false, { transform: booleanAttribute });
+
+  protected readonly allowChatDrawer = signal<boolean>(false);
+  public readonly input = signal<string>('');
+  protected saveAnimation = signal<boolean>(false);
+
+  protected allowEmptySearch = computed(() => {
+    const { queryName } = this.route.snapshot.data;
+    return this.appStore.allowEmptySearch(queryName);
+  });
+
 
   private readonly _subscription = new Subscription();
 
@@ -84,8 +92,6 @@ export class SearchInputComponent implements OnDestroy {
     if (text === undefined) return;
 
     this.input.set(text);
-    this.oldInput = text;
-
     if (!silent) this.emitText();
   }
 
@@ -94,19 +100,22 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   protected emitText(): void {
-    if (this.input() === this.oldInput) return;
+    if(this.allowEmptySearch() === false && this.input() === '') {
+      const message = this.translocoService.translate('searchInput.allowEmptySearch');
+      toast.info(message)
+      return;
+    }
 
-    this.oldInput = this.input();
     this.overlayOpen.set(false);
     this.validated.emit(this.input());
   }
 
   protected clearInput(): void {
-    this.oldInput = '';
-
     this.input.set('');
 
-    this.validated.emit('');
+    if(this.allowEmptySearch()) {
+      this.validated.emit('');
+    }
   }
 
   protected saveQuery(): void {
