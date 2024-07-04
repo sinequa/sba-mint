@@ -54,7 +54,11 @@ export class AggregationComponent implements OnInit {
   items = computed(() => this.aggregation().items || []);
 
   selected = computed<AggregationListItem[]>(() => {
-    return this.items().sort((a, b) => b.$selected && !a.$selected ? 1 : -1)
+    // $selected elements must be displayed first, but the other elements must stay in the same order
+    const selected = this.items().filter(item => item.$selected);
+    // remove from notSelected the elements that are already in selected (due to a load more action for example)
+    const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+    return selected.concat(notSelected) as AggregationListItem[];
   });
 
   readonly aggregationsService = inject(AggregationsService);

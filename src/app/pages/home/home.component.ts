@@ -123,10 +123,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public search(text: string): void {
-    if (!text) return;
-
     this.drawerStack.closeAll();
-
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 

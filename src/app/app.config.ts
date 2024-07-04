@@ -64,7 +64,10 @@ export const appConfig: ApplicationConfig = {
       defaultOptions: {
         queries: {
           refetchOnWindowFocus: false,
-          gcTime: 0
+          gcTime: 0,
+          retry(failureCount, error) {
+            return false;
+          }
         }
       }
     })),
