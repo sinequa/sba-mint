@@ -22,7 +22,7 @@ type NavbarMenu = {
 
 type NavbarTab = {
   display: string;
-  tab: string;
+  name: string;
   path: string;
   iconClass: string;
   routerLink: string;
@@ -75,7 +75,7 @@ export class NavbarComponent implements OnDestroy {
   protected readonly tabs: NavbarTab[] = this.router.config.find(item => item.path === "search")?.children?.filter(c => c.path !== "**")
     .map(child => ({
       display: child.data?.['display'] || child.path,
-      tab: child.data?.['wsQueryTab'] || child.path,
+      name: child.data?.['wsQueryTab'] || child.path,
       path: child.path,
       routerLink: `search/${child.path}/`,
       iconClass: child.data?.['iconClass'],
@@ -114,7 +114,7 @@ export class NavbarComponent implements OnDestroy {
   protected changeTab(tab: NavbarTab): void {
     this.drawerStack.closeAll();
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.tab, filters: undefined, sort: undefined, id: undefined });
+    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.name, filters: undefined, sort: undefined, id: undefined });
     this.searchService.search([tab.routerLink]);
   }
 

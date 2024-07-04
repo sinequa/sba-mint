@@ -128,9 +128,9 @@ export class LoginComponent implements OnDestroy {
    * Calls the login function with the provided credentials and handles any errors that occur.
    */
   async handleLoginWithCredentials() {
-    if(!this.valid()) return;
+    if (!this.valid()) return;
 
-    login(this.credentials()).then( value => {
+    login(this.credentials()).then(value => {
       if (value) {
         this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
           const { fullName, name } = getState(this.principalStore).principal;
@@ -140,18 +140,17 @@ export class LoginComponent implements OnDestroy {
 
           this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
 
-        }).catch((error:Error) => {
+        }).catch((error: Error) => {
           toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
         });
       }
-    })
-      .catch(e => {
-        if (e instanceof Error) {
-          toast.error(e.message);
-        }
-        if (e instanceof Response) {
-          toast.error(e.statusText);
-        }
-      });
+    }).catch(e => {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
+      if (e instanceof Response) {
+        console.error(e.statusText);
+      }
+    });
   }
 }
