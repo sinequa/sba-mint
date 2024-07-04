@@ -1,4 +1,6 @@
 {
+  "aboutSinequa": "À propos de Sinequa",
+  "administration": "Administration",
   "contactAdmin": "Contacter l'administrateur",
   "domainToOverride": "Domaine à surcharger",
   "english": "Anglais",
@@ -9,5 +11,4 @@
   "revertOverride": "Annuler la surcharge",
   "selectLanguage": "Sélectionner la langue",
   "usernameToOverride": "Nom d'utilisateur à surcharger"
- }
- 
+}

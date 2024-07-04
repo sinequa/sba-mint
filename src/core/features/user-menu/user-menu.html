@@ -4,44 +4,33 @@
   <div menu-content>
     @if(allowUserOverride() && !isOverridingUser()) {
     <sq-menu-item (click)="handleOverride()">
-      <svg
-        class="size-4"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M18 21a8 8 0 0 0-16 0" />
-        <circle cx="10" cy="8" r="5" />
-        <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
-      </svg>
+      <i class="fa-fw fal fa-user-secret size-4"></i>
       {{ 'userMenu.overrideUser' | transloco }}
     </sq-menu-item>
-    } @else if(isOverridingUser()) {
+    }
+    @else if(isOverridingUser()) {
     <sq-menu-item (click)="handleOverrideUser()">
-      <svg
-        class="size-4"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M18 21a8 8 0 0 0-16 0" />
-        <circle cx="10" cy="8" r="5" />
-        <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
-      </svg>
+      <i class="fa-fw fal fa-user size-4"></i>
       {{ 'userMenu.revertOverride' | transloco }}
     </sq-menu-item>
     }
+
+    <sq-menu-item (click)="openAdmin()">
+      <i class="fa-fw fal fa-user-tie"></i>
+      {{ 'userMenu.administration' | transloco }}
+      <i class="ms-auto fa-fw fal fa-arrow-up-right-from-square"></i>
+    </sq-menu-item>
+
+    <sq-menu-item (click)="handleResetUserSettings()">
+      <i class="fa-fw fal fa-trash"></i>
+      {{ 'userMenu.resetUserSettings' | transloco }}
+    </sq-menu-item>
+
+    <hr class="my-1" />
+
     <sq-menu position="left-start" className="dropdown-content max-w-40">
       <sq-menu-item>
-        <i class="far fa-chevron-left size-4"></i>
+        <i class="fa-fw fal fa-chevron-left size-4"></i>
         {{ 'userMenu.selectLanguage' | transloco }}
       </sq-menu-item>
 
@@ -58,17 +47,17 @@
       </div>
     </sq-menu>
 
-    <hr class="my-1" />
-
-    <sq-menu-item (click)="handleResetUserSettings()">
-      <i class="far fa-trash"></i>
-      {{ 'userMenu.resetUserSettings' | transloco }}
+    <sq-menu-item (click)="openSinequa()">
+      <img class="size-4" src="assets/logo/small.svg" />
+      {{ 'userMenu.aboutSinequa' | transloco }}
+      <i class="ms-auto fa-fw fal fa-arrow-up-right-from-square"></i>
     </sq-menu-item>
 
     @if(!isOverridingUser()) {
     <hr class="my-1" />
+    
     <sq-menu-item (click)="handleLogout()">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <i class="fa-fw fal fa-arrow-right-from-bracket"></i>
       {{ 'logout' | transloco }} {{ user().fullName || user().name }}
     </sq-menu-item>
     }

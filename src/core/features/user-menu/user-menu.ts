@@ -40,6 +40,8 @@ export class UserMenuComponent {
     return (principal.fullName || principal.name || '').split(separator).filter(word => word[0] && (word[0] === word[0].toUpperCase())).map(word => word[0]).join('').slice(0, 3);
   });
 
+  readonly isAdmin = computed(() => this.principalStore.principal.isAdministrator() || this.principalStore.principal.isDelegatedAdmin());
+
   readonly allowUserOverride = computed(() => {
     return this.principalStore.allowUserOverride();
   })
@@ -52,7 +54,7 @@ export class UserMenuComponent {
   readonly overrideUserDialog = viewChild<ElementRef>('overrideUserDialog');
 
   changeLanguage(lang: string) {
-    if (this.transloco.getActiveLang() !== lang){
+    if (this.transloco.getActiveLang() !== lang) {
       this.transloco.setActiveLang(lang);
     }
     this.menu()?.close();
@@ -99,4 +101,11 @@ export class UserMenuComponent {
     this.menu()?.close();
   }
 
+  openAdmin() {
+    window.open(`${window.location.origin}/admin`, "_blank");
+  }
+
+  openSinequa() {
+    window.open("https://sinequa.com", "_blank");
+  }
 }
