@@ -43,7 +43,8 @@
         [ngClass]="cn(
           'data-list-item flex px-2 leading-7',
           form.get('option')?.value === option.display && 'selected',
-          option.disabled && 'disabled hidden'
+          option.hidden && 'hidden',
+          option.disabled && 'disabled text-neutral-300 pointer-events-none'
         )"
         [attr.aria-hidden]="option.disabled"
       >
@@ -67,7 +68,7 @@
               for="date-filter-{{ option.display }}"
               class="p-1 grow cursor-pointer"
             >
-              {{ option.display }}
+              {{ option.display | syslang | transloco }}
             </label>
           </li>
         }

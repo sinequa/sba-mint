@@ -74,17 +74,11 @@ export class SearchAllComponent implements OnDestroy {
   query = injectInfiniteQuery<R>(() => ({
     queryKey: ["search-all", this.keys()],
     queryFn: ({ pageParam }) => {
-
       const q = this.searchService.getQuery();
       const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.queryService.search(query).pipe(
-        tap(() => this.queryText.set(this.keys().text ?? '')),
-        tap(result => this.result.set(result)),
-        tap(result => {
-          // Update the aggregations store with the new aggregations
-          this.aggregationsStore.update(result.aggregations);
-
+        tap(() => {
           const queryParams = getState(this.queryParamsStore);
           // Add the current search to the user settings only if there is a text query
           if (queryParams.text) {
@@ -115,6 +109,20 @@ export class SearchAllComponent implements OnDestroy {
     effect(() => {
       getState(this.queryParamsStore);
       this.articles.set(undefined);
+    }, { allowSignalWrites: true });
+
+    // Make Result object available to children and update aggregations store
+    effect(() => {
+      this.query.isSuccess();
+
+      const result = this.query.data()?.pages[0];
+
+      if (!result) return;
+
+      this.result.set(result);
+
+      // Update the aggregations store with the new aggregations
+      this.aggregationsStore.update(result.aggregations);
     }, { allowSignalWrites: true });
   }
 
