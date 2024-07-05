@@ -18,7 +18,7 @@ export function getAuthorizedFilters(injector: Injector): string[] | undefined {
     tab = inject(ActivatedRoute)?.snapshot.url.toString();
   });
 
-  if (!tab || !tabs) return ['treepath','geo', 'company','person', "docformat", "fileext", "sourcestr4", "#date"];
+  if (!tab || !tabs) return ['treepath', 'geo', 'company', 'person', 'docformat', 'fileext', 'sourcestr4', '#date'];
 
   return tabs[tab];
 }
