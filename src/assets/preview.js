@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         else {
             selectHighlight(elements);
         }
+        returnMessage('selected-passage', {});
         returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
     }
     function selectPassage(elements) {
