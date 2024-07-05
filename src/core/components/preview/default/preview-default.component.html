@@ -60,6 +60,7 @@
           </tr>
         }
 
+        @if (hasLabels()) {
         <tr>
           <th>{{ 'labels' | transloco }}</th>
 
@@ -76,7 +77,8 @@
               [metadata]="labels.private"
             />
           </td>
-        </tr>
+      </tr>
+      }
 
       <tr>
         <th>{{ 'type' | transloco }}</th>
