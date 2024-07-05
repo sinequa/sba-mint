@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, HostBinding, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { Subscription, lastValueFrom, map } from 'rxjs';
+import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
 import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, QueryService, SearchService, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective, UserSettingsStore } from '@sinequa/atomic-angular';
@@ -78,6 +78,13 @@ export class SearchAllComponent implements OnDestroy {
       const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.queryService.search(query).pipe(
+        tap(() => {
+          const queryParams = getState(this.queryParamsStore);
+          // Add the current search to the user settings only if there is a text query
+          if (queryParams.text) {
+            this.userSettingsStore.addCurrentSearch(queryParams);
+          }
+        }),
         map(result => {
           result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
           return result;
@@ -104,12 +111,6 @@ export class SearchAllComponent implements OnDestroy {
       this.articles.set(undefined);
     }, { allowSignalWrites: true });
 
-    // Sync the query text with the query params store
-    effect(() => {
-      this.query.isSuccess();
-      this.queryText.set(this.keys().text ?? '')
-    }, { allowSignalWrites: true });
-
     // Make Result object available to children and update aggregations store
     effect(() => {
       this.query.isSuccess();
@@ -123,16 +124,6 @@ export class SearchAllComponent implements OnDestroy {
       // Update the aggregations store with the new aggregations
       this.aggregationsStore.update(result.aggregations);
     }, { allowSignalWrites: true });
-
-    effect(() => {
-      this.query.isSuccess();
-
-      const queryParams = getState(this.queryParamsStore);
-      // Add the current search to the user settings only if there is a text query
-      if (queryParams.text) {
-        this.userSettingsStore.addCurrentSearch(queryParams);
-      }
-    });
   }
 
   ngOnDestroy(): void {
