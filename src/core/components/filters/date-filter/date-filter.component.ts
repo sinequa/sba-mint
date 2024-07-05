@@ -1,11 +1,13 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, Output, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HashMap, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, FilterOperator } from '@sinequa/atomic';
 import { AggregationEx, DateFilter, Filter, QueryParamsStore, cn } from '@sinequa/atomic-angular';
+
+import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
@@ -19,32 +21,35 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-date-filter',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule, TranslocoPipe],
+  imports: [NgClass, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
   templateUrl: './date-filter.component.html',
-  styleUrl: './date-filter.component.scss'
+  styleUrl: './date-filter.component.scss',
+  providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class DateFilterComponent implements OnDestroy {
   cn = cn;
   aggregation = input.required<AggregationEx>();
   title = input<AggregationTitle>({ label: 'Date', icon: 'fas fa-calendar' });
+  displayEmptyDistributionIntervals = input<boolean>(false);
+
 
   @Output() public readonly refreshed = new EventEmitter<Filter>();
   @Output() public readonly updated = new EventEmitter<Filter>();
   @Output() public readonly valueChanged = new EventEmitter<Filter>();
 
-  readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
+  protected readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
 
-  private readonly queryParamsStore = inject(QueryParamsStore);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
 
-  readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
+  protected readonly dateOptions = computed(() => this.translateAggregationToDateOptions(this.aggregation()));
 
-  readonly column = computed(() => this.aggregation().column);
+  protected readonly column = computed(() => this.aggregation().column);
 
-  readonly hasAppliedFilter = computed(() => {
+  protected readonly hasAppliedFilter = computed(() => {
     return this.column() ? !!this.queryParamsStore.getFilterFromColumn(this.column()) : false;
   });
 
-  readonly form = new FormGroup({
+  protected readonly form = new FormGroup({
     option: new FormControl<string | null>(null),
     customRange: new FormGroup({
       from: new FormControl<string | null>(null),
@@ -139,11 +144,16 @@ export class DateFilterComponent implements OnDestroy {
   }
 
   private translateAggregationToDateOptions(aggregation: Aggregation): DateFilter[] {
+    // ! TODO: this code is a bit messy, it should be refactored
     if (!aggregation?.items || aggregation?.items?.length === 0)
       return [];
 
     const items = aggregation.items;
     const arr = items.reduce((acc, curr) => {
+      // if the value is empty, skip it
+      if(!curr.value) return acc;
+
+      // if the value is a empty string, skip it
       if (curr.value === '') return acc;
 
       if((curr.value as string).includes('-')) {
@@ -160,7 +170,10 @@ export class DateFilterComponent implements OnDestroy {
           operator: 'between',
           range: [from, to],
           display: (curr.display ?? curr.value) as string,
-          disabled: curr.count === 0
+          disabled: curr.count === 0,
+          hidden: curr.count === 0 && aggregation.isDistribution
+            ? !this.displayEmptyDistributionIntervals()
+            : false
         });
       }
       else {
@@ -169,7 +182,10 @@ export class DateFilterComponent implements OnDestroy {
           operator: value[0],
           value: value[1],
           display: curr.display || value[1],
-          disabled: curr.count === 0
+          disabled: curr.count === 0,
+          hidden: curr.count === 0 && aggregation.isDistribution
+            ? !this.displayEmptyDistributionIntervals()
+            : false
         });
       }
 
