@@ -64,9 +64,20 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 })
 export class PreviewActionsComponent {
   protected readonly extracts = signal(true);
-  protected readonly entities = signal(true);
+  protected readonly entities = signal(false);
 
   private readonly previewService = inject(PreviewService);
+
+  constructor() {
+    window.addEventListener('message', (event: MessageEvent) => {
+      const message = event.data;
+      if (message.type === 'selected-position') {        
+        this.extracts.set(false);
+        this.entities.set(false);
+        this.previewService.toggle(this.extracts(), this.entities());
+      }
+    });
+  }
 
   public zoomIn(): void {
     this.previewService.zoomIn();
@@ -76,13 +87,23 @@ export class PreviewActionsComponent {
     this.previewService.zoomOut();
   }
 
-  public toggleExtracts(): void {
-    this.extracts.set(!this.extracts());
+  toggleExtracts() {
+    const value = !this.extracts();
+    this.extracts.set(value);
+    if (value === true) {
+      this.entities.set(false);
+    }
     this.previewService.toggle(this.extracts(), this.entities());
+    this.previewService.sendMessage({ action: 'unselect' });
   }
 
-  public toggleEntities(): void {
-    this.entities.set(!this.entities());
+  toggleEntities() {
+    const value = !this.entities();
+    this.entities.set(value);
+    if (value === true) {
+      this.extracts.set(false);
+    }
     this.previewService.toggle(this.extracts(), this.entities());
+    this.previewService.sendMessage({ action: 'unselect' });
   }
 }
