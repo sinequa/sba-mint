@@ -4,13 +4,17 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { Article, PreviewData } from '@sinequa/atomic';
+import { PreviewData } from '@sinequa/atomic';
+import { Article as A } from "@sinequa/atomic";
 import { AppStore, MetadataComponent, PreviewService, SplitPipe } from '@sinequa/atomic-angular';
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
+type Article = A & {
+  [key: string]: string[] | undefined;
+};
 
 @Component({
   selector: 'app-preview-default',
@@ -45,6 +49,12 @@ export class PreviewDefaultComponent implements OnDestroy {
   );
 
   public labels = inject(AppStore).getLabels();
+
+  public readonly hasLabels = computed(() => {
+    const publicLabels = this.article()[this.labels.public];
+    const privateLabels = this.article()[this.labels.private];
+    return (publicLabels && publicLabels.length > 0) || (privateLabels && privateLabels.length > 0);
+  });
 
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
