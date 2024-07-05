@@ -71,7 +71,7 @@ export class PreviewActionsComponent {
   constructor() {
     window.addEventListener('message', (event: MessageEvent) => {
       const message = event.data;
-      if (message.type === 'selected-passage') {        
+      if (message.type === 'selected-position') {        
         this.extracts.set(false);
         this.entities.set(false);
         this.previewService.toggle(this.extracts(), this.entities());
