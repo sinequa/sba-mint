@@ -6,7 +6,8 @@
       "/auth/redirect",
       "/saml/redirect",
       "/r",
-      "/endpoints"
+      "/endpoints",
+      "/assets"
     ],
     "target": "https://su-sba.demo.sinequa.com",
     "secure": false,
