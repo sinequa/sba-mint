@@ -48,7 +48,12 @@ module.exports = {
     },
   },
   plugins: [
-    dropdown, button, tab, article, avatar, pill,
+    dropdown,
+    button,
+    tab,
+    article,
+    avatar,
+    pill,
     plugin(function ({ addComponents, theme }) {
       addComponents({
         '.active:not([disabled])': {

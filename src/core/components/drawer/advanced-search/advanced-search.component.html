@@ -1,6 +1,6 @@
 @if (article()) {
-  <div class="max-h-screen flex flex-col p-6 gap-4 overflow-auto">
-    <section class="w-full flex flex-col gap-6">
+  <div class="h-screen flex flex-col p-6">
+    <section class="w-full flex flex-col gap-6 mb-4">
       <header
         id="panel-control"
         class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary"
@@ -42,58 +42,66 @@
       </header>
     </section>
 
-    <section class="w-full flex flex-col grow overflow-auto">
-      <ul id="panel-content" class="flex flex-col gap-2">
-        <!-- extracts comes from the HTML document not from the Article object -->
-        @for (extract of extracts(); track $index) {
-          <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
-            <p
-              role="button"
-              [id]="'extract-' + extract.id"
-              [innerHTML]="extract.text"
-              (click)="scrollTo('extractslocations', extract.textIndex, true)"
-            ></p>
-          </li>
+    <section class="border-b border-neutral-300 overflow-y-auto" stkPanel>
+      <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+        <p class="flex gap-2 font-semibold items-baseline">
+          <i class="fa-fw far fa-magnifying-glass"></i>
+          {{ 'extracts' | transloco }}
+        </p>
 
-          <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
-        }
+        <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
+      </header>
 
-        @empty {
-          <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
-        }
-      </ul>
+      <div id="panel-content" open>
+        <ul>
+          @for (extract of extracts(); track $index) {
+            <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
+              <p
+                role="button"
+                [id]="'extract-' + extract.id"
+                [innerHTML]="extract.text"
+                (click)="scrollTo('extractslocations', extract.textIndex, true)"
+              ></p>
+            </li>
+  
+            <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
+          }
+  
+          @empty {
+            <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
+          }
+        </ul>
+      </div>
     </section>
 
-    <section>
-      <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
-        <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
-          <p class="flex gap-2 font-semibold items-baseline">
-            <i class="fa-fw far fa-tags"></i>
-            {{ 'labels' | transloco }}
-          </p>
+    <section class="border-b border-neutral-300" stkPanel>
+      <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+        <p class="flex gap-2 font-semibold items-baseline">
+          <i class="fa-fw far fa-tags"></i>
+          {{ 'labels' | transloco }}
+        </p>
 
-          <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-        </header>
+        <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
+      </header>
 
-        <div id="panel-content">
-          <ul class="mt-4 flex flex-col flex-wrap gap-2">
-            <li>
-              <sq-metadata
-                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-                [article]="article()!"
-                [metadata]="labels.public"
-              />
-            </li>
-    
-            <li>
-              <sq-metadata
-                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-                [article]="article()!"
-                [metadata]="labels.private"
-              />
-            </li>
-          </ul>
-        </div>
+      <div id="panel-content">
+        <ul class="mt-4 flex flex-col flex-wrap gap-2">
+          <li>
+            <sq-metadata
+              class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+              [article]="article()!"
+              [metadata]="labels.public"
+            />
+          </li>
+  
+          <li>
+            <sq-metadata
+              class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+              [article]="article()!"
+              [metadata]="labels.private"
+            />
+          </li>
+        </ul>
       </div>
     </section>
   </div>
