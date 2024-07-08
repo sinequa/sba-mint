@@ -23,6 +23,10 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   standalone: true,
   templateUrl: './advanced-search.component.html',
   styles: [`
+    :host {
+      // disable default max-height for panel
+      --panel-max-height: none;
+    }
     /* Hides cancel button from input that as type='search' */
     input[type="search"]::-webkit-search-cancel-button {
       -webkit-appearance: none;
@@ -43,7 +47,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
 export class AdvancedSearchComponent {
-  public readonly article = input<Article | undefined>();
+  public readonly article = input.required<Article>();
   public readonly textChanged = output<string>();
 
   public readonly labels = inject(AppStore).getLabels();

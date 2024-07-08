@@ -16,7 +16,7 @@
 
 @if (article()) {
   <app-advanced-search
-    [article]="article()"
+    [article]="article()!"
     (textChanged)="onTextChanged($event)"
     (close)="drawer.collapse()"
   />

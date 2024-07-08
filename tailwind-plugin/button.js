@@ -11,9 +11,6 @@ function toRgba(variableName) {
 const button = plugin(function ({ addBase, addComponents, theme }) {
   addBase({
     [['button','.btn', '[role=button]']]: {
-      '&:hover': {
-        opacity: '0.9'
-      },
       '&:disabled': {
         opacity: '0.5',
         pointerEvents: 'none'
