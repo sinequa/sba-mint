@@ -11,10 +11,6 @@ function toRgba(variableName) {
 const button = plugin(function ({ addBase, addComponents, theme }) {
   addBase({
     [['button','.btn', '[role=button]']]: {
-      // TODO: breaks layering order fsr, see: https://sinequa.atlassian.net/browse/ES-23405
-      // '&:hover': {
-      //   opacity: '0.9'
-      // },
       '&:disabled': {
         opacity: '0.5',
         pointerEvents: 'none'
