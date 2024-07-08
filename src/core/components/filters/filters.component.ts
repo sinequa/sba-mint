@@ -11,8 +11,8 @@ import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsServ
 import { DropdownComponent } from '../dropdown';
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
-import { MoreFiltersComponent } from './more-filters/more-filters.component';
 import { getAuthorizedFilters } from './filter';
+import { MoreFiltersComponent } from './more-filters/more-filters.component';
 
 export const FILTERS_COUNT = 4;
 
@@ -83,9 +83,6 @@ export class FiltersComponent implements OnInit {
 
       const { aggregations } = getState(this._aggregationsStore);
 
-      if (authorizedFilters.length > FILTERS_COUNT)
-        this.hasMoreFilters.set(true);
-
       let modifiedAggregation: AggregationEx | undefined;
 
       if (authorizedFilters.includes(DATE_FILTER_NAME) && (modifiedAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_COLUMN) as AggregationListEx)) {
@@ -118,6 +115,9 @@ export class FiltersComponent implements OnInit {
       }, [] as Aggregation[]);
 
       const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
+      
+      if (resolvedAggregations.length > FILTERS_COUNT)
+        this.hasMoreFilters.set(true);
 
       this.moreFiltersColumns = resolvedAggregations
         .slice(FILTERS_COUNT)

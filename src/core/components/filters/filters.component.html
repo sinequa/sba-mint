@@ -105,7 +105,9 @@
           <span>{{ 'filters.moreFilters' | transloco }}</span>
 
           @if (moreFiltersCount() > 0) {
-            <span class="ms-1 size-5 pill pill-xs bg-primary text-white flex place-content-center font-semibold">{{ moreFiltersCount() }}</span>
+            <span class="ms-1 size-5 pill pill-xs bg-primary text-white flex place-content-center font-semibold">
+              {{ moreFiltersCount() }}
+            </span>
           }
         </button>
 
