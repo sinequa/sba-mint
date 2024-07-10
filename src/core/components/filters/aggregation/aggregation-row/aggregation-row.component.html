@@ -1,6 +1,9 @@
 <label
   role="button"
-  class="data-list-item leading-7 p-1 ps-2 gap-2 flex grow items-center"
+  [ngClass]="cn(
+    'data-list-item leading-7 p-1 ps-2 gap-2 flex grow items-center',
+    item().count === 0 && 'disabled text-neutral-300 pointer-events-none'
+    )"
 >
 
   @if(item().hasChildren &&  !$any(item()).items) {
@@ -10,6 +13,8 @@
   <input
     type="checkbox"
     value="{{ item().value }}"
+    [attr.disabled]="item().count === 0 ? true : null"
+    [attr.aria-disabled]="item().count === 0"
     (keydown.enter)="select($event, item())"
     (click)="select($event, item())"
     [checked]="item().$selected"
@@ -19,7 +24,7 @@
     <i class="fa-fw {{ item().icon }} self-center justify-self-center"></i>
   }
 
-  {{ item().display || item().value }}
+  {{ item().display || item().value | syslang }}
 </label>
 
 @if($any(item()).hasChildren) {

@@ -2,7 +2,7 @@
   <app-filters
     class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
   />
-  
+
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
   @if (query.isPending()) {
@@ -12,7 +12,7 @@
     <li><app-article-default-skeleton /></li>
   </ul>
   }
-  @else {
+  @else if(query.isSuccess()) {
   <div class="flex mt-4">
     <app-sort-selector
       class="ms-auto"
@@ -37,5 +37,7 @@
     </ul>
     }
 
-  <div infinity-scroll (loadMore)="nextPage()"></div>
+  @if(query.hasNextPage()){
+    <div infinity-scroll (loadMore)="nextPage()"></div>
+  }
 </main>

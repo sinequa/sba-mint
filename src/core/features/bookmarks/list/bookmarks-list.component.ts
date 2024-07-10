@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { Query } from '@sinequa/atomic';
+import { LegacyFilter, Query } from '@sinequa/atomic';
 import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 const BOOKMARKS_ITEMS_PER_PAGE = 5;
@@ -54,7 +54,7 @@ export class BookmarksListComponent {
       filters: {
         field: "id",
         value: bookmark.id
-      }
+      } as LegacyFilter
     }
     this.queryService.search(query, false).subscribe((result) => {
       if (!result.records || result.records.length === 0) {
