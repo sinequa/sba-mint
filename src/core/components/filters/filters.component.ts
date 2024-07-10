@@ -1,23 +1,20 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, OnInit, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, Filter, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { Aggregation, LegacyFilter } from '@sinequa/atomic';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { DropdownComponent } from '../dropdown';
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
-import { getAuthorizedFilters } from './filter';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
+import { SyslangPipe } from '@/core/pipe/syslang';
 
-export const FILTERS_COUNT = 4;
-
-const DATE_FILTER_NAME = "#date";
-const DATE_FILTER_COLUMN = "Modified";
+export const FILTERS_COUNT = 6;
+export const DATE_FILTER_NAME = "Modified";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -37,25 +34,25 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     MoreFiltersComponent,
     FocusWithArrowKeysDirective,
     DropdownComponent,
-    TranslocoPipe
+    TranslocoPipe,
+    SyslangPipe
   ],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
-export class FiltersComponent implements OnInit {
+export class FiltersComponent {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
 
   cn = cn;
 
   private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _injector = inject(Injector);
-  private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _aggregationsService = inject(AggregationsService);
   private readonly _aggregationsStore = inject(AggregationsStore);
   private readonly _searchService = inject(SearchService);
   private readonly appStore = inject(AppStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
-  readonly filters = this.queryParamsStore.filters || signal([]);
+  readonly filters = computed(() => getState(this.queryParamsStore).filters || []);
   readonly hasMoreFilters = signal<boolean>(false);
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly dateFilterDropdown = signal<FilterDropdown | undefined>(undefined);
@@ -65,57 +62,46 @@ export class FiltersComponent implements OnInit {
 
     // count more filters
     return filters
-      .filter(f => this.moreFiltersColumns.includes(f.column))
-      .reduce((acc, f) => acc + f.values.length, 0);
+      .filter(f => this.moreFiltersColumns.includes(f.field))
+      .reduce((acc, f) => {
+        const { value, values, filters } = f;
+        if (value) acc++;
+        if (values) acc += values.length;
+        if (filters) acc += filters.length;
+        return acc
+      }, 0);
   });
 
-
-  private readonly _subscriptions = new Subscription();
 
   moreFiltersColumns: string[] = [];
 
   constructor() {
 
     effect(() => {
-      const authorizedFilters = getAuthorizedFilters(this._injector);
-
-      if (!authorizedFilters) return;
-
       const { aggregations } = getState(this._aggregationsStore);
 
-      let modifiedAggregation: AggregationEx | undefined;
+      if (aggregations.length > FILTERS_COUNT) {
+        this.hasMoreFilters.set(true);
+      }
 
-      if (authorizedFilters.includes(DATE_FILTER_NAME) && (modifiedAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_COLUMN) as AggregationListEx)) {
-        const filter = this.queryParamsStore.getFilterFromColumn(modifiedAggregation.column);
-        const value = this.getFilterValue(filter);
+      const dateAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_NAME) as AggregationListEx
+
+      if (dateAggregation) {
+        const filter = this.queryParamsStore.getFilterFromColumn(dateAggregation.column);
 
         this.dateFilterDropdown.set({
           label: 'Date',
-          aggregation: modifiedAggregation,
-          currentFilter: filter,
-          value,
+          aggregation: dateAggregation,
+          firstFilter: filter,
           icon: 'far fa-calendar-day'
         });
       }
 
-      const resolvedAggregations = authorizedFilters.reduce((acc, name) => {
-        let aggregation = aggregations.find(agg => agg.column === name);
-
-        if (!aggregation) {
-          const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore) as CCApp, this._activatedRoute.snapshot.data['queryName']))
-
-          if (aggColumn) {
-            aggregation = aggregations.find(agg => agg.column === aggColumn);
-          }
-        }
-
-        if (aggregation) acc.push(aggregation);
-
-        return acc;
-      }, [] as Aggregation[]);
+      // remove date filter from the list of filters because it is displayed separately
+      const resolvedAggregations = [...aggregations.filter(aggregation => aggregation.name !== DATE_FILTER_NAME)];
 
       const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
-      
+
       if (resolvedAggregations.length > FILTERS_COUNT)
         this.hasMoreFilters.set(true);
 
@@ -127,29 +113,15 @@ export class FiltersComponent implements OnInit {
     }, { allowSignalWrites: true })
   }
 
-  ngOnInit(): void {
-    this._subscriptions.add(
-      this._activatedRoute.queryParams.subscribe((queryParams) => {
-        let filters;
-        if (queryParams['f']) {
-          filters = JSON.parse(queryParams['f']);
-        }
-        this.queryParamsStore.patch({ filters });
-      })
-    );
-  }
-
-  public filterUpdated(filter: Filter, index: number): void {
+  public filterUpdated(filter: LegacyFilter, index: number): void {
     this.updateDropdownButtons(filter, index);
-
     this.queryParamsStore.updateFilter(filter);
-
     this._searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters as ApiFilter })),
+      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -161,13 +133,12 @@ export class FiltersComponent implements OnInit {
     });
   }
 
-  public dateFilterRefreshed(filter: Filter): void {
+  public dateFilterRefreshed(filter: LegacyFilter): void {
     this.updateDateDropdownButton(filter);
-
     this._cdr.detectChanges();
   }
 
-  public dateFilterUpdated(filter: Filter): void {
+  public dateFilterUpdated(filter: LegacyFilter): void {
     this.queryParamsStore.updateFilter(filter);
     this._searchService.search([]);
   }
@@ -187,6 +158,24 @@ export class FiltersComponent implements OnInit {
   }
 
 
+  private flattenFilters(filters: LegacyFilter[]) {
+    let flattenedValues: string[] = [];
+
+    function extractValues(filters: LegacyFilter[]) {
+      for (const filter of filters) {
+        if (filter.value) {
+          flattenedValues.push(filter.value);
+        }
+        if (filter.filters) {
+          extractValues(filter.filters);
+        }
+      }
+    }
+
+    extractValues(filters);
+    return flattenedValues;
+  }
+
   /**
    * Builds an array of filter dropdowns from the given aggregations.
    *
@@ -200,79 +189,53 @@ export class FiltersComponent implements OnInit {
    * @returns An array of filter dropdowns.
    */
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
+    const { filters = [] } = getState(this.queryParamsStore);
+    const flattenedValues = this.flattenFilters(filters);
+
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
-        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
+        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
-          item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
+          item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
           item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
         });
 
-        return [aggregation, display] as [AggregationEx, string];
+        return aggregation as AggregationEx;
       })
-      .map(([aggregation, display]) => {
+      .map((aggregation) => {
+        const { display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const more = f?.values.length ? f.values.length - 1 : undefined;
-
-        const { items } = aggregation;
-        if (items) {
-          // filter out items that are not selected
-          // find the selected items who is the first values of filter
-          const item = items.filter((item) => item.$selected).find((item) => f?.values[0] === item.value);
-          if (item) {
-            return ({
-              label: display,
-              aggregation: aggregation,
-              icon: this.appStore.getAggregationIcon(aggregation.column),
-              currentFilter: f,
-              value: { text: f?.values[0], display: item.display || item.value },
-              moreFiltersCount: more,
-            })
-          }
-        }
+        const more = f?.filters?.length ? f.filters.length - 1 : undefined;
 
         return ({
           label: display,
           aggregation: aggregation,
           icon: this.appStore.getAggregationIcon(aggregation.column),
-          currentFilter: f,
-          value: { text: f?.values[0] },
+          firstFilter: f,
           moreFiltersCount: more,
-        })
+        });
       });
 
-    return dropdowns as FilterDropdown[];
+    return dropdowns;
   }
 
-  private updateDropdownButtons(filter: Filter, index: number): void {
-    this.filterDropdowns.update((filters: FilterDropdown[]) => {
-      filters[index].currentFilter = filter;
-      filters[index].moreFiltersCount = filter.values.length - 1;
+  private updateDropdownButtons(filters: LegacyFilter, index: number): void {
+    this.filterDropdowns.update((f: FilterDropdown[]) => {
+      f[index].firstFilter = filters;
+      f[index].moreFiltersCount = filters.filters?.length || 1 - 1;
 
-      return filters;
+      return f;
     });
   }
 
-  private updateDateDropdownButton(filter: Filter): void {
+  private updateDateDropdownButton(filter: LegacyFilter): void {
     this.dateFilterDropdown.update((value) => {
       if (value) {
-        value.currentFilter = filter;
+        value.firstFilter = filter;
       }
       return value;
     });
   }
 
-  private getFilterValue(filter?: Filter): { operator?: string, text: string } | undefined {
-    if (!filter) return undefined;
-
-    if (filter.operator === 'between') return { text: `[${filter.values[0]} - ${filter.values[1]}]` };
-    if (filter.operator === 'gte') return { operator: "&#8805;", text: filter.values[0] };
-    if (filter.operator === 'lte') return { operator: "&#8804;", text: filter.values[0] };
-    if (filter.operator === 'lt') return { text: `< ${filter.values[0]}` };
-    if (filter.operator === 'gt') return { text: `> ${filter.values[0]}` };
-
-    return { text: filter.values[0] };
-  }
 }
