@@ -104,6 +104,33 @@
             </li>
           </ul>
         </div>
+
+        @if (showGeo() && (article().geo ?? []).length > 0) {
+          <ng-container *ngTemplateOutlet="metadataPanel; context: {
+            metadata: article()!.geo,
+            name: 'Location',
+            iconClass: 'far fa-location-dot',
+            entity: 'geo'
+          }"></ng-container>
+          }
+  
+          @if (showCompanies() && (article().company ?? []).length > 0) {
+          <ng-container *ngTemplateOutlet="metadataPanel; context: {
+            metadata: article()!.company,
+            name: 'Companies',
+            iconClass: 'far fa-buildings',
+            entity: 'company'
+          }"></ng-container>
+          }
+  
+          @if (showPerson() && (article().person ?? []).length > 0) {
+          <ng-container *ngTemplateOutlet="metadataPanel; context: {
+            metadata: article()!.person,
+            name: 'Mentioned',
+            iconClass: 'far fa-at',
+            entity: 'person'
+          }"></ng-container>
+          }
       </section>
     }
   </div>
