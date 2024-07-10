@@ -3,12 +3,11 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, Filter as ApiFilter, CCApp, resolveToColumnName } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, Filter, FilterDropdown, QueryParamsStore, SearchService, buildQuery, getCurrentQueryName } from '@sinequa/atomic-angular';
+import { Aggregation, LegacyFilter } from '@sinequa/atomic';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery } from '@sinequa/atomic-angular';
 
-import { getAuthorizedFilters } from '../filter';
-import { FILTERS_COUNT } from '../filters.component';
 import { AggregationComponent } from '../aggregation/aggregation.component';
+import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -20,13 +19,18 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   standalone: true,
   imports: [AggregationComponent, TranslocoPipe],
   templateUrl: './more-filters.component.html',
+  styles: [`
+    :host {
+      scrollbar-width: none;
+    }
+  `],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class MoreFiltersComponent implements OnDestroy {
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
-  readonly hasFilters = signal<boolean[]>([]);
+  readonly hasFilters = signal<LegacyFilter[]>([]);
   readonly hasAppliedFilters = signal<boolean[]>([]);
   readonly filterCounts = signal<number[]>([]);
 
@@ -42,28 +46,18 @@ export class MoreFiltersComponent implements OnDestroy {
 
   constructor() {
     effect(() => {
-      const authorizedFilters = getAuthorizedFilters(this._injector);
-
-      if (!authorizedFilters) return;
-
-      const { aggregations } = getState(this._aggregationsStore);
-
-      const resolvedAggregations = authorizedFilters.reduce((acc, name) => {
-        let aggregation = aggregations.find(agg => agg.column === name);
-
-        if (!aggregation) {
-          const aggColumn = runInInjectionContext(this._injector, () => resolveToColumnName(name, getState(this.appStore) as CCApp, getCurrentQueryName()))
-
-          aggregation = aggregations.find(agg => agg.column === aggColumn);
-        }
-
-        if (aggregation) acc.push(aggregation);
-
-        return acc;
-      }, [] as Aggregation[]);
+      // as slice mutates the array, we need to clone it first
+      // and then remove the first FILTERS_COUNT elements
+      // to get the aggregations that are not shown in the filters
+      // and remove also the "Modified" aggregation
+      const aggregations = [...getState(this._aggregationsStore).aggregations];
 
       // create filters with only aggregations that are authorized and not already shown
-      const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(resolvedAggregations.splice(FILTERS_COUNT));
+      const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(
+        aggregations.splice(FILTERS_COUNT)
+          .filter(agg => agg.name !== DATE_FILTER_NAME)
+          .filter(agg => agg.items !== undefined && agg.items.length > 0)
+      );
 
       this.filterDropdowns.set(filterDropdowns);
 
@@ -75,46 +69,34 @@ export class MoreFiltersComponent implements OnDestroy {
   }
 
   public applyFilter(index: number) {
-    this.aggregations.toArray()[index].apply();
-
-    const filters = this.aggregations.toArray()[index].aggregation().items
-      .filter((item: AggregationListItem) => item.$selected)
-      .map((item: AggregationListItem) => item.value?.toString() || '');
-
-    const filter: Filter = {
-      column: this.filterDropdowns()[index].aggregation.column,
-      label: filters[0],
-      values: filters
-    };
-
-    this.updateFiltersCount(filter, index);
+    const filter = this.hasFilters()[index] || [];
     this.queryParamsStore.updateFilter(filter);
+
+    this.updateFiltersFlags(filter, index);
+
     this._searchService.search([]);
   }
 
   public clearFilter(index: number) {
     this.aggregations.toArray()[index].clearFilters();
-    const filter: Filter = {
-      column: this.filterDropdowns()[index].aggregation.column,
-      label: undefined,
-      values: []
+    const filter: LegacyFilter = {
+      field: this.filterDropdowns()[index].aggregation.column,
+      display: ''
     };
 
-    this.updateFiltersCount(filter, index);
-    this.updateHasFilters(filter, index);
+    this.updateFiltersFlags(filter, index);
 
 
     this.queryParamsStore.updateFilter({
-      column: this.filterDropdowns()[index].aggregation.column,
-      label: undefined,
-      values: []
+      field: this.filterDropdowns()[index].aggregation.column,
+      display: ''
     });
     this._searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
     this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters as ApiFilter })),
+      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -126,21 +108,47 @@ export class MoreFiltersComponent implements OnDestroy {
     });
   }
 
-  private updateFiltersCount(filter: Filter, index: number) {
+  private updateFiltersFlags(filter: LegacyFilter, index: number) {
     this.updateFilterCounts(filter, index);
     this.updateHasFilters(filter, index);
   }
 
+  private flattenFilters(filters: LegacyFilter[]) {
+    let flattenedValues: string[] = [];
+
+    function extractValues(filters: LegacyFilter[]) {
+      for (const filter of filters) {
+        if (filter.value) {
+          flattenedValues.push(filter.value);
+        }
+        if (filter.filters) {
+          extractValues(filter.filters);
+        }
+      }
+    }
+
+    extractValues(filters);
+    return flattenedValues;
+  }
+
   private buildMoreFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
+    const { filters = [] } = getState(this.queryParamsStore);
+    const flattenedValues = this.flattenFilters(filters);
+
     return (aggregations as AggregationEx[])
       .map((aggregation, index) => {
-        const { items = [], name = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as AggregationEx || aggregation as AggregationEx;
+        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+
+        aggregation?.items?.forEach((item: AggregationListItem) => {
+          item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
+          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
+        });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const count = f?.values.length ?? undefined;
+        const count =  f?.filters?.length ? f.filters.length : f ? 1 : undefined;
 
         if (f) {
-          this.updateFiltersCount(f, index)
+          this.updateFiltersFlags(f, index)
         }
 
         this.hasAppliedFilters.update((values) => {
@@ -148,32 +156,26 @@ export class MoreFiltersComponent implements OnDestroy {
           return values;
         });
 
-        aggregation?.items?.forEach((item: AggregationListItem) => {
-          item.$selected = f?.values.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it: AggregationListItem) => it.value === item.value)?.icon;
-        });
-
         return ({
-          label: name,
+          label: display,
           aggregation: aggregation as AggregationEx,
-          column: aggregation.column,
-          currentFilter: f,
           icon: this.appStore.getAggregationIcon(aggregation.column),
+          firstFilter: f,
           moreFiltersCount: count
         })
       });
   }
 
-  protected updateHasFilters(filter: Filter, index: number): void {
+  protected updateHasFilters(filter: LegacyFilter, index: number): void {
     this.hasFilters.update((values) => {
-      values[index] = filter.values.length > 0;
+      values[index] = filter;
       return values;
     });
   }
 
-  private updateFilterCounts(filter: Filter, index: number): void {
+  private updateFilterCounts(filter: LegacyFilter, index: number): void {
     this.filterCounts.update((values) => {
-      values[index] = filter.values.length;
+      values[index] = filter?.filters?.length || 0;
       return values;
     });
   }

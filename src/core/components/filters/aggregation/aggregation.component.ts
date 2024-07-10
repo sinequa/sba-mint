@@ -3,10 +3,12 @@ import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, in
 import { ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, Filter, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
+import { AggregationItem, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
-import { AggregationRowComponent } from "./components/aggregation-row.component";
+import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
+
+type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
 
 export type AggregationTitle = {
   label: string;
@@ -41,8 +43,8 @@ export class AggregationComponent implements OnInit {
    * Event emitter for changes in filters.
    * Emits a `Filter` object when the filters change (**apply** or **clear** actions).
    */
-  @Output() public readonly onFiltersChanges = new EventEmitter<Filter>();
-  @Output() public readonly onSelect = new EventEmitter<Filter>();
+  @Output() public readonly onFiltersChanges = new EventEmitter<LegacyFilter>();
+  @Output() public readonly onSelect = new EventEmitter<LegacyFilter>();
 
   private queryParamsStore = inject(QueryParamsStore);
 
@@ -56,8 +58,24 @@ export class AggregationComponent implements OnInit {
   selected = computed<AggregationListItem[]>(() => {
     // $selected elements must be displayed first, but the other elements must stay in the same order
     const selected = this.items().filter(item => item.$selected);
+
+    // const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
+    // if (columnFilter?.filters) {
+    //   const selectedFilters = columnFilter.filters.map((filter: LegacyFilter) => {
+    //     return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
+    //   }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+    //   selected.push(...selectedFilters);
+    // }
+    // if (columnFilter?.value) {
+    //   const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
+    //   if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
+    //     selected.push(selectedFilters);
+    //   };
+    // }
+
     // remove from notSelected the elements that are already in selected (due to a load more action for example)
     const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+
     return selected.concat(notSelected) as AggregationListItem[];
   });
 
@@ -73,16 +91,38 @@ export class AggregationComponent implements OnInit {
   }
 
   public select(item: AggregationListItem): void {
-    const filters = this.getSelectedFilters()
+    const filters = this.getFilters();
 
     this.hasFilter.set(Boolean(filters.length));
-    this.onSelect.emit({ column: this.aggregation().column, label: item.value?.toString() || '', values: filters });
+
+    // if filters length > 1, we need to wrap them in an "or" filter
+    if (filters.length > 1) {
+      const display = filters[0].display;
+      this.onSelect.emit({ operator: 'or', filters, field: this.aggregation().column, display } as LegacyFilter);
+    } else {
+      this.onSelect.emit(filters[0]);
+    }
   }
 
   public apply(): void {
-    const filters = this.getSelectedFilters();
+    const filters = this.getFilters();
 
-    this.onFiltersChanges.emit({ column: this.aggregation().column, label: filters[0], values: filters });
+    // if filters length > 1, we need to wrap them in an "or" filter
+    if (filters.length > 1) {
+      const display = filters[0].display;
+      // if aggregation not a distribution, we need to merge the filters into a single filter with an in operator
+      // with the values of the filters
+      if (this.aggregation().isDistribution) {
+        this.onFiltersChanges.emit({ operator: 'or', filters, field: this.aggregation().column, display } as LegacyFilter);
+      }
+      else {
+        const values = filters.map(filter => filter.value);
+        this.onFiltersChanges.emit({ operator: 'in', field: this.aggregation().column, values, display, filters } as LegacyFilter);
+      }
+    }
+    else {
+      this.onFiltersChanges.emit(filters[0]);
+    }
   }
 
   public clearFilters(notifyAsUpdated: boolean = true): void {
@@ -100,36 +140,19 @@ export class AggregationComponent implements OnInit {
       allItems.forEach(item => item.$selected = false);
     }
 
-    if (notifyAsUpdated) this.onFiltersChanges.emit({ column: this.aggregation().column, label: undefined, values: [] });
+    if (notifyAsUpdated) this.onFiltersChanges.emit({ field: this.aggregation().column, display: '' } as LegacyFilter);
   }
 
   private hasFilters(): boolean {
     if (this.aggregation().isTree) {
-      // TODO: implement
-      return false;
+      const allItems = this.getFlattenTreeItems();
+      return !!allItems.some(item => item.$selected);
     }
-    return !!(this.aggregation().items?.some(item => item.$selected));
-  }
-
-  private getSelectedFilters(): string[] {
-    let filters: string[] = [];
-    if (!this.aggregation().isTree) {
-      filters = this.aggregation().items
-        .filter(item => item.$selected)
-        .map((item) => item.value?.toString() || '');
-    }
-
-    if (this.aggregation().isTree) {
-      filters = this.getFlattenTreeItems()
-        .filter(item => item.$selected)
-        .map((item) => `/${item.$path}/*` || '');
-    }
-
-    return filters;
+    return !!(this.selected().some(item => item.$selected));
   }
 
   private getFlattenTreeItems(): TreeAggregationNode[] {
-    if(this.aggregation().items === undefined) return [];
+    if (this.aggregation().items === undefined) return [];
 
     const flattenItems = (items: TreeAggregationNode[]): TreeAggregationNode[] => {
       return items.reduce((flat, item) => {
@@ -138,6 +161,61 @@ export class AggregationComponent implements OnInit {
     };
 
     return flattenItems(this.aggregation().items as TreeAggregationNode[]);
+  }
+
+  protected getFilters() {
+    if (this.aggregation().isTree) return this.getFiltersForTree();
+    return this.getFiltersForList();
+  }
+
+  protected getFiltersForTree(): LegacyFilter[] {
+    const items = this.aggregation().items || [];
+    const filters = items.map(item => this.toFilter(item));
+    return filters;
+  }
+  protected getFiltersForList(): LegacyFilter[] {
+    const items = this.aggregation().items.filter(item => item.$selected) || [];
+    const filters = items.map(item => this.toFilter(item));
+    return filters;
+  }
+
+  protected toFilter(item: AggregationItem): LegacyFilter {
+    const field = this.aggregation().column;
+
+    if (this.aggregation().isTree) {
+      // const _item = item as TreeAggregationNode;
+      // return {field, value: '/' +_item.$path! + '/*', display: _item.value}
+      const items = this.getFlattenTreeItems()
+        .filter(item => item.$selected)
+        .map((item) => `/${item.$path}/*` || '');
+
+      return { operator: "in", field, values: items, display: items[0] };
+    }
+
+    if (this.aggregation().isDistribution) {
+      const res = (item.value as string).match(/.*\:\(?([><=\d\-\.AND ]+)\)?/);
+      if (res?.[1]) {
+        const expr = res?.[1].split(" AND ");
+        const filters = expr.map(e => {
+          const operator: 'gte' | 'lt' = e.indexOf('>=') !== -1 ? 'gte' : 'lt';
+          let value: FieldValue = e.substring(e.indexOf(' ') + 1);
+          return { field, operator, value, display: item.display || item.value };
+        });
+
+        if (filters.length === 2) {
+          return { operator: 'and', filters, display: filters[0].display || filters[0].value, field } as LegacyFilter;
+        }
+        else if (filters.length === 1) {
+          return { ...filters[0], field } as LegacyFilter;
+        }
+        throw new Error("Failed to parse distribution expression");
+      }
+    }
+
+    if (typeof item.value === "string") {
+      return { field, value: item.value, operator: "contains", display: item.display } as LegacyFilter;
+    }
+    return { field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
   }
 
   loadMore(): void {

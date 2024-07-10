@@ -39,6 +39,7 @@
     <button
       class="btn btn-ghost"
       [attr.title]="'preview.copyPreviewLink' | transloco"
+      [disabled]="!hasExternalLink()"
       (click)="copyLink()"
     >
       <i

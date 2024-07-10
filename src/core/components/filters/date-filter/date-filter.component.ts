@@ -4,14 +4,26 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, FilterOperator } from '@sinequa/atomic';
-import { AggregationEx, DateFilter, Filter, QueryParamsStore, cn } from '@sinequa/atomic-angular';
+import { Aggregation, AggregationItem, FilterOperator, LegacyFilter } from '@sinequa/atomic';
+import { AggregationEx, QueryParamsStore, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 
+import { getState } from '@ngrx/signals';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
 const ALLOW_CUSTOM_RANGE = true;
+type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
+type DateFilter = {
+  label?: string;
+  operator?: FilterOperator;
+  value?: string;
+  range?: [string, string];
+  display?: string;
+  disabled?: boolean;
+  hidden?: boolean;
+}
+
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -33,9 +45,9 @@ export class DateFilterComponent implements OnDestroy {
   displayEmptyDistributionIntervals = input<boolean>(false);
 
 
-  @Output() public readonly refreshed = new EventEmitter<Filter>();
-  @Output() public readonly updated = new EventEmitter<Filter>();
-  @Output() public readonly valueChanged = new EventEmitter<Filter>();
+  @Output() public readonly refreshed = new EventEmitter<LegacyFilter>();
+  @Output() public readonly updated = new EventEmitter<LegacyFilter>();
+  @Output() public readonly valueChanged = new EventEmitter<LegacyFilter>();
 
   protected readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
 
@@ -66,9 +78,9 @@ export class DateFilterComponent implements OnDestroy {
   constructor() {
 
     effect(() => {
-      const filters = this.queryParamsStore.filters();
+      const filters = getState(this.queryParamsStore).filters || [];
       if (filters) {
-        this.updateForm(filters.find((f: Filter) => f.column === this.column()));
+        this.updateForm(filters?.find((f: LegacyFilter) => f.field === this.column()));
       }
     })
 
@@ -90,41 +102,37 @@ export class DateFilterComponent implements OnDestroy {
 
   public submit(): void {
     const value = this.form.value;
-    const dateOption = this.dateOptions().find((option: DateFilter) => option.display === value.option);
-    const filter: Filter = {
-      column: this.column(),
-      label: value.option as string,
-      values: [],
-    };
 
     if (value.option !== 'custom-range') {
-      filter.operator = dateOption?.operator as FilterOperator;
-      if(filter.operator === "between") {
-        filter.values = dateOption?.range ?? [];
-      } else {
-        filter.values = [dateOption?.value ?? ''];
-      }
+      const dateOption = this.dateOptions().find((option: DateFilter) => option.display === value.option);
+      this.updated.emit({operator: dateOption?.operator || 'eq', field: this.column(), display: dateOption?.display ?? '', value: dateOption?.value});
     }
     else if (value.customRange) {
       // if to is null, operator is gte
       // if from is null, operator is lte
       // if both are not null, operator is between
+      const filter: LegacyFilter = {
+        field: this.column(),
+        display: value.option as string
+      };
 
       if (value.customRange.from && value.customRange.to) {
         filter.operator = 'between';
-        filter.values = [value.customRange.from, value.customRange.to];
+        filter.start = value.customRange.from;
+        filter.end = value.customRange.to;
       }
       else if (value.customRange.from) {
         filter.operator = 'gte';
-        filter.values = [value.customRange.from];
+        filter.value = value.customRange.from;
       }
       else if (value.customRange.to) {
         filter.operator = 'lte';
-        filter.values = [value.customRange.to];
+        filter.value = value.customRange.to;
       }
+
+      this.updated.emit(filter);
     }
 
-    this.updated.emit(filter);
   }
 
   public clearFilters(notifyAsUpdated: boolean = true): void {
@@ -136,7 +144,7 @@ export class DateFilterComponent implements OnDestroy {
       }
     })
 
-    if (notifyAsUpdated) this.updated.emit({ column: this.column(), label: undefined, values: [] });
+    if (notifyAsUpdated) this.updated.emit({ field: this.column(), display: '', values: [] });
   }
 
   protected forceFilterToCustomRange(): void {
@@ -144,7 +152,6 @@ export class DateFilterComponent implements OnDestroy {
   }
 
   private translateAggregationToDateOptions(aggregation: Aggregation): DateFilter[] {
-    // ! TODO: this code is a bit messy, it should be refactored
     if (!aggregation?.items || aggregation?.items?.length === 0)
       return [];
 
@@ -156,83 +163,68 @@ export class DateFilterComponent implements OnDestroy {
       // if the value is a empty string, skip it
       if (curr.value === '') return acc;
 
-      if((curr.value as string).includes('-')) {
-        // if the value contains "-" returns [operator: "between", {from, to}]
-        // where from is the first day of the month and to is the last day of the month
-        const [yearSection, month] = (curr.value as string).split('-');
-
-        // options from a distribution start with a keyword (e.g.: 'thisMonth:=> [DATE]). Only keep the date
-        const yearSectionSplit = yearSection.split(' ');
-        const year = yearSectionSplit[yearSectionSplit.length - 1];
-        const from = `${year}-${month}-01`;
-        const to = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
+        const value = this.parseValueAndOperatorFromItem(curr);
         acc.push({
-          operator: 'between',
-          range: [from, to],
-          display: (curr.display ?? curr.value) as string,
+          operator: value.operator,
+          value: value.value,
+          display: curr.display || value.display,
           disabled: curr.count === 0,
           hidden: curr.count === 0 && aggregation.isDistribution
             ? !this.displayEmptyDistributionIntervals()
             : false
         });
-      }
-      else {
-        const value = this.parseValueAndOperatorFromItem(curr.value as string);
-        acc.push({
-          operator: value[0],
-          value: value[1],
-          display: curr.display || value[1],
-          disabled: curr.count === 0,
-          hidden: curr.count === 0 && aggregation.isDistribution
-            ? !this.displayEmptyDistributionIntervals()
-            : false
-        });
-      }
 
       return acc;
     }, [] as DateFilter[]);
+
     return arr;
   }
 
-  private parseValueAndOperatorFromItem(value: string): [string, string] {
-    if(!value.includes(':')) return ['eq', value];
+  protected parseValueAndOperatorFromItem(item: AggregationItem) {
+    const field = this.aggregation().column;
+    const res = (item.value as string).match(/.*\:\(?([><=\d\-\.AND ]+)\)?/);
+    if (res?.[1]) {
+      const expr = res?.[1].split(" AND ");
+      const filters = expr.map(e => {
+        const operator: 'gte' | 'lt' = e.indexOf('>=') !== -1 ? 'gte' : 'lt';
+        let value: FieldValue = e.substring(e.indexOf(' ') + 1);
+        return { field, operator, value, display: item.display || item.value };
+      });
 
-    const skimmed = value.split(':')[1];
-    // eslint-disable-next-line prefer-const
-    let [operator, valueStr] = skimmed.split(' ');
-
-    switch (operator) {
-      case '>=': operator = 'gte'; break;
-      case '<=': operator = 'lte'; break;
-      case '>': operator = 'gt'; break;
-      case '<': operator = 'lt'; break;
-      case '=': operator = 'eq'; break;
+      if (filters.length === 2) {
+        return { operator: 'and', filters, display: filters[0].display || filters[0].value, field } as LegacyFilter;
+      }
+      else if (filters.length === 1) {
+        return { ...filters[0], field } as LegacyFilter;
+      }
+      throw new Error("Failed to parse distribution expression");
     }
 
-    return [operator, valueStr];
+    return { field, operator: 'eq', value: item.value as string | number | boolean , display: item.display } as LegacyFilter;
+
   }
 
-  private updateForm(filter: Filter | undefined): void {
+  private updateForm(filter: LegacyFilter | undefined): void {
     if (!filter) {
       this.clearFilters(false);
       return;
     }
 
     const operator = filter.operator;
-    const values = filter.values;
-    const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === values[0])?.display ?? "custom-range";
+    const value = filter.value;
+    const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === value)?.display ?? "custom-range";
 
     let from, to;
     if (code === 'custom-range') {
       if (operator === 'lte') {
-        to = values[0];
+        to = filter.end;
       }
       else if (operator === 'gte') {
-        from = values[0];
+        from = filter.start;
       }
       else if (operator === 'between') {
-        from = values[0];
-        to = values[1];
+        from = filter.start;
+        to = filter.end;
       }
     }
 
@@ -244,6 +236,6 @@ export class DateFilterComponent implements OnDestroy {
       }
     };
 
-    this.form.setValue(formValue);
+    this.form.setValue(formValue as any);
   }
 }
