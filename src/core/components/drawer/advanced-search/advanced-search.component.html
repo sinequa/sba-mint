@@ -74,36 +74,38 @@
       </div>
     </section>
 
-    <section class="border-b border-neutral-300" stkPanel>
-      <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
-        <p class="flex gap-2 font-semibold items-baseline">
-          <i class="fa-fw far fa-tags"></i>
-          {{ 'labels' | transloco }}
-        </p>
+    @if (hasLabels()) {
+      <section class="border-b border-neutral-300" stkPanel>
+        <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+          <p class="flex gap-2 font-semibold items-baseline">
+            <i class="fa-fw far fa-tags"></i>
+            {{ 'labels' | transloco }}
+          </p>
 
-        <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-      </header>
+          <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
+        </header>
 
-      <div id="panel-content">
-        <ul class="mt-4 flex flex-col flex-wrap gap-2">
-          <li>
-            <sq-metadata
-              class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-              [article]="article()!"
-              [metadata]="labels.public"
-            />
-          </li>
-  
-          <li>
-            <sq-metadata
-              class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-              [article]="article()!"
-              [metadata]="labels.private"
-            />
-          </li>
-        </ul>
-      </div>
-    </section>
+        <div id="panel-content">
+          <ul class="mt-4 flex flex-col flex-wrap gap-2">
+            <li>
+              <sq-metadata
+                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+                [article]="article()!"
+                [metadata]="labels.public"
+              />
+            </li>
+    
+            <li>
+              <sq-metadata
+                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
+                [article]="article()!"
+                [metadata]="labels.private"
+              />
+            </li>
+          </ul>
+        </div>
+      </section>
+    }
   </div>
 }
 

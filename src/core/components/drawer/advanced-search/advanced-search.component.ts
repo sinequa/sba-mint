@@ -68,6 +68,12 @@ export class AdvancedSearchComponent {
   public hovering = signal<string | undefined>(undefined);
   public hoverIndex = computed(() => this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0);
 
+  public readonly hasLabels = computed(() => {
+    const article: any = this.article(); // required as any otherwise the lines below won't compile
+    const publicLabels: string[] | undefined = article[this.labels.public];
+    const privateLabels: string[] | undefined = article[this.labels.private];
+    return (publicLabels && publicLabels.length > 0) || (privateLabels && privateLabels.length > 0);
+  });
 
   protected executeSearch(): void {
     this.textChanged.emit(this.input());
