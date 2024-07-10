@@ -4,13 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article, CCWebService } from '@sinequa/atomic';
+import { Article as A, CCWebService } from '@sinequa/atomic';
 import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, ReplacePipe, SelectionStore } from '@sinequa/atomic-angular';
 import { PanelDirective } from 'toolkit';
 
 interface MetadataNavigation {
   index: number;
   value: string;
+}
+
+type ArticleType = 'default' | 'person' | 'matters' | 'slide' | 'deals' | 'person-banker';
+
+interface Article extends A {
+  value?: string;
+  type?: ArticleType;
+  parentFolder?: string;
+  geo?: ArticleMetadata[];
+  company?: ArticleMetadata[];
+  person?: ArticleMetadata[];
+  queryDuplicates?: Article[];
+  $queryName?: string;
+  s_tab?: string;
 }
 
 type PreviewWebService = CCWebService & {
