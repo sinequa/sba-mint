@@ -5,10 +5,11 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, CFilter, CFilterItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';
+import { NgClass } from '@angular/common';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -18,7 +19,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-more-filters',
   standalone: true,
-  imports: [AggregationComponent, TranslocoPipe],
+  imports: [NgClass, AggregationComponent, TranslocoPipe],
   templateUrl: './more-filters.component.html',
   styles: [`
     :host {
@@ -28,6 +29,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class MoreFiltersComponent implements OnDestroy {
+  cn = cn;
+
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
@@ -137,11 +140,11 @@ export class MoreFiltersComponent implements OnDestroy {
 
     return (aggregations as AggregationEx[])
       .map((aggregation, index) => {
-        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { items = [], display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
@@ -159,9 +162,10 @@ export class MoreFiltersComponent implements OnDestroy {
         return ({
           label: display,
           aggregation: aggregation as AggregationEx,
-          icon: this.appStore.getAggregationIcon(aggregation.column),
+          icon,
           firstFilter: f,
-          moreFiltersCount: count
+          moreFiltersCount: count,
+          hidden
         })
       });
   }
