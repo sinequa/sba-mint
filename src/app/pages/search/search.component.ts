@@ -1,5 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
+import { QueryParamsStore } from '@sinequa/atomic-angular';
 
 import { NavbarComponent } from '@/core/components/navbar/navbar.component';
 
@@ -14,11 +16,20 @@ import { NavbarComponent } from '@/core/components/navbar/navbar.component';
 })
 export class SearchComponent {
 
+  queryParamsStore = inject(QueryParamsStore);
+
   // input url bindings
   q = input<string>(); // text
   t = input<string>(); // tab
   s = input<string>(); // sort
   f = input<string>(); // filters
 
-  constructor() { }
+  constructor() {
+    // Update the query params store with the filters from the query params
+    // This allows Browser back/forward to work correctly
+    effect(() => {
+      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s(), filters });
+    }, { allowSignalWrites: true });
+  }
 }
