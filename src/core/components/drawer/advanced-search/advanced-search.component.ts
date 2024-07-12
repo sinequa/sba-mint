@@ -83,19 +83,8 @@ export class AdvancedSearchComponent {
     return this.applicationStore.getExtracts(this.article()!.id)
   });
 
-  protected readonly previewHighlights = computed(() => (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',') ?? []);
-
-  protected readonly showGeo = computed(() => {
-    return this.previewHighlights().find(h => h === 'geo');
-  });
-
-  protected readonly showPerson = computed(() => {
-    return this.previewHighlights().find(h => h === 'person');
-  });
-
-  protected readonly showCompanies = computed(() => {
-    return this.previewHighlights().find(h => h === 'company');
-  });
+  protected readonly previewHighlights = computed(() => (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
+    .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages') ?? []);
 
   public navigation = signal<MetadataNavigation | undefined>(undefined);
   public hovering = signal<string | undefined>(undefined);
@@ -150,5 +139,9 @@ export class AdvancedSearchComponent {
     if (id !== undefined) {
       this.scrollTo(entity, id);
     }
+  }
+
+  getMetadata(highlight: string): ArticleMetadata[] | undefined {
+    return (this.article() as any)[highlight];
   }
 }

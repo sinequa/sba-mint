@@ -105,32 +105,15 @@
           </ul>
         </div>
 
-        @if (showGeo() && (article().geo ?? []).length > 0) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: {
-            metadata: article()!.geo,
-            name: 'Location',
-            iconClass: 'far fa-location-dot',
-            entity: 'geo'
-          }"></ng-container>
+        @for (highlight of previewHighlights(); track $index) {
+          @if ((getMetadata(highlight) ?? []).length > 0) {
+            <ng-container *ngTemplateOutlet="metadataPanel; context: {
+              metadata: getMetadata(highlight),
+              name: highlight,
+              entity: highlight
+            }"></ng-container>
           }
-  
-          @if (showCompanies() && (article().company ?? []).length > 0) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: {
-            metadata: article()!.company,
-            name: 'Companies',
-            iconClass: 'far fa-buildings',
-            entity: 'company'
-          }"></ng-container>
-          }
-  
-          @if (showPerson() && (article().person ?? []).length > 0) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: {
-            metadata: article()!.person,
-            name: 'Mentioned',
-            iconClass: 'far fa-at',
-            entity: 'person'
-          }"></ng-container>
-          }
+        }
       </section>
     }
   </div>
@@ -139,8 +122,8 @@
 <ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
   <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
     <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
-      <p class="flex gap-2 font-semibold items-baseline">
-        <i class="fa-fw {{ iconClass }}"></i>
+      <p class="flex gap-2 font-semibold items-baseline capitalize">
+        <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name }}
       </p>
 
