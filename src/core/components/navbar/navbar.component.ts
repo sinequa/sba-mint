@@ -2,6 +2,7 @@ import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
 import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService, SearchService } from '@sinequa/atomic-angular';
 
@@ -9,10 +10,11 @@ import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
+import { SyslangPipe } from '@/core/pipe/syslang';
+
 import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { TranslocoPipe } from '@jsverse/transloco';
 
 type NavbarMenu = {
   display: string;
@@ -30,21 +32,22 @@ type NavbarTab = {
 }
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
-  imports: [
-    CommonModule,
-    NgClass,
-    AsyncPipe,
-    RouterModule,
-    SearchInputComponent,
-    AutocompleteComponent,
-    UserMenuComponent,
-    DropdownComponent,
-    TranslocoPipe
-  ]
+    selector: 'app-navbar',
+    standalone: true,
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
+    imports: [
+        CommonModule,
+        NgClass,
+        AsyncPipe,
+        RouterModule,
+        SearchInputComponent,
+        AutocompleteComponent,
+        UserMenuComponent,
+        DropdownComponent,
+        TranslocoPipe,
+        SyslangPipe
+    ]
 })
 export class NavbarComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
