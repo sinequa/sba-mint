@@ -5,7 +5,7 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, CFilter, CFilterItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 import { DropdownComponent } from '../dropdown';
@@ -190,26 +190,24 @@ export class FiltersComponent {
 
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CFilterItem ) => it.value === item.value)?.icon;
         });
 
-        return aggregation as AggregationEx;
-      })
-      .map((aggregation) => {
-        const { display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.filters?.length ? f.filters.length - 1 : undefined;
 
         return ({
           label: display,
           aggregation: aggregation,
-          icon: this.appStore.getAggregationIcon(aggregation.column),
+          icon,
           firstFilter: f,
           moreFiltersCount: more,
+          hidden
         });
       });
 
