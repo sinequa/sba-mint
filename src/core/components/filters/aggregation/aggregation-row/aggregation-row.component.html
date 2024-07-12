@@ -1,4 +1,4 @@
-<label
+<a
   role="button"
   [ngClass]="cn(
     'data-list-item leading-7 p-1 ps-2 gap-2 flex grow items-center',
@@ -7,7 +7,10 @@
 >
 
   @if(item().hasChildren &&  !$any(item()).items) {
-    <i (click)="open($event, item())" class="fas fa-angle-right"></i>
+    <button (click)="open($event, item())" >
+      <!-- <i class="fas fa-angle-right"></i> -->
+      <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
   }
 
   <input
@@ -25,7 +28,7 @@
   }
 
   {{ item().display || item().value | syslang }}
-</label>
+</a>
 
 @if($any(item()).hasChildren) {
   @for(item of $any(item()).items; track $index) {
