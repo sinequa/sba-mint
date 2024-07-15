@@ -17,7 +17,7 @@
   @if (navConfig.showOpenButton) {
     <li>
       <button
-        class="btn btn-ghost flex items-center gap-2"
+        class="btn btn-ghost items-center gap-2"
         [attr.title]="'open' | transloco"
         [disabled]="!hasExternalLink()"
         (click)="openClicked()"
@@ -29,7 +29,6 @@
 
     <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
   }
-
   @if (canBookmark()) {
     <li>
       <app-bookmark-button class="btn btn-ghost" [article]="article()!" />
@@ -44,15 +43,14 @@
       (click)="copyLink()"
     >
       <i
-        class="fa-fw far"
+        class="fa-fw far text-sm"
         [class.fa-link]="!copied"
         [class.fa-circle-check]="copied"
       ></i>
     </button>
   </li>
 
-
-  @if (navConfig.showSearchButton) {
+  @if (navConfig.showSearchButton && article()) {
   <li class="ml-auto">
     <button
       [ngClass]="
