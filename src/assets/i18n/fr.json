@@ -37,5 +37,13 @@
     "results_all_tab": "Tous",
     "results_text_tab": "Texte"
   },
+  "msg#column": {
+    "authors": "Auteurs",
+    "documentlanguages": "Langues",
+    "sizes": "Tailles",
+    "geos": "Lieux",
+    "persons": "Personnes",
+    "companies": "Sociétés"
+  },
   "extracts": "Extraits"
 }
