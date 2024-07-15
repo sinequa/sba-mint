@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
@@ -5,11 +6,12 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, CFilter, CFilterItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+
+import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';
-import { NgClass } from '@angular/common';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -19,7 +21,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-more-filters',
   standalone: true,
-  imports: [NgClass, AggregationComponent, TranslocoPipe],
+  imports: [NgClass, AggregationComponent, SyslangPipe, TranslocoPipe],
   templateUrl: './more-filters.component.html',
   styles: [`
     :host {

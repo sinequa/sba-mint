@@ -70,7 +70,7 @@
           @if (filterDropdown.icon) {
             <i class="fa-fw {{ filterDropdown.icon }} " aria-hidden="true"></i>
           }
-          <span class="truncate">{{ (filterDropdown?.firstFilter?.display || filterDropdown.label) | syslang }}</span>
+          <span class="truncate">{{ (filterDropdown?.firstFilter?.display || filterDropdown.label) | syslang | transloco }}</span>
 
           @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
             <div class="pill size-5 pill-xs pill-ghost bg-white flex place-content-center font-semibold text-blue-600">
