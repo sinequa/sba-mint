@@ -13,7 +13,7 @@ import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
 
-export const FILTERS_COUNT = 6;
+export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
