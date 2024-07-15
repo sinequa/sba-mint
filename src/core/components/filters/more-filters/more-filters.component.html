@@ -1,6 +1,6 @@
 <ul class="divide-y">
   @for (filter of filterDropdowns(); track filter.aggregation.column) {
-    <li class="collapse mb-1 bg-base-200">
+    <li class="collapse mb-1 bg-base-200" [ngClass]="cn(filter.hidden && 'hidden')">
       <!-- header -->
       <input
         class="w-full"
