@@ -44,7 +44,7 @@
     @for (item of selected(); track $index) {
       <app-aggregation-row class="ps-1" [ngClass]="{'data-list-item': !item.hasChildren}"
         [aggregation]="aggregation()"
-        [item]="item"
+        [node]="item"
         (onOpen)="open($event)"
         (onSelect)="select($event)" />
     }

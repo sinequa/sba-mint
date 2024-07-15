@@ -1,40 +1,43 @@
 <a
   role="button"
+  [style.--level]="((node().$level ?? 1) -1 + (!node().hasChildren ? 1 : 0))"
   [ngClass]="cn(
-    'data-list-item leading-7 p-1 ps-2 gap-2 flex grow items-center',
-    item().count === 0 && 'disabled text-neutral-300 pointer-events-none'
+    'data-list-item leading-7 p-1 gap-2 flex grow items-center',
+    node().count === 0 && 'disabled text-neutral-300 pointer-events-none'
     )"
-  (click)="select($event, item())"
+  (click)="select($event, node())"
 >
 
-  @if(item().hasChildren &&  !$any(item()).items) {
-    <button (click)="open($event, item())" class="hover:translate-x-1 transition-transform ease-in" >
-      <!-- <i class="fas fa-angle-right"></i> -->
-      <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-    </button>
-  }
+  <button (click)="open($event, node())" class="hover:translate-x-1 transition-transform ease-in" >
+    <!-- <i class="fas fa-angle-right"></i> -->
+    <svg [ngClass]="cn(
+    'size-4',
+    node().$opened && 'rotate-90',
+    !node().hasChildren && 'hidden'
+    )" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
 
   <input
     type="checkbox"
-    value="{{ item().value }}"
-    [attr.disabled]="item().count === 0 ? true : null"
-    [attr.aria-disabled]="item().count === 0"
-    (keydown.enter)="select($event, item())"
-    [checked]="item().$selected"
+    value="{{ node().value }}"
+    [attr.disabled]="node().count === 0 ? true : null"
+    [attr.aria-disabled]="node().count === 0"
+    (keydown.enter)="select($event, node())"
+    [checked]="node().$selected"
   />
 
-  @if (item().icon) {
-    <i class="fa-fw {{ item().icon }} self-center justify-self-center"></i>
+  @if (node().icon) {
+    <i class="fa-fw {{ node().icon }} self-center justify-self-center"></i>
   }
 
-  <span class="text-ellipsis">{{ item().display || item().value | syslang }}</span>
+  <span class="text-ellipsis">{{ node().display || node().value | syslang }} {{ node().$level }}</span>
 </a>
 
-@if($any(item()).hasChildren) {
-  @for(item of $any(item()).items; track $index) {
-    <app-aggregation-row class="ms-4"
+@if(node().hasChildren && node().$opened) {
+  @for(item of node().items; track $index) {
+    <app-aggregation-row
       [aggregation]="aggregation()"
-      [item]="item"
+      [node]="item"
       (onOpen)="onOpen.emit($event)"
       (onSelect)="onSelect.emit($event)" />
   }
