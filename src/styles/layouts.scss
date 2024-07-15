@@ -1,6 +1,6 @@
 @layer components {
   .layout-search {
-    @apply grid;
+    display: grid;
 
     grid-template-columns: 25% 25% 25% 25%;
 
