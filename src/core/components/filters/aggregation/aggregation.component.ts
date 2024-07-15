@@ -6,6 +6,8 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { AggregationItem, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
+import { SyslangPipe } from '@/core/pipe/syslang';
+
 import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
 
 type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
@@ -33,7 +35,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       scrollbar-width: thin;
     }
   `],
-  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, TranslocoPipe],
+  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class AggregationComponent implements OnInit {
