@@ -52,7 +52,7 @@ export const appConfig: ApplicationConfig = {
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },
-    provideRouter(routes, withHashLocation(), withViewTransitions(), withComponentInputBinding()),
+    provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([
       bodyInterceptorFn,
       authInterceptorFn,

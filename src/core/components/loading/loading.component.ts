@@ -137,7 +137,7 @@ export class LoadingComponent {
           this.applicationStore.updateReadyState();
 
         }).catch((error:Error) => {
-          toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
+          console.warn("An error occured while initializing the application (loading)", error);
         });
       }
     })
