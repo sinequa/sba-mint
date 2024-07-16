@@ -42,9 +42,9 @@
 
   <ul class="data-list pt-2 snap-start">
     @for (item of selected(); track $index) {
-      <app-aggregation-row class="ps-1" [ngClass]="{'data-list-item': !item.hasChildren}"
+      <app-aggregation-row
         [aggregation]="aggregation()"
-        [item]="item"
+        [node]="item"
         (onOpen)="open($event)"
         (onSelect)="select($event)" />
     }
