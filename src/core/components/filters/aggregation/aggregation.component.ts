@@ -59,26 +59,35 @@ export class AggregationComponent implements OnInit {
 
   selected = computed<AggregationListItem[]>(() => {
     // $selected elements must be displayed first, but the other elements must stay in the same order
-    const selected = this.items().filter(item => item.$selected);
 
-    // const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
-    // if (columnFilter?.filters) {
-    //   const selectedFilters = columnFilter.filters.map((filter: LegacyFilter) => {
-    //     return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
-    //   }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
-    //   selected.push(...selectedFilters);
-    // }
-    // if (columnFilter?.value) {
-    //   const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
-    //   if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
-    //     selected.push(selectedFilters);
-    //   };
-    // }
+    if(this.aggregation().isTree) {
+      const { values = []  } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
+      // console.log("columnFilter", values);
+      const items = this.items();
+      this.selectItems(items, values);
+      return items;
+    }
+    else {
+      const selected = this.items().filter(item => item.$selected);
+      const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
+      if (columnFilter?.filters) {
+        const selectedFilters = columnFilter.filters.map((filter: LegacyFilter) => {
+          return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
+        }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+        selected.push(...selectedFilters);
+      }
+      if (columnFilter?.value) {
+        const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
+        if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
+          selected.push(selectedFilters);
+        };
+      }
+      // remove from notSelected the elements that are already in selected (due to a load more action for example)
+      const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
 
-    // remove from notSelected the elements that are already in selected (due to a load more action for example)
-    const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+      return selected.concat(notSelected) as AggregationListItem[];
+    }
 
-    return selected.concat(notSelected) as AggregationListItem[];
   });
 
   readonly aggregationsService = inject(AggregationsService);
@@ -165,34 +174,8 @@ export class AggregationComponent implements OnInit {
     return flattenItems(this.aggregation().items as TreeAggregationNode[]);
   }
 
-  protected getFilters() {
-    if (this.aggregation().isTree) return this.getFiltersForTree();
-    return this.getFiltersForList();
-  }
-
-  protected getFiltersForTree(): LegacyFilter[] {
-    const items = this.aggregation().items || [];
-    const filters = items.map(item => this.toFilter(item));
-    return filters;
-  }
-  protected getFiltersForList(): LegacyFilter[] {
-    const items = this.aggregation().items.filter(item => item.$selected) || [];
-    const filters = items.map(item => this.toFilter(item));
-    return filters;
-  }
-
-  protected toFilter(item: AggregationItem): LegacyFilter {
+  private toFilter(item: AggregationItem): LegacyFilter {
     const field = this.aggregation().column;
-
-    if (this.aggregation().isTree) {
-      // const _item = item as TreeAggregationNode;
-      // return {field, value: '/' +_item.$path! + '/*', display: _item.value}
-      const items = this.getFlattenTreeItems()
-        .filter(item => item.$selected)
-        .map((item) => `/${item.$path}/*` || '');
-
-      return { operator: "in", field, values: items, display: items[0] };
-    }
 
     if (this.aggregation().isDistribution) {
       const res = (item.value as string).match(/.*\:\(?([><=\d\-\.AND ]+)\)?/);
@@ -220,6 +203,41 @@ export class AggregationComponent implements OnInit {
     return { field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
   }
 
+  private selectItems(items: AggregationListItem[], values: string[]) {
+    items.forEach(item => {
+      if (values.includes(`/${item.$path}/*`)) {
+        item.$selected = true;
+      }
+      if (item.items) {
+        this.selectItems(item.items, values);
+      }
+    });
+  }
+
+  protected getFilters() {
+    if (this.aggregation().isTree) {
+      return this.getFiltersForTree();
+    }
+    return this.getFiltersForList();
+  }
+
+  protected getFiltersForTree(): LegacyFilter[] {
+    const field = this.aggregation().column;
+    const items = this.getFlattenTreeItems()
+      .filter(item => item.$selected)
+      .map((item) => `/${item.$path}/*` || '');
+
+    if (items.length === 0) return [];
+
+    const filter = { operator: "in", field, values: items, display: items[0] };
+    return [filter] as LegacyFilter[];
+  }
+
+  protected getFiltersForList(): LegacyFilter[] {
+    const items = this.aggregation().items.filter(item => item.$selected) || [];
+    return items.map(item => this.toFilter(item));
+  }
+
   loadMore(): void {
     this.onLoadMore.emit();
   }
@@ -230,4 +248,5 @@ export class AggregationComponent implements OnInit {
     const q = runInInjectionContext(this.injector, () => buildQuery())
     this.aggregationsService.open(q, this.aggregation() as TreeAggregation, node as TreeAggregationNode).subscribe();
   }
+
 }
