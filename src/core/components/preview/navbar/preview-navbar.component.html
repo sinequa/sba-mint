@@ -29,6 +29,7 @@
 
     <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
   }
+
   @if (canBookmark()) {
     <li>
       <app-bookmark-button class="btn btn-ghost" [article]="article()!" />
@@ -51,26 +52,19 @@
   </li>
 
   @if (navConfig.showSearchButton && article()) {
-  <li class="ml-auto">
-    <button
-      [ngClass]="
-        cn(
-          'btn flex gap-2 items-center text-nowrap',
-          isExtended() ? 'btn-secondary' : 'btn-primary'
-        )
-      "
-      (click)="drawerStack.extend()"
-    >
+    <li class="ml-auto *:flex *:gap-2 *:items-center *:text-nowrap">
       @if (isExtended()) {
-        <i class="fa-fw far fa-eye-slash"></i>
-        {{ 'preview.hideSearch' | transloco }}
+        <button class="btn btn-secondary" (click)="drawerStack.extend()">
+          <i class="fa-fw far fa-eye-slash"></i>
+          {{ 'preview.hideSearch' | transloco }}
+        </button>
       }
-
       @else {
-        <i class="fa-fw far fa-eye"></i>
-        {{ 'preview.searchInDocument' | transloco }}
+        <button class="btn btn-primary" (click)="drawerStack.extend()">
+          <i class="fa-fw far fa-eye"></i>
+          {{ 'preview.searchInDocument' | transloco }}
+        </button>
       }
-    </button>
-  </li>
+    </li>
   }
 </menu>
