@@ -234,7 +234,7 @@ export class AggregationComponent implements OnInit {
   }
 
   protected getFiltersForList(): LegacyFilter[] {
-    const items = this.aggregation().items.filter(item => item.$selected) || [];
+    const items = this.selected().filter(item => item.$selected) || [];
     return items.map(item => this.toFilter(item));
   }
 
