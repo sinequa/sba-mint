@@ -4,11 +4,11 @@ import { Router, RouterOutlet } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { CCApp, globalConfig, login } from '@sinequa/atomic';
-import { AppStore, ApplicationService, ApplicationStore, AuthGuard, InitializationGuard, NavigationService, PrincipalStore, QueryParamsStore } from '@sinequa/atomic-angular';
+import { globalConfig, login } from '@sinequa/atomic';
+import { ApplicationService, ApplicationStore, PrincipalStore } from '@sinequa/atomic-angular';
 
-import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
+import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
 import { SearchComponent } from './pages/search/search.component';
 import { SearchFacetsComponent } from './pages/search/side-facets/search-facets.component';
 
@@ -21,7 +21,6 @@ import { SearchFacetsComponent } from './pages/search/side-facets/search-facets.
 export class AppComponent {
   private readonly appService = inject(ApplicationService);
   private readonly principalStore = inject(PrincipalStore);
-  private readonly appStore = inject(AppStore);
   private readonly applicationStore = inject(ApplicationStore);
 
   private readonly router = inject(Router);
@@ -39,7 +38,7 @@ export class AppComponent {
           this.applicationStore.updateReadyState();
 
         }).catch((error: Error) => {
-          toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
+          console.error("An error occured while initializing the application (app)", error);
         });
       }
     }).catch(error => {

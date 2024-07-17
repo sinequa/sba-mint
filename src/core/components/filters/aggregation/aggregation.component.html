@@ -7,7 +7,7 @@
     @if (!legend.hasChildNodes() && title()) {
     <div class="dropdown-header">
       <i class="fa-fw {{ title()?.icon || 'fas fa-list' }}"></i>
-      <span class="ms-1 me-4 grow">{{ title()?.label }}</span>
+      <span class="ms-1 me-4 grow">{{ title()?.label | syslang | transloco }}</span>
 
       <div class="ms-4">
         @if (hasAppliedFilters()) {
@@ -42,9 +42,9 @@
 
   <ul class="data-list pt-2 snap-start">
     @for (item of selected(); track $index) {
-      <app-aggregation-row class="ps-1" [ngClass]="{'data-list-item': !item.hasChildren}"
+      <app-aggregation-row
         [aggregation]="aggregation()"
-        [item]="item"
+        [node]="item"
         (onOpen)="open($event)"
         (onSelect)="select($event)" />
     }
