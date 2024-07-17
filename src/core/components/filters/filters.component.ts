@@ -12,6 +12,7 @@ import { DropdownComponent } from '../dropdown';
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
+import { OperatorPipe } from "../../pipe/operator";
 
 export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";
@@ -35,8 +36,9 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     FocusWithArrowKeysDirective,
     DropdownComponent,
     TranslocoPipe,
-    SyslangPipe
-  ],
+    SyslangPipe,
+    OperatorPipe
+],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent {
