@@ -31,8 +31,7 @@
           <i class="fa-fw {{ dateFilterDropdown()?.icon }} " aria-hidden="true"></i>
         }
         @if( dateFilterDropdown()?.firstFilter ) {
-          <span [innerHTML]="dateFilterDropdown()?.firstFilter?.operator"></span>
-          <span>{{ dateFilterDropdown()?.firstFilter?.display | syslang | transloco }}</span>
+          <span [innerHTML]="dateFilterDropdown()?.firstFilter | operator"></span>
         }
         @else {
           <span>{{ dateFilterDropdown()?.label | syslang | transloco }}</span>
