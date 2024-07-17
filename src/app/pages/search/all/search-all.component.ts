@@ -42,8 +42,6 @@ export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
-  items = Array.from({ length: 100000 }).map((_, i) => `Item #${i}`);
-
   public readonly id = input<string | undefined>();
 
   readonly result = signal<Result | undefined>(undefined);

@@ -11,7 +11,8 @@
         [attr.aria-label]="'filters.openFilter' | transloco: { filter: filter.label }"
       />
 
-      <div class="collapse-title dropdown-header p-2 flex gap-1 items-baseline justify-between">
+      <div class="collapse-title dropdown-header p-2 flex gap-1 items-baseline justify-between"
+        [class.applied-filters]="hasAppliedFilters()[$index]">
         <!-- aggregation's icon -->
         <i class="fa-fw {{ filter.icon || 'fas fa-list' }} me-1"></i>
 

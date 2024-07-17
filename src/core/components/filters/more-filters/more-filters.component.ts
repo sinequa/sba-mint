@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -35,6 +35,8 @@ export class MoreFiltersComponent implements OnDestroy {
 
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
 
+  readonly filtersCount = input<number | undefined>(undefined);
+
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly hasFilters = signal<LegacyFilter[]>([]);
   readonly hasAppliedFilters = signal<boolean[]>([]);
@@ -59,7 +61,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
       // create filters with only aggregations that are authorized and not already shown
       const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(
-        aggregations.splice(FILTERS_COUNT)
+        aggregations.splice(this.filtersCount() !== undefined ? this.filtersCount()! : FILTERS_COUNT)
           .filter(agg => agg.name !== DATE_FILTER_NAME)
           .filter(agg => agg.items !== undefined && agg.items.length > 0)
       );
