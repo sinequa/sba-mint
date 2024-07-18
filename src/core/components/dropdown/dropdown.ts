@@ -7,21 +7,24 @@ import { Placement, autoUpdate, computePosition, flip, offset, shift } from '@fl
   standalone: true,
   imports: [NgClass],
   template: `
-<div #trigger class="select-none dropdown" (click)="toggle()">
-    <ng-content></ng-content>
-</div>
-<div #dropdownWrapper
-  class="absolute text-sm min-w-fit z-backdrop"
-  [style.display]="isOpen() ? 'block' : 'none'"
-  [style.width]="width + 'px'"
-  >
-  <ng-content select="[dropdown-content]"></ng-content>
-</div>
+    <div #trigger class="select-none dropdown" (click)="toggle()">
+      <ng-content></ng-content>
+    </div>
+
+    <div #dropdownWrapper
+      class="absolute text-sm min-w-fit z-backdrop"
+      [style.display]="isOpen() ? 'block' : 'none'"
+      [style.width]="width + 'px'"
+      (click)="contentClicked()"
+    >
+      <ng-content select="[dropdown-content]"></ng-content>
+    </div>
   `
 })
 export class DropdownComponent implements AfterViewInit{
   isOpen = signal(false);
   position = input<Placement>('bottom-start');
+  autoClose = input<boolean>(false);
   disabled = input<boolean>();
 
   @ViewChild('dropdownWrapper') dropdown!: ElementRef;
@@ -73,5 +76,9 @@ export class DropdownComponent implements AfterViewInit{
     ) {
       this.isOpen.set(false);
     }
+  }
+
+  contentClicked() {
+    if (this.autoClose()) this.close();
   }
 }
