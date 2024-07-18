@@ -16,12 +16,16 @@ import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@
     :host a {
       padding-left: calc((1rem * var(--level)))
     }
+    :host:has(input:checked) {
+      color: theme('colors.primary');
+    }
   `
 })
 export class AggregationRowComponent {
   cn = cn;
 
   @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
+  @HostBinding("class.data-list-item") datalistitem = true;
 
   @Output() onSelect = new EventEmitter<AggregationListItem>();
   @Output() onOpen = new EventEmitter<AggregationListItem>();
