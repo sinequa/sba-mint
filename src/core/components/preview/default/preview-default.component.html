@@ -1,6 +1,6 @@
 <app-preview-navbar
-class="block border-b border-neutral-300 bg-white"
-[article]="article()"
+  class="block border-b border-neutral-300 bg-white"
+  [article]="article()"
 />
 
 @if (previewData() && article()) {
@@ -27,12 +27,35 @@ class="block border-b border-neutral-300 bg-white"
         <tr>
           <th>{{ 'location' | transloco }}</th>
 
-          <td class="flex flex-wrap items-center divide-x-chevron-right divide-xs">
-            <app-source-icon [collection]="article().collection" class="fa-fw" />
+          <td class="flex items-center gap-2">
+            <app-source-icon [collection]="article().collection" class="fa-fw flex" />
 
-            @for (segment of (article().treepath[0] || '') | split: '/' | slice:1:-1; track $index) {
-              <span>{{ segment }}</span>
+            <i class="fa-fw far fa-chevron-right"></i>
+            
+            @if (locationSegments().length > 1) {
+              <sq-dropdown position="bottom" [autoClose]="true">
+                <button class="p-1 rounded-full">...</button>
+                
+                <div class="flex gap-1 items-center rounded-full bg-white py-1 px-2 shadow-md" dropdown-content>
+                  @for (segment of locationSegments().slice(0, -1); track $index) {
+                    <button
+                      class="py-1 px-2 rounded-full hover:bg-blue-100"
+                      (click)="navigateToSegment($index)"
+                    >
+                      {{ segment }}
+                    </button>
+
+                    @if (locationSegments().length > 1 && !$last) {
+                      <i class="fa-fw far fa-chevron-right"></i>
+                    }
+                  }
+                </div>
+              </sq-dropdown>
             }
+
+            <i class="fa-fw far fa-chevron-right"></i>
+            
+            <span class="line-clamp-1">{{ locationSegments().at(-1) }}</span> 
           </td>
         </tr>
 
