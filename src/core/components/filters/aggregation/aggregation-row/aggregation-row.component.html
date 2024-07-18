@@ -2,7 +2,7 @@
   role="button"
   [style.--level]="((node().$level ?? 0) -1 + (!node().hasChildren ? 1 : 0))"
   [ngClass]="cn(
-    'data-list-item leading-7 p-1 gap-2 flex grow items-center',
+    'leading-7 p-1 gap-2 flex grow items-center',
     node().count === 0 && 'disabled text-neutral-300 pointer-events-none'
     )"
   (click)="select($event, node())"

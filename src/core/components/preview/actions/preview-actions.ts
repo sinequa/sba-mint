@@ -30,36 +30,46 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       <i class="fa-regular fa-magnifying-glass-minus"></i>
     </button>
     
-    <button
-      class="flex justify-center items-center btn btn-secondary p-1 size-6"
-      [attr.title]="'preview.toggleExtracts' | transloco"
-      (click)="toggleExtracts()"
-    >
-      @if (extracts()) {
+    @if (extracts()) {
+      <button
+        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        [attr.title]="'preview.toggleExtracts' | transloco"
+        (click)="toggleExtracts()"
+      >
+        <i class="fa-regular fa-flashlight"></i>
+      </button>
+    }
+    @else {
+      <button
+        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        [attr.title]="'preview.toggleExtracts' | transloco"
+        (click)="toggleExtracts()"
+      >
         <span class="fa-stack justify-center items-center">
           <i class="fa-regular fa-flashlight fa-stack-1x"></i>
           <i class="fa-regular fa-slash fa-stack-1x"></i>
         </span>
-      }
-
-      @else {
-        <i class="fa-regular fa-flashlight"></i>
-      }
-    </button>
-
-    <button
-      class="flex justify-center items-center btn btn-secondary p-1 size-6"
-      [attr.title]="'preview.toggleEntities' | transloco"
-      (click)="toggleEntities()"
-    >
-      @if (entities()) {
+      </button>
+    }
+      
+    @if (entities()) {
+      <button
+        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        [attr.title]="'preview.toggleEntities' | transloco"
+        (click)="toggleEntities()"
+      >
         <i class="fa-regular fa-lightbulb"></i>
-      }
-
-      @else {
-        <i class="fa-regular fa-lightbulb-slash"></i>
-      }
-    </button>
+      </button>
+    }
+    @else {
+      <button
+        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        [attr.title]="'preview.toggleEntities' | transloco"
+        (click)="toggleEntities()"
+      >
+          <i class="fa-regular fa-lightbulb-slash"></i>
+      </button>
+    }
   `,
 })
 export class PreviewActionsComponent {
