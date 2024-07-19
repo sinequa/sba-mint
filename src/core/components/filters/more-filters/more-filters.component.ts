@@ -127,7 +127,7 @@ export class MoreFiltersComponent implements OnDestroy {
           flattenedValues.push(filter.value);
         }
         if (filter.filters) {
-          extractValues(filter.filters);
+          extractValues(filter.filters as LegacyFilter[]);
         }
       }
     }
@@ -150,7 +150,7 @@ export class MoreFiltersComponent implements OnDestroy {
         });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const count =  f?.filters?.length ? f.filters.length : f ? 1 : undefined;
+        const count =  (Array.isArray(f?.filters)) ? f.filters.length : f ? 1 : undefined;
 
         if (f) {
           this.updateFiltersFlags(f, index)
@@ -181,7 +181,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private updateFilterCounts(filter: LegacyFilter, index: number): void {
     this.filterCounts.update((values) => {
-      values[index] = filter?.filters?.length || 0;
+      values[index] = Array.isArray(filter?.filters) ? filter.filters?.length || 0 : 0;
       return values;
     });
   }
