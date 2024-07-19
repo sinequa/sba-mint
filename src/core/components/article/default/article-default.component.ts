@@ -1,12 +1,12 @@
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { StopPropagationDirective } from 'toolkit';
 
-import { Article } from '@sinequa/atomic';
-import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, SelectionStrategy, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
+import { BaseArticle } from '@/core/registry/base-article';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 type Tab = 'attachments' | 'similars';
@@ -36,10 +36,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     inputs: ['article']
   }]
 })
-export class ArticleDefaultComponent implements OnDestroy {
-  public readonly article = input.required<Article>();
-  public readonly strategy = input<SelectionStrategy>();
-
+export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
 

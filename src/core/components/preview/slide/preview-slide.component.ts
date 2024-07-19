@@ -11,5 +11,6 @@ import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
   styleUrl: './preview-slide.component.scss'
 })
 export class PreviewSlideComponent {
+  public previewData = input.required();
   public slide = input.required<Partial<Article> | undefined>({ alias: 'article' });
 }

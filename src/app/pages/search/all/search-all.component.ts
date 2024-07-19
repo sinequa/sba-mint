@@ -1,5 +1,5 @@
-import { NgClass } from '@angular/common';
-import { Component, HostBinding, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
+import { NgClass, NgComponentOutlet } from '@angular/common';
+import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, tap } from 'rxjs';
@@ -12,6 +12,7 @@ import { ArticleDefaultComponent } from '@/core/components/article/default/artic
 import { FiltersComponent } from '@/core/components/filters/filters.component';
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
+import { getComponentsForDocumentType } from '@/core/registry/document-type';
 
 type R = Result & { nextPage?: number, previousPage?: number };
 
@@ -20,6 +21,7 @@ type R = Result & { nextPage?: number, previousPage?: number };
   standalone: true,
   imports: [
     NgClass,
+    NgComponentOutlet,
     SelectArticleOnClickDirective,
     FiltersComponent,
     ArticleDefaultComponent,
@@ -41,8 +43,6 @@ type R = Result & { nextPage?: number, previousPage?: number };
 export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
-
-  items = Array.from({ length: 100000 }).map((_, i) => `Item #${i}`);
 
   public readonly id = input<string | undefined>();
 
@@ -138,5 +138,13 @@ export class SearchAllComponent implements OnDestroy {
 
   nextPage() {
     this.query.fetchNextPage();
+  }
+
+  getArticleType(docType: string): Type<unknown> {
+    return getComponentsForDocumentType(docType).articleComponent;
+  }
+
+  getInputsForArticle(article: Article): Record<string, unknown> {
+    return { article, strategy: 'replace' };
   }
 }

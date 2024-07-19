@@ -6,38 +6,41 @@
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
   @if (query.isPending()) {
-  <ul class="flex flex-col gap-2 mt-4">
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-    <li><app-article-default-skeleton /></li>
-  </ul>
-  }
-  @else if(query.isSuccess()) {
-  <div class="flex mt-4">
-    <app-sort-selector
-      class="ms-auto"
-      [result]="result()!"
-      (onSort)="onSort($event)"
-    />
-  </div>
-
     <ul class="flex flex-col gap-2 mt-4">
-      @for(page of query.data()?.pages; track page) {
-        @for (article of page.records; track article.id + $index) {
-          <li>
-            <app-article-default [article]="article" [strategy]="'replace'" />
-          </li>
-        }
-        @if(page.records.length === 0){
-          <li class="mt-8 text-neutral-500 italic">
-            No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
-          </li>
-        }
-      }
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
+      <li><app-article-default-skeleton /></li>
     </ul>
-    }
+  }
+  @else if (query.isSuccess()) {
+    <div class="flex mt-4">
+      <app-sort-selector
+        class="ms-auto"
+        [result]="result()!"
+        (onSort)="onSort($event)"
+      />
+    </div>
 
-  @if(query.hasNextPage()){
+      <ul class="flex flex-col gap-2 mt-4">
+        @for(page of query.data()?.pages; track page) {
+          @for (article of page.records; track article.id + $index) {
+            <li>
+              @if (article.docformat) {
+                <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: getInputsForArticle(article)" />
+              }
+            </li>
+          }
+
+          @if(page.records.length === 0){
+            <li class="mt-8 text-neutral-500 italic">
+              No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
+            </li>
+          }
+        }
+      </ul>
+  }
+
+  @if (query.hasNextPage()) {
     <div infinity-scroll (loadMore)="nextPage()"></div>
   }
 </main>
