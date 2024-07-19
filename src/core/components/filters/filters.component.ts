@@ -69,7 +69,7 @@ export class FiltersComponent {
         const { value, values, filters } = f;
         if (value) acc++;
         if (values) acc += values.length;
-        if (filters) acc += filters.length;
+        if (filters) acc += Array.isArray(filters) ? filters.length : 1;
         return acc
       }, 0);
   });
@@ -81,7 +81,7 @@ export class FiltersComponent {
 
     effect(() => {
       const { queryName } = this.route.snapshot.data;
-      const aggregations = this.aggregationsService.getSortedAggregations(queryName);
+      const aggregations = this.aggregationsService.getSortedAggregations(queryName.toLowerCase());
 
       if (aggregations.length === 0) return;
 
@@ -169,9 +169,10 @@ export class FiltersComponent {
       for (const filter of filters) {
         if (filter.value) {
           flattenedValues.push(filter.value);
+          flattenedValues.push(filter.display);
         }
         if (filter.filters) {
-          extractValues(filter.filters);
+          extractValues(filter.filters as LegacyFilter[]);
         }
       }
     }
@@ -195,13 +196,16 @@ export class FiltersComponent {
         const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
-          item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
+          const valueToSearch = aggregation.valuesAreExpressions ? item.display : item.value;
+          item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
           item.icon = items?.find((it: CFilterItem ) => it.value === item.value)?.icon;
         });
 
         const { display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const more = f?.filters?.length ? f.filters.length - 1 : undefined;
+        const more = Array.isArray(f?.filters)
+          ? f.filters.length - 1
+          : undefined;
 
         return ({
           label: display,
@@ -219,7 +223,9 @@ export class FiltersComponent {
   private updateDropdownButtons(filters: LegacyFilter, index: number): void {
     this.filterDropdowns.update((f: FilterDropdown[]) => {
       f[index].firstFilter = filters;
-      f[index].moreFiltersCount = filters.filters?.length || 1 - 1;
+      f[index].moreFiltersCount = Array.isArray(filters.filters)
+        ? filters.filters?.length || 1 - 1
+        : undefined;
 
       return f;
     });

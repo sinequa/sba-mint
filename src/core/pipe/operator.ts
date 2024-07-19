@@ -12,6 +12,9 @@ export class OperatorPipe implements PipeTransform {
     if (filter?.operator === 'between') {
       return `&gt; ${filter.start} &le; ${filter.end}`;
     }
+    if(filter?.operator === 'and') {
+      return filter.display;
+    }
     return `${op} ${filter?.value || ''}`;
   }
 

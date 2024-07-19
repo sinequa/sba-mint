@@ -20,7 +20,7 @@
     <sq-dropdown>
       <button tabindex="-1"
         [ngClass]="cn(
-          'btn font-semibold gap-1',
+          'btn font-semibold gap-1 w-max',
           dateFilterDropdown()?.firstFilter ? 'btn-primary' : 'btn-tertiary'
           )"
           [attr.title]="'filters.dateFilter' | transloco"
@@ -31,7 +31,7 @@
           <i class="fa-fw {{ dateFilterDropdown()?.icon }} " aria-hidden="true"></i>
         }
         @if( dateFilterDropdown()?.firstFilter ) {
-          <span [innerHTML]="dateFilterDropdown()?.firstFilter | operator"></span>
+          <span [innerHTML]="dateFilterDropdown()?.firstFilter | operator | syslang | transloco"></span>
         }
         @else {
           <span>{{ dateFilterDropdown()?.label | syslang | transloco }}</span>

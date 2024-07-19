@@ -25,7 +25,6 @@ export class AggregationRowComponent {
   cn = cn;
 
   @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
-  @HostBinding("class.data-list-item") datalistitem = true;
 
   @Output() onSelect = new EventEmitter<AggregationListItem>();
   @Output() onOpen = new EventEmitter<AggregationListItem>();
