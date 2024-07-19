@@ -103,7 +103,7 @@ export class DateFilterComponent implements OnDestroy {
 
     if (value.option !== 'custom-range') {
       const dateOption = this.dateOptions().find((option: DateFilter) => option.display === value.option);
-      this.updated.emit({ operator: dateOption?.operator || 'eq', field: this.column(), display: dateOption?.display ?? '', value: dateOption?.value });
+      this.updated.emit({ operator: dateOption?.operator || 'eq', field: this.column(), display: dateOption?.display ?? '', filters: dateOption?.filters, value: dateOption?.value });
     }
     else if (value.customRange) {
       // if to is null, operator is gte

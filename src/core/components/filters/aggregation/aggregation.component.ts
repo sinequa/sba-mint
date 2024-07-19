@@ -62,25 +62,27 @@ export class AggregationComponent implements OnInit {
 
     if(this.aggregation().isTree) {
       const { values = []  } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
-      // console.log("columnFilter", values);
       const items = this.items();
       this.selectItems(items, values);
       return items;
     }
     else {
       const selected = this.items().filter(item => item.$selected);
-      const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
-      if (columnFilter?.filters) {
-        const selectedFilters = columnFilter.filters.map((filter: LegacyFilter) => {
-          return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
-        }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
-        selected.push(...selectedFilters);
-      }
-      if (columnFilter?.value) {
-        const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
-        if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
-          selected.push(selectedFilters);
-        };
+
+      if(this.aggregation().valuesAreExpressions === false) {
+        const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
+        if (columnFilter?.filters) {
+          const selectedFilters = (columnFilter.filters as LegacyFilter[]).map((filter: LegacyFilter) => {
+            return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
+          }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+          selected.push(...selectedFilters);
+        }
+        if (columnFilter?.value) {
+          const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
+          if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
+            selected.push(selectedFilters);
+          };
+        }
       }
       // remove from notSelected the elements that are already in selected (due to a load more action for example)
       const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
