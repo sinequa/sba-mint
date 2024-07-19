@@ -4,27 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article as A, CCWebService } from '@sinequa/atomic';
+import { Article, CCWebService } from '@sinequa/atomic';
 import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, ReplacePipe, SelectionStore } from '@sinequa/atomic-angular';
 import { PanelDirective } from 'toolkit';
 
 interface MetadataNavigation {
   index: number;
   value: string;
-}
-
-type ArticleType = 'default' | 'person' | 'matters' | 'slide' | 'deals' | 'person-banker';
-
-interface Article extends A {
-  value?: string;
-  type?: ArticleType;
-  parentFolder?: string;
-  geo?: ArticleMetadata[];
-  company?: ArticleMetadata[];
-  person?: ArticleMetadata[];
-  queryDuplicates?: Article[];
-  $queryName?: string;
-  s_tab?: string;
 }
 
 type PreviewWebService = CCWebService & {
@@ -83,8 +69,15 @@ export class AdvancedSearchComponent {
     return this.applicationStore.getExtracts(this.article()!.id)
   });
 
-  protected readonly previewHighlights = computed(() => (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
-    .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages') ?? []);
+  protected readonly previewHighlights = computed(() => {
+    const highlights = (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
+      .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
+
+    return highlights?.map(highlight => ({
+      highlight,
+      metadata: (this.article() as any)[highlight]
+    }));
+  });
 
   public navigation = signal<MetadataNavigation | undefined>(undefined);
   public hovering = signal<string | undefined>(undefined);
@@ -139,9 +132,5 @@ export class AdvancedSearchComponent {
     if (id !== undefined) {
       this.scrollTo(entity, id);
     }
-  }
-
-  getMetadata(highlight: string): ArticleMetadata[] | undefined {
-    return (this.article() as any)[highlight];
   }
 }
