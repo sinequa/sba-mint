@@ -106,11 +106,7 @@
         </div>
 
         @for (highlight of previewHighlights(); track $index) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: {
-            metadata: highlight.metadata,
-            name: highlight.highlight,
-            entity: highlight.highlight
-          }"></ng-container>
+          <ng-container *ngTemplateOutlet="metadataPanel; context: highlight"></ng-container>
         }
       </section>
     }

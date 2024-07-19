@@ -74,7 +74,8 @@ export class AdvancedSearchComponent {
       .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
 
     return highlights?.map(highlight => ({
-      highlight,
+      name: highlight,
+      entity: highlight,
       metadata: (this.article() as any)[highlight]
     }));
   });
