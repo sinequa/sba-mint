@@ -38,15 +38,15 @@ export class DrawerStackComponent implements OnDestroy {
   public drawerOpened: boolean = false;
 
   readonly drawerStackService = inject(DrawerStackService);
-  private readonly selectionHistory = inject(SelectionHistoryService);
-  private readonly viewContainer = inject(ViewContainerRef);
+  protected readonly selectionHistory = inject(SelectionHistoryService);
+  protected readonly viewContainer = inject(ViewContainerRef);
 
-  private readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
+  protected readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
-  private readonly drawers: ComponentRef<DrawerComponent>[] = [];
+  protected readonly drawers: ComponentRef<DrawerComponent>[] = [];
   get drawersLength() { return this.drawers.length; }
 
-  private readonly subscriptions = new Subscription();
+  protected readonly subscriptions = new Subscription();
 
   constructor() {
     this.subscriptions.add(

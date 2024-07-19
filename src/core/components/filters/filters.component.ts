@@ -1,19 +1,20 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { Subscription } from 'rxjs';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, CFilter, CFilterItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
+import { SyslangPipe } from '@/core/pipe/syslang';
 import { DropdownComponent } from '../dropdown';
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
-import { SyslangPipe } from '@/core/pipe/syslang';
+import { OperatorPipe } from "../../pipe/operator";
 
-export const FILTERS_COUNT = 6;
+export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
@@ -35,8 +36,9 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     FocusWithArrowKeysDirective,
     DropdownComponent,
     TranslocoPipe,
-    SyslangPipe
-  ],
+    SyslangPipe,
+    OperatorPipe
+],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent {
@@ -44,11 +46,11 @@ export class FiltersComponent {
 
   cn = cn;
 
-  private readonly _cdr = inject(ChangeDetectorRef);
-  private readonly _injector = inject(Injector);
-  private readonly _aggregationsService = inject(AggregationsService);
-  private readonly _aggregationsStore = inject(AggregationsStore);
-  private readonly _searchService = inject(SearchService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly injector = inject(Injector);
+  private readonly route = inject(ActivatedRoute);
+  private readonly aggregationsService = inject(AggregationsService);
+  private readonly searchService = inject(SearchService);
   private readonly appStore = inject(AppStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
@@ -78,11 +80,10 @@ export class FiltersComponent {
   constructor() {
 
     effect(() => {
-      const { aggregations } = getState(this._aggregationsStore);
+      const { queryName } = this.route.snapshot.data;
+      const aggregations = this.aggregationsService.getSortedAggregations(queryName);
 
-      if (aggregations.length > FILTERS_COUNT) {
-        this.hasMoreFilters.set(true);
-      }
+      if (aggregations.length === 0) return;
 
       const dateAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_NAME) as AggregationListEx
 
@@ -102,26 +103,29 @@ export class FiltersComponent {
 
       const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
 
-      if (resolvedAggregations.length > FILTERS_COUNT)
-        this.hasMoreFilters.set(true);
+      untracked(() => {
+        if (resolvedAggregations.length > FILTERS_COUNT)
+          this.hasMoreFilters.set(true);
 
-      this.moreFiltersColumns = resolvedAggregations
-        .slice(FILTERS_COUNT)
-        .map(a => a.column);
+        this.moreFiltersColumns = resolvedAggregations
+          .slice(FILTERS_COUNT)
+          .map(a => a.column);
 
-      this.filterDropdowns.set(filterDropdowns);
+        this.filterDropdowns.set(filterDropdowns);
+      });
+
     }, { allowSignalWrites: true })
   }
 
   public filterUpdated(filter: LegacyFilter, index: number): void {
     this.updateDropdownButtons(filter, index);
     this.queryParamsStore.updateFilter(filter);
-    this._searchService.search([]);
+    this.searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
-    this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
+    this.aggregationsService.loadMore(
+      runInInjectionContext(this.injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -135,12 +139,12 @@ export class FiltersComponent {
 
   public dateFilterRefreshed(filter: LegacyFilter): void {
     this.updateDateDropdownButton(filter);
-    this._cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
   public dateFilterUpdated(filter: LegacyFilter): void {
     this.queryParamsStore.updateFilter(filter);
-    this._searchService.search([]);
+    this.searchService.search([]);
   }
 
   public clearFilters(): void {
@@ -154,7 +158,7 @@ export class FiltersComponent {
 
     this.queryParamsStore.patch({ filters: [] });
 
-    this._searchService.search([]);
+    this.searchService.search([]);
   }
 
 
@@ -182,38 +186,30 @@ export class FiltersComponent {
    * @param aggregations - An array of aggregations.
    * @returns An array of filter dropdowns.
    */
-  /**
-   * Builds an array of filter dropdowns from the given aggregations.
-   *
-   * @param aggregations - An array of aggregations.
-   * @returns An array of filter dropdowns.
-   */
   private buildFilterDropdownsFromAggregations(aggregations: Aggregation[]): FilterDropdown[] {
     const { filters = [] } = getState(this.queryParamsStore);
     const flattenedValues = this.flattenFilters(filters);
 
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CFilterItem ) => it.value === item.value)?.icon;
         });
 
-        return aggregation as AggregationEx;
-      })
-      .map((aggregation) => {
-        const { display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = f?.filters?.length ? f.filters.length - 1 : undefined;
 
         return ({
           label: display,
           aggregation: aggregation,
-          icon: this.appStore.getAggregationIcon(aggregation.column),
+          icon,
           firstFilter: f,
           moreFiltersCount: more,
+          hidden
         });
       });
 

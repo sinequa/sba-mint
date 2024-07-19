@@ -17,7 +17,7 @@
   @if (navConfig.showOpenButton) {
     <li>
       <button
-        class="btn btn-ghost flex items-center gap-2"
+        class="btn btn-ghost items-center gap-2"
         [attr.title]="'open' | transloco"
         [disabled]="!hasExternalLink()"
         (click)="openClicked()"
@@ -36,43 +36,36 @@
     </li>
   }
 
-  <li>
-    <button
-      class="btn btn-ghost"
-      [attr.title]="'preview.copyPreviewLink' | transloco"
-      [disabled]="!hasExternalLink()"
-      (click)="copyLink()"
-    >
-      <i
-        class="fa-fw far"
-        [class.fa-link]="!copied"
-        [class.fa-circle-check]="copied"
-      ></i>
-    </button>
-  </li>
+  @if (hasExternalLink()) {
+    <li>
+      <button
+        class="btn btn-ghost"
+        [attr.title]="'preview.copyPreviewLink' | transloco"
+        (click)="copyLink()"
+      >
+        <i
+          class="fa-fw far text-sm"
+          [class.fa-link]="!copied"
+          [class.fa-circle-check]="copied"
+        ></i>
+      </button>
+    </li>
+  }
 
-
-  @if (navConfig.showSearchButton) {
-  <li class="ml-auto">
-    <button
-      [ngClass]="
-        cn(
-          'btn flex gap-2 items-center text-nowrap',
-          isExtended() ? 'btn-secondary' : 'btn-primary'
-        )
-      "
-      (click)="drawerStack.extend()"
-    >
+  @if (navConfig.showSearchButton && article()) {
+    <li class="ml-auto *:flex *:gap-2 *:items-center *:text-nowrap">
       @if (isExtended()) {
-        <i class="fa-fw far fa-eye-slash"></i>
-        {{ 'preview.hideSearch' | transloco }}
+        <button class="btn btn-secondary" (click)="drawerStack.extend()">
+          <i class="fa-fw far fa-eye-slash"></i>
+          {{ 'preview.hideSearch' | transloco }}
+        </button>
       }
-
       @else {
-        <i class="fa-fw far fa-eye"></i>
-        {{ 'preview.searchInDocument' | transloco }}
+        <button class="btn btn-primary" (click)="drawerStack.extend()">
+          <i class="fa-fw far fa-eye"></i>
+          {{ 'preview.searchInDocument' | transloco }}
+        </button>
       }
-    </button>
-  </li>
+    </li>
   }
 </menu>

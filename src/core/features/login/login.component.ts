@@ -141,7 +141,7 @@ export class LoginComponent implements OnDestroy {
           this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
 
         }).catch((error: Error) => {
-          toast.error("An error occured while initializing the application", { description: error.message, duration: 3000 });
+          console.warn("An error occured while initializing the application (login)", error);
         });
       }
     }).catch(e => {

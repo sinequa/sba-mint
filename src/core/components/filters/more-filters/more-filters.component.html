@@ -1,6 +1,6 @@
 <ul class="divide-y">
-  @for (filter of filterDropdowns(); track filter.aggregation.column) {
-    <li class="collapse mb-1 bg-base-200">
+  @for (filter of filterDropdowns(); track $index) {
+    <li class="collapse mb-1 bg-base-200" [ngClass]="cn(filter.hidden && 'hidden')">
       <!-- header -->
       <input
         class="w-full"
@@ -16,7 +16,7 @@
         <i class="fa-fw {{ filter.icon || 'fas fa-list' }} me-1"></i>
 
         <!-- aggregation label -->
-        <span class="me-4 grow items-baseline">{{ filter.label }}</span>
+        <span class="me-4 grow items-baseline">{{ filter.label | syslang | transloco }}</span>
 
         <!-- actions buttons -->
         <div class="flex gap-2 z-10">

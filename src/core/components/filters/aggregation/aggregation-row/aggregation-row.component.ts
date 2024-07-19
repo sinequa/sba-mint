@@ -9,20 +9,31 @@ import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@
   standalone: true,
   imports: [NgClass, SyslangPipe],
   templateUrl: "./aggregation-row.component.html",
-  styles: [":host { display: block; }"]
+  styles: `
+    :host {
+      display: block;
+    }
+    :host a {
+      padding-left: calc((1rem * var(--level)))
+    }
+    :host:has(input:checked) {
+      color: theme('colors.primary');
+    }
+  `
 })
 export class AggregationRowComponent {
   cn = cn;
 
-  @HostBinding("attr.disabled") get disabled() { return this.item().count === 0 ? "disabled" : null }
+  @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
+  @HostBinding("class.data-list-item") datalistitem = true;
 
   @Output() onSelect = new EventEmitter<AggregationListItem>();
   @Output() onOpen = new EventEmitter<AggregationListItem>();
 
-  item = input.required<AggregationListItem>();
+  node = input.required<AggregationListItem>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
-  @HostBinding("class.selected") get selected() { return this.item().$selected }
+  @HostBinding("class.selected") get selected() { return this.node().$selected }
 
   select(e: Event, item: AggregationListItem) {
     e.stopImmediatePropagation();
@@ -31,9 +42,20 @@ export class AggregationRowComponent {
     this.onSelect.emit(item);
   }
 
-  open(e: Event, item: AggregationListItem) {
+  open(e: Event, node: AggregationListItem) {
+    // fetch aggregation items
     e.preventDefault();
     e.stopImmediatePropagation();
-    this.onOpen.emit(item);
+
+    if(node.items && node.$opened === true) {
+      node.$opened = false;
+      return;
+    }
+    if(node.items && (!node.$opened)) {
+      node.$opened = true;
+      return;
+    }
+
+    this.onOpen.emit(node);
   }
 }

@@ -1,10 +1,14 @@
-import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AggregationsStore, AppStore, CAggregation, CAggregationItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+
+import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';
@@ -17,7 +21,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-more-filters',
   standalone: true,
-  imports: [AggregationComponent, TranslocoPipe],
+  imports: [NgClass, AggregationComponent, SyslangPipe, TranslocoPipe],
   templateUrl: './more-filters.component.html',
   styles: [`
     :host {
@@ -27,6 +31,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class MoreFiltersComponent implements OnDestroy {
+  cn = cn;
+
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
@@ -34,23 +40,22 @@ export class MoreFiltersComponent implements OnDestroy {
   readonly hasAppliedFilters = signal<boolean[]>([]);
   readonly filterCounts = signal<number[]>([]);
 
-  private readonly _searchService = inject(SearchService);
-  private readonly _aggregationsService = inject(AggregationsService);
-  private readonly _aggregationsStore = inject(AggregationsStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly searchService = inject(SearchService);
+  private readonly aggregationsService = inject(AggregationsService);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
   private readonly appStore = inject(AppStore);
-  private readonly _injector = inject(Injector);
+  private readonly injector = inject(Injector);
 
   private readonly subscriptions = new Subscription();
 
   constructor() {
     effect(() => {
-      // as slice mutates the array, we need to clone it first
-      // and then remove the first FILTERS_COUNT elements
-      // to get the aggregations that are not shown in the filters
-      // and remove also the "Modified" aggregation
-      const aggregations = [...getState(this._aggregationsStore).aggregations];
+      const { queryName } = this.route.snapshot.data;
+      const aggregations = this.aggregationsService.getSortedAggregations(queryName);
+
+      if (aggregations.length === 0) return;
 
       // create filters with only aggregations that are authorized and not already shown
       const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(
@@ -59,7 +64,7 @@ export class MoreFiltersComponent implements OnDestroy {
           .filter(agg => agg.items !== undefined && agg.items.length > 0)
       );
 
-      this.filterDropdowns.set(filterDropdowns);
+      untracked(() => this.filterDropdowns.set(filterDropdowns));
 
     }, { allowSignalWrites: true });
   }
@@ -74,7 +79,7 @@ export class MoreFiltersComponent implements OnDestroy {
 
     this.updateFiltersFlags(filter, index);
 
-    this._searchService.search([]);
+    this.searchService.search([]);
   }
 
   public clearFilter(index: number) {
@@ -91,12 +96,12 @@ export class MoreFiltersComponent implements OnDestroy {
       field: this.filterDropdowns()[index].aggregation.column,
       display: ''
     });
-    this._searchService.search([]);
+    this.searchService.search([]);
   }
 
   public loadMore(aggregation: AggregationListEx, index: number): void {
-    this._aggregationsService.loadMore(
-      runInInjectionContext(this._injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
+    this.aggregationsService.loadMore(
+      runInInjectionContext(this.injector, () => buildQuery({ filters: getState(this.queryParamsStore).filters })),
       aggregation
     ).subscribe((aggregation) => {
       this.filterDropdowns.update((filters: FilterDropdown[]) => {
@@ -137,11 +142,11 @@ export class MoreFiltersComponent implements OnDestroy {
 
     return (aggregations as AggregationEx[])
       .map((aggregation, index) => {
-        const { items = [], display = aggregation.name } = this.appStore.getAggregationCustomization(aggregation.column) as CAggregation || aggregation as CAggregation;
+        const { items = [], display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
-          item.icon = items?.find((it: CAggregationItem) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
@@ -159,9 +164,10 @@ export class MoreFiltersComponent implements OnDestroy {
         return ({
           label: display,
           aggregation: aggregation as AggregationEx,
-          icon: this.appStore.getAggregationIcon(aggregation.column),
+          icon,
           firstFilter: f,
-          moreFiltersCount: count
+          moreFiltersCount: count,
+          hidden
         })
       });
   }
@@ -179,4 +185,5 @@ export class MoreFiltersComponent implements OnDestroy {
       return values;
     });
   }
+
 }

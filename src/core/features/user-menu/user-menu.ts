@@ -94,7 +94,6 @@ export class UserMenuComponent {
   }
 
   handleResetUserSettings() {
-    console.log("Resetting user settings");
     this.userSettingsStore.reset().then(() => {
       toast("User settings have been reset", { duration: 2000 });
     });
