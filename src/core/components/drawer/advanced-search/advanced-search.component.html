@@ -104,6 +104,10 @@
             </li>
           </ul>
         </div>
+
+        @for (highlight of previewHighlights(); track $index) {
+          <ng-container *ngTemplateOutlet="metadataPanel; context: highlight"></ng-container>
+        }
       </section>
     }
   </div>
@@ -112,8 +116,8 @@
 <ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
   <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
     <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
-      <p class="flex gap-2 font-semibold items-baseline">
-        <i class="fa-fw {{ iconClass }}"></i>
+      <p class="flex gap-2 font-semibold items-baseline capitalize">
+        <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name }}
       </p>
 

@@ -4,13 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article } from '@sinequa/atomic';
+import { Article, CCWebService } from '@sinequa/atomic';
 import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, ReplacePipe, SelectionStore } from '@sinequa/atomic-angular';
 import { PanelDirective } from 'toolkit';
 
 interface MetadataNavigation {
   index: number;
   value: string;
+}
+
+type PreviewWebService = CCWebService & {
+  highlights?: string,
 }
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
@@ -52,6 +56,7 @@ export class AdvancedSearchComponent {
 
   public readonly labels = inject(AppStore).getLabels();
   private readonly applicationStore = inject(ApplicationStore);
+  private readonly appStore = inject(AppStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly previewService = inject(PreviewService);
 
@@ -62,6 +67,17 @@ export class AdvancedSearchComponent {
     if (!this.article()) return [];
 
     return this.applicationStore.getExtracts(this.article()!.id)
+  });
+
+  protected readonly previewHighlights = computed(() => {
+    const highlights = (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
+      .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
+
+    return highlights?.map(highlight => ({
+      name: highlight,
+      entity: highlight,
+      metadata: (this.article() as any)[highlight]
+    }));
   });
 
   public navigation = signal<MetadataNavigation | undefined>(undefined);
