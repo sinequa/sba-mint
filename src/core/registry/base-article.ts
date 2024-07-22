@@ -13,7 +13,7 @@ import { SelectionStrategy } from "@sinequa/atomic-angular";
   standalone: true,
   template: ``
 })
-export class BaseArticle {
+export abstract class BaseArticle {
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 }

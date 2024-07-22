@@ -26,7 +26,7 @@
           @for (article of page.records; track article.id + $index) {
             <li>
               @if (article.docformat) {
-                <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: getInputsForArticle(article)" />
+                <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: { article, strategy: 'replace' }" />
               }
             </li>
           }

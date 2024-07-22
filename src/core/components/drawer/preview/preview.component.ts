@@ -11,7 +11,7 @@ import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore } f
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
-import { getComponentsForDocumentType } from '@/core/registry/document-type';
+import { getComponentsForDocumentType } from '@/core/registry/document-type-registry';
 import { AdvancedSearchComponent } from '../advanced-search/advanced-search.component';
 import { DrawerComponent } from '../drawer.component';
 import { DrawerService } from '../drawer.service';

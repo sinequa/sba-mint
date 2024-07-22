@@ -11,6 +11,6 @@ import { PreviewData } from "@sinequa/atomic";
   standalone: true,
   template: ``
 })
-export class BasePreview {
+export abstract class BasePreview {
   public readonly previewData = input.required<PreviewData>();
 }
