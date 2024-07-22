@@ -1,1 +1,156 @@
-<app-preview-navbar class="sticky top-0" />
+<app-preview-navbar
+  class="block border-b border-neutral-300 bg-white"
+  [article]="article()"
+/>
+
+@if (previewData() && article()) {
+  <div class="overflow-auto h-full flex flex-col">
+    <section class="p-6 flex flex-col gap-4 border-b border-neutral-300">
+      <header class="flex items-center gap-2 text-base">
+        <div class="flex ratio-video object-cover h-full bg-gray-100 w-[120px]">
+          @if (article().thumbnailUrl && !thumbnailFailed()) {
+            <img 
+              class="ratio-video object-cover h-full"
+              [src]="article().thumbnailUrl" 
+              (error)="thumbnailFailed.set(true)"
+            />
+          }
+          @else {
+            <div class="m-auto p-2 flex flex-col items-center text-gray-500">
+              <i class="fa-fw far fa-presentation-screen text-xl"></i>
+      
+              <p class="text-center text-xs">No thumbnail available</p>
+            </div>
+          }
+        </div>
+
+        <a
+          class="overflow-auto"
+          target="_blank"
+          rel="noopener noreferrer"
+          [href]="article()!.url1"
+        >
+          <p class="text-primary font-bold me-auto text-ellipsis whitespace-nowrap overflow-hidden">
+            {{ article().title }}
+          </p>
+        </a>
+
+        <button
+          class="ms-auto"
+          title="Collapse preview header"
+          (click)="headerCollapsed.set(!headerCollapsed())"
+        >
+          <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
+        </button>
+      </header>
+
+      <table class="w-full" [ngClass]="{ hidden: headerCollapsed() }">
+        <tr>
+          <th>{{ 'location' | transloco }}</th>
+
+          <td class="flex items-center gap-2">
+            <app-source-icon [collection]="article().collection" class="fa-fw flex" />
+
+            <i class="fa-fw far fa-chevron-right"></i>
+            
+            @if (locationSegments().length > 1) {
+              <sq-dropdown position="bottom" [autoClose]="true">
+                <button class="p-1 rounded-full">...</button>
+                
+                <div class="flex gap-1 items-center rounded-full bg-white py-1 px-2 shadow-md" dropdown-content>
+                  @for (segment of locationSegments().slice(0, -1); track $index) {
+                    <button
+                      class="py-1 px-2 rounded-full hover:bg-blue-100"
+                      (click)="navigateToSegment($index)"
+                    >
+                      {{ segment }}
+                    </button>
+
+                    @if (locationSegments().length > 1 && !$last) {
+                      <i class="fa-fw far fa-chevron-right"></i>
+                    }
+                  }
+                </div>
+              </sq-dropdown>
+            }
+
+            <i class="fa-fw far fa-chevron-right"></i>
+            
+            <span class="line-clamp-1">{{ locationSegments().at(-1) }}</span> 
+          </td>
+        </tr>
+
+        @if ((article().authors || []).length > 0) {
+          <tr>
+            <th>{{ 'lastUpdatedBy' | transloco }}</th>
+
+            <td class="flex flex-wrap gap-2">
+              <sq-metadata
+                class="empty:hidden badge badge-sm"
+                [article]="article()!"
+                metadata="authors"
+              />
+            </td>
+          </tr>
+        }
+
+        @if (article().modified) {
+          <tr>
+            <th>{{ 'lastUpdatedOn' | transloco }}</th>
+
+            <td class="flex gap-2">
+              <p>{{ article()!.modified | date : "mediumDate" }}</p>
+            </td>
+          </tr>
+        }
+
+        @if (hasLabels()) {
+        <tr>
+          <th>{{ 'labels' | transloco }}</th>
+
+          <td class="flex flex-col gap-2">
+            <sq-metadata
+              class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
+              [article]="article()!"
+              [metadata]="labels.public"
+            />
+
+            <sq-metadata
+              class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
+              [article]="article()!"
+              [metadata]="labels.private"
+            />
+          </td>
+      </tr>
+      }
+
+      <tr>
+        <th>{{ 'type' | transloco }}</th>
+
+        <td>
+          <sq-metadata
+            class="badge badge-sm border-neutral-600 font-semibold"
+            [article]="article()!"
+            [metadata]="'docformat'"
+          />
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="grow flex flex-col gap-4 py-4 px-6">
+    @if (previewUrl()) {
+      <preview-actions class="flex justify-end gap-2" />
+
+      <iframe
+        #preview
+        frameborder="0"
+        class="h-full"
+        [src]="previewUrl()"
+        [attr.title]="'preview.documentPreview' | transloco"
+        [attr.aria-label]="'preview.documentPreview' | transloco"
+      ></iframe>
+    }
+  </section>
+</div>
+}

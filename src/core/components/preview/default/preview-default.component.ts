@@ -1,14 +1,16 @@
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
-import { Component, ElementRef, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Article as A, LegacyFilter, PreviewData } from '@sinequa/atomic';
+import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { AppStore, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SplitPipe } from '@sinequa/atomic-angular';
 
-import { Router } from '@angular/router';
-import { getState } from '@ngrx/signals';
+import { BasePreview } from '@/core/registry/base-preview';
+
 import { DropdownComponent } from "../../dropdown/dropdown";
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
@@ -40,10 +42,9 @@ type Article = A & {
   },
   styleUrl: './preview-default.component.scss'
 })
-export class PreviewDefaultComponent implements OnDestroy {
+export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   public iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
-  public readonly previewData = input.required<PreviewData>();
   public readonly article = computed(() => this.previewData()?.record as Article);
   public readonly previewUrl = computed(() =>
     this.previewData()?.documentCachedContentUrl ?
@@ -70,6 +71,8 @@ export class PreviewDefaultComponent implements OnDestroy {
   private readonly sub = new Subscription();
 
   constructor() {
+    super();
+
     effect(() => {
       if (!this.iframe()) return;
 

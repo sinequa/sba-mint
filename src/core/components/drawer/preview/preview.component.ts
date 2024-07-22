@@ -11,9 +11,10 @@ import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore } f
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
+import { getComponentsForDocumentType } from '@/core/registry/document-type-registry';
+import { AdvancedSearchComponent } from '../advanced-search/advanced-search.component';
 import { DrawerComponent } from '../drawer.component';
 import { DrawerService } from '../drawer.service';
-import { AdvancedSearchComponent } from '../advanced-search/advanced-search.component';
 
 const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
   factory() {
@@ -22,7 +23,7 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
 
     if (!queries) return '';
 
-    const array = Object.entries(queries).map(([key, value]) => ({key, ...value}));
+    const array = Object.entries(queries).map(([key, value]) => ({ key, ...value }));
 
     return array[0].name;
   }
@@ -65,7 +66,11 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
   public readonly article = toSignal(this.article$);
 
   public readonly inputs = computed(() => ({ previewData: this.previewData() }));
-  public readonly previewType = PreviewDefaultComponent;
+  public readonly previewType = computed(() => {
+    if (!this.article()?.docformat) return undefined;
+
+    return getComponentsForDocumentType(this.article()?.docformat || '').previewComponent;
+  })
 
   private readonly queryService = inject(QueryService);
 
