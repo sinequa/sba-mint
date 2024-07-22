@@ -11,7 +11,9 @@
     [ngClass]="{ hidden: (drawer.isExtended | async) === false }"
   ></div>
 
-  <ng-container *ngComponentOutlet="previewType; inputs: inputs()" />
+  @if (previewType()) {
+    <ng-container *ngComponentOutlet="previewType()!; inputs: inputs()" />
+  }
 </div>
 
 @if (article()) {

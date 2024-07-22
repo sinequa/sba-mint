@@ -1,13 +1,13 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
+import { SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 import { StopPropagationDirective } from 'toolkit';
-import { Article } from '@sinequa/atomic';
-import { SelectArticleOnClickDirective, ShowBookmarkDirective } from '@sinequa/atomic-angular';
-import { SelectionStore } from '@sinequa/atomic-angular';
 
-import { BookmarkButtonComponent } from '../../bookmark/bookmark-button.component';
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
+import { BaseArticle } from '@/core/registry/base-article';
+
 
 @Component({
   selector: 'app-article-slide',
@@ -20,22 +20,21 @@ import { BookmarkButtonComponent } from '../../bookmark/bookmark-button.componen
   },
   hostDirectives: [{
     directive: SelectArticleOnClickDirective,
-    inputs: ['article: slide']
+    inputs: ['article', 'strategy']
   }, {
     directive: ShowBookmarkDirective,
-    inputs: ['article: slide']
+    inputs: ['article']
   }]
 })
-export class ArticleSlideComponent implements OnDestroy {
-  public readonly slide = input.required<Partial<Article> | undefined>();
-
-  showBookmark = signal(false);
+export class ArticleSlideComponent extends BaseArticle implements OnDestroy {
+  selectionStore = inject(SelectionStore);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
     this.showBookmark.set(value);
   });
 
-  selectionStore = inject(SelectionStore);
-  selected = computed(() => this.slide()?.id === getState(this.selectionStore).id);
+  thumbnailFailed = signal(false);
+  showBookmark = signal(false);
+  selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
