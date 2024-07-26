@@ -69,7 +69,12 @@ export class FiltersComponent {
         const { value, values, filters } = f;
         if (value) acc++;
         if (values) acc += values.length;
-        if (filters) acc += Array.isArray(filters) ? filters.length : 1;
+        if (filters) acc += f.operator === 'and'
+          ? 1
+          : Array.isArray(filters)
+            ? filters.length
+            : 1;
+
         return acc
       }, 0);
   });
@@ -193,7 +198,7 @@ export class FiltersComponent {
 
     const dropdowns = (aggregations as AggregationEx[])
       .map((aggregation) => {
-        const { items = [] } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
+        const { items = [], display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
           const valueToSearch = aggregation.valuesAreExpressions ? item.display : item.value;
@@ -201,7 +206,6 @@ export class FiltersComponent {
           item.icon = items?.find((it: CFilterItem ) => it.value === item.value)?.icon;
         });
 
-        const { display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
         const more = Array.isArray(f?.filters)
           ? f.filters.length - 1

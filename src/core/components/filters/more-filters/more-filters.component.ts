@@ -127,6 +127,7 @@ export class MoreFiltersComponent implements OnDestroy {
       for (const filter of filters) {
         if (filter.value) {
           flattenedValues.push(filter.value);
+          flattenedValues.push(filter.display);
         }
         if (filter.filters) {
           extractValues(filter.filters as LegacyFilter[]);
@@ -147,12 +148,17 @@ export class MoreFiltersComponent implements OnDestroy {
         const { items = [], display = aggregation.name, icon, hidden } = this.appStore.getAggregationCustomization(aggregation.column) as CFilter || {};
 
         aggregation?.items?.forEach((item: AggregationListItem) => {
-          item.$selected = flattenedValues.includes(item.value?.toString() ?? '') || false;
+          const valueToSearch = aggregation.valuesAreExpressions ? item.display : item.value;
+          item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
           item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const count =  (Array.isArray(f?.filters)) ? f.filters.length : f ? 1 : undefined;
+        const count = aggregation.isDistribution && f?.operator === 'and'
+          ? 1
+          : (Array.isArray(f?.filters))
+            ? f.filters.length : f ? 1
+            : undefined;
 
         if (f) {
           this.updateFiltersFlags(f, index)
