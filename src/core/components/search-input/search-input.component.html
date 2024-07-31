@@ -68,8 +68,8 @@
     class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
-    [attr.aria-disabled]="!allowEmptySearch()"
-    [disabled]="!allowEmptySearch()"
+    [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"
+    [disabled]="!allowEmptySearch() && this.input() === ''"
     (click)="emitText()"
   >
     <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
