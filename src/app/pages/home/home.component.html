@@ -10,7 +10,7 @@
 
   <main class="h-[50vh] flex flex-col gap-16">
     <app-search-input
-      class="w-full"
+      class="w-full leading-8"
       (debounced)="searchText.set($event)"
       (validated)="search($event)"
     >
