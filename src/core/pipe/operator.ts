@@ -13,7 +13,7 @@ export class OperatorPipe implements PipeTransform {
       return `&gt; ${filter.start} &le; ${filter.end}`;
     }
     if(filter?.operator === 'and') {
-      return filter.display;
+      return filter.display || filter.value || '';
     }
     return `${op} ${filter?.value || ''}`;
   }

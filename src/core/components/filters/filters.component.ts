@@ -64,7 +64,7 @@ export class FiltersComponent {
 
     // count more filters
     return filters
-      .filter(f => this.moreFiltersColumns.includes(f.field))
+      .filter(f => this.moreFiltersColumns.includes(f.field || ''))
       .reduce((acc, f) => {
         const { value, values, filters } = f;
         if (value) acc++;
@@ -174,7 +174,7 @@ export class FiltersComponent {
       for (const filter of filters) {
         if (filter.value) {
           flattenedValues.push(filter.value);
-          flattenedValues.push(filter.display);
+          flattenedValues.push(filter.display || filter.value);
         }
         if (filter.filters) {
           extractValues(filter.filters as LegacyFilter[]);

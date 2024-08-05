@@ -1,14 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
+import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 
-import { FormsModule } from '@angular/forms';
 import { Credentials, Principal, authenticated$, globalConfig, isAuthenticated, login, logout } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, PrincipalService, PrincipalStore } from '@sinequa/atomic-angular';
-import { toast } from 'ngx-sonner';
-import { SearchComponent } from '@/app/pages/search/search.component';
+
 import { SearchAllComponent } from '@/app/pages/search/all/search-all.component';
-import { getState } from '@ngrx/signals';
+import { SearchComponent } from '@/app/pages/search/search.component';
+
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`./i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>)
 
 /**
  * Represents the LoginComponent class, which is responsible for handling the login functionality.
@@ -17,22 +24,22 @@ import { getState } from '@ngrx/signals';
 @Component({
   selector: 'sq-login',
   standalone: true,
-  imports: [RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule, TranslocoPipe],
   templateUrl: "./login.component.html",
   styles: [`
-:host {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-}
-.btn-primary {
-  background-color: black;
-  color: white;
-}
+    :host {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    .btn-primary {
+      background-color: black;
+      color: white;
+    }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  providers: [provideTranslocoScope({ scope: "login", loader })]
 })
 export class LoginComponent implements OnDestroy {
 
@@ -53,6 +60,7 @@ export class LoginComponent implements OnDestroy {
   protected readonly appService = inject(ApplicationService);
   protected readonly applicationStore = inject(ApplicationStore);
   protected readonly principalStore = inject(PrincipalStore);
+  private readonly translocoService = inject(TranslocoService);
 
 
 
@@ -144,13 +152,19 @@ export class LoginComponent implements OnDestroy {
           console.warn("An error occured while initializing the application (login)", error);
         });
       }
-    }).catch(e => {
+    }).catch(async e => {
+
       if (e instanceof Error) {
         console.error(e.message);
       }
       if (e instanceof Response) {
         console.error(e.statusText);
       }
+      if(e.status === 401 && e instanceof Response === false) {
+        const message = this.translocoService.translate('login.invalidCredentials');
+        toast.error(message, { duration: 2000 });
+      }
+
     });
   }
 }

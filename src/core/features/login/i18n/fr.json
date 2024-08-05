@@ -1,8 +1,14 @@
 {
+  "username": "Nom d'utilisateur",
+  "password": "Mot de passe",
+  "connect": "Se connecter",
+  "back": "Retour",
+  "disconnect": "Se déconnecter",
   "forgotYourPassword": "Mot de passe oublié ?",
   "loginDescription": "Saisissez votre adresse email pour vous connecter",
   "loginWith": "Se connecter avec { provider }",
   "or": "Ou",
   "welcomeBack": "Bienvenue{ name, select, other { , {name}} undefined {}} !",
-  "youAreLoggedIn": "Vous êtes connecté"
+  "youAreLoggedIn": "Vous êtes connecté",
+  "invalidCredentials": "Nom d'utilisateur ou mot de passe invalide"
 }
