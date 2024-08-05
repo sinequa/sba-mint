@@ -79,6 +79,9 @@ export class DrawerStackComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  public toggleAssistant(): void {
+    this.drawerStackService.toggleAssistant();
+  }
   private openTopDrawer(index: number): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
       console.log('Drawer stack is full');
