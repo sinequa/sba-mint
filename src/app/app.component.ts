@@ -9,8 +9,8 @@ import { ApplicationService, ApplicationStore, PrincipalStore } from '@sinequa/a
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
+import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
-import { SearchFacetsComponent } from './pages/search/side-facets/search-facets.component';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +31,7 @@ export class AppComponent {
 
     login().then(value => {
       if (value) {
-        this.appService.initWithCreateRoutes(SearchComponent, SearchFacetsComponent).then(() => {
+        this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
           const { fullName, name } = getState(this.principalStore).principal;
 
           toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
