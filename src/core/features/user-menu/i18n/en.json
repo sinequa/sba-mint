@@ -10,5 +10,6 @@
   "resetUserSettings": "Reset user settings",
   "revertOverride": "Revert override user",
   "selectLanguage": "Select language",
-  "usernameToOverride": "Username to override"
+  "usernameToOverride": "Username to override",
+  "help": "Help"
 }

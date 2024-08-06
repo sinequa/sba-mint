@@ -7,6 +7,7 @@ import { toast } from "ngx-sonner";
 
 import { login, logout, setGlobalConfig } from "@sinequa/atomic";
 import { ApplicationService, MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
+import { getHelpIndexUrl, HelpFolderOptions } from "./help-folder-options";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -101,10 +102,21 @@ export class UserMenuComponent {
   }
 
   openAdmin() {
-    window.open(`${window.location.origin}/admin`, "_blank");
+    window.open(`${window.location.origin}/admin`, "_blank", 'noopener');
   }
 
   openSinequa() {
-    window.open("https://sinequa.com", "_blank");
+    window.open("https://sinequa.com", "_blank", 'noopener');
+  }
+
+  openHelp() {
+    const url = getHelpIndexUrl(this.transloco.getActiveLang(), {
+      folder: 'mint-search',
+      path: '/r/_sinequa/webpackages/help',
+      indexFile: 'olh-index.html',
+      useLocale: true,
+      useLocaleAsPrefix: true
+    });
+    window.open(url, "_blank", "noopener");
   }
 }
