@@ -26,24 +26,17 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
   providers: [provideTranslocoScope({ scope: 'recent-searches', loader })]
 })
 export class RecentSearchesComponent {
-  protected readonly range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
-  protected readonly recentSearches = signal<RecentSearch[]>([]);
-  protected readonly paginatedRecentSearches = computed<RecentSearch[]>(() => this.recentSearches().slice(0, this.range()));
-  protected readonly hasMore = computed<boolean>(() => this.recentSearches().length > 0 && this.range() < this.recentSearches().length);
-
-  protected readonly getRelativeDate = getRelativeDate;
-
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly router = inject(Router);
   protected readonly transloco = inject(TranslocoService);
 
-  constructor() {
-    effect(() => {
-      const searches = this.userSettingsStore.recentSearches();
-      this.recentSearches.set(searches);
-    }, { allowSignalWrites: true });
-  }
+  protected readonly range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
+  protected readonly recentSearches = computed<RecentSearch[]>(() => this.userSettingsStore.recentSearches());
+  protected readonly paginatedRecentSearches = computed<RecentSearch[]>(() => this.recentSearches().slice(0, this.range()));
+  protected readonly hasMore = computed<boolean>(() => this.recentSearches().length > 0 && this.range() < this.recentSearches().length);
+
+  protected readonly getRelativeDate = getRelativeDate;
 
   /**
    * Handles the click event for a recent search item.

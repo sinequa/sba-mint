@@ -30,16 +30,10 @@ export class BookmarksListComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
 
   public range = signal<number>(BOOKMARKS_ITEMS_PER_PAGE);
-  protected bookmarks = signal<Bookmark[]>([]);
+  protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
   public paginatedBookmarks = computed<Bookmark[]>(() => this.bookmarks().slice(0, this.range()));
   public hasMore = computed<boolean>(() => this.bookmarks().length > 0 && this.range() < this.bookmarks().length);
 
-  constructor() {
-    effect(() => {
-      const bookmarks = this.userSettingsStore.bookmarks();
-      this.bookmarks.set(bookmarks);
-    }, { allowSignalWrites: true });
-  }
 
   public onClick(bookmark: Bookmark): void {
 
