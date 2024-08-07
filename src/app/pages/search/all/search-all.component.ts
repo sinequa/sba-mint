@@ -49,6 +49,7 @@ export class SearchAllComponent implements OnDestroy {
   readonly result = signal<Result | undefined>(undefined);
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
+  protected readonly noRecords = signal(false);
 
   private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
@@ -82,6 +83,14 @@ export class SearchAllComponent implements OnDestroy {
           if (queryParams.text) {
             this.userSettingsStore.addCurrentSearch(queryParams);
           }
+        }),
+        map(result => {
+          if (result.records?.length === 0) {
+            this.noRecords.set(true);
+          } else {
+            this.noRecords.set(false);
+          }
+          return result;
         }),
         map(result => {
           result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
