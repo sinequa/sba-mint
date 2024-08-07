@@ -14,6 +14,12 @@ div.tab-container {
   margin-left: theme("spacing.2");
 }
 
+.article-extract {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
 ::ng-deep .matchlocations {
   font-weight: 700;
 }
