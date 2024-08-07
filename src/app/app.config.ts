@@ -3,7 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter, withComponentInputBinding, withHashLocation, withViewTransitions } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
 
 import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';

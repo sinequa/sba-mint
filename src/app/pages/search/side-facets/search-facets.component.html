@@ -1,0 +1,39 @@
+<app-more-filters class="mt-8 mb-4 px-8 sticky top-8 self-start w-full max-h-[80dvh] overflow-y-scroll overscroll-y-contain" id="sidebar-filters" />
+
+<main class="col-span-2 mb-8 z-0">
+
+  @if (query.isSuccess()) {
+    <app-sort-selector class="flex justify-end mt-2" [result]="result()!" (onSort)="onSort($event)" />
+  }
+
+  <app-did-you-mean class="text-alert py-1" [result]="result()" />
+
+  @if (query.isPending()) {
+  <ul class="flex flex-col gap-2 mt-4">
+    <li><app-article-default-skeleton /></li>
+    <li><app-article-default-skeleton /></li>
+    <li><app-article-default-skeleton /></li>
+  </ul>
+  }
+  @else if(query.isSuccess()) {
+  <ul class="flex flex-col gap-2 mt-4">
+    @for(page of query.data()?.pages; track page) {
+    @for (article of page.records; track article.id + $index) {
+    <li>
+      <app-article-default [article]="article" [strategy]="'replace'" />
+    </li>
+    }
+    @if(page.records.length === 0){
+    <li class="mt-8 text-neutral-500 italic">
+      No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
+    </li>
+    }
+    }
+  </ul>
+  }
+
+  @if(query.hasNextPage()){
+  <div infinity-scroll (loadMore)="nextPage()"></div>
+  }
+</main>
+
