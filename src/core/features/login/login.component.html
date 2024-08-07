@@ -125,13 +125,13 @@
           <div class="grid gap-2">
             <label
               class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              for="email"
-              >Login</label>
+              for="username"
+              >{{ 'login.username' | transloco }}</label>
 
             <input
               type="text"
               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              id="login"
+              id="username"
               required
               [ngModel]="credentials().username"
               (ngModelChange)="updateCredentials({ username: $event })"
@@ -143,7 +143,7 @@
               <label
                 class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 for="password"
-                >Password</label>
+                >{{ 'login.password' | transloco }}</label>
             </div>
             <input
               type="password"
@@ -160,7 +160,7 @@
             [disabled]="!valid()"
             (click)="handleLoginWithCredentials()"
           >
-            Login
+            {{ 'login.connect' | transloco }}
           </button>
         }
         @else {
@@ -177,12 +177,12 @@
       <button
         (click)="handleLogout()"
         class="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-slate/90 h-10 px-4 py-2 w-full"
-        type="submit">Logout</button>
+        type="submit">{{ 'login.disconnect' | transloco }}</button>
       <a
         role="button"
         routerLink="window.history.back()"
         class="mt-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input h-10 px-4 py-2 w-full"
-      >Back</a>
+      >{{ 'login.back' | transloco }}</a>
     }
   </div>
 </div>
