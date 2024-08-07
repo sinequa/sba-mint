@@ -125,7 +125,8 @@ export class MoreFiltersComponent implements OnDestroy {
       for (const filter of filters) {
         if (filter.value) {
           flattenedValues.push(filter.value);
-          flattenedValues.push(filter.display || filter.value);
+          if(filter.display)
+            flattenedValues.push(filter.display);
         }
         if (filter.filters) {
           extractValues(filter.filters as LegacyFilter[]);
