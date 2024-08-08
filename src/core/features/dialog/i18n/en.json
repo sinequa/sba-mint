@@ -1,0 +1,13 @@
+{
+  "overrideUser": {
+    "title": "Override User",
+    "domainToOverride": "Domain to override",
+    "usernameToOverride": "Username to override",
+    "override": "Override"
+  },
+  "resetUserSettings": {
+      "title": "Reset User Settings",
+      "message": "You are about to reset ALL your user data (recent queries, collections, alerts, preferences, etc.). Do you want to continue?",
+      "success": "User settings have been reset successfully."
+    }
+}

@@ -26,7 +26,10 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
       borderRadius: theme('borderRadius.DEFAULT'),
       backgroundColor: theme('colors.zinc.900'),
       color: theme('colors.zinc.50'),
-      cursor: 'pointer'
+      cursor: 'pointer',
+      '&:hover': {
+        opacity: '0.9'
+      }
     },
     '.btn-primary': {
       backgroundColor: theme('colors.primary'),

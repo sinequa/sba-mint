@@ -1,13 +1,14 @@
-import { Component, ElementRef, computed, inject, model, viewChild } from "@angular/core";
+import { Component, computed, inject, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
-import { toast } from "ngx-sonner";
 
-import { login, logout, setGlobalConfig } from "@sinequa/atomic";
-import { ApplicationService, MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
-import { getHelpIndexUrl, HelpFolderOptions } from "./help-folder-options";
+import { logout } from "@sinequa/atomic";
+import { MenuComponent, MenuItemComponent, PrincipalStore } from "@sinequa/atomic-angular";
+import { OverrideUserDialogComponent } from "../dialog/override";
+import { ResetUserSettingsDialogComponent } from "../dialog/reset-user-settings";
+import { getHelpIndexUrl } from "./help-folder-options";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -17,17 +18,17 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: "app-user-menu",
   standalone: true,
-  imports: [FormsModule, MenuComponent, MenuItemComponent, TranslocoPipe],
+  imports: [FormsModule, MenuComponent, MenuItemComponent, TranslocoPipe, OverrideUserDialogComponent, ResetUserSettingsDialogComponent],
   templateUrl: "./user-menu.html",
   providers: [provideTranslocoScope({ scope: "user-menu", loader })]
 })
 export class UserMenuComponent {
   readonly menu = viewChild(MenuComponent);
+  readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
+  readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
 
   private readonly router = inject(Router);
-  private readonly appService = inject(ApplicationService);
   private readonly principalStore = inject(PrincipalStore);
-  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
 
   readonly user = computed(() => {
@@ -51,8 +52,6 @@ export class UserMenuComponent {
     return this.principalStore.isOverridingUser();
   })
 
-  readonly overrideUser = model<{ username: string; domain: string }>({ username: '', domain: '' });
-  readonly overrideUserDialog = viewChild<ElementRef>('overrideUserDialog');
 
   changeLanguage(lang: string) {
     if (this.transloco.getActiveLang() !== lang) {
@@ -67,38 +66,16 @@ export class UserMenuComponent {
 
   handleOverride() {
     this.menu()?.close();
-    this.overrideUserDialog()!.nativeElement.showModal();
+    this.overrideUserDialog()?.showModal();
   }
 
-  override() {
-    if (!!this.overrideUser().domain && !!this.overrideUser().username) {
-      this.handleOverrideUser(this.overrideUser().username, this.overrideUser().domain);
-      this.overrideUserDialog()!.nativeElement.close();
-    }
-  }
-
-  handleOverrideUser(username?: string, domain?: string) {
-    if (username === undefined || domain === undefined) {
-      setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    }
-    else {
-      setGlobalConfig({ userOverrideActive: true, userOverride: { username, domain } });
-    }
-    login().then(value => {
-      if (value) {
-        this.appService.init().then(() => {
-          const { fullName } = getState(this.principalStore).principal;
-          toast(`Welcome back ${fullName}!`, { duration: 2000 })
-        });
-      }
-    });
+  handleOverrideUser() {
+    this.overrideUserDialog()?.handleOverrideUser();
   }
 
   handleResetUserSettings() {
-    this.userSettingsStore.reset().then(() => {
-      toast("User settings have been reset", { duration: 2000 });
-    });
     this.menu()?.close();
+    this.resetUserSettingsDialog()?.showModal();
   }
 
   openAdmin() {

@@ -1,5 +1,6 @@
 {
   "cancel": "Cancel",
+  "delete": "Delete",
   "domain": "Domain",
   "username": "Username",
   "loadMore": "Load more",
@@ -44,6 +45,6 @@
     "geos": "Places",
     "persons": "People",
     "companies": "Companies"
-  },  
+  },
   "extracts": "Extracts"
 }
