@@ -1,14 +1,15 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AggregationItem, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
+import { AggregationItem, LegacyFilter, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery, AutocompleteService } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
+import { debounceTime, distinctUntilChanged, Observable, of, Subscription, switchMap } from 'rxjs';
 
 type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
 
@@ -35,10 +36,10 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       scrollbar-width: thin;
     }
   `],
-  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
+  imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
-export class AggregationComponent implements OnInit {
+export class AggregationComponent implements OnInit, OnDestroy {
   @Output() public readonly onLoadMore = new EventEmitter<void>();
 
   /**
@@ -49,13 +50,35 @@ export class AggregationComponent implements OnInit {
   @Output() public readonly onSelect = new EventEmitter<LegacyFilter>();
 
   private queryParamsStore = inject(QueryParamsStore);
+  readonly autocompleteService = inject(AutocompleteService);
+
+  public readonly searchable = input<boolean>(true);
+  searchText = signal<string | undefined>(undefined);
 
   protected readonly hasFilter = signal<boolean>(false);
 
   title = input<AggregationTitle>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
-  items = computed(() => this.aggregation().items || []);
+  items = computed(() => this.searchedItems() || this.aggregation().items || []);
+
+  sub: Subscription = new Subscription();
+  searchGroup: FormGroup<{searchQuery: FormControl<string>}>;
+  suggestDelay = 200;
+  suggests = signal<Suggestion[] | undefined>([]);
+  searchedItems = computed(() => {
+    if (!this.suggests()) return undefined;
+
+    const list: AggregationListItem[] = this.suggests()!.map(suggest => ({
+      name: suggest.category,
+      value: suggest.display,
+      display: suggest.display,
+      column: suggest.id,
+      count: 0,
+      items: []
+    }));
+    return list;
+  });
 
   selected = computed<AggregationListItem[]>(() => {
     // $selected elements must be displayed first, but the other elements must stay in the same order
@@ -97,8 +120,27 @@ export class AggregationComponent implements OnInit {
     return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
   });
 
+  constructor() {
+    const searchQuery = new FormControl("", {nonNullable: true});
+    this.searchGroup = new FormGroup({searchQuery});
+
+    this.sub.add(
+      searchQuery.valueChanges.pipe(
+          debounceTime(this.suggestDelay),
+          distinctUntilChanged(),
+          switchMap(text => this.onSearch(text))
+      ).subscribe((suggests: Suggestion[] | undefined) => {
+          this.suggests.set(suggests);
+      })
+  );
+  }
+
   ngOnInit(): void {
     this.hasFilter.set(this.hasFilters());
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   public select(item: AggregationListItem): void {
@@ -201,6 +243,13 @@ export class AggregationComponent implements OnInit {
       return { field, value: item.value, operator: "contains", display: item.display } as LegacyFilter;
     }
     return { field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
+  }
+
+  onSearch(text: string): Observable<Suggestion[] | undefined> {
+    if(text.trim() === '') {
+        return of(undefined);
+    }
+    return this.autocompleteService.getSuggestions(text, buildQuery());
   }
 
   private selectItems(items: AggregationListItem[], values: string[]) {
