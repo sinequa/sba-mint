@@ -74,43 +74,5 @@
   </div>
 </sq-menu>
 
-<dialog
-  popover
-  class="z-backdrop w-full max-w-md p-4 rounded-lg shadow-lg"
-  #overrideUserDialog
->
-  <div class="flex flex-col gap-4">
-    <p class="text-2xl font-bold">{{ 'userMenu.overrideUser' | transloco }}</p>
-
-    <input
-      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      type="text"
-      autocomplete="off"
-      spellcheck="false"
-      [attr.aria-label]="'userMenu.usernameToOverride' | transloco"
-      [attr.placeholder]="'userMenu.usernameToOverride' | transloco"
-      [(ngModel)]="overrideUser().username"
-    />
-
-    <input
-      required
-      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      type="text"
-      autocomplete="off"
-      spellcheck="false"
-      [attr.aria-label]="'userMenu.domainToOverride' | transloco"
-      [attr.placeholder]="'userMenu.domainToOverride' | transloco"
-      [(ngModel)]="overrideUser().domain"
-    />
-
-    <div class="flex justify-between">
-      <button class="btn btn-outline w-24" (click)="overrideUserDialog.close()">
-        {{ 'cancel' | transloco }}
-      </button>
-
-      <button class="btn btn-primary w-24" (click)="override()">
-        {{ 'userMenu.override' | transloco }}
-      </button>
-    </div>
-  </div>
-</dialog>
+<override-dialog />
+<reset-user-settings-dialog />
