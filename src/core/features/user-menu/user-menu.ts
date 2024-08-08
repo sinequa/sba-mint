@@ -43,14 +43,8 @@ export class UserMenuComponent {
   });
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
-
-  readonly allowUserOverride = computed(() => {
-    return this.principalStore.allowUserOverride();
-  })
-
-  readonly isOverridingUser = computed(() => {
-    return this.principalStore.isOverridingUser();
-  })
+  readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
+  readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
 
   changeLanguage(lang: string) {

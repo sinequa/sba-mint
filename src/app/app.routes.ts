@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthGuard } from '@sinequa/atomic-angular';
 
-import { LoadingComponent } from '@/core/features/loading.component';
+import { LoadingComponent } from '@/core/components/loading/loading.component';
 import { LoginComponent } from '@/core/features/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { SearchComponent } from './pages/search/search.component';
