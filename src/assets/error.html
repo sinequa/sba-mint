@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+</head>
+<body>
+  <div id="error-content"></div>
+  <h3 id="error-url"></h3>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorMessage = localStorage.getItem('errorMessage');
+    const errorUrl = urlParams.get('url');
+
+    if (errorMessage) {
+      document.getElementById('error-content').innerHTML = errorMessage;
+    }
+
+    if (errorUrl) {
+      document.getElementById('error-url').textContent = `URL causing the error: ${decodeURIComponent(errorUrl)}`;
+    }
+  </script>
+</body>
+</html>
