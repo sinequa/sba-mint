@@ -12,7 +12,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 }, {} as HashMap<() => Promise<Translation>>)
 
 @Component({
-  selector: 'override-dialog',
+  selector: 'override-user-dialog',
   standalone: true,
   imports: [FormsModule, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: "dialog", loader })],

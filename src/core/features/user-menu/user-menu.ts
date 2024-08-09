@@ -6,7 +6,7 @@ import { getState } from "@ngrx/signals";
 
 import { logout } from "@sinequa/atomic";
 import { MenuComponent, MenuItemComponent, PrincipalStore } from "@sinequa/atomic-angular";
-import { OverrideUserDialogComponent } from "../dialog/override";
+import { OverrideUserDialogComponent } from "../dialog/override-user";
 import { ResetUserSettingsDialogComponent } from "../dialog/reset-user-settings";
 import { getHelpIndexUrl } from "./help-folder-options";
 
