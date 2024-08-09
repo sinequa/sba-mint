@@ -48,9 +48,10 @@ export class ResetUserSettingsDialogComponent {
   }
 
   handleResetUserSettings() {
+    this.dialog()!.nativeElement.close();
     this.userSettingsStore.reset().then(() => {
       const message = this.translocoService.translate('dialog.resetUserSettings.success');
-      toast(message, { duration: 2000 });
+      toast.success(message, { duration: 2000 });
     });
   }
 
