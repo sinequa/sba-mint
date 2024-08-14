@@ -3,7 +3,7 @@ import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed,
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AggregationItem, LegacyFilter, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationItem, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery, AutocompleteService } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
@@ -53,7 +53,6 @@ export class AggregationComponent implements OnInit, OnDestroy {
   readonly autocompleteService = inject(AutocompleteService);
 
   public readonly searchable = input<boolean>(true);
-  searchText = signal<string | undefined>(undefined);
 
   protected readonly hasFilter = signal<boolean>(false);
 
@@ -120,7 +119,11 @@ export class AggregationComponent implements OnInit, OnDestroy {
     return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
   });
 
+  query: Query;
+
   constructor() {
+  this.query = buildQuery();
+
     const searchQuery = new FormControl("", {nonNullable: true});
     this.searchGroup = new FormGroup({searchQuery});
 
@@ -249,7 +252,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
     if(text.trim() === '') {
         return of(undefined);
     }
-    return this.autocompleteService.getSuggestions(text, buildQuery());
+    return this.autocompleteService.getSuggestions(text, this.aggregation().column, this.query);
   }
 
   private selectItems(items: AggregationListItem[], values: string[]) {
