@@ -4,9 +4,16 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 
+import atomic from "../node_modules/@sinequa/atomic/package.json";
+import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
+
 setGlobalConfig(environment);
 
 bootstrapApplication(AppComponent, appConfig)
+  .then(() => {
+    console.log("atomic", atomic.version);
+    console.log("atomic-angular", atomicAngular.version);
+  })
   .catch((err) => {
     console.error("bootstrapApplication error:", err);
     parseResponse(err);

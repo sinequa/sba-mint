@@ -44,7 +44,7 @@ export class SavedSearchesComponent {
   protected readonly savedSearches = signal<SavedSearch[]>([]);
   protected readonly paginatedSearches = computed<SavedSearch[]>(() => this.savedSearches().slice(0, this.range()));
   protected readonly hasMore = computed<boolean>(() => this.savedSearches().length > 0 && this.range() < this.savedSearches().length);
-  
+
   protected readonly getRelativeDate = getRelativeDate;
 
   private readonly router = inject(Router);
@@ -84,17 +84,10 @@ export class SavedSearchesComponent {
     this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }
 
-  public onDelete(index: number, e: Event): void {
+  public async onDelete(index: number, e: Event) {
     e.stopPropagation();
-    const searches = this.savedSearches();
-
-    if (searches) {
-      searches?.splice(index, 1);
-
-      this.savedSearches.set(searches);
-      this.savedSearchesService.updateSavedSearches(searches);
-      toast.success('Saved search deleted');
-    }
+    await this.savedSearchesService.deleteSavedSearch(index);
+    toast.success('Saved search deleted');
   }
 
   public loadMore(e: Event): void {

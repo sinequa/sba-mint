@@ -5,7 +5,7 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
-import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, QueryService, SearchService, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, SearchService, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
@@ -76,11 +76,11 @@ export class SearchAllComponent implements OnDestroy {
       const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
-        tap(() => {
+        tap(async () => {
           const queryParams = getState(this.queryParamsStore);
           // Add the current search to the user settings only if there is a text query
           if (queryParams.text) {
-            this.userSettingsStore.addCurrentSearch(queryParams);
+            await this.userSettingsStore.addCurrentSearch(queryParams);
           }
         }),
         map(result => {
