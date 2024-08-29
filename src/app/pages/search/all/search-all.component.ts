@@ -51,7 +51,6 @@ export class SearchAllComponent implements OnDestroy {
   protected readonly queryText = signal<string>('');
   protected readonly noRecords = signal(false);
 
-  private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
@@ -76,7 +75,7 @@ export class SearchAllComponent implements OnDestroy {
       const q = this.searchService.getQuery();
       const query = { ...q, page: pageParam } as Query;
 
-      return lastValueFrom(this.queryService.search(query).pipe(
+      return lastValueFrom(this.searchService.getResult(query).pipe(
         tap(() => {
           const queryParams = getState(this.queryParamsStore);
           // Add the current search to the user settings only if there is a text query
@@ -142,7 +141,13 @@ export class SearchAllComponent implements OnDestroy {
     this.queryParamsStore.patch({ sort: sort.name });
 
     this.articles.set(undefined);
-    this.searchService.search([]);
+    this.searchService.search([], { audit: {
+      type: "Search_Sort",
+      detail: {
+        sort: sort.name,
+        orderByClause: sort.orderByClause,
+      }
+    }});
   }
 
   nextPage() {
