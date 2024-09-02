@@ -6,7 +6,7 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { combineLatest, map, of, switchMap } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
-import { AppStore, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AppStore, AuditService, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { SearchInputComponent } from '../search-input.component';
 
@@ -36,6 +36,7 @@ export class AutocompleteComponent {
   @Output() readonly onClick = new EventEmitter<Suggestion>();
 
   readonly autocompleteService = inject(AutocompleteService);
+  readonly auditService = inject(AuditService);
   readonly appStore = inject(AppStore);
   readonly userSettingsStore = inject(UserSettingsStore);
 
@@ -85,6 +86,13 @@ export class AutocompleteComponent {
   }
 
   public itemClicked(item: Suggestion): void {
+    this.auditService.notify({
+      type: "Search_Autocomplete",
+      detail: {
+        display: item.display,
+        category: item.category,
+      }
+    });
     this.onClick.emit(item);
   }
 }
