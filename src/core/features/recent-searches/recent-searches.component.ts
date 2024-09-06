@@ -61,15 +61,10 @@ export class RecentSearchesComponent {
    * @param index - The index of the item to delete.
    * @param e - The event object.
    */
-  onDelete(index: number, e: Event) {
+  async onDelete(index: number, e: Event) {
     e.stopPropagation();
-    const searches = this.recentSearches();
-
-    if (searches) {
-      searches?.splice(index, 1);
-      this.userSettingsStore.updateRecentSearches(searches);
-      toast.success('Recent search deleted');
-    }
+    await this.userSettingsStore.deleteRecentSearch(index);
+    toast.success('Recent search deleted');
   }
 
   loadMore(e: Event) {

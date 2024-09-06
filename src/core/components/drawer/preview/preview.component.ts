@@ -1,11 +1,10 @@
 import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, Inject, InjectionToken, OnInit, computed, inject, input } from '@angular/core';
+import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
 import { BehaviorSubject, combineLatest, map, shareReplay, switchMap } from 'rxjs';
 
 import { Article, CCApp } from '@sinequa/atomic';
-import { QueryService } from '@sinequa/atomic-angular';
 
 import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore } from '@sinequa/atomic-angular';
 
@@ -44,7 +43,8 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
   templateUrl: './preview.component.html',
   styleUrls: ['../drawer.component.scss']
 })
-export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
+export class DrawerPreviewComponent extends DrawerComponent implements OnInit, OnDestroy {
+  previewService = inject(PreviewService);
   queryParamsStore = inject(QueryParamsStore);
   queryText = computed(() => {
     const { text } = getState(this.queryParamsStore);
@@ -56,7 +56,7 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
 
   public readonly previewData$ = combineLatest([toObservable(this.articleId), this.text])
     .pipe(
-      switchMap(([articleId, text]) => this.queryService.preview(articleId, { name: this.globalQueryName, text })),
+      switchMap(([articleId, text]) => this.previewService.preview(articleId, { name: this.globalQueryName, text })),
       // shareReplay is used to prevent multiple requests when multiple properties are bound to this observable
       shareReplay(1)
     );
@@ -72,10 +72,15 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit {
     return getComponentsForDocumentType(this.article()?.docformat || '').previewComponent;
   })
 
-  private readonly queryService = inject(QueryService);
 
   constructor(@Inject(GLOBAL_QUERY_NAME) private readonly globalQueryName: string) {
     super();
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.text.complete();
+    this.previewService.close(this.articleId(), { name: this.globalQueryName });
   }
 
   public onTextChanged(text: string): void {
