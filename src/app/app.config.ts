@@ -6,8 +6,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
 
-import { HIGHLIGHTS, appInitializerFn, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
+import { HIGHLIGHTS, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
 
+import { appInitializerFn } from '@sinequa/atomic';
 import { toastInterceptorFn } from '@sinequa/atomic-angular';
 
 import { routes } from '@/app/app.routes';
