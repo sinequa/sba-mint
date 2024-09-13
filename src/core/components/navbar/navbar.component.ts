@@ -1,10 +1,10 @@
 import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
 import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService, SearchService } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
@@ -40,7 +40,8 @@ type NavbarTab = {
         CommonModule,
         NgClass,
         AsyncPipe,
-        RouterModule,
+        RouterLink,
+        RouterLinkActive,
         SearchInputComponent,
         AutocompleteComponent,
         UserMenuComponent,
@@ -67,7 +68,6 @@ export class NavbarComponent implements OnDestroy {
 
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
-  private readonly searchService = inject(SearchService);
   private readonly savedSearchesService = inject(SavedSearchesService);
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
@@ -115,10 +115,9 @@ export class NavbarComponent implements OnDestroy {
   }
 
   protected changeTab(tab: NavbarTab): void {
+    // we use the routerlink to navigate, so just close the drawer and remove the id parameter from the query params
     this.drawerStack.closeAll();
-    // ! we need to remove the page parameter from the query params when new search is performed
-    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.name, filters: undefined, sort: undefined, id: undefined });
-    this.searchService.search([tab.routerLink]);
+    this.queryParamsStore.patch({ id: undefined });
   }
 
   /**
