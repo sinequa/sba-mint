@@ -1,4 +1,4 @@
-<fieldset class="max-h-80 overflow-auto snap-y">
+<fieldset>
   <legend class="w-full p-2 cursor-default">
     <div #legend>
       <ng-content select="[header]" />
@@ -52,7 +52,7 @@
     </div>
   }
 
-  <ul class="data-list snap-start" [ngClass]="{'pt-2': !searchable()}">
+  <ul class="data-list snap-start max-h-52 overflow-auto snap-y" [ngClass]="{'pt-2': !searchable()}">
     @for (item of selected(); track $index) {
       <app-aggregation-row
         [aggregation]="aggregation()"
