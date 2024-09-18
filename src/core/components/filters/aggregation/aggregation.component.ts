@@ -4,7 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import { AggregationItem, fetchSuggestField, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery, AutocompleteService } from '@sinequa/atomic-angular';
+import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 
@@ -50,7 +50,6 @@ export class AggregationComponent implements OnInit, OnDestroy {
   @Output() public readonly onSelect = new EventEmitter<LegacyFilter>();
 
   private queryParamsStore = inject(QueryParamsStore);
-  readonly autocompleteService = inject(AutocompleteService);
 
   public readonly searchable = input<boolean>(true);
 
