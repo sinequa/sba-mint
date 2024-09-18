@@ -1,6 +1,6 @@
 @if (article()) {
-  <div class="h-screen flex flex-col p-6">
-    <section class="w-full flex flex-col gap-6 mb-4">
+  <div class="h-screen flex flex-col px-6 pb-6 overflow-y-auto">
+    <section class="w-full flex flex-col gap-6 mt-6 mb-4">
       <header
         id="panel-control"
         class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary"
@@ -42,7 +42,7 @@
       </header>
     </section>
 
-    <details name="advanced-search-panels" class="border-b border-neutral-300 overflow-y-auto group" open>
+    <details name="advanced-search-panels" class="border-b border-neutral-300 group" open>
       <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
         <p class="flex gap-2 font-semibold items-baseline">
           <i class="fa-fw far fa-magnifying-glass"></i>
@@ -104,35 +104,30 @@
             </li>
           </ul>
         </div>
-
-        @for (highlight of previewHighlights(); track $index) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: {
-            metadata: highlight.metadata,
-            name: highlight.name,
-            iconClass: undefined,
-            last: $last 
-          }" />
-        }
       </details>
+
+      @for (highlight of previewHighlights(); track $index) {
+        <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
+      }
     }
   </div>
 }
 
-<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity" let-last="last">
-  <details name="advanced-search-metadata" class="px-2 py-3 border-neutral-300 group/metadata" [ngClass]="{'border-b': !last}">
-    <summary class="flex justify-between items-baseline select-none cursor-pointer">
+<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
+  <details name="advanced-search-panels" class="border-b border-neutral-300 group">
+    <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
       <p class="flex gap-2 font-semibold items-baseline capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name }}
       </p>
 
-      <i class="fa-fw far fa-chevron-down group-open/metadata:rotate-180"></i>
+      <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
     </summary>
 
     <div>
-      <ul class="p-2">
+      <ul>
         @for (data of metadata; track $index) {
-          <li class="flex justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
+          <li class="flex px-2 py-1 mr-2 justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
             <p>{{ data.display }}</p>
 
             <p class="flex items-center gap-2">
