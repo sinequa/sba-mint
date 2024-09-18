@@ -3,13 +3,13 @@ import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed,
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AggregationItem, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationItem, fetchSuggestField, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery, AutocompleteService } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
-import { debounceTime, distinctUntilChanged, Observable, of, Subscription, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, from, Observable, of, Subscription, switchMap } from 'rxjs';
 
 type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
 
@@ -64,7 +64,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
   sub: Subscription = new Subscription();
   searchGroup: FormGroup<{searchQuery: FormControl<string>}>;
   suggestDelay = 200;
-  suggests = signal<Suggestion[] | undefined>([]);
+  suggests = signal<Suggestion[] | undefined>(undefined);
   searchedItems = computed(() => {
     if (!this.suggests()) return undefined;
 
@@ -73,7 +73,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
       value: suggest.display,
       display: suggest.display,
       column: suggest.id,
-      count: 0,
+      count: 1,
       items: []
     }));
     return list;
@@ -252,7 +252,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
     if(text.trim() === '') {
         return of(undefined);
     }
-    return this.autocompleteService.getSuggestions(text, this.aggregation().column, this.query);
+    return from(fetchSuggestField(text, [this.aggregation().column]));
   }
 
   private selectItems(items: AggregationListItem[], values: string[]) {
