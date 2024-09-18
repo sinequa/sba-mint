@@ -1,6 +1,6 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import { AggregationItem, fetchSuggestField, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
@@ -52,6 +52,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
   private queryParamsStore = inject(QueryParamsStore);
 
   public readonly searchable = input<boolean>(true);
+  public readonly formBuilder = inject(NonNullableFormBuilder);
 
   protected readonly hasFilter = signal<boolean>(false);
 
@@ -61,7 +62,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
   items = computed(() => this.searchedItems() || this.aggregation().items || []);
 
   sub: Subscription = new Subscription();
-  searchGroup: FormGroup<{searchQuery: FormControl<string>}>;
+  searchGroup = this.formBuilder.group({ searchQuery: '' });
   suggestDelay = 200;
   suggests = signal<Suggestion[] | undefined>(undefined);
   searchedItems = computed(() => {
@@ -121,20 +122,20 @@ export class AggregationComponent implements OnInit, OnDestroy {
   query: Query;
 
   constructor() {
-  this.query = buildQuery();
-
-    const searchQuery = new FormControl("", {nonNullable: true});
-    this.searchGroup = new FormGroup({searchQuery});
+    this.query = buildQuery();
 
     this.sub.add(
-      searchQuery.valueChanges.pipe(
-          debounceTime(this.suggestDelay),
-          distinctUntilChanged(),
-          switchMap(text => this.onSearch(text))
+      this.searchGroup.get('searchQuery')?.valueChanges.pipe(
+        debounceTime(this.suggestDelay),
+        distinctUntilChanged(),
+        switchMap(text => {
+          if (text.trim() === '') return of(undefined);
+          return from(fetchSuggestField(text, [this.aggregation().column]))
+        })
       ).subscribe((suggests: Suggestion[] | undefined) => {
-          this.suggests.set(suggests);
+        this.suggests.set(suggests);
       })
-  );
+    );
   }
 
   ngOnInit(): void {
@@ -245,13 +246,6 @@ export class AggregationComponent implements OnInit, OnDestroy {
       return { field, value: item.value, operator: "contains", display: item.display } as LegacyFilter;
     }
     return { field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
-  }
-
-  onSearch(text: string): Observable<Suggestion[] | undefined> {
-    if(text.trim() === '') {
-        return of(undefined);
-    }
-    return from(fetchSuggestField(text, [this.aggregation().column]));
   }
 
   private selectItems(items: AggregationListItem[], values: string[]) {
