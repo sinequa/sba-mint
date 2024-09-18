@@ -32,7 +32,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       display: block;
     }
 
-    fieldset {
+    .data-list {
       scrollbar-width: thin;
     }
   `],
