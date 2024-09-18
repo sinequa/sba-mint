@@ -42,17 +42,17 @@
       </header>
     </section>
 
-    <section class="border-b border-neutral-300 overflow-y-auto" stkPanel>
-      <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+    <details name="advanced-search-panels" class="border-b border-neutral-300 overflow-y-auto group" open>
+      <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
         <p class="flex gap-2 font-semibold items-baseline">
           <i class="fa-fw far fa-magnifying-glass"></i>
           {{ 'extracts' | transloco }}
         </p>
 
-        <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-      </header>
+        <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+      </summary>
 
-      <div id="panel-content" open>
+      <div>
         <ul>
           @for (extract of extracts(); track $index) {
             <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
@@ -72,20 +72,20 @@
           }
         </ul>
       </div>
-    </section>
+    </details>
 
     @if (hasLabels()) {
-      <section class="border-b border-neutral-300" stkPanel>
-        <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+      <details class="border-b border-neutral-300 group" name="advanced-search-panels">
+        <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
           <p class="flex gap-2 font-semibold items-baseline">
             <i class="fa-fw far fa-tags"></i>
             {{ 'labels' | transloco }}
           </p>
 
-          <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-        </header>
+          <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+        </summary>
 
-        <div id="panel-content">
+        <div>
           <ul class="mt-4 flex flex-col flex-wrap gap-2">
             <li>
               <sq-metadata
@@ -106,26 +106,31 @@
         </div>
 
         @for (highlight of previewHighlights(); track $index) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: highlight"></ng-container>
+          <ng-container *ngTemplateOutlet="metadataPanel; context: {
+            metadata: highlight.metadata,
+            name: highlight.name,
+            iconClass: undefined,
+            last: $last 
+          }" />
         }
-      </section>
+      </details>
     }
   </div>
 }
 
-<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
-  <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
-    <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
+<ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity" let-last="last">
+  <details name="advanced-search-metadata" class="px-2 py-3 border-neutral-300 group/metadata" [ngClass]="{'border-b': !last}">
+    <summary class="flex justify-between items-baseline select-none cursor-pointer">
       <p class="flex gap-2 font-semibold items-baseline capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name }}
       </p>
 
-      <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-    </header>
+      <i class="fa-fw far fa-chevron-down group-open/metadata:rotate-180"></i>
+    </summary>
 
-    <div id="panel-content">
-      <ul id="panel-content" class="p-2">
+    <div>
+      <ul class="p-2">
         @for (data of metadata; track $index) {
           <li class="flex justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
             <p>{{ data.display }}</p>
@@ -147,5 +152,5 @@
         }
       </ul>
     </div>
-  </div>
+  </details>
 </ng-template>
