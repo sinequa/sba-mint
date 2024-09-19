@@ -34,56 +34,7 @@ export class SponsoredResultsComponent {
       } else {
         const query = this.searchService.getQuery();
         from(fetchSponsoredLinks(sponsoredLinks, query))
-          .subscribe(links => {
-            //todo remove hardcoding
-            const l = links || [
-              {
-                id: 'someid',
-                title: 'string',
-                url: 'string',
-                icon: 'string',
-                thumbnail: 'string',
-                tooltip: 'string',
-                summary: 'string',
-                rank: 1,
-                relevance: 0.9
-              },
-              {
-                id: 'someid',
-                title: 'string2',
-                url: 'string',
-                icon: 'string',
-                thumbnail: 'string',
-                tooltip: 'string2',
-                summary: 'string',
-                rank: 2,
-                relevance: 0.9
-              },
-              {
-                id: 'someid',
-                title: 'string3',
-                url: 'string',
-                icon: 'string',
-                thumbnail: 'string',
-                tooltip: 'string3',
-                summary: 'string',
-                rank: 2,
-                relevance: 0.9
-              },
-              {
-                id: 'someid',
-                title: 'string4',
-                url: 'string',
-                icon: 'string',
-                thumbnail: 'string',
-                tooltip: 'string4',
-                summary: 'string',
-                rank: 2,
-                relevance: 0.9
-              }
-            ];
-            this.sponsoredResults.set(l.slice(0, 3));
-          });
+          .subscribe(links => this.sponsoredResults.set(links.slice(0, 3)));
       }
     });
   }
