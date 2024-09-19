@@ -7,7 +7,16 @@ import { from, map } from "rxjs";
 @Component({
   selector: "app-sponsored-results",
   standalone: true,
-  templateUrl: './sponsored-results.component.html'
+  templateUrl: './sponsored-results.component.html',
+  styles: `
+.promoted-badge {
+  visibility: hidden;
+}
+
+a:hover .promoted-badge {
+  visibility: visible;
+}
+  `
 })
 export class SponsoredResultsComponent {
 
@@ -26,7 +35,54 @@ export class SponsoredResultsComponent {
         const query = this.searchService.getQuery();
         from(fetchSponsoredLinks(sponsoredLinks, query))
           .subscribe(links => {
-            this.sponsoredResults.set(links.slice(0, 3));
+            //todo remove hardcoding
+            const l = links || [
+              {
+                id: 'someid',
+                title: 'string',
+                url: 'string',
+                icon: 'string',
+                thumbnail: 'string',
+                tooltip: 'string',
+                summary: 'string',
+                rank: 1,
+                relevance: 0.9
+              },
+              {
+                id: 'someid',
+                title: 'string2',
+                url: 'string',
+                icon: 'string',
+                thumbnail: 'string',
+                tooltip: 'string2',
+                summary: 'string',
+                rank: 2,
+                relevance: 0.9
+              },
+              {
+                id: 'someid',
+                title: 'string3',
+                url: 'string',
+                icon: 'string',
+                thumbnail: 'string',
+                tooltip: 'string3',
+                summary: 'string',
+                rank: 2,
+                relevance: 0.9
+              },
+              {
+                id: 'someid',
+                title: 'string4',
+                url: 'string',
+                icon: 'string',
+                thumbnail: 'string',
+                tooltip: 'string4',
+                summary: 'string',
+                rank: 2,
+                relevance: 0.9
+              }
+            ];
+            this.sponsoredResults.set(l.slice(0, 3));
           });
       }
     });
