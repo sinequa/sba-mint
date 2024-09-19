@@ -1,0 +1,10 @@
+@if (sponsoredResults()?.length) {
+    @for (link of sponsoredResults(); track $index) {
+        <a href="{{link.url}}" target="_blank" title="{{(link.tooltip || link.title)}}"
+            class="result-link font-bold text-primary py-2 px-3 rounded hover:shadow-md flex items-center gap-2">
+            <i class="fa-fw far fa-arrow-up-right-from-square"></i>
+            <span>{{link.title}}</span>
+            <span class="bg-primary text-white px-2 rounded-xl flex items-center text-xs">PROMOTED</span>
+        </a>
+    }
+}

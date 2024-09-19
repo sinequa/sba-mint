@@ -5,6 +5,8 @@
 
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
+  <app-sponsored-results />
+
   @if (query.isPending()) {
     <ul class="flex flex-col gap-2 mt-4">
       <li><app-article-default-skeleton /></li>
