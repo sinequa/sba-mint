@@ -1,7 +1,7 @@
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
@@ -49,6 +49,7 @@ const PREVIEW_HIGHLIGHTS = [
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
+    provideExperimentalZonelessChangeDetection(),
     // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },

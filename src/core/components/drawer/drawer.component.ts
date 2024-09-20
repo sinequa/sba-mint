@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding, HostListener, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, OnDestroy, OnInit, ViewChild, inject, signal, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { SelectionHistoryService } from '@sinequa/atomic-angular';
@@ -13,14 +13,15 @@ import { DrawerService } from './drawer.service';
   standalone: true,
   providers: [DrawerService],
   template: ``,
-  styleUrl: './drawer.component.scss'
+  styleUrl: './drawer.component.scss',
+  host : {
+    '[attr.drawer-opened]' : 'drawerOpened()',
+    '[attr.drawer-extended]': 'drawerExtended()'
+  }
 })
 export class DrawerComponent implements OnInit, OnDestroy {
-  @HostBinding('attr.drawer-opened')
-  public drawerOpened: boolean = false;
-
-  @HostBinding('attr.drawer-extended')
-  public drawerExtended: boolean = false;
+  public drawerOpened = signal(false);
+  public drawerExtended = signal(false);
 
   @HostBinding('style.grid-template-columns')
   public drawerGridTemplateColumns: string = '';
@@ -38,7 +39,7 @@ export class DrawerComponent implements OnInit, OnDestroy {
 
   @HostListener('mousedown', ['$event'])
   public mouseDown(event: MouseEvent): void {
-    if (event.target !== this.drawerHandle?.nativeElement) return;
+    if (event.target !== this.drawerHandle()?.nativeElement) return;
 
     this.disableAnimation();
     this.isSliding = true;
@@ -51,8 +52,7 @@ export class DrawerComponent implements OnInit, OnDestroy {
     this.isSliding = false;
   }
 
-  @ViewChild('drawerHandle', { static: true })
-  public drawerHandle: ElementRef | undefined;
+  drawerHandle = viewChild<ElementRef>('drawerHandle');
 
 
   public readonly drawer = inject(DrawerService);
@@ -68,14 +68,14 @@ export class DrawerComponent implements OnInit, OnDestroy {
   constructor() {
     this.sub.add(
       this.drawer.isOpened.subscribe(state => {
-        this.drawerOpened = state;
+        this.drawerOpened.set(state);
         if (!state) this.resetGridTemplateColumns();
       })
     );
 
     this.sub.add(
       this.drawer.isExtended.subscribe(state => {
-        this.drawerExtended = state;
+        this.drawerExtended.set(state);
         if (!state) this.resetGridTemplateColumns();
       })
     );

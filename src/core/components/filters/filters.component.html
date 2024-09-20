@@ -17,7 +17,7 @@
   <!-- date filter dropdown -->
   @if (dateFilterDropdown()) {
   <li tabindex="0" appFocusWithArrowKeys>
-    <sq-dropdown>
+    <Dropdown>
       <button tabindex="-1"
         [ngClass]="cn(
           'btn font-semibold gap-1 w-max',
@@ -48,14 +48,14 @@
         (refreshed)="dateFilterRefreshed($event)"
         (updated)="dateFilterUpdated($event)"
       />
-    </sq-dropdown>
+    </Dropdown>
   </li>
   }
 
   <!-- other filter dropdowns -->
   @for (filterDropdown of filterDropdowns(); track $index) {
     <li tabindex="0" appFocusWithArrowKeys [ngClass]="cn(filterDropdown.hidden && 'hidden')">
-      <sq-dropdown [disabled]="!filterDropdown.aggregation.items">
+      <Dropdown [disabled]="!filterDropdown.aggregation.items">
         <button tabindex="-1"
           [ngClass]="cn(
             'btn font-semibold gap-1',
@@ -95,7 +95,7 @@
           (onFiltersChanges)="filterUpdated($event, $index)"
           (onLoadMore)="loadMore(filterDropdown.aggregation, $index)"
         />
-      </sq-dropdown>
+      </Dropdown>
     </li>
   }
 
@@ -106,7 +106,7 @@
       tabindex="0"
       appFocusWithArrowKeys
       >
-      <sq-dropdown class="dropdown-end">
+      <Dropdown class="dropdown-end">
         <button class="btn btn-tertiary font-semibold gap-1 truncate" tabindex="-1" aria-label="more filters">
           <i class="far fa-filters"></i>
           <span>{{ 'filters.moreFilters' | transloco }}</span>
@@ -119,7 +119,7 @@
         </button>
 
         <app-more-filters dropdown-content class="absolute dropdown-content p-1 mt-1 max-w-80 max-h-96 overflow-y-scroll" />
-      </sq-dropdown>
+      </Dropdown>
     </li>
   }
 </menu>
