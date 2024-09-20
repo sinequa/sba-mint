@@ -87,6 +87,7 @@
         <app-aggregation dropdown-content
           class="dropdown-content w-max"
           [aggregation]="filterDropdown.aggregation"
+          [searchable]="searchable()"
           [title]="{
             label: filterDropdown.label,
             icon: filterDropdown.icon
