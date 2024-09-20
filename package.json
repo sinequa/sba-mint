@@ -35,6 +35,7 @@
     "@types/node": "^16.18.11",
     "clsx": "^2.1.0",
     "highlight-words": "^1.2.2",
+    "keyux": "^0.8.2",
     "ngx-sonner": "^1.0.0",
     "rxjs": "~7.8.0",
     "toolkit": "^0.0.1",
