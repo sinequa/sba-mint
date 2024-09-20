@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Output, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
@@ -15,7 +15,7 @@ export type Suggestion = Partial<SuggestionBasic> & {
 }
 
 const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-search', 'saved-search'];
-const autocompleteCategories = ['full-text', 'recent-search', 'saved-search',  'bookmark', 'title', 'concepts', 'people'];
+const autocompleteCategories = ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people'];
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -31,10 +31,10 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');
+  readonly onClick = output<Suggestion>();
+
   readonly wasSearchClicked = signal(false);
-
-  @Output() readonly onClick = new EventEmitter<Suggestion>();
-
+  
   readonly autocompleteService = inject(AutocompleteService);
   readonly auditService = inject(AuditService);
   readonly appStore = inject(AppStore);
@@ -46,11 +46,10 @@ export class AutocompleteComponent {
     combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)])
       .pipe(
         switchMap(([testText]) => {
-
           const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
-          if (!testText) {
+
+          if (!testText)
             return fromUserSettings;
-          }
 
           return combineLatest([
             fromUserSettings,
@@ -69,17 +68,17 @@ export class AutocompleteComponent {
             // add a divider before specific categories
             if (!last?.$isDivider && last?.category !== curr.category && titledSections.includes(curr.category)) {
               acc.push({ $isDivider: true });
-                acc.push({category: curr.category, $isDivider: false});
+              acc.push({ category: curr.category, $isDivider: false });
             }
             // handle the case when the first item is from a titled section
           } else if (titledSections.includes(curr.category)) {
-            acc.push({category: curr.category, $isDivider: false});
+            acc.push({ category: curr.category, $isDivider: false });
           }
 
           acc.push({ ...curr, $isDivider: false });
           return acc;
-          }, []))
-    ));
+        }, []))
+      ));
 
   constructor({ el: { nativeElement } }: SearchInputComponent, private eventManager: EventManager) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
