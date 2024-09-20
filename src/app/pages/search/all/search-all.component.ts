@@ -13,7 +13,7 @@ import { FiltersComponent } from '@/core/components/filters/filters.component';
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
 import { getComponentsForDocumentType } from '@/core/registry/document-type-registry';
-import { SponsoredResultsComponent } from "../../../../core/components/sponsored-results/sponsored-results.component";
+import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
 
 type R = Result & { nextPage?: number, previousPage?: number };
 
