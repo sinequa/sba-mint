@@ -133,8 +133,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.autocompleteService.opened.set(false);
-
     this.search(item.display!);
   }
 }
