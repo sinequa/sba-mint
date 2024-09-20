@@ -5,14 +5,13 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CAggregation, CAggregationItem, CFilter, CFilterItem, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, DropdownComponent, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
-import { DropdownComponent } from '../dropdown';
+import { OperatorPipe } from "../../pipe/operator";
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
-import { OperatorPipe } from "../../pipe/operator";
 
 export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";

@@ -63,10 +63,10 @@
                 (click)="scrollTo('extractslocations', extract.textIndex, true)"
               ></p>
             </li>
-  
+
             <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
           }
-  
+
           @empty {
             <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
           }
@@ -88,15 +88,15 @@
         <div id="panel-content">
           <ul class="mt-4 flex flex-col flex-wrap gap-2">
             <li>
-              <sq-metadata
+              <Metadata
                 class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
                 [article]="article()!"
                 [metadata]="labels.public"
               />
             </li>
-    
+
             <li>
-              <sq-metadata
+              <Metadata
                 class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
                 [article]="article()!"
                 [metadata]="labels.private"

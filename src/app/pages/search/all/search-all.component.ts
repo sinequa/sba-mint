@@ -43,13 +43,11 @@ export class SearchAllComponent implements OnDestroy {
   readonly result = signal<Result | undefined>(undefined);
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
-  protected readonly noRecords = signal(false);
 
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
-  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly selectionService = inject(SelectionService);
 
   protected aggregations: Aggregation[];
@@ -78,25 +76,6 @@ export class SearchAllComponent implements OnDestroy {
       const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
-        tap(async () => {
-          const queryParams = getState(this.queryParamsStore);
-          // Add the current search to the user settings only if there is a text query
-          if (queryParams.text) {
-            await this.userSettingsStore.addCurrentSearch(queryParams);
-          }
-        }),
-        map(result => {
-          if (result.records?.length === 0) {
-            this.noRecords.set(true);
-          } else {
-            this.noRecords.set(false);
-          }
-          return result;
-        }),
-        map(result => {
-          result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
-          return result;
-        }),
         map(result => {
           // If the id is set, open the drawer with the preview of the article
           const id = this.id();
@@ -109,10 +88,6 @@ export class SearchAllComponent implements OnDestroy {
             });
           }
           return result;
-        }),
-        map(result => {
-          const r = ({ ...result, nextPage: result.page < Math.ceil(result.rowCount / result.pageSize) ? result.page + 1 : undefined, previousPage: result.page > 1 ? result.page - 1 : undefined })
-          return r;
         })
       ));
     },

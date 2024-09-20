@@ -7,11 +7,10 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
-import { AppStore, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SplitPipe } from '@sinequa/atomic-angular';
+import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SplitPipe } from '@sinequa/atomic-angular';
 
 import { BasePreview } from '@/core/registry/base-preview';
 
-import { DropdownComponent } from '../../dropdown';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
