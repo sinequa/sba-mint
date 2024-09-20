@@ -9,6 +9,7 @@ const tab = plugin(function ({ addComponents, theme }) {
     },
     '.tab': {
       padding: theme('spacing.2') + ' ' + theme('spacing.3'),
+      paddingBottom: '.7rem',
       userSelect: 'none',
       fontWeight: fontWeight.semibold,
       borderBottomWidth: borderWidth.DEFAULT,

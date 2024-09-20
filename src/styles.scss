@@ -37,3 +37,8 @@ html {
 [data-description] {
   white-space: pre-line;
 }
+
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}

@@ -3,9 +3,7 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 
 import { CCApp, Result } from '@sinequa/atomic';
-import { AppStore } from '@sinequa/atomic-angular';
-
-import { DropdownComponent } from '@/core/components/dropdown';
+import { AppStore, DropdownComponent } from '@sinequa/atomic-angular';
 
 export type SortingChoice = {
   name: string;
@@ -33,7 +31,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 export class SortSelectorComponent {
   readonly result = input.required<Result>();
   readonly onSort = output<SortingChoice>();
-  
+
   dropdown = viewChild(DropdownComponent);
   appStore = inject(AppStore);
 

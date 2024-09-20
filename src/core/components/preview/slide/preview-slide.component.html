@@ -9,16 +9,16 @@
       <header class="flex items-center gap-2 text-base">
         <div class="flex ratio-video object-cover h-full bg-gray-100 w-[120px]">
           @if (article().thumbnailUrl && !thumbnailFailed()) {
-            <img 
+            <img
               class="ratio-video object-cover h-full"
-              [src]="article().thumbnailUrl" 
+              [src]="article().thumbnailUrl"
               (error)="thumbnailFailed.set(true)"
             />
           }
           @else {
             <div class="m-auto p-2 flex flex-col items-center text-gray-500">
               <i class="fa-fw far fa-presentation-screen text-xl"></i>
-      
+
               <p class="text-center text-xs">No thumbnail available</p>
             </div>
           }
@@ -52,11 +52,11 @@
             <app-source-icon [collection]="article().collection" class="fa-fw flex" />
 
             <i class="fa-fw far fa-chevron-right"></i>
-            
+
             @if (locationSegments().length > 1) {
-              <sq-dropdown position="bottom" [autoClose]="true">
+              <Dropdown position="bottom" [autoClose]="true">
                 <button class="p-1 rounded-full">...</button>
-                
+
                 <div class="flex gap-1 items-center rounded-full bg-white py-1 px-2 shadow-md" dropdown-content>
                   @for (segment of locationSegments().slice(0, -1); track $index) {
                     <button
@@ -71,12 +71,12 @@
                     }
                   }
                 </div>
-              </sq-dropdown>
+              </Dropdown>
             }
 
             <i class="fa-fw far fa-chevron-right"></i>
-            
-            <span class="line-clamp-1">{{ locationSegments().at(-1) }}</span> 
+
+            <span class="line-clamp-1">{{ locationSegments().at(-1) }}</span>
           </td>
         </tr>
 
@@ -85,7 +85,7 @@
             <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
             <td class="flex flex-wrap gap-2">
-              <sq-metadata
+              <Metadata
                 class="empty:hidden badge badge-sm"
                 [article]="article()!"
                 metadata="authors"
@@ -109,13 +109,13 @@
           <th>{{ 'labels' | transloco }}</th>
 
           <td class="flex flex-col gap-2">
-            <sq-metadata
+            <Metadata
               class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
               [article]="article()!"
               [metadata]="labels.public"
             />
 
-            <sq-metadata
+            <Metadata
               class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
               [article]="article()!"
               [metadata]="labels.private"
@@ -128,7 +128,7 @@
         <th>{{ 'type' | transloco }}</th>
 
         <td>
-          <sq-metadata
+          <Metadata
             class="badge badge-sm border-neutral-600 font-semibold"
             [article]="article()!"
             [metadata]="'docformat'"
