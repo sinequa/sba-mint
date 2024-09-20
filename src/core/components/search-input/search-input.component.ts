@@ -1,15 +1,13 @@
-import { OverlayModule } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, OnDestroy, Output, booleanAttribute, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, booleanAttribute, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { Subscription, debounceTime, filter } from 'rxjs';
-
 import { AppStore, AutocompleteService, CJson, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
+import { Subscription, debounceTime, filter } from 'rxjs';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -21,16 +19,18 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, OverlayModule, TranslocoPipe],
+  imports: [NgClass, FormsModule, TranslocoPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
 })
 export class SearchInputComponent implements OnDestroy {
-  @Output() public readonly debounced = new EventEmitter<string>();
-  @Output() public readonly validated = new EventEmitter<string>();
-  @Output() public readonly saved = new EventEmitter<void>();
-  @Output() public readonly clicked = new EventEmitter<void>();
+  readonly debounced = output<string>();
+  readonly validated = output<string>();
+  readonly saved = output<void>();
+  readonly clicked = output<void>();
+
+  private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
 
   protected readonly autocompleteService = inject(AutocompleteService);
   private readonly drawerStack = inject(DrawerStackService);
@@ -39,7 +39,7 @@ export class SearchInputComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
 
-  protected readonly overlayOpen = this.autocompleteService.opened;
+  protected readonly autocompletePopoverOpened = computed(() => this.autocompletePopover()?.nativeElement?.isPopoverOpen);
   public readonly showSave = input(false, { transform: booleanAttribute });
 
   protected readonly allowChatDrawer = signal<boolean>(false);
@@ -55,10 +55,9 @@ export class SearchInputComponent implements OnDestroy {
   private readonly _subscription = new Subscription();
 
   constructor(public readonly el: ElementRef) {
-
     effect(() => {
-      const {data} = getState(this.appStore);
-      const { features = { allowChatDrawer: false} } = data as CJson;
+      const { data } = getState(this.appStore);
+      const { features = { allowChatDrawer: false } } = data as CJson;
 
       this.allowChatDrawer.set(features.allowChatDrawer);
     }, { allowSignalWrites: true })
@@ -83,8 +82,12 @@ export class SearchInputComponent implements OnDestroy {
     this._subscription.unsubscribe();
   }
 
+  public closeAutocompletePopover(): void {
+    this.autocompletePopover()?.nativeElement?.hidePopover();
+  }
+
   public inputClicked(): void {
-    this.overlayOpen.set(true);
+    this.autocompletePopover()?.nativeElement?.showPopover();
     this.clicked.emit();
   }
 
@@ -100,20 +103,19 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   protected emitText(): void {
-    if(this.allowEmptySearch() === false && this.input() === '') {
+    if (this.allowEmptySearch() === false && this.input() === '') {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
       toast.info(message)
       return;
     }
 
-    this.overlayOpen.set(false);
     this.validated.emit(this.input());
   }
 
   protected clearInput(): void {
     this.input.set('');
 
-    if(this.allowEmptySearch()) {
+    if (this.allowEmptySearch()) {
       this.validated.emit('');
     }
   }

@@ -3,18 +3,18 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-    <app-search-input
-      class="flex grow h-7"
-      [showSave]="true"
-      (saved)="saveSearch()"
-      (validated)="validated($event)"
-      (debounced)="debounced($event)"
-    >
-      <app-autocomplete
-        [text]="searchText()"
-        (onClick)="autocompleteItemClicked($event)"
-      />
-    </app-search-input>
+  <app-search-input
+    class="flex grow h-7"
+    [showSave]="true"
+    (saved)="saveSearch()"
+    (validated)="validated($event)"
+    (debounced)="debounced($event)"
+  >
+    <app-autocomplete
+      [text]="searchText()"
+      (onClick)="autocompleteItemClicked($event)"
+    />
+  </app-search-input>
 </div>
 
 <menu class="flex justify-end gap-3 items-center pe-10">
