@@ -112,12 +112,15 @@ export class FiltersComponent {
       const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
 
       untracked(() => {
-        if (resolvedAggregations.length > FILTERS_COUNT)
+        // set more filters flag
+        const moreFilters = resolvedAggregations.slice(FILTERS_COUNT);
+        if(moreFilters.filter(agg => agg.items !== undefined && agg.items.length > 0).length > 0) {
           this.hasMoreFilters.set(true);
+        } else {
+          this.hasMoreFilters.set(false);
+        }
 
-        this.moreFiltersColumns = resolvedAggregations
-          .slice(FILTERS_COUNT)
-          .map(a => a.column);
+        this.moreFiltersColumns = moreFilters.map(a => a.column);
 
         this.filterDropdowns.set(filterDropdowns);
       });

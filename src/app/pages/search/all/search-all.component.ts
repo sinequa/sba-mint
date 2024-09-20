@@ -1,11 +1,11 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map, tap } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
-import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, QueryService, SearchService, SelectArticleFromQueryParamsDirective, SelectArticleOnClickDirective, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
@@ -34,28 +34,23 @@ type R = Result & { nextPage?: number, previousPage?: number };
   styleUrl: './search-all.component.scss',
   host: {
     class: 'layout-search overflow-auto h-full'
-  },
-  hostDirectives: [{
-    directive: SelectArticleFromQueryParamsDirective,
-    inputs: ['articleId: id', 'aggregations']
-  }]
+  }
 })
 export class SearchAllComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
-  public readonly id = input<string | undefined>();
-
   readonly result = signal<Result | undefined>(undefined);
   protected readonly articles = signal(undefined as Article[] | undefined);
   protected readonly queryText = signal<string>('');
+  protected readonly noRecords = signal(false);
 
-  private readonly queryService = inject(QueryService);
   private readonly searchService = inject(SearchService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly selectionService = inject(SelectionService);
 
   protected aggregations: Aggregation[];
 
@@ -63,10 +58,17 @@ export class SearchAllComponent implements OnDestroy {
 
   // track the query params store changes
   keys = computed(() => {
-    const state = getState(this.queryParamsStore)
+    const state = getState(this.queryParamsStore);
     const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
     return r;
   });
+
+  // get the id from the query params store to open the drawer with the preview of the article
+  id = computed(() => {
+    const state = getState(this.queryParamsStore);
+    return state.id;
+  });
+
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
@@ -75,16 +77,37 @@ export class SearchAllComponent implements OnDestroy {
       const q = this.searchService.getQuery();
       const query = { ...q, page: pageParam } as Query;
 
-      return lastValueFrom(this.queryService.search(query).pipe(
-        tap(() => {
+      return lastValueFrom(this.searchService.getResult(query).pipe(
+        tap(async () => {
           const queryParams = getState(this.queryParamsStore);
           // Add the current search to the user settings only if there is a text query
           if (queryParams.text) {
-            this.userSettingsStore.addCurrentSearch(queryParams);
+            await this.userSettingsStore.addCurrentSearch(queryParams);
           }
         }),
         map(result => {
+          if (result.records?.length === 0) {
+            this.noRecords.set(true);
+          } else {
+            this.noRecords.set(false);
+          }
+          return result;
+        }),
+        map(result => {
           result.records?.map((article: Article) => (Object.assign(article, { value: article.title, type: 'default' })));
+          return result;
+        }),
+        map(result => {
+          // If the id is set, open the drawer with the preview of the article
+          const id = this.id();
+          if(id) {
+            result.records?.forEach(article => {
+              if (article.id === id) {
+                this.selectionService.setCurrentArticle(article);
+                this.drawerStack.open();
+              }
+            });
+          }
           return result;
         }),
         map(result => {
@@ -133,7 +156,13 @@ export class SearchAllComponent implements OnDestroy {
     this.queryParamsStore.patch({ sort: sort.name });
 
     this.articles.set(undefined);
-    this.searchService.search([]);
+    this.searchService.search([], { audit: {
+      type: "Search_Sort",
+      detail: {
+        sort: sort.name,
+        orderByClause: sort.orderByClause,
+      }
+    }});
   }
 
   nextPage() {

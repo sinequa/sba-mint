@@ -5,9 +5,9 @@
     </div>
   </section>
 
-  <section class="flex flex-col gap-2">
+  <section class="flex flex-col gap-2 overflow-auto break-words">
     <header>
-      <div class="flex gap-2 items-baseline overflow-auto">
+      <div class="flex gap-2 items-baseline">
         <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
         @if (showBookmark()) {
           <app-bookmark-button [article]="article()" />
@@ -37,7 +37,7 @@
     </header>
 
     <main>
-      <p class="line-clamp-2" [innerHTML]="extract()"></p>
+      <p class="article-extract line-clamp-2" [innerHTML]="extract()"></p>
     </main>
 
   </section>

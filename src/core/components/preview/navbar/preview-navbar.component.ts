@@ -5,7 +5,7 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
-import { DrawerStackService, cn } from '@sinequa/atomic-angular';
+import { DrawerStackService, PreviewService, cn } from '@sinequa/atomic-angular';
 
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { DrawerService } from '../../drawer/drawer.service';
@@ -44,6 +44,7 @@ export class PreviewNavbarComponent {
 
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly drawerService = inject(DrawerService);
+  protected readonly previewService = inject(PreviewService);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
 
@@ -55,7 +56,8 @@ export class PreviewNavbarComponent {
   private readonly transloco = inject(TranslocoService);
 
   openClicked(): void {
-    window.open(this.article()?.url1, '_blank', 'noopener noreferrer');
+    // open the preview in a new tab and audit the action
+    this.previewService.openExternal(this.article() as Article);
   }
 
   public copyLink(): void {

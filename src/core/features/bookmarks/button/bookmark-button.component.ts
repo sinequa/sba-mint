@@ -37,12 +37,12 @@ export class BookmarkButtonComponent {
     const isBookmarked = await this.userSettingsStore.isBookmarked(this.article());
 
     if (isBookmarked) {
-      this.userSettingsStore.unbookmark(this.article()!.id!);
+      await this.userSettingsStore.unbookmark(this.article()!.id!);
       toast.success(this.transloco.translate('bookmark.bookmarkRemoved'), { duration: 2000 });
     }
     else {
       const { queryName } = this.route.snapshot.data
-      this.userSettingsStore.bookmark(this.article()! as Article, queryName);
+      await this.userSettingsStore.bookmark(this.article()! as Article, queryName);
       toast.success(this.transloco.translate('bookmark.bookmarkAdded'), { duration: 2000 });
     }
   }

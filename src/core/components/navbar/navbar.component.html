@@ -4,7 +4,7 @@
 
 <div class="col-span-2 flex items-center">
     <app-search-input
-      class="flex grow leading-8"
+      class="flex grow h-7"
       [showSave]="true"
       (saved)="saveSearch()"
       (validated)="validated($event)"
@@ -49,15 +49,17 @@
   <ul class="col-start-2 col-span-2 flex">
     @for (tab of tabs; track $index) {
     <li>
-      <button
+      <a
         class="first-letter:capitalize tab aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
-        (click)="changeTab(tab)"
+        [routerLink]="tab.routerLink" [queryParamsHandling]="'merge'" [queryParams]="{ queryName: tab.queryName, t: tab.name, f: undefined, tab:undefined, sort: undefined, id: undefined, page: undefined }"
+        [routerLinkActive]="'text-primary border-primary'"
         [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
-        [attr.aria-label]="tab.display"
+        [attr.aria-label]="tab.display | syslang | transloco"
+        (click)="changeTab(tab)"
         >
         <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
         {{ tab.display | syslang | transloco }}
-      </button>
+      </a>
     </li>
     }
   </ul>
