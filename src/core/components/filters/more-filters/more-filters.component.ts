@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { Component, Injector, OnDestroy, QueryList, ViewChildren, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -34,6 +34,8 @@ export class MoreFiltersComponent implements OnDestroy {
   cn = cn;
 
   @ViewChildren(AggregationComponent) aggregations!: QueryList<AggregationComponent>;
+
+  readonly searchable = input<boolean>(true);
 
   readonly filterDropdowns = signal<FilterDropdown[]>([]);
   readonly hasFilters = signal<LegacyFilter[]>([]);

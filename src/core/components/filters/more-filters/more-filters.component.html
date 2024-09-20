@@ -53,6 +53,7 @@
       <!-- content -->
       <app-aggregation
         class="collapse-content"
+        [searchable]="searchable()"
         [aggregation]="filter.aggregation"
         (onSelect)="updateHasFilters($event, $index)"
         (onLoadMore)="loadMore(filter.aggregation, $index)"

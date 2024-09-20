@@ -1,14 +1,15 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Injector, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AggregationItem, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationItem, fetchSuggestField, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 
 import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
+import { debounceTime, distinctUntilChanged, from, Observable, of, Subscription, switchMap } from 'rxjs';
 
 type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
 
@@ -31,14 +32,14 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       display: block;
     }
 
-    fieldset {
+    .data-list {
       scrollbar-width: thin;
     }
   `],
-  imports: [AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
+  imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
-export class AggregationComponent implements OnInit {
+export class AggregationComponent implements OnInit, OnDestroy {
   @Output() public readonly onLoadMore = new EventEmitter<void>();
 
   /**
@@ -50,25 +51,46 @@ export class AggregationComponent implements OnInit {
 
   private queryParamsStore = inject(QueryParamsStore);
 
+  public readonly searchable = input<boolean>(true);
+  public readonly formBuilder = inject(NonNullableFormBuilder);
+
   protected readonly hasFilter = signal<boolean>(false);
 
   title = input<AggregationTitle>();
   aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
-  items = computed(() => this.aggregation().items || []);
+  items = computed(() => this.searchedItems() || this.aggregation().items || []);
+
+  sub: Subscription = new Subscription();
+  searchGroup = this.formBuilder.group({ searchQuery: '' });
+  suggestDelay = 200;
+  suggests = signal<Suggestion[] | undefined>(undefined);
+  searchedItems = computed(() => {
+    if (!this.suggests()) return undefined;
+
+    const list: AggregationListItem[] = this.suggests()!.map(suggest => ({
+      name: suggest.category,
+      value: suggest.display,
+      display: suggest.display,
+      column: suggest.id,
+      count: 1,
+      items: []
+    }));
+    return list;
+  });
 
   selected = computed<AggregationListItem[]>(() => {
     // $selected elements must be displayed first, but the other elements must stay in the same order
 
-    if(this.aggregation().isTree) {
-      const { values = []  } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
+    if (this.aggregation().isTree) {
+      const { values = [] } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
       const items = this.items();
       this.selectItems(items, values);
       return items;
     }
 
     const selected = this.items().filter(item => item.$selected);
-    if(this.aggregation().valuesAreExpressions === false) {
+    if (this.aggregation().valuesAreExpressions === false) {
       const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
       if (columnFilter?.filters) {
         const selectedFilters = (columnFilter.filters as LegacyFilter[]).map((filter: LegacyFilter) => {
@@ -97,8 +119,31 @@ export class AggregationComponent implements OnInit {
     return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
   });
 
+  query: Query;
+
+  constructor() {
+    this.query = buildQuery();
+
+    this.sub.add(
+      this.searchGroup.get('searchQuery')?.valueChanges.pipe(
+        debounceTime(this.suggestDelay),
+        distinctUntilChanged(),
+        switchMap(text => {
+          if (text.trim() === '') return of(undefined);
+          return from(fetchSuggestField(text, [this.aggregation().column]))
+        })
+      ).subscribe((suggests: Suggestion[] | undefined) => {
+        this.suggests.set(suggests);
+      })
+    );
+  }
+
   ngOnInit(): void {
     this.hasFilter.set(this.hasFilters());
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   public select(item: AggregationListItem): void {
@@ -117,6 +162,10 @@ export class AggregationComponent implements OnInit {
 
   public apply(): void {
     const filters = this.getFilters();
+
+    if (this.searchable()) {
+      this.searchGroup.get('searchQuery')?.setValue('');
+    }
 
     // if filters length > 1, we need to wrap them in an "or" filter
     if (filters.length > 1) {
