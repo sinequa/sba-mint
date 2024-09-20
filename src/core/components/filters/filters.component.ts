@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -45,6 +45,8 @@ export class FiltersComponent {
   @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
 
   cn = cn;
+
+  public readonly searchable = input<boolean>(true);
 
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly injector = inject(Injector);
