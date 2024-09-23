@@ -4,7 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
@@ -12,7 +12,6 @@ import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-sea
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipe/syslang';
 
-import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
