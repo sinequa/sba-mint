@@ -4,10 +4,22 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 
-import atomic from "../node_modules/@sinequa/atomic/package.json";
+import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
+import atomic from "../node_modules/@sinequa/atomic/package.json";
 
 setGlobalConfig(environment);
+
+/**
+ * keyux configuration
+ */
+startKeyUX(window, [
+  hotkeyKeyUX(),
+  focusGroupKeyUX(),
+  pressKeyUX('is-pressed'),
+  jumpKeyUX(),
+  hiddenKeyUX()
+]);
 
 bootstrapApplication(AppComponent, appConfig)
   .then(() => {
@@ -21,8 +33,6 @@ bootstrapApplication(AppComponent, appConfig)
     // Redirect to the error page with the URL causing the error
     window.location.href = `/assets/error.html?url=${currentUrl}`;
   });
-
-
 
 /**
  * Parses the response error and sets the error message in the local storage.
