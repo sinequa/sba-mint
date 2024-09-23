@@ -3,6 +3,40 @@
   input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
   }
+
+  border-radius: theme('borderRadius.DEFAULT');
+  
+  &:has([popover]:popover-open) {
+    z-index: 5000;
+    box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, 0.3);
+    border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
+  }
+}
+
+#autocomplete-anchor {
+  anchor-name: --anchor;
+}
+
+[popover] {
+  /* Select Firefox */
+  @supports (-moz-appearance: none) {
+    margin: calc(33.3333333333vh + 30px) 25vw;
+    width: 50vw;
+  }
+
+  /* Select Safari */
+  @supports (background: -webkit-named-image(i)) {
+    margin: calc(33.3333333333vh + 30px) 25vw;
+    width: 50vw;
+  }
+
+  position-anchor: --anchor;
+  width: anchor-size(width);
+  top: anchor(bottom);
+  left: anchor(left);
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 6px 6px;
 }
 
 .animate-save {

@@ -1,10 +1,10 @@
 import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
-import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnDestroy, Type, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
@@ -12,7 +12,6 @@ import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-sea
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipe/syslang';
 
-import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
@@ -32,29 +31,31 @@ type NavbarTab = {
 }
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
-    imports: [
-        CommonModule,
-        NgClass,
-        AsyncPipe,
-        RouterLink,
-        RouterLinkActive,
-        SearchInputComponent,
-        AutocompleteComponent,
-        UserMenuComponent,
-        DropdownComponent,
-        TranslocoPipe,
-        SyslangPipe
-    ]
+  selector: 'app-navbar',
+  standalone: true,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
+  imports: [
+    CommonModule,
+    NgClass,
+    AsyncPipe,
+    RouterLink,
+    RouterLinkActive,
+    SearchInputComponent,
+    AutocompleteComponent,
+    UserMenuComponent,
+    DropdownComponent,
+    TranslocoPipe,
+    SyslangPipe
+  ],
+  host: {
+    '[attr.drawer-opened]': 'drawerOpened()'
+  }
 })
 export class NavbarComponent implements OnDestroy {
-  @HostBinding('attr.drawer-opened')
-  public drawerOpened: boolean = false;
+  readonly drawerOpened = signal(false);
 
-  @ViewChild(SearchInputComponent, { static: true }) public readonly searchInput: SearchInputComponent;
+  readonly searchInput = viewChild(SearchInputComponent);
 
   protected readonly searchText = signal<string>('');
 
@@ -88,7 +89,7 @@ export class NavbarComponent implements OnDestroy {
 
   constructor() {
     this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state))
     );
   }
 
@@ -102,7 +103,7 @@ export class NavbarComponent implements OnDestroy {
       return;
     }
 
-    this.autocompleteService.opened.set(false);
+    this.searchInput()?.closeAutocompletePopover();
 
     this.search(item.display!);
   }

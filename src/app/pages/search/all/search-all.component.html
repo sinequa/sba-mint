@@ -15,15 +15,14 @@
     </ul>
   }
   @else if (query.isSuccess()) {
-    @if(noRecords() === false) {
-      <div class="flex mt-4">
-        <app-sort-selector
-          class="ms-auto"
-          [result]="result()!"
-          (onSort)="onSort($event)"
-        />
-      </div>
-    }
+    <!-- the sort is always displayed excepts when no records are found -->
+    <div class="flex mt-4 has-[_+ul>li.no-records]:hidden">
+      <app-sort-selector
+        class="ms-auto"
+        [result]="result()!"
+        (onSort)="onSort($event)"
+      />
+    </div>
 
     <ul class="flex flex-col gap-2 mt-4">
       @for(page of query.data()?.pages; track page) {
@@ -35,7 +34,7 @@
           </li>
         }
         @empty {
-          <li class="mt-8 text-neutral-500 italic">
+          <li class="mt-8 text-neutral-500 italic no-records">
             No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
           </li>
         }

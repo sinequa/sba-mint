@@ -1,10 +1,9 @@
 <div
-  cdkOverlayOrigin
-  #overlayPosition="cdkOverlayOrigin"
-  class="group flex grow relative rounded focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary focus-within:rounded-b-none"
+  id="autocomplete-anchor"
+  class="group flex grow relative rounded focus-within:rounded-b-none focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary"
 >
   <div
-    class="grow px-2 flex gap-2 items-center focus-within:rounded-bl-none rounded-s rounded-e-none bg-neutral-50 group-hover:bg-white"
+    class="grow px-2 flex gap-2 items-center rounded-s focus-within:rounded-b-none bg-neutral-50 group-hover:bg-white"
   >
     @if (showSave() && input() !== '') {
     <button
@@ -76,18 +75,6 @@
   </button>
 </div>
 
-<ng-template
-  cdkConnectedOverlay
-  [cdkConnectedOverlayOrigin]="overlayPosition"
-  [cdkConnectedOverlayOpen]="overlayOpen()"
-  (overlayOutsideClick)="overlayOpen.set(false)"
-  cdkConnectedOverlayHasBackdrop="true"
->
-  <div
-    [style.width.px]="
-      overlayPosition.elementRef.nativeElement.getBoundingClientRect().width
-    "
-  >
-    <ng-content></ng-content>
-  </div>
-</ng-template>
+<div popover #autocompletePopover>
+  <ng-content></ng-content>
+</div>

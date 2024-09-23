@@ -3,25 +3,25 @@
 </a>
 
 <div class="col-span-2 flex items-center">
-    <app-search-input
-      class="flex grow h-7"
-      [showSave]="true"
-      (saved)="saveSearch()"
-      (validated)="validated($event)"
-      (debounced)="debounced($event)"
-    >
-      <app-autocomplete
-        [text]="searchText()"
-        (onClick)="autocompleteItemClicked($event)"
-      />
-    </app-search-input>
+  <app-search-input
+    class="flex grow h-7"
+    [showSave]="true"
+    (saved)="saveSearch()"
+    (validated)="validated($event)"
+    (debounced)="debounced($event)"
+  >
+    <app-autocomplete
+      [text]="searchText()"
+      (onClick)="autocompleteItemClicked($event)"
+    />
+  </app-search-input>
 </div>
 
 <menu class="flex justify-end gap-3 items-center pe-10">
   @for (menu of menus; track $index) {
     <li>
       @if (menu.component) {
-        <sq-dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
+        <Dropdown class="dropdown-end z-50 border-neutral-300 rounded-lg">
           <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
@@ -29,7 +29,7 @@
           <div dropdown-content class="absolute w-[380px] max-w-md dropdown-content">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
-        </sq-dropdown>
+        </Dropdown>
       }
       @else {
         <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
@@ -45,7 +45,7 @@
 
 <div class="row-start-2"></div>
 
-<nav class="col-start-2 col-span-2 absolute -bottom-[1px] w-full overflow-x-auto">
+<nav class="col-start-2 col-span-2 w-full z-10">
   <ul class="col-start-2 col-span-2 flex">
     @for (tab of tabs; track $index) {
     <li>

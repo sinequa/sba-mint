@@ -17,7 +17,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   template: `
 <dialog
   popover
-  class="z-backdrop w-full max-w-md p-4 rounded-lg shadow-2xl"
+  class="z-backdrop w-full max-w-md p-4 rounded-lg border border-neutral-200 shadow-2xl"
   #dialog>
   <div class="flex flex-col gap-4">
     <h1 class="text-xl font-bold">{{ 'dialog.resetUserSettings.title' | transloco }}</h1>
@@ -25,7 +25,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     <p>{{ 'dialog.resetUserSettings.message' | transloco }}</p>
 
     <div class="flex justify-end gap-2 mt-4">
-      <button class="btn btn-outline w-24" (click)="dialog.close()">
+      <button class="btn btn-ghost outline-none w-24" (click)="dialog.close()">
         {{ 'cancel' | transloco }}
       </button>
 
