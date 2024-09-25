@@ -43,6 +43,6 @@
   }
 
   @if (query.hasNextPage()) {
-    <div infinity-scroll (loadMore)="nextPage()"></div>
+    <div infinity-scroll (onScroll)="nextPage()"></div>
   }
 </main>

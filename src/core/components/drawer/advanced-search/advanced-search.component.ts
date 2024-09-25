@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Article, CCWebService } from '@sinequa/atomic';
-import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, ReplacePipe, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 interface MetadataNavigation {
   index: number;
@@ -41,7 +41,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   imports: [
     NgTemplateOutlet,
     FormsModule,
-    ReplacePipe,
     MetadataComponent,
     TranslocoPipe,
     NgClass

@@ -5,7 +5,7 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
-import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, DropdownComponent, FilterDropdown, FocusWithArrowKeysDirective, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
+import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, DropdownComponent, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipe/syslang';
 import { OperatorPipe } from "../../pipe/operator";
@@ -32,7 +32,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     DateFilterComponent,
     AggregationComponent,
     MoreFiltersComponent,
-    FocusWithArrowKeysDirective,
     DropdownComponent,
     TranslocoPipe,
     SyslangPipe,

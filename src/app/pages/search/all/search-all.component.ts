@@ -2,18 +2,18 @@ import { NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { Subscription, lastValueFrom, map, tap } from 'rxjs';
+import { Subscription, lastValueFrom, map } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
-import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, SearchService, SelectionService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
 import { FiltersComponent } from '@/core/components/filters/filters.component';
+import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
 import { getComponentsForDocumentType } from '@/core/registry/document-type-registry';
-import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
 
 type R = Result & { nextPage?: number, previousPage?: number };
 
@@ -23,7 +23,6 @@ type R = Result & { nextPage?: number, previousPage?: number };
   imports: [
     NgClass,
     NgComponentOutlet,
-    SelectArticleOnClickDirective,
     FiltersComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
@@ -74,7 +73,7 @@ export class SearchAllComponent implements OnDestroy {
   query = injectInfiniteQuery<R>(() => ({
     queryKey: ["search-all", this.keys()],
     queryFn: ({ pageParam }) => {
-      const q = this.searchService.getQuery();
+      const q = this.queryParamsStore.getQuery();
       const query = { ...q, page: pageParam } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(

@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, SlicePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, computed, effect, ElementRef, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
-import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SplitPipe } from '@sinequa/atomic-angular';
+import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
 
 import { BasePreview } from '@/core/registry/base-preview';
 
@@ -25,8 +25,6 @@ type Article = A & {
   imports: [
     NgClass,
     DatePipe,
-    SlicePipe,
-    SplitPipe,
     PreviewNavbarComponent,
     MetadataComponent,
     PreviewActionsComponent,

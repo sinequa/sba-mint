@@ -16,7 +16,7 @@
 
   <!-- date filter dropdown -->
   @if (dateFilterDropdown()) {
-  <li tabindex="0" appFocusWithArrowKeys>
+  <li tabindex="0">
     <Dropdown>
       <button tabindex="-1"
         [ngClass]="cn(
@@ -54,7 +54,7 @@
 
   <!-- other filter dropdowns -->
   @for (filterDropdown of filterDropdowns(); track $index) {
-    <li tabindex="0" appFocusWithArrowKeys [ngClass]="cn(filterDropdown.hidden && 'hidden')">
+    <li tabindex="0" [ngClass]="cn(filterDropdown.hidden && 'hidden')">
       <Dropdown [disabled]="!filterDropdown.aggregation.items">
         <button tabindex="-1"
           [ngClass]="cn(
@@ -104,7 +104,6 @@
     <li
       class="ms-auto"
       tabindex="0"
-      appFocusWithArrowKeys
       >
       <Dropdown class="dropdown-end">
         <button class="btn btn-tertiary font-semibold gap-1 truncate" tabindex="-1" aria-label="more filters">

@@ -1,10 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { getRelativeDate } from '@sinequa/atomic';
-import { FocusWithArrowKeysDirective, QueryParams, QueryParamsStore, RecentSearch, RelativeDatePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { getRelativeDate, QueryParams } from '@sinequa/atomic';
+import { QueryParamsStore, RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -16,7 +16,7 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
 @Component({
   selector: 'app-recent-searches',
   standalone: true,
-  imports: [FocusWithArrowKeysDirective, RelativeDatePipe, TranslocoPipe],
+  imports: [TranslocoPipe],
   templateUrl: './recent-searches.component.html',
   styleUrl: './recent-searches.component.scss',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
