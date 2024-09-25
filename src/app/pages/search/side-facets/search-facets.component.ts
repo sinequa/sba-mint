@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 
-import { InfinityScrollDirective, SelectArticleOnClickDirective } from '@sinequa/atomic-angular';
+import { InfinityScrollDirective } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
@@ -16,7 +16,6 @@ import { SearchAllComponent } from '../all/search-all.component';
   standalone: true,
   imports: [
     NgClass,
-    SelectArticleOnClickDirective,
     FiltersComponent,
     ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,

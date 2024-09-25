@@ -1,12 +1,12 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { RelativeDate as AtomicRelativeDate, QueryParams, SavedSearch as S, SavedSearchesService, getQueryParamsFromUrl } from '@sinequa/atomic-angular';
+import { SavedSearch as S, SavedSearchesService } from '@sinequa/atomic-angular';
 
-import { getRelativeDate } from '@sinequa/atomic';
+import { getQueryParamsFromUrl, getRelativeDate, QueryParams } from '@sinequa/atomic';
 import { StopPropagationDirective } from 'toolkit';
 
 const SAVED_SEARCHES_ITEMS_PER_PAGE = 5;
@@ -23,9 +23,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   return acc;
 }, {} as HashMap<() => Promise<Translation>>);
 
-export type RelativeDate = AtomicRelativeDate & {
-  unit: Intl.RelativeTimeFormatUnit;
-}
 
 @Component({
   selector: 'app-saved-searches',

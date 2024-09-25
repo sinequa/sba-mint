@@ -1,7 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AppStore, CSources, SourceIconPipe } from '@sinequa/atomic-angular';
+import { AppStore, CSources } from '@sinequa/atomic-angular';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -11,7 +11,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'app-source-icon',
   standalone: true,
-  imports: [TranslocoPipe, SourceIconPipe],
+  imports: [TranslocoPipe],
   templateUrl: './source-icon.component.html',
   providers: [provideTranslocoScope({ scope: 'sources', loader })]
 })

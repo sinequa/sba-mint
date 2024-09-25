@@ -3,7 +3,6 @@
     <li
       class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
       tabindex="0"
-      appFocusWithArrowKeys="y"
       (click)="onClick(search)"
       (keydown.enter)="onClick(search)"
     >
@@ -14,7 +13,7 @@
       @if ((search.filterCount ?? 0) > 0) {
         <p class="text-neutral-500" aria-hidden="true">
           <i class="fa-fw far fa-filter"></i>
-          
+
           {{ "recentSearches.filterCount" | transloco : { count: search.filterCount } }}
         </p>
       }
@@ -25,7 +24,7 @@
         </p>
       }
 
-      <button 
+      <button
         class="hidden group-hover:block text-alert hover:scale-125"
         [attr.title]="'recentSearches.removeRecentSearch' | transloco"
         [attr.aria-label]="'recentSearches.removeRecentSearch' | transloco"
@@ -47,7 +46,6 @@
   <button
     class="btn btn-tertiary flex justify-center w-full px-3 py-2"
     tabindex="0"
-    appFocusWithArrowKeys="y"
     [attr.title]="'loadMore' | transloco"
     (click)="loadMore($event)"
   >

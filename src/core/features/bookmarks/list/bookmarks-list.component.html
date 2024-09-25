@@ -3,7 +3,6 @@
     <li
       class="flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none group"
       tabindex="0"
-      appFocusWithArrowKeys="y"
       (click)="onClick(bookmark)"
       (keydown.enter)="onClick(bookmark)"
     >
@@ -35,7 +34,7 @@
       </button>
     </li>
   }
-  
+
   @empty {
     <li class="text-neutral-500 text-center py-4">
       {{ 'bookmark.noBookmarks' | transloco }}
