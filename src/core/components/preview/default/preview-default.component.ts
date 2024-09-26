@@ -14,6 +14,7 @@ import { BasePreview } from '@/core/registry/base-preview';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
+import { HttpClient } from '@angular/common/http';
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -64,6 +65,9 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
+  private readonly http = inject(HttpClient);
+  readonly canLoadIframe = signal<boolean>(false); 
+  readonly previewUrlError = signal<boolean>(false); 
 
   private readonly sub = new Subscription();
 
@@ -80,7 +84,18 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       if (!this.previewData()) return;
 
       this.previewService.setPreviewData(this.previewData());
-    })
+    });
+
+    effect(() => {
+      if (!this.previewUrl()) return;
+
+      this.http.get(window.location.origin + this.previewData().documentCachedContentUrl, { responseType: 'text' })
+        .subscribe(() => {
+          this.canLoadIframe.set(true);
+        }, () => {
+          this.previewUrlError.set(true);
+        });
+    });
   }
 
   ngOnDestroy(): void {

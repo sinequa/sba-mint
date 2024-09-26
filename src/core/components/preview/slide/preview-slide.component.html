@@ -139,7 +139,7 @@
   </section>
 
   <section class="grow flex flex-col gap-4 py-4 px-6">
-    @if (previewUrl()) {
+    @if (previewUrl() && canLoadIframe()) {
       <preview-actions class="flex justify-end gap-2" />
 
       <iframe
@@ -150,6 +150,13 @@
         [attr.title]="'preview.documentPreview' | transloco"
         [attr.aria-label]="'preview.documentPreview' | transloco"
       ></iframe>
+    } @else if (previewUrlError()) {
+      <div class="w-full h-full flex items-center justify-center">
+        <p class="text-center text-xl">
+          <i class="fa-fw far fa-image text-6xl text-secondary mb-6"></i><br />
+          {{ 'previewUnavailable' | transloco }}
+        </p>
+      </div>
     }
   </section>
 </div>

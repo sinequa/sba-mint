@@ -46,5 +46,6 @@
     "persons": "People",
     "companies": "Companies"
   },
-  "extracts": "Extracts"
+  "extracts": "Extracts",
+  "previewUnavailable": "Sorry, preview is not available for this file."
 }
