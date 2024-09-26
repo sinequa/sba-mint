@@ -1,6 +1,7 @@
-import { Pipe, PipeTransform, inject } from "@angular/core";
+import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform, inject } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { sysLang } from "@sinequa/atomic";
+import { Subscription } from "rxjs";
 
 /**
  * The `SyslangPipe` class is a custom pipe that transforms a string value using the current language.
@@ -11,28 +12,28 @@ import { sysLang } from "@sinequa/atomic";
  *
  * @example
  * <div>{{ 'Hello[fr]Bonjour' | syslang }}</div>
- * // output: Bonjour if your current language is 'fr'
- * // output: Hello if your current language is not 'fr'
+ * // output: `Bonjour` if your current language is 'fr'
+ * // output: `Hello` if your current language is not 'fr'
  *
  * <div>{{ 'Hello[fr]Bonjour' | syslang: 'fr' }}</div>
- * // output: Bonjour even if your current language is not 'fr'
+ * // output: `Bonjour` even if your current language is not 'fr'
  */
 @Pipe({
   name: 'syslang',
   standalone: true,
   pure: false
 })
-export class SyslangPipe implements PipeTransform {
-  currentLang: string;
+export class SyslangPipe implements PipeTransform, OnDestroy {
+  private readonly transloco = inject(TranslocoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  /**
-   * Creates an instance of `SyslangPipe`.
-   * @param translocoService The TranslocoService used to get the current language.
-   */
-  constructor(private translocoService: TranslocoService) {
-    this.translocoService.langChanges$.subscribe(lang => {
-      this.currentLang = lang;
-    });
+  private lastValue: string | null = null;
+  private currentLang: string;
+  private subscription: Subscription | null = null;
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+    this.subscription = null;
   }
 
   /**
@@ -40,7 +41,20 @@ export class SyslangPipe implements PipeTransform {
    * @param value The input string value to be transformed.
    * @returns The transformed string value.
    */
-  transform(value?: string, lang?: string): string {
-    return sysLang(value || "", lang || this.currentLang);
+  transform(value?: string, lang?: string): string | null {
+    this.subscription?.unsubscribe();
+
+    this.subscription = this.transloco.langChanges$.subscribe(locale => {
+      this.currentLang = locale;
+
+      const transformedValue = sysLang(value || "", lang || this.currentLang);
+
+      if (transformedValue !== this.lastValue) {
+        this.lastValue = transformedValue;
+        this.cdr.markForCheck();
+      }
+    });
+
+    return this.lastValue;
   }
 }
