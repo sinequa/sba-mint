@@ -1,8 +1,9 @@
-import { SyslangPipe } from "@/core/pipe/syslang";
 import { NgClass } from "@angular/common";
 import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
 
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@sinequa/atomic-angular";
+
+import { SyslangPipe } from "@/core/pipes/syslang";
 
 @Component({
   selector: "app-aggregation-row",

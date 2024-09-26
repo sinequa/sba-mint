@@ -1,15 +1,15 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { Subscription, debounceTime, distinctUntilChanged, from, of, switchMap } from 'rxjs';
 
-import { AggregationItem, fetchSuggestField, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AggregationItem, LegacyFilter, Query, Suggestion, TreeAggregation, TreeAggregationNode, fetchSuggestField } from '@sinequa/atomic';
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, AggregationsService, QueryParamsStore, buildQuery } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipe/syslang';
+import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { AggregationRowComponent } from "./aggregation-row/aggregation-row.component";
-import { debounceTime, distinctUntilChanged, from, Observable, of, Subscription, switchMap } from 'rxjs';
 
 type FieldValue = string | number | Date | boolean | Array<string | { value: string, display?: string }>;
 
