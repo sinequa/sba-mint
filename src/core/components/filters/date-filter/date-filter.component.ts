@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
 import { AggregationEx, QueryParamsStore, cn } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipe/syslang';
+import { SyslangPipe } from '@/core/pipes/syslang';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
 const ALLOW_CUSTOM_RANGE = true;

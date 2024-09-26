@@ -78,7 +78,7 @@
             <th>{{ 'lastUpdatedOn' | transloco }}</th>
 
             <td class="flex gap-2">
-              <p>{{ article()!.modified | date : "mediumDate" }}</p>
+              <p>{{ article()!.modified | translocoDate : "mediumDate" }}</p>
             </td>
           </tr>
         }
