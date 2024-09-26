@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
 
+import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BasePreview } from '@/core/registry/base-preview';
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
@@ -30,6 +31,7 @@ type Article = A & {
     PreviewActionsComponent,
     SourceIconComponent,
     TranslocoPipe,
+    TranslocoDateImpurePipe,
     DropdownComponent
   ],
   templateUrl: './preview-slide.component.html',

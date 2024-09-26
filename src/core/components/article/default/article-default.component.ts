@@ -6,6 +6,7 @@ import { StopPropagationDirective } from 'toolkit';
 
 import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
+import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
@@ -24,7 +25,8 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     StopPropagationDirective,
     MetadataComponent,
     BookmarkButtonComponent,
-    SourceIconComponent
+    SourceIconComponent,
+    TranslocoDateImpurePipe
   ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
