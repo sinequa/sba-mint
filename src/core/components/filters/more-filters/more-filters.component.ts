@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipe/syslang';
+import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';

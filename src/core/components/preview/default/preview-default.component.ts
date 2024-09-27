@@ -11,6 +11,7 @@ import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryPa
 
 import { BasePreview } from '@/core/registry/base-preview';
 
+import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
@@ -31,7 +32,8 @@ type Article = A & {
     PreviewActionsComponent,
     SourceIconComponent,
     TranslocoPipe,
-    DropdownComponent
+    TranslocoDateImpurePipe,
+    DropdownComponent,
   ],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property

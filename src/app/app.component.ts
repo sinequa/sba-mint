@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { globalConfig, login } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, PrincipalStore } from '@sinequa/atomic-angular';
+import { ApplicationService, ApplicationStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
@@ -22,6 +23,8 @@ export class AppComponent {
   private readonly appService = inject(ApplicationService);
   private readonly principalStore = inject(PrincipalStore);
   private readonly applicationStore = inject(ApplicationStore);
+  private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
 
@@ -37,6 +40,7 @@ export class AppComponent {
           toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
           this.applicationStore.updateReadyState();
 
+          this.setupApplicationLanguage();
         }).catch((error: Error) => {
           console.error("An error occured while initializing the application (app)", error);
         });
@@ -49,4 +53,10 @@ export class AppComponent {
     });
   }
 
+  private setupApplicationLanguage() {
+    if (this.userSettingsStore.language?.() === undefined)
+      this.userSettingsStore.updateLanguage('en');
+
+    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+  }
 }
