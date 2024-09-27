@@ -7,8 +7,8 @@ import { getState } from '@ngrx/signals';
 import { Aggregation, LegacyFilter } from '@sinequa/atomic';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, DropdownComponent, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipe/syslang';
-import { OperatorPipe } from "../../pipe/operator";
+import { SyslangPipe } from '@/core/pipes/syslang';
+import { OperatorPipe } from "../../pipes/operator";
 import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';

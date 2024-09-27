@@ -11,6 +11,11 @@
     box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, 0.3);
     border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
   }
+
+  [popover]::backdrop {
+    background-color: transparent;
+    backdrop-filter: none;
+  }
 }
 
 #autocomplete-anchor {

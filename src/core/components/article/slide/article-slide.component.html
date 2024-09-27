@@ -34,7 +34,7 @@
           @if (article().modified) {
             <p class="flex gap-1 items-baseline">
               <i class="fa-fw far fa-calendar-day"></i>
-              <span class="w-max">{{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}</span>
+              <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate : "mediumDate" }}</span>
             </p>
           }
         </div>

@@ -5,7 +5,7 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { getState } from "@ngrx/signals";
 
 import { logout } from "@sinequa/atomic";
-import { MenuComponent, MenuItemComponent, PrincipalStore } from "@sinequa/atomic-angular";
+import { MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
 import { OverrideUserDialogComponent } from "../dialog/override-user";
 import { ResetUserSettingsDialogComponent } from "../dialog/reset-user-settings";
 import { getHelpIndexUrl } from "./help-folder-options";
@@ -29,6 +29,7 @@ export class UserMenuComponent {
 
   private readonly router = inject(Router);
   private readonly principalStore = inject(PrincipalStore);
+  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
 
   readonly user = computed(() => {
@@ -48,9 +49,11 @@ export class UserMenuComponent {
 
 
   changeLanguage(lang: string) {
-    if (this.transloco.getActiveLang() !== lang) {
+    this.userSettingsStore.updateLanguage(lang);
+
+    if (this.transloco.getActiveLang() !== lang)
       this.transloco.setActiveLang(lang);
-    }
+
     this.menu()?.close();
   }
 
