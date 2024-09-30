@@ -44,7 +44,7 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
 })
 export class DrawerPreviewComponent extends DrawerComponent implements OnInit, OnDestroy {
   appStore = inject(AppStore);
-  selectionStore= inject(SelectionStore);
+  selectionStore = inject(SelectionStore);
   queryParamsStore = inject(QueryParamsStore);
 
   previewService = inject(PreviewService);
@@ -73,11 +73,16 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
 
     effect((onCleanup) => {
       const state = getState(this.selectionStore);
-      let sub = this.previewService.preview(this.articleId(), { name: this.globalQueryName, text: this.queryText() }, state.previewHighlights?.highlights).subscribe( previewData => {
+      const sub = this.previewService.preview(
+        this.articleId(),
+        { name: this.globalQueryName, text: this.queryText() },
+        state.previewHighlights?.highlights
+      ).subscribe(previewData => {
         this.previewData.set(previewData);
       });
-      onCleanup(() => { sub?.unsubscribe(); sub = undefined });
-    }, {allowSignalWrites: true});
+
+      onCleanup(() => sub.unsubscribe());
+    }, { allowSignalWrites: true });
   }
 
   override ngOnDestroy(): void {
