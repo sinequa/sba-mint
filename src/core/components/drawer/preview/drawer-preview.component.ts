@@ -71,11 +71,12 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
   constructor(@Inject(GLOBAL_QUERY_NAME) private readonly globalQueryName: string) {
     super();
 
-    effect(() => {
+    effect((onCleanup) => {
       const state = getState(this.selectionStore);
-      this.previewService.preview(this.articleId(), { name: this.globalQueryName, text: this.queryText() }, state.previewHighlights?.highlights).subscribe( previewData => {
+      let sub = this.previewService.preview(this.articleId(), { name: this.globalQueryName, text: this.queryText() }, state.previewHighlights?.highlights).subscribe( previewData => {
         this.previewData.set(previewData);
       });
+      onCleanup(() => { sub?.unsubscribe(); sub = undefined });
     }, {allowSignalWrites: true});
   }
 
