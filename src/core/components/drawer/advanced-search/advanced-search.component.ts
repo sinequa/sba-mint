@@ -34,7 +34,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       -webkit-appearance: none;
     }
   `],
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   imports: [
     NgTemplateOutlet,
     FormsModule,
