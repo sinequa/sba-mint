@@ -43,3 +43,7 @@ Thumbs.db
 
 # NPM resource file
 .npmrc
+
+# Docusaurus
+.docusaurus
+docusaurus/node_modules

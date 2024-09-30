@@ -7,7 +7,7 @@
 <div class="flex overflow-auto bg-white">
   <div
     #drawerHandle
-    class="w-[5px] h-full fixed hover:cursor-ew-resize"
+    class="w-[5px] h-full fixed hover:bg-orange-300 hover:cursor-ew-resize select-none"
     [ngClass]="{ hidden: (drawer.isExtended | async) === false }"
   ></div>
 
@@ -17,9 +17,13 @@
 </div>
 
 @if (article()) {
-  <app-advanced-search
-    [article]="article()!"
-    (textChanged)="onTextChanged($event)"
-    (close)="drawer.collapse()"
-  />
+<div class="bg-white border-l flex flex-col">
+  <div class="relative flex flex-col grow">
+	  <app-advanced-search class="overflow-y-auto absolute w-full h-full"
+	    [article]="article()!"
+	    (textChanged)="onTextChanged($event)"
+	    (close)="drawer.collapse()"
+	  />
+  </div>
+</div>
 }
