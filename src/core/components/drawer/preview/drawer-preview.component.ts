@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { Article, CCApp, PreviewData } from '@sinequa/atomic';
 
-import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
@@ -38,7 +38,7 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
     PreviewDefaultComponent,
     PreviewSlideComponent
   ],
-  providers: [DrawerService, PreviewService, ExtractsLocationService],
+  providers: [DrawerService, PreviewService],
   templateUrl: './drawer-preview.component.html',
   styleUrls: ['../drawer.component.scss']
 })
