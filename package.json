@@ -31,7 +31,7 @@
     "@ngrx/store": "^17.1.1",
     "@popperjs/core": "^2.11.8",
     "@sinequa/atomic": "^0.0.35",
-    "@sinequa/atomic-angular": "^0.0.77",
+    "@sinequa/atomic-angular": "^0.0.78",
     "@tanstack/angular-query-experimental": "^5.40.0",
     "@types/node": "^16.18.11",
     "clsx": "^2.1.0",
