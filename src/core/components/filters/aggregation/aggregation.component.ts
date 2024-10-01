@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output, computed, inject, input, runInInjectionContext, signal } from '@angular/core';
+import { Component, Injector, OnDestroy, OnInit, computed, inject, input, output, runInInjectionContext, signal } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { Subscription, debounceTime, distinctUntilChanged, from, of, switchMap } from 'rxjs';
@@ -40,32 +40,30 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class AggregationComponent implements OnInit, OnDestroy {
-  @Output() public readonly onLoadMore = new EventEmitter<void>();
+  public readonly aggregation = input.required<AggregationListEx | AggregationTreeEx>();
+  public readonly title = input<AggregationTitle>();
+  public readonly searchable = input<boolean>(true);
 
+  public readonly onLoadMore = output<void>();
   /**
    * Event emitter for changes in filters.
    * Emits a `Filter` object when the filters change (**apply** or **clear** actions).
    */
-  @Output() public readonly onFiltersChanges = new EventEmitter<LegacyFilter>();
-  @Output() public readonly onSelect = new EventEmitter<LegacyFilter>();
-
-  private queryParamsStore = inject(QueryParamsStore);
-
-  public readonly searchable = input<boolean>(true);
-  public readonly formBuilder = inject(NonNullableFormBuilder);
+  public readonly onFiltersChanges = output<LegacyFilter>();
+  public readonly onSelect = output<LegacyFilter>();
 
   protected readonly hasFilter = signal<boolean>(false);
 
-  title = input<AggregationTitle>();
-  aggregation = input.required<AggregationListEx | AggregationTreeEx>();
+  private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
 
-  items = computed(() => this.searchedItems() || this.aggregation().items || []);
+  private readonly items = computed(() => this.searchedItems() || this.aggregation().items || []);
 
-  sub: Subscription = new Subscription();
-  searchGroup = this.formBuilder.group({ searchQuery: '' });
-  suggestDelay = 200;
-  suggests = signal<Suggestion[] | undefined>(undefined);
-  searchedItems = computed(() => {
+  private sub: Subscription = new Subscription();
+  protected searchGroup = this.formBuilder.group({ searchQuery: '' });
+  private suggestDelay = 200;
+  readonly suggests = signal<Suggestion[] | undefined>(undefined);
+  readonly searchedItems = computed(() => {
     if (!this.suggests()) return undefined;
 
     const list: AggregationListItem[] = this.suggests()!.map(suggest => ({
@@ -79,27 +77,34 @@ export class AggregationComponent implements OnInit, OnDestroy {
     return list;
   });
 
-  selected = computed<AggregationListItem[]>(() => {
+  readonly selected = computed<AggregationListItem[]>(() => {
     // $selected elements must be displayed first, but the other elements must stay in the same order
 
     if (this.aggregation().isTree) {
       const { values = [] } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
       const items = this.items();
+
       this.selectItems(items, values);
+
       return items;
     }
 
     const selected = this.items().filter(item => item.$selected);
+
     if (this.aggregation().valuesAreExpressions === false) {
       const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
+
       if (columnFilter?.filters) {
         const selectedFilters = (columnFilter.filters as LegacyFilter[]).map((filter: LegacyFilter) => {
           return ({ count: 1, value: filter.value, display: filter.display, $selected: true }) as AggregationListItem;
         }).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
+
         selected.push(...selectedFilters);
       }
+
       if (columnFilter?.value) {
         const selectedFilters = ({ count: 1, value: columnFilter.value, display: columnFilter.display, $selected: true }) as AggregationListItem;
+
         if (!selected.some(selectedItem => selectedItem.value === columnFilter.value)) {
           selected.push(selectedFilters);
         };
@@ -109,13 +114,12 @@ export class AggregationComponent implements OnInit, OnDestroy {
     const notSelected = this.items().filter(item => !item.$selected).filter((item) => !selected.some(selectedItem => selectedItem.value === item.value));
 
     return selected.concat(notSelected) as AggregationListItem[];
-
   });
 
   readonly aggregationsService = inject(AggregationsService);
   readonly injector = inject(Injector);
 
-  hasAppliedFilters = computed(() => {
+  readonly hasAppliedFilters = computed(() => {
     return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
   });
 
