@@ -60,7 +60,7 @@
           [ngClass]="cn(
             'btn font-semibold gap-1',
             filterDropdown.firstFilter ? 'btn-primary' : 'btn-tertiary'
-            )"
+          )"
           [disabled]="!filterDropdown.aggregation.items || null"
           [attr.aria-disabled]="!filterDropdown.aggregation.items"
           [attr.aria-label]="filterDropdown?.firstFilter?.display || filterDropdown.label"
@@ -79,11 +79,15 @@
 
           @if (filterDropdown.moreFiltersCount && filterDropdown.moreFiltersCount > 0) {
             <div class="pill size-5 pill-xs pill-ghost bg-white flex place-content-center font-semibold text-blue-600">
-              <i class="fas fa-plus text-[0.5rem] my-auto " aria-hidden="true"></i>
+              <!-- ES-23830 specific behavior for treepath, we want to show filter count -->
+              @if (filterDropdown.aggregation.column !== 'treepath') {
+                <i class="fas fa-plus text-[0.5rem] my-auto " aria-hidden="true"></i>
+              }
               <span>{{ filterDropdown.moreFiltersCount }}</span>
             </div>
           }
         </button>
+
         <app-aggregation dropdown-content
           class="dropdown-content w-max"
           [aggregation]="filterDropdown.aggregation"
