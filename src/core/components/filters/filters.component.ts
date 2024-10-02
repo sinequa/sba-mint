@@ -36,7 +36,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     TranslocoPipe,
     SyslangPipe,
     OperatorPipe
-],
+  ],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent {
@@ -112,7 +112,7 @@ export class FiltersComponent {
       untracked(() => {
         // set more filters flag
         const moreFilters = resolvedAggregations.slice(FILTERS_COUNT);
-        if(moreFilters.filter(agg => agg.items !== undefined && agg.items.length > 0).length > 0) {
+        if (moreFilters.filter(agg => agg.items !== undefined && agg.items.length > 0).length > 0) {
           this.hasMoreFilters.set(true);
         } else {
           this.hasMoreFilters.set(false);
@@ -178,7 +178,8 @@ export class FiltersComponent {
       for (const filter of filters) {
         if (filter.value) {
           flattenedValues.push(filter.value);
-          if(filter.display)
+
+          if (filter.display)
             flattenedValues.push(filter.display);
         }
         if (filter.filters) {
@@ -208,13 +209,18 @@ export class FiltersComponent {
         aggregation?.items?.forEach((item: AggregationListItem) => {
           const valueToSearch = aggregation.valuesAreExpressions ? item.display : item.value;
           item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
-          item.icon = items?.find((it: CFilterItem ) => it.value === item.value)?.icon;
+          item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
-        const more = Array.isArray(f?.filters)
+
+        let more = Array.isArray(f?.filters)
           ? f.filters.length - 1
           : undefined;
+
+        // ES-23830 specific behavior for treepath, we want to show filter count
+        if (aggregation.column === 'treepath' && f?.operator === 'in')
+          more = f.values?.length;
 
         return ({
           label: display,
