@@ -63,7 +63,6 @@ export class MoreFiltersComponent implements OnDestroy {
       const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(
         aggregations.splice(FILTERS_COUNT)
           .filter(agg => agg.name !== DATE_FILTER_NAME)
-          .filter(agg => agg.items !== undefined && agg.items.length > 0)
       );
 
       untracked(() => this.filterDropdowns.set(filterDropdowns));
