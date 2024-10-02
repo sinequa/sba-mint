@@ -34,10 +34,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       -webkit-appearance: none;
     }
   `],
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
-  host: {
-    class: 'border-l border-neutral-300 bg-white'
-  },
   imports: [
     NgTemplateOutlet,
     FormsModule,
@@ -67,7 +63,7 @@ export class AdvancedSearchComponent {
   });
 
   protected readonly previewHighlights = computed(() => {
-    const highlights = (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
+    const highlights = (this.appStore.getWebServiceByType('preview') as PreviewWebService)?.highlights?.split(',')
       .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
 
     return highlights?.map(highlight => ({

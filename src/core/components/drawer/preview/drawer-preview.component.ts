@@ -1,12 +1,11 @@
 import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, inject, input } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { BehaviorSubject, combineLatest, map, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
-import { Article, CCApp } from '@sinequa/atomic';
+import { Article, CCApp, PreviewData } from '@sinequa/atomic';
 
-import { AppStore, ExtractsLocationService, PreviewService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AppStore, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
@@ -39,13 +38,17 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
     PreviewDefaultComponent,
     PreviewSlideComponent
   ],
-  providers: [DrawerService, PreviewService, ExtractsLocationService],
-  templateUrl: './preview.component.html',
+  providers: [DrawerService, PreviewService],
+  templateUrl: './drawer-preview.component.html',
   styleUrls: ['../drawer.component.scss']
 })
 export class DrawerPreviewComponent extends DrawerComponent implements OnInit, OnDestroy {
-  previewService = inject(PreviewService);
+  appStore = inject(AppStore);
+  selectionStore = inject(SelectionStore);
   queryParamsStore = inject(QueryParamsStore);
+
+  previewService = inject(PreviewService);
+
   queryText = computed(() => {
     const { text } = getState(this.queryParamsStore);
     return text ?? '';
@@ -54,16 +57,8 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
   public readonly articleId = input.required<string>();
   public readonly text = new BehaviorSubject<string>(this.queryText());
 
-  public readonly previewData$ = combineLatest([toObservable(this.articleId), this.text])
-    .pipe(
-      switchMap(([articleId, text]) => this.previewService.preview(articleId, { name: this.globalQueryName, text })),
-      // shareReplay is used to prevent multiple requests when multiple properties are bound to this observable
-      shareReplay(1)
-    );
-  public readonly article$ = this.previewData$.pipe(map(data => data.record as Article));
-
-  public readonly previewData = toSignal(this.previewData$);
-  public readonly article = toSignal(this.article$);
+  public readonly previewData = signal<PreviewData | undefined>(undefined);
+  public readonly article = computed(() => this.previewData()?.record as Article);
 
   public readonly inputs = computed(() => ({ previewData: this.previewData() }));
   public readonly previewType = computed(() => {
@@ -75,6 +70,19 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
 
   constructor(@Inject(GLOBAL_QUERY_NAME) private readonly globalQueryName: string) {
     super();
+
+    effect((onCleanup) => {
+      const state = getState(this.selectionStore);
+      const sub = this.previewService.preview(
+        this.articleId(),
+        { name: this.globalQueryName, text: this.queryText() },
+        state.previewHighlights?.highlights
+      ).subscribe(previewData => {
+        this.previewData.set(previewData);
+      });
+
+      onCleanup(() => sub.unsubscribe());
+    }, { allowSignalWrites: true });
   }
 
   override ngOnDestroy(): void {

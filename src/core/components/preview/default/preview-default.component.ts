@@ -7,7 +7,7 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
-import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { BasePreview } from '@/core/registry/base-preview';
 
@@ -61,6 +61,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   });
   protected readonly locationSegments = computed(() => this.article().treepath[0]?.split('/')?.slice(1, -1));
   protected readonly queryParamStore = inject(QueryParamsStore);
+  protected readonly selectionStore = inject(SelectionStore);
   protected readonly searchService = inject(SearchService);
   protected readonly router = inject(Router);
 
@@ -120,5 +121,21 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
     const { filters } = getState(this.queryParamStore);
 
     this.router.navigate([], { queryParams: { f: JSON.stringify(filters) }, queryParamsHandling: 'merge' });
+  }
+
+  /**
+   * Handles the event when the preview component is loaded.
+   *
+   * This method retrieves the `previewHighlights` from the selection store state.
+   * If `previewHighlights` contains a `snippetId`, it constructs a message with
+   * the action 'select', the snippet ID, and a flag to use the passage highlighter.
+   * The message is then sent to the preview service.
+   */
+  onLoaded() {
+    const { previewHighlights } = getState(this.selectionStore);
+    if (previewHighlights?.snippetId !== undefined) {
+      const message: any = { action: 'select', id: `snippet_${previewHighlights!.snippetId}`, usePassageHighlighter: true };
+      this.previewService.sendMessage(message);
+    }
   }
 }
