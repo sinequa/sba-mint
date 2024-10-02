@@ -66,6 +66,8 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
+  readonly canLoadIframe = signal<boolean>(false); 
+  readonly previewUrlError = signal<boolean>(false); 
 
   private readonly sub = new Subscription();
 
@@ -82,7 +84,19 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
       if (!this.previewData()) return;
 
       this.previewService.setPreviewData(this.previewData());
-    })
+    });
+
+    effect(async() => {
+      if (!this.previewUrl()) return;
+
+      try {
+        const response = await fetch(this.previewUrl() as string);
+        const text = await response.text();
+        this.canLoadIframe.set(true);
+      } catch(e) {
+          this.previewUrlError.set(true);
+      }
+    });
   }
 
   ngOnDestroy(): void {

@@ -46,5 +46,6 @@
     "persons": "Personnes",
     "companies": "Sociétés"
   },
-  "extracts": "Extraits"
+  "extracts": "Extraits",
+  "previewUnavailable": "Désolé, la prévisualisation n'est pas disponible pour ce fichier."
 }
