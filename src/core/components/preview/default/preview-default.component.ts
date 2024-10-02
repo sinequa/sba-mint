@@ -15,7 +15,6 @@ import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
-import { HttpClient } from '@angular/common/http';
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -68,7 +67,6 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
-  private readonly http = inject(HttpClient);
   readonly canLoadIframe = signal<boolean>(false); 
   readonly previewUrlError = signal<boolean>(false); 
 
