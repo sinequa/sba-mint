@@ -1,5 +1,5 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map } from 'rxjs';
@@ -30,7 +30,7 @@ type R = Result & { nextPage?: number, previousPage?: number };
     DidYouMeanComponent,
     InfinityScrollDirective,
     SponsoredResultsComponent
-],
+  ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
   host: {
@@ -58,8 +58,7 @@ export class SearchAllComponent implements OnDestroy {
   // track the query params store changes
   keys = computed(() => {
     const state = getState(this.queryParamsStore);
-    const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
-    return r;
+    return { text: state.text, filters: state.filters, sort: state.sort }
   });
 
   // get the id from the query params store to open the drawer with the preview of the article
@@ -68,19 +67,21 @@ export class SearchAllComponent implements OnDestroy {
     return state.id;
   });
 
+  // get the tab from the query params URL
+  t = input("all");
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
-    queryKey: ["search-all", this.keys()],
+    queryKey: [`search-${this.t()}`, this.keys()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
-      const query = { ...q, page: pageParam } as Query;
+      const query = { ...q, page: pageParam, tab: this.t() } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
         map(result => {
           // If the id is set, open the drawer with the preview of the article
           const id = this.id();
-          if(id) {
+          if (id) {
             result.records?.forEach(article => {
               if (article.id === id) {
                 this.selectionService.setCurrentArticle(article);
@@ -132,13 +133,15 @@ export class SearchAllComponent implements OnDestroy {
     this.queryParamsStore.patch({ sort: sort.name });
 
     this.articles.set(undefined);
-    this.searchService.search([], { audit: {
-      type: "Search_Sort",
-      detail: {
-        sort: sort.name,
-        orderByClause: sort.orderByClause,
+    this.searchService.search([], {
+      audit: {
+        type: "Search_Sort",
+        detail: {
+          sort: sort.name,
+          orderByClause: sort.orderByClause,
+        }
       }
-    }});
+    });
   }
 
   nextPage() {
