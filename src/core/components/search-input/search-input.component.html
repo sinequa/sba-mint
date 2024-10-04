@@ -31,7 +31,7 @@
       spellcheck="false"
       [ngModel]="input()"
       (ngModelChange)="input.set($event)"
-      (keydown.enter)="emitText()"
+      (keyup)="onKeyDown($event)"
       (click)="inputClicked()"
     />
 
