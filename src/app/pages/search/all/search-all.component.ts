@@ -30,7 +30,7 @@ type R = Result & { nextPage?: number, previousPage?: number };
     DidYouMeanComponent,
     InfinityScrollDirective,
     SponsoredResultsComponent
-],
+  ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
   host: {
@@ -58,8 +58,7 @@ export class SearchAllComponent implements OnDestroy {
   // track the query params store changes
   keys = computed(() => {
     const state = getState(this.queryParamsStore);
-    const r = { text: state.text, filters: state.filters, sort: state.sort }
-    return r;
+    return { text: state.text, filters: state.filters, sort: state.sort }
   });
 
   // get the id from the query params store to open the drawer with the preview of the article
@@ -68,12 +67,12 @@ export class SearchAllComponent implements OnDestroy {
     return state.id;
   });
 
-  // get the params from the query params URL
-  t = input("");
+  // get the tab from the query params URL
+  t = input("all");
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
-    queryKey: ["search-all", this.keys()],
+    queryKey: [`search-${this.t()}`, this.keys()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
       const query = { ...q, page: pageParam, tab: this.t() } as Query;
@@ -82,7 +81,7 @@ export class SearchAllComponent implements OnDestroy {
         map(result => {
           // If the id is set, open the drawer with the preview of the article
           const id = this.id();
-          if(id) {
+          if (id) {
             result.records?.forEach(article => {
               if (article.id === id) {
                 this.selectionService.setCurrentArticle(article);
@@ -134,13 +133,15 @@ export class SearchAllComponent implements OnDestroy {
     this.queryParamsStore.patch({ sort: sort.name });
 
     this.articles.set(undefined);
-    this.searchService.search([], { audit: {
-      type: "Search_Sort",
-      detail: {
-        sort: sort.name,
-        orderByClause: sort.orderByClause,
+    this.searchService.search([], {
+      audit: {
+        type: "Search_Sort",
+        detail: {
+          sort: sort.name,
+          orderByClause: sort.orderByClause,
+        }
       }
-    }});
+    });
   }
 
   nextPage() {
