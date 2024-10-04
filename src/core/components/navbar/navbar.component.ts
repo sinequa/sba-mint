@@ -81,7 +81,7 @@ export class NavbarComponent implements OnDestroy {
       display: child.data?.['display'] || child.path,
       name: child.data?.['wsQueryTab'] || child.path,
       path: child.path,
-      routerLink: `${child.path}/`,
+      routerLink: `${child.path}`,
       iconClass: child.data?.['iconClass'],
       queryName: child.data?.['queryName']
     }) as NavbarTab) ?? [];
