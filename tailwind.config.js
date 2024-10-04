@@ -54,8 +54,12 @@ module.exports = {
     article,
     avatar,
     pill,
-    plugin(function ({ addComponents, theme }) {
-      addComponents({
+    plugin(function ({ addBase, addComponents, theme }) {
+      addBase({
+        '.scrollbar-thin': {
+          scrollbarWidth: 'thin',
+          scrollbarGutter: 'stable'
+        },
         '.active:not([disabled])': {
           color: theme('colors.primary'),
           borderColor: theme('colors.primary'),

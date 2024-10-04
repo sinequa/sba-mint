@@ -1,5 +1,5 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map } from 'rxjs';
@@ -58,7 +58,7 @@ export class SearchAllComponent implements OnDestroy {
   // track the query params store changes
   keys = computed(() => {
     const state = getState(this.queryParamsStore);
-    const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort }
+    const r = { text: state.text, filters: state.filters, sort: state.sort }
     return r;
   });
 
@@ -68,13 +68,15 @@ export class SearchAllComponent implements OnDestroy {
     return state.id;
   });
 
+  // get the params from the query params URL
+  t = input("");
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
     queryKey: ["search-all", this.keys()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
-      const query = { ...q, page: pageParam } as Query;
+      const query = { ...q, page: pageParam, tab: this.t() } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
         map(result => {
