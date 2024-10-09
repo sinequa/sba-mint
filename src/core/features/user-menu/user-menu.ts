@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { logout } from "@sinequa/atomic";
+import { globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import { MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
 import { OverrideUserDialogComponent } from "../dialog/override-user";
 import { ResetUserSettingsDialogComponent } from "../dialog/reset-user-settings";
@@ -47,6 +47,8 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
+  // used to hide the logout button when using SSO
+  useCredentials = globalConfig.useCredentials;
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);
@@ -58,6 +60,7 @@ export class UserMenuComponent {
   }
 
   handleLogout() {
+    setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
     logout().then(() => this.router.navigate(['/logout']));
   }
 

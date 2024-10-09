@@ -2,11 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { globalConfig, login } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { globalConfig } from '@sinequa/atomic';
+import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
@@ -20,10 +19,8 @@ import { SearchComponent } from './pages/search/search.component';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  private readonly appService = inject(ApplicationService);
-  private readonly principalStore = inject(PrincipalStore);
-  private readonly applicationStore = inject(ApplicationStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly appService = inject(ApplicationService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
@@ -31,24 +28,35 @@ export class AppComponent {
   constructor() {
     // Login and initialize the application when the user is logged in
     const { useCredentials } = globalConfig;
-
-    login().then(value => {
-      if (value) {
-        this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
-          const { fullName, name } = getState(this.principalStore).principal;
-
-          toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
-          this.applicationStore.updateReadyState();
-
-          this.setupApplicationLanguage();
-        }).catch((error: Error) => {
-          console.error("An error occured while initializing the application (app)", error);
-        });
+    this.appService.register([
+      {
+        path: 'search',
+        component: SearchComponent,
+        isLayout: true,
+      },
+      {
+        path: 'all',
+        component: SearchAllComponent,
       }
-    }).catch(error => {
-      console.warn("An error occured while logging in", error);
+    ]);
+
+    this.appService.logMeIn().then((value) => {
+      if (value) {
+        this.setupApplicationLanguage();
+      }
+    }).catch((err) => {
+      console.warn("An error occured while logging in (app component)", err);
       if (useCredentials) {
-        this.router.navigate(['/login'])
+        this.router.navigate(['login']);
+      }
+      else if (err instanceof Response) {
+        if(err.status === 401 || err.status === 403) {
+          toast.error("You are not authorized to access this page");
+        }
+        if(err.status === 500) {
+          toast.error("An error occured while processing your request");
+          this.router.navigate(['error']);
+        }
       }
     });
   }

@@ -66,7 +66,7 @@
       <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
     </MenuItem>
 
-    @if(!isOverridingUser()) {
+    @if(useCredentials) {
     <MenuItem (click)="handleLogout()">
       <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
       <span class="grow">{{ 'logout' | transloco }} {{ user().fullName || user().name }}</span>

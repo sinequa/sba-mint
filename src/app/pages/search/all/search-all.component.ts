@@ -5,7 +5,7 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { Subscription, lastValueFrom, map } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
-import { AggregationsStore, DrawerStackService, InfinityScrollDirective, QueryParamsStore, SearchService, SelectionService } from '@sinequa/atomic-angular';
+import { AggregationsStore, DrawerStackService, InfinityScrollDirective, PrincipalStore, QueryParamsStore, SearchService, SelectionService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
@@ -50,6 +50,7 @@ export class SearchAllComponent implements OnDestroy {
   private readonly aggregationsStore = inject(AggregationsStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly selectionService = inject(SelectionService);
+  private readonly principalStore = inject(PrincipalStore);
 
   protected aggregations: Aggregation[];
 
@@ -67,12 +68,18 @@ export class SearchAllComponent implements OnDestroy {
     return state.id;
   });
 
+  // the query must be retriggered when the user override is active
+  userOverrideActive = computed(() => {
+    const state = getState(this.principalStore);
+    return state.userOverrideActive;
+  });
+
   // get the tab from the query params URL
   t = input("all");
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
-    queryKey: [`search-${this.t()}`, this.keys()],
+    queryKey: [`search-${this.t()}`, this.keys(), this.userOverrideActive()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
       const query = { ...q, page: pageParam, tab: this.t() } as Query;
