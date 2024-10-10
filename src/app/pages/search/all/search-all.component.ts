@@ -74,15 +74,22 @@ export class SearchAllComponent implements OnDestroy {
     return state.userOverrideActive;
   });
 
-  // get the tab from the query params URL
-  t = input("all");
+
+  // input url bindings
+  q = input<string>(); // text
+  t = input<string>(); // tab
+  s = input<string>(); // sort
+  f = input<string>(); // filters
+  queryName = input<string>(); // query param
+
 
   // tanstack query
   query = injectInfiniteQuery<R>(() => ({
     queryKey: [`search-${this.t()}`, this.keys(), this.userOverrideActive()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
-      const query = { ...q, page: pageParam, tab: this.t() } as Query;
+      console.log('q', this.keys());
+      const query = { ...q, page: pageParam, tab: this.t(), name: this.queryName() } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
         map(result => {
@@ -106,6 +113,13 @@ export class SearchAllComponent implements OnDestroy {
   }));
 
   constructor() {
+    // Update the query params store with the filters from the query params
+    // This allows Browser back/forward to work correctly
+    effect(() => {
+      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s(), filters, queryName: this.queryName() });
+    }, { allowSignalWrites: true });
+
     this.sub.add(
       this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
     );

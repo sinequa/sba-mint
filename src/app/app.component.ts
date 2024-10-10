@@ -9,6 +9,7 @@ import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
+
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 
@@ -19,8 +20,8 @@ import { SearchComponent } from './pages/search/search.component';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appService = inject(ApplicationService);
+  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
