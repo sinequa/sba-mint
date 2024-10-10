@@ -1,13 +1,31 @@
 <main class="col-start-2 col-span-2 mb-8 z-0">
-  <app-filters
-    class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
-  />
+  @if(query.isPending()){
+    <div class="flex mt-4 justify-between">
+      <div class="flex gap-2">
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+      </div>
 
+      <div class="h-9 w-28 btn btn-tertiary"></div>
+    </div>
+  }
+  @else if (query.isSuccess()){
+    <app-filters
+      class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
+    />
+  }
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
   <app-sponsored-results />
 
   @if (query.isPending()) {
+    <div class="flex justify-end mt-10">
+      <div class="h-9 w-28 btn btn-tertiary"></div>
+    </div>
+
     <ul class="flex flex-col gap-2 mt-4">
       <li><app-article-default-skeleton /></li>
       <li><app-article-default-skeleton /></li>

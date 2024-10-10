@@ -112,7 +112,7 @@ export class NavbarComponent implements OnDestroy {
     this.queryParamsStore.patch({ text });
 
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'merge' });
+    this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'replace' });
   }
 
   protected changeTab(tab: NavbarTab): void {
