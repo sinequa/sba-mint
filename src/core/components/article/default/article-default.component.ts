@@ -4,11 +4,12 @@ import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { StopPropagationDirective } from 'toolkit';
 
-import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { AppStore, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
+import { LegacyFilter } from '@sinequa/atomic';
 
 type Tab = 'attachments' | 'similars';
 
@@ -41,6 +42,8 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
+  queryParamStore = inject(QueryParamsStore);
+  searchService = inject(SearchService);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
@@ -81,5 +84,16 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
 
     this.currentTab = tab;
     this.showTab.set(true);
+  }
+
+  /**
+   * Apply filter from the metadata click
+   * @param field field to filter on
+   * @param value value from the filter
+   */
+  setFilter(field: string, value: string): void {
+    let filter: LegacyFilter = { field, value };
+    this.queryParamStore.updateFilter(filter);
+    this.searchService.search([]);
   }
 }

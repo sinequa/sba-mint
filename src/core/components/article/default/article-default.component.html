@@ -16,7 +16,8 @@
 
       <section class="flex gap-1 items-center">
         @if (docformatMetadata()) {
-        <div class="pill pill-xs border-neutral-600 hover:bg-neutral-600 hover:text-white font-bold uppercase">
+        <div class="pill pill-xs border-neutral-600 hover:bg-neutral-600 hover:text-white font-bold uppercase"
+          (click)="setFilter('docformat', docformatMetadata()!)">
           {{ docformatMetadata() }}
         </div>
         }

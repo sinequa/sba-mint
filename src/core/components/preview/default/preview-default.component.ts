@@ -137,4 +137,15 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       this.previewService.sendMessage(message);
     }
   }
+
+  /**
+   * Apply filter from the metadata click
+   * @param field field to filter on
+   * @param value value from the filter
+   */
+  onMetadataClick(field: string, value: string): void {
+    let filter: LegacyFilter = { field, value };
+    this.queryParamStore.updateFilter(filter);
+    this.searchService.search([]);
+  }
 }
