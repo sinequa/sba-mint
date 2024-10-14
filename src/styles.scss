@@ -26,6 +26,12 @@
 
 html {
   overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  position: relative;
 }
 
 /* Override to hide bootstrap spinner */

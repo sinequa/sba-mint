@@ -1,8 +1,12 @@
 :host {
   --drawer-width: 46;
   --drawer-subdrawer-width: 400px;
+  display: grid;
+  position: absolute;
+  height: 100%;
+  top: 0;
 
-  @apply grid justify-end absolute h-screen top-0 -right-full;
+  @apply justify-end -right-full;
 
   /* Makes drawer x% the size of the screen + space for subdrawer */
   width: calc(
