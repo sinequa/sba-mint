@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
-import { Subscription } from 'rxjs';
+import { Subscription, fromEvent } from 'rxjs';
 
-import { Credentials, Principal, authenticated$, globalConfig, isAuthenticated, login, logout } from '@sinequa/atomic';
+import { Credentials, Principal, globalConfig, isAuthenticated, login, logout } from '@sinequa/atomic';
 import { ApplicationService, PrincipalService } from '@sinequa/atomic-angular';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
@@ -82,8 +82,9 @@ export class LoginComponent implements OnDestroy {
       }
     })
 
-    this.sub.add(authenticated$.subscribe((response) => {
-      this.authenticated.set(response);
+    this.sub.add(fromEvent(document, 'authenticated').subscribe((event) => {
+      const response = event as CustomEvent;
+      this.authenticated.set(response.detail.authenticated);
       const url = this.route.snapshot.queryParams['returnUrl'] || null;
 
       if (url !== null) {

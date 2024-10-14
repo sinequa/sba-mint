@@ -143,6 +143,8 @@ export class FiltersComponent {
         }
         return filters;
       });
+
+      this.cdr.detectChanges();
     });
   }
 
