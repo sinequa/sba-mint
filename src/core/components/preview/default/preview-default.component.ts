@@ -92,10 +92,14 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
 
       try {
         const response = await fetch(this.previewUrl() as string);
-        const text = await response.text();
-        this.canLoadIframe.set(true);
-      } catch(e) {
-          this.previewUrlError.set(true);
+        if (response.status === 200) {
+          const text = await response.text();
+          this.canLoadIframe.set(true);
+        } else {
+          this.previewUrlError.set(true)
+        }
+      } catch (e) {
+        this.previewUrlError.set(true);
       }
     });
   }
