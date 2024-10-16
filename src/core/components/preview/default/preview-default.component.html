@@ -55,7 +55,7 @@
 
             <i class="fa-fw far fa-chevron-right"></i>
 
-            <span class="line-clamp-1">{{ locationSegments().at(-1) }}</span>
+            <span class="line-clamp-1" role="button" (click)="navigateToSegment(locationSegments().length - 1)">{{ locationSegments().at(-1) }}</span>
           </td>
         </tr>
 
@@ -110,7 +110,9 @@
           <Metadata
             class="badge badge-sm border-neutral-600 font-semibold"
             [article]="article()!"
-            [metadata]="'docformat'"
+            className="cursor-pointer"
+            metadata="docformat"
+            (onMetadataClick)="onMetadataClick('docformat', $event)"
           />
         </td>
       </tr>

@@ -120,4 +120,15 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
 
     this.router.navigate([], { queryParams: { f: JSON.stringify(filters) }, queryParamsHandling: 'merge' });
   }
+
+  /**
+   * Apply filter from the metadata click
+   * @param field field to filter on
+   * @param value value from the filter
+   */
+  onMetadataClick(field: string, value: string): void {
+    let filter: LegacyFilter = { field, value };
+    this.queryParamStore.updateFilter(filter);
+    this.searchService.search([]);
+  }
 }
