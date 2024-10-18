@@ -68,7 +68,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
 
     const list: AggregationListItem[] = this.suggests()!.map(suggest => ({
       name: suggest.category,
-      value: suggest.display,
+      value: suggest.normalized ?? '',
       display: suggest.display,
       column: suggest.id,
       count: 1,

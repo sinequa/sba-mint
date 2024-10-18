@@ -1,0 +1,63 @@
+<fieldset class="flex flex-col gap-2">
+
+  @if(!headless()) {
+    <legend class="flex items-center gap-1 w-full pl-1 mb-1 h-8 text-sm font-semibold text-gray-600 select-none">
+      @if (aggregation()?.icon) {
+        <i class="fa-fw {{ aggregation()?.icon }}" aria-hidden="true"></i>
+      }
+      <span class="grow">{{ aggregation()?.display }}</span>
+
+      @if(hasFilters()) {
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [attr.title]="'filters.clearFilters' | transloco"
+          [attr.aria-label]="'filters.clearFilters' | transloco"
+          (click)="clear()"
+          >
+          <i class="fa-fw far fa-filter-circle-xmark"></i>
+        </button>
+      }
+      @if(selectionCount()) {
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [attr.title]="'filters.applyFilters' | transloco"
+          [attr.aria-label]="'filters.applyFilters' | transloco"
+          (click)="apply()"
+          >
+          <i class="fa-fw far fa-filter"></i>
+        </button>
+      }
+    </legend>
+  }
+
+  @if( searchable() ) {
+    <div class="p-1 group border bg-neutral-50 grow px-2 flex gap-2 items-center rounded hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus-within:outline focus-within:outline-1 focus-within:outline-primary  focus-within:bg-white">
+      <input
+        class="grow focus:outline-none group-hover:bg-white focus:bg-white bg-neutral-50"
+        type="search"
+        [placeholder]="'search' | transloco"
+        [ngModel]="searchText()"
+        (ngModelChange)="searchText.set($event)"
+        >
+    </div>
+  }
+
+  <ul class="data-list snap-start max-h-52 overflow-auto snap-y">
+    @for (item of items(); track $index) {
+      <AggregationRow [node]="item" (onSelect)="select($event)" />
+    }
+  </ul>
+
+</fieldset>
+
+@if (aggregation()?.$hasMore) {
+  <button
+    class="btn btn-secondary mt-1 w-full flex justify-center"
+    [attr.aria-label]="'loadMore' | transloco"
+    (click)="loadMore()"
+  >
+    {{ 'loadMore' | transloco }}
+  </button>
+}

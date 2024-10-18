@@ -1,0 +1,44 @@
+<a
+  role="button"
+  [style.--level]="((node().$level ?? 0) -1 + (!node().hasChildren ? 1 : 0))"
+  [ngClass]="cn(
+    'leading-7 p-1 gap-2 flex grow items-center data-list-item',
+    node().count === 0 && 'disabled text-neutral-300 pointer-events-none'
+    )"
+  (click)="select($event, node())"
+>
+
+  <button (click)="open($event, node())" class="hover:scale-125 transition-transform ease-in" >
+    <!-- <i class="fas fa-angle-right"></i> -->
+    <svg [ngClass]="cn(
+    'size-4 translate-x-1',
+    node().$opened && 'rotate-90',
+    !node().hasChildren && 'hidden'
+    )" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <input
+    type="checkbox"
+    role="button"
+    value="{{ node().value }}"
+    [attr.disabled]="node().count === 0 ? true : null"
+    [attr.aria-disabled]="node().count === 0"
+    (keydown.enter)="select($event, node())"
+    [checked]="node().$selected"
+  />
+
+  @if (node().icon) {
+    <i class="fa-fw {{ node().icon }} self-center justify-self-center"></i>
+  }
+
+  <span class="line-clamp-1 text-ellipsis" [title]="node().display || node().value | syslang" [ariaLabel]="node().display || node().value | syslang">{{ node().display || node().value | syslang }}</span>
+</a>
+
+@if(node().hasChildren && node().$opened) {
+  @for(item of node().items; track $index) {
+    <AggregationRow
+      [node]="item"
+      (onOpen)="onOpen.emit($event)"
+      (onSelect)="onSelect.emit($event)" />
+  }
+}

@@ -9,9 +9,9 @@ import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsServ
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 import { OperatorPipe } from "../../pipes/operator";
-import { AggregationComponent } from './aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
+import { AggregationComponent } from '../aggregation/aggregation.component';
 
 export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";
@@ -160,7 +160,7 @@ export class FiltersComponent {
 
   public clearFilters(): void {
     // clear internal filters
-    this.aggregations.forEach((filter: AggregationComponent) => filter.clearFilters(false));
+    this.aggregations.forEach((filter: AggregationComponent) => filter.clear());
 
     // clear dropdowns state
     this.filterDropdowns.update((filters: FilterDropdown[]) =>
