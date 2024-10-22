@@ -49,6 +49,7 @@ type NavbarTab = {
     SyslangPipe
   ],
   host: {
+    'class': 'layout-search',
     '[attr.drawer-opened]': 'drawerOpened()'
   }
 })

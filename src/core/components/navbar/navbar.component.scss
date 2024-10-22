@@ -3,8 +3,7 @@
   align-items: center;
   row-gap: 0.5rem;
   grid-template-rows: repeat(2, minmax(0, 1fr));
-
-  @apply layout-search;
+  z-index: auto;
 
   #navbar-logo {
     opacity: 1;
