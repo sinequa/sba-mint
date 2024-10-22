@@ -23,7 +23,11 @@
 /* @import "./styles/checkbox.scss"; */
 @import "./styles/radio.scss";
 
-
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 html {
   overflow-x: hidden;
   height: 100%;
