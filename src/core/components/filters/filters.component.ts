@@ -9,9 +9,10 @@ import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsServ
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 import { OperatorPipe } from "../../pipes/operator";
-import { DateFilterComponent } from './date-filter/date-filter.component';
-import { MoreFiltersComponent } from './more-filters/more-filters.component';
 import { AggregationComponent } from '../aggregation/aggregation.component';
+import { DateFilterComponent } from './date-filter/date-filter.component';
+import { DateComponent } from "./date/date.component";
+import { MoreFiltersComponent } from './more-filters/more-filters.component';
 
 export const FILTERS_COUNT = 5;
 export const DATE_FILTER_NAME = "Modified";
@@ -35,8 +36,10 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     DropdownComponent,
     TranslocoPipe,
     SyslangPipe,
-    OperatorPipe
-  ],
+    OperatorPipe,
+    DateFilterComponent,
+    DateComponent
+],
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent {

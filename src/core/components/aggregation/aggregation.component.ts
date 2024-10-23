@@ -1,15 +1,15 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { AggregationListItem, AggregationsService, AggregationsStore, AppStore, CFilter, CFilterItem, debouncedSignal, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AggregationListItem, debouncedSignal } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { getState } from '@ngrx/signals';
-import { Aggregation, AggregationItem, fetchSuggestField, FieldValue, LegacyFilter, Suggestion, TreeAggregationNode } from '@sinequa/atomic';
+import { Aggregation, fetchSuggestField, LegacyFilter, Suggestion, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./aggregation-row.component";
+import { BaseAggregation } from './base-aggregation.abstract';
 
 
 export type AggEx = Aggregation & {
@@ -33,33 +33,7 @@ export type AggEx = Aggregation & {
   `],
   imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
 })
-export class AggregationComponent {
-  /* stores */
-  aggregationsStore = inject(AggregationsStore);
-  appStore = inject(AppStore);
-  queryParamsStore = inject(QueryParamsStore);
-
-  /* services */
-  aggregationsService = inject(AggregationsService);
-
-
-  /**
-   * The `name` property is a required input that can be either a string or null.
-   * By default, it represents the name of the aggregation column.
-   *
-   * If you want specify a column name, uses the `kind` input with the `'column'` value.
-   *
-   * @remarks
-   * The `kind` property is an input that can be either "column" or "name".
-   */
-  name = input.required<string | null>();
-  /**
-   * Represents the type of aggregation component.
-   *
-   * Default is "name"
-   */
-  kind = input<"column" | "name">("name");
-
+export class AggregationComponent extends BaseAggregation {
   /**
    * A boolean flag indicating whether the component should operate in headless mode.
    * When set to `true`, the component will function without rendering any UI elements.
@@ -74,32 +48,6 @@ export class AggregationComponent {
    */
   searchable = input(true);
   selectionCount = signal(0);
-
-  /* aggregation */
-  aggregation = computed(() => {
-    const state = getState(this.aggregationsStore);
-    if (this.name() !== null) {
-      const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
-      const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
-      agg.display = display;
-      agg.icon = icon;
-      agg.hidden = hidden;
-
-      if (agg.items) {
-        const { filters = [] } = getState(this.queryParamsStore);
-        const flattenedValues = this.flattenFilters(filters);
-
-        (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
-          const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
-          item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
-          item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
-        });
-      }
-
-      return (agg?.items) ? agg : null;
-    }
-    return null
-  })
 
   /* items of the aggretions */
   items = computed(() => {
@@ -143,6 +91,8 @@ export class AggregationComponent {
   });
 
   constructor() {
+    super();
+
     effect(async () => {
       if (this.debouncedSearchText() === '') {
         this.suggests.set(undefined);
@@ -199,13 +149,6 @@ export class AggregationComponent {
     this.searchText.set('');
   }
 
-  loadMore(): void {
-    const q = this.queryParamsStore.getQuery();
-    this.aggregationsService.loadMore(q, this.aggregation() as Aggregation).subscribe((aggregation) => {
-      this.aggregationsStore.updateAggregation(aggregation);
-    });
-  }
-
   /**
    * Updates the selected state of the given item in the aggregation list.
    *
@@ -232,7 +175,6 @@ export class AggregationComponent {
       this.selectionCount.set(this.selectionCount() - 1);
     }
   }
-
 
   /**
    * Retrieves the appropriate filters based on the aggregation type.
@@ -283,13 +225,12 @@ export class AggregationComponent {
     return items.map(item => this.toFilter(item));
   }
 
-
   /**
    * Recursively flattens a tree structure of `TreeAggregationNode` items into a single array.
    *
    * @returns {TreeAggregationNode[]} An array containing all nodes from the tree structure, flattened.
    */
-  private getFlattenTreeItems(): TreeAggregationNode[] {
+  protected getFlattenTreeItems(): TreeAggregationNode[] {
     const flattenItems = (items: TreeAggregationNode[]): TreeAggregationNode[] => {
       return items.reduce((flat, item) => {
         return flat.concat(item, item.items ? flattenItems(item.items) : []);
@@ -297,73 +238,5 @@ export class AggregationComponent {
     };
 
     return flattenItems(this.items());
-  }
-
-  /**
-   * Converts an `AggregationItem` to a `LegacyFilter`.
-   *
-   * @param item - The `AggregationItem` to be converted.
-   * @returns A `LegacyFilter` object based on the provided `AggregationItem`.
-   *
-   * The function performs the following steps:
-   * 1. Retrieves the field from the aggregation column.
-   * 2. If the aggregation is a distribution, it parses the item value to extract filter expressions.
-   *    - The expressions are split by " AND " and mapped to filter objects.
-   *    - If two filters are found, they are combined with an "and" operator.
-   *    - If one filter is found, it is returned as is.
-   *    - Throws an error if the distribution expression cannot be parsed.
-   * 3. If the item value is a string, it creates a filter with the "contains" operator.
-   * 4. Otherwise, it creates a filter with the item value as a string, number, or boolean.
-   *
-   * @throws Will throw an error if the distribution expression cannot be parsed.
-   */
-  private toFilter(item: AggregationItem): LegacyFilter {
-    const field = this.aggregation()?.column;
-
-    if (this.aggregation()?.isDistribution) {
-      const res = (item.value as string).match(/.*\:\(?([><=\d\-\.AND ]+)\)?/);
-      if (res?.[1]) {
-        const expr = res?.[1].split(" AND ");
-        const filters = expr.map(e => {
-          const operator: 'gte' | 'lt' = e.indexOf('>=') !== -1 ? 'gte' : 'lt';
-          let value: FieldValue = e.substring(e.indexOf(' ') + 1);
-          return { field, operator, value, display: item.display || item.value };
-        });
-
-        if (filters.length === 2) {
-          return { operator: 'and', filters, display: filters[0].display || filters[0].value, field } as LegacyFilter;
-        }
-        else if (filters.length === 1) {
-          return { ...filters[0], field } as LegacyFilter;
-        }
-        throw new Error("Failed to parse distribution expression");
-      }
-    }
-
-    if (typeof item.value === "string") {
-      return { field, value: item.value, operator: "contains", display: item.display } as LegacyFilter;
-    }
-    return { field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
-  }
-
-  private flattenFilters(filters: LegacyFilter[]) {
-    let flattenedValues: string[] = [];
-
-    function extractValues(filters: LegacyFilter[]) {
-      for (const filter of filters) {
-        if (filter.value) {
-          flattenedValues.push(filter.value);
-
-          if (filter.display)
-            flattenedValues.push(filter.display);
-        }
-        if (filter.filters) {
-          extractValues(filter.filters as LegacyFilter[]);
-        }
-      }
-    }
-
-    extractValues(filters);
-    return flattenedValues;
   }
 }
