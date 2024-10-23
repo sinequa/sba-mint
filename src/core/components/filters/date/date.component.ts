@@ -2,12 +2,13 @@ import { NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
 import { Aggregation, FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
+import { cn, SearchService } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
-import { cn, SearchService } from '@sinequa/atomic-angular';
-import { Subscription } from 'rxjs';
+
 import { BaseAggregation } from '../../aggregation/base-aggregation.abstract';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
@@ -33,7 +34,15 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   standalone: true,
   imports: [NgClass, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
   templateUrl: './date.component.html',
-  styles: ``,
+  styles: `
+    :host {
+      display: block;
+    }
+
+    .data-list {
+      scrollbar-width: thin;
+    }
+  `,
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class DateComponent extends BaseAggregation {
@@ -79,8 +88,6 @@ export class DateComponent extends BaseAggregation {
     const filter = this.getFormValueFilter();
 
     this.queryParamsStore.updateFilter(filter);
-    // update url params
-    this.searchService.search([]);
   }
 
   public clear(notify: boolean = true): void {
@@ -92,12 +99,8 @@ export class DateComponent extends BaseAggregation {
       }
     })
 
-    if (notify) {
+    if (notify)
       this.queryParamsStore.updateFilter({ field: this.aggregation()!.column, display: '' });
-
-      // update url params
-      this.searchService.search([]);
-    }
   }
 
   private updateForm(filter: LegacyFilter | undefined): void {
