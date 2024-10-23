@@ -63,8 +63,14 @@ export abstract class BaseAggregation implements OnDestroy {
         const flattenedValues = this.flattenFilters(filters);
 
         (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
-          const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
-          item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
+          if (agg.isTree) {
+            const { values = [] } = this.queryParamsStore.getFilterFromColumn(agg.column) as LegacyFilter || {};
+            this.selectItems(agg.items as AggregationListItem[], values);
+          } else {
+            const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
+            item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
+          }
+
           item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
       }
@@ -146,17 +152,21 @@ export abstract class BaseAggregation implements OnDestroy {
    * @param filters - The filters to be flattened.
    * @returns An array of strings containing the values and displays of the filters.
    */
-  protected flattenFilters(filters: LegacyFilter[]): string[] {
+  protected flattenFilters(filters: LegacyFilter[]) {
     let flattenedValues: string[] = [];
 
-    function extractValues(filters: LegacyFilter[]): void {
+    function extractValues(filters: LegacyFilter[]) {
       for (const filter of filters) {
-        if (filter.value) {
-          flattenedValues.push(filter.value);
+        if (!filter.value) continue;
 
-          if (filter.display)
-            flattenedValues.push(filter.display);
+        flattenedValues.push(filter.value);
+
+        if (filter.display) {
+          flattenedValues.push(filter.display);
+        } else if (filter.values) {
+          flattenedValues.push(...filter.values);
         }
+
         if (filter.filters) {
           extractValues(filter.filters as LegacyFilter[]);
         }
@@ -164,7 +174,31 @@ export abstract class BaseAggregation implements OnDestroy {
     }
 
     extractValues(filters);
-
     return flattenedValues;
+  }
+
+  // Select all items for tree aggregation
+  protected selectItems(items: AggregationListItem[], values: string[]) {
+    items.forEach(item => {
+      if (values.includes(`/${item.$path}/*`)) {
+        item.$selected = true;
+      }
+      if (item.items) {
+        this.selectItems(item.items, values);
+      }
+    });
+  }
+
+  protected countSelected(items: AggregationListItem[]): number {
+    let count = 0;
+    items.forEach(item => {
+      if (item.$selected) {
+        count++;
+      }
+      if (item.items) {
+        count += this.countSelected(item.items);
+      }
+    });
+    return count;
   }
 }

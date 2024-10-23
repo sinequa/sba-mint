@@ -101,6 +101,12 @@ export class AggregationComponent extends BaseAggregation {
       const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
       this.suggests.set(suggests);
     }, { allowSignalWrites: true });
+
+    effect(() => {
+      if(this.aggregation() === null) return;
+      const count = this.countSelected(this.aggregation()!.items as AggregationListItem[]);
+      this.selectionCount.set(count);
+    }, { allowSignalWrites: true });
   }
 
   /**
@@ -161,13 +167,6 @@ export class AggregationComponent extends BaseAggregation {
    * If the item is deselected, the selection count is decremented by 1.
    */
   select(item: AggregationListItem) {
-    // update the selected state of the item
-    this.aggregation()?.items?.forEach((i) => {
-      if (i.value === item.value) {
-        i.$selected = item.$selected;
-      }
-    });
-
     if (item.$selected) {
       this.selectionCount.set(this.selectionCount() + 1);
     }
