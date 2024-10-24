@@ -5,6 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach Edge",
+      "request": "attach",
+      "port": 9223,
+      "type": "msedge",
+      "urlFilter": "https://localhost:4200/*",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "meteor://💻app/*": "${workspaceFolder}/*",
+        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+        "webpack://?:*/*": "${workspaceFolder}/*"
+      }
+    },
+    {
       "name": "Launch Chrome Canary",
       "request": "launch",
       "runtimeExecutable": "canary",
