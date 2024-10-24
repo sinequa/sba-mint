@@ -49,7 +49,7 @@ export class AggregationComponent extends BaseAggregation {
   searchable = input(true);
   selectionCount = signal(0);
 
-  /* items of the aggretions */
+  /* items of the aggregations */
   items = computed(() => {
     if (this.searchedItems()) {
       return this.searchedItems() as AggregationListItem[];
@@ -98,12 +98,14 @@ export class AggregationComponent extends BaseAggregation {
         this.suggests.set(undefined);
         return;
       }
+
       const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
       this.suggests.set(suggests);
     }, { allowSignalWrites: true });
 
     effect(() => {
-      if(this.aggregation() === null) return;
+      if (this.aggregation() === null) return;
+
       const count = this.countSelected(this.aggregation()!.items as AggregationListItem[]);
       this.selectionCount.set(count);
     }, { allowSignalWrites: true });
@@ -142,7 +144,7 @@ export class AggregationComponent extends BaseAggregation {
       }
       else {
         const values = filters.map(filter => filter.value);
-        this.queryParamsStore.updateFilter({ operator: 'in', field: this.aggregation()?.column, values, display, filters } as LegacyFilter);
+        this.queryParamsStore.updateFilter({ operator: 'in', field: this.aggregation()?.column, values, display, $filters: filters } as LegacyFilter);
       }
     }
     else if (filters.length === 1) {

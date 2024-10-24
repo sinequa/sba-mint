@@ -51,34 +51,38 @@ export abstract class BaseAggregation implements OnDestroy {
 
   /** Aggregation computed from stores and selected by `name()` and `kind()` */
   readonly aggregation = computed(() => {
-    if (this.name() !== null) {
-      const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
-      const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
-      agg.display = display;
-      agg.icon = icon;
-      agg.hidden = hidden;
+    if (!this.name()) return;
 
-      if (agg.items) {
-        const { filters = [] } = getState(this.queryParamsStore);
-        const flattenedValues = this.flattenFilters(filters);
+    const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
 
-        (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
-          if (agg.isTree) {
-            const { values = [] } = this.queryParamsStore.getFilterFromColumn(agg.column) as LegacyFilter || {};
-            this.selectItems(agg.items as AggregationListItem[], values);
-          } else {
-            const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
-            item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
-          }
-
-          item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
-        });
-      }
-
-      return (agg?.items) ? agg : null;
+    if (agg.column === 'geo') {
+      console.log('geo', agg);
     }
 
-    return null;
+    const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
+
+    agg.display = display;
+    agg.icon = icon;
+    agg.hidden = hidden;
+
+    if (agg.items) {
+      const { filters = [] } = getState(this.queryParamsStore);
+      const flattenedValues = this.flattenFilters(filters);
+
+      (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
+        if (agg.isTree) {
+          const { values = [] } = this.queryParamsStore.getFilterFromColumn(agg.column) as LegacyFilter || {};
+          this.selectItems(agg.items as AggregationListItem[], values);
+        } else {
+          const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
+          item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
+        }
+
+        item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
+      });
+    }
+
+    return (agg?.items) ? agg : null;
   })
 
   protected readonly subscriptions = new Subscription();
@@ -191,14 +195,15 @@ export abstract class BaseAggregation implements OnDestroy {
 
   protected countSelected(items: AggregationListItem[]): number {
     let count = 0;
+
     items.forEach(item => {
-      if (item.$selected) {
+      if (item.$selected)
         count++;
-      }
-      if (item.items) {
+
+      if (item.items)
         count += this.countSelected(item.items);
-      }
     });
+
     return count;
   }
 }
