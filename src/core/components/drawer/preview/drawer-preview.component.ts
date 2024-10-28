@@ -1,7 +1,7 @@
 import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
 import { Article, CCApp, PreviewData } from '@sinequa/atomic';
 
@@ -50,12 +50,12 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
   previewService = inject(PreviewService);
 
   queryText = computed(() => {
+    const { queryText } = getState(this.selectionStore);
     const { text } = getState(this.queryParamsStore);
-    return text ?? '';
+    return queryText ?? text;
   });
 
   public readonly articleId = input.required<string>();
-  public readonly text = new BehaviorSubject<string>(this.queryText());
 
   public readonly previewData = signal<PreviewData | undefined>(undefined);
   public readonly article = computed(() => this.previewData()?.record as Article);
@@ -71,27 +71,31 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
   constructor(@Inject(GLOBAL_QUERY_NAME) private readonly globalQueryName: string) {
     super();
 
-    effect((onCleanup) => {
-      const state = getState(this.selectionStore);
-      const sub = this.previewService.preview(
-        this.articleId(),
-        { name: this.globalQueryName, text: this.queryText() },
-        state.previewHighlights?.highlights
-      ).subscribe(previewData => {
+    effect(() => {
+      const articleId = this.articleId();
+      const text = this.queryText();
+
+      untracked(async () => {
+        const state = getState(this.selectionStore);
+        const previewData = await firstValueFrom(this.previewService.preview
+          (
+            articleId,
+            {
+              name: this.globalQueryName,
+              text
+            },
+            state.previewHighlights?.highlights
+          )
+        );
+
         this.previewData.set(previewData);
       });
 
-      onCleanup(() => sub.unsubscribe());
-    }, { allowSignalWrites: true });
+    });
   }
 
   override ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.text.complete();
     this.previewService.close(this.articleId(), { name: this.globalQueryName });
   }
 
-  public onTextChanged(text: string): void {
-    this.text.next(text);
-  }
 }

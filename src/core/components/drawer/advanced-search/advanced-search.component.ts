@@ -45,7 +45,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 })
 export class AdvancedSearchComponent {
   public readonly article = input.required<Article>();
-  public readonly textChanged = output<string>();
 
   public readonly labels = inject(AppStore).getLabels();
   private readonly applicationStore = inject(ApplicationStore);
@@ -85,7 +84,7 @@ export class AdvancedSearchComponent {
   });
 
   protected executeSearch(): void {
-    this.textChanged.emit(this.input());
+    this.selectionStore.update({ queryText: this.input() });
   }
 
   protected clearInput(): void {
