@@ -18,7 +18,7 @@ import { RecentSearch } from "@sinequa/atomic-angular";
     >
       <i class="fa-fw far fa-clock-rotate-left " aria-hidden="true"></i>
 
-      <p>{{ recentSearch().display || recentSearch().label }}</p>
+      <p class="truncate">{{ recentSearch().display || recentSearch().label }}</p>
 
       @if ((recentSearch().filterCount ?? 0) > 0) {
         <p class="text-neutral-500" aria-hidden="true">

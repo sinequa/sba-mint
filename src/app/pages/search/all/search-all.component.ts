@@ -127,7 +127,13 @@ export class SearchAllComponent implements OnDestroy {
     // Trigger skeleton on search whether from input or from filters
     effect(() => {
       getState(this.queryParamsStore);
+
+      // Reset the articles when the query params store changes
       this.articles.set(undefined);
+
+      // update URL Search Params when the query params store changes
+      this.searchService.search([]);
+
     }, { allowSignalWrites: true });
 
     // Make Result object available to children and update aggregations store

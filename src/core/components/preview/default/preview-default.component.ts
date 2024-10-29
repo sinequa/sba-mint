@@ -67,8 +67,8 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
-  readonly canLoadIframe = signal<boolean>(false); 
-  readonly previewUrlError = signal<boolean>(false); 
+  readonly canLoadIframe = signal<boolean>(false);
+  readonly previewUrlError = signal<boolean>(false);
 
   private readonly sub = new Subscription();
 
@@ -147,9 +147,8 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick(field: string, value: string): void {
+  onMetadataClick({field, value}:{field: string, value: string}): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
-    this.searchService.search([]);
   }
 }

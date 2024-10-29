@@ -229,6 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
     passageHighlighter.style.display = "none";
   }
   function getHtml(ids) {
+    if(!ids) return [];
     var data = ids.map(function (id) {
       return getHighlightHtmlById(id);
     });
