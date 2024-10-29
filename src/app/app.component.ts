@@ -59,6 +59,10 @@ export class AppComponent {
           this.router.navigate(['error']);
         }
       }
+      else {
+        toast.error("An error occured while processing your request");
+        this.router.navigate(['error']);
+      }
     });
   }
 

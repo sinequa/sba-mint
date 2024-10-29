@@ -150,6 +150,5 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   onMetadataClick({ field, value }: { field: string, value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
-    this.searchService.search([]);
   }
 }

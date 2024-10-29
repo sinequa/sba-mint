@@ -14,11 +14,11 @@ import { ErrorComponent } from '@/core/components/error/error.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
-  queryName?: string;
-  display?: string;
-  wsQueryTab?: string;
-  iconClass?: string;
-  [key: string | symbol]: any;
+  queryName?: string;     // name of the query defined in the admin
+  display?: string;       // the label you want to display in the interface
+  wsQueryTab?: string;    // the name of the "tab" associated with the query you want to use
+  iconClass?: string;     // the icon you want to associate with the label in the interface
+  [key: string | symbol]: any;  // all the "custom" parameters you want
 }
 type ExtendedRoute = Route & {
   data?: ExtendedData;
@@ -33,7 +33,7 @@ export const routes: ExtendedRoutes = [
   {
     path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver },
      children: [
-      { path: 'all', component: LoadingComponent },
+      { path: 'all', component: LoadingComponent, data: { queryName: 'search', display: 'search', wsQueryTab: 'All', iconClass: 'fas fa-search' } },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },
