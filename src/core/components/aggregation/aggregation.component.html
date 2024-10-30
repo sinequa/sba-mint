@@ -54,10 +54,15 @@
 
 @if (aggregation()?.$hasMore) {
   <button
-    class="btn btn-secondary mt-1 w-full flex justify-center"
+    class="btn btn-secondary mt-1 w-full flex justify-center text-sm"
     [attr.aria-label]="'loadMore' | transloco"
+    [disabled]="loadingMore()"
     (click)="loadMore()"
   >
-    {{ 'loadMore' | transloco }}
+    @if (loadingMore()) {
+      <i class="fa-fw fas fa-spinner-third fa-spin text-sm" aria-hidden="true"></i>
+    } @else {
+      {{ 'loadMore' | transloco }}
+    }
   </button>
 }

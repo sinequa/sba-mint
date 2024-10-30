@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
-import { Component, computed, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -48,6 +48,10 @@ export abstract class BaseAggregation implements OnDestroy {
    * Default is "name"
    */
   readonly kind = input<"column" | "name">("name");
+  /**
+   * Is the aggregation component loading more items?
+   */
+  readonly loadingMore = signal<boolean>(false);
 
   /** Aggregation computed from stores and selected by `name()` and `kind()` */
   readonly aggregation = computed(() => {
@@ -127,8 +131,10 @@ export abstract class BaseAggregation implements OnDestroy {
   async loadMore(): Promise<void> {
     const q = this.queryParamsStore.getQuery();
 
+    this.loadingMore.set(true);
     const aggregation = await firstValueFrom(this.aggregationsService.loadMore(q, this.aggregation() as Aggregation));
     this.aggregationsStore.updateAggregation(aggregation);
+    this.loadingMore.set(false);
   }
 
 
