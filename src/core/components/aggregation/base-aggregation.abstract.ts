@@ -4,12 +4,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Aggregation, AggregationItem, FieldValue, LegacyFilter } from '@sinequa/atomic';
+import { Aggregation, AggregationItem, aggregationItemStrictCompare, bisect, FieldValue, LegacyFilter } from '@sinequa/atomic';
 import { AggregationListItem, AggregationsService, AggregationsStore, AppStore, CFilter, CFilterItem, QueryParamsStore } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { AggregationRowComponent } from "./aggregation-row.component";
 
 
@@ -55,9 +55,8 @@ export abstract class BaseAggregation implements OnDestroy {
 
     const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
 
-    if (agg.column === 'geo') {
-      console.log('geo', agg);
-    }
+    if (!agg)
+      throw new Error(`Aggregation ${this.name()} not found`);
 
     const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
 
@@ -65,7 +64,11 @@ export abstract class BaseAggregation implements OnDestroy {
     agg.icon = icon;
     agg.hidden = hidden;
 
+    // process known items
     if (agg.items) {
+      // remove cached items if there was a loadMore
+      agg.items = agg.items.filter((i: AggregationItem) => !(i as any).$cached);
+
       const { filters = [] } = getState(this.queryParamsStore);
       const flattenedValues = this.flattenFilters(filters);
 
@@ -80,6 +83,35 @@ export abstract class BaseAggregation implements OnDestroy {
 
         item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
       });
+    } else {
+      agg.items = [];
+    }
+
+    // add cached items on top of the list for non-tree aggregations
+    if (!agg.isTree) {
+      let currentAggregationFilters = getState(this.queryParamsStore).filters?.filter(f => f.field === agg.column);
+
+      currentAggregationFilters = currentAggregationFilters?.reduce((acc, f) => {
+        if (f.operator === 'in')
+          acc.push(...(f as any)?.$filters);
+        else
+          acc.push(f);
+
+        return acc;
+      }, [] as LegacyFilter[]);
+
+      if (currentAggregationFilters && currentAggregationFilters.length > 0) {
+        const sections = bisect(
+          agg.items,
+          (i) => currentAggregationFilters.find(
+            f => aggregationItemStrictCompare(agg, f as any as AggregationItem, i)
+          ) !== undefined);
+
+        if (currentAggregationFilters.length > sections.true.length) {
+          const toAdd = currentAggregationFilters.filter(f => !sections.true.find(i => aggregationItemStrictCompare(agg, f as any as AggregationItem, i)));
+          agg.items.unshift(...(toAdd.map(f => ({ value: f.value, display: f.display, $selected: true, $cached: true } as any as AggregationItem))));
+        }
+      }
     }
 
     return (agg?.items) ? agg : null;
@@ -92,14 +124,11 @@ export abstract class BaseAggregation implements OnDestroy {
   }
 
   /** Load next page of filter */
-  loadMore(): void {
+  async loadMore(): Promise<void> {
     const q = this.queryParamsStore.getQuery();
 
-    this.subscriptions.add(
-      this.aggregationsService.loadMore(q, this.aggregation() as Aggregation).subscribe((aggregation) => {
-        this.aggregationsStore.updateAggregation(aggregation);
-      })
-    );
+    const aggregation = await firstValueFrom(this.aggregationsService.loadMore(q, this.aggregation() as Aggregation));
+    this.aggregationsStore.updateAggregation(aggregation);
   }
 
 
@@ -161,19 +190,19 @@ export abstract class BaseAggregation implements OnDestroy {
 
     function extractValues(filters: LegacyFilter[]) {
       for (const filter of filters) {
-        if (!filter.value) continue;
-
-        flattenedValues.push(filter.value);
-
-        if (filter.display) {
+        // appended display value
+        if (filter.display)
           flattenedValues.push(filter.display);
-        } else if (filter.values) {
-          flattenedValues.push(...filter.values);
-        }
 
-        if (filter.filters) {
+        // filter.value and filter.values should be exclusive
+        if (filter.value)
+          flattenedValues.push(filter.value);
+        else if (filter.values)
+          flattenedValues.push(...filter.values);
+
+        // dig deeper
+        if (filter.filters)
           extractValues(filter.filters as LegacyFilter[]);
-        }
       }
     }
 

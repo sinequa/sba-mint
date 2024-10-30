@@ -112,11 +112,11 @@ export class AggregationComponent extends BaseAggregation {
   }
 
   /**
- * Clears the current filter for the aggregation column.
- *
- * This method updates the filter in the `queryParamsStore` by setting the display value
- * of the current aggregation column to an empty string.
- */
+   * Clears the current filter for the aggregation column.
+   *
+   * This method updates the filter in the `queryParamsStore` by setting the display value
+   * of the current aggregation column to an empty string.
+   */
   clear() {
     this.queryParamsStore.updateFilter({ field: this.aggregation()?.column, display: '' });
   }
@@ -139,20 +139,17 @@ export class AggregationComponent extends BaseAggregation {
       const display = filters[0].display;
       // if aggregation not a distribution, we need to merge the filters into a single filter with an in operator
       // with the values of the filters
-      if (this.aggregation()?.isDistribution) {
+      if (this.aggregation()?.isDistribution)
         this.queryParamsStore.updateFilter({ operator: 'or', filters, field: this.aggregation()?.column, display } as LegacyFilter);
-      }
       else {
         const values = filters.map(filter => filter.value);
         this.queryParamsStore.updateFilter({ operator: 'in', field: this.aggregation()?.column, values, display, $filters: filters } as LegacyFilter);
       }
     }
-    else if (filters.length === 1) {
+    else if (filters.length === 1)
       this.queryParamsStore.updateFilter(filters[0]);
-    }
-    else {
+    else
       this.clear();
-    }
 
     this.searchText.set('');
   }
