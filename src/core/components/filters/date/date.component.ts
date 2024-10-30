@@ -4,12 +4,12 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { Aggregation, FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
-import { cn, SearchService } from '@sinequa/atomic-angular';
+import { Aggregation, AggregationItem, FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
+import { cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { BaseAggregation } from '../../aggregation/base-aggregation.abstract';
+import { AggEx, BaseAggregation } from '../../aggregation/base-aggregation.abstract';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
 const ALLOW_CUSTOM_RANGE = true;
@@ -68,7 +68,6 @@ export class DateComponent extends BaseAggregation {
   cn = cn;
 
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly searchService = inject(SearchService);
   private readonly subscription = new Subscription();
 
   constructor() {
@@ -82,6 +81,11 @@ export class DateComponent extends BaseAggregation {
     this.subscription.add(
       this.form.valueChanges.subscribe(() => this.hasFilter.set(true))
     );
+  }
+
+  protected override processAggregation(): AggEx | null | undefined {
+    let agg = super.processAggregation();
+    return { ...agg, items: agg?.items?.filter((item: AggregationItem) => item.display !== 'custom-range') ?? [] } as AggEx;
   }
 
   public apply(): void {

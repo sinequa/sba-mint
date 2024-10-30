@@ -57,6 +57,22 @@ export abstract class BaseAggregation implements OnDestroy {
   readonly aggregation = computed(() => {
     if (!this.name()) return;
 
+    return this.processAggregation();
+  })
+
+  protected readonly subscriptions = new Subscription();
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Processes the aggregation by retrieving it from the store and updating its display, icon, and hidden properties.
+   * Apply the selected state to the items based on the current filters.
+   * 
+   * @returns - The processed aggregation or null if the aggregation is not found.
+   */
+  protected processAggregation(): AggEx | null | undefined {
     const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
 
     if (!agg)
@@ -119,16 +135,10 @@ export abstract class BaseAggregation implements OnDestroy {
     }
 
     return (agg?.items) ? agg : null;
-  })
-
-  protected readonly subscriptions = new Subscription();
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 
   /** Load next page of filter */
-  async loadMore(): Promise<void> {
+  protected async loadMore(): Promise<void> {
     const q = this.queryParamsStore.getQuery();
 
     this.loadingMore.set(true);
@@ -136,7 +146,6 @@ export abstract class BaseAggregation implements OnDestroy {
     this.aggregationsStore.updateAggregation(aggregation);
     this.loadingMore.set(false);
   }
-
 
   /**
    * Converts an `AggregationItem` to a `LegacyFilter`.
