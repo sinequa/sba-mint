@@ -100,16 +100,18 @@
             >
               <label for="date-filter-custom-from">{{ 'from' | transloco }}</label>
 
-              <input class="border-b border-neutral-300 text-neutral-300"
+              <input
+                class="grow border-b border-neutral-400 text-neutral-600 bg-transparent"
                 type="date"
                 id="date-filter-custom-from"
+                #dateFilterCustomFrom
                 formControlName="from"
                 [max]="form.get('customRange.to')?.value ?? today"
               />
 
               <label for="date-filter-custom-to">{{ 'to' | transloco }}</label>
 
-              <input class="border-b border-neutral-300 text-neutral-300"
+              <input class="border-b border-neutral-400 text-neutral-600 bg-transparent"
                 type="date"
                 id="date-filter-custom-to"
                 formControlName="to"

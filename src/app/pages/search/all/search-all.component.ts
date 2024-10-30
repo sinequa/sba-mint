@@ -88,7 +88,6 @@ export class SearchAllComponent implements OnDestroy {
     queryKey: [`search-${this.t()}`, this.keys(), this.userOverrideActive()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
-      console.log('q', this.keys());
       const query = { ...q, page: pageParam, tab: this.t(), name: this.queryName() } as Query;
 
       return lastValueFrom(this.searchService.getResult(query).pipe(
