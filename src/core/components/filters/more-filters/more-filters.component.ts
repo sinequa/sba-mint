@@ -11,7 +11,7 @@ import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsServ
 import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { AggregationComponent } from '../aggregation/aggregation.component';
-import { DATE_FILTER_NAME, FILTERS_COUNT } from '../filters.component';
+import { FILTER_DATE_NAME, FILTERS_COUNT_PER_PAGE } from '../filters.component';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`../i18n/${lang}.json`);
@@ -52,6 +52,9 @@ export class MoreFiltersComponent implements OnDestroy {
 
   private readonly subscriptions = new Subscription();
 
+  filtersCountPerPage = inject(FILTERS_COUNT_PER_PAGE);
+  dateFilterName = inject(FILTER_DATE_NAME);
+
   constructor() {
     effect(() => {
       const { queryName } = this.route.snapshot.data;
@@ -61,8 +64,8 @@ export class MoreFiltersComponent implements OnDestroy {
 
       // create filters with only aggregations that are authorized and not already shown
       const filterDropdowns = this.buildMoreFilterDropdownsFromAggregations(
-        aggregations.splice(FILTERS_COUNT)
-          .filter(agg => agg.name !== DATE_FILTER_NAME)
+        aggregations.splice(this.filtersCountPerPage)
+          .filter(agg => agg.name !== this.dateFilterName)
       );
 
       untracked(() => this.filterDropdowns.set(filterDropdowns));

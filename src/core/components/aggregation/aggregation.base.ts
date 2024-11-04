@@ -1,16 +1,11 @@
-import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, computed, inject, input, OnDestroy, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Aggregation, AggregationItem, aggregationItemStrictCompare, bisect, FieldValue, LegacyFilter } from '@sinequa/atomic';
 import { AggregationListItem, AggregationsService, AggregationsStore, AppStore, CFilter, CFilterItem, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { firstValueFrom, Subscription } from 'rxjs';
-import { AggregationRowComponent } from "./aggregation-row.component";
 
 
 export type AggEx = Aggregation & {
@@ -20,12 +15,9 @@ export type AggEx = Aggregation & {
 }
 
 @Component({
-  selector: '',
-  standalone: true,
   template: '',
-  imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
 })
-export abstract class BaseAggregation implements OnDestroy {
+export abstract class AggregationBase {
   /* stores */
   readonly aggregationsStore = inject(AggregationsStore);
   readonly appStore = inject(AppStore);
@@ -60,16 +52,10 @@ export abstract class BaseAggregation implements OnDestroy {
     return this.processAggregation();
   })
 
-  protected readonly subscriptions = new Subscription();
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
   /**
    * Processes the aggregation by retrieving it from the store and updating its display, icon, and hidden properties.
    * Apply the selected state to the items based on the current filters.
-   * 
+   *
    * @returns - The processed aggregation or null if the aggregation is not found.
    */
   protected processAggregation(): AggEx | null | undefined {
@@ -226,6 +212,16 @@ export abstract class BaseAggregation implements OnDestroy {
   }
 
   // Select all items for tree aggregation
+  /**
+   * Selects items from the provided list based on the given values.
+   *
+   * This method iterates through the `items` array and sets the `$selected` property
+   * of each item to `true` if its `$path` matches any of the values in the `values` array.
+   * If an item contains nested items, the method recursively selects items within those nested lists.
+   *
+   * @param items - The list of `AggregationListItem` objects to be processed.
+   * @param values - An array of string values used to determine which items should be selected.
+   */
   protected selectItems(items: AggregationListItem[], values: string[]) {
     items.forEach(item => {
       if (values.includes(`/${item.$path}/*`)) {
@@ -237,17 +233,20 @@ export abstract class BaseAggregation implements OnDestroy {
     });
   }
 
+  /**
+   * Counts the number of selected items in a nested list of `AggregationListItem`.
+   *
+   * This method recursively traverses the provided list of items and their nested items,
+   * counting how many of them have the `$selected` property set to `true`.
+   *
+   * @param items - The list of `AggregationListItem` to count selected items from.
+   * @returns The total number of selected items.
+   */
   protected countSelected(items: AggregationListItem[]): number {
-    let count = 0;
-
-    items.forEach(item => {
-      if (item.$selected)
-        count++;
-
-      if (item.items)
-        count += this.countSelected(item.items);
-    });
-
-    return count;
+    return items.reduce((count, item) => {
+      if (item.$selected) count++;
+      if (item.items) count += this.countSelected(item.items);
+      return count;
+    }, 0);
   }
 }

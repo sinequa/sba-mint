@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, InjectionToken, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -9,10 +9,25 @@ import { cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AggEx, BaseAggregation } from '../../aggregation/base-aggregation.abstract';
+import { AggEx, AggregationBase } from '../../aggregation/aggregation.base';
 import { AggregationTitle } from '../aggregation/aggregation.component';
 
-const ALLOW_CUSTOM_RANGE = true;
+/**
+ * Injection token that indicates whether custom date ranges are allowed.
+ *
+ * @remarks
+ * This token is used to configure the date component to allow users to select custom date ranges.
+ *
+ * @example
+ * ```typescript
+ * providers: [
+ *   { provide: ALLOW_CUSTOM_RANGE, useValue: false }
+ * ]
+ * ```
+ *
+ * @public
+ */
+export const FILTER_DATE_ALLOW_CUSTOM_RANGE = new InjectionToken<boolean>("date allow custom range", { factory: () => true });
 
 type DateFilter = {
   label?: string;
@@ -45,10 +60,10 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   `,
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
-export class DateComponent extends BaseAggregation {
+export class DateComponent extends AggregationBase {
   readonly title = input<AggregationTitle>({ label: 'Date', icon: 'far fa-calendar-day' });
   readonly displayEmptyDistributionIntervals = input<boolean>(false);
-  readonly allowCustomRange = ALLOW_CUSTOM_RANGE;
+  readonly allowCustomRange = inject(FILTER_DATE_ALLOW_CUSTOM_RANGE);
 
   protected readonly dateOptions = computed(
     () => translateAggregationToDateOptions(this.aggregation() as Aggregation, this.displayEmptyDistributionIntervals())

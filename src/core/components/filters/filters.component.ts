@@ -1,5 +1,5 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Injector, ViewChildren, computed, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
+import { ChangeDetectorRef, Component, InjectionToken, Injector, ViewChildren, computed, effect, inject, input, runInInjectionContext, signal, untracked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -8,14 +8,15 @@ import { Aggregation, LegacyFilter } from '@sinequa/atomic';
 import { AggregationEx, AggregationListEx, AggregationListItem, AggregationsService, AppStore, CFilter, CFilterItem, DropdownComponent, FilterDropdown, QueryParamsStore, SearchService, buildQuery, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
+
 import { OperatorPipe } from "../../pipes/operator";
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { DateFilterComponent } from './date-filter/date-filter.component';
 import { DateComponent } from "./date/date.component";
 import { MoreFiltersComponent } from './more-filters/more-filters.component';
 
-export const FILTERS_COUNT = 5;
-export const DATE_FILTER_NAME = "Modified";
+export const FILTERS_COUNT_PER_PAGE = new InjectionToken<number>('filters count per page', { factory: () => 5 });
+export const FILTER_DATE_NAME = new InjectionToken<string>('filter date name', { factory: () => 'Modified' });
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -43,7 +44,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
 export class FiltersComponent {
-  @ViewChildren(AggregationComponent) aggregations!: AggregationComponent[];
+  aggregations: AggregationComponent[] = ViewChildren(AggregationComponent);
 
   cn = cn;
 
@@ -86,6 +87,9 @@ export class FiltersComponent {
 
   moreFiltersColumns: string[] = [];
 
+  dateFilterName = inject(FILTER_DATE_NAME);
+  filtersCountPerPage = inject(FILTERS_COUNT_PER_PAGE);
+
   constructor() {
 
     effect(() => {
@@ -94,7 +98,7 @@ export class FiltersComponent {
 
       if (aggregations.length === 0) return;
 
-      const dateAggregation = aggregations?.find(agg => agg.name === DATE_FILTER_NAME) as AggregationListEx
+      const dateAggregation = aggregations?.find(agg => agg.name === this.dateFilterName) as AggregationListEx
 
       if (dateAggregation) {
         const filter = this.queryParamsStore.getFilterFromColumn(dateAggregation.column);
@@ -108,13 +112,13 @@ export class FiltersComponent {
       }
 
       // remove date filter from the list of filters because it is displayed separately
-      const resolvedAggregations = [...aggregations.filter(aggregation => aggregation.name !== DATE_FILTER_NAME)];
+      const resolvedAggregations = [...aggregations.filter(aggregation => aggregation.name !== this.dateFilterName)];
 
-      const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, FILTERS_COUNT));
+      const filterDropdowns = this.buildFilterDropdownsFromAggregations(resolvedAggregations.slice(0, this.filtersCountPerPage));
 
       untracked(() => {
         // set more filters flag
-        const moreFilters = resolvedAggregations.slice(FILTERS_COUNT);
+        const moreFilters = resolvedAggregations.slice(this.filtersCountPerPage);
         if (moreFilters.filter(agg => agg.items !== undefined && agg.items.length > 0).length > 0) {
           this.hasMoreFilters.set(true);
         } else {
@@ -219,8 +223,8 @@ export class FiltersComponent {
 
         const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
 
-        let more = Array.isArray(f?.filters)
-          ? f.filters.length - 1
+        let more = Array.isArray(f?.values)
+          ? f.values.length - 1
           : undefined;
 
         // ES-23830 specific behavior for treepath, we want to show filter count

@@ -9,14 +9,8 @@ import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { Aggregation, fetchSuggestField, LegacyFilter, Suggestion, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./aggregation-row.component";
-import { BaseAggregation } from './base-aggregation.abstract';
+import { AggregationBase } from './aggregation.base';
 
-
-export type AggEx = Aggregation & {
-  display?: string;
-  icon?: string;
-  hidden?: boolean;
-}
 
 @Component({
   selector: 'Aggregation',
@@ -33,7 +27,7 @@ export type AggEx = Aggregation & {
   `],
   imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
 })
-export class AggregationComponent extends BaseAggregation {
+export class AggregationComponent extends AggregationBase {
   /**
    * A boolean flag indicating whether the component should operate in headless mode.
    * When set to `true`, the component will function without rendering any UI elements.
@@ -211,16 +205,19 @@ export class AggregationComponent extends BaseAggregation {
   }
 
   /**
-   * Retrieves a list of filters based on the selected items.
+   * Retrieves the filters for the list based on selected items.
    *
-   * This method filters the items to include only those that are selected,
-   * and then maps each selected item to a filter using the `toFilter` method.
+   * This method combines selected items from `searchedItems` and `aggregation`
+   * and maps them to `LegacyFilter` objects.
    *
-   * @returns {LegacyFilter[]} An array of filters corresponding to the selected items.
+   * @returns {LegacyFilter[]} An array of `LegacyFilter` objects derived from the selected items.
    */
   protected getFiltersForList(): LegacyFilter[] {
-    const items = this.items().filter(item => item.$selected) || [];
-    return items.map(item => this.toFilter(item));
+    const searchItems = this.searchedItems()?.filter(item => item.$selected) || [];
+    const items = this.aggregation()?.items.filter(item => item.$selected) || [];
+    const selectedItems = [...searchItems, ...items];
+
+    return selectedItems.map(item => this.toFilter(item));
   }
 
   /**
@@ -235,6 +232,9 @@ export class AggregationComponent extends BaseAggregation {
       }, [] as TreeAggregationNode[]);
     };
 
-    return flattenItems(this.items());
+    const searchItems = flattenItems(this.searchedItems() || []);
+    const items = flattenItems(this.aggregation()?.items as TreeAggregationNode[] || []);
+    const flattenedTreeItems = [...searchItems, ...items];
+    return flattenedTreeItems;
   }
 }
