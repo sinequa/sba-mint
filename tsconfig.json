@@ -21,8 +21,10 @@
     "resolveJsonModule": true,
     "useDefineForClassFields": false,
     "lib": ["esnext", "dom"],
+    "preserveSymlinks": true,
     "paths": {
-      "@mint/services/*": ["./src/01-atomic-angular/services/*"],
+      "@sinequa/atomic": ["./node_modules/@sinequa/atomic/dist"],
+      "@sinequa/atomic-angular": ["./node_modules/@sinequa/atomic-angular"],
       "@/*": ["./src/*"],
     }
   },

@@ -28,6 +28,9 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   return acc;
 }, {} as HashMap<() => Promise<Translation>>);
 
+/**
+ * @deprecated Use DateComponent instead
+ */
 @Component({
   selector: 'app-date-filter',
   standalone: true,

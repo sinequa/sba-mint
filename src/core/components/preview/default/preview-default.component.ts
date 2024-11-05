@@ -87,7 +87,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       this.previewService.setPreviewData(this.previewData());
     });
 
-    effect(async() => {
+    effect(async () => {
       if (!this.previewUrl()) return;
 
       try {
@@ -147,7 +147,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick({field, value}:{field: string, value: string}): void {
+  onMetadataClick({ field, value }: { field: string, value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }

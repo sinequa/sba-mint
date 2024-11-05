@@ -16,40 +16,34 @@
 
   <!-- date filter dropdown -->
   @if (dateFilterDropdown()) {
-  <li tabindex="0">
-    <Dropdown>
-      <button tabindex="-1"
-        [ngClass]="cn(
-          'btn font-semibold gap-1 w-max',
-          dateFilterDropdown()?.firstFilter ? 'btn-primary' : 'btn-tertiary'
-          )"
-          [attr.title]="'filters.dateFilter' | transloco"
-          [attr.aria-label]="'filters.dateFilter' | transloco"
-        >
+    <li tabindex="0">
+      <Dropdown>
+        <button tabindex="-1"
+          [ngClass]="cn(
+            'btn font-semibold gap-1 w-max',
+            dateFilterDropdown()?.firstFilter ? 'btn-primary' : 'btn-tertiary'
+            )"
+            [attr.title]="'filters.dateFilter' | transloco"
+            [attr.aria-label]="'filters.dateFilter' | transloco"
+          >
 
-        @if (dateFilterDropdown()?.icon) {
-          <i class="fa-fw {{ dateFilterDropdown()?.icon }} " aria-hidden="true"></i>
-        }
-        @if( dateFilterDropdown()?.firstFilter ) {
-          <span [innerHTML]="dateFilterDropdown()?.firstFilter | operator | syslang | transloco"></span>
-        }
-        @else {
-          <span>{{ dateFilterDropdown()?.label | syslang | transloco }}</span>
-        }
-      </button>
+          @if (dateFilterDropdown()?.icon) {
+            <i class="fa-fw {{ dateFilterDropdown()?.icon }} " aria-hidden="true"></i>
+          }
+          @if( dateFilterDropdown()?.firstFilter ) {
+            <span [innerHTML]="dateFilterDropdown()?.firstFilter | operator | syslang | transloco"></span>
+          }
+          @else {
+            <span>{{ dateFilterDropdown()?.label | syslang | transloco }}</span>
+          }
+        </button>
 
-      <app-date-filter dropdown-content
-        class="block dropdown-content min-w-[300px] w-max"
-        [aggregation]="dateFilterDropdown()!.aggregation"
-        [title]="{
-          label: dateFilterDropdown()?.label || '',
-          icon: dateFilterDropdown()?.icon
-        }"
-        (refreshed)="dateFilterRefreshed($event)"
-        (updated)="dateFilterUpdated($event)"
-      />
-    </Dropdown>
-  </li>
+        <DateFilter dropdown-content
+          class="block dropdown-content min-w-[300px] w-max"
+          name="Modified"
+        />
+      </Dropdown>
+    </li>
   }
 
   <!-- other filter dropdowns -->
@@ -87,7 +81,13 @@
             </div>
           }
         </button>
-        <Aggregation dropdown-content [name]="filterDropdown.aggregation.column" kind="column" [searchable]="searchable()" class="dropdown-content w-max" />
+
+        <Aggregation
+          dropdown-content
+          class="dropdown-content w-max"
+          [name]="filterDropdown.aggregation.name"
+          [searchable]="searchable()"
+        />
       </Dropdown>
     </li>
   }
@@ -97,7 +97,7 @@
     <li
       class="ms-auto"
       tabindex="0"
-      >
+    >
       <Dropdown class="dropdown-end">
         <button class="btn btn-tertiary font-semibold gap-1 truncate" tabindex="-1" aria-label="more filters">
           <i class="far fa-filters"></i>

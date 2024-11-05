@@ -5,6 +5,33 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach Edge",
+      "request": "attach",
+      "port": 9223,
+      "type": "msedge",
+      "urlFilter": "https://localhost:4200/*",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "meteor://💻app/*": "${workspaceFolder}/*",
+        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+        "webpack://?:*/*": "${workspaceFolder}/*"
+      }
+    },
+    {
+      "name": "Launch Chrome Canary",
+      "request": "launch",
+      "runtimeExecutable": "canary",
+      "port": 9222,
+      "type": "chrome",
+      "url": "https://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "meteor://💻app/*": "${workspaceFolder}/*",
+        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+        "webpack://?:*/*": "${workspaceFolder}/*"
+      }
+    },
+    {
       "name": "Launch Chrome",
       "request": "launch",
       "port": 9222,
@@ -25,7 +52,7 @@
       "urlFilter": "http://localhost:4200/*",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
-        "webpack:///./*": "${workspaceFolder}/*",
+        "webpack:///./*": "${workspaceFolder}/*"
       }
     },
     {
@@ -36,7 +63,7 @@
       "urlFilter": "https://localhost:6006/*",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
-        "webpack:///./*": "${workspaceFolder}/*",
+        "webpack:///./*": "${workspaceFolder}/*"
       }
     },
     {
