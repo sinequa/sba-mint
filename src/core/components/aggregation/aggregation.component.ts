@@ -7,7 +7,8 @@ import { AggregationListItem, debouncedSignal } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { Aggregation, fetchSuggestField, LegacyFilter, Suggestion, TreeAggregationNode } from '@sinequa/atomic';
+import { getState } from '@ngrx/signals';
+import { Aggregation, AggregationItem, fetchSuggestField, FieldValue, LegacyFilter, Suggestion, suggestionsToTreeAggregationNodes, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./aggregation-row.component";
 import { AggregationBase } from './aggregation.base';
 
@@ -73,15 +74,22 @@ export class AggregationComponent extends AggregationBase {
   readonly searchedItems = computed(() => {
     if (!this.suggests()) return undefined;
 
-    const list: AggregationListItem[] = this.suggests()!.map(suggest => ({
+    // if the aggregation is a tree, we transform the suggestions into tree nodes
+    if(this.aggregation()?.isTree) {
+      return suggestionsToTreeAggregationNodes(this.suggests()!, this.debouncedSearchText());
+    }
+
+    // if the aggregation is not a tree, we return the suggestions as is
+    return this.suggests()!.map(suggest => ({
       name: suggest.category,
       value: suggest.normalized || suggest.display || '',
       display: suggest.display,
       column: suggest.id,
       count: 1,
+      $selected: false,
       items: []
     }));
-    return list;
+
   });
 
   constructor() {
