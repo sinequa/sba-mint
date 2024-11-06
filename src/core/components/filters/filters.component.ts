@@ -167,16 +167,12 @@ export class FiltersComponent {
 
   public clearFilters(): void {
     // clear internal filters
-    this.aggregations.forEach((filter: AggregationComponent) => filter.clear());
+    this.queryParamsStore.clearFilters();
 
     // clear dropdowns state
     this.filterDropdowns.update((filters: FilterDropdown[]) =>
       filters.map((filter: FilterDropdown) => ({ ...filter, currentFilter: undefined, moreFiltersCount: undefined }))
     )
-
-    this.queryParamsStore.patch({ filters: [] });
-
-    this.searchService.search([]);
   }
 
 
