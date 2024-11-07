@@ -14,7 +14,7 @@ module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
     fontFamily: {
-      sans: ["Segoe UI", "SF Pro Text"],
+      sans: ["Segoe UI", "SF Pro Text", "Aria", "sans-serif"],
     },
     extend: {
       zIndex: {
