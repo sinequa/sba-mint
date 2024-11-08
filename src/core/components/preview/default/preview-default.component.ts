@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, OnDestroy, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -25,7 +25,6 @@ type Article = A & {
   standalone: true,
   imports: [
     NgClass,
-    DatePipe,
     PreviewNavbarComponent,
     MetadataComponent,
     PreviewActionsComponent,
@@ -91,7 +90,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       if (!this.previewUrl()) return;
 
       try {
-        const response = await fetch(this.previewUrl() as string);
+        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
         if (response.status === 200) {
           const text = await response.text();
           this.canLoadIframe.set(true);
