@@ -101,12 +101,12 @@ export class FiltersComponent {
       const dateAggregation = aggregations?.find(agg => agg.name === this.dateFilterName) as AggregationListEx
 
       if (dateAggregation) {
-        const filter = this.queryParamsStore.getFilterFromColumn(dateAggregation.column);
+        const filter = this.queryParamsStore.getFilter(dateAggregation.column);
 
         this.dateFilterDropdown.set({
           label: 'Date',
           aggregation: dateAggregation,
-          firstFilter: filter,
+          firstFilter: filter as LegacyFilter,
           icon: 'far fa-calendar-day'
         });
       }
@@ -217,7 +217,7 @@ export class FiltersComponent {
           item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
-        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
+        const f = this.queryParamsStore.getFilter(aggregation.column);
 
         let more = Array.isArray(f?.values)
           ? f.values.length - 1
@@ -234,7 +234,7 @@ export class FiltersComponent {
           firstFilter: f,
           moreFiltersCount: more,
           hidden
-        });
+        }) as FilterDropdown;
       });
 
     return dropdowns;

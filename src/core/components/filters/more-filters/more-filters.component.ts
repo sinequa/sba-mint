@@ -156,7 +156,7 @@ export class MoreFiltersComponent implements OnDestroy {
           item.icon = items?.find((it: CFilterItem) => it.value === item.value)?.icon;
         });
 
-        const f = this.queryParamsStore.getFilterFromColumn(aggregation.column);
+        const f = this.queryParamsStore.getFilter(aggregation.column);
         const count = aggregation.isDistribution && f?.operator === 'and'
           ? 1
           : (Array.isArray(f?.filters))
@@ -179,7 +179,7 @@ export class MoreFiltersComponent implements OnDestroy {
           firstFilter: f,
           moreFiltersCount: count,
           hidden
-        })
+        }) as FilterDropdown;
       });
   }
 

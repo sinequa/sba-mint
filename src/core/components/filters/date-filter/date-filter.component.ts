@@ -59,7 +59,7 @@ export class DateFilterComponent implements OnDestroy {
   protected readonly column = computed(() => this.aggregation().column);
 
   protected readonly hasAppliedFilter = computed(() => {
-    return this.column() ? !!this.queryParamsStore.getFilterFromColumn(this.column()) : false;
+    return this.column() ? !!this.queryParamsStore.getFilter(this.column()) : false;
   });
 
   protected readonly form = new FormGroup({
@@ -79,7 +79,7 @@ export class DateFilterComponent implements OnDestroy {
   constructor() {
 
     effect(() => {
-      const dateFilter = this.queryParamsStore.getFilterFromColumn(this.column());
+      const dateFilter = this.queryParamsStore.getFilter(this.column());
       if (dateFilter) {
         this.updateForm(dateFilter);
       }

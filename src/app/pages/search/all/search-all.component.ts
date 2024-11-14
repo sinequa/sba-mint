@@ -116,7 +116,7 @@ export class SearchAllComponent implements OnDestroy {
     // This allows Browser back/forward to work correctly
     effect(() => {
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s(), filters, queryName: this.queryName() });
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s(), filters, name: this.queryName() });
     }, { allowSignalWrites: true });
 
     this.sub.add(
