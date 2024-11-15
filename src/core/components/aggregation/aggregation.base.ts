@@ -1,11 +1,9 @@
-import { Component, computed, inject, input, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
+import { firstValueFrom } from 'rxjs';
 
 import { Aggregation, AggregationItem, aggregationItemStrictCompare, bisect, FieldValue, LegacyFilter } from '@sinequa/atomic';
 import { AggregationListItem, AggregationsService, AggregationsStore, AppStore, CFilter, CFilterItem, QueryParamsStore } from '@sinequa/atomic-angular';
-
-
-import { firstValueFrom, Subscription } from 'rxjs';
 
 
 export type AggEx = Aggregation & {

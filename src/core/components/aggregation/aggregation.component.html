@@ -46,7 +46,7 @@
 
   <ul class="data-list snap-start max-h-52 overflow-auto snap-y">
     @for (item of items(); track $index) {
-      <AggregationRow [node]="item" (onSelect)="select($event)" />
+      <AggregationRow [node]="item" (onOpen)="open($event)" (onSelect)="select($event)" />
     }
   </ul>
 
