@@ -80,7 +80,7 @@ export abstract class AggregationBase {
 
       (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
         if (agg.isTree) {
-          const { values = [] } = this.queryParamsStore.getFilterFromColumn(agg.column) as LegacyFilter || {};
+          const { values = [] } = this.queryParamsStore.getFilter(agg.column) as LegacyFilter || {};
           this.selectItems(agg.items as AggregationListItem[], values);
         } else {
           const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;

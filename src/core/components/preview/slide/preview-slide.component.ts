@@ -104,7 +104,7 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
   }
 
   navigateToSegment(index: number): void {
-    let currentFilter = this.queryParamStore.getFilterFromColumn('treepath');
+    let currentFilter = this.queryParamStore.getFilter('Treepath');
 
     if (!currentFilter)
       currentFilter = { field: 'treepath', operator: 'in' } as LegacyFilter;

@@ -90,7 +90,7 @@ export class DateComponent extends AggregationBase {
 
     // apply current date filter from queryParamsStore
     effect(() => {
-      this.updateForm(this.queryParamsStore.getFilterFromColumn(this.aggregation()!.column));
+      this.updateForm(this.queryParamsStore.getFilter(this.aggregation()!.column) as LegacyFilter);
     })
 
     this.subscription.add(

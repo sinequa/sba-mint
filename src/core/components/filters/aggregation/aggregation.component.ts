@@ -81,7 +81,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
     // $selected elements must be displayed first, but the other elements must stay in the same order
 
     if (this.aggregation().isTree) {
-      const { values = [] } = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter || {};
+      const { values = [] } = this.queryParamsStore.getFilter(this.aggregation().column) as LegacyFilter || {};
       const items = this.items();
 
       this.selectItems(items, values);
@@ -92,7 +92,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
     const selected = this.items().filter(item => item.$selected);
 
     if (this.aggregation().valuesAreExpressions === false) {
-      const columnFilter = this.queryParamsStore.getFilterFromColumn(this.aggregation().column) as LegacyFilter;
+      const columnFilter = this.queryParamsStore.getFilter(this.aggregation().column) as LegacyFilter;
 
       if (columnFilter?.filters) {
         const selectedFilters = (columnFilter.filters as LegacyFilter[]).map((filter: LegacyFilter) => {
@@ -120,7 +120,7 @@ export class AggregationComponent implements OnInit, OnDestroy {
   readonly injector = inject(Injector);
 
   readonly hasAppliedFilters = computed(() => {
-    return !!this.queryParamsStore.getFilterFromColumn(this.aggregation().column);
+    return !!this.queryParamsStore.getFilter(this.aggregation().column);
   });
 
   query: Query;
