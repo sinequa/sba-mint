@@ -1,14 +1,12 @@
-import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 
 import { AggregationListItem, debouncedSignal } from '@sinequa/atomic-angular';
 
-import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { getState } from '@ngrx/signals';
-import { Aggregation, AggregationItem, fetchSuggestField, FieldValue, LegacyFilter, Suggestion, suggestionsToTreeAggregationNodes, TreeAggregationNode } from '@sinequa/atomic';
+import { fetchSuggestField, LegacyFilter, Suggestion, suggestionsToTreeAggregationNodes, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
 import { AggregationRowComponent } from "./aggregation-row.component";
 import { AggregationBase } from './aggregation.base';
 
@@ -26,7 +24,7 @@ import { AggregationBase } from './aggregation.base';
       scrollbar-width: thin;
     }
   `],
-  imports: [FormsModule, AsyncPipe, ReactiveFormsModule, NgClass, NgIf, AggregationRowComponent, SyslangPipe, TranslocoPipe],
+  imports: [FormsModule, ReactiveFormsModule, AggregationRowComponent, TranslocoPipe],
 })
 export class AggregationComponent extends AggregationBase {
   /**
@@ -174,6 +172,12 @@ export class AggregationComponent extends AggregationBase {
     else {
       this.selectionCount.set(this.selectionCount() - 1);
     }
+  }
+
+  async open(node: AggregationListItem) {
+    const q = this.queryParamsStore.getQuery();
+    const agg = await firstValueFrom(this.aggregationsService.open(q, this.aggregation() as TreeAggregation, node as TreeAggregationNode));
+    this.aggregationsStore.updateAggregation(agg);
   }
 
   /**
