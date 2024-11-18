@@ -138,7 +138,7 @@ export class LoginComponent implements OnDestroy {
   async handleLoginWithCredentials() {
     if (!this.valid()) return;
 
-    this.appService.logMeIn({credentials: this.credentials()}).then((value) => {
+    this.appService.autoLogin({credentials: this.credentials()}).then((value) => {
       this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
     }).catch((e) => {
       if (e instanceof Error) {
