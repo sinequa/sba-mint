@@ -13,9 +13,7 @@
     </div>
   }
   @else if (query.isSuccess()){
-    <app-filters
-      class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
-    />
+    <FiltersList class="sticky flex gap-2 pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white z-filter" />
   }
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
@@ -32,7 +30,7 @@
       <li><app-article-default-skeleton /></li>
     </ul>
   }
-  @else if (query.isSuccess()) {
+  @else if (query.isSuccess() && query.data()?.pages) {
     <!-- the sort is always displayed excepts when no records are found -->
     <div class="flex mt-4 has-[_+ul>li.no-records]:hidden">
       <app-sort-selector

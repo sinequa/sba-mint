@@ -1,15 +1,14 @@
-import { NgClass, NgComponentOutlet } from '@angular/common';
+import { NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, Type, computed, effect, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { Subscription, lastValueFrom, map } from 'rxjs';
+import { Subscription, catchError, lastValueFrom, map, of } from 'rxjs';
 
 import { Aggregation, Article, Query, Result } from '@sinequa/atomic';
 import { AggregationsStore, DrawerStackService, InfinityScrollDirective, PrincipalStore, QueryParamsStore, SearchService, SelectionService } from '@sinequa/atomic-angular';
 
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
-import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
-import { FiltersComponent } from '@/core/components/filters/filters.component';
+import { FiltersListComponent } from "@/core/components/filters/filters-list.component";
 import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
@@ -21,16 +20,14 @@ type R = Result & { nextPage?: number, previousPage?: number };
   selector: 'app-search-all',
   standalone: true,
   imports: [
-    NgClass,
     NgComponentOutlet,
-    FiltersComponent,
-    ArticleDefaultComponent,
     ArticleDefaultSkeletonComponent,
     SortSelectorComponent,
     DidYouMeanComponent,
     InfinityScrollDirective,
-    SponsoredResultsComponent
-  ],
+    SponsoredResultsComponent,
+    FiltersListComponent
+],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
   host: {

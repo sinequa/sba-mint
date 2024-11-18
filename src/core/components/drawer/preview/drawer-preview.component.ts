@@ -34,9 +34,7 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
     NgClass,
     NgComponentOutlet,
     AsyncPipe,
-    AdvancedSearchComponent,
-    PreviewDefaultComponent,
-    PreviewSlideComponent
+    AdvancedSearchComponent
   ],
   providers: [DrawerService, PreviewService],
   templateUrl: './drawer-preview.component.html',
