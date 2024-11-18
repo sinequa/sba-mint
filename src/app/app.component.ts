@@ -41,7 +41,7 @@ export class AppComponent {
       }
     ]);
 
-    this.appService.logMeIn().then((value) => {
+    this.appService.autoLogin().then((value) => {
       if (value) {
         this.setupApplicationLanguage();
       }
