@@ -69,12 +69,7 @@ export class FiltersListComponent {
     // when the query parameters store updates, update the hasFilters signal
     // to show or hide the clear filters button
     const state = getState(this.queryParamsStore);
-    if (Array.isArray(state.filters) && state.filters.length > 0) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return Array.isArray(state.filters) && state.filters.length > 0;
   });
 
   hasAggregations = computed(() => {
