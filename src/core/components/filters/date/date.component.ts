@@ -9,8 +9,7 @@ import { cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AggEx, AggregationBase } from '../../aggregation/aggregation.base';
-import { AggregationTitle } from '../aggregation/aggregation.component';
+import { AggEx, AggregationComponent, AggregationTitle } from '../aggregation/aggregation.component';
 
 /**
  * Injection token that indicates whether custom date ranges are allowed.
@@ -45,7 +44,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 }, {} as HashMap<() => Promise<Translation>>);
 
 @Component({
-  selector: 'DateFilter',
+  selector: 'date-filter,DateFilter',
   standalone: true,
   imports: [NgClass, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
   templateUrl: './date.component.html',
@@ -60,7 +59,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   `,
   providers: [provideTranslocoScope({ scope: 'filters', loader })]
 })
-export class DateComponent extends AggregationBase {
+export class DateComponent extends AggregationComponent {
   readonly title = input<AggregationTitle>({ label: 'Date', icon: 'far fa-calendar-day' });
   readonly displayEmptyDistributionIntervals = input<boolean>(false);
   readonly allowCustomRange = inject(FILTER_DATE_ALLOW_CUSTOM_RANGE);
@@ -82,7 +81,6 @@ export class DateComponent extends AggregationBase {
 
   cn = cn;
 
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly subscription = new Subscription();
 
   constructor() {
@@ -103,13 +101,13 @@ export class DateComponent extends AggregationBase {
     return { ...agg, items: agg?.items?.filter((item: AggregationItem) => item.display !== 'custom-range') ?? [] } as AggEx;
   }
 
-  public apply(): void {
+  public override apply(): void {
     const filter = this.getFormValueFilter();
 
     this.queryParamsStore.updateFilter(filter);
   }
 
-  public clear(notify: boolean = true): void {
+  public override clear(notify: boolean = true): void {
     this.form.setValue({
       option: null,
       customRange: {

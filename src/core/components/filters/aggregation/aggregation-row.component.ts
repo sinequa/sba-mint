@@ -1,6 +1,5 @@
 import { NgClass } from "@angular/common";
-import { Component, EventEmitter, HostBinding, output, input } from "@angular/core";
-
+import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
 
 import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@sinequa/atomic-angular";
 
@@ -29,9 +28,8 @@ export class AggregationRowComponent {
 
   @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
 
-  onSelect = output<AggregationListItem>();
-  onOpen = output<AggregationListItem>();
-
+  @Output() onSelect = new EventEmitter<AggregationListItem>();
+  @Output() onOpen = new EventEmitter<AggregationListItem>();
 
   node = input.required<AggregationListItem>();
 
