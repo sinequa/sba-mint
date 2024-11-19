@@ -41,8 +41,6 @@ import { ActivatedRoute } from "@angular/router";
       .map(f => f.column)
       .toSpliced(0, count);
 
-    console.log("authorizedFilters", authorizedFilters);
-
     const total = authorizedFilters.reduce((acc, filter) => {
       const f = this.queryParamsStore.getFilter(filter);
       acc += f?.count || 0;
