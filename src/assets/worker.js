@@ -2,7 +2,6 @@ self.addEventListener("message", function (event) {
   // Perform some computation or task
   let result = getAllExtracts(event.data);
 
-  console.log("Posting message back to main script", result);
   // Send the result back to the main script
   self.postMessage(result);
 });
