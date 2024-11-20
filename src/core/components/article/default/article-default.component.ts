@@ -4,16 +4,22 @@ import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { StopPropagationDirective } from 'toolkit';
 
-import { AppStore, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { AppStore, DropdownComponent, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { LegacyFilter } from '@sinequa/atomic';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 
 type Tab = 'attachments' | 'similars';
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
+
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
 
 @Component({
   selector: 'app-article-default',
@@ -27,7 +33,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     MetadataComponent,
     BookmarkButtonComponent,
     SourceIconComponent,
-    TranslocoDateImpurePipe
+    TranslocoDateImpurePipe,
+    DropdownComponent,
+    TranslocoPipe
   ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
@@ -37,7 +45,8 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   }, {
     directive: ShowBookmarkDirective,
     inputs: ['article']
-  }]
+  }],
+  providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
 export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   appStore = inject(AppStore);
