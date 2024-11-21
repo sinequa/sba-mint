@@ -4,7 +4,7 @@ import { Component, OnDestroy, computed, inject, signal, viewChild } from '@angu
 import { getState } from '@ngrx/signals';
 import { StopPropagationDirective } from 'toolkit';
 
-import { AppStore, DropdownComponent, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { AppStore, DropdownComponent, LabelService, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
@@ -12,6 +12,7 @@ import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { LegacyFilter } from '@sinequa/atomic';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { EditLabelsComponent } from '@/core/features/dialog/edit-labels';
+import { map, Subscription } from 'rxjs';
 
 type Tab = 'attachments' | 'similars';
 
@@ -55,6 +56,7 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
   searchService = inject(SearchService);
+  labelService = inject(LabelService);
 
   readonly editLabelsDialog = viewChild(EditLabelsComponent);
 
@@ -85,8 +87,23 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
     return undefined;
   });
 
+  protected hasLabelsAccess = signal<boolean>(false);
+  protected readonly subscriptions = new Subscription();
+
+  constructor() {
+    super();
+
+    this.subscriptions.add(
+      this.labelService.canHandleLabels()
+        .pipe(
+          map((res: boolean) => this.hasLabelsAccess.set(res))
+        ).subscribe()
+    );
+  }
+
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   public toggleTab(tab: Tab): void {
