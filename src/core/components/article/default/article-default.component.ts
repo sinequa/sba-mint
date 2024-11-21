@@ -1,6 +1,6 @@
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 import { StopPropagationDirective } from 'toolkit';
 
@@ -11,6 +11,7 @@ import { BaseArticle } from '@/core/registry/base-article';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { LegacyFilter } from '@sinequa/atomic';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { EditLabelsComponent } from '@/core/features/dialog/edit-labels';
 
 type Tab = 'attachments' | 'similars';
 
@@ -35,7 +36,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     SourceIconComponent,
     TranslocoDateImpurePipe,
     DropdownComponent,
-    TranslocoPipe
+    TranslocoPipe,
+    EditLabelsComponent
   ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
@@ -53,6 +55,8 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
   searchService = inject(SearchService);
+
+  readonly editLabelsDialog = viewChild(EditLabelsComponent);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
@@ -104,5 +108,9 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
     this.searchService.search([]);
+  }
+
+  editLabels(): void {
+    this.editLabelsDialog()?.showModal();
   }
 }
