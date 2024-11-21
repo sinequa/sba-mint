@@ -9,5 +9,8 @@
     "title": "Réinitialiser les paramètres de l'utilisateur",
     "message": "Vous êtes sur le point de réinitialiser TOUTES vos données utilisateur (requêtes récentes, collections, alertes, préférences, etc.). Voulez-vous continuer ?",
     "success": "Paramètres de l'utilisateur réinitialisés avec succès."
+  },
+  "editLabels": {
+    "title": "Ajout / Modification des labels"
   }
 }

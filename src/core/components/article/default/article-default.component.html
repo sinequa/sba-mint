@@ -23,7 +23,7 @@
           </button>
         
           <div dropdown-content class="absolute dropdown-content p-1 font-semibold" (click)="$event.stopPropagation()">
-            <li class="mb-1 bg-base-200 p-2">
+            <li class="mb-1 bg-base-200 p-2" (click)="editLabels()">
               <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }}
             </li>
           </div>
@@ -59,3 +59,5 @@
 
   </section>
 </article>
+
+<edit-labels-dialog />
