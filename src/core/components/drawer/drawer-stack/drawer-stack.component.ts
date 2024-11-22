@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -12,7 +11,7 @@ const DRAWER_STACK_MAX_COUNT = 3;
 @Component({
   selector: 'app-drawer-stack',
   standalone: true,
-  imports: [AsyncPipe, DrawerComponent],
+  imports: [],
   template: ``,
   styles: [`
     :host {

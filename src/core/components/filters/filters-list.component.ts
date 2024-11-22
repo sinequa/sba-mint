@@ -38,10 +38,13 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     @for(filter of filters(); track $index) {
       <FilterButton [class]="cn(
         filter.hidden && 'hidden',
-        $index >= moreFilterCount() && 'invisible'
+        hasMoreFilters() && $index >= moreFilterCount() && 'invisible'
         )" [filter]="filter" />
     }
-    <FiltersMoreButton class="absolute right-0" [count]="moreFilterCount()" />
+
+    @if(hasMoreFilters()) {
+      <FiltersMoreButton class="absolute right-0" [count]="moreFilterCount()" />
+    }
   }
   `,
   host: {
@@ -73,9 +76,21 @@ export class FiltersListComponent {
   });
 
   hasAggregations = computed(() => {
-    if(this.aggregationsStore.aggregations()) return this.aggregationsStore.aggregations().length > 0;
+    if (this.aggregationsStore.aggregations()) return this.aggregationsStore.aggregations().length > 0;
     return false;
   });
+
+  hasMoreFilters = computed(() => {
+    // more filters button is hidden by default
+    // to show the filters button, aggregations MUST contains items
+    const moreFiltersAggregations = this.appStore.getAuthorizedFilters(this.route)
+      .filter(f => f.name !== "Modified")
+      .map(f => f.column)
+      .toSpliced(0, this.filtersCount)
+      .map(column => this.aggregationsStore.getAggregation(column, "column"));
+
+    return moreFiltersAggregations.some(agg => agg?.items && agg.items.length > 0);
+  })
 
   filterDate = { name: "#date", column: "modified", count: 0, isTree: false, disabled: false, hidden: false };
 
@@ -106,7 +121,7 @@ export class FiltersListComponent {
           isTree: false,
           disabled: false,
           hidden,
-        })
+        }) as CFilterEx
       });
 
       this.filters.set(f);

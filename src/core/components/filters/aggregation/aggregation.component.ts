@@ -121,7 +121,7 @@ export class AggregationComponent {
     if (!this.suggests()) return undefined;
 
     // if the aggregation is a tree, we transform the suggestions into tree nodes
-    if(this.aggregation()?.isTree) {
+    if (this.aggregation()?.isTree) {
       return suggestionsToTreeAggregationNodes(this.suggests()!, this.debouncedSearchText());
     }
 
@@ -166,7 +166,7 @@ export class AggregationComponent {
   protected processAggregation(): AggEx | null | undefined {
     const agg: AggEx = this.aggregationsStore.getAggregation(this.name() || '', this.kind()) as AggEx;
 
-    if(!agg) return null;
+    if (!agg) return null;
 
     const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
     agg.display = display;
@@ -177,11 +177,15 @@ export class AggregationComponent {
       const { filters = [] } = getState(this.queryParamsStore);
       const flattenedValues = this.flattenFilters(filters);
 
+      if (agg.isTree) {
+        const selectedAgg = agg.items.map( item => this.selectNode(item as TreeAggregationNode, flattenedValues));
+        const openedAgg = selectedAgg.map( item => this.openParentNodes(item as TreeAggregationNode, flattenedValues));
+        agg.items = openedAgg;
+      }
+
       (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
 
-        if (agg.isTree) {
-          this.selectItems(agg.items as AggregationListItem[], flattenedValues);
-        } else {
+        if (!agg.isTree) {
           const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
           item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
         }
@@ -192,6 +196,40 @@ export class AggregationComponent {
 
     return agg;
   }
+
+  /**
+   * Selects a node in a tree structure based on a given path.
+   *
+   * @param {TreeAggregationNode} node - The current node in the tree.
+   * @param {string[]} path - An array of path strings used to determine which nodes to select.
+   * @returns {TreeAggregationNode} - The updated node with the selection state applied.
+   */
+  private selectNode(node: TreeAggregationNode, path: string[]): TreeAggregationNode {
+    if (node.$path && path.includes(`/${node.$path}/*`)) {
+      node.$selected = true;
+    }
+    if (node.items) {
+      node.items = node.items.map((item) => this.selectNode(item, path));
+    }
+    return node;
+  };
+
+  /**
+   * Recursively opens parent nodes in a tree structure if any of their child nodes are selected or opened.
+   *
+   * @param node - The current tree node being processed.
+   * @param path - An array representing the path to the current node.
+   * @returns The updated tree node with parent nodes opened if necessary.
+   */
+  private openParentNodes(node: TreeAggregationNode, path: string[]): TreeAggregationNode {
+    if (node.items) {
+      node.items = node.items.map((item) => this.openParentNodes(item, path));
+    }
+    if (node.items && node.items.some(item => item.$selected || item.$opened)) {
+      node.$opened = true;
+    }
+    return node;
+  };
 
   /**
  * Clears the current filter for the aggregation column.
@@ -248,8 +286,9 @@ export class AggregationComponent {
 
   async open(node: AggregationListItem) {
     const q = this.queryParamsStore.getQuery();
-    await firstValueFrom(this.aggregationsService.open(q, this.aggregation() as TreeAggregation, node as TreeAggregationNode));
-    this.cdr.detectChanges();
+    node.$opened = true;
+    const agg = await firstValueFrom(this.aggregationsService.open(q, this.aggregation() as TreeAggregation, node as TreeAggregationNode));
+    this.aggregationsStore.updateAggregation(agg);
   }
 
   /**
@@ -415,42 +454,22 @@ export class AggregationComponent {
     return flattenedValues;
   }
 
-  // Select all items for tree aggregation
-  // If an item is selected, open all its parents
-  private selectItems(items: AggregationListItem[], values: string[]): boolean {
-    let shouldParentBeOpened = false;
+  /**
+ * Counts the number of selected items in a nested list of `AggregationListItem`.
+ *
+ * This method recursively traverses the provided list of items and their nested items,
+ * counting how many of them have the `$selected` property set to `true`.
+ *
+ * @param items - The list of `AggregationListItem` to count selected items from.
+ * @returns The total number of selected items.
+ */
+  protected countSelected(items: AggregationListItem[]): number {
+    if (!items) return 0;
 
-    items.forEach(item => {
-      if (values.includes(`/${item.$path}/*`)) {
-        item.$selected = true;
-        shouldParentBeOpened = true;
-      }
-      if (item.items) {
-        const shouldBeOpened = this.selectItems(item.items, values);
-        item.$opened = shouldBeOpened;
-        shouldParentBeOpened = shouldParentBeOpened || shouldBeOpened;
-      }
-    });
-
-    return shouldParentBeOpened;
+    return items.reduce((count, item) => {
+      if (item.$selected) count++;
+      if (item.items) count += this.countSelected(item.items);
+      return count;
+    }, 0);
   }
-
-    /**
-   * Counts the number of selected items in a nested list of `AggregationListItem`.
-   *
-   * This method recursively traverses the provided list of items and their nested items,
-   * counting how many of them have the `$selected` property set to `true`.
-   *
-   * @param items - The list of `AggregationListItem` to count selected items from.
-   * @returns The total number of selected items.
-   */
-    protected countSelected(items: AggregationListItem[]): number {
-      if(!items) return 0;
-
-      return items.reduce((count, item) => {
-        if (item.$selected) count++;
-        if (item.items) count += this.countSelected(item.items);
-        return count;
-      }, 0);
-    }
 }

@@ -4,11 +4,12 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { cn, DropdownComponent } from "@sinequa/atomic-angular";
 import { AggregationComponent } from "../aggregation/aggregation.component";
 import { CFilterEx } from "../filters.models";
+import { SyslangPipe } from "../../../pipes/syslang";
 
 @Component({
   selector: 'filter-button, FilterButton',
   standalone: true,
-  imports: [NgClass, DropdownComponent, TranslocoPipe, AggregationComponent],
+  imports: [NgClass, DropdownComponent, TranslocoPipe, AggregationComponent, SyslangPipe],
   template: `
     <Dropdown [disabled]="filter().disabled">
       <button
@@ -21,7 +22,7 @@ import { CFilterEx } from "../filters.models";
         @if (filter().icon) {
           <i class="fa-fw {{ filter().icon }} " aria-hidden="true"></i>
         }
-        {{ (filter().display || filter().name) | transloco }}
+        {{ (filter().display || filter().name) | syslang | transloco }}
         @if(filter().isTree && filter().count > 0) {
           <span class="pill size-5 pill-xs pill-ghost bg-white flex place-content-center font-semibold text-blue-600">
             {{ filter().count }}
