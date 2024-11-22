@@ -1,14 +1,14 @@
-import { afterNextRender, Component, computed, effect, ElementRef, inject, InjectionToken, signal, viewChild, viewChildren } from "@angular/core";
+import { afterNextRender, Component, computed, effect, ElementRef, inject, signal, viewChild, viewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { HashMap, provideTranslocoScope, Translation } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { AggregationsStore, AppStore, CFilter, cn, QueryParamsStore } from "@sinequa/atomic-angular";
+import { AggregationsStore, AppStore, cn, QueryParamsStore } from "@sinequa/atomic-angular";
 
 import { FilterButtonComponent } from "./buttons/filter-button.component";
 import { FilterDateButtonComponent } from "./buttons/filter-date-button.component";
 import { FiltersMoreButtonComponent } from "./buttons/filters-more-button.component";
-import { CFilterEx, FILTERS_BREAKPOINT } from "./filters.models";
+import { FILTERS_BREAKPOINT } from "./filters.models";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -37,9 +37,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 
     @for(filter of filters(); track $index) {
       <FilterButton [class]="cn(
-        filter.hidden && 'hidden',
         hasMoreFilters() && $index >= moreFilterCount() && 'invisible'
-        )" [filter]="filter" />
+        )" [column]="filter" />
     }
 
     @if(hasMoreFilters()) {
@@ -65,7 +64,7 @@ export class FiltersListComponent {
   aggregationsStore = inject(AggregationsStore);
   queryParamsStore = inject(QueryParamsStore);
 
-  filters = signal<CFilterEx[]>([]);
+  filters = signal<string[]>([]);
   moreFilterCount = signal(this.filtersCount);
 
   hasFilters = computed(() => {
@@ -111,21 +110,7 @@ export class FiltersListComponent {
         .map(f => f.column)
         .toSpliced(this.filtersCount);
 
-      const f = authorizedFilters.map((filter) => {
-        const { icon, hidden = false } = this.appStore.getAggregationCustomization(filter) as CFilter || {};
-        return ({
-          name: filter,
-          column: filter,
-          icon,
-          count: 0,
-          isTree: false,
-          disabled: false,
-          hidden,
-        }) as CFilterEx
-      });
-
-      this.filters.set(f);
-      this.updateFilter();
+      this.filters.set(authorizedFilters);
       this.adjustFiltersCount();
     }, { allowSignalWrites: true });
 
@@ -162,38 +147,6 @@ export class FiltersListComponent {
     else {
       this.moreFilterCount.set(this.filtersCount);
     }
-  }
-
-  /**
-   * Updates the filters list by mapping through each filter and updating its properties
-   * based on the corresponding aggregation and query parameters.
-   *
-   * - Retrieves the aggregation for each filter's column.
-   * - Gets the filter from the query parameters store using the aggregation name.
-   * - Determines the count of items for the filter.
-   * - Retrieves the display customization for the filter's column.
-   * - Updates the filter properties including name, display, isTree, count, and disabled status.
-   *
-   */
-  updateFilter() {
-    this.filters.update(filters => {
-      return filters.map((filter) => {
-        const agg = this.aggregationsStore.getAggregation(filter.column, "column");
-        const f = this.queryParamsStore.getFilter(agg?.name);
-        const count = f?.count || 0;
-
-        const { display = agg?.isTree ? undefined : f?.display || filter.display } = this.appStore.getAggregationCustomization(filter.column) as CFilter || {};
-
-        return {
-          ...filter,
-          name: agg?.name || filter.name,
-          display,
-          isTree: agg?.isTree || false,
-          count,
-          disabled: !agg?.items || agg.items?.length === 0 ? true : false,
-        };
-      })
-    })
   }
 
 }
