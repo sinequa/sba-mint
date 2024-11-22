@@ -11,6 +11,10 @@
       "success": "User settings have been reset successfully."
   },
   "editLabels": {
-    "title": "Add / Edit labels"
+    "title": "Add / Edit labels",
+    "info": "Press 'Enter' to add a new label that does not exist in the suggestions",
+    "startTyping": "Start typing labels...",
+    "publicLabels": "Public labels",
+    "privateLabels": "Private labels"
   }
 }
