@@ -1,8 +1,9 @@
+import { NgClass } from "@angular/common";
 import { Component, computed, ElementRef, inject, input, model, OnDestroy, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
-import { LabelsConfig, LabelService } from "@sinequa/atomic-angular";
+import { LabelsConfig, LabelService, cn } from "@sinequa/atomic-angular";
 import { Subscription, tap } from "rxjs";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
@@ -13,7 +14,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: 'edit-labels-dialog',
   standalone: true,
-  imports: [FormsModule, TranslocoPipe],
+  imports: [FormsModule, TranslocoPipe, NgClass],
   providers: [provideTranslocoScope({ scope: "dialog", loader })],
   template: `
 <dialog
@@ -44,10 +45,15 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       }
       <div>
         @for (label of publicLabels(); track $index) {
-          <span class="pill pill-sm pill-ghost bg-primary flex place-content-center items-center font-semibold text-white float-left m-1 cursor-pointer"
+          <span class="pill pill-sm pill-ghost bg-primary flex place-content-center items-center font-semibold text-white float-left m-1"
+            [ngClass]="cn(
+              labelsConfig()!.allowPublicLabelsModification && 'cursor-pointer'
+            )"
             (click)="removeLabel(label, true)">
             {{label}}
-            <i class="ms-1 fa-fw far fa-circle-xmark"></i>
+            @if (labelsConfig()!.allowPublicLabelsModification) {
+              <i class="ms-1 fa-fw far fa-circle-xmark"></i>
+            }
           </span>
         }
       </div>
@@ -77,6 +83,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 `
 })
 export class EditLabelsComponent implements OnDestroy {
+  cn = cn;
+
   public readonly article = input.required<Article>();
 
   labelService = inject(LabelService);
