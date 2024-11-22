@@ -64,4 +64,4 @@
   </section>
 </article>
 
-<edit-labels-dialog />
+<edit-labels-dialog [article]="article()" (click)="$event.stopPropagation()" />
