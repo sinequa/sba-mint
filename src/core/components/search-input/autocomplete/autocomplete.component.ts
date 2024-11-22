@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
@@ -26,7 +26,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   selector: 'app-autocomplete',
   standalone: true,
   templateUrl: './autocomplete.component.html',
-  imports: [AsyncPipe, NgIf, NgClass, HighlightWordPipe, TranslocoPipe],
+  imports: [NgClass, HighlightWordPipe, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: 'search-input', loader })]
 })
 export class AutocompleteComponent {
@@ -34,7 +34,7 @@ export class AutocompleteComponent {
   readonly onClick = output<Suggestion>();
 
   readonly wasSearchClicked = signal(false);
-  
+
   readonly autocompleteService = inject(AutocompleteService);
   readonly auditService = inject(AuditService);
   readonly appStore = inject(AppStore);
