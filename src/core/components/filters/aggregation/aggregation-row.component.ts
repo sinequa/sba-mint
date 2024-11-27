@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
 
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@sinequa/atomic-angular";
+import { AggregationListItem, cn } from "@sinequa/atomic-angular";
 
 import { SyslangPipe } from "@/core/pipes/syslang";
 
@@ -25,7 +25,6 @@ import { SyslangPipe } from "@/core/pipes/syslang";
 })
 export class AggregationRowComponent {
   cn = cn;
-
   @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
 
   @Output() onSelect = new EventEmitter<AggregationListItem>();

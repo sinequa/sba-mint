@@ -8,7 +8,6 @@ import { HomeComponent } from './pages/home/home.component';
 import { SearchComponent } from './pages/search/search.component';
 
 import { InitializationGuard, queryNameResolver } from '@sinequa/atomic-angular';
-import { SearchAllComponent } from './pages/search/all/search-all.component';
 
 import { ErrorComponent } from '@/core/components/error/error.component';
 
@@ -17,7 +16,7 @@ type ExtendedData = Data & {
   queryName?: string;     // name of the query defined in the admin
   display?: string;       // the label you want to display in the interface
   wsQueryTab?: string;    // the name of the "tab" associated with the query you want to use
-  iconClass?: string;     // the icon you want to associate with the label in the interface
+  icon?: string;     // the icon you want to associate with the label in the interface
   [key: string | symbol]: any;  // all the "custom" parameters you want
 }
 type ExtendedRoute = Route & {
@@ -33,7 +32,7 @@ export const routes: ExtendedRoutes = [
   {
     path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver },
      children: [
-      { path: 'all', component: LoadingComponent, data: { queryName: 'search', display: 'search', wsQueryTab: 'All', iconClass: 'fas fa-search' } },
+      { path: 'all', component: LoadingComponent },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },

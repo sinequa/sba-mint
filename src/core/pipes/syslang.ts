@@ -36,24 +36,24 @@ export class SyslangPipe implements PipeTransform, OnDestroy {
     this.subscription = null;
   }
 
+  constructor() {
+    this.currentLang = this.transloco.getActiveLang();
+    this.subscription = this.transloco.langChanges$.subscribe(locale => this.currentLang = locale);
+  }
+
   /**
    * Transforms the input value using the current language.
    * @param value The input string value to be transformed.
    * @returns The transformed string value.
    */
   transform(value?: string, lang?: string): string | null {
-    this.subscription?.unsubscribe();
 
-    this.subscription = this.transloco.langChanges$.subscribe(locale => {
-      this.currentLang = locale;
+    const transformedValue = sysLang(value || "", lang || this.currentLang);
 
-      const transformedValue = sysLang(value || "", lang || this.currentLang);
-
-      if (transformedValue !== this.lastValue) {
-        this.lastValue = transformedValue;
-        this.cdr.markForCheck();
-      }
-    });
+    if (transformedValue !== this.lastValue) {
+      this.lastValue = transformedValue;
+      this.cdr.markForCheck();
+    }
 
     return this.lastValue;
   }

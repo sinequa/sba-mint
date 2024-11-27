@@ -37,7 +37,6 @@ type NavbarTab = {
   styleUrl: './navbar.component.scss',
   imports: [
     CommonModule,
-    NgClass,
     AsyncPipe,
     RouterLink,
     RouterLinkActive,
@@ -119,7 +118,6 @@ export class NavbarComponent implements OnDestroy {
   protected changeTab(tab: NavbarTab): void {
     // we use the routerlink to navigate, so just close the drawer and remove the id parameter from the query params
     this.drawerStack.closeAll();
-    this.queryParamsStore.patch({ id: undefined });
   }
 
   /**
