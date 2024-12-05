@@ -31,7 +31,7 @@
     <i class="fa-fw {{ node().icon }} self-center justify-self-center"></i>
   }
 
-  <span class="line-clamp-1 text-ellipsis" [title]="node().display || node().value | syslang" [ariaLabel]="node().display || node().value | syslang">{{ node().display || node().value | syslang }}</span>
+  <span class="line-clamp-1 text-ellipsis" [title]="name() | syslang" [ariaLabel]="name() | syslang">{{ name() | syslang }}</span>
 </a>
 
 @if(node().hasChildren && node().$opened) {

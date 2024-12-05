@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
+import { Component, EventEmitter, HostBinding, Output, computed, input } from "@angular/core";
 
 import { AggregationListItem, cn } from "@sinequa/atomic-angular";
 
@@ -33,6 +33,11 @@ export class AggregationRowComponent {
   node = input.required<AggregationListItem>();
 
   @HostBinding("class.selected") get selected() { return this.node().$selected }
+
+  name = computed(() => {
+    const value = this.node().display || this.node().value;
+    return typeof value === 'string' ? value : `${value}`;
+  })
 
   select(e: Event, item: AggregationListItem) {
     e.stopImmediatePropagation();
