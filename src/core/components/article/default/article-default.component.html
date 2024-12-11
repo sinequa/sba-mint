@@ -1,4 +1,4 @@
-<article class="article group/article" [class.selected]="selected()">
+<article class="article group/article group" [class.selected]="selected()">
   <section class="shrink-0">
     <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
       <app-source-icon [collection]="article().collection" [connector]="article().connector" class="text-lg max-w-7" />
@@ -9,8 +9,27 @@
     <header>
       <div class="flex gap-2 items-baseline">
         <p class="text-primary text-base font-bold line-clamp-1">{{ article().title }}</p>
-        @if (showBookmark()) {
-          <app-bookmark-button [article]="article()" />
+
+        <div class="flex-grow">
+          @if (showBookmark()) {
+            <app-bookmark-button [article]="article()" />
+          }
+        </div>
+
+        @if (hasLabelsAccess()) {
+        <Dropdown [autoClose]="true" class="invisible group-hover:visible" (click)="$event.stopImmediatePropagation()">
+          @if (hasLabelsAccess()) {
+            <button class="btn btn-ghost" [title]="'article.openMenu' | transloco" role="button">
+              <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+            </button>
+          }
+
+          <ul dropdown-content class="dropdown-content p-1 font-semibold data-list">
+              <li class="flex gap-2 items-baseline data-list-item p-1" (click)="editLabels()">
+                <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }}
+              </li>
+            </ul>
+        </Dropdown>
         }
       </div>
 
@@ -43,3 +62,5 @@
 
   </section>
 </article>
+
+<edit-labels-dialog [article]="article()" (click)="$event.stopPropagation()" />
