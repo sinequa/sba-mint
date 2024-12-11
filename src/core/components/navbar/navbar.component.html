@@ -43,22 +43,19 @@
   </li>
 </menu>
 
-<nav class="row-start-2 col-start-2 col-span-2 w-full h-full absolute top-[1px]">
-  <ul class="col-start-2 col-span-2 flex">
-    @for (tab of tabs; track $index) {
-    <li>
-      <a
-        class="first-letter:capitalize tab inline-block aria-selected:text-primary aria-selected:border-primary whitespace-nowrap"
-        [routerLink]="[tab.routerLink]" [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
-        [routerLinkActive]="'text-primary border-primary'"
-        [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
-        [attr.aria-label]="tab.display | syslang | transloco"
-        (click)="changeTab(tab)"
-        >
-        <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
-        {{ tab.display | syslang | transloco }}
-      </a>
-    </li>
-    }
-  </ul>
-</nav>
+<ul class="row-start-2 col-start-2 col-span-2 w-full h-full flex">
+  @for (tab of tabs; track $index) {
+  <li routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary" class="px-2 py-3 select-none font-semibold cursor-pointer">
+    <a
+      class="first-letter:capitalize inline-block whitespace-nowrap"
+      [routerLink]="[tab.routerLink]" [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
+      [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
+      [attr.aria-label]="tab.display | syslang | transloco"
+      (click)="changeTab(tab)"
+      >
+      <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
+      {{ tab.display | syslang | transloco }}
+    </a>
+  </li>
+  }
+</ul>
