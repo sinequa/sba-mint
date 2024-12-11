@@ -1,4 +1,4 @@
-<article class="article group/article" [class.selected]="selected()">
+<article class="article group/article group" [class.selected]="selected()">
   <section class="shrink-0">
     <div class="flex justify-center items-center size-[40px] rounded-full bg-neutral-50 text-primary">
       <app-source-icon [collection]="article().collection" [connector]="article().connector" class="text-lg max-w-7" />
@@ -16,22 +16,21 @@
           }
         </div>
 
-        <Dropdown #dropdown>
+        @if (hasLabelsAccess()) {
+        <Dropdown [autoClose]="true" class="invisible group-hover:visible" (click)="$event.stopImmediatePropagation()">
           @if (hasLabelsAccess()) {
-            <button class="btn btn-ghost" [title]="'article.openMenu' | transloco" role="button"
-              [attr.aria-label]="'article.openMenu' | transloco" (click)="$event.stopPropagation(); dropdown.toggle()">
+            <button class="btn btn-ghost" [title]="'article.openMenu' | transloco" role="button">
               <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
             </button>
           }
-        
-          <div dropdown-content class="absolute dropdown-content p-1 font-semibold" (click)="$event.stopPropagation()">
-            @if (hasLabelsAccess()) {
-              <li class="mb-1 bg-base-200 p-2" (click)="editLabels()">
+
+          <ul dropdown-content class="dropdown-content p-1 font-semibold data-list">
+              <li class="flex gap-2 items-baseline data-list-item p-1" (click)="editLabels()">
                 <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }}
               </li>
-            }
-          </div>
+            </ul>
         </Dropdown>
+        }
       </div>
 
       <section class="flex gap-1 items-center">

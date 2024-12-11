@@ -1,18 +1,15 @@
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
-import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { StopPropagationDirective } from 'toolkit';
 
-import { AppStore, DropdownComponent, LabelService, MetadataComponent, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { ApplicationStore, AppStore, DropdownComponent, LabelService, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
+import { EditLabelsComponent } from '@/core/features/dialog/labels/edit-labels';
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
-import { SourceIconComponent } from '../../source-icon/source-icon.component';
-import { LegacyFilter } from '@sinequa/atomic';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
-import { EditLabelsComponent } from '@/core/features/dialog/edit-labels';
-import { map, Subscription } from 'rxjs';
+import { LegacyFilter } from '@sinequa/atomic';
+import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 type Tab = 'attachments' | 'similars';
 
@@ -27,19 +24,13 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   selector: 'app-article-default',
   standalone: true,
   imports: [
-    NgClass,
-    AsyncPipe,
-    DatePipe,
-    SelectArticleOnClickDirective,
-    StopPropagationDirective,
-    MetadataComponent,
     BookmarkButtonComponent,
     SourceIconComponent,
     TranslocoDateImpurePipe,
     DropdownComponent,
     TranslocoPipe,
     EditLabelsComponent
-  ],
+],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -53,6 +44,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 })
 export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   appStore = inject(AppStore);
+  applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
   searchService = inject(SearchService);
@@ -87,23 +79,10 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
     return undefined;
   });
 
-  protected hasLabelsAccess = signal<boolean>(false);
-  protected readonly subscriptions = new Subscription();
-
-  constructor() {
-    super();
-
-    this.subscriptions.add(
-      this.labelService.canHandleLabels()
-        .pipe(
-          map((res: boolean) => this.hasLabelsAccess.set(res))
-        ).subscribe()
-    );
-  }
+  protected hasLabelsAccess = computed(() => this.applicationStore.hasLabelsAccess() || false);
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
-    this.subscriptions.unsubscribe();
   }
 
   public toggleTab(tab: Tab): void {
