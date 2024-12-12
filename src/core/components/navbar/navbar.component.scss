@@ -3,7 +3,7 @@
   align-items: center;
   row-gap: 0.5rem;
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  z-index: 0;
+  z-index: auto;
   box-shadow: inset 0 -1px 0 0 rgb(212 212 212);
 
   #navbar-logo {
