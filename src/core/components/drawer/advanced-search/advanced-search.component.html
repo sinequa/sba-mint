@@ -52,7 +52,12 @@
         <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
       </summary>
 
-      <div>
+      @if(loading()) {
+        <div class="flex justify-center items-center h-32">
+          <i class="fa-fw far fa-spinner-third fa-spin text-primary"></i>
+        </div>
+      }
+      @else {
         <ul>
           @for (extract of extracts(); track $index) {
             <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
@@ -71,7 +76,7 @@
             <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
           }
         </ul>
-      </div>
+      }
     </details>
 
     @if (hasLabels()) {
