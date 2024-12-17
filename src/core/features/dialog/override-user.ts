@@ -2,9 +2,10 @@ import { Component, ElementRef, inject, model, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
-import { login, setGlobalConfig } from "@sinequa/atomic";
-import { ApplicationService, PrincipalStore } from "@sinequa/atomic-angular";
 import { toast } from "ngx-sonner";
+
+import { globalConfig, login, setGlobalConfig } from "@sinequa/atomic";
+import { ApplicationService, PrincipalStore } from "@sinequa/atomic-angular";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -19,35 +20,37 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   template: `
 <dialog
   popover
-  class="z-backdrop w-full max-w-md p-4 rounded-lg shadow-2xl"
+  class="z-backdrop w-full max-w-md p-4 rounded-lg border border-neutral-200 shadow-2xl"
   #dialog>
   <div class="flex flex-col gap-4">
     <h1 class="text-xl font-bold">{{ 'dialog.overrideUser.title' | transloco }}</h1>
     <hr class="border-t mb-2" />
 
     <input
-      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      class="h-10 px-2 border w-full rounded-md bg-neutral-50 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
       type="text"
       autocomplete="off"
       spellcheck="false"
       [attr.aria-label]="'dialog.overrideUser.usernameToOverride' | transloco"
       [attr.placeholder]="'dialog.overrideUser.usernameToOverride' | transloco"
       [(ngModel)]="overrideUser().username"
+      (keydown.enter)="override()"
     />
 
     <input
       required
-      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      class="h-10 px-2 border w-full rounded-md bg-neutral-50 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
       type="text"
       autocomplete="off"
       spellcheck="false"
       [attr.aria-label]="'dialog.overrideUser.domainToOverride' | transloco"
       [attr.placeholder]="'dialog.overrideUser.domainToOverride' | transloco"
       [(ngModel)]="overrideUser().domain"
+      (keydown.enter)="override()"
     />
 
     <div class="flex justify-end gap-2 mt-4">
-      <button class="btn btn-outline w-24" (click)="dialog.close()">
+      <button class="btn btn-ghost outline-none w-24" (click)="dialog.close()">
         {{ 'cancel' | transloco }}
       </button>
 
@@ -79,19 +82,43 @@ export class OverrideUserDialogComponent {
   }
 
   handleOverrideUser(username?: string, domain?: string) {
+    const { useSSO } = globalConfig
+
     if (username === undefined || domain === undefined) {
       setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
     }
     else {
       setGlobalConfig({ userOverrideActive: true, userOverride: { username, domain } });
     }
-    login().then(value => {
-      if (value) {
-        this.appService.init().then(() => {
-          const { fullName } = getState(this.principalStore).principal;
-          toast(`Welcome back ${fullName}!`, { duration: 2000 })
-        });
-      }
-    });
+
+    // Login with the new user
+    if (useSSO) {
+
+      this.appService.init().then(() => {
+        const { fullName } = getState(this.principalStore).principal;
+        toast(`Welcome back ${fullName}!`, { duration: 2000 });
+      }).catch(error => {
+        toast.error('An error occured while overriding (SSO - intialize)', { duration: 2000 });
+        setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
+      });
+
+    } else {
+      login().then(value => {
+        if (value) {
+          this.appService.init().then(() => {
+            const { fullName } = getState(this.principalStore).principal;
+            toast(`Welcome back ${fullName}!`, { duration: 2000 });
+          }).catch(error => {
+            toast.error('An error occured while overriding (initialize)', { duration: 2000 });
+            setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
+          });
+        }
+      }).catch(error => {
+        toast.error('An error occured while overriding (login)', { duration: 2000 });
+        setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
+      });
+
+    }
+
   }
 }

@@ -1,31 +1,36 @@
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
-import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { StopPropagationDirective } from 'toolkit';
 
-import { AppStore, MetadataComponent, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { ApplicationStore, AppStore, DropdownComponent, LabelService, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
+import { EditLabelsComponent } from '@/core/features/dialog/labels/edit-labels';
+import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { LegacyFilter } from '@sinequa/atomic';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 type Tab = 'attachments' | 'similars';
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
+const loader = ['en', 'fr'].reduce((acc, lang) => {
+  acc[lang] = () => import(`../i18n/${lang}.json`);
+  return acc;
+}, {} as HashMap<() => Promise<Translation>>);
+
 @Component({
   selector: 'app-article-default',
   standalone: true,
   imports: [
-    NgClass,
-    AsyncPipe,
-    DatePipe,
-    SelectArticleOnClickDirective,
-    StopPropagationDirective,
-    MetadataComponent,
     BookmarkButtonComponent,
-    SourceIconComponent
-  ],
+    SourceIconComponent,
+    TranslocoDateImpurePipe,
+    DropdownComponent,
+    TranslocoPipe,
+    EditLabelsComponent
+],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
   hostDirectives: [{
@@ -34,11 +39,18 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   }, {
     directive: ShowBookmarkDirective,
     inputs: ['article']
-  }]
+  }],
+  providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
 export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   appStore = inject(AppStore);
+  applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
+  queryParamStore = inject(QueryParamsStore);
+  searchService = inject(SearchService);
+  labelService = inject(LabelService);
+
+  readonly editLabelsDialog = viewChild(EditLabelsComponent);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
@@ -67,6 +79,8 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
     return undefined;
   });
 
+  protected hasLabelsAccess = computed(() => this.applicationStore.hasLabelsAccess() || false);
+
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
   }
@@ -79,5 +93,20 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
 
     this.currentTab = tab;
     this.showTab.set(true);
+  }
+
+  /**
+   * Apply filter from the metadata click
+   * @param field field to filter on
+   * @param value value from the filter
+   */
+  setFilter(field: string, value: string): void {
+    let filter: LegacyFilter = { field, value };
+    this.queryParamStore.updateFilter(filter);
+    this.searchService.search([]);
+  }
+
+  editLabels(): void {
+    this.editLabelsDialog()?.showModal();
   }
 }

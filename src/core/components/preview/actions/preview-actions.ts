@@ -86,6 +86,10 @@ export class PreviewActionsComponent {
         this.entities.set(false);
         this.previewService.toggle(this.extracts(), this.entities());
       }
+
+      if (message.type === 'ready'){
+        this.previewService.toggle(this.extracts(), this.entities());
+      }
     });
   }
 

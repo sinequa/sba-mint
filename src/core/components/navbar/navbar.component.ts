@@ -1,18 +1,17 @@
 import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
-import { Component, HostBinding, OnDestroy, Type, ViewChild, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, Type, inject, signal, viewChild } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, NavigationService, QueryParamsStore, SavedSearchesService, SearchService } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
-import { SyslangPipe } from '@/core/pipe/syslang';
+import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { DropdownComponent } from '../dropdown/dropdown';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
@@ -32,28 +31,31 @@ type NavbarTab = {
 }
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
-    imports: [
-        CommonModule,
-        NgClass,
-        AsyncPipe,
-        RouterModule,
-        SearchInputComponent,
-        AutocompleteComponent,
-        UserMenuComponent,
-        DropdownComponent,
-        TranslocoPipe,
-        SyslangPipe
-    ]
+  selector: 'app-navbar',
+  standalone: true,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
+  imports: [
+    CommonModule,
+    AsyncPipe,
+    RouterLink,
+    RouterLinkActive,
+    SearchInputComponent,
+    AutocompleteComponent,
+    UserMenuComponent,
+    DropdownComponent,
+    TranslocoPipe,
+    SyslangPipe
+  ],
+  host: {
+    'class': 'layout-search',
+    '[attr.drawer-opened]': 'drawerOpened()'
+  }
 })
 export class NavbarComponent implements OnDestroy {
-  @HostBinding('attr.drawer-opened')
-  public drawerOpened: boolean = false;
+  readonly drawerOpened = signal(false);
 
-  @ViewChild(SearchInputComponent, { static: true }) public readonly searchInput: SearchInputComponent;
+  readonly searchInput = viewChild(SearchInputComponent);
 
   protected readonly searchText = signal<string>('');
 
@@ -67,7 +69,6 @@ export class NavbarComponent implements OnDestroy {
 
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
-  private readonly searchService = inject(SearchService);
   private readonly savedSearchesService = inject(SavedSearchesService);
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
@@ -80,7 +81,7 @@ export class NavbarComponent implements OnDestroy {
       display: child.data?.['display'] || child.path,
       name: child.data?.['wsQueryTab'] || child.path,
       path: child.path,
-      routerLink: `search/${child.path}/`,
+      routerLink: `${child.path}`,
       iconClass: child.data?.['iconClass'],
       queryName: child.data?.['queryName']
     }) as NavbarTab) ?? [];
@@ -88,7 +89,7 @@ export class NavbarComponent implements OnDestroy {
 
   constructor() {
     this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+      this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state))
     );
   }
 
@@ -102,7 +103,7 @@ export class NavbarComponent implements OnDestroy {
       return;
     }
 
-    this.autocompleteService.opened.set(false);
+    this.searchInput()?.closeAutocompletePopover();
 
     this.search(item.display!);
   }
@@ -111,14 +112,12 @@ export class NavbarComponent implements OnDestroy {
     this.queryParamsStore.patch({ text });
 
     // ! we need to remove the page parameter from the query params when new search is performed
-    this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'merge' });
+    this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'replace' });
   }
 
   protected changeTab(tab: NavbarTab): void {
+    // we use the routerlink to navigate, so just close the drawer and remove the id parameter from the query params
     this.drawerStack.closeAll();
-    // ! we need to remove the page parameter from the query params when new search is performed
-    this.queryParamsStore.patch({ queryName: tab.queryName, page: undefined, tab: tab.name, filters: undefined, sort: undefined, id: undefined });
-    this.searchService.search([tab.routerLink]);
   }
 
   /**

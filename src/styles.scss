@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css";
+/* @import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css"; */
 
 @import "../node_modules/toolkit/styles/keyframes.css";
 @import "../node_modules/toolkit/styles/panel.css";
@@ -23,9 +23,19 @@
 /* @import "./styles/checkbox.scss"; */
 @import "./styles/radio.scss";
 
-
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 html {
   overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  position: relative;
 }
 
 /* Override to hide bootstrap spinner */
@@ -36,4 +46,9 @@ html {
 /* allow multi-line text in the taost description */
 [data-description] {
   white-space: pre-line;
+}
+
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
 }

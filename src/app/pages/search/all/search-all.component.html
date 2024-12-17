@@ -1,27 +1,44 @@
 <main class="col-start-2 col-span-2 mb-8 z-0">
-  <app-filters
-    class="sticky pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white"
-  />
+  @if(query.isPending()){
+    <div class="flex mt-4 justify-between">
+      <div class="flex gap-2">
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="h-9 w-24 btn btn-tertiary"></div>
+      </div>
 
+      <div class="h-9 w-28 btn btn-tertiary"></div>
+    </div>
+  }
+  @else if (query.isSuccess()){
+    <FiltersList class="sticky flex gap-2 pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white z-filter" />
+  }
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
+  <app-sponsored-results />
+
   @if (query.isPending()) {
+    <div class="flex justify-end mt-10">
+      <div class="h-9 w-28 btn btn-tertiary"></div>
+    </div>
+
     <ul class="flex flex-col gap-2 mt-4">
       <li><app-article-default-skeleton /></li>
       <li><app-article-default-skeleton /></li>
       <li><app-article-default-skeleton /></li>
     </ul>
   }
-  @else if (query.isSuccess()) {
-    @if(noRecords() === false) {
-      <div class="flex mt-4">
-        <app-sort-selector
-          class="ms-auto"
-          [result]="result()!"
-          (onSort)="onSort($event)"
-        />
-      </div>
-    }
+  @else if (query.isSuccess() && query.data()?.pages) {
+    <!-- the sort is always displayed excepts when no records are found -->
+    <div class="flex mt-4 has-[_+ul>li.no-records]:hidden">
+      <app-sort-selector
+        class="ms-auto"
+        [result]="result()!"
+        (onSort)="onSort($event)"
+      />
+    </div>
 
     <ul class="flex flex-col gap-2 mt-4">
       @for(page of query.data()?.pages; track page) {
@@ -33,7 +50,7 @@
           </li>
         }
         @empty {
-          <li class="mt-8 text-neutral-500 italic">
+          <li class="mt-8 text-neutral-500 italic no-records">
             No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
           </li>
         }
@@ -42,6 +59,6 @@
   }
 
   @if (query.hasNextPage()) {
-    <div infinity-scroll (loadMore)="nextPage()"></div>
+    <div infinity-scroll (onScroll)="nextPage()"></div>
   }
 </main>

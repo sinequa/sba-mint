@@ -6,13 +6,14 @@ import { SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } 
 import { StopPropagationDirective } from 'toolkit';
 
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
+import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
 
 
 @Component({
   selector: 'app-article-slide',
   standalone: true,
-  imports: [DatePipe, StopPropagationDirective, BookmarkButtonComponent],
+  imports: [DatePipe, StopPropagationDirective, BookmarkButtonComponent, TranslocoDateImpurePipe],
   templateUrl: './article-slide.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {

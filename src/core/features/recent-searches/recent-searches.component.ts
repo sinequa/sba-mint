@@ -1,10 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { Component, computed, inject, signal } from '@angular/core';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { FocusWithArrowKeysDirective, QueryParams, QueryParamsStore, RecentSearch, RelativeDatePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
+import { RecentSearchComponent } from "./recent-search.component";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -14,21 +14,17 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
 
 @Component({
-  selector: 'app-recent-searches',
+  selector: 'app-recent-searches, RecentSearches',
   standalone: true,
-  imports: [FocusWithArrowKeysDirective, RelativeDatePipe, TranslocoPipe],
+  imports: [TranslocoPipe, RecentSearchComponent],
   templateUrl: './recent-searches.component.html',
-  styleUrl: './recent-searches.component.scss',
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
-    class: 'block overflow-auto max-h-[460px]'
+    class: 'block max-h-[460px]'
   },
   providers: [provideTranslocoScope({ scope: 'recent-searches', loader })]
 })
 export class RecentSearchesComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
-  private readonly queryParamsStore = inject(QueryParamsStore);
-  private readonly router = inject(Router);
   protected readonly transloco = inject(TranslocoService);
 
   protected readonly range = signal<number>(RECENT_SEARCHES_ITEMS_PER_PAGE);
@@ -39,37 +35,14 @@ export class RecentSearchesComponent {
   protected readonly getRelativeDate = getRelativeDate;
 
   /**
-   * Handles the click event for a recent search item.
-   * Navigates to the specified path with the query parameters from the recent search.
-   * @param recentSearch - The recent search item that was clicked.
-   */
-  onClick(recentSearch: RecentSearch): void {
-    const { text, filters = [], tab, page } = recentSearch.queryParams || {} as QueryParams;
-
-    const queryParams = {
-      q: text,
-      f: filters.length > 0 ? JSON.stringify(filters) : undefined,
-      t: tab,
-      p: page
-    };
-    this.queryParamsStore.setFromUrl(recentSearch.url);
-    this.router.navigate([recentSearch.url], { queryParams });
-  }
-
-  /**
    * Deletes a recent search item at the specified index.
    * @param index - The index of the item to delete.
    * @param e - The event object.
    */
-  onDelete(index: number, e: Event) {
+  async remove(index: number, e: Event) {
     e.stopPropagation();
-    const searches = this.recentSearches();
-
-    if (searches) {
-      searches?.splice(index, 1);
-      this.userSettingsStore.updateRecentSearches(searches);
-      toast.success('Recent search deleted');
-    }
+    await this.userSettingsStore.deleteRecentSearch(index);
+    toast.success('Recent search deleted');
   }
 
   loadMore(e: Event) {

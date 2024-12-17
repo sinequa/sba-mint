@@ -14,7 +14,7 @@ module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
     fontFamily: {
-      sans: ["Segoe UI"],
+      sans: ["Segoe UI", "SF Pro Text", "Aria", "sans-serif"],
     },
     extend: {
       zIndex: {
@@ -54,8 +54,12 @@ module.exports = {
     article,
     avatar,
     pill,
-    plugin(function ({ addComponents, theme }) {
-      addComponents({
+    plugin(function ({ addBase, addComponents, theme }) {
+      addBase({
+        '.scrollbar-thin': {
+          scrollbarWidth: 'thin',
+          scrollbarGutter: 'stable'
+        },
         '.active:not([disabled])': {
           color: theme('colors.primary'),
           borderColor: theme('colors.primary'),

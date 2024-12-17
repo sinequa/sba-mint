@@ -1,6 +1,6 @@
 @if (article()) {
-  <div class="h-screen flex flex-col p-6">
-    <section class="w-full flex flex-col gap-6 mb-4">
+  <div class="h-screen flex flex-col px-6 pb-6 overflow-y-auto">
+    <section class="w-full flex flex-col gap-6 mt-6 mb-4">
       <header
         id="panel-control"
         class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary"
@@ -42,17 +42,22 @@
       </header>
     </section>
 
-    <section class="border-b border-neutral-300 overflow-y-auto" stkPanel>
-      <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+    <details name="advanced-search-panels" class="border-b border-neutral-300 group" open>
+      <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
         <p class="flex gap-2 font-semibold items-baseline">
           <i class="fa-fw far fa-magnifying-glass"></i>
           {{ 'extracts' | transloco }}
         </p>
 
-        <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-      </header>
+        <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+      </summary>
 
-      <div id="panel-content" open>
+      @if(loading()) {
+        <div class="flex justify-center items-center h-32">
+          <i class="fa-fw far fa-spinner-third fa-spin text-primary"></i>
+        </div>
+      }
+      @else {
         <ul>
           @for (extract of extracts(); track $index) {
             <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
@@ -63,40 +68,40 @@
                 (click)="scrollTo('extractslocations', extract.textIndex, true)"
               ></p>
             </li>
-  
+
             <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
           }
-  
+
           @empty {
             <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
           }
         </ul>
-      </div>
-    </section>
+      }
+    </details>
 
     @if (hasLabels()) {
-      <section class="border-b border-neutral-300" stkPanel>
-        <header id="panel-control" class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
+      <details class="border-b border-neutral-300 group" name="advanced-search-panels">
+        <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
           <p class="flex gap-2 font-semibold items-baseline">
             <i class="fa-fw far fa-tags"></i>
             {{ 'labels' | transloco }}
           </p>
 
-          <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-        </header>
+          <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+        </summary>
 
-        <div id="panel-content">
+        <div>
           <ul class="mt-4 flex flex-col flex-wrap gap-2">
             <li>
-              <sq-metadata
+              <Metadata
                 class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
                 [article]="article()!"
                 [metadata]="labels.public"
               />
             </li>
-    
+
             <li>
-              <sq-metadata
+              <Metadata
                 class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
                 [article]="article()!"
                 [metadata]="labels.private"
@@ -104,30 +109,30 @@
             </li>
           </ul>
         </div>
+      </details>
 
-        @for (highlight of previewHighlights(); track $index) {
-          <ng-container *ngTemplateOutlet="metadataPanel; context: highlight"></ng-container>
-        }
-      </section>
+      @for (highlight of previewHighlights(); track $index) {
+        <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
+      }
     }
   </div>
 }
 
 <ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
-  <div class="px-2 py-3 border-b border-neutral-300" stkPanel>
-    <header id="panel-control" class="flex justify-between items-baseline select-none cursor-pointer">
+  <details name="advanced-search-panels" class="border-b border-neutral-300 group">
+    <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
       <p class="flex gap-2 font-semibold items-baseline capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name }}
       </p>
 
-      <i class="fa-fw far fa-chevron-down panel-control-icon"></i>
-    </header>
+      <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+    </summary>
 
-    <div id="panel-content">
-      <ul id="panel-content" class="p-2">
+    <div>
+      <ul>
         @for (data of metadata; track $index) {
-          <li class="flex justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
+          <li class="flex px-2 py-1 mr-2 justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
             <p>{{ data.display }}</p>
 
             <p class="flex items-center gap-2">
@@ -147,5 +152,5 @@
         }
       </ul>
     </div>
-  </div>
+  </details>
 </ng-template>

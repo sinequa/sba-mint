@@ -4,8 +4,8 @@ import { Router } from "@angular/router";
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { logout } from "@sinequa/atomic";
-import { MenuComponent, MenuItemComponent, PrincipalStore } from "@sinequa/atomic-angular";
+import { globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
+import { MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
 import { OverrideUserDialogComponent } from "../dialog/override-user";
 import { ResetUserSettingsDialogComponent } from "../dialog/reset-user-settings";
 import { getHelpIndexUrl } from "./help-folder-options";
@@ -29,6 +29,7 @@ export class UserMenuComponent {
 
   private readonly router = inject(Router);
   private readonly principalStore = inject(PrincipalStore);
+  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
 
   readonly user = computed(() => {
@@ -46,15 +47,20 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
+  // used to hide the logout button when using SSO
+  useCredentials = globalConfig.useCredentials;
 
   changeLanguage(lang: string) {
-    if (this.transloco.getActiveLang() !== lang) {
+    this.userSettingsStore.updateLanguage(lang);
+
+    if (this.transloco.getActiveLang() !== lang)
       this.transloco.setActiveLang(lang);
-    }
+
     this.menu()?.close();
   }
 
   handleLogout() {
+    setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
     logout().then(() => this.router.navigate(['/logout']));
   }
 

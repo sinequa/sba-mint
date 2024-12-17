@@ -5,16 +5,90 @@
   <title>Error</title>
 </head>
 <body>
-  <div id="error-content"></div>
-  <h3 id="error-url"></h3>
+  <style>
+    html {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+    .icon {
+      width: 5rem;
+      height: 5rem;
+      color: #e3342f;
+      margin-bottom: 2rem;
+    }
+    .title {
+      font-size: 2.25rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .message {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: var(--muted-foreground);
+    }
+    .button-container {
+      display: flex;
+      gap: 1rem;
+    }
+    .button {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .button:hover {
+      background-color: #e2e8f0;
+      color: #4a5568;
+    }
+    .button svg {
+      margin-right: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .error-digest {
+      margin-top: 2rem;
+      padding: 2rem;
+      font-size: 0.875rem;
+      border: 1px solid #d1d5db;
+      border-radius: .375rem;
+      background-color: #eceeee;
+    }
+  </style>
+
+  <div class="container">
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <h1 class="title">Oops! Something went wrong</h1>
+    <p class="message">We apologize for the inconvenience.</p>
+    <div class="button-container">
+      <a href="/" class="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Go to Homepage
+      </a>
+    </div>
+    <!-- <div id="error-content"></div> -->
+    <p class="error-digest" id="error-url"></p>
+  </div></a>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const errorMessage = localStorage.getItem('errorMessage');
     const errorUrl = urlParams.get('url');
 
-    if (errorMessage) {
-      document.getElementById('error-content').innerHTML = errorMessage;
-    }
+    // if (errorMessage) {
+    //   document.getElementById('error-content').innerHTML = errorMessage;
+    // }
 
     if (errorUrl) {
       document.getElementById('error-url').textContent = `URL causing the error: ${decodeURIComponent(errorUrl)}`;

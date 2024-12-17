@@ -4,7 +4,7 @@ import { EventType, Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
-import { AppStore, AutocompleteService, DrawerStackService, FocusWithArrowKeysDirective, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
 
 import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
@@ -54,7 +54,6 @@ const homeFeatures: HomeTab[] = [
     NgClass,
     NgComponentOutlet,
     SearchInputComponent,
-    FocusWithArrowKeysDirective,
     AutocompleteComponent,
     UserMenuComponent,
     TranslocoPipe
@@ -132,8 +131,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       console.error('No display property found on item', item);
       return;
     }
-
-    this.autocompleteService.opened.set(false);
 
     this.search(item.display!);
   }

@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { getState } from '@ngrx/signals';
+import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { globalConfig, login } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, PrincipalStore } from '@sinequa/atomic-angular';
+import { globalConfig } from '@sinequa/atomic';
+import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
-import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SearchComponent } from './pages/search/search.component';
+
 
 @Component({
   selector: 'app-root',
@@ -19,34 +18,55 @@ import { SearchComponent } from './pages/search/search.component';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  private readonly appService = inject(ApplicationService);
-  private readonly principalStore = inject(PrincipalStore);
-  private readonly applicationStore = inject(ApplicationStore);
+  private readonly applicationService = inject(ApplicationService);
+  private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
 
   constructor() {
+    this.login();
+  }
+
+  async login() {
     // Login and initialize the application when the user is logged in
     const { useCredentials } = globalConfig;
 
-    login().then(value => {
-      if (value) {
-        this.appService.initWithCreateRoutes(SearchComponent, SearchAllComponent).then(() => {
-          const { fullName, name } = getState(this.principalStore).principal;
-
-          toast(`Welcome back ${fullName || name}!`, { duration: 2000 })
-          this.applicationStore.updateReadyState();
-
-        }).catch((error: Error) => {
-          console.error("An error occured while initializing the application (app)", error);
-        });
-      }
-    }).catch(error => {
-      console.warn("An error occured while logging in", error);
+    const success = await this.applicationService.autoLogin().catch((err) => {
+      console.warn("An error occured while logging in (app component)", err);
       if (useCredentials) {
-        this.router.navigate(['/login'])
+        this.router.navigate(['login']);
+      }
+      else if (err instanceof Response) {
+        if (err.status === 401 || err.status === 403) {
+          toast.error("You are not authorized to access this page");
+        }
+        if (err.status === 500) {
+          toast.error("An error 500 occured while processing your request");
+          this.router.navigate(['error'], { skipLocationChange: true });
+        }
+      }
+      else {
+        toast.error("An error occured while processing your request");
+        this.router.navigate(['error'], { skipLocationChange: true });
       }
     });
+
+    if (success) {
+      this.setupApplicationLanguage();
+      if (this.router.url === '/error') {
+        this.router.navigate(['/']);
+      }
+    } else {
+      console.warn("An error occured while logging in (app component) after auto login");
+      this.router.navigate(['error'], { skipLocationChange: true });
+    }
   }
 
+  private setupApplicationLanguage() {
+    if (this.userSettingsStore.language?.() === undefined)
+      this.userSettingsStore.updateLanguage('en');
+
+    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+  }
 }

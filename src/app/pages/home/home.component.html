@@ -41,12 +41,9 @@
         <li class="grow border-b border-neutral-300"></li>
       </menu>
 
-      <div class="my-8 overflow-auto">
+      <div class="my-8 overflow-y-auto scrollbar-thin">
         @for (tab of tabs(); track tab.label) {
-        <div
-          [ngClass]="{ hidden: selectedTabId() !== $index }"
-          class="overflow-y-auto"
-        >
+        <div [ngClass]="{ hidden: selectedTabId() !== $index }">
           <ng-container *ngComponentOutlet="tab.component" />
         </div>
         }

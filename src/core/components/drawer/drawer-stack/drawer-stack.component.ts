@@ -1,18 +1,17 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { AppStore, DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
+import { DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
 
-import { DrawerPreviewComponent } from '../preview/preview.component';
 import { DrawerComponent } from '../drawer.component';
+import { DrawerPreviewComponent } from '../preview/drawer-preview.component';
 
 const DRAWER_STACK_MAX_COUNT = 3;
 
 @Component({
   selector: 'app-drawer-stack',
   standalone: true,
-  imports: [AsyncPipe, DrawerComponent],
+  imports: [],
   template: ``,
   styles: [`
     :host {
@@ -75,13 +74,13 @@ export class DrawerStackComponent implements OnDestroy {
     );
   }
 
+  protected toggleAssistant(): void {
+    this.drawerStackService.toggleAssistant();
+  }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  public toggleAssistant(): void {
-    this.drawerStackService.toggleAssistant();
-  }
   private openTopDrawer(index: number): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
       console.log('Drawer stack is full');

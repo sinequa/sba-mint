@@ -1,21 +1,14 @@
 <article class="article group/article p-0" [class.selected]="selected()">
   <section class="shrink-0">
-    <div class="flex ratio-video rounded-s-lg object-cover h-full bg-gray-100 w-[120px]">
-      @if (article().thumbnailUrl && !thumbnailFailed()) {
+    @if (article().thumbnailUrl && !thumbnailFailed()) {
+      <div class="flex ratio-video rounded-s-lg object-cover h-full bg-gray-100 w-[120px]">
         <img 
           class="ratio-video rounded-s-lg object-cover h-full"
           [src]="article().thumbnailUrl" 
           (error)="thumbnailFailed.set(true)"
         />
-      }
-      @else {
-        <div class="m-auto p-1 flex flex-col items-center text-gray-500">
-          <i class="fa-fw far fa-presentation-screen text-xl"></i>
-  
-          <p class="text-center text-xs">No thumbnail available</p>
-        </div>
-      }
-    </div>
+      </div>
+    }
     
   </section>
 
@@ -41,7 +34,7 @@
           @if (article().modified) {
             <p class="flex gap-1 items-baseline">
               <i class="fa-fw far fa-calendar-day"></i>
-              <span class="w-max">{{ article()!.modified!.split(" ")[0] | date : "mediumDate" }}</span>
+              <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate : "mediumDate" }}</span>
             </p>
           }
         </div>

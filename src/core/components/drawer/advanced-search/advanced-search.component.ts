@@ -1,12 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+import { Subscription } from 'rxjs';
 
 import { Article, CCWebService } from '@sinequa/atomic';
-import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, ReplacePipe, SelectionStore } from '@sinequa/atomic-angular';
-import { PanelDirective } from 'toolkit';
+import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 interface MetadataNavigation {
   index: number;
@@ -36,23 +36,16 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       -webkit-appearance: none;
     }
   `],
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
-  host: {
-    class: 'border-l border-neutral-300 bg-white'
-  },
   imports: [
     NgTemplateOutlet,
     FormsModule,
-    PanelDirective,
-    ReplacePipe,
     MetadataComponent,
     TranslocoPipe
   ],
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
-export class AdvancedSearchComponent {
+export class AdvancedSearchComponent implements OnDestroy {
   public readonly article = input.required<Article>();
-  public readonly textChanged = output<string>();
 
   public readonly labels = inject(AppStore).getLabels();
   private readonly applicationStore = inject(ApplicationStore);
@@ -70,7 +63,7 @@ export class AdvancedSearchComponent {
   });
 
   protected readonly previewHighlights = computed(() => {
-    const highlights = (this.appStore.getWebServiceByType('Preview') as PreviewWebService)?.highlights?.split(',')
+    const highlights = (this.appStore.getWebServiceByType('preview') as PreviewWebService)?.highlights?.split(',')
       .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
 
     return highlights?.map(highlight => ({
@@ -91,8 +84,30 @@ export class AdvancedSearchComponent {
     return (publicLabels && publicLabels.length > 0) || (privateLabels && privateLabels.length > 0);
   });
 
+  loading = signal(true);
+  protected subscription: Subscription;
+
+  constructor() {
+    this.subscription = this.previewService.events.subscribe(event => {
+      switch(event) {
+        case 'fetching':
+          this.loading.set(true);
+          break;
+        default:
+          this.loading.set(false);
+          break;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
+  }
+
   protected executeSearch(): void {
-    this.textChanged.emit(this.input());
+    this.selectionStore.update({ queryText: this.input() });
   }
 
   protected clearInput(): void {

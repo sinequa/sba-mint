@@ -26,22 +26,28 @@ const button = plugin(function ({ addBase, addComponents, theme }) {
       borderRadius: theme('borderRadius.DEFAULT'),
       backgroundColor: theme('colors.zinc.900'),
       color: theme('colors.zinc.50'),
-      cursor: 'pointer',
-      '&:hover': {
-        opacity: '0.9'
-      }
+      cursor: 'pointer'
     },
     '.btn-primary': {
       backgroundColor: theme('colors.primary'),
-      color: theme('colors.white')
+      color: theme('colors.white'),
+      '&:hover': {
+        backgroundColor: toRgba(theme('colors.primary'))({ opacityValue: 0.9 })
+      }
     },
     '.btn-secondary': {
       backgroundColor: theme('colors.secondary'),
-      color: theme('colors.primary')
+      color: theme('colors.primary'),
+      '&:hover': {
+        backgroundColor: toRgba(theme('colors.secondary'))({ opacityValue: 0.8 })
+      }
     },
     '.btn-tertiary': {
       backgroundColor: toRgba(colors.neutral[300])({ opacityValue: 0.2 }),
       color: theme('colors.neutral.600'),
+      "&:hover": {
+        backgroundColor: toRgba(colors.neutral[300])({ opacityValue: 0.3 })
+      }
     },
     '.btn-ghost': {
       backgroundColor: colors.transparent,

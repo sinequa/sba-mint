@@ -1,17 +1,19 @@
-import { SyslangPipe } from "@/core/pipe/syslang";
 import { NgClass } from "@angular/common";
-import { Component, EventEmitter, HostBinding, Output, input } from "@angular/core";
+import { Component, EventEmitter, HostBinding, Output, computed, input } from "@angular/core";
 
-import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@sinequa/atomic-angular";
+import { AggregationListItem, cn } from "@sinequa/atomic-angular";
+
+import { SyslangPipe } from "@/core/pipes/syslang";
 
 @Component({
-  selector: "app-aggregation-row",
+  selector: "aggregation-row, AggregationRow",
   standalone: true,
   imports: [NgClass, SyslangPipe],
   templateUrl: "./aggregation-row.component.html",
   styles: `
     :host {
       display: block;
+      user-select: none;
     }
     :host a {
       padding-left: calc((1rem * var(--level)))
@@ -23,16 +25,19 @@ import { AggregationListEx, AggregationListItem, AggregationTreeEx, cn } from "@
 })
 export class AggregationRowComponent {
   cn = cn;
-
   @HostBinding("attr.disabled") get disabled() { return this.node().count === 0 ? "disabled" : null }
 
   @Output() onSelect = new EventEmitter<AggregationListItem>();
   @Output() onOpen = new EventEmitter<AggregationListItem>();
 
   node = input.required<AggregationListItem>();
-  aggregation = input.required<AggregationListEx | AggregationTreeEx>();
 
   @HostBinding("class.selected") get selected() { return this.node().$selected }
+
+  name = computed(() => {
+    const value = this.node().display || this.node().value;
+    return typeof value === 'string' ? value : `${value}`;
+  })
 
   select(e: Event, item: AggregationListItem) {
     e.stopImmediatePropagation();

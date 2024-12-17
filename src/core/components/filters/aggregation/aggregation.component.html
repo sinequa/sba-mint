@@ -1,60 +1,60 @@
-<fieldset class="max-h-80 overflow-auto snap-y">
-  <legend class="w-full px-2 pt-2 cursor-default">
-    <div #legend>
-      <ng-content select="[header]" />
-    </div>
+<fieldset class="flex flex-col gap-2">
 
-    @if (!legend.hasChildNodes() && title()) {
-    <div class="dropdown-header">
-      <i class="fa-fw {{ title()?.icon || 'fas fa-list' }}"></i>
-      <span class="ms-1 me-4 grow">{{ title()?.label | syslang | transloco }}</span>
-
-      <div class="ms-4">
-        @if (hasAppliedFilters()) {
-        <button
-          type="button"
-          class="me-2"
-          [attr.title]="'filters.clearFilters' | transloco"
-          [attr.aria-label]="'filters.clearFilters' | transloco"
-          (click)="clearFilters()"
-          (keydown.enter)="clearFilters()"
-        >
-          <i class="fa-fw far fa-filter-circle-xmark"></i>
-        </button>
+  @if(!headless()) {
+    <legend class="flex items-center gap-1 w-full pl-1 mb-1 h-8 text-sm font-semibold text-gray-600 select-none">
+      @if (aggregation()?.icon) {
+        <i class="fa-fw {{ aggregation()?.icon }}" aria-hidden="true"></i>
       }
+      <span class="grow">{{ aggregation()?.display | syslang | transloco}}</span>
 
-      @if (hasFilter()) {
-        <button
-          type="button"
-          [ngClass]="{ 'ms-7': !hasFilter() }"
-          [attr.title]="'filters.applyFilters' | transloco"
-          [attr.aria-label]="'filters.applyFilters' | transloco"
-          (click)="apply()"
-          (keydown.enter)="apply()"
+    @if(hasFilters()) {
+      <button
+        type="button"
+        class="btn btn-ghost"
+        [attr.title]="'filters.clearFilters' | transloco"
+        [attr.aria-label]="'filters.clearFilters' | transloco"
+        (click)="clear()"
         >
-          <i class="fa-fw far fa-filter"></i>
-        </button>
-      }
-      </div>
-    </div>
+        <i class="fa-fw far fa-filter-circle-xmark"></i>
+      </button>
+    }
+    @if(selectionCount()) {
+      <button
+        type="button"
+        class="btn btn-ghost"
+        [attr.title]="'filters.applyFilters' | transloco"
+        [attr.aria-label]="'filters.applyFilters' | transloco"
+        (click)="apply()"
+        >
+        <i class="fa-fw far fa-filter"></i>
+      </button>
     }
   </legend>
+  }
 
-  <ul class="data-list pt-2 snap-start">
-    @for (item of selected(); track $index) {
-      <app-aggregation-row
-        [aggregation]="aggregation()"
-        [node]="item"
-        (onOpen)="open($event)"
-        (onSelect)="select($event)" />
+  @if( searchable() ) {
+    <div class="p-1 group border bg-neutral-50 grow px-2 flex gap-2 items-center rounded hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus-within:outline focus-within:outline-1 focus-within:outline-primary  focus-within:bg-white">
+      <input
+        class="grow focus:outline-none group-hover:bg-white focus:bg-white bg-neutral-50"
+        type="search"
+        [placeholder]="'search' | transloco"
+        [ngModel]="searchText()"
+        (ngModelChange)="searchText.set($event)"
+        >
+    </div>
+  }
+
+  <ul class="data-list snap-start max-h-52 overflow-auto snap-y">
+    @for (item of items(); track $index) {
+      <AggregationRow [node]="item" (onSelect)="select($event)" (onOpen)="open($event)" />
     }
   </ul>
 
 </fieldset>
 
-@if (aggregation().$hasMore) {
+@if (aggregation()?.$hasMore) {
   <button
-    class="btn btn-tertiary mt-1 w-full flex justify-center"
+    class="btn btn-secondary mt-1 w-full flex justify-center"
     [attr.aria-label]="'loadMore' | transloco"
     (click)="loadMore()"
   >
