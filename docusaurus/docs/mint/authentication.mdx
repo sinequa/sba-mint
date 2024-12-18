@@ -1,3 +1,5 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 ---
 title: Authentication
 ---
@@ -22,7 +24,7 @@ export const appConfig: ApplicationConfig = {
 We attach the function _appInitializerFn()_ which will try to recognize the authentication mode defined in the Administration.
 
 Example of configuration in the Administration:
-<img src='/img/authentication/20241120113835.png' alt='authentication' />
+<img src={useBaseUrl('img/authentication/20241120113835.png')} alt='authentication' />
 
 *In the example above, the mode that is checked will be returned by the Backend and authentication will be performed using this mode. Here, authentication will be done in SAML mode.*
 

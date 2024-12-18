@@ -1,3 +1,5 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 ---
 title: Overview
 ---
@@ -75,18 +77,18 @@ The components in the **core/components** folder are as follows:
 - **Filters List**
   This component is used as a filter bar, it can contain all types of components, but mainly `FilterButton`.
 
-    <img src='/img/overview/20240701084723.png' alt="Filters list"/>
+    <img src={useBaseUrl('/img/overview/20240701084723.png')} alt="Filters list"/>
  - **Aggregation**
    This component is used to display the content of aggregations related to a search. It can be compared to **Facets** in SBA, with the difference that here it is only a display component (dump component).
-    <img src='/img/overview/20240701084821.png' alt="Aggregation"/>
+    <img src={useBaseUrl('/img/overview/20240701084821.png')} alt="Aggregation"/>
 
 - **Date**
   A specific component for applying date-type filters.
-    <img src='/img/overview/20240701084855.png' alt="Date"/>
+    <img src={useBaseUrl('/img/overview/20240701084855.png')} alt="Date"/>
 
 - **More Filters**
   This component can be compared to the `FacetMulti` component in SBA. It contains all the filters that cannot be displayed on a single line (due to lack of space). The contained filters are displayed in an accordion format.
-      <img src='/img/overview/20240701084920.png' alt="More Filters"/>
+      <img src={useBaseUrl('/img/overview/20240701084920.png')} alt="More Filters"/>
 
 - **Navbar**
   This component represents the navigation bar of the **Search** page. If you want to modify this component, simply copy it to the `/app/components` folder and change the import in the `search.component.ts` file that uses it to `@/app/components` instead of `@/core/components`.

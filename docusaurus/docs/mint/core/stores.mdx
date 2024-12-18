@@ -1,3 +1,5 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 ---
 title: Stores
 ---
@@ -11,10 +13,10 @@ Overall, they behave the same as a standard Angular service, except here, the pr
 
 ## Schemas
 
-<img src='/img/stores/20241120140201.png' alt="Stores schema"/>
+<img src={useBaseUrl('/img/stores/20241120140201.png')} alt="Stores schema"/>
 All stores are globally accessible by the application. However, stores related to a search (query) can also be specifically attached to a component.
 
-<img src='/img/stores/20241120141213.png' alt="Stores schema"/>
+<img src={useBaseUrl('/img/stores/20241120141213.png')} alt="Stores schema"/>
 
 :::note
 A detailed description of the stores is available in the documentation related to the [**atomic-library**](../../atomic/intro).
