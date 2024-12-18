@@ -13,7 +13,7 @@ Retrieves metadata from an article object.
 | parameter | type | description |
 | --- | --- | --- |
 | article | `Article` | The article object containing the metadata |
-| metadata | [_KeyOf_](#code) &lt;`Article`&gt; | The key of the metadata to retrieve. |
+| metadata | _KeyOf_ &lt;`Article`&gt; | The key of the metadata to retrieve. |
 
 __Returns__ An array of objects with a `display` property representing the metadata.
 

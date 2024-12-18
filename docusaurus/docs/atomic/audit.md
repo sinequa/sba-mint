@@ -75,7 +75,7 @@ addAuditAdditionalInfo(body);
 ```
 :::warning
 The following functions are used internally, use them with caution.  
-Prefers using the [`addAuditAdditionalInfo()`](#addauditadditionalinfobody)
+Prefers using the [`addAuditAdditionalInfo()`](#addauditadditionalinfo)
 :::
 
 ### ensureAuditRecord(_obj_)
