@@ -9,7 +9,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest"
+    "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest",
+    "docs:ci": "cd docusaurus && npm ci",
+    "docs:build": "cd docusaurus && npm run build",
+    "docs:build-internal": "cd docusaurus && npm run build-internal"
   },
   "private": true,
   "dependencies": {

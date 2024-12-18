@@ -97,7 +97,7 @@ console.log("suggestions", suggestions);
 ### fetchSuggestQuery()
 Fetches suggestions based on the provided query parameters.
 :::danger
-This function is deprecated. Use [fetchSuggest](#fetchsuggestsuggestqueryname-text-filter-kinds-showsources) instead.  
+This function is deprecated. Use [fetchSuggest](#fetchsuggest) instead.  
 This function exists for legacy reasons and could be removed in the futur.
 :::
 

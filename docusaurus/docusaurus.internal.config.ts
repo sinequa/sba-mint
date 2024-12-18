@@ -1,43 +1,51 @@
-// @ts-check
-// `@type` JSDoc annotations allow editor autocompletion and type checking
-// (when paired with `@ts-check`).
-// There are various equivalent ways to declare your Docusaurus config.
-// See: https://docusaurus.io/docs/api/docusaurus-config
+import {themes as prismThemes, Prism} from 'prism-react-renderer';
+(typeof global !== "undefined" ? global : window).Prism = Prism
+require("prismjs/components/prism-csharp");
+require("prismjs/components/prism-bash");
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { Config } from "@docusaurus/types";
 
-/** @type {import('@docusaurus/types').Config} */
-const config = {
+
+const config: Config = {
   title: 'Sinequa Mint',
   tagline: 'Connect your modern workplace and drive innovation from the inside out',
   favicon: 'img/favicon.ico',
   staticDirectories: ['static'],
 
   // Set the production url of your site here
-  url: 'https://github.com/',
+  url: 'https://github.sinequa.com/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/sba-mint/',
+  baseUrl: '/pages/Product/sba-mint/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'sinequa', // Usually your GitHub org/user name.
   projectName: 'sba-mint', // Usually your repo name.
+  deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
   trailingSlash: false,
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+
+  // Even if you don't use internalization, you can use this field to set useful
+  // metadata like html lang. For example, if your site is Chinese, you may want
+  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
 
-
   plugins: [require.resolve('docusaurus-lunr-search')],
+
+  markdown: {
+    mdx1Compat: {
+      comments: false,
+      admonitions: false,
+      headingIds: false
+    }
+  },
 
   presets: [
     [
@@ -46,16 +54,15 @@ const config = {
       ({
         docs: {
           routeBasePath: '/',
-          // path: 'docs',
-          sidebarPath: './sidebars.js',
+          sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
-          //   'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          //   'https://github.com/sinequa/sba-angular/tree/main/',
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: require.resolve('./src/css/custom.css'),
         },
       }),
     ],
@@ -66,12 +73,6 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
-      docs: {
-        sidebar: {
-          hideable: true,
-          autoCollapseCategories: true,
-        },
-      },
       navbar: {
         title: 'Mint',
         logo: {
@@ -79,12 +80,6 @@ const config = {
           src: 'img/sinequa-logo-light-sm.png',
         },
         items: [
-          // {
-          //   type: 'docSidebar',
-          //   sidebarId: 'docs',
-          //   position: 'left',
-          //   label: 'Docs',
-          // },
           {
             type: 'docSidebar',
             position: 'left',
