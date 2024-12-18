@@ -1,0 +1,38 @@
+---
+title: Pages
+---
+
+This is where the application pages are located as described in the routes file: _app.routes.ts_.
+
+There are currently 2 main pages:
+- **Home**, the home page
+- **Search**, the search page. It is further divided into several other pages by existing tabs.
+
+## Structure du dossier _Pages_
+
+``` 
+ pages
+  +-- home/
+  |   +-- home.component
+  |
+  +-- search/
+  |   +-- all/
+  |   |   +-- search-all.component
+  |   |
+  |   +-- search.component
+  |
+  +-- app.component
+```
+
+
+| Page        | Description                                                                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| home/       | This is the landing page. It displays the most recently viewed documents, recent searches, and bookmarks.                              |
+| search/     | This folder contains the **search** component which represents the layout of the page. This component is intended to be very simple.   |
+| search/all/ | This folder contains the component(s) that will be used to display search results.                                                     |
+
+:::note
+It is possible to use different components for each tab or for each type of returned documents. For this, you need to look at the file _app/registry/document-type-registry.ts_.
+
+For simplicity reasons, in "Mint" we use only one component to display a result regardless of the tab or its type (html, pdf, slide...)
+:::

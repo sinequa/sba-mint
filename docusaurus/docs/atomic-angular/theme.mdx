@@ -1,0 +1,150 @@
+---
+title: Theme
+---
+
+## Overview
+A theme is a collection of variables utilized in the DOM to apply consistent colors, spacing, and typography based on the specified collection. In this context, the theme exclusively provides color variables.
+
+For example, a "red" theme would define a range of red shades that vary according to the significance of the content. Additionally, it would include other shades to reflect different contexts, such as secondary, danger, or muted tones.
+
+We manage both light and dark color for the same theme.
+
+### Scope
+
+A scope defines which theme to apply to an identifier, including the associated CSS variables and the mode to be used.
+
+<details>
+<summary>Model</summary>
+```ts
+{
+    name: "Default",
+    id: "default",
+    colors: {
+      background: "0 0% 100%",
+      foreground: "225 11% 7%",
+      card: "0 0% 100%",
+      "card-foreground": "225 11% 7%",
+      active: "219 97% 54%",
+      "active-foreground": "0 0% 98%",
+      "active-background": "219 97% 54% / 10%",
+      primary: "219 97% 54%",
+      "primary-foreground": "0 0% 98%",
+      secondary: "240 4.8% 95.9%",
+      "secondary-foreground": "240 5.9% 10%",
+      muted: "240 4.8% 95.9%",
+      "muted-foreground": "240 3.8% 46.1%",
+      accent: "240 4.8% 95.9%",
+      "accent-foreground": "240 5.9% 10%",
+      destructive: "0 84.2% 60.2%",
+      "destructive-foreground": "0 0% 98%",
+      border: "240 5.9% 90%",
+      input: "240 5.9% 90%",
+      ring: "225 11% 7%",
+    },
+    colorsDark: {
+      background: "240 10% 3.9%",
+      foreground: "0 0% 98%",
+      card: "240 10% 3.9%",
+      "card-foreground": "0 0% 98%",
+      active: "0 0% 98%",
+      "active-foreground": "240 5.9% 10%",
+      "active-background": "0 0% 98% / 10%",
+      primary: "0 0% 98%",
+      "primary-foreground": "240 5.9% 10%",
+      secondary: "240 3.7% 15.9%",
+      "secondary-foreground": "0 0% 98%",
+      muted: "240 3.7% 15.9%",
+      "muted-foreground": "240 5% 64.9%",
+      accent: "240 3.7% 15.9%",
+      "accent-foreground": "0 0% 98%",
+      destructive: "0 62.8% 30.6%",
+      "destructive-foreground": "0 0% 98%",
+      border: "240 3.7% 15.9%",
+      input: "240 3.7% 15.9%",
+      ring: "240 4.9% 83.9%",
+    },
+  }
+```
+</details>
+
+
+## ThemeStore
+
+### Description
+
+The `ThemeStore` fetches a collection of themes from a static files, saves scopes content, handles scopes updates.
+
+### API
+
+| Function                                                                | Description                                   |
+| ----------------------------------------------------------------------- | --------------------------------------------- |
+| `loadDefaultTheme(scope: string, darkMode?: boolean)`                   | Load theme `Default` theme for given `scope`. |
+| `setCurrentTheme(scope: string, themeName: string, darkMode?: boolean)` | Update given `scope` to use `themeName`.      |
+| `setDarkMode(scope: string, darkMode: boolean)`                         | Update given `scope` to `darkMode`.           |
+
+
+
+## Theme providers
+
+### withThemes
+
+`withThemes()` function allow you to push your own theme into the theme array and make it available to use.
+
+```ts
+const THEMES = [{...}];
+
+bootstrapApplication(AppComponent, appConfig)
+  .then((app) => withThemes(app, THEMES))
+  .catch((err) => console.error(err));
+```
+
+Exporting themes from a dedicated file is recommended, as themes can be pretty heavy.
+
+### withThemeBodyHook
+
+`withThemeBodyHook` function allow you to create a special scope, declared with `APPLICATION_THEME_SCOPE = 'application'`, attached to the `<body>` tag using `window.document.body` reference. It will call `themeStore.loadDefaultTheme()` to set everything up at application's bootstrap.
+
+If you want to use a theme over your entire application this is your way to go.
+
+```ts
+const THEMES = [{...}];
+
+bootstrapApplication(AppComponent, appConfig)
+  .then((app) => withThemes(app, THEMES))
+  .then(withThemeBodyHook)
+  .catch((err) => console.error(err));
+```
+
+
+
+## ThemeProviderDirective
+
+### Description
+
+The `ThemeProviderDirective` takes in argument a scope name. It looks for the associated theme name from the `ThemeStore` and apply the CSS variable to on DOM element the directive is attached to. That means every child element will inherit from the theme, but also that you can nest theme.
+
+### Properties
+
+| Property        | Description                                       |
+| --------------- | ------------------------------------------------- |
+| `themeProvider` | Name of the theme to use for that node of the DOM |
+
+### Usage
+
+```html
+<div themeProvider="ruby">
+  <div themeProvider="emerald">
+    <span class="primary">This will be green.</span>
+  </div>
+
+  <div themeProvider="saphir">
+    <span class="primary">This will be blue.</span>
+
+    <div themeProvider="ruby">
+      <span class="primary">This will be red again.</span>
+    </div>
+  </div>
+
+  <span class="primary">This will be red.</span>
+</div>
+```

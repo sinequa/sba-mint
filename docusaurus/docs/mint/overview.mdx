@@ -1,0 +1,98 @@
+---
+title: Overview
+---
+# Overview
+
+:::warning
+This project is only compatible with Angular 18+
+:::
+
+# Third-party dependencies
+
+| Dependency                | Description                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| ngrx/signals/signal-store | fully-featured state management solution<br/>https://ngrx.io/guide/signals/signal-store |
+| tanstack query            | asyncronous state management<br/>https://tanstack.com/query/latest                      |
+| Tailwindcss               | https://tailwindcss.com/docs/installation                                              |
+
+# General structure of the application
+
+| Folder          | Description                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| app             | Contains files related to the application                                                                                                                                       |
+| app/components  | Groups components specific to the application                                                                                                                                   |
+| app/pages       | Contains components related to pages                                                                                                                                            |
+| core/components | Groups base or shared components                                                                                                                                                |
+| core/features   | Groups more complex or specific components                                                                                                                                      |
+| environments    | Contains environment-specific configuration files to manage environment variables and other deployment-specific configurations.                                                 |
+| assets          | Contains static resources like images, global CSS files, and other necessary files for the application.                                                                         |
+| tailwind-plugin | Contains custom TailwindCSS plugin.                                                                                                                                                        |
+
+## /app
+
+The `/app` folder is the core of the Angular application, containing the main components, configurations, routes, and services needed to build the user interface. Here is a detailed description of its content and role in the application:
+
+- **/pages**: contains the page components for the Angular application
+
+  - **/home**: contains the layout for the Home page.
+  - **/search**: contains the layout for the Search page. This page can contain sub-pages represented by folders. Here, only the sub-page **“all”** exists.
+
+  These components are used to structure the different pages of the application, each serving a specific purpose in the overall user experience of the application. The choice of this structure is heavily inspired by the approach taken by NextJS.
+
+- **app.component.html**: This file contains the HTML template for the root component of your application. It defines the basic structure of the web page, including the placeholders where other components will be dynamically loaded.
+
+- **app.component.ts**: This file defines the class for the root component (`AppComponent`). It contains the initialization logic of the application, authentication management, and the injection of various services needed for the application's operation.
+
+- **app.config.ts**: This file configures various aspects of the application, such as internationalization and HTTP interceptors. It exports `appConfig`, a configuration object that is used during the bootstrap of the application in `main.ts`.
+
+- **app.routes.ts**: This file defines the application's routes using Angular's routing system. It maps URL paths to components and configures navigation, including route protection with authentication guards.
+
+- **transloco-loader.ts**: This file is used to configure the loading of translations with the `@jsverse/transloco` library. It defines how translation files are loaded, enabling the internationalization of the application.
+
+In summary, the `/app` folder contains the essential elements for the operation of the Angular application, including the root component, global configuration, routing, and internationalization. It serves as the entry point for the application's structure and business logic.
+
+## /core/components
+
+This folder contains all the base components used by the application.
+
+:::warning
+We do not recommend modifying them directly to avoid future conflicts.
+They are provided as examples only.
+:::
+
+:::tip
+If you want to modify a component in this folder, simply copy it to the **/app/components** folder and update the imports in your application to **@/app/components** instead of **@/core/components**.
+:::
+
+The components in the **core/components** folder are as follows:
+
+- **Drawer**
+  This concerns the operation of the sliding panel used to display previews. However, you can display anything you want as long as the component to be displayed inherits from the base `DrawerComponent`. You can refer to the `DrawerPreviewComponent` for an example of usage.
+    - **DrawerComponent**
+    - **DrawerPreviewComponent**
+    - **DrawerStackComponent**
+
+- **Filters List**
+  This component is used as a filter bar, it can contain all types of components, but mainly `FilterButton`.
+
+    <img src='/img/overview/20240701084723.png' alt="Filters list"/>
+ - **Aggregation**
+   This component is used to display the content of aggregations related to a search. It can be compared to **Facets** in SBA, with the difference that here it is only a display component (dump component).
+    <img src='/img/overview/20240701084821.png' alt="Aggregation"/>
+
+- **Date**
+  A specific component for applying date-type filters.
+    <img src='/img/overview/20240701084855.png' alt="Date"/>
+
+- **More Filters**
+  This component can be compared to the `FacetMulti` component in SBA. It contains all the filters that cannot be displayed on a single line (due to lack of space). The contained filters are displayed in an accordion format.
+      <img src='/img/overview/20240701084920.png' alt="More Filters"/>
+
+- **Navbar**
+  This component represents the navigation bar of the **Search** page. If you want to modify this component, simply copy it to the `/app/components` folder and change the import in the `search.component.ts` file that uses it to `@/app/components` instead of `@/core/components`.
+
+- **Preview**
+  Contains the various components used for the preview. They are used by the **Drawer**
+    - **PreviewDefaultComponent**: default document preview
+    - **PreviewSlideComponent**: preview of documents identified as presentation documents
+    - **AdvancedSearchComponent**: the advanced part of the preview. Allows you to perform searches within the currently previewed document and display the main passages.

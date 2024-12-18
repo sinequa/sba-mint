@@ -1,0 +1,140 @@
+---
+title: Filters
+---
+
+A list of default Filters has been defined and can be configured in different ways.
+
+* by overriding the Token: **AGGREGATIONS_NAMES**
+* by overriding the `getAuthorizedFilters` function of the store: **AppStore** (see Stores).
+* or simply by creating your own component.
+  👉 _core/components/filters/filters-list.component.ts_
+
+Here, we will see how to customize the list using the Token: **AGGREGATIONS_NAMES**
+## Overriding AGGREGATIONS_NAMES
+
+The list of predefined filters is accessible via the constant:
+* **AGGREGATIONS_NAMES_PRESET_DEFAULT**
+
+So, if you want to simply add new filters, you just need to add a new entry in the list of _providers_ in the _app.config.ts_ file:
+
+```ts title="app.config.ts"
+export const appConfig: ApplicationConfig = {
+  providers: [
+	{ provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, "Money"] }
+  ]
+}
+```
+line 3, we add the aggregation named "Money" to the default filters list.
+
+:::tip
+You can simply put your own list of aggregations here, in the form of a string array.
+```ts
+{ provide: AGGREGATIONS_NAMES, useValue: ["Treepath","Person","Geo","Money"] }
+```
+:::
+
+## Folder structure
+```
+core
++-- components
+    +-- filters
+        |-- aggregation/
+        |-- buttons/
+        |-- date/
+        |-- i18n
+        |-- more/
+        +-- filters-list.component.ts
+```
+
+| Folder       | Description                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| aggregations | Contains all components intended to display an aggregation.                                                      |
+| buttons      | Contains all "Filters" components displayed as dropdowns.                                                        |
+| date         | Contains a special filter component for filtering by date.                                                       |
+| more         | Contains a special component intended to display aggregations as an accordion-type component.                    |
+| i18n         | Contains the different translations for the "Filters" components.                                                |
+
+## Components breakdown
+### Filters List
+<img src='/img/overview/20240701084723.png' alt="Filters list"/>
+This component is responsible for displaying the authorized filters (see override **AGGREGATIONS_NAMES**) as a horizontal list.
+
+```html
+<FiltersList /> or <filters-list />
+```
+
+The number of visible items by default is 5, but it can be customized using the Token **FILTERS_BREAKPOINT** in the file 👉 _app.config.ts_.
+```ts title="app.config.ts"
+export const appConfig: ApplicationConfig = {
+  providers: [
+	{ provide: FILTERS_BREAKPOINT, useValue: 6 }
+  ]
+}
+```
+
+Each filter is represented by a button. There are 3 types of buttons:
+* date
+* generic (applies to all filters that are not _dates_)
+* "more filters"
+All these buttons are located in the folder 👉 _filters/buttons_
+
+### Filter Button
+These buttons are responsible for displaying the name of the aggregation they are associated with, as well as the first selected filter and a counter indicating how many other filters have also been applied for this aggregation.
+
+```html
+<FilterButton column="" /> or <filter-button column="" />
+```
+
+| Input  | Type   | Description                                      |
+| ------ | ------ | ------------------------------------------------ |
+| column | string | Column identifier of the aggregation to display |
+
+### Aggregation
+This component is responsible for displaying the content of an aggregation, selecting items, and applying filters.
+
+<img src='/img/overview/20240701084821.png' alt="Aggregation"/>
+
+```html
+<Aggregation name="" [searchable]="false" />
+or
+<aggregation name="" [searchable]="false" />
+```
+
+| Input      | Type               | Description                                                                                |
+| ---------- | ------------------ | ------------------------------------------------------------------------------------------ |
+| name       | string \| null     | Identifier of the aggregation                                                               |
+| kind       | "column" \| "name" | Type of the identifier. By default, the type is "name".                                      |
+| headless   | boolean            | Indicates if the component header should be hidden. By default, the value is "false".       |
+| searchable | boolean            | Indicates if the aggregation can be searched. By default, the value is "true". |
+
+Each row is represented by the component _aggregation-row.component.ts_
+
+### Aggregation Row
+```html
+<AggregationRow node="" (onSelect)="" (onOpen)="" />
+or
+<aggregation-row (onSelect)="" (onOpen)="" />
+```
+
+| Input      | Type                | Description                                        |
+| ---------- | ------------------- | -------------------------------------------------- |
+| node       | AggregationListItem | Represents an item in the aggregation list. |
+
+| Output     | Type                | Description                                                                                    |
+| ---------- | ------------------- | ---------------------------------------------------------------------------------------------- |
+| onSelect() | AggregationListItem | Triggered when the row is selected.                                                |
+| onOpen()   | AggregationListItem | Triggered when a node is opened. Only used by tree-type aggregations. |
+
+### Date
+This component can be used to display date-type aggregations.
+This component inherits from the **Aggregation** component and adds its own specifics.
+<img src='/img/overview/20241122144700.png' alt="Date"/>
+
+```html
+<DateFilter /> or <date-filter />
+```
+
+| Input                             | Type                           | Description                                                                                                           |
+| --------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| title                             | \{ label: string, icon: string\} | The title displayed in the component header.<br/> Default is \{ label: "Date", icon: "far fa-calendar-day" } |
+| displayEmptyDistributionIntervals | boolean                        | Indicates whether to display options with no results.<br/> Default is _false_.                             |

@@ -1,0 +1,84 @@
+---
+title: Stores
+---
+
+# Overview
+Angular applications generally rely on services for managing the state of components or the application.
+
+With "Mint", we have chosen to use **"signal stores"**.
+
+Overall, they behave the same as a standard Angular service, except here, the properties are **"signals"** (features provided by Angular 18).
+
+## Schemas
+
+<img src='/img/stores/20241120140201.png' alt="Stores schema"/>
+All stores are globally accessible by the application. However, stores related to a search (query) can also be specifically attached to a component.
+
+<img src='/img/stores/20241120141213.png' alt="Stores schema"/>
+
+:::note
+A detailed description of the stores is available in the documentation related to the [**atomic-library**](../../atomic/intro).
+:::
+
+## Customize a store
+All stores can be extended so that you can add your own features to them.
+The store most likely to be modified is the **user-settings store**.
+
+By default, this store contains all the useful functions to modify the **user-settings**.
+But if you want to add your own features, here's how to do it:
+
+### Step 1
+Create a file **user-settings.store.ts** in the **app/stores** folder. Create the folder if it does not exist.
+
+### Step 2
+Extend the original **user-settings** store.
+
+:::note
+This is not truly inheritance in the "class" sense, but rather importing functionalities (functions).
+:::
+
+```ts title="app/stores/my-user-settings.store.ts"
+import {
+	withBookmarkFeatures,
+	withRecentSearchFeatures,
+	withSavedSearchFeatures,
+	withUserSettingsFeatures
+} from '@sinequa/atomic-angular';
+
+export const MyUserSettingsStore = signalStore(
+	{ provideId: 'root' },
+	withState({}),
+	withUserSettingsFeatures(),
+	withBookmarkFeatures(),
+	withRecentSearchFeatures(),
+	withSavedSearchFeatures(),
+	withMetods((store) => {
+		/* put your code here */
+	})
+)
+```
+line 9 indicates that this store will be accessible throughout the entire application.
+lines 2 to 5, import the existing _"features"_ from the original store. Feel free to import the features you want.
+line 10, determine the initial state of your "store".
+
+### Step 3
+Inform the application to use your store instead of the original store when necessary.
+This operation is performed in the **app.config.ts** file in the "providers" section.
+
+```ts title="app.config.ts"
+import { UserSettingsStore } from "@sinequa/atomic-angular";
+import { MyUserSettingsStore } from "@/app/stores/my-user-settings.store"
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+	  { provide: UserSettingsStore, useExisting: MyUserSettingsStore }
+  ]
+```
+
+line 6, inform the application that when a component requests access to the original **UserSettingsStore**, it should be redirected to the new store: **MyUserSettingsStore**.
+
+:::warning
+Be careful when using automatic imports by your IDE when you use the **user-settings** store to ensure that it is your store being imported.
+
+Normally, this should not have much impact thanks to the provider override done above.
+:::

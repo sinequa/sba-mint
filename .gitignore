@@ -46,4 +46,5 @@ Thumbs.db
 
 # Docusaurus
 .docusaurus
-docusaurus/node_modules
+docusaurus/build/*
+docusaurus/node_modules/*

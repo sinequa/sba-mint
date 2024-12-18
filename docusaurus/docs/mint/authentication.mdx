@@ -1,0 +1,104 @@
+---
+title: Authentication
+---
+
+By default, the application tries to recognize your authentication mode.
+
+For this, the application uses the Angular token: **APP_INITIALIZER**.
+```ts title="app.config.ts"
+import { appInitializerFn } from '@sinequa/atomic';
+
+export const appConfig: ApplicationConfig = {
+
+  providers: [
+	{
+		provide: APP_INITIALIZER,
+		useFactory: () => appInitializerFn,
+		multi: true
+	}
+]
+```
+
+We attach the function _appInitializerFn()_ which will try to recognize the authentication mode defined in the Administration.
+
+Example of configuration in the Administration:
+<img src='/img/authentication/20241120113835.png' alt='authentication' />
+
+*In the example above, the mode that is checked will be returned by the Backend and authentication will be performed using this mode. Here, authentication will be done in SAML mode.*
+
+This function makes an HTTP call to the Backend which will return the available mode(s).
+
+* If at least one mode is returned, it will be automatically used by the _login()_ function to authenticate.
+* If no mode is returned, the application will attempt SSO authentication or default to _login/password_ if SSO authentication fails.
+
+:::note
+You don't need to change anything in the application, the _autoLogin()_ function takes care of everything.
+:::
+
+The routing in case of failures is handled by the application, you can easily modify it according to your own needs.
+
+```ts title="app.component.ts"
+  async login() {
+    // Login and initialize the application when the user is logged in
+    const { useCredentials } = globalConfig;
+
+    const success = await this.applicationService.autoLogin().catch((err) => {
+      if (useCredentials) {
+        this.router.navigate(['login']);
+      }
+      else if (err instanceof Response) {
+        if(err.status === 401 || err.status === 403) {
+          toast.error("You are not authorized to access this page");
+        }
+        if(err.status === 500) {
+          toast.error("An error 500 occured while processing your request");
+          this.router.navigate(['error']);
+        }
+      }
+      else {
+        toast.error("An error occured while processing your request");
+        this.router.navigate(['error']);
+      }
+    });
+
+    if (success) {
+      this.setupApplicationLanguage();
+      if(this.route.snapshot.url[0].path === 'error') {
+        this.router.navigate(['/']);
+      }
+    } else {
+      this.router.navigate(['error']);
+    }
+  }
+```
+
+
+## Connecting to the Sinequa server
+### Basic configuration
+By default, the connection configuration is automatically managed during the initialization of the application. However, it is possible to override this configuration during development, for example.
+
+This can be found in the **main.ts** file.
+```ts title="main.ts"
+setGlobalConfig(environment);
+```
+
+`environment` is a configuration object with the following main properties:
+
+| Name                                  | Type   | Description                                                                                                                          |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| app                                   | string | The name of the app on the Sinequa server. If not specified, the app will be inferred from the URL `/app/<app-name>`                 |
+| backendUrl                            | string | The URL of the Sinequa server. If not specified, the app will use the URL of the host server                                         |
+| autoOauthProvider or autoSAMLProvider | string | The name of the login provider on the Sinequa server (if any).<br/>If not specified, the app attempts to retrieve it from the server. |
+
+:::note
+All these properties are optional as they all have a default or inferred value.
+:::
+
+Example of connection configuration object:
+```ts title="environment.ts"
+export const environment: Environment = {
+  production: false,
+  app: '_mint',
+  autoSAMLProvider: '...'
+}
+```
