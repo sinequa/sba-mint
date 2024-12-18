@@ -1,3 +1,5 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 ---
 title: Filters
 ---
@@ -56,7 +58,7 @@ core
 
 ## Components breakdown
 ### Filters List
-<img src='/img/overview/20240701084723.png' alt="Filters list"/>
+<img src={useBaseUrl('/img/overview/20240701084723.png')} alt="Filters list"/>
 This component is responsible for displaying the authorized filters (see override **AGGREGATIONS_NAMES**) as a horizontal list.
 
 ```html
@@ -92,7 +94,7 @@ These buttons are responsible for displaying the name of the aggregation they ar
 ### Aggregation
 This component is responsible for displaying the content of an aggregation, selecting items, and applying filters.
 
-<img src='/img/overview/20240701084821.png' alt="Aggregation"/>
+<img src={useBaseUrl('/overview/20240701084821.png')} alt="Aggregation"/>
 
 ```html
 <Aggregation name="" [searchable]="false" />
@@ -128,7 +130,7 @@ or
 ### Date
 This component can be used to display date-type aggregations.
 This component inherits from the **Aggregation** component and adds its own specifics.
-<img src='/img/overview/20241122144700.png' alt="Date"/>
+<img src={useBaseUrl('/img/overview/20241122144700.png')} alt="Date"/>
 
 ```html
 <DateFilter /> or <date-filter />

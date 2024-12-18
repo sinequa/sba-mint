@@ -1,3 +1,5 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 ---
 title: Routes
 ---
@@ -59,7 +61,7 @@ Each **children** will be constructed from the information of the **query** defi
 
 By default, the "Tabs" defined for "Mint" are:
 
-<img src='/img/routes/20241120090158.png' alt='tabs' />
+<img src={useBaseUrl('/img/routes/20241120090158.png')} alt='tabs' />
 
 It is possible to configure other parameters via the **extras customization json files** in the **routes** section.
 
@@ -67,7 +69,7 @@ It is possible to configure other parameters via the **extras customization json
 If the file does not exist, you can simply create it, but it must **ABSOLUTELY** be named: **routes**
 :::
 
-<img src='/img/routes/20241118165044.png' alt='routes' />
+<img src={useBaseUrl('/img/routes/20241118165044.png')} alt='routes' />
 
 Correspondence between the fields of the Json configuration file and the Angular routes.
 
