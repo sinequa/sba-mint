@@ -1,10 +1,9 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, OnDestroy, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { Subscription } from 'rxjs';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SelectionStore } from '@sinequa/atomic-angular';
@@ -40,7 +39,7 @@ type Article = A & {
   },
   styleUrl: './preview-default.component.scss'
 })
-export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
+export class PreviewDefaultComponent extends BasePreview {
   public iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
   public readonly article = computed(() => this.previewData()?.record as Article);
@@ -62,14 +61,14 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly searchService = inject(SearchService);
   protected readonly router = inject(Router);
+  protected readonly cdr = inject(ChangeDetectorRef);
 
   readonly headerCollapsed = signal<boolean>(false);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly previewService = inject(PreviewService);
   readonly canLoadIframe = signal<boolean>(false);
   readonly previewUrlError = signal<boolean>(false);
-
-  private readonly sub = new Subscription();
+  readonly loading = signal<boolean>(false);
 
   constructor() {
     super();
@@ -83,6 +82,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
     effect(() => {
       if (!this.previewData()) return;
 
+      this.cdr.detectChanges();
       this.previewService.setPreviewData(this.previewData());
     });
 
@@ -90,21 +90,18 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       if (!this.previewUrl()) return;
 
       try {
+        this.loading.set(true);
+        this.cdr.detectChanges();
         const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
-        if (response.status === 200) {
-          const text = await response.text();
-          this.canLoadIframe.set(true);
-        } else {
-          this.previewUrlError.set(true)
-        }
+        this.canLoadIframe.set(response.status === 200);
+        this.previewUrlError.set(response.status !== 200);
       } catch (e) {
+        this.canLoadIframe.set(false);
         this.previewUrlError.set(true);
+      } finally {
+        this.loading.set(false);
       }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    }, { allowSignalWrites: true });
   }
 
   navigateToSegment(index: number): void {
@@ -139,6 +136,7 @@ export class PreviewDefaultComponent extends BasePreview implements OnDestroy {
       const message: any = { action: 'select', id: `snippet_${previewHighlights!.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
+    this.loading.set(false);
   }
 
   /**
