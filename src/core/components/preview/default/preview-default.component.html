@@ -90,14 +90,18 @@
           <td class="flex flex-col gap-2">
             <Metadata
               class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
+              className="cursor-pointer"
               [article]="article()!"
               [metadata]="labels.public"
+              (onMetadataClick)="onMetadataClick($event)"
             />
 
             <Metadata
               class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
+              className="cursor-pointer"
               [article]="article()!"
               [metadata]="labels.private"
+              (onMetadataClick)="onMetadataClick($event)"
             />
           </td>
       </tr>
