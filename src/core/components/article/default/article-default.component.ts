@@ -10,6 +10,7 @@ import { BaseArticle } from '@/core/registry/base-article';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { LegacyFilter } from '@sinequa/atomic';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
+import { MissingTermsComponent } from '../missing-terms/missing-terms.component';
 
 type Tab = 'attachments' | 'similars';
 
@@ -29,7 +30,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     TranslocoDateImpurePipe,
     DropdownComponent,
     TranslocoPipe,
-    EditLabelsComponent
+    EditLabelsComponent,
+    MissingTermsComponent
 ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',

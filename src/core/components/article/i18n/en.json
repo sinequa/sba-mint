@@ -1,4 +1,6 @@
 {
   "openMenu": "Open article menu",
-  "editLabels": "Edit labels"
+  "editLabels": "Edit labels",
+  "missingTerms": "Missing terms:",
+  "mustInclude": "| Must include:"
 }
