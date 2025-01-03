@@ -143,7 +143,8 @@ export class LabelsFormComponent {
 
   async fetchLabels(text: string, isPublic: boolean) {
     const labels = await fetchLabels(text, isPublic);
-    this.suggestedLabels.set(labels);
+    const unappliedLabels = labels.filter(label => !this.labels().some(l => l === label));
+    this.suggestedLabels.set(unappliedLabels);
     labels.length ? this.popoverElement().showPopover() : this.popoverElement().hidePopover();
   }
 

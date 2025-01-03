@@ -15,6 +15,7 @@
     "info": "Appuyez sur 'Entrée' pour ajouter un nouveau label qui n'existe pas dans les suggestions",
     "startTyping": "Commencez à écrire un label...",
     "publicLabels": "Labels publics",
-    "privateLabels": "Labels privés"
+    "privateLabels": "Labels privés",
+    "close": "Fermer"
   }
 }

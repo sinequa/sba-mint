@@ -31,7 +31,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
       <i class="fa-fw fas fa-circle-info"></i><span class="font-semibold mx-2">INFO</span>{{'dialog.editLabels.info' | transloco}}
     </div>
 
-    @if (!!labelsConfig()) {
+    @if (!!labelsConfig()?.publicLabelsField) {
       <section class="flex flex-col gap-2">
         <p class="font-semibold">{{'dialog.editLabels.publicLabels' | transloco}}</p>
         @if (labelsConfig()!.allowPublicLabelsCreation) {
@@ -42,6 +42,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
             [isPublic]="true" />
         }
       </section>
+    }
+    @if (!!labelsConfig()?.privateLabelsField) {
       <section class="flex flex-col gap-2">
         <p class="font-semibold">{{'dialog.editLabels.privateLabels' | transloco}}</p>
         <labels-form
@@ -54,7 +56,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 
     <div class="flex justify-end gap-2 mt-4">
       <button class="btn btn-tertiary outline-none w-24" (click)="dialog.close()">
-        {{ 'close' | transloco }}
+        {{ 'dialog.editLabels.close' | transloco }}
       </button>
     </div>
   </div>

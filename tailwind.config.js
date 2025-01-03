@@ -17,6 +17,15 @@ module.exports = {
       sans: ["Segoe UI", "SF Pro Text", "Aria", "sans-serif"],
     },
     extend: {
+      keyframes: {
+        progress: {
+          "0%": { transform: 'translateX(-100%)' },
+          "100%": { transform: 'translateX(100%)' }
+        }
+      },
+      animation: {
+        "progress": "progress 5s infinite linear"
+      },
       zIndex: {
         filter: 100,
         backdrop: 1000,
