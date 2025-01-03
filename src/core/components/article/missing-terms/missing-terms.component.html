@@ -1,14 +1,15 @@
 @if (missingTerms().length > 0) {
-    <span class="sq-missing-terms-label">{{ 'article.missingTerms' | transloco }}</span>
-    <span class="sq-missing-terms">
+    <span class="terms-label">{{ 'article.missingTerms' | transloco }}</span>
+    <span class="terms">
         @for (term of missingTerms(); track $index) {
-        <span class="sq-missing-term ms-1">{{term}}</span>
+        <span class="term ms-1">{{term}}</span>
         }
     </span>
-    <span class="sq-missing-terms-label ms-1">{{ 'article.mustInclude' | transloco }}</span>
-    <span class="sq-missing-terms">
+    <span class="mx-1">|</span>
+    <span class="terms-label ms-1">{{ 'article.mustInclude' | transloco }}</span>
+    <span class="terms">
         @for (term of missingTerms(); track $index) {
-            <a role="button" (click)="$event.stopPropagation(); mustInclude(term)" class="ms-1">{{term}}</a>
+        <a role="button" class="ms-1" routerLink="search" [queryParams]="term.queryParams">{{ term.value }}</a>
         }
     </span>
 }
