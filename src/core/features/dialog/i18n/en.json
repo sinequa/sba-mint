@@ -15,6 +15,7 @@
     "info": "Press 'Enter' to add a new label that does not exist in the suggestions",
     "startTyping": "Start typing labels...",
     "publicLabels": "Public labels",
-    "privateLabels": "Private labels"
+    "privateLabels": "Private labels",
+    "close": "Close"
   }
 }
