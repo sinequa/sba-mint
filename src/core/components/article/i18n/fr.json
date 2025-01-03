@@ -1,4 +1,6 @@
 {
   "openMenu": "Ouvrir le menu de l'article",
-  "editLabels": "Editer les labels"
+  "editLabels": "Editer les labels",
+  "missingTerms": "Termes manquants:",
+  "mustInclude": "Doit inclure:"
 }
