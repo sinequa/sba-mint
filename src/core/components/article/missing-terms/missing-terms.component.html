@@ -1,4 +1,4 @@
-@if (missingTerms().length > 0) {
+@if ((missingTerms() || []).length > 0) {
     <span class="terms-label">{{ 'article.missingTerms' | transloco }}</span>
     <span class="terms">
         @for (term of missingTerms(); track $index) {
