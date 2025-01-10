@@ -1,0 +1,12 @@
+{
+  "createCollection": "Create Collection",
+  "manageCollections": "Manage Collections",
+  "reorderCollections": "Reorder",
+  "addToCollection": "Add to Collection",
+  "noCollections": "No collections yet",
+  "collectionName": "Collection name",
+  "save": "Save",
+  "create": "Create",
+  "cancel": "Cancel",
+  "close": "Close"
+}

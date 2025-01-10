@@ -12,6 +12,7 @@ import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
 
 
 type HomeTab = {
@@ -40,6 +41,12 @@ const homeFeatures: HomeTab[] = [
     iconClass: 'fa-regular fa-bookmark',
     label: 'My bookmark',
     component: BookmarksListComponent
+  },
+  {
+    name: 'baskets',
+    iconClass: 'fa-regular fa-inbox',
+    label: 'My collections',
+    component: CollectionsComponent
   }
 ];
 

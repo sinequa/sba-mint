@@ -1,6 +1,7 @@
 {
   "openMenu": "Open article menu",
   "editLabels": "Edit labels",
+  "addToCollection": "Add to collection",
   "missingTerms": "Missing terms:",
   "mustInclude": "Must include:"
 }
