@@ -1,5 +1,8 @@
 # Sinequa Mint (Beta)
 
+Please watch the [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy) and visit the [Documentation website](https://sinequa.github.io/sba-mint/).
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
 
 ## Development server
