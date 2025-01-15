@@ -1,9 +1,9 @@
-import { afterNextRender, Component, computed, effect, ElementRef, inject, signal, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, ElementRef, inject, signal, viewChild, viewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { HashMap, provideTranslocoScope, Translation } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { AggregationsStore, AppStore, cn, QueryParamsStore } from "@sinequa/atomic-angular";
+import { AggregationsStore, AppStore, cn, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore } from "@sinequa/atomic-angular";
 
 import { FilterButtonComponent } from "./buttons/filter-button.component";
 import { FilterDateButtonComponent } from "./buttons/filter-date-button.component";
@@ -18,38 +18,55 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
 @Component({
   selector: "filters-list, FiltersList",
   standalone: true,
-  imports: [FiltersMoreButtonComponent, FilterButtonComponent, FilterDateButtonComponent],
+  imports: [
+    FiltersMoreButtonComponent,
+    FilterButtonComponent,
+    FilterDateButtonComponent,
+    OverflowManagerDirective,
+    OverflowItemDirective,
+    OverflowStopDirective
+  ],
   providers: [provideTranslocoScope({ scope: 'filters', loader })],
   template: `
-  @if (hasFilters()) {
-    <button
-      class="btn bg-alert/10 text-alert"
-      aria-label="clear all filters"
-      (click)="clearFilters()"
-      (keydown.enter)="clearFilters()"
-      >
-      <i class="fa-fw far fa-trash-can " aria-hidden="true"></i>
-    </button>
-  }
+    <ng-container overflowManager [target]="el.nativeElement" (count)="adjustFiltersCount($event)">
+      @if (hasFilters()) {
+        <button
+          class="btn bg-alert/10 text-alert"
+          aria-label="clear all filters"
+          (click)="clearFilters()"
+          (keydown.enter)="clearFilters()"
+        >
+          <i class="fa-fw far fa-trash-can " aria-hidden="true"></i>
+        </button>
+      }
 
-  @if(hasAggregations()) {
-    <FilterDateButton/>
+      @if (hasAggregations()) {
+        <FilterDateButton />
 
-    @for(filter of filters(); track $index) {
-      <FilterButton [class]="cn(
-        hasMoreFilters() && $index >= moreFilterCount() && 'invisible'
-        )" [column]="filter" />
-    }
+        @for (filter of filters(); track $index) {
+          <FilterButton
+            overflowItem
+            [column]="filter"
+          />
+        }
 
-    @if(hasMoreFilters()) {
-      <FiltersMoreButton class="absolute right-0" [count]="moreFilterCount()" />
-    }
-  }
+        @if (hasMoreFilters()) {
+          <FiltersMoreButton
+            overflowStop
+            class="absolute right-0"
+            [count]="moreFilterCount()"
+          />
+        }
+        @else {
+          <div overflowStop class="absolute right-0"></div>
+        }
+      }
+    </ng-container>
   `,
   host: {
     "role": "list",
     "aria-label": "Filters list",
-  },
+  }
 })
 export class FiltersListComponent {
   cn = cn;
@@ -63,6 +80,7 @@ export class FiltersListComponent {
   appStore = inject(AppStore);
   aggregationsStore = inject(AggregationsStore);
   queryParamsStore = inject(QueryParamsStore);
+  el = inject(ElementRef);
 
   filters = signal<string[]>([]);
   moreFilterCount = signal(this.filtersCount);
@@ -93,27 +111,16 @@ export class FiltersListComponent {
 
   filterDate = { name: "#date", column: "modified", count: 0, isTree: false, disabled: false, hidden: false };
 
-  resizeObserver = new ResizeObserver(() => this.adjustFiltersCount());
-
-  constructor(private el: ElementRef) {
-    afterNextRender(() => {
-      this.resizeObserver.observe(this.el.nativeElement);
-    });
-
-    this.adjustFiltersCount();
-
+  constructor() {
     effect(() => {
       // set filters according to the route and the authorized filters with default values
-
       const authorizedFilters = this.appStore.getAuthorizedFilters(this.route)
         .filter(f => f.name !== "Modified")
         .map(f => f.column)
         .toSpliced(this.filtersCount);
 
       this.filters.set(authorizedFilters);
-      this.adjustFiltersCount();
     }, { allowSignalWrites: true });
-
   }
 
   /**
@@ -133,20 +140,7 @@ export class FiltersListComponent {
    * to the total number of filters.
    *
    */
-  adjustFiltersCount(): void {
-    if (this.filters().length) {
-      const moreFiltersRect = this.moreFilterElement()?.nativeElement.getBoundingClientRect();
-      const dropdownsRects = this.dropdownElements().map(el => el.nativeElement.getBoundingClientRect());
-
-      let index = 0;
-      dropdownsRects.forEach(r => {
-        if ((r.right + 2) <= moreFiltersRect?.left!) index++;
-      });
-      this.moreFilterCount.set(index > this.filtersCount ? this.filtersCount : index);
-    }
-    else {
-      this.moreFilterCount.set(this.filtersCount);
-    }
+  adjustFiltersCount(count: number): void {
+    this.moreFilterCount.set(count > this.filtersCount ? this.filtersCount : count);
   }
-
 }
