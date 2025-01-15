@@ -20,11 +20,11 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   class="z-backdrop w-full max-w-md p-4 rounded-lg border border-neutral-200 shadow-2xl"
   #dialog>
   <div class="flex flex-col gap-4">
-    <h1 class="text-xl font-bold">{{ 'collection.manageCollections' | transloco }} {{modifiedIndex()}}</h1>
+    <h1 class="text-xl font-bold">{{ 'collection.manageCollections' | transloco }}</h1>
     <hr class="border-t mb-2" />
 
     <button class="btn btn-tertiary outline-none w-24" (click)="reorder()">
-      {{ reordering() ? 'collection.save' : 'collection.reorderCollections' | transloco }}
+      {{ (reordering() ? 'collection.save' : 'collection.reorderCollections') | transloco }}
     </button>
 
     <ul class="flex flex-col" cdkDropList [cdkDropListData]="tmpCollections" [cdkDropListDisabled]="!reordering()" (cdkDropListDropped)="dropped($event)">
@@ -37,9 +37,15 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
         >
           @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
             <span class="grow">{{ collection.name }}</span>
+            @if (!reordering()) {
+              <i class="fa-fw fa-regular fa-trash-can" (click)="$event.stopPropagation(); deleteCollection($index)"></i>
+            } @else {
+              <i class="fa-fw fa-regular fa-bars"></i>
+            }
           } @else {
             <div class="grow flex">
               <input
+                #renameInput
                 class="grow h-10 px-2 border w-full rounded-md bg-neutral-50 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
                 type="text"
                 autocomplete="off"
@@ -48,29 +54,9 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
                 [attr.placeholder]="'collection.collectionName' | transloco"
                 [ngModel]="collectionName()"
                 (ngModelChange)="collectionName.set($event)"
+                (blur)="onBlur()"
               />
-              <button 
-                class="btn btn-tertiary flex justify-center px-3 py-2"
-                tabindex="0"
-                [attr.title]="'collection.save' | transloco"
-                (click)="validateRename()"
-              >
-                <i class="fa-fw fa-regular fa-save"></i>
-              </button>
-              <button
-                class="btn btn-tertiary flex justify-center px-3 py-2"
-                tabindex="0"
-                [attr.title]="'collection.cancel' | transloco"
-                (click)="cancelRename()"
-              >
-                <i class="fa-fw fa-regular fa-times"></i>
-              </button>
             </div>
-          }
-          @if (!reordering()) {
-            <i class="fa-fw fa-regular fa-trash-can" (click)="$event.stopPropagation(); deleteCollection($index)"></i>
-          } @else {
-            <i class="fa-fw fa-regular fa-bars"></i>
           }
         </li>
       }
@@ -103,6 +89,7 @@ export class ManageCollectionsDialog {
 
   private readonly userSettingsStore = inject(UserSettingsStore);
   readonly dialog = viewChild<ElementRef>('dialog');
+  readonly renameInput = viewChild<ElementRef>('renameInput');
   collectionName = signal<string>('');
   modifiedIndex = signal<number | undefined>(undefined);
   reordering = signal<boolean>(false);
@@ -135,15 +122,16 @@ export class ManageCollectionsDialog {
 
     this.collectionName.set(collection.name);
     this.modifiedIndex.set(index);
+    setTimeout(() => {
+      this.renameInput()?.nativeElement.focus();
+    });
   }
 
-  validateRename(): void {
-    const collection = this.tmpCollections[this.modifiedIndex()!];
-    collection.name = this.collectionName();
-    this.modifiedIndex.set(undefined);
-  }
-
-  cancelRename(): void {
+  onBlur(): void {
+    if (this.collectionName()) {
+      const collection = this.tmpCollections[this.modifiedIndex()!];
+      collection.name = this.collectionName();
+    }
     this.modifiedIndex.set(undefined);
   }
 

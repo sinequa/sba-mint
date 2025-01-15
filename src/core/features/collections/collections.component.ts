@@ -4,6 +4,7 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsv
 import { Basket, buildQuery, DrawerStackService, QueryParamsStore, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
 import { CreateCollectionDialog } from "./create-collection";
 import { ManageCollectionsDialog } from "./manage-collections";
+import { Query } from '@sinequa/atomic';
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
   acc[lang] = () => import(`./i18n/${lang}.json`);
@@ -29,10 +30,20 @@ export class CollectionsComponent {
   readonly createCollectionDialog = viewChild(CreateCollectionDialog);
   readonly manageCollectionsDialog = viewChild(ManageCollectionsDialog);
 
+  query: Query;
+
+  constructor() {
+    this.query = buildQuery();
+  }
+
   onClick(collection: Basket): void {
     console.log('collection', collection)
-    /* this.drawerStack.closeAll();
-    this.router.navigate(['/search'], { queryParams: { basket: collection.name } }); */
+    this.drawerStack.closeAll();
+    this.query.basket = collection.name;
+    this.queryService.search(this.query, false).subscribe((result) => {
+      console.log('search', result)
+    });
+    /* this.router.navigate(['/search'], { queryParams: { basket: collection.name } }); */
   }
 
   createCollection(): void {
