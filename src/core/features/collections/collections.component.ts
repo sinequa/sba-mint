@@ -1,7 +1,7 @@
 import { Component, computed, inject, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
-import { Basket, buildQuery, DrawerStackService, QueryParamsStore, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { Basket, buildQuery, DrawerStackService, UserSettingsStore } from '@sinequa/atomic-angular';
 import { CreateCollectionDialog } from "./create-collection";
 import { ManageCollectionsDialog } from "./manage-collections";
 import { Query } from '@sinequa/atomic';
@@ -19,8 +19,6 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'collection', loader })]
 })
 export class CollectionsComponent {
-  private readonly queryParamsStore = inject(QueryParamsStore);
-  private readonly queryService = inject(QueryService);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly router = inject(Router);
@@ -34,16 +32,11 @@ export class CollectionsComponent {
 
   constructor() {
     this.query = buildQuery();
-  }
+  } 
 
   onClick(collection: Basket): void {
-    console.log('collection', collection)
     this.drawerStack.closeAll();
-    this.query.basket = collection.name;
-    this.queryService.search(this.query, false).subscribe((result) => {
-      console.log('search', result)
-    });
-    /* this.router.navigate(['/search'], { queryParams: { basket: collection.name } }); */
+    this.router.navigate(['/search'], { queryParams: { b: collection.name } });
   }
 
   createCollection(): void {
