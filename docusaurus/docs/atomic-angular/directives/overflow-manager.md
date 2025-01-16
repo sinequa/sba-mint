@@ -2,7 +2,7 @@
 title: OverflowManager
 ---
 
-## Overview
+# Overview
 Directive that handles a list of elements and manages the overflow of the list. It listens to the resize event and emits a the number of elements that can be displayed in the list to a stop element.
 
 3 directives are available:
@@ -26,9 +26,14 @@ The `overflowManager` directive cannot be used inside the `hostDirectives` array
 
 You can listen to `count` output to get the number of items that can fit before the stop marker.
 
-### Usage
+:::warning
+If you use this directive with text translated with **Transloco**, see dedicated usage section for utility function.
+:::
 
-#### Basic
+# Usage
+
+## Basic
+
 ```ts title="some-component.ts"
 @Component({
   ...
@@ -51,7 +56,8 @@ export class SomeComponent {
 }
 ```
 
-#### Host element is the list
+## Host element is the list
+
 ```ts title="some-component.ts"
 @Component({
   ...
@@ -82,4 +88,39 @@ export class SomeComponent {
 
 :::note
 `ng-container` here is used as a middleware for the container element and won't be rendered in the DOM.
+:::
+
+## Use with translated field with **Transloco**
+
+```ts title="some-component.ts"
+@Component({
+  ...
+})
+export class SomeComponent implements OnDestroy {
+  readonly overflowManager = viewChild(OverflowManagerDirective);
+
+  readonly transloco = inject(TranslocoService);
+
+  private readonly sub = new Subscription();
+
+  constructor() {
+    // register to transloco events to update the overflow manager when translations are loaded
+    // otherwise the overflow manager will count size of items without text
+    this.sub.add(
+      this.transloco.events$.pipe(
+        debounceTime(250)
+      ).subscribe(() => {
+        this.overflowManager()?.countItems();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
+}
+```
+
+:::note
+**Transloco** emits several events when translations are loaded, we debounce the event to avoid multiple calls to the `countItems` method.
 :::
