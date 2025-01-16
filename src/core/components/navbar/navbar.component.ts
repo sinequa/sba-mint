@@ -1,10 +1,10 @@
-import { AsyncPipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy, Type, inject, signal, viewChild } from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { Component, computed, inject, OnDestroy, signal, Type, viewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { debounceTime, Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
@@ -45,7 +45,10 @@ type NavbarTab = {
     UserMenuComponent,
     DropdownComponent,
     TranslocoPipe,
-    SyslangPipe
+    SyslangPipe,
+    OverflowManagerDirective,
+    OverflowItemDirective,
+    OverflowStopDirective
   ],
   host: {
     'class': 'layout-search',
@@ -53,11 +56,12 @@ type NavbarTab = {
   }
 })
 export class NavbarComponent implements OnDestroy {
-  readonly drawerOpened = signal(false);
-
   readonly searchInput = viewChild(SearchInputComponent);
+  readonly overflowManager = viewChild(OverflowManagerDirective);
 
-  protected readonly searchText = signal<string>('');
+  readonly drawerOpened = signal(false);
+  readonly searchText = signal<string>('');
+  readonly visibleTabCount = signal<number | undefined>(undefined);
 
   protected readonly menus: NavbarMenu[] = [
     { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
@@ -67,6 +71,7 @@ export class NavbarComponent implements OnDestroy {
 
   protected readonly navigationService = inject(NavigationService);
 
+  private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly savedSearchesService = inject(SavedSearchesService);
@@ -76,7 +81,9 @@ export class NavbarComponent implements OnDestroy {
   private readonly sub = new Subscription();
 
   // create tabs from the search routes
-  protected readonly tabs: NavbarTab[] = this.router.config.find(item => item.path === "search")?.children?.filter(c => c.path !== "**")
+  readonly tabs = computed(() => this.router.config
+    .find(item => item.path === "search")?.children
+    ?.filter(c => c.path !== "**")
     .map(child => ({
       display: child.data?.['display'] || child.path,
       name: child.data?.['wsQueryTab'] || child.path,
@@ -84,12 +91,23 @@ export class NavbarComponent implements OnDestroy {
       routerLink: `${child.path}`,
       iconClass: child.data?.['iconClass'],
       queryName: child.data?.['queryName']
-    }) as NavbarTab) ?? [];
-
+    }) as NavbarTab) ?? []
+  );
+  readonly moreTabs = computed(() => this.tabs().slice(this.visibleTabCount()));
 
   constructor() {
     this.sub.add(
       this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state))
+    );
+
+    // register to transloco events to update the overflow manager when translations are loaded
+    // otherwise the overflow manager will count size of items without text
+    this.sub.add(
+      this.transloco.events$.pipe(
+        debounceTime(100)
+      ).subscribe(() => {
+        this.overflowManager()?.countItems();
+      })
     );
   }
 
@@ -132,6 +150,7 @@ export class NavbarComponent implements OnDestroy {
 
   /**
    * Occurs when the search input is updated by the user and debounced by the system
+   * 
    * @param text The debounced text
    */
   protected debounced(text: string): void {

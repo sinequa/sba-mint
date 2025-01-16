@@ -43,19 +43,64 @@
   </li>
 </menu>
 
-<ul class="row-start-2 col-start-2 col-span-2 w-full h-full flex">
-  @for (tab of tabs; track $index) {
-  <li routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary" class="px-2 py-3 select-none font-semibold cursor-pointer">
-    <a
-      class="first-letter:capitalize inline-block whitespace-nowrap"
-      [routerLink]="[tab.routerLink]" [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
-      [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
-      [attr.aria-label]="tab.display | syslang | transloco"
-      (click)="changeTab(tab)"
+<div
+  overflowManager
+  class="row-start-2 col-start-2 col-span-2 flex relative"
+  (count)="visibleTabCount.set($event)"
+>
+  <ul class="flex">
+    @for (tab of tabs(); track $index) {
+      <li
+        overflowItem
+        class="px-2 py-3 select-none font-semibold cursor-pointer"
+        routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary"
       >
-      <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
-      {{ tab.display | syslang | transloco }}
-    </a>
-  </li>
+        <a
+          class="first-letter:capitalize inline-block whitespace-nowrap"
+          [routerLink]="[tab.routerLink]"
+          [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
+          [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
+          [attr.aria-label]="tab.display | syslang | transloco"
+          (click)="changeTab(tab)"
+        >
+          <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
+          {{ tab.display | syslang | transloco }}
+        </a>
+      </li>
+    }
+  </ul>
+
+  @if (moreTabs().length > 0) {
+    <Dropdown class="absolute right-0 bottom-0" overflowStop [position]="'bottom-end'">
+      <button class="btn btn-ghost font-semibold p-1 mb-2 gap-1 truncate" aria-label="more tabs">
+        <span>{{ 'more' | transloco }}</span>
+        <i class="fa-fw fal fa-chevron-down"></i>
+      </button>
+    
+      <ul dropdown-content class="dropdown-content w-fit mt-0">
+        @for (tab of moreTabs(); track $index) {
+          <li
+            class="px-2 py-3 select-none font-semibold cursor-pointer"
+            routerLinkActive="text-primary aria-selected:text-primary"
+          >
+            <a
+              class="first-letter:capitalize inline-block whitespace-nowrap"
+              [routerLink]="[tab.routerLink]"
+              [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
+              [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
+              [attr.aria-label]="tab.display | syslang | transloco"
+              (click)="changeTab(tab)"
+            >
+              <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
+              {{ tab.display | syslang | transloco }}
+            </a>
+          </li>
+        }
+      </ul>
+    </Dropdown>
   }
-</ul>
+  @else {
+    <div class="absolute right-0" overflowStop></div>
+  }
+
+</div>

@@ -1,10 +1,11 @@
-import { Component, computed, effect, ElementRef, inject, signal, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, ElementRef, inject, OnDestroy, signal, viewChild, viewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { HashMap, provideTranslocoScope, Translation } from "@jsverse/transloco";
+import { HashMap, provideTranslocoScope, Translation, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
 import { AggregationsStore, AppStore, cn, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore } from "@sinequa/atomic-angular";
 
+import { debounceTime, Subscription } from "rxjs";
 import { FilterButtonComponent } from "./buttons/filter-button.component";
 import { FilterDateButtonComponent } from "./buttons/filter-date-button.component";
 import { FiltersMoreButtonComponent } from "./buttons/filters-more-button.component";
@@ -68,11 +69,12 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     "aria-label": "Filters list",
   }
 })
-export class FiltersListComponent {
+export class FiltersListComponent implements OnDestroy {
   cn = cn;
 
   moreFilterElement = viewChild<FiltersMoreButtonComponent>(FiltersMoreButtonComponent);
   dropdownElements = viewChildren<FilterButtonComponent>(FilterButtonComponent);
+  readonly overflowManager = viewChild<OverflowManagerDirective>(OverflowManagerDirective);
 
   filtersCount = inject(FILTERS_BREAKPOINT);
 
@@ -81,6 +83,7 @@ export class FiltersListComponent {
   aggregationsStore = inject(AggregationsStore);
   queryParamsStore = inject(QueryParamsStore);
   el = inject(ElementRef);
+  readonly transloco = inject(TranslocoService);
 
   filters = signal<string[]>([]);
   moreFilterCount = signal(this.filtersCount);
@@ -111,6 +114,8 @@ export class FiltersListComponent {
 
   filterDate = { name: "#date", column: "modified", count: 0, isTree: false, disabled: false, hidden: false };
 
+  private readonly sub = new Subscription();
+
   constructor() {
     effect(() => {
       // set filters according to the route and the authorized filters with default values
@@ -121,6 +126,14 @@ export class FiltersListComponent {
 
       this.filters.set(authorizedFilters);
     }, { allowSignalWrites: true });
+
+    this.sub.add(
+      this.transloco.events$.pipe(debounceTime(100)).subscribe(() => this.overflowManager()?.countItems())
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   /**
