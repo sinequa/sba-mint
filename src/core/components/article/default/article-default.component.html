@@ -28,6 +28,9 @@
               <li class="flex gap-2 items-baseline data-list-item p-1" (click)="editLabels()">
                 <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }}
               </li>
+              <li class="flex gap-2 items-baseline data-list-item p-1" (click)="addToCollection()">
+                <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }}
+              </li>
             </ul>
         </Dropdown>
         }
@@ -66,3 +69,4 @@
 </article>
 
 <edit-labels-dialog [article]="article()" (click)="$event.stopPropagation()" />
+<add-to-collection-dialog [article]="article()" (click)="$event.stopPropagation()" />
