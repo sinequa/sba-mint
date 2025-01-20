@@ -7,9 +7,11 @@ import { InfinityScrollDirective } from '@sinequa/atomic-angular';
 import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
 import { FiltersListComponent } from "@/core/components/filters/filters-list.component";
+import { NoResultPanelComponent } from "@/core/components/no-result-panel/no-result-panel.component";
 import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
+
 import { SearchBase } from '../search.abstract';
 
 type R = Result & { nextPage?: number, previousPage?: number };
@@ -24,7 +26,8 @@ type R = Result & { nextPage?: number, previousPage?: number };
     DidYouMeanComponent,
     InfinityScrollDirective,
     SponsoredResultsComponent,
-    FiltersListComponent
+    FiltersListComponent,
+    NoResultPanelComponent
   ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
