@@ -25,7 +25,7 @@ type R = Result & { nextPage?: number, previousPage?: number };
     InfinityScrollDirective,
     SponsoredResultsComponent,
     FiltersListComponent
-],
+  ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',
   host: {
