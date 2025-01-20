@@ -1,12 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { setGlobalConfig } from '@sinequa/atomic';
+import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
+
+import { globalConfig, setGlobalConfig } from '@sinequa/atomic';
+import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
+import atomic from "../node_modules/@sinequa/atomic/package.json";
+
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
-
-import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
-import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
-import atomic from "../node_modules/@sinequa/atomic/package.json";
 
 setGlobalConfig(environment);
 
@@ -23,8 +24,10 @@ startKeyUX(window, [
 
 bootstrapApplication(AppComponent, appConfig)
   .then(() => {
-    console.log("atomic", atomic.version);
-    console.log("atomic-angular", atomicAngular.version);
+    if (globalConfig.verbose) {
+      console.log("atomic", atomic.version);
+      console.log("atomic-angular", atomicAngular.version);
+    }
   })
   .catch((err) => {
     console.error("bootstrapApplication error:", err);
