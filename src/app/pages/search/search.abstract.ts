@@ -15,6 +15,7 @@ type QP = {
   s?: string; // sort name
   t?: string; // tab name
   q?: string; // query text
+  b?: string; // basket
 }
 
 @Component({
@@ -47,7 +48,7 @@ export abstract class SearchBase<T> implements OnDestroy {
   // track the query params store changes
   keys = computed(() => {
     const state = getState(this.queryParamsStore)
-    const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort };
+    const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort, basket: state.basket };
     return r;
   });
 
@@ -67,6 +68,7 @@ export abstract class SearchBase<T> implements OnDestroy {
   // input url bindings
   q = input<string>(); // text
   t = input<string>(); // tab
+  b = input<string>(); // basket
   s = input<string>(); // sort
   f = input<string>(); // filters
   queryName = input<string>(); // query param
@@ -78,7 +80,7 @@ export abstract class SearchBase<T> implements OnDestroy {
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
 
-      const query = { ...q, page: pageParam, tab: this.t() } as Query;
+      const query = { ...q, page: pageParam, tab: this.t(), basket: this.b() } as Query;
 
       // Add the current search to the user settings when the text is not empty
       if(query.text && query.text !== '') {
@@ -115,7 +117,7 @@ export abstract class SearchBase<T> implements OnDestroy {
     // This allows Browser back/forward to work correctly
     effect(() => {
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), sort: this.s(), filters, name: this.queryName() });
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.queryName() });
     }, { allowSignalWrites: true });
 
     // Update the URL with the query params
@@ -123,13 +125,14 @@ export abstract class SearchBase<T> implements OnDestroy {
       const key = this.keys();
 
       const queryParams: QP = {};
-      const { text, filters = [], page, sort, tab } = getState(this.queryParamsStore);
+      const { text, filters = [], page, sort, tab, basket } = getState(this.queryParamsStore);
 
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
       queryParams.s = sort;
       queryParams.t = tab;
       queryParams.q = text;
+      queryParams.b = basket;
 
       this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {  } });
     })

@@ -21,7 +21,7 @@
   @for (menu of menus; track $index) {
     <li>
       @if (menu.component) {
-        <Dropdown class="dropdown-end border-neutral-300 rounded-lg">
+        <Dropdown class="dropdown-end border-neutral-300 rounded-lg" [keepOnMouseLeave]="menu.keepOnMouseLeave">
           <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>

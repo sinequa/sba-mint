@@ -1,0 +1,40 @@
+<ul class="flex flex-col">
+    @for (collection of collections(); track $index) {
+      <li
+        class="flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none group"
+        tabindex="0"
+        (click)="onClick(collection)"
+        (keydown.enter)="onClick(collection)"
+      >
+        {{ collection.name }}
+      </li>
+    }
+  
+    @empty {
+      <li class="text-neutral-500 text-center py-4">
+        {{ 'collection.noCollections' | transloco }}
+      </li>
+    }
+    <li class="text-neutral-500 text-center py-4 flex flex-row-reverse gap-2">
+        <button
+            class="btn btn-tertiary flex justify-center px-3 py-2"
+            tabindex="0"
+            [attr.title]="'collection.manageCollections' | transloco"
+            [disabled]="!collections().length"
+            (click)="manageCollections()"
+        >
+            {{ 'collection.manageCollections' | transloco }}
+        </button>
+        <button
+            class="btn btn-tertiary flex justify-center px-3 py-2"
+            tabindex="1"
+            [attr.title]="'collection.createCollection' | transloco"
+            (click)="createCollection()"
+        >
+            {{ 'collection.createCollection' | transloco }}
+        </button>
+    </li>
+</ul>
+
+<create-collection-dialog />
+<manage-collections-dialog [collections]="collections()" />

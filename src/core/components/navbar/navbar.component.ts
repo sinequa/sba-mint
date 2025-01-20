@@ -14,10 +14,12 @@ import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
 
 type NavbarMenu = {
   display: string;
   iconClass: string;
+  keepOnMouseLeave?: boolean;
   component?: Type<unknown>;
 };
 
@@ -66,6 +68,7 @@ export class NavbarComponent implements OnDestroy {
   protected readonly menus: NavbarMenu[] = [
     { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
     { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
+    { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
     { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
   ];
 

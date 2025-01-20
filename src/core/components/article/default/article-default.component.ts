@@ -11,6 +11,7 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsv
 import { LegacyFilter } from '@sinequa/atomic';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { MissingTermsComponent } from '../missing-terms/missing-terms.component';
+import { AddToCollectionDialog } from '@/core/features/collections/add-to-collection';
 
 type Tab = 'attachments' | 'similars';
 
@@ -31,6 +32,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     DropdownComponent,
     TranslocoPipe,
     EditLabelsComponent,
+    AddToCollectionDialog,
     MissingTermsComponent
 ],
   templateUrl: './article-default.component.html',
@@ -53,6 +55,7 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   labelService = inject(LabelService);
 
   readonly editLabelsDialog = viewChild(EditLabelsComponent);
+  readonly addToCollectionDialog = viewChild(AddToCollectionDialog);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
@@ -110,5 +113,9 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
 
   editLabels(): void {
     this.editLabelsDialog()?.showModal();
+  }
+
+  addToCollection(): void {
+    this.addToCollectionDialog()?.showModal();
   }
 }

@@ -1,6 +1,7 @@
 {
   "openMenu": "Ouvrir le menu de l'article",
   "editLabels": "Editer les labels",
+  "addToCollection": "Ajouter à une collection",
   "missingTerms": "Termes manquants:",
   "mustInclude": "Doit inclure:"
 }
