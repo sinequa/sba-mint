@@ -115,6 +115,33 @@
         <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
       }
     }
+
+    @if ((article().geo ?? []).length > 0) {
+      <ng-container *ngTemplateOutlet="metadataPanel; context: {
+        metadata: article()!.geo,
+        name: 'location',
+        iconClass: 'far fa-location-dot',
+        entity: 'geo'
+      }"></ng-container>
+    }
+
+    @if ((article().company ?? []).length > 0) {
+      <ng-container *ngTemplateOutlet="metadataPanel; context: {
+        metadata: article()!.company,
+        name: 'companies',
+        iconClass: 'far fa-buildings',
+        entity: 'company'
+      }"></ng-container>
+    }
+
+    @if ((article().person ?? []).length > 0) {
+      <ng-container *ngTemplateOutlet="metadataPanel; context: {
+        metadata: article()!.person,
+        name: 'drawers.mentioned',
+        iconClass: 'far fa-at',
+        entity: 'person'
+      }"></ng-container>
+    }
   </div>
 }
 

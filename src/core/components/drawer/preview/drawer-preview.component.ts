@@ -1,11 +1,11 @@
 import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { getState } from '@ngrx/signals';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
-import { Article, CCApp, PreviewData } from '@sinequa/atomic';
+import { CCApp, PreviewData } from '@sinequa/atomic';
 
-import { AppStore, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, PreviewArticle, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
 import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
@@ -56,7 +56,7 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
   public readonly articleId = input.required<string>();
 
   public readonly previewData = signal<PreviewData | undefined>(undefined);
-  public readonly article = computed(() => this.previewData()?.record as Article);
+  public readonly article = computed(() => this.previewData()?.record as PreviewArticle);
 
   public readonly inputs = computed(() => ({ previewData: this.previewData() }));
   public readonly previewType = computed(() => {
