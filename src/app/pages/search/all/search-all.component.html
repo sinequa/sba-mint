@@ -51,8 +51,8 @@
           </li>
         }
         @empty {
-          <li class="mt-8 text-neutral-500 italic no-records">
-            No result for &quot;<em class="not-italic font-semibold">{{ keys().text }}</em>&quot;
+          <li class="no-records">
+            <NoResultPanel />
           </li>
         }
       }
