@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 
-import { globalConfig, setGlobalConfig } from '@sinequa/atomic';
+import { applyConsoleLogLevels, setGlobalConfig } from '@sinequa/atomic';
 import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
 import atomic from "../node_modules/@sinequa/atomic/package.json";
 
@@ -10,6 +10,8 @@ import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 
 setGlobalConfig(environment);
+
+applyConsoleLogLevels();
 
 /**
  * keyux configuration
@@ -24,10 +26,8 @@ startKeyUX(window, [
 
 bootstrapApplication(AppComponent, appConfig)
   .then(() => {
-    if (globalConfig.verbose) {
-      console.log("atomic", atomic.version);
-      console.log("atomic-angular", atomicAngular.version);
-    }
+    console.info("atomic", atomic.version);
+    console.info("atomic-angular", atomicAngular.version);
   })
   .catch((err) => {
     console.error("bootstrapApplication error:", err);

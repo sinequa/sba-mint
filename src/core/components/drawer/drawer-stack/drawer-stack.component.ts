@@ -1,7 +1,6 @@
 import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { globalConfig } from '@sinequa/atomic';
 import { DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
 
 import { DrawerComponent } from '../drawer.component';
@@ -84,7 +83,7 @@ export class DrawerStackComponent implements OnDestroy {
 
   private openTopDrawer(index: number): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
-      if (globalConfig.verbose) console.log('Drawer stack is full');
+      console.log('Drawer stack is full');
       this.shiftDrawer();
     }
 
