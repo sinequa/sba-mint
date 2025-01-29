@@ -111,36 +111,12 @@
         </div>
       </details>
 
-      @for (highlight of previewHighlights(); track $index) {
+    }
+
+    @for (highlight of previewHighlights(); track $index) {
+      @if (highlight.metadata) {
         <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
       }
-    }
-
-    @if ((article().geo ?? []).length > 0) {
-      <ng-container *ngTemplateOutlet="metadataPanel; context: {
-        metadata: article()!.geo,
-        name: 'msg#column.geos',
-        iconClass: 'far fa-location-dot',
-        entity: 'geo'
-      }"></ng-container>
-    }
-
-    @if ((article().company ?? []).length > 0) {
-      <ng-container *ngTemplateOutlet="metadataPanel; context: {
-        metadata: article()!.company,
-        name: 'msg#column.companies',
-        iconClass: 'far fa-buildings',
-        entity: 'company'
-      }"></ng-container>
-    }
-
-    @if ((article().person ?? []).length > 0) {
-      <ng-container *ngTemplateOutlet="metadataPanel; context: {
-        metadata: article()!.person,
-        name: 'msg#column.persons',
-        iconClass: 'far fa-at',
-        entity: 'person'
-      }"></ng-container>
     }
   </div>
 }

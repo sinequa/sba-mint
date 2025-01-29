@@ -5,8 +5,8 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { CCWebService } from '@sinequa/atomic';
-import { AppStore, ApplicationStore, ArticleMetadata, PreviewArticle, MetadataComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CCWebService } from '@sinequa/atomic';
+import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 interface MetadataNavigation {
   index: number;
@@ -45,7 +45,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
 export class AdvancedSearchComponent implements OnDestroy {
-  public readonly article = input.required<PreviewArticle>();
+  public readonly article = input.required<Article>();
 
   public readonly labels = inject(AppStore).getLabels();
   private readonly applicationStore = inject(ApplicationStore);
