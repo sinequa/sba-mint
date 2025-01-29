@@ -12,13 +12,14 @@ import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-sea
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipes/syslang';
 
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
 
 type NavbarMenu = {
   display: string;
   iconClass: string;
+  routerLink?: string;
   keepOnMouseLeave?: boolean;
   component?: Type<unknown>;
 };
@@ -66,7 +67,7 @@ export class NavbarComponent implements OnDestroy {
   readonly visibleTabCount = signal<number | undefined>(undefined);
 
   protected readonly menus: NavbarMenu[] = [
-    { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', component: RecentSearchesComponent },
+    { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
     { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
     { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
     { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
@@ -75,9 +76,9 @@ export class NavbarComponent implements OnDestroy {
   protected readonly navigationService = inject(NavigationService);
 
   private readonly transloco = inject(TranslocoService);
-  private readonly router = inject(Router);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly savedSearchesService = inject(SavedSearchesService);
+  readonly router = inject(Router);
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
 

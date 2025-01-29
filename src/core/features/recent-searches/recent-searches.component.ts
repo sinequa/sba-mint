@@ -1,9 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
+
 import { RecentSearchComponent } from "./recent-search.component";
 
 const loader = ['en', 'fr'].reduce((acc, lang) => {
@@ -11,16 +13,55 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   return acc;
 }, {} as HashMap<() => Promise<Translation>>);
 
-const RECENT_SEARCHES_ITEMS_PER_PAGE = 5;
+const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
 
 @Component({
-  selector: 'app-recent-searches, RecentSearches',
+  selector: 'RecentSearches',
   standalone: true,
-  imports: [TranslocoPipe, RecentSearchComponent],
-  templateUrl: './recent-searches.component.html',
+  imports: [RouterModule, TranslocoPipe, RecentSearchComponent],
+  template: `
+    <ul class="flex flex-col">
+      @for (recentSearch of paginatedRecentSearches(); track $index) {
+        <RecentSearch [recentSearch]="recentSearch" (remove)="remove($index, $event)" />
+      }
+
+      @empty {
+        <li class="text-center text-neutral-500 py-4">
+          {{ 'recentSearches.noRecentSearches' | transloco }}
+        </li>
+      }
+    </ul>
+
+    <div class="flex gap-2">
+      @if (hasMore()) {
+        <button
+          class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+          tabindex="0"
+          [attr.title]="'loadMore' | transloco"
+          (click)="loadMore($event)"
+        >
+          {{ 'loadMore' | transloco }}
+        </button>
+      }
+
+      <a
+        class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+        tabindex="0"
+        [attr.title]="'seeMore' | transloco"
+        [routerLink]="['/recent-searches']"
+      >
+        {{ 'seeMore' | transloco }}
+      </a>
+    </div>
+  `,
   host: {
     class: 'block max-h-[460px]'
   },
+  styles: `
+    :host {
+      scrollbar-width: thin;
+    }
+  `,
   providers: [provideTranslocoScope({ scope: 'recent-searches', loader })]
 })
 export class RecentSearchesComponent {

@@ -9,8 +9,8 @@ import { RecentSearch } from "@sinequa/atomic-angular";
   standalone: true,
   imports: [RouterLink, TranslocoPipe],
   template: `
-      <li
-      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+    <li
+      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none *:whitespace-nowrap"
       tabindex="0"
       attr.data-href="{{ recentSearch().path || recentSearch().queryParams?.path }}"
       [routerLink]="[recentSearch().path || recentSearch().queryParams?.path]" [queryParams]="queryParams()"
