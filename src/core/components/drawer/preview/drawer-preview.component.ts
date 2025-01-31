@@ -3,12 +3,10 @@ import { Component, Inject, InjectionToken, OnDestroy, OnInit, computed, effect,
 import { getState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 
-import { CCApp, PreviewData, Article } from '@sinequa/atomic';
+import { Article, CCApp, PreviewData } from '@sinequa/atomic';
 
 import { AppStore, PreviewService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
-import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
-import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
 import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
 import { AdvancedSearchComponent } from '../advanced-search/advanced-search.component';
 import { DrawerComponent } from '../drawer.component';
