@@ -2,7 +2,7 @@
   <ul
     class="data-list-xs z-10 px-2 py-4 text-black bg-white rounded-b-lg shadow-md max-h-80 overflow-auto"
     aria-labelledby="dropdownDefaultButton"
-    role="listbox"  
+    role="listbox"
   >
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
@@ -22,18 +22,18 @@
               {{ 'bookmarks' | transloco }}
             }
             @case('title') {
-              {{ 'documents' | transloco }}
+              {{ 'title' | transloco }}
             }
             @case('concepts') {
-              {{ 'matters' | transloco }}
+              {{ 'concepts' | transloco }}
             }
             @case('people') {
-              {{ 'collaborators' | transloco }}
+              {{ 'people' | transloco }}
             }
           }
         </li>
       }
-      
+
       @else {
         <li
           role="option"
@@ -56,7 +56,7 @@
               @case('people') { <i class="fa-fw far fa-user-circle"></i> }
               @default { <i class="fa-fw far fa-magnifying-glass"></i> }
             }
-          
+
             <p class="text-ellipsis line-clamp-1">
               @for(chunk of item.display! | highlightWord:text():10; track $index ) {
                 <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
