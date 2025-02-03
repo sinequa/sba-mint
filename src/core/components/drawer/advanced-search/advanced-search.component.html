@@ -111,7 +111,10 @@
         </div>
       </details>
 
-      @for (highlight of previewHighlights(); track $index) {
+    }
+
+    @for (highlight of previewHighlights(); track $index) {
+      @if (highlight.metadata) {
         <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
       }
     }
@@ -123,7 +126,7 @@
     <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
       <p class="flex gap-2 font-semibold items-baseline capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
-        {{ name }}
+        {{ name | transloco }}
       </p>
 
       <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
