@@ -5,11 +5,13 @@
     "ng": "ng",
     "start": "ng serve --ssl=true --proxy-config=proxy.conf.json",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
+    "start:docs": "cd docusaurus && npm start",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
     "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest",
+    "docs:start": "npm run start:docs",
     "docs:ci": "cd docusaurus && npm ci",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal"
