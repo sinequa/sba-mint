@@ -7,10 +7,13 @@ import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@
 
 const BOOKMARKS_ITEMS_PER_PAGE = 5;
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-bookmarks-list',
@@ -34,9 +37,7 @@ export class BookmarksListComponent {
   public paginatedBookmarks = computed<Bookmark[]>(() => this.bookmarks().slice(0, this.range()));
   public hasMore = computed<boolean>(() => this.bookmarks().length > 0 && this.range() < this.bookmarks().length);
 
-
   public onClick(bookmark: Bookmark): void {
-
     // if the bookmark was created before the queryName was added, don't try to open it
     if (!bookmark.queryName) {
       toast.warning('This bookmark is outdated and cannot be opened', { description: 'No query name!', duration: 2000 });
@@ -46,11 +47,11 @@ export class BookmarksListComponent {
     const query: Partial<Query> = {
       name: bookmark.queryName,
       filters: {
-        field: "id",
+        field: 'id',
         value: bookmark.id
       } as LegacyFilter
-    }
-    this.queryService.search(query, false).subscribe((result) => {
+    };
+    this.queryService.search(query, false).subscribe(result => {
       if (!result.records || result.records.length === 0) {
         toast.warning('This bookmark is outdated and cannot be opened', { description: 'no record found!', duration: 2000 });
         return;

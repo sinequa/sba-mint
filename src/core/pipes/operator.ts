@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from "@angular/core";
-import { FilterOperator, LegacyFilter } from "@sinequa/atomic";
+import { Pipe, PipeTransform } from '@angular/core';
+import { FilterOperator, LegacyFilter } from '@sinequa/atomic';
 
 @Pipe({
   name: 'operator',
@@ -12,7 +12,7 @@ export class OperatorPipe implements PipeTransform {
     if (filter?.operator === 'between') {
       return `&gt; ${filter.start} &le; ${filter.end}`;
     }
-    if(filter?.operator === 'and') {
+    if (filter?.operator === 'and') {
       return filter.display ?? filter.value ?? '';
     }
     return `${op} ${filter?.value || ''}`;
@@ -33,7 +33,7 @@ export class OperatorPipe implements PipeTransform {
       case 'gt':
         return '&gt;';
       default:
-        return ''
+        return '';
     }
   }
 }

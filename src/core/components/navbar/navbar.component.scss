@@ -17,7 +17,7 @@
    * When the `drawer-opened` attribute is set to `true` on the parent element,
    * the `#navbar-logo` element will have an opacity of 0 and a transition of 0.2s ease-out.
    */
-  &[drawer-opened="true"] #navbar-logo {
+  &[drawer-opened='true'] #navbar-logo {
     opacity: 0;
     transition: 0.2s ease-out;
   }

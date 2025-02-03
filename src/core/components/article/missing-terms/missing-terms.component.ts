@@ -4,10 +4,13 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsv
 import { Article } from '@sinequa/atomic';
 import { QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'missing-terms',
@@ -16,9 +19,9 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   templateUrl: './missing-terms.component.html',
   providers: [provideTranslocoScope({ scope: 'article', loader })],
   styles: `
-.term {
-    text-decoration-line: line-through;
-}
+    .term {
+      text-decoration-line: line-through;
+    }
   `
 })
 export class MissingTermsComponent {
@@ -30,12 +33,14 @@ export class MissingTermsComponent {
 
   public missingTerms = computed(() => {
     const query = this.queryParamsStore.getQuery();
-    return this.article().termspresence?.filter(tp => tp.presence === 'missing').map(tp => {
-      const text = (query.text || '').replace(new RegExp(`\\b${tp.term}\\b`, 'gi'), "");
-      return ({
-        value: tp.term,
-        queryParams: { q: `${text}+[${tp.term}]` }
-      })
-    });
-  })
+    return this.article()
+      .termspresence?.filter(tp => tp.presence === 'missing')
+      .map(tp => {
+        const text = (query.text || '').replace(new RegExp(`\\b${tp.term}\\b`, 'gi'), '');
+        return {
+          value: tp.term,
+          queryParams: { q: `${text}+[${tp.term}]` }
+        };
+      });
+  });
 }

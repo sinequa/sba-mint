@@ -2,14 +2,17 @@ import { Component, computed, inject, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Basket, buildQuery, DrawerStackService, UserSettingsStore } from '@sinequa/atomic-angular';
-import { CreateCollectionDialog } from "./create-collection";
-import { ManageCollectionsDialog } from "./manage-collections";
+import { CreateCollectionDialog } from './create-collection';
+import { ManageCollectionsDialog } from './manage-collections';
 import { Query } from '@sinequa/atomic';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-collections',
@@ -32,7 +35,7 @@ export class CollectionsComponent {
 
   constructor() {
     this.query = buildQuery();
-  } 
+  }
 
   onClick(collection: Basket): void {
     this.drawerStack.closeAll();

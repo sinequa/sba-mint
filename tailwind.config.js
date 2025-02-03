@@ -63,7 +63,12 @@ module.exports = {
     article,
     avatar,
     pill,
-    plugin(function ({ addBase, addComponents, theme }) {
+    plugin(function ({ addBase, addUtilities, theme }) {
+      addUtilities({
+        '.scroll-stable': {
+          'scrollbar-gutter': 'stable'
+        },
+      }),
       addBase({
         '.scrollbar-thin': {
           scrollbarWidth: 'thin',

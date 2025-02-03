@@ -13,24 +13,26 @@ const DRAWER_STACK_MAX_COUNT = 3;
   standalone: true,
   imports: [],
   template: ``,
-  styles: [`
-    :host {
-      position: absolute;
-      top: 50%;
-      right: 0;
+  styles: [
+    `
+      :host {
+        position: absolute;
+        top: 50%;
+        right: 0;
 
-      --drawer-width: 46;
-      --drawer-subdrawer-width: 400px;
+        --drawer-width: 46;
+        --drawer-subdrawer-width: 400px;
 
-      z-index: theme('zIndex.drawer');
+        z-index: theme('zIndex.drawer');
 
-      transition: right 300ms linear;
+        transition: right 300ms linear;
 
-      &[drawer-opened="true"] {
-        right: calc(1% * var(--drawer-width));
+        &[drawer-opened='true'] {
+          right: calc(1% * var(--drawer-width));
+        }
       }
-    }
-  `]
+    `
+  ]
 })
 export class DrawerStackComponent implements OnDestroy {
   @HostBinding('attr.drawer-opened')
@@ -43,35 +45,27 @@ export class DrawerStackComponent implements OnDestroy {
   protected readonly selectionHistory$ = this.selectionHistory.selectionHistoryEvent;
 
   protected readonly drawers: ComponentRef<DrawerComponent>[] = [];
-  get drawersLength() { return this.drawers.length; }
+  get drawersLength() {
+    return this.drawers.length;
+  }
 
   protected readonly subscriptions = new Subscription();
 
   constructor() {
-    this.subscriptions.add(
-      this.drawerStackService.isOpened.subscribe((state) => this.drawerOpened = state)
-    );
+    this.subscriptions.add(this.drawerStackService.isOpened.subscribe(state => (this.drawerOpened = state)));
 
     this.subscriptions.add(
-      this.selectionHistory$.subscribe((event) => {
+      this.selectionHistory$.subscribe(event => {
         if (event !== 'new') return;
 
         this.openTopDrawer(this.selectionHistory.getCurrentSelectionIndex());
       })
     );
 
-    this.subscriptions.add(
-      this.drawerStackService.toggleTopDrawerExtension$.subscribe(() => this.toggleTopDrawerExtension())
-    );
-    this.subscriptions.add(
-      this.drawerStackService.forceTopDrawerCollapse$.subscribe(() => this.collapseTopDrawer())
-    );
-    this.subscriptions.add(
-      this.drawerStackService.closeTopDrawer$.subscribe(() => this.closeTopDrawer())
-    );
-    this.subscriptions.add(
-      this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers())
-    );
+    this.subscriptions.add(this.drawerStackService.toggleTopDrawerExtension$.subscribe(() => this.toggleTopDrawerExtension()));
+    this.subscriptions.add(this.drawerStackService.forceTopDrawerCollapse$.subscribe(() => this.collapseTopDrawer()));
+    this.subscriptions.add(this.drawerStackService.closeTopDrawer$.subscribe(() => this.closeTopDrawer()));
+    this.subscriptions.add(this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers()));
   }
 
   protected toggleAssistant(): void {
@@ -103,7 +97,7 @@ export class DrawerStackComponent implements OnDestroy {
 
   private closeAllDrawers(): void {
     this.closeAndDestroyDrawer(this.drawers.pop());
-    this.drawers.forEach((drawer) => drawer.destroy());
+    this.drawers.forEach(drawer => drawer.destroy());
     this.drawers.length = 0;
   }
 

@@ -14,34 +14,34 @@ interface MetadataNavigation {
 }
 
 type PreviewWebService = CCWebService & {
-  highlights?: string,
-}
+  highlights?: string;
+};
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-advanced-search',
   standalone: true,
   templateUrl: './advanced-search.component.html',
-  styles: [`
-    :host {
-      // disable default max-height for panel
-      --panel-max-height: none;
-    }
-    /* Hides cancel button from input that as type='search' */
-    input[type="search"]::-webkit-search-cancel-button {
-      -webkit-appearance: none;
-    }
-  `],
-  imports: [
-    NgTemplateOutlet,
-    FormsModule,
-    MetadataComponent,
-    TranslocoPipe
+  styles: [
+    `
+      :host {
+        // disable default max-height for panel
+        --panel-max-height: none;
+      }
+      /* Hides cancel button from input that as type='search' */
+      input[type='search']::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+      }
+    `
   ],
+  imports: [NgTemplateOutlet, FormsModule, MetadataComponent, TranslocoPipe],
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
 export class AdvancedSearchComponent implements OnDestroy {
@@ -59,11 +59,12 @@ export class AdvancedSearchComponent implements OnDestroy {
 
     if (!this.article()) return [];
 
-    return this.applicationStore.getExtracts(this.article()!.id)
+    return this.applicationStore.getExtracts(this.article()!.id);
   });
 
   protected readonly previewHighlights = computed(() => {
-    const highlights = (this.appStore.getWebServiceByType('preview') as PreviewWebService)?.highlights?.split(',')
+    const highlights = (this.appStore.getWebServiceByType('preview') as PreviewWebService)?.highlights
+      ?.split(',')
       .filter(h => h !== 'extractslocations' && h !== 'matchlocations' && h !== 'matchingpassages');
 
     return highlights?.map(highlight => ({
@@ -75,7 +76,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
   public navigation = signal<MetadataNavigation | undefined>(undefined);
   public hovering = signal<string | undefined>(undefined);
-  public hoverIndex = computed(() => this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0);
+  public hoverIndex = computed(() => (this.navigation()?.value === this.hovering() ? this.navigation()!.index : 0));
 
   public readonly hasLabels = computed(() => {
     const article: any = this.article(); // required as any otherwise the lines below won't compile
@@ -89,7 +90,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
   constructor() {
     this.subscription = this.previewService.events.subscribe(event => {
-      switch(event) {
+      switch (event) {
         case 'fetching':
           this.loading.set(true);
           break;
@@ -101,7 +102,7 @@ export class AdvancedSearchComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -119,9 +120,7 @@ export class AdvancedSearchComponent implements OnDestroy {
   }
 
   navigateNext(entity: string, data: ArticleMetadata) {
-    const index = this.navigation()?.value === data.value
-      ? this.navigation()!.index < data.count! ? this.navigation()!.index + 1 : 1
-      : 1;
+    const index = this.navigation()?.value === data.value ? (this.navigation()!.index < data.count! ? this.navigation()!.index + 1 : 1) : 1;
 
     this.navigation.set({
       value: data.value,
@@ -135,9 +134,7 @@ export class AdvancedSearchComponent implements OnDestroy {
   }
 
   navigatePrev(entity: string, data: ArticleMetadata) {
-    const index = this.navigation()?.value === data.value
-      ? this.navigation()!.index <= 1 ? data.count! : this.navigation()!.index - 1
-      : data.count!;
+    const index = this.navigation()?.value === data.value ? (this.navigation()!.index <= 1 ? data.count! : this.navigation()!.index - 1) : data.count!;
 
     this.navigation.set({
       value: data.value,

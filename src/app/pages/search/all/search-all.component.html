@@ -1,47 +1,41 @@
-<main class="col-start-2 col-span-2 mb-8 z-0">
+<main class="z-0 col-span-2 col-start-2 mb-8">
   @if (query.isPending()) {
-    <div class="flex mt-4 justify-between">
+    <div class="mt-4 flex justify-between">
       <div class="flex gap-2">
-        <div class="h-9 w-24 btn btn-tertiary"></div>
-        <div class="h-9 w-24 btn btn-tertiary"></div>
-        <div class="h-9 w-24 btn btn-tertiary"></div>
-        <div class="h-9 w-24 btn btn-tertiary"></div>
-        <div class="h-9 w-24 btn btn-tertiary"></div>
+        <div class="btn btn-tertiary h-9 w-24"></div>
+        <div class="btn btn-tertiary h-9 w-24"></div>
+        <div class="btn btn-tertiary h-9 w-24"></div>
+        <div class="btn btn-tertiary h-9 w-24"></div>
+        <div class="btn btn-tertiary h-9 w-24"></div>
       </div>
 
-      <div class="h-9 w-28 btn btn-tertiary"></div>
+      <div class="btn btn-tertiary h-9 w-28"></div>
     </div>
-  }
-  @else if (query.isSuccess()) {
-    <FiltersList class="sticky flex gap-2 pt-4 pb-4 top-0 bg-gradient-to-b from-80% from-white z-filter" />
+  } @else if (query.isSuccess()) {
+    <FiltersList class="sticky top-0 z-filter flex gap-2 bg-gradient-to-b from-white from-80% pb-4 pt-4" />
   }
 
-  <app-did-you-mean class="text-alert py-1" [result]="result()" />
+  <app-did-you-mean class="py-1 text-alert" [result]="result()" />
 
   <app-sponsored-results />
 
   @if (query.isPending()) {
-    <div class="flex justify-end mt-10">
-      <div class="h-9 w-28 btn btn-tertiary"></div>
+    <div class="mt-10 flex justify-end">
+      <div class="btn btn-tertiary h-9 w-28"></div>
     </div>
 
-    <ul class="flex flex-col gap-2 mt-4">
+    <ul class="mt-4 flex flex-col gap-2">
       <li><app-article-default-skeleton /></li>
       <li><app-article-default-skeleton /></li>
       <li><app-article-default-skeleton /></li>
     </ul>
-  }
-  @else if (query.isSuccess() && query.data()?.pages) {
+  } @else if (query.isSuccess() && query.data()?.pages) {
     <!-- the sort is always displayed excepts when no records are found -->
-    <div class="flex mt-4 has-[_+ul>li.no-records]:hidden">
-      <app-sort-selector
-        class="ms-auto"
-        [result]="result()!"
-        (onSort)="onSort($event)"
-      />
+    <div class="mt-4 flex has-[_+ul>li.no-records]:hidden">
+      <app-sort-selector class="ms-auto" [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
-    <ul class="flex flex-col gap-2 mt-4">
+    <ul class="mt-4 flex flex-col gap-2">
       @for (page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id + $index) {
           <li>
@@ -49,8 +43,7 @@
               <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: { article, strategy: 'replace' }" />
             }
           </li>
-        }
-        @empty {
+        } @empty {
           <li class="no-records">
             <NoResultPanel />
           </li>

@@ -1,6 +1,6 @@
-import { Component, input } from "@angular/core";
-import { Article } from "@sinequa/atomic";
-import { SelectionStrategy } from "@sinequa/atomic-angular";
+import { Component, input } from '@angular/core';
+import { Article } from '@sinequa/atomic';
+import { SelectionStrategy } from '@sinequa/atomic-angular';
 
 /**
  * Base class for article components.
@@ -9,7 +9,7 @@ import { SelectionStrategy } from "@sinequa/atomic-angular";
  */
 
 @Component({
-  selector: "app-base-article",
+  selector: 'app-base-article',
   standalone: true,
   template: ``
 })

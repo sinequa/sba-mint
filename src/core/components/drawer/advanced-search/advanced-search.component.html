@@ -1,50 +1,42 @@
 @if (article()) {
-  <div class="h-screen flex flex-col px-6 pb-6 overflow-y-auto">
-    <section class="w-full flex flex-col gap-6 mt-6 mb-4">
+  <div class="flex h-screen flex-col overflow-y-auto pb-6 pl-6 pr-3 scroll-stable">
+    <section class="mb-4 mt-6 flex w-full flex-col gap-6">
       <header
         id="panel-control"
-        class="flex rounded group hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300  focus-within:outline focus-within:outline-1 focus-within:outline-primary"
-      >
-        <div class="bg-neutral-50 grow px-2 flex gap-2 items-center rounded-s rounded-e-none group-hover:bg-white">
+        class="group flex rounded focus-within:outline focus-within:outline-1 focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
+        <div class="flex grow items-center gap-2 rounded-e-none rounded-s bg-neutral-50 px-2 group-hover:bg-white">
           <input
             type="search"
-            class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
+            class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
             autocomplete="off"
             spellcheck="false"
             [attr.placeholder]="'drawers.inputPlaceholder' | transloco"
             [attr.aria-label]="'drawers.inputPlaceholder' | transloco"
             [ngModel]="input()"
             (ngModelChange)="input.set($event)"
-            (keydown.enter)="executeSearch()"
-          />
+            (keydown.enter)="executeSearch()" />
 
           @if (input() !== '') {
-            <button
-              [attr.title]="'clear' | transloco"
-              [attr.aria-label]="'clear' | transloco"
-              (click)="clearInput()"
-              (keydown.enter)="clearInput()"
-            >
+            <button [attr.title]="'clear' | transloco" [attr.aria-label]="'clear' | transloco" (click)="clearInput()" (keydown.enter)="clearInput()">
               <i class="fa-fw far fa-circle-xmark"></i>
             </button>
           }
         </div>
 
         <button
-          class="btn btn-primary rounded-s-none rounded-e"
+          class="btn btn-primary rounded-e rounded-s-none"
           [disabled]="input() === '' || null"
           [attr.title]="'search' | transloco"
           [attr.aria-label]="'search' | transloco"
-          (click)="executeSearch()"
-        >
+          (click)="executeSearch()">
           <i class="fa-fw far fa-magnifying-glass"></i>
         </button>
       </header>
     </section>
 
-    <details name="advanced-search-panels" class="border-b border-neutral-300 group" open>
-      <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
-        <p class="flex gap-2 font-semibold items-baseline">
+    <details name="advanced-search-panels" class="group border-b border-neutral-300" open>
+      <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+        <p class="flex items-baseline gap-2 font-semibold">
           <i class="fa-fw far fa-magnifying-glass"></i>
           {{ 'extracts' | transloco }}
         </p>
@@ -52,27 +44,19 @@
         <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
       </summary>
 
-      @if(loading()) {
-        <div class="flex justify-center items-center h-32">
+      @if (loading()) {
+        <div class="flex h-32 items-center justify-center">
           <i class="fa-fw far fa-spinner-third fa-spin text-primary"></i>
         </div>
-      }
-      @else {
+      } @else {
         <ul>
           @for (extract of extracts(); track $index) {
-            <li class="rounded px-2 py-1 mr-2 hover:bg-highlight">
-              <p
-                role="button"
-                [id]="'extract-' + extract.id"
-                [innerHTML]="extract.text"
-                (click)="scrollTo('extractslocations', extract.textIndex, true)"
-              ></p>
+            <li class="mr-2 rounded px-2 py-1 hover:bg-highlight">
+              <p role="button" [id]="'extract-' + extract.id" [innerHTML]="extract.text" (click)="scrollTo('extractslocations', extract.textIndex, true)"></p>
             </li>
 
-            <li class="bg-neutral-200 px-2 mr-2 h-[1px]"></li>
-          }
-
-          @empty {
+            <li class="mr-2 h-[1px] bg-neutral-200 px-2"></li>
+          } @empty {
             <li class="text-slate-300">{{ 'drawers.noRelevantExtracts' | transloco }}</li>
           }
         </ul>
@@ -80,9 +64,9 @@
     </details>
 
     @if (hasLabels()) {
-      <details class="border-b border-neutral-300 group" name="advanced-search-panels">
-        <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
-          <p class="flex gap-2 font-semibold items-baseline">
+      <details class="group border-b border-neutral-300" name="advanced-search-panels">
+        <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+          <p class="flex items-baseline gap-2 font-semibold">
             <i class="fa-fw far fa-tags"></i>
             {{ 'labels' | transloco }}
           </p>
@@ -93,24 +77,15 @@
         <div>
           <ul class="mt-4 flex flex-col flex-wrap gap-2">
             <li>
-              <Metadata
-                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-                [article]="article()!"
-                [metadata]="labels.public"
-              />
+              <Metadata class="badge badge-sm flex gap-1 border-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.public" />
             </li>
 
             <li>
-              <Metadata
-                class="flex gap-1 badge badge-sm border-neutral-600 font-semibold"
-                [article]="article()!"
-                [metadata]="labels.private"
-              />
+              <Metadata class="badge badge-sm flex gap-1 border-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.private" />
             </li>
           </ul>
         </div>
       </details>
-
     }
 
     @for (highlight of previewHighlights(); track $index) {
@@ -122,9 +97,9 @@
 }
 
 <ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
-  <details name="advanced-search-panels" class="border-b border-neutral-300 group">
-    <summary class="p-3 flex justify-between items-baseline select-none cursor-pointer bg-white sticky top-0">
-      <p class="flex gap-2 font-semibold items-baseline capitalize">
+  <details name="advanced-search-panels" class="group border-b border-neutral-300">
+    <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+      <p class="flex items-baseline gap-2 font-semibold capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name | transloco }}
       </p>
@@ -135,19 +110,17 @@
     <div>
       <ul>
         @for (data of metadata; track $index) {
-          <li class="flex px-2 py-1 mr-2 justify-between" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
+          <li class="mr-2 flex justify-between px-2 py-1" (mouseenter)="hovering.set(data.value)" (mouseleave)="hovering.set(undefined)">
             <p>{{ data.display }}</p>
 
             <p class="flex items-center gap-2">
               @if (hovering() === data.value) {
-                <i class="fa-light fa-chevron-left" role="button" (click)="navigatePrev(entity, data)"></i>
+                <i class="fa-light fa-chevron-left" aria-label="previous entity" role="button" (click)="navigatePrev(entity, data)"></i>
 
                 <span>{{ hoverIndex() }} / {{ data.count }}</span>
 
-                <i class="fa-light fa-chevron-right" role="button" (click)="navigateNext(entity, data)"></i>
-              }
-
-              @else {
+                <i class="fa-light fa-chevron-right" aria-label="next entity" role="button" (click)="navigateNext(entity, data)"></i>
+              } @else {
                 {{ data.count }}
               }
             </p>

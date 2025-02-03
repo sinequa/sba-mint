@@ -8,10 +8,13 @@ import { Subscription, fromEvent } from 'rxjs';
 import { Credentials, Principal, globalConfig, isAuthenticated, login, logout } from '@sinequa/atomic';
 import { ApplicationService, PrincipalService } from '@sinequa/atomic-angular';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 /**
  * Represents the LoginComponent class, which is responsible for handling the login functionality.
@@ -21,30 +24,31 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   selector: 'sq-login',
   standalone: true,
   imports: [RouterModule, FormsModule, TranslocoPipe],
-  templateUrl: "./login.component.html",
-  styles: [`
-    :host {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
-    .btn-primary {
-      background-color: black;
-      color: white;
-    }
-  `],
-  providers: [provideTranslocoScope({ scope: "login", loader })]
+  templateUrl: './login.component.html',
+  styles: [
+    `
+      :host {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+      .btn-primary {
+        background-color: black;
+        color: white;
+      }
+    `
+  ],
+  providers: [provideTranslocoScope({ scope: 'login', loader })]
 })
 export class LoginComponent implements OnDestroy {
-
   config = globalConfig;
 
   /**
    * Represents the user credentials for login.
    */
-  credentials = signal<Credentials>({ username: '', password: '' })
+  credentials = signal<Credentials>({ username: '', password: '' });
 
   readonly authenticated = signal<boolean>(false);
   readonly user = signal<Principal | null>(null);
@@ -55,8 +59,6 @@ export class LoginComponent implements OnDestroy {
   private readonly principalService = inject(PrincipalService);
   protected readonly appService = inject(ApplicationService);
   private readonly translocoService = inject(TranslocoService);
-
-
 
   private sub = new Subscription();
 
@@ -71,34 +73,36 @@ export class LoginComponent implements OnDestroy {
 
     effect(() => {
       if (this.authenticated()) {
-        this.sub.add(this.principalService.getPrincipal().subscribe((principal) => this.user.set(principal)))
+        this.sub.add(this.principalService.getPrincipal().subscribe(principal => this.user.set(principal)));
       }
-    })
+    });
 
     effect(() => {
       if (this.returnUrl() !== null) {
-        const [url] = this.returnUrl() || ["/"];
+        const [url] = this.returnUrl() || ['/'];
         this.router.navigateByUrl(url);
       }
-    })
+    });
 
-    this.sub.add(fromEvent(document, 'authenticated').subscribe((event) => {
-      const response = event as CustomEvent;
-      this.authenticated.set(response.detail.authenticated);
-      const url = this.route.snapshot.queryParams['returnUrl'] || null;
+    this.sub.add(
+      fromEvent(document, 'authenticated').subscribe(event => {
+        const response = event as CustomEvent;
+        this.authenticated.set(response.detail.authenticated);
+        const url = this.route.snapshot.queryParams['returnUrl'] || null;
 
-      if (url !== null) {
-        this.returnUrl.set([url]);
-      }
-
-      if (isAuthenticated()) {
         if (url !== null) {
-          this.router.navigateByUrl(url);
-        } else {
-          this.router.navigateByUrl("/");
+          this.returnUrl.set([url]);
         }
-      }
-    }));
+
+        if (isAuthenticated()) {
+          if (url !== null) {
+            this.router.navigateByUrl(url);
+          } else {
+            this.router.navigateByUrl('/');
+          }
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -109,7 +113,7 @@ export class LoginComponent implements OnDestroy {
    * Updates the credentials with the provided values.
    * @param credentials - An object containing the username and password.
    */
-  updateCredentials(credentials: { username?: string, password?: string }) {
+  updateCredentials(credentials: { username?: string; password?: string }) {
     this.credentials.update(v => ({ ...v, ...credentials }));
   }
 
@@ -123,10 +127,10 @@ export class LoginComponent implements OnDestroy {
    * This method calls the login function asynchronously.
    */
   async handleLogin() {
-    login().catch((error) => {
+    login().catch(error => {
       {
-        console.warn("An error occurred while logging in", error);
-        this.router.navigate(['error'])
+        console.warn('An error occurred while logging in', error);
+        this.router.navigate(['error']);
       }
     });
   }
@@ -138,19 +142,22 @@ export class LoginComponent implements OnDestroy {
   async handleLoginWithCredentials() {
     if (!this.valid()) return;
 
-    this.appService.autoLogin({credentials: this.credentials()}).then((value) => {
-      this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
-    }).catch((e) => {
-      if (e instanceof Error) {
-        console.error(e.message);
-      }
-      if (e instanceof Response) {
-        console.error(e.statusText);
-      }
-      if (e.status === 401 && e instanceof Response === false) {
-        const message = this.translocoService.translate('login.invalidCredentials');
-        toast.error(message, { duration: 2000 });
-      }
-    });
+    this.appService
+      .autoLogin({ credentials: this.credentials() })
+      .then(value => {
+        this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
+      })
+      .catch(e => {
+        if (e instanceof Error) {
+          console.error(e.message);
+        }
+        if (e instanceof Response) {
+          console.error(e.statusText);
+        }
+        if (e.status === 401 && e instanceof Response === false) {
+          const message = this.translocoService.translate('login.invalidCredentials');
+          toast.error(message, { duration: 2000 });
+        }
+      });
   }
 }

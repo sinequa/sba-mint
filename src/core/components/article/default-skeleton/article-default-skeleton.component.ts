@@ -8,4 +8,4 @@ import { SkeletonDirective } from 'toolkit';
   templateUrl: './article-default-skeleton.component.html',
   styleUrl: './article-default-skeleton.component.scss'
 })
-export class ArticleDefaultSkeletonComponent { }
+export class ArticleDefaultSkeletonComponent {}
