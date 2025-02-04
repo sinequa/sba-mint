@@ -16,7 +16,7 @@ import { CollectionsComponent } from '@/core/features/collections/collections.co
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
-type NavbarMenu = {
+export type NavbarMenu = {
   display: string;
   iconClass: string;
   routerLink?: string;
@@ -24,7 +24,7 @@ type NavbarMenu = {
   component?: Type<unknown>;
 };
 
-type NavbarTab = {
+export type NavbarTab = {
   display: string;
   name: string;
   path: string;
