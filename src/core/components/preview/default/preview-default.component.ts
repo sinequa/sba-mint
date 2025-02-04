@@ -10,7 +10,7 @@ import { AppStore, MetadataComponent, PreviewService, QueryParamsStore, SearchSe
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BasePreview } from '@/core/registry/base-preview';
 
-import { DocumentLocatorComponent } from "../../document-locator/document-locator.component";
+import { DocumentLocatorComponent } from '../../document-locator/document-locator.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
 
@@ -21,15 +21,7 @@ type Article = A & {
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [
-    NgClass,
-    PreviewNavbarComponent,
-    MetadataComponent,
-    PreviewActionsComponent,
-    TranslocoPipe,
-    TranslocoDateImpurePipe,
-    DocumentLocatorComponent
-],
+  imports: [NgClass, PreviewNavbarComponent, MetadataComponent, PreviewActionsComponent, TranslocoPipe, TranslocoDateImpurePipe, DocumentLocatorComponent],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {

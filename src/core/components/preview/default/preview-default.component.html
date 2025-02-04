@@ -20,7 +20,7 @@
           <th>{{ 'location' | transloco }}</th>
 
           <td class="flex items-center gap-2 overflow-auto">
-            <DocumentLocator [article]="article()" />            
+            <DocumentLocator [article]="article()" />
           </td>
         </tr>
 
@@ -83,8 +83,8 @@
   }
 
   @if (loading()) {
-    <section class="w-full bg-gray-200 h-[2px] dark:bg-gray-700 overflow-hidden">
-      <div class="h-[2px] animate-progress" style="background: linear-gradient(to right, blue, #333, orange, #333, blue);"></div>
+    <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+      <div class="h-[2px] animate-progress" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
     </section>
   }
   @if (canLoadIframe()) {
