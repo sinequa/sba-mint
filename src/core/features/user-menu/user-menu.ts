@@ -5,7 +5,7 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { getState } from '@ngrx/signals';
 
 import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
-import { MenuComponent, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { OverrideUserDialogComponent } from '../dialog/override-user';
 import { ResetUserSettingsDialogComponent } from '../dialog/reset-user-settings';
 import { getHelpIndexUrl } from './help-folder-options';
@@ -21,7 +21,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [FormsModule, TranslocoPipe, OverrideUserDialogComponent, ResetUserSettingsDialogComponent],
+  imports: [FormsModule, MenuComponent, MenuItemComponent, TranslocoPipe, OverrideUserDialogComponent, ResetUserSettingsDialogComponent],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope({ scope: 'user-menu', loader })]
 })
