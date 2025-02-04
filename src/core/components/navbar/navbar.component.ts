@@ -22,9 +22,10 @@ import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-sea
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipes/syslang';
 
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
+
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
 
 type NavbarMenu = {
   display: string;
