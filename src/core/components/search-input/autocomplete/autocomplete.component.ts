@@ -3,7 +3,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
-import { combineLatest, map, of, switchMap } from 'rxjs';
+import { combineLatest, map, of, switchMap, catchError } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 import { AppStore, AuditService, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
@@ -53,7 +53,10 @@ export class AutocompleteComponent {
 
           return combineLatest([
             fromUserSettings,
-            this.autocompleteService.getFromSuggestQueriesForText(testText)
+            this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(catchError(error => {
+              console.error(error);
+              return of([]);
+            }))
           ]);
         }),
         map(items => items.flat(2)),

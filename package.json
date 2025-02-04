@@ -5,14 +5,24 @@
     "ng": "ng",
     "start": "ng serve --ssl=true --proxy-config=proxy.conf.json",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
+    "start:docs": "cd docusaurus && npm start",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
     "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest",
+    "docs:start": "npm run start:docs",
     "docs:ci": "cd docusaurus && npm ci",
     "docs:build": "cd docusaurus && npm run build",
-    "docs:build-internal": "cd docusaurus && npm run build-internal"
+    "docs:build-internal": "cd docusaurus && npm run build-internal",
+    "prettier:check": "prettier --config .prettierrc --check src/**/*.{ts,html,scss,json}",
+    "prettier:write": "prettier --config .prettierrc --write src/**/*.{ts,html,scss,json}",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,html,scss,json}": [
+      "npm run prettier:write"
+    ]
   },
   "private": true,
   "dependencies": {
@@ -53,7 +63,12 @@
     "@floating-ui/dom": "^1.6.3",
     "@types/unist": "^2.0.7",
     "autoprefixer": "^10.4.16",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
     "postcss": "^8.4.32",
+    "prettier": "^3.4.2",
+    "prettier-plugin-package": "^1.4.0",
+    "prettier-plugin-tailwindcss": "^0.6.10",
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.4.2"
