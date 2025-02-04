@@ -6,6 +6,8 @@ import { SkeletonDirective } from 'toolkit';
   standalone: true,
   imports: [SkeletonDirective],
   templateUrl: './article-slide-skeleton.component.html',
-  styleUrl: './article-slide-skeleton.component.scss'
+  host: {
+    class: 'article pointer-events-none flex-col p-0'
+  }
 })
-export class ArticleSlideSkeletonComponent { }
+export class ArticleSlideSkeletonComponent {}

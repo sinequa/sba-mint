@@ -30,7 +30,7 @@ type Article = A & {
     SourceIconComponent,
     TranslocoPipe,
     TranslocoDateImpurePipe,
-    DropdownComponent,
+    DropdownComponent
   ],
   templateUrl: './preview-default.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
@@ -44,9 +44,9 @@ export class PreviewDefaultComponent extends BasePreview {
 
   public readonly article = computed(() => this.previewData()?.record as Article);
   public readonly previewUrl = computed(() =>
-    this.previewData()?.documentCachedContentUrl ?
-      this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl) :
-      undefined
+    this.previewData()?.documentCachedContentUrl
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl)
+      : undefined
   );
 
   public labels = inject(AppStore).getLabels();
@@ -86,34 +86,39 @@ export class PreviewDefaultComponent extends BasePreview {
       this.previewService.setPreviewData(this.previewData());
     });
 
-    effect(async () => {
-      if (!this.previewUrl()) return;
+    effect(
+      async () => {
+        if (!this.previewUrl()) return;
 
-      try {
-        this.loading.set(true);
-        this.cdr.detectChanges();
-        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
-        this.canLoadIframe.set(response.status === 200);
-        this.previewUrlError.set(response.status !== 200);
-      } catch (e) {
-        this.canLoadIframe.set(false);
-        this.previewUrlError.set(true);
-      } finally {
-        this.loading.set(false);
-      }
-    }, { allowSignalWrites: true });
+        try {
+          this.loading.set(true);
+          this.cdr.detectChanges();
+          const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
+          this.canLoadIframe.set(response.status === 200);
+          this.previewUrlError.set(response.status !== 200);
+        } catch (e) {
+          this.canLoadIframe.set(false);
+          this.previewUrlError.set(true);
+        } finally {
+          this.loading.set(false);
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   navigateToSegment(index: number): void {
     let currentFilter = this.queryParamStore.getFilter('Treepath');
 
-    if (!currentFilter)
-      currentFilter = { field: 'treepath', operator: 'in' } as LegacyFilter;
+    if (!currentFilter) currentFilter = { field: 'treepath', operator: 'in' } as LegacyFilter;
 
-    if (!currentFilter.values)
-      currentFilter.values = [];
+    if (!currentFilter.values) currentFilter.values = [];
 
-    currentFilter.values.push(`/${this.locationSegments().slice(0, index + 1).join('/')}/*`);
+    currentFilter.values.push(
+      `/${this.locationSegments()
+        .slice(0, index + 1)
+        .join('/')}/*`
+    );
 
     this.queryParamStore.updateFilter(currentFilter);
 
@@ -144,7 +149,7 @@ export class PreviewDefaultComponent extends BasePreview {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick({ field, value }: { field: string, value: string }): void {
+  onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }

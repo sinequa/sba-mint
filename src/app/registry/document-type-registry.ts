@@ -1,11 +1,11 @@
-import { Type } from "@angular/core";
+import { Type } from '@angular/core';
 
-import { Article } from "@sinequa/atomic";
+import { Article } from '@sinequa/atomic';
 
-import { ArticleDefaultComponent } from "@/core/components/article/default/article-default.component";
-import { ArticleSlideComponent } from "@/core/components/article/slide/article-slide.component";
-import { PreviewDefaultComponent } from "@/core/components/preview/default/preview-default.component";
-import { PreviewSlideComponent } from "@/core/components/preview/slide/preview-slide.component";
+import { ArticleDefaultComponent } from '@/core/components/article/default/article-default.component';
+import { ArticleSlideComponent } from '@/core/components/article/slide/article-slide.component';
+import { PreviewDefaultComponent } from '@/core/components/preview/default/preview-default.component';
+import { PreviewSlideComponent } from '@/core/components/preview/slide/preview-slide.component';
 
 // Define the default document type, should be linked to default article and preview components
 // This document type is used when the document type is not recognized
@@ -18,7 +18,7 @@ export type DocumentTypeMap = {
   documentType: string;
   articleComponent: Type<unknown>;
   previewComponent: Type<unknown>;
-}
+};
 
 // Define the mapping between document types and components
 // Keep it sorted by docType length in descending order so
@@ -44,10 +44,10 @@ export function getComponentsForArticle(article: Article): DocumentTypeMap {
 
 export function getComponentsForDocumentType(documentType?: string): DocumentTypeMap {
   if (documentType) {
-    const type = documentTypeMap.find((dtm) => dtm.documentType === documentType);
+    const type = documentTypeMap.find(dtm => dtm.documentType === documentType);
 
     if (type) return type;
   }
 
-  return documentTypeMap.find((dtm) => dtm.documentType === DEFAULT_DOCUMENT_TYPE)!;
+  return documentTypeMap.find(dtm => dtm.documentType === DEFAULT_DOCUMENT_TYPE)!;
 }

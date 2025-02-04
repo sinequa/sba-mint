@@ -9,10 +9,13 @@ import { toast } from 'ngx-sonner';
 
 const DEBOUNCE_DELAY = 300;
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-search-input',
@@ -52,7 +55,6 @@ export class SearchInputComponent {
     return this.appStore.allowEmptySearch(queryName);
   });
 
-
   // el is the ElementRef of the component, it is injected by Angular and used by the AutoComplete component
   constructor(public readonly el: ElementRef) {
     effect(() => {
@@ -60,20 +62,24 @@ export class SearchInputComponent {
       this.debounced.emit(value);
     });
 
+    effect(
+      () => {
+        const { data } = getState(this.appStore);
+        const { features = { allowChatDrawer: false } } = data as CJson;
 
-    effect(() => {
-      const { data } = getState(this.appStore);
-      const { features = { allowChatDrawer: false } } = data as CJson;
-
-      this.allowChatDrawer.set(features.allowChatDrawer);
-    }, { allowSignalWrites: true })
+        this.allowChatDrawer.set(features.allowChatDrawer);
+      },
+      { allowSignalWrites: true }
+    );
 
     // first time the component is created, we set the input value from the query params
-    effect(() => {
-      const { text } = getState(this.queryParamsStore);
-      this.setInput(text);
-    }, { allowSignalWrites: true })
-
+    effect(
+      () => {
+        const { text } = getState(this.queryParamsStore);
+        this.setInput(text);
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   public closeAutocompletePopover(): void {
@@ -99,7 +105,7 @@ export class SearchInputComponent {
   protected emitText(): void {
     if (this.allowEmptySearch() === false && this.input() === '') {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
-      toast.info(message)
+      toast.info(message);
       return;
     }
 
@@ -133,7 +139,7 @@ export class SearchInputComponent {
   protected onKeyDown(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       this.emitText();
-    } else if(this.input() !== ''){
+    } else if (this.input() !== '') {
       this.popoverElement().showPopover();
     }
   }

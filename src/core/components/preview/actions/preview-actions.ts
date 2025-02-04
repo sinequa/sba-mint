@@ -1,76 +1,65 @@
-import { Component, inject, signal } from "@angular/core";
-import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from "@jsverse/transloco";
+import { Component, inject, signal } from '@angular/core';
+import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { PreviewService } from "@sinequa/atomic-angular";
+import { PreviewService } from '@sinequa/atomic-angular';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
-  selector: "preview-actions",
+  selector: 'preview-actions',
   standalone: true,
   imports: [TranslocoPipe],
-  providers: [provideTranslocoScope({ scope: "preview", loader })],
+  providers: [provideTranslocoScope({ scope: 'preview', loader })],
   template: `
-    <button
-      class="flex justify-center items-center btn btn-secondary p-1 size-6"
-      [attr.title]="'preview.zoomIn' | transloco"
-      (click)="zoomIn()"
-    >
+    <button class="btn btn-secondary flex size-6 items-center justify-center p-1" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus"></i>
     </button>
-    
-    <button
-      class="flex justify-center items-center btn btn-secondary p-1 size-6"
-      [attr.title]="'preview.zoomOut' | transloco"
-      (click)="zoomOut()"
-    >
+
+    <button class="btn btn-secondary flex size-6 items-center justify-center p-1" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
       <i class="fa-regular fa-magnifying-glass-minus"></i>
     </button>
-    
+
     @if (extracts()) {
       <button
-        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        class="btn btn-secondary flex size-6 items-center justify-center p-1"
         [attr.title]="'preview.toggleExtracts' | transloco"
-        (click)="toggleExtracts()"
-      >
+        (click)="toggleExtracts()">
         <i class="fa-regular fa-flashlight"></i>
       </button>
-    }
-    @else {
+    } @else {
       <button
-        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        class="btn btn-secondary flex size-6 items-center justify-center p-1"
         [attr.title]="'preview.toggleExtracts' | transloco"
-        (click)="toggleExtracts()"
-      >
-        <span class="fa-stack justify-center items-center">
+        (click)="toggleExtracts()">
+        <span class="fa-stack items-center justify-center">
           <i class="fa-regular fa-flashlight fa-stack-1x"></i>
           <i class="fa-regular fa-slash fa-stack-1x"></i>
         </span>
       </button>
     }
-      
+
     @if (entities()) {
       <button
-        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        class="btn btn-secondary flex size-6 items-center justify-center p-1"
         [attr.title]="'preview.toggleEntities' | transloco"
-        (click)="toggleEntities()"
-      >
+        (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb"></i>
       </button>
-    }
-    @else {
+    } @else {
       <button
-        class="flex justify-center items-center btn btn-secondary p-1 size-6"
+        class="btn btn-secondary flex size-6 items-center justify-center p-1"
         [attr.title]="'preview.toggleEntities' | transloco"
-        (click)="toggleEntities()"
-      >
-          <i class="fa-regular fa-lightbulb-slash"></i>
+        (click)="toggleEntities()">
+        <i class="fa-regular fa-lightbulb-slash"></i>
       </button>
     }
-  `,
+  `
 })
 export class PreviewActionsComponent {
   protected readonly extracts = signal(true);
@@ -81,13 +70,13 @@ export class PreviewActionsComponent {
   constructor() {
     window.addEventListener('message', (event: MessageEvent) => {
       const message = event.data;
-      if (message.type === 'selected-position') {        
+      if (message.type === 'selected-position') {
         this.extracts.set(false);
         this.entities.set(false);
         this.previewService.toggle(this.extracts(), this.entities());
       }
 
-      if (message.type === 'ready'){
+      if (message.type === 'ready') {
         this.previewService.toggle(this.extracts(), this.entities());
       }
     });

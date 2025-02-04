@@ -5,21 +5,26 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { Result } from '@sinequa/atomic';
 import { QueryParamsStore } from '@sinequa/atomic-angular';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-did-you-mean',
   standalone: true,
   imports: [RouterModule, TranslocoPipe],
   templateUrl: './did-you-mean.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `
+  ],
   providers: [provideTranslocoScope({ scope: 'did-you-mean', loader })]
 })
 export class DidYouMeanComponent {
@@ -33,12 +38,12 @@ export class DidYouMeanComponent {
   private readonly queryParamsStore = inject(QueryParamsStore);
 
   selectCorrected(): void {
-    this.queryParamsStore.patch({ spellingCorrectionMode: "dymonly", text: this.correction()! });
-    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { c: "dymonly", q: this.correction() } })
+    this.queryParamsStore.patch({ spellingCorrectionMode: 'dymonly', text: this.correction()! });
+    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { c: 'dymonly', q: this.correction() } });
   }
 
   selectOriginal(): void {
-    this.queryParamsStore.patch({ spellingCorrectionMode: "dymonly" });
-    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { c: "dymonly", q: this.original() } })
+    this.queryParamsStore.patch({ spellingCorrectionMode: 'dymonly' });
+    this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { c: 'dymonly', q: this.original() } });
   }
 }

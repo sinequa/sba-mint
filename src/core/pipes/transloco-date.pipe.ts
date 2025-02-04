@@ -18,7 +18,7 @@ export class TranslocoDateImpurePipe extends DatePipe implements OnDestroy {
   constructor(
     @Inject(LOCALE_ID) locale: string,
     @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() defaultTimezone?: string | null,
-    @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() defaultOptions?: DatePipeConfig | null,
+    @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() defaultOptions?: DatePipeConfig | null
   ) {
     super(locale, defaultTimezone, defaultOptions);
   }
@@ -33,7 +33,7 @@ export class TranslocoDateImpurePipe extends DatePipe implements OnDestroy {
   override transform(value: Date | string | number | null | undefined, format?: string, timezone?: string): string | null {
     this.subscription?.unsubscribe();
 
-    this.subscription = this.transloco.langChanges$.subscribe((locale) => {
+    this.subscription = this.transloco.langChanges$.subscribe(locale => {
       const transformedValue = super.transform(value, format, timezone, locale);
 
       if (transformedValue !== this.lastTransformedValue) {

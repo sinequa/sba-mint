@@ -1,5 +1,5 @@
-import { Component, input } from "@angular/core";
-import { PreviewData } from "@sinequa/atomic";
+import { Component, input } from '@angular/core';
+import { PreviewData } from '@sinequa/atomic';
 
 /**
  * Base class for preview components.
@@ -7,7 +7,7 @@ import { PreviewData } from "@sinequa/atomic";
  */
 
 @Component({
-  selector: "app-base-preview",
+  selector: 'app-base-preview',
   standalone: true,
   template: ``
 })

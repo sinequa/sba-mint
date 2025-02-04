@@ -14,14 +14,13 @@ import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-sea
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { CollectionsComponent } from '@/core/features/collections/collections.component';
 
-
 type HomeTab = {
   name: string;
   iconClass: string;
   label: string;
   component: Type<unknown>;
   disabled?: boolean;
-}
+};
 
 const homeFeatures: HomeTab[] = [
   {
@@ -55,16 +54,9 @@ const homeFeatures: HomeTab[] = [
   standalone: true,
   templateUrl: './home.component.html',
   host: {
-    "class": "layout-search h-screen"
+    class: 'layout-search h-screen'
   },
-  imports: [
-    NgClass,
-    NgComponentOutlet,
-    SearchInputComponent,
-    AutocompleteComponent,
-    UserMenuComponent,
-    TranslocoPipe
-  ],
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TranslocoPipe]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
@@ -89,26 +81,25 @@ export class HomeComponent implements OnInit, OnDestroy {
   defaultUserFeatures = {
     bookmarks: true,
     recentSearches: true,
-    savedSearches: true,
-  }
+    savedSearches: true
+  };
 
   readonly translateService = inject(TranslocoService);
 
   constructor() {
     // react to tab changes
-    effect(() => {
-      this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
-    }, { allowSignalWrites: true });
-
-    this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+    effect(
+      () => {
+        this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
+      },
+      { allowSignalWrites: true }
     );
+
+    this.sub.add(this.drawerStack.isOpened.subscribe(state => (this.drawerOpened = state)));
 
     this.sub.add(
       // on navigation, close all tabs
-      this.router.events
-        .pipe(filter(event => event.type === EventType.NavigationStart))
-        .subscribe(() => this.drawerStack.closeAll())
+      this.router.events.pipe(filter(event => event.type === EventType.NavigationStart)).subscribe(() => this.drawerStack.closeAll())
     );
   }
 

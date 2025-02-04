@@ -10,23 +10,21 @@
  * If false, no locale will be used as a prefix.
  */
 export type HelpFolderOptions = {
-  path: string,
-  folder?: string,
-  indexFile?: string,
-  useLocale?: boolean,
-  useLocaleAsPrefix?: boolean
-}
+  path: string;
+  folder?: string;
+  indexFile?: string;
+  useLocale?: boolean;
+  useLocaleAsPrefix?: boolean;
+};
 
 /**
  * helper function to retrieve the help html file accordingly with the current locale
  */
 export function getHelpIndexUrl(locale: string, options: HelpFolderOptions): string {
-    const { useLocale, useLocaleAsPrefix, indexFile, path, folder } = options;
+  const { useLocale, useLocaleAsPrefix, indexFile, path, folder } = options;
 
-    const localeFolder = useLocale ? `${locale}/` : null;
-    const file = useLocaleAsPrefix ? `${locale}.${indexFile}` : indexFile ?? '';
+  const localeFolder = useLocale ? `${locale}/` : null;
+  const file = useLocaleAsPrefix ? `${locale}.${indexFile}` : (indexFile ?? '');
 
-    return [path, folder, `${localeFolder ? localeFolder : ''}${file}`]
-      .filter(item => item !== undefined)
-      .join('/');
-  };
+  return [path, folder, `${localeFolder ? localeFolder : ''}${file}`].filter(item => item !== undefined).join('/');
+}

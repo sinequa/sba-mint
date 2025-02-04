@@ -2,8 +2,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 
 import { applyConsoleLogLevels, setGlobalConfig } from '@sinequa/atomic';
-import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
-import atomic from "../node_modules/@sinequa/atomic/package.json";
+import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
+import atomic from '../node_modules/@sinequa/atomic/package.json';
 
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
@@ -16,21 +16,15 @@ applyConsoleLogLevels();
 /**
  * keyux configuration
  */
-startKeyUX(window, [
-  hotkeyKeyUX(),
-  focusGroupKeyUX(),
-  pressKeyUX('is-pressed'),
-  jumpKeyUX(),
-  hiddenKeyUX()
-]);
+startKeyUX(window, [hotkeyKeyUX(), focusGroupKeyUX(), pressKeyUX('is-pressed'), jumpKeyUX(), hiddenKeyUX()]);
 
 bootstrapApplication(AppComponent, appConfig)
   .then(() => {
-    console.info("atomic", atomic.version);
-    console.info("atomic-angular", atomicAngular.version);
+    console.info('atomic', atomic.version);
+    console.info('atomic-angular', atomicAngular.version);
   })
-  .catch((err) => {
-    console.error("bootstrapApplication error:", err);
+  .catch(err => {
+    console.error('bootstrapApplication error:', err);
     parseResponse(err);
     const currentUrl = encodeURIComponent(err.url);
     // Redirect to the error page with the URL causing the error
@@ -63,7 +57,7 @@ async function parseResponse(err: Response) {
 
       errorMessage = result || errorMessage;
     } catch (streamError) {
-      console.error("Error reading stream", streamError);
+      console.error('Error reading stream', streamError);
     }
   }
 

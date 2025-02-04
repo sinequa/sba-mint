@@ -45,9 +45,9 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
 
   public readonly article = computed(() => this.previewData()?.record as Article);
   public readonly previewUrl = computed(() =>
-    this.previewData()?.documentCachedContentUrl ?
-      this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl) :
-      undefined
+    this.previewData()?.documentCachedContentUrl
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl)
+      : undefined
   );
   thumbnailFailed = signal(false);
 
@@ -106,13 +106,15 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
   navigateToSegment(index: number): void {
     let currentFilter = this.queryParamStore.getFilter('Treepath');
 
-    if (!currentFilter)
-      currentFilter = { field: 'treepath', operator: 'in' } as LegacyFilter;
+    if (!currentFilter) currentFilter = { field: 'treepath', operator: 'in' } as LegacyFilter;
 
-    if (!currentFilter.values)
-      currentFilter.values = [];
+    if (!currentFilter.values) currentFilter.values = [];
 
-    currentFilter.values.push(`/${this.locationSegments().slice(0, index + 1).join('/')}/*`);
+    currentFilter.values.push(
+      `/${this.locationSegments()
+        .slice(0, index + 1)
+        .join('/')}/*`
+    );
 
     this.queryParamStore.updateFilter(currentFilter);
 
@@ -126,7 +128,7 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick({ field, value }: { field: string, value: string }): void {
+  onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }

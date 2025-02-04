@@ -6,15 +6,15 @@ import { InfinityScrollDirective } from '@sinequa/atomic-angular';
 
 import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
-import { FiltersListComponent } from "@/core/components/filters/filters-list.component";
-import { NoResultPanelComponent } from "@/core/components/no-result-panel/no-result-panel.component";
-import { SponsoredResultsComponent } from "@/core/components/sponsored-results/sponsored-results.component";
+import { FiltersListComponent } from '@/core/components/filters/filters-list.component';
+import { NoResultPanelComponent } from '@/core/components/no-result-panel/no-result-panel.component';
+import { SponsoredResultsComponent } from '@/core/components/sponsored-results/sponsored-results.component';
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
 
 import { SearchBase } from '../search.abstract';
 
-type R = Result & { nextPage?: number, previousPage?: number };
+type R = Result & { nextPage?: number; previousPage?: number };
 
 @Component({
   selector: 'app-search-all',
@@ -37,21 +37,18 @@ type R = Result & { nextPage?: number, previousPage?: number };
 })
 export class SearchAllComponent extends SearchBase<R> {
   @HostBinding('attr.drawer-opened')
-
-
   onSort(sort: SortingChoice): void {
     this.queryParamsStore.patch({ sort: sort.name });
     this.searchService.search([], {
       audit: {
-        type: "Search_Sort",
+        type: 'Search_Sort',
         detail: {
           sort: sort.name,
-          orderByClause: sort.orderByClause,
+          orderByClause: sort.orderByClause
         }
       }
     });
   }
-
 
   getArticleType(docType: string): Type<unknown> {
     return getComponentsForDocumentType(docType).articleComponent;

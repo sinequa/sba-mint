@@ -1,30 +1,22 @@
 <div
   id="autocomplete-anchor"
-  class="group flex grow relative h-8 rounded focus-within:rounded-b-none focus-within:z-[1001] hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300 focus-within:outline-primary"
->
-  <div
-    class="grow px-2 flex gap-2 items-center rounded-s focus-within:rounded-b-none bg-neutral-50 group-hover:bg-white"
-  >
+  class="group relative flex h-8 grow rounded focus-within:z-[1001] focus-within:rounded-b-none focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
+  <div class="flex grow items-center gap-2 rounded-s bg-neutral-50 px-2 focus-within:rounded-b-none group-hover:bg-white">
     @if (showSave() && input() !== '') {
-    <button
-      [ngClass]="{ 'animate-save': saveAnimation() }"
-      [attr.title]="'searchInput.saveSearch' | transloco"
-      [attr.aria-label]="'searchInput.saveSearch' | transloco"
-      (click)="saveQuery()"
-      (keydown.enter)="saveQuery()"
-    >
-      <i
-        [ngClass]="{ fas: saveAnimation() }"
-        class="fa-fw far fa-star"
-        aria-hidden="true"
-      ></i>
-    </button>
+      <button
+        [ngClass]="{ 'animate-save': saveAnimation() }"
+        [attr.title]="'searchInput.saveSearch' | transloco"
+        [attr.aria-label]="'searchInput.saveSearch' | transloco"
+        (click)="saveQuery()"
+        (keydown.enter)="saveQuery()">
+        <i [ngClass]="{ fas: saveAnimation() }" class="fa-fw far fa-star" aria-hidden="true"></i>
+      </button>
     }
 
     <input
       type="search"
       id="serach-navbar"
-      class="grow focus:outline-none bg-neutral-50 group-hover:bg-white"
+      class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
       [attr.placeholder]="'searchInput.placeholder' | transloco"
       [attr.aria-label]="'searchInput.placeholder' | transloco"
       autocomplete="off"
@@ -32,30 +24,27 @@
       [ngModel]="input()"
       (ngModelChange)="input.set($event)"
       (keyup)="onKeyDown($event)"
-      (click)="inputClicked()"
-    />
+      (click)="inputClicked()" />
 
     <!-- Clear search button -->
     @if (input() !== '') {
-    <button
-      [attr.title]="'searchInput.clearSearch' | transloco"
-      [attr.aria-label]="'searchInput.clearSearch' | transloco"
-      (click)="clearInput()"
-      (keydown.enter)="clearInput()"
-    >
-      <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
-    </button>
+      <button
+        [attr.title]="'searchInput.clearSearch' | transloco"
+        [attr.aria-label]="'searchInput.clearSearch' | transloco"
+        (click)="clearInput()"
+        (keydown.enter)="clearInput()">
+        <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
+      </button>
     }
 
     <!-- Ask AI button -->
     @if (input() !== '' && allowChatDrawer()) {
       <button
-        class="btn btn-xs my-1 bg-blue-100 rounded-sm text-sm text-primary"
+        class="btn btn-xs my-1 rounded-sm bg-blue-100 text-sm text-primary"
         title="Ask AI"
         aria-label="Ask AI"
         (click)="askAI()"
-        (keydown.enter)="askAI()"
-      >
+        (keydown.enter)="askAI()">
         <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
         Ask AI
       </button>
@@ -64,13 +53,12 @@
 
   <!-- Search button -->
   <button
-    class="btn btn-primary rounded-s-none group-focus-within:rounded-br-none rounded-e"
+    class="btn btn-primary rounded-e rounded-s-none group-focus-within:rounded-br-none"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"
     [disabled]="!allowEmptySearch() && this.input() === ''"
-    (click)="emitText()"
-  >
+    (click)="emitText()">
     <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
   </button>
 </div>
