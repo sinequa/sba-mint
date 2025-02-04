@@ -82,6 +82,7 @@ export class DocumentLocatorComponent implements OnDestroy {
   // margin for dropdown segment with separator
   readonly margin = 50;
 
+  previousCount?: number;
   resizeObserver?: ResizeObserver = new ResizeObserver(() => this.onResize());
 
   constructor() {
@@ -118,10 +119,12 @@ export class DocumentLocatorComponent implements OnDestroy {
       }
     }
 
-    console.log('can show', Math.ceil(i / 2), 'elements');
+    if (!this.previousCount || i !== this.previousCount) {
+      this.previousCount = i;
 
-    this.visibleSegments.set(this.locationSegments().slice(0, Math.ceil(i / 2)));
-    this.invisibleSegments.set(this.locationSegments().slice(Math.ceil(i / 2)));
+      this.visibleSegments.set(this.locationSegments().slice(0, Math.ceil(i / 2)));
+      this.invisibleSegments.set(this.locationSegments().slice(Math.ceil(i / 2)));
+    }
   }
 
   navigateToSegment(index: number): void {
