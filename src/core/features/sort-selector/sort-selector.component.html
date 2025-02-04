@@ -1,23 +1,15 @@
 <Dropdown [autoClose]="true">
-  <button
-    tabindex="0"
-    class="btn btn-tertiary font-semibold"
-    [attr.title]="'sortSelector.selectSort'"
-  >
-    <i class="fa-fw fa-regular fa-arrow-{{ sort()?.$isDesc ? 'down': 'up' }}-big-small me-1"></i>
+  <button tabindex="0" class="btn btn-tertiary font-semibold" [attr.title]="'sortSelector.selectSort'">
+    <i class="fa-fw fa-regular fa-arrow-{{ sort()?.$isDesc ? 'down' : 'up' }}-big-small me-1"></i>
     <span>{{ sort()?.display | transloco }}</span>
   </button>
 
-  <div dropdown-content class="dropdown-content p-1 mt-1">
-    @if ((sortOptions().length) > 0) {
+  <div dropdown-content class="dropdown-content mt-1 p-1">
+    @if (sortOptions().length > 0) {
       <ul class="data-list p-1">
         @for (option of sortOptions(); track $index) {
-          <li
-            class="flex gap-2 items-baseline data-list-item p-1"
-            role="button"
-            (click)="onSortOptionClicked(option)"
-          >
-            <i class="fa-fw fa-regular fa-arrow-{{ option.$isDesc ? 'down': 'up' }}-big-small"></i>
+          <li class="data-list-item flex items-baseline gap-2 p-1" role="menuitem" (click)="onSortOptionClicked(option)">
+            <i class="fa-fw fa-regular fa-arrow-{{ option.$isDesc ? 'down' : 'up' }}-big-small"></i>
             <span>{{ option.display | transloco }}</span>
           </li>
         }

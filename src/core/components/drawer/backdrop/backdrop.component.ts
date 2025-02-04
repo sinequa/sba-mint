@@ -7,46 +7,49 @@ import { BackdropService } from './backdrop.service';
   standalone: true,
   imports: [],
   template: ``,
-  styles: [`
-    :host {
-      --backdrop-animation-duration: 250ms;
+  host: {
+    class: 'z-backdrop bg-backdrop absolute bottom-0 left-0 right-0 top-0 hidden select-none'
+  },
+  styles: [
+    `
+      :host {
+        --backdrop-animation-duration: 250ms;
 
-      @apply absolute hidden top-0 bottom-0 left-0 right-0 bg-backdrop select-none;
+        animation: hide-backdrop var(--backdrop-animation-duration, 250ms) ease-out;
 
-      z-index: theme('zIndex.backdrop');
+        &[backdrop-visible='true'] {
+          display: block;
+          animation: show-backdrop var(--backdrop-animation-duration, 250ms) ease-out;
+        }
 
-      animation: hide-backdrop var(--backdrop-animation-duration, 250ms) ease-out;
+        @keyframes show-backdrop {
+          0% {
+            display: none;
+            opacity: 0;
+          }
+          1% {
+            display: block;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-      &[backdrop-visible="true"] {
-        @apply block;
-        animation: show-backdrop var(--backdrop-animation-duration, 250ms) ease-out;
+        @keyframes hide-backdrop {
+          0% {
+            display: block;
+            opacity: 1;
+          }
+          99% {
+            opacity: 0;
+          }
+          100% {
+            display: none;
+          }
+        }
       }
-
-      @keyframes show-backdrop {
-        0% {
-          @apply opacity-0 hidden;
-        }
-        1% {
-          @apply block;
-        }
-        100% {
-          @apply opacity-100;
-        }
-      }
-
-      @keyframes hide-backdrop {
-        0% {
-          @apply block opacity-100;
-        }
-        99% {
-          @apply opacity-0;
-        }
-        100% {
-          @apply hidden;
-        }
-      }
-    }
-  `]
+    `
+  ]
 })
 export class BackdropComponent implements OnDestroy {
   @HostBinding('attr.backdrop-visible')
@@ -56,9 +59,7 @@ export class BackdropComponent implements OnDestroy {
   private readonly sub = new Subscription();
 
   constructor() {
-    this.sub.add(
-      this.backdrop.isVisible.subscribe(state => this.backdropVisible = state)
-    );
+    this.sub.add(this.backdrop.isVisible.subscribe(state => (this.backdropVisible = state)));
   }
 
   ngOnDestroy(): void {

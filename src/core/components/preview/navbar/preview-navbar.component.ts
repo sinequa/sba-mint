@@ -1,4 +1,3 @@
-import { AsyncPipe, NgClass } from '@angular/common';
 import { Component, Input, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -13,22 +12,25 @@ import { DrawerService } from '../../drawer/drawer.service';
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
   showSearchButton?: boolean;
-}
+};
 
 const DEFAULT_CONFIG: PreviewNavbarConfig = {
   showOpenButton: true,
   showSearchButton: true
-}
+};
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [NgClass, AsyncPipe, BookmarkButtonComponent, TranslocoPipe],
+  imports: [BookmarkButtonComponent, TranslocoPipe],
   templateUrl: './preview-navbar.component.html',
   styleUrl: './preview-navbar.component.scss',
   providers: [provideTranslocoScope({ scope: 'preview', loader })]

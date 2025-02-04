@@ -12,16 +12,16 @@ import { SearchComponent } from './pages/search/search.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
-  queryName?: string;           // name of the query defined in the admin
-  display?: string;             // the label you want to display in the interface
-  wsQueryTab?: string;          // the name of the "tab" associated with the query you want to use
-  icon?: string;                // the icon you want to associate with the label in the interface
-  [key: string | symbol]: any;  // all the "custom" parameters you want
-}
+  queryName?: string; // name of the query defined in the admin
+  display?: string; // the label you want to display in the interface
+  wsQueryTab?: string; // the name of the "tab" associated with the query you want to use
+  icon?: string; // the icon you want to associate with the label in the interface
+  [key: string | symbol]: any; // all the "custom" parameters you want
+};
 type ExtendedRoute = Route & {
   data?: ExtendedData;
   children?: ExtendedRoutes;
-}
+};
 type ExtendedRoutes = ExtendedRoute[];
 
 export const routes: ExtendedRoutes = [
@@ -30,7 +30,10 @@ export const routes: ExtendedRoutes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   { path: 'recent-searches', component: RecentSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   {
-    path: 'search', component: SearchComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver },
+    path: 'search',
+    component: SearchComponent,
+    canActivate: [AuthGuard(), InitializationGuard()],
+    resolve: { queryName: queryNameResolver },
     children: [
       { path: 'all', component: LoadingComponent },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }

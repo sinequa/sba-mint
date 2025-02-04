@@ -4,19 +4,40 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 
-import { Aggregation, AggregationItem, fetchDataset, fetchSuggestField, FieldValue, LegacyFilter, Query, Suggestion, suggestionsToTreeAggregationNodes, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-import { AggregationListItem, AggregationsService, AggregationsStore, AppStore, buildQuery, CFilter, CFilterItem, debouncedSignal, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import {
+  Aggregation,
+  AggregationItem,
+  fetchSuggestField,
+  FieldValue,
+  LegacyFilter,
+  Query,
+  Suggestion,
+  suggestionsToTreeAggregationNodes,
+  TreeAggregation,
+  TreeAggregationNode
+} from '@sinequa/atomic';
+import {
+  AggregationListItem,
+  AggregationsService,
+  AggregationsStore,
+  AppStore,
+  buildQuery,
+  CFilter,
+  CFilterItem,
+  debouncedSignal,
+  QueryParamsStore,
+  SearchService
+} from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AggregationRowComponent } from "./aggregation-row.component";
-
+import { AggregationRowComponent } from './aggregation-row.component';
 
 export type AggEx = Aggregation & {
   display?: string;
   icon?: string;
   hidden?: boolean;
-}
+};
 
 export type AggregationTitle = {
   label: string;
@@ -27,16 +48,18 @@ export type AggregationTitle = {
   selector: 'Aggregation',
   standalone: true,
   templateUrl: './aggregation.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+      }
 
-    .data-list {
-      scrollbar-width: thin;
-    }
-  `],
-  imports: [FormsModule, ReactiveFormsModule, AggregationRowComponent, SyslangPipe, TranslocoPipe],
+      .data-list {
+        scrollbar-width: thin;
+      }
+    `
+  ],
+  imports: [FormsModule, ReactiveFormsModule, AggregationRowComponent, SyslangPipe, TranslocoPipe]
 })
 export class AggregationComponent {
   cdr = inject(ChangeDetectorRef);
@@ -48,7 +71,6 @@ export class AggregationComponent {
 
   /* services */
   aggregationsService = inject(AggregationsService);
-
 
   /**
    * The `name` property is a required input that can be either a string or null.
@@ -65,7 +87,7 @@ export class AggregationComponent {
    *
    * Default is "name"
    */
-  kind = input<"column" | "name">("name");
+  kind = input<'column' | 'name'>('name');
 
   /**
    * A boolean flag indicating whether the component should operate in headless mode.
@@ -87,8 +109,8 @@ export class AggregationComponent {
     if (this.name() !== null) {
       return this.processAggregation();
     }
-    return null
-  })
+    return null;
+  });
 
   /* items of the aggretions */
   items = computed(() => {
@@ -99,7 +121,7 @@ export class AggregationComponent {
       return this.aggregation()?.items as AggregationListItem[];
     }
     return [];
-  })
+  });
 
   /* whether the aggregation has filters */
   hasFilters = computed(() => {
@@ -107,7 +129,7 @@ export class AggregationComponent {
       const allItems = this.getFlattenTreeItems();
       return !!allItems.some(item => item.$selected);
     }
-    return !!(this.items().some(item => item.$selected));
+    return !!this.items().some(item => item.$selected);
   });
 
   /* search feature */
@@ -135,7 +157,6 @@ export class AggregationComponent {
       $selected: false,
       items: []
     }));
-
   });
 
   query: Query;
@@ -145,22 +166,28 @@ export class AggregationComponent {
 
     const q = this.queryParamsStore.getQuery();
 
-    effect(async () => {
-      if (this.debouncedSearchText() === '' || this.aggregation() === null) {
-        this.suggests.set(undefined);
-        return;
-      }
+    effect(
+      async () => {
+        if (this.debouncedSearchText() === '' || this.aggregation() === null) {
+          this.suggests.set(undefined);
+          return;
+        }
 
-      const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
-      this.suggests.set(suggests);
-    }, { allowSignalWrites: true });
+        const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
+        this.suggests.set(suggests);
+      },
+      { allowSignalWrites: true }
+    );
 
-    effect(() => {
-      if (this.aggregation() === null) return;
+    effect(
+      () => {
+        if (this.aggregation() === null) return;
 
-      const count = this.countSelected(this.aggregation()!.items as AggregationListItem[]);
-      this.selectionCount.set(count);
-    }, { allowSignalWrites: true });
+        const count = this.countSelected(this.aggregation()!.items as AggregationListItem[]);
+        this.selectionCount.set(count);
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   protected processAggregation(): AggEx | null | undefined {
@@ -168,7 +195,7 @@ export class AggregationComponent {
 
     if (!agg) return null;
 
-    const { items = [], display = agg.name, icon, hidden } = this.appStore.getAggregationCustomization(agg.column) as CFilter || {};
+    const { items = [], display = agg.name, icon, hidden } = (this.appStore.getAggregationCustomization(agg.column) as CFilter) || {};
     agg.display = display;
     agg.icon = icon;
     agg.hidden = hidden;
@@ -178,13 +205,12 @@ export class AggregationComponent {
       const flattenedValues = this.flattenFilters(filters);
 
       if (agg.isTree) {
-        const selectedAgg = agg.items.map( item => this.selectNode(item as TreeAggregationNode, flattenedValues));
-        const openedAgg = selectedAgg.map( item => this.openParentNodes(item as TreeAggregationNode, flattenedValues));
+        const selectedAgg = agg.items.map(item => this.selectNode(item as TreeAggregationNode, flattenedValues));
+        const openedAgg = selectedAgg.map(item => this.openParentNodes(item as TreeAggregationNode, flattenedValues));
         agg.items = openedAgg;
       }
 
       (agg.items as AggregationListItem[]).forEach((item: AggregationListItem) => {
-
         if (!agg.isTree) {
           const valueToSearch = agg.valuesAreExpressions ? item.display : item.value;
           item.$selected = flattenedValues.includes(valueToSearch ?? '') || false;
@@ -209,10 +235,10 @@ export class AggregationComponent {
       node.$selected = true;
     }
     if (node.items) {
-      node.items = node.items.map((item) => this.selectNode(item, path));
+      node.items = node.items.map(item => this.selectNode(item, path));
     }
     return node;
-  };
+  }
 
   /**
    * Recursively opens parent nodes in a tree structure if any of their child nodes are selected or opened.
@@ -223,20 +249,20 @@ export class AggregationComponent {
    */
   private openParentNodes(node: TreeAggregationNode, path: string[]): TreeAggregationNode {
     if (node.items) {
-      node.items = node.items.map((item) => this.openParentNodes(item, path));
+      node.items = node.items.map(item => this.openParentNodes(item, path));
     }
     if (node.items && node.items.some(item => item.$selected || item.$opened)) {
       node.$opened = true;
     }
     return node;
-  };
+  }
 
   /**
- * Clears the current filter for the aggregation column.
- *
- * This method updates the filter in the `queryParamsStore` by setting the display value
- * of the current aggregation column to an empty string.
- */
+   * Clears the current filter for the aggregation column.
+   *
+   * This method updates the filter in the `queryParamsStore` by setting the display value
+   * of the current aggregation column to an empty string.
+   */
   clear() {
     this.queryParamsStore.removeFilter(this.aggregation()?.column);
   }
@@ -260,17 +286,27 @@ export class AggregationComponent {
       // if aggregation not a distribution, we need to merge the filters into a single filter with an in operator
       // with the values of the filters
       if (this.aggregation()?.isDistribution) {
-        this.queryParamsStore.updateFilter({ operator: 'or', filters, name: this.aggregation()?.name, field: this.aggregation()?.column, display } as LegacyFilter);
-      }
-      else {
+        this.queryParamsStore.updateFilter({
+          operator: 'or',
+          filters,
+          name: this.aggregation()?.name,
+          field: this.aggregation()?.column,
+          display
+        } as LegacyFilter);
+      } else {
         const values = filters.map(filter => filter.value);
-        this.queryParamsStore.updateFilter({ operator: 'in', name: this.aggregation()?.name, field: this.aggregation()?.column, values, display, filters } as LegacyFilter);
+        this.queryParamsStore.updateFilter({
+          operator: 'in',
+          name: this.aggregation()?.name,
+          field: this.aggregation()?.column,
+          values,
+          display,
+          filters
+        } as LegacyFilter);
       }
-    }
-    else if (filters.length === 1) {
+    } else if (filters.length === 1) {
       this.queryParamsStore.updateFilter(filters[0]);
-    }
-    else {
+    } else {
       this.clear();
     }
 
@@ -279,7 +315,7 @@ export class AggregationComponent {
 
   loadMore(): void {
     const q = this.queryParamsStore.getQuery();
-    this.aggregationsService.loadMore(q, this.aggregation() as Aggregation).subscribe((aggregation) => {
+    this.aggregationsService.loadMore(q, this.aggregation() as Aggregation).subscribe(aggregation => {
       this.aggregationsStore.updateAggregation(aggregation);
     });
   }
@@ -305,8 +341,7 @@ export class AggregationComponent {
   select(item: AggregationListItem) {
     if (item.$selected) {
       this.selectionCount.set(this.selectionCount() + 1);
-    }
-    else {
+    } else {
       this.selectionCount.set(this.selectionCount() - 1);
     }
   }
@@ -340,11 +375,11 @@ export class AggregationComponent {
     const name = this.aggregation()?.name;
     const items = this.getFlattenTreeItems()
       .filter(item => item.$selected)
-      .map((item) => `/${item.$path}/*` || '');
+      .map(item => `/${item.$path}/*` || '');
 
     if (items.length === 0) return [];
 
-    const filter = { operator: "in", name, field, values: items, display: items[0] };
+    const filter = { operator: 'in', name, field, values: items, display: items[0] };
     return [filter] as LegacyFilter[];
   }
 
@@ -377,7 +412,7 @@ export class AggregationComponent {
     };
 
     const searchItems = flattenItems(this.searchedItems() || []);
-    const items = flattenItems(this.aggregation()?.items as TreeAggregationNode[] || []);
+    const items = flattenItems((this.aggregation()?.items as TreeAggregationNode[]) || []);
     const flattenedTreeItems = [...searchItems, ...items];
     return flattenedTreeItems;
   }
@@ -407,7 +442,7 @@ export class AggregationComponent {
     if (this.aggregation()?.isDistribution) {
       const res = (item.value as string).match(/.*\:\(?([><=\d\-\.AND ]+)\)?/);
       if (res?.[1]) {
-        const expr = res?.[1].split(" AND ");
+        const expr = res?.[1].split(' AND ');
         const filters = expr.map(e => {
           const operator: 'gte' | 'lt' = e.indexOf('>=') !== -1 ? 'gte' : 'lt';
           let value: FieldValue = e.substring(e.indexOf(' ') + 1);
@@ -416,16 +451,15 @@ export class AggregationComponent {
 
         if (filters.length === 2) {
           return { operator: 'and', filters, display: filters[0].display || filters[0].value, field, name } as LegacyFilter;
-        }
-        else if (filters.length === 1) {
+        } else if (filters.length === 1) {
           return { ...filters[0], field, name } as LegacyFilter;
         }
-        throw new Error("Failed to parse distribution expression");
+        throw new Error('Failed to parse distribution expression');
       }
     }
 
-    if (typeof item.value === "string") {
-      return { name, field, value: item.value, operator: "contains", display: item.display } as LegacyFilter;
+    if (typeof item.value === 'string') {
+      return { name, field, value: item.value, operator: 'contains', display: item.display } as LegacyFilter;
     }
     return { name, field, value: item.value as string | number | boolean, display: item.display } as LegacyFilter;
   }
@@ -438,8 +472,7 @@ export class AggregationComponent {
         if (filter.value) {
           flattenedValues.push(filter.value);
 
-          if (filter.display)
-            flattenedValues.push(filter.display);
+          if (filter.display) flattenedValues.push(filter.display);
           // we handle "values" field for trees
         } else if (filter.values) {
           flattenedValues.push(...filter.values);
@@ -455,14 +488,14 @@ export class AggregationComponent {
   }
 
   /**
- * Counts the number of selected items in a nested list of `AggregationListItem`.
- *
- * This method recursively traverses the provided list of items and their nested items,
- * counting how many of them have the `$selected` property set to `true`.
- *
- * @param items - The list of `AggregationListItem` to count selected items from.
- * @returns The total number of selected items.
- */
+   * Counts the number of selected items in a nested list of `AggregationListItem`.
+   *
+   * This method recursively traverses the provided list of items and their nested items,
+   * counting how many of them have the `$selected` property set to `true`.
+   *
+   * @param items - The list of `AggregationListItem` to count selected items from.
+   * @returns The total number of selected items.
+   */
   protected countSelected(items: AggregationListItem[]): number {
     if (!items) return 0;
 

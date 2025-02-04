@@ -1,33 +1,22 @@
-<menu
-  class="flex items-center p-4 gap-2 *:*:font-semibold btn-sm"
->
+<menu class="btn-sm flex items-center gap-2 p-4 *:*:font-semibold">
   <li>
-    <button
-      class="btn btn-ghost flex items-center gap-2"
-      [attr.title]="'back' | transloco"
-      (click)="drawerStack.close()"
-    >
+    <button class="btn btn-ghost flex items-center gap-2" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
       <i class="fa-fw far fa-arrow-left"></i>
-      {{ 'back'| transloco }}
+      {{ 'back' | transloco }}
     </button>
   </li>
 
-  <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
+  <li class="h-8 w-[1px] self-center bg-neutral-200"></li>
 
   @if (navConfig.showOpenButton) {
     <li>
-      <button
-        class="btn btn-ghost items-center gap-2"
-        [attr.title]="'open' | transloco"
-        [disabled]="!hasExternalLink()"
-        (click)="openClicked()"
-      >
+      <button class="btn btn-ghost items-center gap-2" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
         <i class="fa-fw far fa-arrow-up-right-from-square"></i>
-        {{ 'open'| transloco }}
+        {{ 'open' | transloco }}
       </button>
     </li>
 
-    <li class="bg-neutral-200 w-[1px] h-8 self-center"></li>
+    <li class="h-8 w-[1px] self-center bg-neutral-200"></li>
   }
 
   @if (canBookmark()) {
@@ -38,29 +27,20 @@
 
   @if (hasExternalLink()) {
     <li>
-      <button
-        class="btn btn-ghost"
-        [attr.title]="'preview.copyPreviewLink' | transloco"
-        (click)="copyLink()"
-      >
-        <i
-          class="fa-fw far text-sm"
-          [class.fa-link]="!copied"
-          [class.fa-circle-check]="copied"
-        ></i>
+      <button class="btn btn-ghost" [attr.title]="'preview.copyPreviewLink' | transloco" (click)="copyLink()">
+        <i class="fa-fw far text-sm" [class.fa-link]="!copied" [class.fa-circle-check]="copied"></i>
       </button>
     </li>
   }
 
   @if (navConfig.showSearchButton && article()) {
-    <li class="ml-auto *:flex *:gap-2 *:items-center *:text-nowrap">
+    <li class="ml-auto *:flex *:items-center *:gap-2 *:text-nowrap">
       @if (isExtended()) {
         <button class="btn btn-secondary" (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye-slash"></i>
           {{ 'preview.hideSearch' | transloco }}
         </button>
-      }
-      @else {
+      } @else {
         <button class="btn btn-primary" (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye"></i>
           {{ 'preview.searchInDocument' | transloco }}

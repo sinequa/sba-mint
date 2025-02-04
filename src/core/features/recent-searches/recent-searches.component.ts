@@ -8,10 +8,13 @@ import { RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { RecentSearchComponent } from "./recent-search.component";
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
 

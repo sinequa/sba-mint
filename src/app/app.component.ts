@@ -10,7 +10,6 @@ import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -32,22 +31,20 @@ export class AppComponent {
     // Login and initialize the application when the user is logged in
     const { useCredentials } = globalConfig;
 
-    const success = await this.applicationService.autoLogin().catch((err) => {
-      console.warn("An error occured while logging in (app component)", err);
+    const success = await this.applicationService.autoLogin().catch(err => {
+      console.warn('An error occured while logging in (app component)', err);
       if (useCredentials) {
         this.router.navigate(['login']);
-      }
-      else if (err instanceof Response) {
+      } else if (err instanceof Response) {
         if (err.status === 401 || err.status === 403) {
-          toast.error("You are not authorized to access this page");
+          toast.error('You are not authorized to access this page');
         }
         if (err.status === 500) {
-          toast.error("An error 500 occured while processing your request");
+          toast.error('An error 500 occured while processing your request');
           this.router.navigate(['error'], { skipLocationChange: true });
         }
-      }
-      else {
-        toast.error("An error occured while processing your request");
+      } else {
+        toast.error('An error occured while processing your request');
         this.router.navigate(['error'], { skipLocationChange: true });
       }
     });
@@ -58,14 +55,13 @@ export class AppComponent {
         this.router.navigate(['/']);
       }
     } else {
-      console.warn("An error occured while logging in (app component) after auto login");
+      console.warn('An error occured while logging in (app component) after auto login');
       this.router.navigate(['error'], { skipLocationChange: true });
     }
   }
 
   private setupApplicationLanguage() {
-    if (this.userSettingsStore.language?.() === undefined)
-      this.userSettingsStore.updateLanguage('en');
+    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
 
     this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
   }

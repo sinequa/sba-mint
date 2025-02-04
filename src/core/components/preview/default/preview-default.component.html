@@ -1,25 +1,17 @@
-<app-preview-navbar
-  class="block border-b bg-white"
-  [article]="article()"
-/>
+<app-preview-navbar class="block border-b bg-white" [article]="article()" />
 
-<div class="overflow-auto h-full flex flex-col">
+<div class="flex h-full flex-col overflow-auto">
   @if (previewData() && article()) {
-  <section class="p-6 flex flex-col gap-4 border-b">
+    <section class="flex flex-col gap-4 border-b p-6">
       <header class="flex items-center justify-between gap-4 text-base">
-        <a
-          class="overflow-auto"
-          target="_blank"
-          rel="noopener noreferrer"
-          [href]="article()!.url1"
-        >
-          <p class="text-primary font-bold me-auto text-ellipsis whitespace-nowrap overflow-hidden">
+        <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
+          <p class="me-auto overflow-hidden text-ellipsis whitespace-nowrap font-bold text-primary">
             {{ article().title }}
           </p>
         </a>
 
         <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
-          <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{'rotate-180': headerCollapsed()}"></i>
+          <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{ 'rotate-180': headerCollapsed() }"></i>
         </button>
       </header>
 
@@ -34,14 +26,11 @@
 
             @if (locationSegments().length > 1) {
               <Dropdown position="bottom" [autoClose]="true">
-                <button class="p-1 rounded-full">...</button>
+                <button class="rounded-full p-1">...</button>
 
-                <div class="flex gap-1 items-center rounded-full bg-white py-1 px-2 shadow-md" dropdown-content>
+                <div class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-md" dropdown-content>
                   @for (segment of locationSegments().slice(0, -1); track $index) {
-                    <button
-                      class="py-1 px-2 rounded-full hover:bg-blue-100"
-                      (click)="navigateToSegment($index)"
-                    >
+                    <button class="rounded-full px-2 py-1 hover:bg-blue-100" (click)="navigateToSegment($index)">
                       {{ segment }}
                     </button>
 
@@ -64,11 +53,7 @@
             <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
             <td class="flex flex-wrap gap-2">
-              <Metadata
-                class="empty:hidden badge badge-sm"
-                [article]="article()!"
-                metadata="authors"
-              />
+              <Metadata class="badge badge-sm empty:hidden" [article]="article()!" metadata="authors" />
             </td>
           </tr>
         }
@@ -78,59 +63,56 @@
             <th>{{ 'lastUpdatedOn' | transloco }}</th>
 
             <td class="flex gap-2">
-              <p>{{ article()!.modified | translocoDate : "mediumDate" }}</p>
+              <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
             </td>
           </tr>
         }
 
         @if (hasLabels()) {
+          <tr>
+            <th>{{ 'labels' | transloco }}</th>
+
+            <td class="flex flex-col gap-2">
+              <Metadata
+                class="badge badge-sm border-neutral-600 font-semibold empty:hidden"
+                className="cursor-pointer"
+                [article]="article()!"
+                [metadata]="labels.public"
+                (onMetadataClick)="onMetadataClick($event)" />
+
+              <Metadata
+                class="badge badge-sm border-neutral-600 font-semibold empty:hidden"
+                className="cursor-pointer"
+                [article]="article()!"
+                [metadata]="labels.private"
+                (onMetadataClick)="onMetadataClick($event)" />
+            </td>
+          </tr>
+        }
+
         <tr>
-          <th>{{ 'labels' | transloco }}</th>
+          <th>{{ 'type' | transloco }}</th>
 
-          <td class="flex flex-col gap-2">
+          <td>
             <Metadata
-              class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
-              className="cursor-pointer"
+              class="badge badge-sm border-neutral-600 font-semibold"
               [article]="article()!"
-              [metadata]="labels.public"
-              (onMetadataClick)="onMetadataClick($event)"
-            />
-
-            <Metadata
-              class="empty:hidden badge badge-sm border-neutral-600 font-semibold"
               className="cursor-pointer"
-              [article]="article()!"
-              [metadata]="labels.private"
-              (onMetadataClick)="onMetadataClick($event)"
-            />
+              metadata="docformat"
+              (onMetadataClick)="onMetadataClick($event)" />
           </td>
-      </tr>
-      }
-
-      <tr>
-        <th>{{ 'type' | transloco }}</th>
-
-        <td>
-          <Metadata
-            class="badge badge-sm border-neutral-600 font-semibold"
-            [article]="article()!"
-            className="cursor-pointer"
-            metadata="docformat"
-            (onMetadataClick)="onMetadataClick($event)"
-          />
-        </td>
-      </tr>
-    </table>
-  </section>
+        </tr>
+      </table>
+    </section>
   }
 
-  @if(loading()) {
-    <section class="w-full bg-gray-200 h-[2px] dark:bg-gray-700 overflow-hidden">
-      <div class="h-[2px] animate-progress" style="background: linear-gradient(to right, blue, #333, orange, #333, blue);"></div>
+  @if (loading()) {
+    <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+      <div class="h-[2px] animate-progress" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
     </section>
   }
   @if (canLoadIframe()) {
-  <section class="grow flex flex-col gap-4 py-4 px-6">
+    <section class="flex grow flex-col gap-4 px-6 py-4">
       <preview-actions class="flex justify-end gap-2" />
 
       <iframe
@@ -140,15 +122,14 @@
         [src]="previewUrl()"
         (load)="onLoaded()"
         [attr.title]="'preview.documentPreview' | transloco"
-        [attr.aria-label]="'preview.documentPreview' | transloco"
-      ></iframe>
+        [attr.aria-label]="'preview.documentPreview' | transloco"></iframe>
     </section>
-    } @else if (previewUrlError()) {
-      <section class="w-full h-full flex items-center justify-center">
-        <p class="text-center text-xl">
-          <i class="fa-fw far fa-image text-6xl text-secondary mb-6"></i><br />
-          {{ 'previewUnavailable' | transloco }}
-        </p>
-      </section>
-    }
+  } @else if (previewUrlError()) {
+    <section class="flex h-full w-full items-center justify-center">
+      <p class="text-center text-xl">
+        <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
+        {{ 'previewUnavailable' | transloco }}
+      </p>
+    </section>
+  }
 </div>

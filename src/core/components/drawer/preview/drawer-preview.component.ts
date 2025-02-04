@@ -23,17 +23,12 @@ const GLOBAL_QUERY_NAME = new InjectionToken<string>('GLOBAL_QUERY_NAME', {
 
     return array[0].name;
   }
-})
+});
 
 @Component({
   selector: 'app-drawer-preview',
   standalone: true,
-  imports: [
-    NgClass,
-    NgComponentOutlet,
-    AsyncPipe,
-    AdvancedSearchComponent
-  ],
+  imports: [NgClass, NgComponentOutlet, AsyncPipe, AdvancedSearchComponent],
   providers: [DrawerService, PreviewService],
   templateUrl: './drawer-preview.component.html',
   styleUrls: ['../drawer.component.scss']
@@ -61,8 +56,7 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
     if (!this.article()?.docformat) return undefined;
 
     return getComponentsForDocumentType(this.article()?.docformat || '').previewComponent;
-  })
-
+  });
 
   constructor(@Inject(GLOBAL_QUERY_NAME) private readonly globalQueryName: string) {
     super();
@@ -73,8 +67,8 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
 
       untracked(async () => {
         const state = getState(this.selectionStore);
-        const previewData = await firstValueFrom(this.previewService.preview
-          (
+        const previewData = await firstValueFrom(
+          this.previewService.preview(
             articleId,
             {
               name: this.globalQueryName,
@@ -86,12 +80,10 @@ export class DrawerPreviewComponent extends DrawerComponent implements OnInit, O
 
         this.previewData.set(previewData);
       });
-
     });
   }
 
   override ngOnDestroy(): void {
     this.previewService.close(this.articleId(), { name: this.globalQueryName });
   }
-
 }

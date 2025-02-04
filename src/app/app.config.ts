@@ -4,10 +4,18 @@ import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
-import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
+import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
-import { AGGREGATIONS_NAMES, AGGREGATIONS_NAMES_PRESET_DEFAULT, HIGHLIGHTS, ROUTE_COMPONENTS, auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorInterceptorFn } from '@sinequa/atomic-angular';
-
+import {
+  AGGREGATIONS_NAMES,
+  AGGREGATIONS_NAMES_PRESET_DEFAULT,
+  HIGHLIGHTS,
+  ROUTE_COMPONENTS,
+  auditInterceptorFn,
+  authInterceptorFn,
+  bodyInterceptorFn,
+  errorInterceptorFn
+} from '@sinequa/atomic-angular';
 
 import { appInitializerFn } from '@sinequa/atomic';
 import { toastInterceptorFn } from '@sinequa/atomic-angular';
@@ -57,7 +65,9 @@ export const appConfig: ApplicationConfig = {
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },
-    { provide: ROUTE_COMPONENTS, useValue: [
+    {
+      provide: ROUTE_COMPONENTS,
+      useValue: [
         {
           path: 'search',
           component: SearchComponent,
@@ -65,30 +75,26 @@ export const appConfig: ApplicationConfig = {
         },
         {
           path: 'all',
-          component: SearchAllComponent,
+          component: SearchAllComponent
         }
       ]
     },
-    { provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, "Money"] },
+    { provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, 'Money'] },
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    provideHttpClient(withInterceptors([
-      bodyInterceptorFn,
-      authInterceptorFn,
-      auditInterceptorFn,
-      errorInterceptorFn,
-      toastInterceptorFn
-    ])),
-    provideAngularQuery(new QueryClient({
-      defaultOptions: {
-        queries: {
-          refetchOnWindowFocus: false,
-          gcTime: 0,
-          retry(failureCount, error) {
-            return false;
+    provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
+    provideTanStackQuery(
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            gcTime: 0,
+            retry() {
+              return false;
+            }
           }
         }
-      }
-    })),
+      })
+    ),
     provideTransloco({
       config: {
         availableLangs: ['en', 'fr'],
@@ -102,7 +108,7 @@ export const appConfig: ApplicationConfig = {
           useFallbackTranslation: true
         }
       },
-      loader: TranslocoHttpLoader,
+      loader: TranslocoHttpLoader
     }),
     provideTranslocoMessageformat()
   ]

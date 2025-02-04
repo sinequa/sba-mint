@@ -4,7 +4,17 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { debounceTime, Subscription } from 'rxjs';
 
-import { AutocompleteService, DrawerStackService, DropdownComponent, NavigationService, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
+import {
+  AutocompleteService,
+  DrawerStackService,
+  DropdownComponent,
+  NavigationService,
+  OverflowItemDirective,
+  OverflowManagerDirective,
+  OverflowStopDirective,
+  QueryParamsStore,
+  SavedSearchesService
+} from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
@@ -31,7 +41,7 @@ export type NavbarTab = {
   iconClass: string;
   routerLink: string;
   queryName?: string;
-}
+};
 
 @Component({
   selector: 'app-navbar',
@@ -54,7 +64,7 @@ export type NavbarTab = {
     OverflowStopDirective
   ],
   host: {
-    'class': 'layout-search',
+    class: 'layout-search',
     '[attr.drawer-opened]': 'drawerOpened()'
   }
 })
@@ -85,31 +95,32 @@ export class NavbarComponent implements OnDestroy {
   private readonly sub = new Subscription();
 
   // create tabs from the search routes
-  readonly tabs = computed(() => this.router.config
-    .find(item => item.path === "search")?.children
-    ?.filter(c => c.path !== "**")
-    .map(child => ({
-      display: child.data?.['display'] || child.path,
-      name: child.data?.['wsQueryTab'] || child.path,
-      path: child.path,
-      routerLink: `${child.path}`,
-      iconClass: child.data?.['iconClass'],
-      queryName: child.data?.['queryName']
-    }) as NavbarTab) ?? []
+  readonly tabs = computed(
+    () =>
+      this.router.config
+        .find(item => item.path === 'search')
+        ?.children?.filter(c => c.path !== '**')
+        .map(
+          child =>
+            ({
+              display: child.data?.['display'] || child.path,
+              name: child.data?.['wsQueryTab'] || child.path,
+              path: child.path,
+              routerLink: `${child.path}`,
+              iconClass: child.data?.['iconClass'],
+              queryName: child.data?.['queryName']
+            }) as NavbarTab
+        ) ?? []
   );
   readonly moreTabs = computed(() => this.tabs().slice(this.visibleTabCount()));
 
   constructor() {
-    this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state))
-    );
+    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
 
     // register to transloco events to update the overflow manager when translations are loaded
     // otherwise the overflow manager will count size of items without text
     this.sub.add(
-      this.transloco.events$.pipe(
-        debounceTime(100)
-      ).subscribe(() => {
+      this.transloco.events$.pipe(debounceTime(100)).subscribe(() => {
         this.overflowManager()?.countItems();
       })
     );
@@ -154,7 +165,7 @@ export class NavbarComponent implements OnDestroy {
 
   /**
    * Occurs when the search input is updated by the user and debounced by the system
-   * 
+   *
    * @param text The debounced text
    */
   protected debounced(text: string): void {

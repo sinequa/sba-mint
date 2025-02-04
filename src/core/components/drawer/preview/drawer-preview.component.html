@@ -1,15 +1,10 @@
-<div
-  (click)="drawer.toggleExtension()"
-  (keydown.escape)="drawer.toggleExtension()"
-  [attr.aria-hidden]="true"
-></div>
+<div (click)="drawer.toggleExtension()" (keydown.escape)="drawer.toggleExtension()" [attr.aria-hidden]="true"></div>
 
 <div class="flex overflow-auto bg-white">
   <div
     #drawerHandle
-    class="w-[5px] h-full fixed hover:bg-orange-300 hover:cursor-ew-resize select-none"
-    [ngClass]="{ hidden: (drawer.isExtended | async) === false }"
-  ></div>
+    class="fixed h-full w-[5px] select-none hover:cursor-ew-resize hover:bg-orange-300"
+    [ngClass]="{ hidden: (drawer.isExtended | async) === false }"></div>
 
   @if (previewType()) {
     <ng-container *ngComponentOutlet="previewType()!; inputs: inputs()" />
@@ -17,12 +12,9 @@
 </div>
 
 @if (article()) {
-<div class="bg-white border-l flex flex-col">
-  <div class="relative flex flex-col grow">
-	  <app-advanced-search class="overflow-y-auto absolute w-full h-full"
-	    [article]="article()!"
-	    (close)="drawer.collapse()"
-	  />
+  <div class="flex flex-col border-l bg-white">
+    <div class="relative flex grow flex-col">
+      <app-advanced-search class="absolute h-full w-full overflow-y-auto" [article]="article()!" (close)="drawer.collapse()" />
+    </div>
   </div>
-</div>
 }

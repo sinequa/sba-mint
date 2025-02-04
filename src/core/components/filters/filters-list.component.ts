@@ -1,23 +1,34 @@
-import { Component, computed, effect, ElementRef, inject, OnDestroy, signal, viewChild, viewChildren } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { HashMap, provideTranslocoScope, Translation, TranslocoService } from "@jsverse/transloco";
-import { getState } from "@ngrx/signals";
+import { Component, computed, effect, ElementRef, inject, OnDestroy, signal, viewChild, viewChildren } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { HashMap, provideTranslocoScope, Translation, TranslocoService } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 
-import { AggregationsStore, AppStore, cn, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore } from "@sinequa/atomic-angular";
+import {
+  AggregationsStore,
+  AppStore,
+  cn,
+  OverflowItemDirective,
+  OverflowManagerDirective,
+  OverflowStopDirective,
+  QueryParamsStore
+} from '@sinequa/atomic-angular';
 
-import { debounceTime, Subscription } from "rxjs";
-import { FilterButtonComponent } from "./buttons/filter-button.component";
-import { FilterDateButtonComponent } from "./buttons/filter-date-button.component";
-import { FiltersMoreButtonComponent } from "./buttons/filters-more-button.component";
-import { FILTERS_BREAKPOINT } from "./filters.models";
+import { debounceTime, Subscription } from 'rxjs';
+import { FilterButtonComponent } from './buttons/filter-button.component';
+import { FilterDateButtonComponent } from './buttons/filter-date-button.component';
+import { FiltersMoreButtonComponent } from './buttons/filters-more-button.component';
+import { FILTERS_BREAKPOINT } from './filters.models';
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
-  selector: "filters-list, FiltersList",
+  selector: 'filters-list, FiltersList',
   standalone: true,
   imports: [
     FiltersMoreButtonComponent,
@@ -31,13 +42,8 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   template: `
     <ng-container overflowManager [target]="el.nativeElement" (count)="adjustFiltersCount($event)">
       @if (hasFilters()) {
-        <button
-          class="btn bg-alert/10 text-alert"
-          aria-label="clear all filters"
-          (click)="clearFilters()"
-          (keydown.enter)="clearFilters()"
-        >
-          <i class="fa-fw far fa-trash-can " aria-hidden="true"></i>
+        <button class="btn bg-alert/10 text-alert" aria-label="clear all filters" (click)="clearFilters()" (keydown.enter)="clearFilters()">
+          <i class="fa-fw far fa-trash-can" aria-hidden="true"></i>
         </button>
       }
 
@@ -45,28 +51,20 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
         <FilterDateButton />
 
         @for (filter of filters(); track $index) {
-          <FilterButton
-            overflowItem
-            [column]="filter"
-          />
+          <FilterButton overflowItem [column]="filter" />
         }
 
         @if (hasMoreFilters()) {
-          <FiltersMoreButton
-            overflowStop
-            class="absolute right-0"
-            [count]="moreFilterCount()"
-          />
-        }
-        @else {
+          <FiltersMoreButton overflowStop class="absolute right-0" [count]="moreFilterCount()" />
+        } @else {
           <div overflowStop class="absolute right-0"></div>
         }
       }
     </ng-container>
   `,
   host: {
-    "role": "list",
-    "aria-label": "Filters list",
+    role: 'list',
+    'aria-label': 'Filters list'
   }
 })
 export class FiltersListComponent implements OnDestroy {
@@ -78,7 +76,7 @@ export class FiltersListComponent implements OnDestroy {
 
   filtersCount = inject(FILTERS_BREAKPOINT);
 
-  route = inject(ActivatedRoute)
+  route = inject(ActivatedRoute);
   appStore = inject(AppStore);
   aggregationsStore = inject(AggregationsStore);
   queryParamsStore = inject(QueryParamsStore);
@@ -103,33 +101,36 @@ export class FiltersListComponent implements OnDestroy {
   hasMoreFilters = computed(() => {
     // more filters button is hidden by default
     // to show the filters button, aggregations MUST contains items
-    const moreFiltersAggregations = this.appStore.getAuthorizedFilters(this.route)
-      .filter(f => f.name !== "Modified")
+    const moreFiltersAggregations = this.appStore
+      .getAuthorizedFilters(this.route)
+      .filter(f => f.name !== 'Modified')
       .map(f => f.column)
       .toSpliced(0, this.filtersCount)
-      .map(column => this.aggregationsStore.getAggregation(column, "column"));
+      .map(column => this.aggregationsStore.getAggregation(column, 'column'));
 
     return moreFiltersAggregations.some(agg => agg?.items && agg.items.length > 0);
-  })
+  });
 
-  filterDate = { name: "#date", column: "modified", count: 0, isTree: false, disabled: false, hidden: false };
+  filterDate = { name: '#date', column: 'modified', count: 0, isTree: false, disabled: false, hidden: false };
 
   private readonly sub = new Subscription();
 
   constructor() {
-    effect(() => {
-      // set filters according to the route and the authorized filters with default values
-      const authorizedFilters = this.appStore.getAuthorizedFilters(this.route)
-        .filter(f => f.name !== "Modified")
-        .map(f => f.column)
-        .toSpliced(this.filtersCount);
+    effect(
+      () => {
+        // set filters according to the route and the authorized filters with default values
+        const authorizedFilters = this.appStore
+          .getAuthorizedFilters(this.route)
+          .filter(f => f.name !== 'Modified')
+          .map(f => f.column)
+          .toSpliced(this.filtersCount);
 
-      this.filters.set(authorizedFilters);
-    }, { allowSignalWrites: true });
-
-    this.sub.add(
-      this.transloco.events$.pipe(debounceTime(100)).subscribe(() => this.overflowManager()?.countItems())
+        this.filters.set(authorizedFilters);
+      },
+      { allowSignalWrites: true }
     );
+
+    this.sub.add(this.transloco.events$.pipe(debounceTime(100)).subscribe(() => this.overflowManager()?.countItems()));
   }
 
   ngOnDestroy(): void {

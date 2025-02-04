@@ -1,23 +1,14 @@
-<a id="navbar-logo" routerLink="/home" class="ps-10 self-center">
+<a id="navbar-logo" routerLink="/home" class="self-center ps-10">
   <img src="assets/logo/large.svg" alt="sinequa logo" class="max-h-8" />
 </a>
 
-<div class="col-span-2 h-full flex items-center">
-  <app-search-input
-    class="flex grow h-7"
-    [showSave]="true"
-    (saved)="saveSearch()"
-    (validated)="validated($event)"
-    (debounced)="debounced($event)"
-  >
-    <app-autocomplete
-      [text]="searchText()"
-      (onClick)="autocompleteItemClicked($event)"
-    />
+<div class="col-span-2 flex h-full items-center">
+  <app-search-input class="flex h-7 grow" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)" (debounced)="debounced($event)">
+    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
   </app-search-input>
 </div>
 
-<menu class="flex justify-end gap-3 items-center pe-10">
+<menu class="flex items-center justify-end gap-3 pe-10">
   @for (menu of menus; track $index) {
     <li>
       @if (menu.routerLink === router.url) {
@@ -26,17 +17,16 @@
         </button>
       }
       @else if (menu.component) {
-        <Dropdown class="dropdown-end border-neutral-300 rounded-lg" [keepOnMouseLeave]="menu.keepOnMouseLeave">
+        <Dropdown class="dropdown-end rounded-lg border-neutral-300" [keepOnMouseLeave]="menu.keepOnMouseLeave">
           <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
 
-          <div dropdown-content class="absolute w-[380px] max-w-md dropdown-content">
+          <div dropdown-content class="dropdown-content absolute w-[380px] max-w-md">
             <ng-container [ngComponentOutlet]="menu.component"></ng-container>
           </div>
         </Dropdown>
-      }
-      @else {
+      } @else {
         <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
           <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
         </button>
@@ -44,30 +34,24 @@
     </li>
   }
   <li class="shrink-0">
-    <app-user-menu/>
+    <app-user-menu />
   </li>
 </menu>
 
-<div
-  overflowManager
-  class="row-start-2 col-start-2 col-span-2 flex relative"
-  (count)="visibleTabCount.set($event)"
->
+<div overflowManager class="relative col-span-2 col-start-2 row-start-2 flex" (count)="visibleTabCount.set($event)">
   <ul class="flex">
     @for (tab of tabs(); track $index) {
       <li
         overflowItem
-        class="px-2 py-3 select-none font-semibold cursor-pointer"
-        routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary"
-      >
+        class="cursor-pointer select-none px-2 py-3 font-semibold"
+        routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary">
         <a
-          class="first-letter:capitalize inline-block whitespace-nowrap"
+          class="inline-block whitespace-nowrap first-letter:capitalize"
           [routerLink]="[tab.routerLink]"
           [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
           [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
           [attr.aria-label]="tab.display | syslang | transloco"
-          (click)="changeTab(tab)"
-        >
+          (click)="changeTab(tab)">
           <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
           {{ tab.display | syslang | transloco }}
         </a>
@@ -76,26 +60,22 @@
   </ul>
 
   @if (moreTabs().length > 0) {
-    <Dropdown class="absolute right-0 bottom-0" overflowStop [position]="'bottom-end'">
-      <button class="btn btn-ghost font-semibold p-1 mb-2 gap-1 truncate" aria-label="more tabs">
+    <Dropdown class="absolute bottom-0 right-0" overflowStop [position]="'bottom-end'">
+      <button class="btn btn-ghost mb-2 gap-1 truncate p-1 font-semibold" aria-label="more tabs">
         <span>{{ 'more' | transloco }}</span>
         <i class="fa-fw fal fa-chevron-down"></i>
       </button>
-    
-      <ul dropdown-content class="dropdown-content w-fit mt-0">
+
+      <ul dropdown-content class="dropdown-content mt-0 w-fit">
         @for (tab of moreTabs(); track $index) {
-          <li
-            class="px-2 py-3 select-none font-semibold cursor-pointer"
-            routerLinkActive="text-primary aria-selected:text-primary"
-          >
+          <li class="cursor-pointer select-none px-2 py-3 font-semibold" routerLinkActive="text-primary aria-selected:text-primary">
             <a
-              class="first-letter:capitalize inline-block whitespace-nowrap"
+              class="inline-block whitespace-nowrap first-letter:capitalize"
               [routerLink]="[tab.routerLink]"
               [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"
               [attr.aria-selected]="(navigationService.path$ | async) === tab.name"
               [attr.aria-label]="tab.display | syslang | transloco"
-              (click)="changeTab(tab)"
-            >
+              (click)="changeTab(tab)">
               <i class="fa-fw {{ tab.iconClass }} " aria-hidden="true"></i>
               {{ tab.display | syslang | transloco }}
             </a>
@@ -103,9 +83,7 @@
         }
       </ul>
     </Dropdown>
-  }
-  @else {
+  } @else {
     <div class="absolute right-0" overflowStop></div>
   }
-
 </div>

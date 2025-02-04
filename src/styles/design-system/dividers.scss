@@ -1,12 +1,12 @@
 @layer components {
   .divide-x-slash > * + *::before {
-    content: "\2f";
+    content: '\2f';
     font: var(--fa-font-regular);
     @apply mx-0;
   }
 
   .divide-x-chevron-right > * + *::before {
-    content: "\f054";
+    content: '\f054';
     font: var(--fa-font-regular);
     @apply mx-0;
   }
@@ -43,7 +43,7 @@
   }
 
   .divide-x-comma > * + *::before {
-    content: ",";
+    content: ',';
     @apply mx-0;
   }
 

@@ -1,9 +1,9 @@
-import { NgStyle } from "@angular/common";
-import { afterRender, Component, computed, effect, ElementRef, input, signal, viewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { TranslocoPipe } from "@jsverse/transloco";
-import { Article, fetchLabels, guid, labels } from "@sinequa/atomic";
-import { debouncedSignal } from "@sinequa/atomic-angular";
+import { NgStyle } from '@angular/common';
+import { afterRender, Component, computed, effect, ElementRef, input, signal, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { Article, fetchLabels, guid, labels } from '@sinequa/atomic';
+import { debouncedSignal } from '@sinequa/atomic-angular';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -12,88 +12,79 @@ const DEBOUNCE_DELAY = 300;
   standalone: true,
   imports: [FormsModule, NgStyle, TranslocoPipe],
   template: `
-  <div class="anchor" [ngStyle]="{'anchor-name': anchor()}">
-    <input
-      class="h-10 px-2 border w-full rounded-md bg-neutral-50 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
-      type="text"
-      autocomplete="off"
-      spellcheck="false"
-      [attr.aria-label]="'dialog.editLabels.startTyping' | transloco"
-      [attr.placeholder]="'dialog.editLabels.startTyping' | transloco"
-      [ngModel]="labelInput()"
-      (ngModelChange)="labelInput.set($event)"
-      (keyup)="onKeyDown($event)"
-      (click)="onInputClick()"
-    />
-    <div popover class="popover m-0 mt-2 border shadow-md" #LabelsPopover>
-      <ul
-        class="data-list-xs m-1 text-black bg-white max-h-40 overflow-auto"
-        aria-labelledby="dropdownDefaultButton"
-        role="listbox"
-      >
-        @for (label of suggestedLabels(); track $index) {
-          <li
-            role="option"
-            tabindex="0"
-          >
-            <a
-              class="p-2 flex data-list-item items-baseline gap-2 cursor-pointer"
-              role="button"
-              aria-keyshortcuts="enter"
-              (keypress.enter)="itemClicked(label)"
-              (click)="itemClicked(label)"
-            >
-              {{ label }}
-            </a>
-          </li>
-        }
-      </ul>
+    <div class="anchor" [ngStyle]="{ 'anchor-name': anchor() }">
+      <input
+        class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        [attr.aria-label]="'dialog.editLabels.startTyping' | transloco"
+        [attr.placeholder]="'dialog.editLabels.startTyping' | transloco"
+        [ngModel]="labelInput()"
+        (ngModelChange)="labelInput.set($event)"
+        (keyup)="onKeyDown($event)"
+        (click)="onInputClick()" />
+      <div popover class="popover m-0 mt-2 border shadow-md" #LabelsPopover>
+        <ul class="data-list-xs m-1 max-h-40 overflow-auto bg-white text-black" aria-labelledby="dropdownDefaultButton" role="listbox">
+          @for (label of suggestedLabels(); track $index) {
+            <li role="option" tabindex="0">
+              <a
+                class="data-list-item flex cursor-pointer items-baseline gap-2 p-2"
+                role="button"
+                aria-keyshortcuts="enter"
+                (keypress.enter)="itemClicked(label)"
+                (click)="itemClicked(label)">
+                {{ label }}
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
     </div>
-  </div>
-  <div class="my-2 flex flex-wrap">
-    @for (label of labels(); track $index) {
-      <span class="pill pill-sm pill-ghost bg-primary flex place-content-center items-center font-semibold text-white float-left m-1 select-none">
-        {{ label }}
-        @if(allowModification()) {
-        <i class="ms-1 fa-fw far fa-circle-xmark cursor-pointer" (click)="removeLabel(label, isPublic())"></i>
-        }
-      </span>
-    }
-  </div>
+    <div class="my-2 flex flex-wrap">
+      @for (label of labels(); track $index) {
+        <span class="pill pill-ghost pill-sm float-left m-1 flex select-none place-content-center items-center bg-primary font-semibold text-white">
+          {{ label }}
+          @if (allowModification()) {
+            <i class="fa-fw far fa-circle-xmark ms-1 cursor-pointer" (click)="removeLabel(label, isPublic())"></i>
+          }
+        </span>
+      }
+    </div>
   `,
   styles: `
-  .anchor {
-    &:has(.popover:popover-open) {
-      z-index: 5000;
-      border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
+    .anchor {
+      &:has(.popover:popover-open) {
+        z-index: 5000;
+        border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
+      }
+
+      .popover::backdrop {
+        background-color: transparent;
+        backdrop-filter: none;
+      }
     }
 
-    .popover::backdrop {
-      background-color: transparent;
-      backdrop-filter: none;
-    }
-  }
+    .popover {
+      /* Select Firefox */
+      @supports (-moz-appearance: none) {
+        margin: calc(33.3333333333vh + 30px) 25vw;
+        width: 50vw;
+      }
 
-  .popover {
-    /* Select Firefox */
-    @supports (-moz-appearance: none) {
-      margin: calc(33.3333333333vh + 30px) 25vw;
-      width: 50vw;
-    }
+      /* Select Safari */
+      @supports (background: -webkit-named-image(i)) {
+        margin: calc(33.3333333333vh + 30px) 25vw;
+        width: 50vw;
+      }
 
-    /* Select Safari */
-    @supports (background: -webkit-named-image(i)) {
-      margin: calc(33.3333333333vh + 30px) 25vw;
-      width: 50vw;
+      width: anchor-size(width);
+      top: anchor(bottom);
+      left: anchor(left);
+      padding: 0;
+      border-radius: 6px;
     }
-
-    width: anchor-size(width);
-    top: anchor(bottom);
-    left: anchor(left);
-    padding: 0;
-    border-radius: 6px;
-  }
-  `,
+  `
 })
 export class LabelsFormComponent {
   article = input.required<Article>();
@@ -112,14 +103,17 @@ export class LabelsFormComponent {
 
   labels = signal<string[]>([]);
 
-  constructor(){
+  constructor() {
     afterRender(() => {
       this.popoverElement().style.positionAnchor = this.anchor();
     });
 
-    effect(() => {
-      this.labels.set(this.article()[this.labelsField()! as keyof Article] as string[] || []);
-    }, {allowSignalWrites: true});
+    effect(
+      () => {
+        this.labels.set((this.article()[this.labelsField()! as keyof Article] as string[]) || []);
+      },
+      { allowSignalWrites: true }
+    );
 
     effect(() => {
       this.fetchLabels(this.debouncedLabelInput(), this.isPublic());
@@ -131,12 +125,12 @@ export class LabelsFormComponent {
   }
 
   onInputClick() {
-    if(this.suggestedLabels().length === 0) return;
+    if (this.suggestedLabels().length === 0) return;
     this.popoverElement().showPopover();
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if(event.key === 'Enter') {
+    if (event.key === 'Enter') {
       this.addLabel(this.labelInput(), this.isPublic());
     }
   }
@@ -160,5 +154,4 @@ export class LabelsFormComponent {
     this.labels.set(this.labels().filter(l => l !== label));
     await labels.remove([label], [this.article().id], isPublic);
   }
-
 }

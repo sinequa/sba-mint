@@ -1,14 +1,21 @@
-import { Component, computed, effect, HostBinding, inject, input, OnDestroy, signal } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { getState } from "@ngrx/signals";
-import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
-import { lastValueFrom, map, Subscription, tap } from "rxjs";
+import { Component, computed, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { getState } from '@ngrx/signals';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 
-import { Aggregation, Article, Query, QueryParams, Result } from "@sinequa/atomic";
-import { AggregationsStore, DrawerStackService, PrincipalStore, QueryParamsStore, SearchService, SelectionService, UserSettingsStore } from "@sinequa/atomic-angular";
+import { Aggregation, Article, Query, QueryParams, Result } from '@sinequa/atomic';
+import {
+  AggregationsStore,
+  DrawerStackService,
+  PrincipalStore,
+  QueryParamsStore,
+  SearchService,
+  SelectionService,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 
-
-type R = Result & { nextPage?: number, previousPage?: number };
+type R = Result & { nextPage?: number; previousPage?: number };
 type QP = {
   f?: string; // filters list
   p?: number; // page number
@@ -16,7 +23,7 @@ type QP = {
   t?: string; // tab name
   q?: string; // query text
   b?: string; // basket
-}
+};
 
 @Component({
   template: ''
@@ -47,7 +54,7 @@ export abstract class SearchBase<T> implements OnDestroy {
 
   // track the query params store changes
   keys = computed(() => {
-    const state = getState(this.queryParamsStore)
+    const state = getState(this.queryParamsStore);
     const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort, basket: state.basket };
     return r;
   });
@@ -64,7 +71,6 @@ export abstract class SearchBase<T> implements OnDestroy {
     return state.userOverrideActive;
   });
 
-
   // input url bindings
   q = input<string>(); // text
   t = input<string>(); // tab
@@ -73,9 +79,8 @@ export abstract class SearchBase<T> implements OnDestroy {
   f = input<string>(); // filters
   queryName = input<string>(); // query param
 
-
   // tanstack query
-  query = injectInfiniteQuery<R,T>(() => ({
+  query = injectInfiniteQuery<R, T>(() => ({
     queryKey: [`search-${this.t()}`, this.keys(), this.userOverrideActive()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
@@ -83,42 +88,47 @@ export abstract class SearchBase<T> implements OnDestroy {
       const query = { ...q, page: pageParam, tab: this.t(), basket: this.b() } as Query;
 
       // Add the current search to the user settings when the text is not empty
-      if(query.text && query.text !== '') {
+      if (query.text && query.text !== '') {
         this.usersettingsStore.addCurrentSearch(query as QueryParams);
       }
 
-      return lastValueFrom(this.searchService.getResult(query).pipe(
-        tap(() => this.queryText.set(this.keys().text ?? '')),
-        map(result => {
-          return this.updateArticleType(result);
-        }),
-        map(result => {
-          // If the id is set, open the drawer with the preview of the article
-          const id = this.id();
-          if (id) {
-            result.records?.forEach(article => {
-              if (article.id === id) {
-                this.selectionService.setCurrentArticle(article);
-                this.drawerStack.open();
-              }
-            });
-          }
-          return result;
-        })
-      ));
+      return lastValueFrom(
+        this.searchService.getResult(query).pipe(
+          tap(() => this.queryText.set(this.keys().text ?? '')),
+          map(result => {
+            return this.updateArticleType(result);
+          }),
+          map(result => {
+            // If the id is set, open the drawer with the preview of the article
+            const id = this.id();
+            if (id) {
+              result.records?.forEach(article => {
+                if (article.id === id) {
+                  this.selectionService.setCurrentArticle(article);
+                  this.drawerStack.open();
+                }
+              });
+            }
+            return result;
+          })
+        )
+      );
     },
     initialPageParam: 1,
-    getPreviousPageParam: (firstPage) => (firstPage.previousPage ?? undefined),
-    getNextPageParam: (lastPage) => (lastPage.nextPage ?? undefined),
+    getPreviousPageParam: firstPage => firstPage.previousPage ?? undefined,
+    getNextPageParam: lastPage => lastPage.nextPage ?? undefined
   }));
 
   constructor() {
     // Update the query params store with the filters from the query params
     // This allows Browser back/forward to work correctly
-    effect(() => {
-      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.queryName() });
-    }, { allowSignalWrites: true });
+    effect(
+      () => {
+        const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+        this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.queryName() });
+      },
+      { allowSignalWrites: true }
+    );
 
     // Update the URL with the query params
     effect(() => {
@@ -134,26 +144,27 @@ export abstract class SearchBase<T> implements OnDestroy {
       queryParams.q = text;
       queryParams.b = basket;
 
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {  } });
-    })
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
+    });
 
     // Make Result object available to children and update aggregations store
-    effect(() => {
-      this.query.isSuccess();
+    effect(
+      () => {
+        this.query.isSuccess();
 
-      const result = this.query.data()?.pages[0];
+        const result = this.query.data()?.pages[0];
 
-      if (!result) return;
+        if (!result) return;
 
-      this.result.set(result);
+        this.result.set(result);
 
-      // Update the aggregations store with the new aggregations
-      this.aggregationsStore.update(result.aggregations);
-    }, { allowSignalWrites: true });
-
-    this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
+        // Update the aggregations store with the new aggregations
+        this.aggregationsStore.update(result.aggregations);
+      },
+      { allowSignalWrites: true }
     );
+
+    this.sub.add(this.drawerStack.isOpened.subscribe(state => (this.drawerOpened = state)));
   }
 
   ngOnDestroy(): void {
