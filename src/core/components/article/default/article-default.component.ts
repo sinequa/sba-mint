@@ -2,7 +2,17 @@ import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookma
 import { Component, computed, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
-import { ApplicationStore, AppStore, DropdownComponent, LabelService, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import {
+  ApplicationStore,
+  AppStore,
+  DropdownComponent,
+  LabelService,
+  QueryParamsStore,
+  SearchService,
+  SelectArticleOnClickDirective,
+  SelectionStore,
+  ShowBookmarkDirective
+} from '@sinequa/atomic-angular';
 
 import { EditLabelsComponent } from '@/core/features/dialog/labels/edit-labels';
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
@@ -17,10 +27,13 @@ type Tab = 'attachments' | 'similars';
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-article-default',
@@ -34,16 +47,19 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
     EditLabelsComponent,
     AddToCollectionDialog,
     MissingTermsComponent
-],
+  ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
-  hostDirectives: [{
-    directive: SelectArticleOnClickDirective,
-    inputs: ['article', 'strategy']
-  }, {
-    directive: ShowBookmarkDirective,
-    inputs: ['article']
-  }],
+  hostDirectives: [
+    {
+      directive: SelectArticleOnClickDirective,
+      inputs: ['article', 'strategy']
+    },
+    {
+      directive: ShowBookmarkDirective,
+      inputs: ['article']
+    }
+  ],
   providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
 export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
@@ -58,7 +74,7 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   readonly addToCollectionDialog = viewChild(AddToCollectionDialog);
 
   showBookmark = signal(false);
-  showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe((value) => {
+  showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
     this.showBookmark.set(value);
   });
 
@@ -67,19 +83,17 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
 
-    const topPassage = this.article().matchingpassages!.passages.sort((a, b) => a.score > b.score ? -1 : 1)[0];
+    const topPassage = this.article().matchingpassages!.passages.sort((a, b) => (a.score > b.score ? -1 : 1))[0];
     return topPassage.highlightedText;
-  })
+  });
 
   protected showTab = signal(false);
   protected currentTab: Tab = 'attachments';
 
   protected docformatMetadata = computed(() => {
-    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
-      return this.article().docformat;
+    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase())) return this.article().docformat;
 
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase()))
-      return this.article().doctype;
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return this.article().doctype;
 
     return undefined;
   });

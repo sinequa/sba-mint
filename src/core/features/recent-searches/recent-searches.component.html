@@ -1,22 +1,15 @@
 <ul class="flex flex-col">
   @for (recentSearch of paginatedRecentSearches(); track $index) {
     <RecentSearch [recentSearch]="recentSearch" (remove)="remove($index, $event)" />
-  }
-
-  @empty {
-    <li class="text-center text-neutral-500 py-4">
+  } @empty {
+    <li class="py-4 text-center text-neutral-500">
       {{ 'recentSearches.noRecentSearches' | transloco }}
     </li>
   }
 </ul>
 
 @if (hasMore()) {
-  <button
-    class="btn btn-tertiary flex justify-center w-full px-3 py-2"
-    tabindex="0"
-    [attr.title]="'loadMore' | transloco"
-    (click)="loadMore($event)"
-  >
+  <button class="btn btn-tertiary flex w-full justify-center px-3 py-2" tabindex="0" [attr.title]="'loadMore' | transloco" (click)="loadMore($event)">
     {{ 'loadMore' | transloco }}
   </button>
 }

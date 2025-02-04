@@ -48,16 +48,13 @@
     @apply rounded-b;
   }
 
-  .data-list-item:not(.data-list-item.selected, .data-list-item:hover)
-    + .data-list-item.selected {
+  .data-list-item:not(.data-list-item.selected, .data-list-item:hover) + .data-list-item.selected {
     @apply rounded-t;
   }
   .data-list-item.selected:has(+ :not(.data-list-item.selected)) {
     @apply rounded-b;
   }
-  .data-list-item:hover:not(.data-list-item.selected):has(
-      + :not(.data-list-item.selected)
-    ) {
+  .data-list-item:hover:not(.data-list-item.selected):has(+ :not(.data-list-item.selected)) {
     @apply rounded-b;
   }
   .data-list-item:not(.data-list-item.selected) + .data-list-item:hover {

@@ -12,4 +12,4 @@ import { NavbarComponent } from '@/core/components/navbar/navbar.component';
     class: 'flex flex-col h-full w-full'
   }
 })
-export class SearchComponent { }
+export class SearchComponent {}

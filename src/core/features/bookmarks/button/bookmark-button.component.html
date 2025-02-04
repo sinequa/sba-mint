@@ -1,5 +1,5 @@
 <button [attr.title]="'bookmark.bookmarkDocument' | transloco" (click)="bookmark($event)">
-  @if(isBookmarked()){
+  @if (isBookmarked()) {
     <i class="fa-fw fa-bookmark fa-solid"></i>
   } @else {
     <i class="fa-fw fa-bookmark fa-regular"></i>

@@ -7,7 +7,6 @@ import { toast } from 'ngx-sonner';
 import { SavedSearch as S, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { getQueryParamsFromUrl, getRelativeDate, QueryParams } from '@sinequa/atomic';
-import { StopPropagationDirective } from 'toolkit';
 
 const SAVED_SEARCHES_ITEMS_PER_PAGE = 5;
 
@@ -16,18 +15,20 @@ type SavedSearch = S & {
   filterCount?: number;
   date?: string;
   queryParams?: QueryParams;
-}
+};
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
-
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-saved-searches',
   standalone: true,
-  imports: [NgClass, StopPropagationDirective, TranslocoPipe],
+  imports: [NgClass, TranslocoPipe],
   templateUrl: './saved-searches.component.html',
   styleUrl: './saved-searches.component.scss',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property
@@ -49,34 +50,36 @@ export class SavedSearchesComponent {
   protected readonly transloco = inject(TranslocoService);
 
   constructor() {
-    effect(() => {
-      const savedSearches = this.savedSearchesService.getSavedSearches();
+    effect(
+      () => {
+        const savedSearches = this.savedSearchesService.getSavedSearches();
 
-      this.savedSearches.set(
-        (savedSearches || []).reduce((acc, savedSearch) => {
-          const queryParams = getQueryParamsFromUrl(savedSearch.url);
+        this.savedSearches.set(
+          (savedSearches || []).reduce((acc, savedSearch) => {
+            const queryParams = getQueryParamsFromUrl(savedSearch.url);
 
-          acc.push(
-            Object.assign(savedSearch, {
-              label: queryParams?.text || '',
-              filterCount: queryParams?.filters?.length || 0,
-              queryParams
-            })
-          );
+            acc.push(
+              Object.assign(savedSearch, {
+                label: queryParams?.text || '',
+                filterCount: queryParams?.filters?.length || 0,
+                queryParams
+              })
+            );
 
-          return acc;
-        }, [] as SavedSearch[])
-      );
-    }, { allowSignalWrites: true });
+            return acc;
+          }, [] as SavedSearch[])
+        );
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   public onClick(savedSearch: SavedSearch): void {
     const queryParams = {
       q: savedSearch.queryParams?.text
-    } as { q: string, f?: string };
+    } as { q: string; f?: string };
 
-    if (savedSearch.queryParams?.filters && savedSearch.queryParams?.filters?.length > 0)
-      queryParams.f = JSON.stringify(savedSearch.queryParams?.filters);
+    if (savedSearch.queryParams?.filters && savedSearch.queryParams?.filters?.length > 0) queryParams.f = JSON.stringify(savedSearch.queryParams?.filters);
 
     this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }

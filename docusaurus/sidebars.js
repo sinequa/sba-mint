@@ -47,6 +47,7 @@ const sidebars = {
         "atomic/authentication",
         "atomic/helpers",
         "atomic/audit",
+        "atomic/log-levels"
       ],
     },
     {

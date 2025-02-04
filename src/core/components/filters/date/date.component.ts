@@ -26,7 +26,7 @@ import { AggEx, AggregationComponent, AggregationTitle } from '../aggregation/ag
  *
  * @public
  */
-export const FILTER_DATE_ALLOW_CUSTOM_RANGE = new InjectionToken<boolean>("date allow custom range", { factory: () => true });
+export const FILTER_DATE_ALLOW_CUSTOM_RANGE = new InjectionToken<boolean>('date allow custom range', { factory: () => true });
 
 type DateFilter = {
   label?: string;
@@ -36,12 +36,15 @@ type DateFilter = {
   display?: string;
   disabled?: boolean;
   hidden?: boolean;
-}
+};
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>);
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'date-filter,DateFilter',
@@ -64,8 +67,8 @@ export class DateComponent extends AggregationComponent {
   readonly displayEmptyDistributionIntervals = input<boolean>(false);
   readonly allowCustomRange = inject(FILTER_DATE_ALLOW_CUSTOM_RANGE);
 
-  protected readonly dateOptions = computed(
-    () => translateAggregationToDateOptions(this.aggregation() as Aggregation, this.displayEmptyDistributionIntervals())
+  protected readonly dateOptions = computed(() =>
+    translateAggregationToDateOptions(this.aggregation() as Aggregation, this.displayEmptyDistributionIntervals())
   );
 
   protected readonly form = new FormGroup({
@@ -89,11 +92,9 @@ export class DateComponent extends AggregationComponent {
     // apply current date filter from queryParamsStore
     effect(() => {
       this.updateForm(this.queryParamsStore.getFilter(this.aggregation()!.column) as LegacyFilter);
-    })
+    });
 
-    this.subscription.add(
-      this.form.valueChanges.subscribe(() => this.hasFilter.set(true))
-    );
+    this.subscription.add(this.form.valueChanges.subscribe(() => this.hasFilter.set(true)));
   }
 
   protected override processAggregation(): AggEx | null | undefined {
@@ -114,10 +115,9 @@ export class DateComponent extends AggregationComponent {
         from: null,
         to: null
       }
-    })
+    });
 
-    if (notify)
-      this.queryParamsStore.updateFilter({ field: this.aggregation()!.column, display: '' });
+    if (notify) this.queryParamsStore.updateFilter({ field: this.aggregation()!.column, display: '' });
   }
 
   private updateForm(filter: LegacyFilter | undefined): void {
@@ -127,19 +127,19 @@ export class DateComponent extends AggregationComponent {
     }
 
     const { operator, value } = filter;
-    const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === value)?.display ?? "custom-range";
+    const code = this.dateOptions().find((option: DateFilter) => option.operator === operator && option.value === value)?.display ?? 'custom-range';
 
     let from, to;
 
     if (code === 'custom-range') {
       switch (operator) {
-        case ('lte'):
+        case 'lte':
           to = filter.value;
           break;
-        case ('gte'):
+        case 'gte':
           from = filter.value;
           break;
-        case ('between'):
+        case 'between':
           from = filter.start;
           to = filter.end;
           break;
@@ -149,8 +149,8 @@ export class DateComponent extends AggregationComponent {
     const formValue = {
       option: code,
       customRange: {
-        from: (code === 'custom-range') ? from ?? null : null,
-        to: (code === 'custom-range') ? to ?? null : null
+        from: code === 'custom-range' ? (from ?? null) : null,
+        to: code === 'custom-range' ? (to ?? null) : null
       }
     };
 
@@ -171,8 +171,7 @@ export class DateComponent extends AggregationComponent {
         filters: dateOption?.filters,
         value: dateOption?.value
       };
-    }
-    else if (value.customRange) {
+    } else if (value.customRange) {
       // if to is null, operator is gte
       // if from is null, operator is lte
       // if both are not null, operator is between
@@ -185,12 +184,10 @@ export class DateComponent extends AggregationComponent {
         filter.operator = 'between';
         filter.start = value.customRange.from;
         filter.end = value.customRange.to;
-      }
-      else if (value.customRange.from) {
+      } else if (value.customRange.from) {
         filter.operator = 'gte';
         filter.value = value.customRange.from;
-      }
-      else if (value.customRange.to) {
+      } else if (value.customRange.to) {
         filter.operator = 'lte';
         filter.value = value.customRange.to;
       }

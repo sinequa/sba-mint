@@ -1,73 +1,78 @@
 @if (items()) {
   <ul
-    class="data-list-xs z-10 px-2 py-4 text-black bg-white rounded-b-lg shadow-md max-h-80 overflow-auto"
+    class="data-list-xs z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black shadow-md"
     aria-labelledby="dropdownDefaultButton"
-    role="listbox"  
-  >
+    role="listbox">
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
-        <li role="presentation" class="m-2 bg-neutral-300 h-[1px]"></li>
-      }
-
-      @else if (!item.display) {
-        <li role="presentation" class="p-2 cursor-pointer text-xs text-neutral-500 font-semibold">
+        <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
+      } @else if (!item.display) {
+        <li role="presentation" class="cursor-pointer p-2 text-xs font-semibold text-neutral-500">
           @switch (item.category) {
-            @case('recent-search') {
+            @case ('recent-search') {
               {{ 'recentSearches' | transloco }}
             }
-            @case('saved-search') {
+            @case ('saved-search') {
               {{ 'savedSearches' | transloco }}
             }
-            @case('bookmark') {
+            @case ('bookmark') {
               {{ 'bookmarks' | transloco }}
             }
-            @case('title') {
-              {{ 'documents' | transloco }}
+            @case ('title') {
+              {{ 'title' | transloco }}
             }
-            @case('concepts') {
-              {{ 'matters' | transloco }}
+            @case ('concepts') {
+              {{ 'concepts' | transloco }}
             }
-            @case('people') {
-              {{ 'collaborators' | transloco }}
+            @case ('people') {
+              {{ 'people' | transloco }}
             }
           }
         </li>
-      }
-      
-      @else {
-        <li
-          role="option"
-          tabindex="0"
-        >
+      } @else {
+        <li role="option" tabindex="0">
           <a
-            class="p-2 flex data-list-item items-baseline gap-2 cursor-pointer"
+            class="data-list-item flex cursor-pointer items-baseline gap-2 p-2"
             role="button"
             aria-keyshortcuts="enter"
             (keypress.enter)="itemClicked(item)"
-            (click)="itemClicked(item)"
-          >
+            (click)="itemClicked(item)">
             @switch (item.category) {
-              @case('recent-search') { <i class="fa-fw far fa-clock-rotate-left"></i> }
-              @case('saved-search') { <i class="fa-fw far fa-star"></i> }
-              @case('bookmark') { <i class="fa-fw far fa-bookmark"></i> }
-              @case('full-text') { <i class="fa-fw far fa-magnifying-glass"></i> }
-              @case('title') { <i class="fa-fw far fa-file"></i> }
-              @case('concepts') { <i class="fa-fw far fa-lightbulb"></i> }
-              @case('people') { <i class="fa-fw far fa-user-circle"></i> }
-              @default { <i class="fa-fw far fa-magnifying-glass"></i> }
+              @case ('recent-search') {
+                <i class="fa-fw far fa-clock-rotate-left"></i>
+              }
+              @case ('saved-search') {
+                <i class="fa-fw far fa-star"></i>
+              }
+              @case ('bookmark') {
+                <i class="fa-fw far fa-bookmark"></i>
+              }
+              @case ('full-text') {
+                <i class="fa-fw far fa-magnifying-glass"></i>
+              }
+              @case ('title') {
+                <i class="fa-fw far fa-file"></i>
+              }
+              @case ('concepts') {
+                <i class="fa-fw far fa-lightbulb"></i>
+              }
+              @case ('people') {
+                <i class="fa-fw far fa-user-circle"></i>
+              }
+              @default {
+                <i class="fa-fw far fa-magnifying-glass"></i>
+              }
             }
-          
-            <p class="text-ellipsis line-clamp-1">
-              @for(chunk of item.display! | highlightWord:text():10; track $index ) {
+
+            <p class="line-clamp-1 text-ellipsis">
+              @for (chunk of item.display! | highlightWord: text() : 10; track $index) {
                 <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
               }
             </p>
           </a>
         </li>
       }
-    }
-
-    @empty {
+    } @empty {
       <span>
         {{ 'searchInput.noSuggestions' | transloco }}
       </span>

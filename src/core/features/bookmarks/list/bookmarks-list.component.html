@@ -1,42 +1,38 @@
 <ul class="flex flex-col">
   @for (bookmark of paginatedBookmarks(); track $index) {
     <li
-      class="flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none group"
+      class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
       tabindex="0"
       (click)="onClick(bookmark)"
-      (keydown.enter)="onClick(bookmark)"
-    >
-      <i class="fa-fw far fa-bookmark shrink-0 " aria-hidden="true"></i>
+      (keydown.enter)="onClick(bookmark)">
+      <i class="fa-fw fas fa-bookmark shrink-0" aria-hidden="true"></i>
 
       <p class="line-clamp-1">{{ bookmark.label }}</p>
 
       @if (bookmark.author) {
-        <p class="text-neutral-500 line-clamp-1">
-          <i class="fa-fw far fa-user " aria-hidden="true"></i>
+        <p class="line-clamp-1 text-neutral-500">
+          <i class="fa-fw far fa-user" aria-hidden="true"></i>
           {{ bookmark.author }}
         </p>
       }
 
       @if (bookmark.parentFolder) {
-        <p class="text-neutral-500 line-clamp-1">
-          <i class="fa-fw far fa-folder " aria-hidden="true"></i>
+        <p class="line-clamp-1 text-neutral-500">
+          <i class="fa-fw far fa-folder" aria-hidden="true"></i>
           {{ bookmark.parentFolder }}
         </p>
       }
 
       <button
-        class="hidden group-hover:block ms-auto text-alert hover:scale-125"
+        class="ms-auto hidden text-alert hover:scale-125 group-hover:block"
         [attr.title]="'bookmark.removeBookmark' | transloco"
         [attr.aria-label]="'bookmark.removeBookmark' | transloco"
-        (click)="onDelete(bookmark, $event)"
-      >
-        <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
+        (click)="onDelete(bookmark, $event)">
+        <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
       </button>
     </li>
-  }
-
-  @empty {
-    <li class="text-neutral-500 text-center py-4">
+  } @empty {
+    <li class="py-4 text-center text-neutral-500">
       {{ 'bookmark.noBookmarks' | transloco }}
     </li>
   }
@@ -44,11 +40,10 @@
 
 @if (hasMore()) {
   <button
-    class="btn btn-tertiary flex justify-center w-full px-3 py-2"
+    class="btn btn-tertiary flex w-full justify-center px-3 py-2"
     tabindex="0"
     [attr.aria-label]="'bookmark.loadMore' | transloco"
-    (click)="loadMore($event)"
-  >
+    (click)="loadMore($event)">
     {{ 'loadMore' | transloco }}
   </button>
 }

@@ -6,9 +6,9 @@
     "override": "Override"
   },
   "resetUserSettings": {
-      "title": "Reset User Settings",
-      "message": "You are about to reset ALL your user data (recent queries, collections, alerts, preferences, etc.). Do you want to continue?",
-      "success": "User settings have been reset successfully."
+    "title": "Reset User Settings",
+    "message": "You are about to reset ALL your user data (recent queries, collections, alerts, preferences, etc.). Do you want to continue?",
+    "success": "User settings have been reset successfully."
   },
   "editLabels": {
     "title": "Add / Edit labels",

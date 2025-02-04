@@ -1,7 +1,7 @@
-import { InjectionToken } from "@angular/core";
-import { LegacyFilter } from "@sinequa/atomic";
+import { InjectionToken } from '@angular/core';
+import { LegacyFilter } from '@sinequa/atomic';
 
-import { CFilter } from "@sinequa/atomic-angular";
+import { CFilter } from '@sinequa/atomic-angular';
 
 export type CFilterEx = CFilter & {
   name: string;
@@ -12,4 +12,4 @@ export type CFilterEx = CFilter & {
   legacyFilter?: LegacyFilter;
 };
 
-export const FILTERS_BREAKPOINT = new InjectionToken<number>("FILTERS_BREAKPOINT", { factory: () => 5 });
+export const FILTERS_BREAKPOINT = new InjectionToken<number>('FILTERS_BREAKPOINT', { factory: () => 5 });

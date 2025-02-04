@@ -13,12 +13,15 @@ export type SortingChoice = {
   isDefaultNoRelevance: boolean;
   isDefaultWithRelevance: boolean;
   $isDesc?: boolean;
-}
+};
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-sort-selector',

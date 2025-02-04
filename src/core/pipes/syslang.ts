@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform, inject } from "@angular/core";
-import { TranslocoService } from "@jsverse/transloco";
-import { sysLang } from "@sinequa/atomic";
-import { Subscription } from "rxjs";
+import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import { sysLang } from '@sinequa/atomic';
+import { Subscription } from 'rxjs';
 
 /**
  * The `SyslangPipe` class is a custom pipe that transforms a string value using the current language.
@@ -38,7 +38,7 @@ export class SyslangPipe implements PipeTransform, OnDestroy {
 
   constructor() {
     this.currentLang = this.transloco.getActiveLang();
-    this.subscription = this.transloco.langChanges$.subscribe(locale => this.currentLang = locale);
+    this.subscription = this.transloco.langChanges$.subscribe(locale => (this.currentLang = locale));
   }
 
   /**
@@ -47,8 +47,7 @@ export class SyslangPipe implements PipeTransform, OnDestroy {
    * @returns The transformed string value.
    */
   transform(value?: string, lang?: string): string | null {
-
-    const transformedValue = sysLang(value || "", lang || this.currentLang);
+    const transformedValue = sysLang(value || '', lang || this.currentLang);
 
     if (transformedValue !== this.lastValue) {
       this.lastValue = transformedValue;

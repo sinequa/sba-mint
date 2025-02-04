@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { BackdropService } from './backdrop/backdrop.service';
 
 export type ArticleTypeMap = {
-  articleType: "default";
+  articleType: 'default';
   previewComponentType: Type<unknown>;
   articleComponentType: Type<unknown>;
   articleLightComponentType: Type<unknown>;

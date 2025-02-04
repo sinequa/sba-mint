@@ -1,16 +1,16 @@
 /* Hides default radio */
-input[type="radio"]:has(+ .radio) {
+input[type='radio']:has(+ .radio) {
   display: none;
 }
 
-input[type="radio"] + .radio::before {
+input[type='radio'] + .radio::before {
   /* fa-square glyph code */
-  content: "\f111";
+  content: '\f111';
   font: var(--fa-font-regular);
 }
 
-input[type="radio"]:checked + .radio::before {
+input[type='radio']:checked + .radio::before {
   /* fa-check-square glyph code */
-  content: "\f192";
+  content: '\f192';
   font: var(--fa-font-regular);
 }

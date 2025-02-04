@@ -14,8 +14,8 @@ import { DrawerService } from './drawer.service';
   providers: [DrawerService],
   template: ``,
   styleUrl: './drawer.component.scss',
-  host : {
-    '[attr.drawer-opened]' : 'drawerOpened()',
+  host: {
+    '[attr.drawer-opened]': 'drawerOpened()',
     '[attr.drawer-extended]': 'drawerExtended()'
   }
 })
@@ -30,8 +30,8 @@ export class DrawerComponent implements OnInit, OnDestroy {
   public mouseMove(event: MouseEvent): void {
     if (!this.isSliding) return;
 
-    const min = window.innerWidth * 3 / 100;
-    const max = window.innerWidth * 46 / 100;
+    const min = (window.innerWidth * 3) / 100;
+    const max = (window.innerWidth * 46) / 100;
     const width = Math.min(Math.max(event.clientX, min), max);
 
     this.drawerGridTemplateColumns = `${width}px minmax(min-content, 1fr) var(--drawer-subdrawer-width)`;
@@ -53,7 +53,6 @@ export class DrawerComponent implements OnInit, OnDestroy {
   }
 
   drawerHandle = viewChild<ElementRef>('drawerHandle');
-
 
   public readonly drawer = inject(DrawerService);
 

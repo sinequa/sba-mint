@@ -3,7 +3,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
-import { combineLatest, map, of, switchMap } from 'rxjs';
+import { combineLatest, map, of, switchMap, catchError } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
 import { AppStore, AuditService, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
@@ -12,15 +12,18 @@ import { SearchInputComponent } from '../search-input.component';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
-}
+};
 
 const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-search', 'saved-search'];
 const autocompleteCategories = ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people'];
 
-const loader = ['en', 'fr'].reduce((acc, lang) => {
-  acc[lang] = () => import(`../i18n/${lang}.json`);
-  return acc;
-}, {} as HashMap<() => Promise<Translation>>)
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
 
 @Component({
   selector: 'app-autocomplete',
@@ -43,25 +46,31 @@ export class AutocompleteComponent {
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
 
   readonly items = toSignal(
-    combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)])
-      .pipe(
-        switchMap(([testText]) => {
-          const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
+    combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)]).pipe(
+      switchMap(([testText]) => {
+        const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
 
-          if (!testText)
-            return fromUserSettings;
+        if (!testText) return fromUserSettings;
 
-          return combineLatest([
-            fromUserSettings,
-            this.autocompleteService.getFromSuggestQueriesForText(testText)
-          ]);
-        }),
-        map(items => items.flat(2)),
-        // order the items to have full-text, recent search and saved search at the beginning
-        map(items => items.sort((a, b) => {
+        return combineLatest([
+          fromUserSettings,
+          this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
+            catchError(error => {
+              console.error(error);
+              return of([]);
+            })
+          )
+        ]);
+      }),
+      map(items => items.flat(2)),
+      // order the items to have full-text, recent search and saved search at the beginning
+      map(items =>
+        items.sort((a, b) => {
           return autocompleteCategories.indexOf(a.category) - autocompleteCategories.indexOf(b.category);
-        })),
-        map((items) => items.reduce<Suggestion[]>((acc, curr) => {
+        })
+      ),
+      map(items =>
+        items.reduce<Suggestion[]>((acc, curr) => {
           if (acc.length > 0) {
             const last = acc.at(-1);
 
@@ -77,19 +86,24 @@ export class AutocompleteComponent {
 
           acc.push({ ...curr, $isDivider: false });
           return acc;
-        }, []))
-      ));
+        }, [])
+      )
+    )
+  );
 
-  constructor({ el: { nativeElement } }: SearchInputComponent, private eventManager: EventManager) {
+  constructor(
+    { el: { nativeElement } }: SearchInputComponent,
+    private eventManager: EventManager
+  ) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
   }
 
   public itemClicked(item: Suggestion): void {
     this.auditService.notify({
-      type: "Search_Autocomplete",
+      type: 'Search_Autocomplete',
       detail: {
         display: item.display,
-        category: item.category,
+        category: item.category
       }
     });
     this.onClick.emit(item);

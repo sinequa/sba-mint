@@ -42,9 +42,9 @@ export class PreviewDefaultComponent extends BasePreview {
 
   public readonly article = computed(() => this.previewData()?.record as Article);
   public readonly previewUrl = computed(() =>
-    this.previewData()?.documentCachedContentUrl ?
-      this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl) :
-      undefined
+    this.previewData()?.documentCachedContentUrl
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl)
+      : undefined
   );
 
   public labels = inject(AppStore).getLabels();
@@ -83,22 +83,25 @@ export class PreviewDefaultComponent extends BasePreview {
       this.previewService.setPreviewData(this.previewData());
     });
 
-    effect(async () => {
-      if (!this.previewUrl()) return;
+    effect(
+      async () => {
+        if (!this.previewUrl()) return;
 
-      try {
-        this.loading.set(true);
-        this.cdr.detectChanges();
-        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
-        this.canLoadIframe.set(response.status === 200);
-        this.previewUrlError.set(response.status !== 200);
-      } catch (e) {
-        this.canLoadIframe.set(false);
-        this.previewUrlError.set(true);
-      } finally {
-        this.loading.set(false);
-      }
-    }, { allowSignalWrites: true });
+        try {
+          this.loading.set(true);
+          this.cdr.detectChanges();
+          const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
+          this.canLoadIframe.set(response.status === 200);
+          this.previewUrlError.set(response.status !== 200);
+        } catch (e) {
+          this.canLoadIframe.set(false);
+          this.previewUrlError.set(true);
+        } finally {
+          this.loading.set(false);
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   /**
@@ -123,7 +126,7 @@ export class PreviewDefaultComponent extends BasePreview {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick({ field, value }: { field: string, value: string }): void {
+  onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }
