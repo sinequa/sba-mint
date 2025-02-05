@@ -1,4 +1,5 @@
 {
   "inputPlaceholder": "Search in document",
-  "noRelevantExtracts": "No relevant extracts found."
+  "noRelevantExtracts": "No relevant extracts found.",
+  "similarDocuments": "Similar documents"
 }
