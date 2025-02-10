@@ -15,8 +15,8 @@
     "docs:ci": "cd docusaurus && npm ci",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal",
-    "prettier:check": "prettier --config .prettierrc --check src/**/*.{ts,html,scss,json}",
-    "prettier:write": "prettier --config .prettierrc --write src/**/*.{ts,html,scss,json}",
+    "prettier:check": "prettier --config .prettierrc --check src/**/*.{js,ts,html,scss,css,json}",
+    "prettier:write": "prettier --config .prettierrc --write src/**/*.{js,ts,html,scss,css,json}",
     "prepare": "husky"
   },
   "lint-staged": {
