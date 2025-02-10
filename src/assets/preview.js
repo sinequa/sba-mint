@@ -56,17 +56,18 @@ document.addEventListener("DOMContentLoaded", function () {
         init(event.origin, data.highlights);
         createWorker(data.appname);
         break;
-      case 'get-html':{
+      case 'get-html':
+        {
           const html = getHtml(data.ids);
           returnMessage('get-html-results', html);
           break;
-      }
+        }
       case "get-html-webworker":
-      {
-        const html = getHtml(data.ids);
-        worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
-        break;
-      }
+        {
+          const html = getHtml(data.ids);
+          worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
+          break;
+        }
       case "get-text":
         getText(data.ids);
         break;
@@ -87,14 +88,25 @@ document.addEventListener("DOMContentLoaded", function () {
       case "zoom-in":
         var factor = parseFloat(rs.getPropertyValue("--factor"));
         var max = Math.min(3, factor + 0.2);
-        r.style.setProperty("--factor", max);
+        zoom(max);
         break;
       case "zoom-out":
         var factor = parseFloat(rs.getPropertyValue("--factor"));
         var min = Math.max(0.2, factor - 0.2);
-        r.style.setProperty("--factor", min);
+        zoom(min);
         break;
     }
+  }
+  function zoom(value) {
+    const elts = r.querySelectorAll('p');
+    const firstVisibleElt = Array.from(elts).find(elt => {
+      const { top, bottom } = elt.getBoundingClientRect()
+      return bottom > 0 && top < window.innerHeight;
+    });
+    r.style.setProperty("--factor", value);
+      if (firstVisibleElt) {
+        firstVisibleElt.scrollIntoView();
+      }
   }
   function returnMessage(type, data) {
     parent.postMessage(
