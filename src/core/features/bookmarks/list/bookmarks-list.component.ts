@@ -4,8 +4,9 @@ import { toast } from 'ngx-sonner';
 
 import { LegacyFilter, Query } from '@sinequa/atomic';
 import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { RouterModule } from '@angular/router';
 
-const BOOKMARKS_ITEMS_PER_PAGE = 5;
+const BOOKMARKS_ITEMS_PER_PAGE = 10;
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -16,9 +17,9 @@ const loader = ['en', 'fr'].reduce(
 );
 
 @Component({
-  selector: 'app-bookmarks-list',
-  standalone: true,
-  imports: [TranslocoPipe],
+  selector: 'BookmarksList',
+  standalone: true, 
+  imports: [TranslocoPipe, RouterModule],
   templateUrl: './bookmarks-list.component.html',
   styleUrl: './bookmarks-list.component.scss',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property

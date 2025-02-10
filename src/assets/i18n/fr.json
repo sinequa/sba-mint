@@ -40,6 +40,10 @@
     "relevance": "Pertinence",
     "title": "Titre"
   },
+  "bookmark": {
+    "removeBookmark": "Supprimer le marque-page",
+    "myBookmarks": "Mes marque-pages"
+  },
   "nextPage": "Page suivante",
   "open": "Ouvrir",
   "password": "Mot de passe",
