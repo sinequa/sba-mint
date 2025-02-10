@@ -1,47 +1,41 @@
-document.addEventListener("DOMContentLoaded", function () {
-  var TRUSTED_ORIGINS = [
-    "http://localhost:4200",
-    "https://localhost:4200",
-    window.origin,
-  ];
-  var parentOrigin = "*";
+document.addEventListener('DOMContentLoaded', function () {
+  var TRUSTED_ORIGINS = ['http://localhost:4200', 'https://localhost:4200', window.origin];
+  var parentOrigin = '*';
   var styleElement;
 
-  var r = document.querySelector("body");
+  var r = document.querySelector('body');
   var rs = getComputedStyle(r);
 
   var passageHighlighter;
   setSvgBackgroundPositionAndSize();
-  window.addEventListener("message", receiveMessage);
-  returnMessage("ready");
+  window.addEventListener('message', receiveMessage);
+  returnMessage('ready');
 
   var worker;
   function createWorker(appname) {
-    if (!appname) console.error("appname is required");
+    if (!appname) console.error('appname is required');
 
     if (window.Worker) {
-      console.log("Web Worker is supported");
+      console.log('Web Worker is supported');
 
       // Utilise une URL absolue pour le fichier worker.js
-      const path = (window.origin.includes("localhost"))
-        ?`${window.origin}/assets/worker.js`
-        :`${window.origin}/app/${appname}/assets/worker.js`
+      const path = window.origin.includes('localhost') ? `${window.origin}/assets/worker.js` : `${window.origin}/app/${appname}/assets/worker.js`;
 
       worker = new Worker(path);
 
       worker.onmessage = function (event) {
         window.parent.postMessage(
           {
-            type: "get-html-results-webworker",
+            type: 'get-html-results-webworker',
             data: event.data,
-            url: window.location.href,
+            url: window.location.href
           },
           parentOrigin
         );
       };
 
       worker.onerror = function (error) {
-        console.error("Error from worker:", error);
+        console.error('Error from worker:', error);
       };
     }
   }
@@ -52,46 +46,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     var data = event.data;
     switch (data.action) {
-      case "init":
+      case 'init':
         init(event.origin, data.highlights);
         createWorker(data.appname);
         break;
-      case 'get-html':
-        {
-          const html = getHtml(data.ids);
-          returnMessage('get-html-results', html);
-          break;
-        }
-      case "get-html-webworker":
-        {
-          const html = getHtml(data.ids);
-          worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
-          break;
-        }
-      case "get-text":
+      case 'get-html': {
+        const html = getHtml(data.ids);
+        returnMessage('get-html-results', html);
+        break;
+      }
+      case 'get-html-webworker': {
+        const html = getHtml(data.ids);
+        worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
+        break;
+      }
+      case 'get-text':
         getText(data.ids);
         break;
-      case "get-positions":
+      case 'get-positions':
         getPositions(data.highlight);
         break;
-      case "highlight":
+      case 'highlight':
         highlight(data.highlights);
         break;
-      case "select":
+      case 'select':
         select(data.id, data.usePassageHighlighter);
         break;
-      case "unselect":
+      case 'unselect':
         unselect();
         break;
-      case "paging":
+      case 'paging':
         break;
-      case "zoom-in":
-        var factor = parseFloat(rs.getPropertyValue("--factor"));
+      case 'zoom-in':
+        var factor = parseFloat(rs.getPropertyValue('--factor'));
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
-      case "zoom-out":
-        var factor = parseFloat(rs.getPropertyValue("--factor"));
+      case 'zoom-out':
+        var factor = parseFloat(rs.getPropertyValue('--factor'));
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
@@ -100,39 +92,36 @@ document.addEventListener("DOMContentLoaded", function () {
   function zoom(value) {
     const elts = r.querySelectorAll('p');
     const firstVisibleElt = Array.from(elts).find(elt => {
-      const { top, bottom } = elt.getBoundingClientRect()
+      const { top, bottom } = elt.getBoundingClientRect();
       return bottom > 0 && top < window.innerHeight;
     });
-    r.style.setProperty("--factor", value);
-      if (firstVisibleElt) {
-        firstVisibleElt.scrollIntoView();
-      }
+    r.style.setProperty('--factor', value);
+    if (firstVisibleElt) {
+      firstVisibleElt.scrollIntoView();
+    }
   }
   function returnMessage(type, data) {
-    parent.postMessage(
-      { type: type, data: data, url: window.location.href },
-      parentOrigin
-    );
+    parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
   }
   function init(origin, highlights) {
     parentOrigin = origin;
-    styleElement = document.createElement("style");
+    styleElement = document.createElement('style');
     document.head.appendChild(styleElement);
-    passageHighlighter = document.createElement("div");
-    passageHighlighter.id = "sq-passage-highlighter";
-    passageHighlighter.style.position = "absolute";
-    passageHighlighter.style.display = "none";
+    passageHighlighter = document.createElement('div');
+    passageHighlighter.id = 'sq-passage-highlighter';
+    passageHighlighter.style.position = 'absolute';
+    passageHighlighter.style.display = 'none';
     document.body.appendChild(passageHighlighter);
-    document.addEventListener("mouseup", function () {
+    document.addEventListener('mouseup', function () {
       return setTimeout(function () {
         return onMouseUp();
       });
     });
-    document.addEventListener("mousemove", function (e) {
+    document.addEventListener('mousemove', function (e) {
       return onMouseMove(e);
     });
-    window.addEventListener("scroll", function () {
-      return returnMessage("scroll", { x: window.scrollX, y: window.scrollY });
+    window.addEventListener('scroll', function () {
+      return returnMessage('scroll', { x: window.scrollX, y: window.scrollY });
     });
     if (highlights) {
       highlight(highlights);
@@ -150,18 +139,18 @@ document.addEventListener("DOMContentLoaded", function () {
       .map(function (highlight) {
         return `
                     span.${highlight.name} {
-                        color: ${highlight.color || "black"};
-                        background-color: ${highlight.bgColor || "yellow"};
+                        color: ${highlight.color || 'black'};
+                        background-color: ${highlight.bgColor || 'yellow'};
                     }
                     tspan.${highlight.name} {
-                        fill: ${highlight.color || "black"};
+                        fill: ${highlight.color || 'black'};
                     }
                     rect.${highlight.name} {
-                        fill: ${highlight.bgColor || "yellow"};
+                        fill: ${highlight.bgColor || 'yellow'};
                     }
                 `;
       })
-      .join("");
+      .join('');
   }
   function select(id, usePassageHighlighter) {
     if (usePassageHighlighter === void 0) {
@@ -174,21 +163,18 @@ document.addEventListener("DOMContentLoaded", function () {
       return box.width && box.height;
     });
     (visibleElements[0] || elements[0]).scrollIntoView({
-      block: "center",
-      behavior: "auto",
+      block: 'center',
+      behavior: 'auto'
     });
     if (usePassageHighlighter) {
       selectPassage(visibleElements);
     } else {
       selectHighlight(elements);
     }
-    returnMessage(
-      "selected-position",
-      getVerticalPositions(visibleElements)[0]
-    );
+    returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
   }
   function selectPassage(elements) {
-    passageHighlighter.style.display = "none";
+    passageHighlighter.style.display = 'none';
     var box = getBoundingBox(elements);
     if (box) {
       var margin = 4;
@@ -196,28 +182,28 @@ document.addEventListener("DOMContentLoaded", function () {
       var top_1 = Math.max(0, box.top - margin);
       var right = box.right + margin;
       var bottom = box.bottom + margin;
-      passageHighlighter.style.left = "".concat(window.scrollX + left, "px");
-      passageHighlighter.style.top = "".concat(window.scrollY + top_1, "px");
-      passageHighlighter.style.width = right - left + "px";
-      passageHighlighter.style.height = bottom - top_1 + "px";
-      passageHighlighter.style.display = "block";
+      passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
+      passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
+      passageHighlighter.style.width = right - left + 'px';
+      passageHighlighter.style.height = bottom - top_1 + 'px';
+      passageHighlighter.style.display = 'block';
     }
   }
   function selectPassage2(elements) {
-    passageHighlighter.style.display = "none";
+    passageHighlighter.style.display = 'none';
 
-    elements[0].style.position = "relative";
-    elements[0].style.display = "inline-block";
+    elements[0].style.position = 'relative';
+    elements[0].style.display = 'inline-block';
     elements[0].append(passageHighlighter);
 
     // const rect = getBoundingBox(elements)
     // console.log("rect", rect);
     passageHighlighter.style.top = 0;
     passageHighlighter.style.left = 0;
-    passageHighlighter.style.width = "100%";
-    passageHighlighter.style.height = "100%";
-    passageHighlighter.style.zIndex = "1";
-    passageHighlighter.style.display = "block"; // var box = getBoundingBox(elements);
+    passageHighlighter.style.width = '100%';
+    passageHighlighter.style.height = '100%';
+    passageHighlighter.style.zIndex = '1';
+    passageHighlighter.style.display = 'block'; // var box = getBoundingBox(elements);
   }
 
   function selectHighlight(elements) {
@@ -227,21 +213,21 @@ document.addEventListener("DOMContentLoaded", function () {
       if (el instanceof SVGElement) {
         selectHighlightSVG(el, first, last);
       } else {
-        el.classList.add("sq-current");
-        if (first) el.classList.add("sq-first");
-        if (last) el.classList.add("sq-last");
+        el.classList.add('sq-current');
+        if (first) el.classList.add('sq-first');
+        if (last) el.classList.add('sq-last');
       }
     });
   }
   function unselect() {
-    removeAllClasses("sq-current");
-    removeAllClasses("sq-first");
-    removeAllClasses("sq-last");
-    removeAllElements("svg line.sq-svg");
-    passageHighlighter.style.display = "none";
+    removeAllClasses('sq-current');
+    removeAllClasses('sq-first');
+    removeAllClasses('sq-last');
+    removeAllElements('svg line.sq-svg');
+    passageHighlighter.style.display = 'none';
   }
   function getHtml(ids) {
-    if(!ids) return [];
+    if (!ids) return [];
     var data = ids.map(function (id) {
       return getHighlightHtmlById(id);
     });
@@ -251,49 +237,45 @@ document.addEventListener("DOMContentLoaded", function () {
     var data = ids.map(function (id) {
       return getHighlightTextById(id);
     });
-    returnMessage("get-text-results", data);
+    returnMessage('get-text-results', data);
   }
   function getPositions(highlight) {
-    var allHighlights = Array.from(
-      document.querySelectorAll(
-        "span.".concat(highlight, ",tspan.").concat(highlight)
-      )
-    );
+    var allHighlights = Array.from(document.querySelectorAll('span.'.concat(highlight, ',tspan.').concat(highlight)));
     var data = getVerticalPositions(allHighlights);
-    returnMessage("get-positions-results", data);
+    returnMessage('get-positions-results', data);
   }
   function onMouseUp() {
     var selection = document.getSelection();
-    var selectedText = selection ? selection.toString().trim() : "";
+    var selectedText = selection ? selection.toString().trim() : '';
     if (selection && selectedText) {
       var range = selection.getRangeAt(0);
       var position = range.getBoundingClientRect();
-      returnMessage("text-selection", {
+      returnMessage('text-selection', {
         selectedText: selectedText,
-        position: position,
+        position: position
       });
     } else {
-      returnMessage("text-selection");
+      returnMessage('text-selection');
     }
   }
   var currentId;
   function onMouseMove(event) {
     var el = event.target;
-    if (el.attributes["data-entity-display"] && el.id !== currentId) {
+    if (el.attributes['data-entity-display'] && el.id !== currentId) {
       currentId = el.id;
-      returnMessage("highlight-hover", {
+      returnMessage('highlight-hover', {
         id: el.id,
-        position: el.getBoundingClientRect(),
+        position: el.getBoundingClientRect()
       });
     } else if (currentId && el.id !== currentId) {
       currentId = undefined;
-      returnMessage("highlight-hover");
+      returnMessage('highlight-hover');
     }
   }
   function setSvgBackgroundPositionAndSize() {
-    document.querySelectorAll("svg").forEach(function (svg) {
-      svg.querySelectorAll("tspan").forEach(function (tspan) {
-        var bgId = tspan.getAttribute("data-entity-background");
+    document.querySelectorAll('svg').forEach(function (svg) {
+      svg.querySelectorAll('tspan').forEach(function (tspan) {
+        var bgId = tspan.getAttribute('data-entity-background');
         if (bgId) {
           var rect = document.getElementById(bgId);
           if (rect) {
@@ -314,15 +296,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var deltaY = 2 * scaleY;
     var firstCharRect = tspan.getExtentOfChar(0);
     var tspanWidth = tspan.getComputedTextLength();
-    rect.setAttribute("x", String(firstCharRect.x - deltaX));
-    rect.setAttribute("y", String(firstCharRect.y - deltaY));
-    rect.setAttribute("width", String(tspanWidth + 2 * deltaX));
-    rect.setAttribute("height", String(textBoxSVG.height + 2 * deltaY));
-    var valueTransform = text.getAttribute("transform");
-    if (valueTransform) rect.setAttribute("transform", valueTransform);
+    rect.setAttribute('x', String(firstCharRect.x - deltaX));
+    rect.setAttribute('y', String(firstCharRect.y - deltaY));
+    rect.setAttribute('width', String(tspanWidth + 2 * deltaX));
+    rect.setAttribute('height', String(textBoxSVG.height + 2 * deltaY));
+    var valueTransform = text.getAttribute('transform');
+    if (valueTransform) rect.setAttribute('transform', valueTransform);
   }
   function selectHighlightSVG(elt, isFirst, isLast) {
-    var bgId = elt.getAttribute("data-entity-background");
+    var bgId = elt.getAttribute('data-entity-background');
     if (!bgId) return;
     var rect = document.querySelector(bgId);
     if (!rect) return;
@@ -333,47 +315,43 @@ document.addEventListener("DOMContentLoaded", function () {
       var bottom = rectPosition.y + rectPosition.height;
       var left = rectPosition.x;
       var right = rectPosition.x + rectPosition.width;
-      var valueTransform = rect.getAttribute("transform");
+      var valueTransform = rect.getAttribute('transform');
       addSvgLine(group, left, top_2, right, top_2, valueTransform);
       addSvgLine(group, left, bottom, right, bottom, valueTransform);
       if (isFirst) addSvgLine(group, left, top_2, left, bottom, valueTransform);
-      if (isLast)
-        addSvgLine(group, right, top_2, right, bottom, valueTransform);
+      if (isLast) addSvgLine(group, right, top_2, right, bottom, valueTransform);
     }
   }
   function addSvgLine(group, x1, y1, x2, y2, transform) {
-    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("class", "sq-svg");
-    line.setAttribute("x1", String(x1));
-    line.setAttribute("y1", String(y1));
-    line.setAttribute("x2", String(x2));
-    line.setAttribute("y2", String(y2));
-    if (transform) line.setAttribute("transform", transform);
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('class', 'sq-svg');
+    line.setAttribute('x1', String(x1));
+    line.setAttribute('y1', String(y1));
+    line.setAttribute('x2', String(x2));
+    line.setAttribute('y2', String(y2));
+    if (transform) line.setAttribute('transform', transform);
     group.appendChild(line);
   }
   function getElementsById(id) {
-    return document.querySelectorAll("#".concat(id));
+    return document.querySelectorAll('#'.concat(id));
   }
   function getHighlightTextById(id) {
-    var text = "";
+    var text = '';
     getElementsById(id).forEach(function (n) {
-      return (text += n.textContent + " ");
+      return (text += n.textContent + ' ');
     });
     return text;
   }
   function getHighlightHtmlById(id) {
-    var html = "";
+    var html = '';
     getElementsById(id).forEach(function (n) {
-      return (html += n.innerHTML + " ");
+      return (html += n.innerHTML + ' ');
     });
     return html;
   }
   function getVerticalPositions(elements) {
     var offset = -document.documentElement.getBoundingClientRect().top;
-    var docHeight = Math.max(
-      document.documentElement.scrollHeight,
-      window.innerHeight
-    );
+    var docHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     var groups = new Map();
     for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
       var el = elements_1[_i];
@@ -398,14 +376,14 @@ document.addEventListener("DOMContentLoaded", function () {
           .map(function (e) {
             return e.textContent;
           })
-          .join(" ");
-        var type = id.substring(0, id.lastIndexOf("_"));
+          .join(' ');
+        var type = id.substring(0, id.lastIndexOf('_'));
         positions.push({
           id: id,
           type: type,
           top: top_3,
           height: height,
-          text: text,
+          text: text
         });
       }
     }
@@ -449,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return new DOMRect(left, top, right - left, bottom - top);
   }
   function removeAllClasses(classname) {
-    var selected = document.querySelectorAll(".".concat(classname));
+    var selected = document.querySelectorAll('.'.concat(classname));
     selected.forEach(function (el) {
       return el.classList.remove(classname);
     });

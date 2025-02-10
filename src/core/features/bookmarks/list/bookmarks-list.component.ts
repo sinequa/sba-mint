@@ -18,7 +18,7 @@ const loader = ['en', 'fr'].reduce(
 
 @Component({
   selector: 'BookmarksList',
-  standalone: true, 
+  standalone: true,
   imports: [TranslocoPipe, RouterModule],
   templateUrl: './bookmarks-list.component.html',
   styleUrl: './bookmarks-list.component.scss',

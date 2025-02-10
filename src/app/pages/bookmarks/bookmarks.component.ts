@@ -32,9 +32,7 @@ export class BookmarksComponent {
   private readonly sub = new Subscription();
 
   constructor() {
-    this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state))
-    );
+    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
 
     effect(() => {
       if (this.bookmarks().length) {
@@ -49,7 +47,7 @@ export class BookmarksComponent {
       const query: Partial<Query> = {
         name: bookmark.queryName,
         filters: {
-          field: "id",
+          field: 'id',
           value: bookmark.id
         } as LegacyFilter
       };
@@ -69,4 +67,4 @@ export class BookmarksComponent {
     this.userSettingsStore.unbookmark(bookmark.id);
     toast.success('Bookmark removed', { duration: 2000 });
   }
-} 
+}
