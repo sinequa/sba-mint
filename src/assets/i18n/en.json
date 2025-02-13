@@ -11,7 +11,10 @@
   "domain": "Domain",
   "email": "Email",
   "extracts": "Extracts",
+  "filters": "Filters",
   "from": "From",
+  "history": "History",
+  "in": "In",
   "labels": "Labels",
   "lastUpdatedBy": "Last updated by",
   "lastUpdatedOn": "Last updated on",
@@ -39,6 +42,10 @@
     "filename": "Filename",
     "relevance": "Relevance",
     "title": "Title"
+  },
+  "bookmark": {
+    "removeBookmark": "Remove bookmark",
+    "myBookmarks": "My Bookmarks"
   },
   "nextPage": "Next page",
   "open": "Open",

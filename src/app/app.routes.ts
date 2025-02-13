@@ -7,7 +7,9 @@ import { LoadingComponent } from '@/core/components/loading/loading.component';
 import { LoginComponent } from '@/core/features/login/login.component';
 
 import { HomeComponent } from './pages/home/home.component';
+import { RecentSearchesComponent } from './pages/recent-searches/recent-searches.component';
 import { SearchComponent } from './pages/search/search.component';
+import { BookmarksComponent } from './pages/bookmarks/bookmarks.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -27,6 +29,8 @@ export const routes: ExtendedRoutes = [
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
+  { path: 'recent-searches', component: RecentSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
+  { path: 'bookmarks', component: BookmarksComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'search',
     component: SearchComponent,

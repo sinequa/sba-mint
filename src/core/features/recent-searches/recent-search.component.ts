@@ -1,8 +1,11 @@
-import { Component, computed, inject, input, output } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { getRelativeDate, QueryParams } from '@sinequa/atomic';
-import { RecentSearch } from '@sinequa/atomic-angular';
+import { Component, computed, inject, input, output } from "@angular/core";
+import { Router, RouterLink } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+
+import { getRelativeDate, QueryParams } from "@sinequa/atomic";
+import { RecentSearch } from "@sinequa/atomic-angular";
+
+import { countFilters, wrapFiltersToArray } from "./utils";
 
 @Component({
   selector: 'RecentSearch',
@@ -10,39 +13,41 @@ import { RecentSearch } from '@sinequa/atomic-angular';
   imports: [RouterLink, TranslocoPipe],
   template: `
     <li
-      class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+      class="group flex h-10 gap-2 px-3 py-2 items-center rounded cursor-pointer hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none *:whitespace-nowrap"
       tabindex="0"
       attr.data-href="{{ recentSearch().path || recentSearch().queryParams?.path }}"
       [routerLink]="[recentSearch().path || recentSearch().queryParams?.path]"
       [queryParams]="queryParams()"
-      (keydown.enter)="onKeyDown()">
-      <i class="fa-fw far fa-clock-rotate-left" aria-hidden="true"></i>
+      (keydown.enter)="onKeyDown()"
+    >
+      <i class="fa-fw far fa-clock-rotate-left " aria-hidden="true"></i>
 
       <p class="truncate">{{ recentSearch().display || recentSearch().label }}</p>
 
-      @if ((recentSearch().filterCount ?? 0) > 0) {
+      @if (filterCount() > 0) {
         <p class="text-neutral-500" aria-hidden="true">
           <i class="fa-fw far fa-filter"></i>
 
-          {{ 'recentSearches.filterCount' | transloco: { count: recentSearch().filterCount } }}
+          {{ "recentSearches.filterCount" | transloco : { count: filterCount() } }}
         </p>
       }
 
       @if (recentSearch().date) {
-        <p class="ms-auto text-neutral-500 first-letter:capitalize">
+        <p class="text-neutral-500 ms-auto first-letter:capitalize">
           {{ getRelativeDate(transloco.getActiveLang(), recentSearch().date) }}
         </p>
       }
 
       <button
-        class="hidden text-alert hover:scale-125 group-hover:block"
+        class="hidden group-hover:block text-alert hover:scale-125"
         [attr.title]="'recentSearches.removeRecentSearch' | transloco"
         [attr.aria-label]="'recentSearches.removeRecentSearch' | transloco"
-        (click)="remove.emit($event)">
-        <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+        (click)="remove.emit($event)"
+      >
+        <i class="fa-fw fa-regular fa-trash-can " aria-hidden="true"></i>
       </button>
     </li>
-  `
+`
 })
 export class RecentSearchComponent {
   protected readonly getRelativeDate = getRelativeDate;
@@ -51,20 +56,23 @@ export class RecentSearchComponent {
 
   recentSearch = input.required<RecentSearch>();
   queryParams = computed(() => {
-    const { text, filters = [], tab, page, queryName } = this.recentSearch().queryParams || ({} as QueryParams);
+    const { text, filters = [], tab, page, queryName } = this.recentSearch().queryParams || {} as QueryParams;
+    const wrapped = wrapFiltersToArray(filters) ?? [];
 
     const queryParams = {
       q: text,
-      f: filters.length > 0 ? JSON.stringify(filters) : undefined,
+      f: wrapped.length > 0 ? JSON.stringify(wrapped) : undefined,
       t: tab,
       p: page,
       queryName
     };
     return queryParams;
   });
+  filterCount = computed(() => countFilters(this.recentSearch().queryParams?.filters) ?? 0);
 
   protected readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+
 
   onKeyDown() {
     // this.queryParamsStore.setFromUrl(queryParams);

@@ -38,12 +38,13 @@
   }
 </ul>
 
-@if (hasMore()) {
-  <button
-    class="btn btn-tertiary flex w-full justify-center px-3 py-2"
-    tabindex="0"
-    [attr.aria-label]="'bookmark.loadMore' | transloco"
-    (click)="loadMore($event)">
-    {{ 'loadMore' | transloco }}
-  </button>
-}
+<div class="flex gap-2">
+  @if (hasMore()) {
+    <button class="btn btn-tertiary flex w-full justify-center px-3 py-2" tabindex="0" [attr.title]="'loadMore' | transloco" (click)="loadMore($event)">
+      {{ 'loadMore' | transloco }}
+    </button>
+  }
+  <a class="btn btn-tertiary flex w-full justify-center px-3 py-2" tabindex="0" [attr.title]="'seeMore' | transloco" [routerLink]="['/bookmarks']">
+    {{ 'seeMore' | transloco }}
+  </a>
+</div>

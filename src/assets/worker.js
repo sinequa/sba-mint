@@ -1,4 +1,4 @@
-self.addEventListener("message", function (event) {
+self.addEventListener('message', function (event) {
   // Perform some computation or task
   let result = getAllExtracts(event.data);
 
@@ -6,8 +6,8 @@ self.addEventListener("message", function (event) {
   self.postMessage(result);
 });
 
-self.addEventListener("error", function (error) {
-  console.error("Error in worker:", error);
+self.addEventListener('error', function (error) {
+  console.error('Error in worker:', error);
 });
 
 function getAllExtracts({ id, extracts, previewData }) {
@@ -21,20 +21,17 @@ function getAllExtracts({ id, extracts, previewData }) {
     return;
   }
 
-  const type = previewData?.highlightsPerCategory?.["matchingpassages"]?.values.length
-    ? "matchingpassages"
-    : "extractslocations";
+  const type = previewData?.highlightsPerCategory?.['matchingpassages']?.values.length ? 'matchingpassages' : 'extractslocations';
 
   // extracts contains the html of extracts in chronological order
   // locations contains the list of start positions sorted by score
-  const locations =
-    previewData.highlightsPerCategory[type]?.values[0]?.locations || [];
+  const locations = previewData.highlightsPerCategory[type]?.values[0]?.locations || [];
 
   // first extract all the extracts locations
   let extractslocations = locations.map(function (l, relevanceIndex) {
     return {
       startIndex: l.start,
-      relevanceIndex,
+      relevanceIndex
     };
   });
 
@@ -45,15 +42,13 @@ function getAllExtracts({ id, extracts, previewData }) {
   extractslocations = extractslocations.map(function (ex, textIndex) {
     return Object.assign(ex, {
       textIndex: textIndex,
-      text: extracts[textIndex] || "",
-      id: `${type}_${textIndex}`,
+      text: extracts[textIndex] || '',
+      id: `${type}_${textIndex}`
     });
   });
 
   // remove empty extracts
-  const _extracts = extractslocations.filter(
-    (item) => item.text.trim().length > 0
-  );
+  const _extracts = extractslocations.filter(item => item.text.trim().length > 0);
 
   // finally sort them by relevance index
   _extracts.sort((a, b) => a.relevanceIndex - b.relevanceIndex);
@@ -61,8 +56,8 @@ function getAllExtracts({ id, extracts, previewData }) {
   // this is from DedicatedWorkerGlobalScope ( because of that we have postMessage and onmessage methods )
   // and it can't see methods of this class
   // @ts-expect-error worker can't see methods of this class
-  return ({
+  return {
     id,
-    extracts: _extracts,
-  });
+    extracts: _extracts
+  };
 }

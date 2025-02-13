@@ -4,5 +4,6 @@
   "bookmarkDocument": "Bookmark that document",
   "bookmarkRemoved": "Bookmark removed",
   "noBookmarks": "No bookmarks yet",
-  "removeBookmark": "Remove bookmark"
+  "removeBookmark": "Remove bookmark",
+  "myBookmarks": "My Bookmarks"
 }

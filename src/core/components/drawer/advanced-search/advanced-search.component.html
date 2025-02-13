@@ -93,6 +93,33 @@
         <ng-container *ngTemplateOutlet="metadataPanel; context: highlight" />
       }
     }
+
+    @if (similarDocuments().length > 0) {
+      <details class="group border-b border-neutral-300" name="advanced-search-panels">
+        <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+          <p class="flex items-baseline gap-2 font-semibold">
+            <i class="fa-fw far fa-tags"></i>
+            {{ 'drawers.similarDocuments' | transloco }}
+          </p>
+
+          <i class="fa-fw far fa-chevron-down group-open:rotate-180"></i>
+        </summary>
+
+        <div>
+          <ul class="mb-2 mt-4 flex flex-col flex-wrap px-2">
+            @for (document of similarDocuments(); track $index) {
+              <li class="flex gap-1 rounded-md py-1 hover:bg-blue-50" role="button" selectArticleOnClick [article]="document" strategy="stack">
+                <div class="flex size-[20px] items-center justify-center rounded-full bg-neutral-50 text-primary">
+                  <app-source-icon [collection]="article().collection" [connector]="article().connector" class="text-xs" />
+                </div>
+
+                <span>{{ document.displayTitle ?? document.title }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </details>
+    }
   </div>
 }
 

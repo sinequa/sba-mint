@@ -1,0 +1,2 @@
+# Ignore vendored files
+src/assets/vendors/**/*

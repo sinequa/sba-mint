@@ -4,5 +4,6 @@
   "bookmarkDocument": "Marquer le document",
   "bookmarkRemoved": "Marque-page supprimé",
   "noBookmarks": "Aucun marque-page",
-  "removeBookmark": "Supprimer le marque-page"
+  "removeBookmark": "Supprimer le marque-page",
+  "myBookmarks": "Mes marque-pages"
 }

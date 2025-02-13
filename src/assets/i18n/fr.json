@@ -11,7 +11,10 @@
   "domain": "Domaine",
   "email": "Email",
   "extracts": "Extraits",
+  "filters": "Filtres",
   "from": "De",
+  "history": "Historique",
+  "in": "In",
   "labels": "Libellés",
   "lastUpdatedBy": "Dernière mise à jour par",
   "lastUpdatedOn": "Dernière mise à jour le",
@@ -39,6 +42,10 @@
     "filename": "Nom de fichier",
     "relevance": "Pertinence",
     "title": "Titre"
+  },
+  "bookmark": {
+    "removeBookmark": "Supprimer le marque-page",
+    "myBookmarks": "Mes marque-pages"
   },
   "nextPage": "Page suivante",
   "open": "Ouvrir",
