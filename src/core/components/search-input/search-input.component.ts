@@ -118,6 +118,8 @@ export class SearchInputComponent {
 
     if (this.allowEmptySearch()) {
       this.validated.emit('');
+    } else {
+      this.popoverElement().hidePopover();
     }
   }
 
