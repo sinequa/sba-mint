@@ -44,6 +44,8 @@ export class BookmarksComponent {
   public async loadBookmarks(): Promise<void> {
     const list: BookmarkArticle[] = [];
     this.bookmarks().forEach(async bookmark => {
+      if (!bookmark.queryName) return;
+
       const query: Partial<Query> = {
         name: bookmark.queryName,
         filters: {
