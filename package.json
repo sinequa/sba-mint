@@ -2,26 +2,26 @@
   "name": "sinequa-mint",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve --ssl=true --proxy-config=proxy.conf.json",
-    "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
-    "start:docs": "cd docusaurus && npm start",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint",
-    "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest",
-    "docs:start": "npm run start:docs",
-    "docs:ci": "cd docusaurus && npm ci",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal",
+    "docs:ci": "cd docusaurus && npm ci",
+    "docs:start": "npm run start:docs",
+    "lint": "ng lint",
+    "ng": "ng",
+    "prepare": "husky",
     "prettier:check": "prettier --config .prettierrc --check src/**/*.{js,ts,html,scss,css,json}",
     "prettier:write": "prettier --config .prettierrc --write src/**/*.{js,ts,html,scss,css,json}",
-    "prepare": "husky"
+    "start": "ng serve --ssl=true --proxy-config=proxy.conf.json",
+    "start:docs": "cd docusaurus && npm start",
+    "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
+    "test": "ng test",
+    "up:atomic": "npm i @sinequa/atomic@latest @sinequa/atomic-angular@latest",
+    "watch": "ng build --watch --configuration development"
   },
   "lint-staged": {
-    "src/**/*.{ts,html,scss,json}": [
-      "npm run prettier:write"
+    "*.{js,ts,html,scss,css,json}": [
+      "prettier --write"
     ]
   },
   "private": true,
