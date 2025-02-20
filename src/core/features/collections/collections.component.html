@@ -5,31 +5,35 @@
       tabindex="0"
       (click)="onClick(collection)"
       (keydown.enter)="onClick(collection)">
-      {{ collection.name }}
+      <i class="fas fa-inbox"></i> {{ collection.name }}
+
+      <button
+        class="ms-auto hidden text-alert hover:scale-125 group-hover:block"
+        [attr.title]="'collection.deleteCollection' | transloco"
+        [attr.aria-label]="'collection.deleteCollection' | transloco"
+        (click)="onDelete(collection, $index, $event)">
+        <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+      </button>
     </li>
   } @empty {
     <li class="py-4 text-center text-neutral-500">
       {{ 'collection.noCollections' | transloco }}
     </li>
   }
-  <li class="flex flex-row-reverse gap-2 py-4 text-center text-neutral-500">
-    <button
-      class="btn btn-tertiary flex justify-center px-3 py-2"
-      tabindex="0"
-      [attr.title]="'collection.manageCollections' | transloco"
-      [disabled]="!collections().length"
-      (click)="manageCollections()">
-      {{ 'collection.manageCollections' | transloco }}
-    </button>
-    <button
-      class="btn btn-tertiary flex justify-center px-3 py-2"
-      tabindex="1"
-      [attr.title]="'collection.createCollection' | transloco"
-      (click)="createCollection()">
-      {{ 'collection.createCollection' | transloco }}
-    </button>
-  </li>
+  @if (showButtons()) {
+    <li class="flex flex-row-reverse gap-2 py-4 text-center text-neutral-500">
+      <button
+        class="btn btn-tertiary flex justify-center px-3 py-2"
+        tabindex="0"
+        [attr.title]="'collection.manageCollections' | transloco"
+        [disabled]="!collections().length"
+        (click)="manageCollections()">
+        {{ 'collection.manageCollections' | transloco }}
+      </button>
+    </li>
+  }
 </ul>
 
 <create-collection-dialog />
 <manage-collections-dialog [collections]="collections()" />
+<delete-collection-dialog />

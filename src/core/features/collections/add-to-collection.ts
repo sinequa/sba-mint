@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Article } from '@sinequa/atomic';
@@ -29,7 +29,11 @@ const loader = ['en', 'fr'].reduce(
               class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
               tabindex="0"
               (click)="addToCollection(collection, $index)">
-              <i class="fa-fw fa-regular {{ containsArticle(collection) ? 'fa-square-check' : 'fa-square' }}"></i>
+              @if (containsArticle(collection)) {
+                <i class="fa-fw fa-regular fa-square-check"></i>
+              } @else {
+                <i class="fa-fw fa-regular fa-square"></i>
+              }
               {{ collection.name }}
             </li>
           } @empty {
@@ -37,9 +41,35 @@ const loader = ['en', 'fr'].reduce(
               {{ 'collection.noCollections' | transloco }}
             </li>
           }
+          @if (creating()) {
+            <li
+              class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+              tabindex="0">
+              <div class="flex grow">
+                <input
+                  #createInput
+                  class="h-10 w-full grow rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  [attr.aria-label]="'collection.collectionName' | transloco"
+                  [attr.placeholder]="'collection.collectionName' | transloco"
+                  [ngModel]="newCollectionName()"
+                  (ngModelChange)="newCollectionName.set($event)"
+                  (blur)="onBlurCreate()" />
+              </div>
+            </li>
+          }
         </ul>
 
         <div class="mt-4 flex justify-end gap-2">
+          <button
+            class="btn btn-tertiary flex justify-center px-3 py-2"
+            tabindex="0"
+            [attr.title]="'collection.createCollection' | transloco"
+            (click)="onCreate()">
+            {{ (creating() ? 'collection.cancelCreation' : 'collection.createCollection') | transloco }}
+          </button>
           <button class="btn btn-tertiary w-24 outline-none" (click)="dialog.close()">
             {{ 'collection.close' | transloco }}
           </button>
@@ -51,8 +81,11 @@ const loader = ['en', 'fr'].reduce(
 export class AddToCollectionDialog {
   readonly article = input.required<Article>();
   private readonly userSettingsStore = inject(UserSettingsStore);
+  readonly createInput = viewChild<ElementRef>('createInput');
   readonly dialog = viewChild<ElementRef>('dialog');
   protected collections = computed<Basket[]>(() => this.userSettingsStore.baskets());
+  newCollectionName = signal<string>('');
+  creating = signal<boolean>(false);
 
   showModal() {
     this.dialog()!.nativeElement.showModal();
@@ -60,6 +93,13 @@ export class AddToCollectionDialog {
 
   containsArticle(collection: Basket): boolean {
     return (collection.ids || []).some(id => id === this.article().id);
+  }
+
+  onCreate(): void {
+    if (this.creating()) return this.creating.set(false);
+
+    this.creating.set(true);
+    this.createInput()?.nativeElement.focus();
   }
 
   async addToCollection(collection: Basket, collectionIndex: number): Promise<void> {
@@ -73,5 +113,14 @@ export class AddToCollectionDialog {
       collection.ids!.push(this.article().id);
     }
     await this.userSettingsStore.updateBasket(collection, collectionIndex);
+  }
+
+  onBlurCreate(): void {
+    if (this.newCollectionName()) {
+      const collection: Basket = { name: this.newCollectionName() };
+      this.userSettingsStore.createBasket(collection);
+      this.newCollectionName.set('');
+      this.creating.set(false);
+    }
   }
 }
