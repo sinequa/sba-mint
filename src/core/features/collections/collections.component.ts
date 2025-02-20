@@ -2,7 +2,6 @@ import { Component, computed, inject, input, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Basket, buildQuery, DrawerStackService, UserSettingsStore } from '@sinequa/atomic-angular';
-import { CreateCollectionDialog } from './create-collection';
 import { ManageCollectionsDialog } from './manage-collections';
 import { Query } from '@sinequa/atomic';
 import { DeleteCollectionDialog } from './delete-collection';
@@ -18,7 +17,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-collections',
   standalone: true,
-  imports: [TranslocoPipe, CreateCollectionDialog, ManageCollectionsDialog, DeleteCollectionDialog],
+  imports: [TranslocoPipe, ManageCollectionsDialog, DeleteCollectionDialog],
   templateUrl: './collections.component.html',
   providers: [provideTranslocoScope({ scope: 'collection', loader })]
 })
@@ -31,7 +30,6 @@ export class CollectionsComponent {
 
   protected collections = computed<Basket[]>(() => this.userSettingsStore.baskets());
 
-  readonly createCollectionDialog = viewChild(CreateCollectionDialog);
   readonly manageCollectionsDialog = viewChild(ManageCollectionsDialog);
   readonly deleteCollectionDialog = viewChild(DeleteCollectionDialog);
 
@@ -49,10 +47,6 @@ export class CollectionsComponent {
   public onDelete(collection: Basket, index: number, e: Event) {
     e.stopPropagation();
     this.deleteCollectionDialog()?.showModal(collection, index);
-  }
-
-  createCollection(): void {
-    this.createCollectionDialog()?.showModal();
   }
 
   manageCollections(): void {
