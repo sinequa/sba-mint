@@ -13,6 +13,7 @@ import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.c
 import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
 
 import { SearchBase } from '../search.abstract';
+import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback.component';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -27,7 +28,8 @@ type R = Result & { nextPage?: number; previousPage?: number };
     InfinityScrollDirective,
     SponsoredResultsComponent,
     FiltersListComponent,
-    NoResultPanelComponent
+    NoResultPanelComponent,
+    SearchFeedbackComponent
   ],
   templateUrl: './search-all.component.html',
   styleUrl: './search-all.component.scss',

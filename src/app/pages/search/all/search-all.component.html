@@ -32,7 +32,8 @@
   } @else if (query.isSuccess() && query.data()?.pages) {
     <!-- the sort is always displayed excepts when no records are found -->
     <div class="mt-4 flex has-[_+ul>li.no-records]:hidden">
-      <app-sort-selector class="ms-auto" [result]="result()!" (onSort)="onSort($event)" />
+      <search-feedback class="ms-auto" [pages]="query.data()?.pages" />
+      <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
     <ul class="mt-4 flex flex-col gap-2">
