@@ -1,4 +1,4 @@
-import { Component, input } from "@angular/core";
+import { Directive, input } from "@angular/core";
 import { Article } from "@sinequa/atomic";
 import { SelectionStrategy } from "@sinequa/atomic-angular";
 
@@ -8,12 +8,11 @@ import { SelectionStrategy } from "@sinequa/atomic-angular";
  * strategy is optional and must be a SelectionStrategy for the drawer to decide how to handle the selection.
  */
 
-@Component({
+@Directive({
   selector: "app-base-article",
-  standalone: true,
-  template: ``
+  standalone: true
 })
-export abstract class BaseArticle {
-  public readonly article = input.required<Article>();
+export abstract class BaseArticle<T extends Article> {
+  public readonly article = input.required<T>();
   public readonly strategy = input<SelectionStrategy>();
 }
