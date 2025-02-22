@@ -1,4 +1,4 @@
-import { Component, input } from "@angular/core";
+import { Directive, input } from "@angular/core";
 import { PreviewData } from "@sinequa/atomic";
 
 /**
@@ -6,10 +6,9 @@ import { PreviewData } from "@sinequa/atomic";
  * previewData is required and must be a PreviewData.
  */
 
-@Component({
+@Directive({
   selector: "app-base-preview",
   standalone: true,
-  template: ``
 })
 export abstract class BasePreview {
   public readonly previewData = input.required<PreviewData>();

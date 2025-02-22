@@ -1,16 +1,21 @@
-import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { Component, computed, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
 import { ApplicationStore, AppStore, DropdownComponent, LabelService, QueryParamsStore, SearchService, SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
 import { EditLabelsComponent } from '@/core/features/dialog/labels/edit-labels';
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 import { BaseArticle } from '@/core/registry/base-article';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
-import { LegacyFilter } from '@sinequa/atomic';
+import type { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { MissingTermsComponent } from '../missing-terms/missing-terms.component';
+
+type Article = A & {
+  entity13: string;
+  entity14: string;
+}
 
 type Tab = 'attachments' | 'similars';
 
@@ -44,7 +49,7 @@ const loader = ['en', 'fr'].reduce((acc, lang) => {
   }],
   providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
-export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
+export class ArticleDefaultComponent extends BaseArticle<Article> implements OnDestroy {
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
