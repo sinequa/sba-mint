@@ -19,32 +19,8 @@
         <tr>
           <th>{{ 'location' | transloco }}</th>
 
-          <td class="flex items-center gap-2">
-            <app-source-icon [collection]="article().collection" class="fa-fw flex" />
-
-            <i class="fa-fw far fa-chevron-right"></i>
-
-            @if (locationSegments().length > 1) {
-              <Dropdown position="bottom" [autoClose]="true">
-                <button class="rounded-full p-1">...</button>
-
-                <div class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-md" dropdown-content>
-                  @for (segment of locationSegments().slice(0, -1); track $index) {
-                    <button class="rounded-full px-2 py-1 hover:bg-blue-100" (click)="navigateToSegment($index)">
-                      {{ segment }}
-                    </button>
-
-                    @if (locationSegments().length > 1 && !$last) {
-                      <i class="fa-fw far fa-chevron-right"></i>
-                    }
-                  }
-                </div>
-              </Dropdown>
-            }
-
-            <i class="fa-fw far fa-chevron-right"></i>
-
-            <span class="line-clamp-1" role="button" (click)="navigateToSegment(locationSegments().length - 1)">{{ locationSegments().at(-1) }}</span>
+          <td class="flex items-center gap-2 overflow-auto">
+            <DocumentLocator [article]="article()" />
           </td>
         </tr>
 

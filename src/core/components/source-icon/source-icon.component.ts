@@ -12,7 +12,7 @@ const loader = ['en', 'fr'].reduce(
 );
 
 @Component({
-  selector: 'app-source-icon',
+  selector: 'app-source-icon, SourceIcon',
   standalone: true,
   imports: [TranslocoPipe],
   templateUrl: './source-icon.component.html',

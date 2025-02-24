@@ -17,12 +17,12 @@ import {
 } from '@sinequa/atomic-angular';
 
 import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
