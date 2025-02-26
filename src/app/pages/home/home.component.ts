@@ -19,6 +19,7 @@ type HomeTab = {
   iconClass: string;
   label: string;
   component: Type<unknown>;
+  inputs?: any;
   disabled?: boolean;
 };
 
@@ -45,7 +46,8 @@ const homeFeatures: HomeTab[] = [
     name: 'baskets',
     iconClass: 'fa-regular fa-inbox',
     label: 'My collections',
-    component: CollectionsComponent
+    component: CollectionsComponent,
+    inputs: { showButtons: false }
   }
 ];
 

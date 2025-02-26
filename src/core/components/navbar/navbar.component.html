@@ -11,7 +11,12 @@
 <menu class="flex items-center justify-end gap-3 pe-10">
   @for (menu of menus; track $index) {
     <li>
-      @if (menu.component) {
+      @if (menu.routerLink === router.url) {
+        <button class="btn btn-primary" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
+          <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+        </button>
+      }
+      @else if (menu.component) {
         <Dropdown class="dropdown-end rounded-lg border-neutral-300" [keepOnMouseLeave]="menu.keepOnMouseLeave">
           <button class="btn btn-ghost" title="{{ menu.display }}" role="button" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>

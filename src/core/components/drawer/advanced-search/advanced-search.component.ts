@@ -1,12 +1,23 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
+import { Component, OnDestroy, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Article, CCWebService } from '@sinequa/atomic';
-import { AppStore, ApplicationStore, ArticleMetadata, MetadataComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CCWebService, fetchSimilarDocuments } from '@sinequa/atomic';
+import {
+  AppStore,
+  ApplicationStore,
+  ArticleMetadata,
+  MetadataComponent,
+  PreviewService,
+  QueryParamsStore,
+  SelectArticleOnClickDirective,
+  SelectionStore
+} from '@sinequa/atomic-angular';
+
+import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
 interface MetadataNavigation {
   index: number;
@@ -41,7 +52,7 @@ const loader = ['en', 'fr'].reduce(
       }
     `
   ],
-  imports: [NgTemplateOutlet, FormsModule, MetadataComponent, TranslocoPipe],
+  imports: [NgTemplateOutlet, FormsModule, MetadataComponent, TranslocoPipe, SourceIconComponent, SelectArticleOnClickDirective],
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
 export class AdvancedSearchComponent implements OnDestroy {
@@ -52,6 +63,7 @@ export class AdvancedSearchComponent implements OnDestroy {
   private readonly appStore = inject(AppStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly previewService = inject(PreviewService);
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   protected readonly input = signal(getState(this.selectionStore).queryText || '');
   protected readonly extracts = computed(() => {
@@ -61,6 +73,7 @@ export class AdvancedSearchComponent implements OnDestroy {
 
     return this.applicationStore.getExtracts(this.article()!.id);
   });
+  readonly similarDocuments = signal<Article[]>([]);
 
   protected readonly previewHighlights = computed(() => {
     const highlights = (this.appStore.getWebServiceByType('preview') as PreviewWebService)?.highlights
@@ -98,6 +111,15 @@ export class AdvancedSearchComponent implements OnDestroy {
           this.loading.set(false);
           break;
       }
+    });
+
+    effect(() => {
+      const id = this.article().id;
+
+      untracked(() => {
+        const queryName = this.queryParamsStore.getQuery().name;
+        fetchSimilarDocuments(id, queryName).then(res => this.similarDocuments.set(res.data));
+      });
     });
   }
 

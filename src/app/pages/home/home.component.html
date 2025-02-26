@@ -32,7 +32,7 @@
       <div class="scrollbar-thin my-8 overflow-y-auto">
         @for (tab of tabs(); track tab.label) {
           <div [ngClass]="{ hidden: selectedTabId() !== $index }">
-            <ng-container *ngComponentOutlet="tab.component" />
+            <ng-container *ngComponentOutlet="tab.component; inputs: tab.inputs" />
           </div>
         }
       </div>

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
 
 const DEBOUNCE_DELAY = 300;
@@ -37,6 +37,7 @@ export class SearchInputComponent {
   protected readonly autocompleteService = inject(AutocompleteService);
   private readonly drawerStack = inject(DrawerStackService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
+  protected readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
@@ -53,6 +54,39 @@ export class SearchInputComponent {
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
+  });
+
+  /** Returns true if the current search (current input() + filters) is in the saved searches */
+  protected isSavedSearch = computed(() => {
+    const params = getState(this.queryParamsStore); // to watch params update
+    const savedSearches = this.userSettingsStore.savedSearches();
+    const url = window.location.hash.substring(1);
+    const filtersSplit = url.split('f=');
+    const filters = filtersSplit.length > 1 ? JSON.parse(decodeURIComponent(filtersSplit[1].split('&')[0]))[0] : undefined;
+    const display = this.input();
+
+    // returns true if a save search matches the display and filters
+    return savedSearches.some(search => {
+      const searchFiltersSplit = search.url.split('f=');
+      const searchFilters = searchFiltersSplit.length > 1 ? JSON.parse(decodeURIComponent(searchFiltersSplit[1].split('&')[0]))[0] : undefined;
+
+      // if one of them has filters and not the other one
+      if ((filters && !searchFilters) || (!filters && searchFilters)) return false;
+
+      if (filters && searchFilters) {
+        const filtersKeys = Object.keys(filters).sort();
+        const searchFiltersKeys = Object.keys(searchFilters).sort();
+        const similarKeys = JSON.stringify(filtersKeys) === JSON.stringify(searchFiltersKeys);
+
+        if (!similarKeys) return false; // if one of them has different keys
+
+        for (const key of filtersKeys) {
+          if (filters[key] !== searchFilters[key]) return false; // if any value is different
+        }
+      }
+
+      return search.display === display; // lastly, if the text is similar
+    });
   });
 
   // el is the ElementRef of the component, it is injected by Angular and used by the AutoComplete component
@@ -118,6 +152,8 @@ export class SearchInputComponent {
 
     if (this.allowEmptySearch()) {
       this.validated.emit('');
+    } else {
+      this.popoverElement().hidePopover();
     }
   }
 
