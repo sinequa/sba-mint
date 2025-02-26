@@ -25,6 +25,8 @@ import { SyslangPipe } from '@/core/pipes/syslang';
 
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { CollectionsComponent } from '@/core/features/collections/collections.component';
+import { AlertsComponent } from '@/core/features/alerts/alerts/alerts.component';
 
 export type NavbarMenu = {
   display: string;
@@ -80,7 +82,8 @@ export class NavbarComponent implements OnDestroy {
     { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
     { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
     { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
-    { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent }
+    { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
+    { display: 'Alerts', iconClass: 'far fa-bell', component: AlertsComponent }
   ];
 
   protected readonly navigationService = inject(NavigationService);
