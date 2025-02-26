@@ -4,7 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { globalConfig } from '@sinequa/atomic';
+import { globalConfig, login, logout } from '@sinequa/atomic';
 import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
@@ -24,6 +24,7 @@ export class AppComponent {
   private readonly router = inject(Router);
 
   constructor() {
+    logout();
     this.login();
   }
 

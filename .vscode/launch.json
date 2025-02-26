@@ -49,7 +49,7 @@
       "port": 9223,
       "request": "attach",
       "type": "chrome",
-      "urlFilter": "http://localhost:4200/*",
+      "urlFilter": "https://localhost:4200/*",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
         "webpack:///./*": "${workspaceFolder}/*"

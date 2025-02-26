@@ -1,6 +1,6 @@
-<menu class="btn-sm flex items-center gap-2 p-4 *:*:font-semibold">
+<nav class="btn-sm flex list-none items-center gap-2 p-4 *:*:font-semibold">
   <li>
-    <button class="btn btn-ghost flex items-center gap-2" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
+    <button variant="ghost" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
       <i class="fa-fw far fa-arrow-left"></i>
       {{ 'back' | transloco }}
     </button>
@@ -10,7 +10,7 @@
 
   @if (navConfig.showOpenButton) {
     <li>
-      <button class="btn btn-ghost items-center gap-2" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
+      <button variant="ghost" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
         <i class="fa-fw far fa-arrow-up-right-from-square"></i>
         {{ 'open' | transloco }}
       </button>
@@ -21,14 +21,20 @@
 
   @if (canBookmark()) {
     <li>
-      <app-bookmark-button class="btn btn-ghost" [article]="article()!" />
+      <button variant="ghost" [attr.title]="'bookmark.bookmarkDocument' | transloco">
+        <bookmark-button [article]="article()!" />
+      </button>
     </li>
   }
 
   @if (hasExternalLink()) {
     <li>
-      <button class="btn btn-ghost" [attr.title]="'preview.copyPreviewLink' | transloco" (click)="copyLink()">
-        <i class="fa-fw far text-sm" [class.fa-link]="!copied" [class.fa-circle-check]="copied"></i>
+      <button variant="ghost" [attr.title]="'preview.copyPreviewLink' | transloco" (click)="copyLink()">
+        @if (copied) {
+          <circle-check class="size-4" />
+        } @else {
+          <link-icon class="size-4" />
+        }
       </button>
     </li>
   }
@@ -48,4 +54,4 @@
       }
     </li>
   }
-</menu>
+</nav>

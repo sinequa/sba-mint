@@ -1,16 +1,23 @@
-import { DatePipe, NgClass } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, OnDestroy, signal, viewChild } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed, effect, ElementRef, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
-import { Article as A, LegacyFilter } from '@sinequa/atomic';
-import { AppStore, DropdownComponent, MetadataComponent, PreviewService, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import { Article as A, LegacyFilter, PreviewData } from '@sinequa/atomic';
+import {
+  AppStore,
+  MetadataComponent,
+  PopoverComponent,
+  PopoverContentComponent,
+  PreviewService,
+  QueryParamsStore,
+  SearchService
+} from '@sinequa/atomic-angular';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
-import { BasePreview } from '@/core/registry/base-preview';
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
@@ -25,14 +32,14 @@ type Article = A & {
   standalone: true,
   imports: [
     NgClass,
-    DatePipe,
     PreviewNavbarComponent,
     MetadataComponent,
     PreviewActionsComponent,
     SourceIconComponent,
     TranslocoPipe,
     TranslocoDateImpurePipe,
-    DropdownComponent
+    PopoverComponent,
+    PopoverContentComponent
   ],
   templateUrl: './preview-slide.component.html',
   host: {
@@ -40,7 +47,8 @@ type Article = A & {
   },
   styleUrl: './preview-slide.component.scss'
 })
-export class PreviewSlideComponent extends BasePreview implements OnDestroy {
+export class PreviewSlideComponent implements OnDestroy {
+  public readonly previewData = input.required<PreviewData>();
   public iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
   public readonly article = computed(() => this.previewData()?.record as Article);
@@ -72,8 +80,6 @@ export class PreviewSlideComponent extends BasePreview implements OnDestroy {
   private readonly sub = new Subscription();
 
   constructor() {
-    super();
-
     effect(() => {
       if (!this.iframe()) return;
 

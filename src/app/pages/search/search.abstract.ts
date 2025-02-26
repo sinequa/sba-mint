@@ -1,4 +1,4 @@
-import { Component, computed, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
+import { Component, computed, Directive, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
@@ -25,9 +25,7 @@ type QP = {
   b?: string; // basket
 };
 
-@Component({
-  template: ''
-})
+@Directive({})
 export abstract class SearchBase<T> implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;

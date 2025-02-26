@@ -22,6 +22,7 @@ import {
   AggregationsStore,
   AppStore,
   buildQuery,
+  ButtonComponent,
   CFilter,
   CFilterItem,
   debouncedSignal,
@@ -54,12 +55,12 @@ export type AggregationTitle = {
         display: block;
       }
 
-      .data-list {
+      ul[role='list'] {
         scrollbar-width: thin;
       }
     `
   ],
-  imports: [FormsModule, ReactiveFormsModule, AggregationRowComponent, SyslangPipe, TranslocoPipe]
+  imports: [FormsModule, ReactiveFormsModule, ButtonComponent, AggregationRowComponent, SyslangPipe, TranslocoPipe]
 })
 export class AggregationComponent {
   cdr = inject(ChangeDetectorRef);

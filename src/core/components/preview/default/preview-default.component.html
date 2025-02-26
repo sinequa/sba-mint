@@ -19,7 +19,7 @@
         <tr>
           <th>{{ 'location' | transloco }}</th>
 
-          <td class="flex items-center gap-2 overflow-auto">
+          <td class="flex items-center gap-2 overflow-hidden">
             <DocumentLocator [article]="article()" />
           </td>
         </tr>
@@ -29,7 +29,7 @@
             <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
             <td class="flex flex-wrap gap-2">
-              <Metadata class="badge badge-sm empty:hidden" [article]="article()!" metadata="authors" />
+              <Metadata variant="outline" [article]="article()!" metadata="authors" />
             </td>
           </tr>
         }
@@ -49,19 +49,9 @@
             <th>{{ 'labels' | transloco }}</th>
 
             <td class="flex flex-col gap-2">
-              <Metadata
-                class="badge badge-sm border-neutral-600 font-semibold empty:hidden"
-                className="cursor-pointer"
-                [article]="article()!"
-                [metadata]="labels.public"
-                (onMetadataClick)="onMetadataClick($event)" />
+              <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
 
-              <Metadata
-                class="badge badge-sm border-neutral-600 font-semibold empty:hidden"
-                className="cursor-pointer"
-                [article]="article()!"
-                [metadata]="labels.private"
-                (onMetadataClick)="onMetadataClick($event)" />
+              <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
             </td>
           </tr>
         }
@@ -70,12 +60,7 @@
           <th>{{ 'type' | transloco }}</th>
 
           <td>
-            <Metadata
-              class="badge badge-sm border-neutral-600 font-semibold"
-              [article]="article()!"
-              className="cursor-pointer"
-              metadata="docformat"
-              (onMetadataClick)="onMetadataClick($event)" />
+            <Metadata variant="outline" class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
           </td>
         </tr>
       </table>
@@ -89,7 +74,7 @@
   }
   @if (canLoadIframe()) {
     <section class="flex grow flex-col gap-4 px-6 py-4">
-      <preview-actions class="flex justify-end gap-2" />
+      <preview-actions class="flex justify-end" />
 
       <iframe
         #preview

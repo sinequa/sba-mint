@@ -46,6 +46,16 @@ const PREVIEW_HIGHLIGHTS = [
     bgColor: '#00ABB5'
   },
   {
+    name: 'money',
+    color: 'white',
+    bgColor: '#85BB65' // Hex color for dollar green
+  },
+  {
+    name: 'entity12',
+    color: 'white',
+    bgColor: '#FFD700' // Hex color for the sun (gold)
+  },
+  {
     name: 'extractslocations',
     color: 'black',
     bgColor: '#fffacd'

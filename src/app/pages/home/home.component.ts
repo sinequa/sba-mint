@@ -8,11 +8,11 @@ import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } f
 
 import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
-import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
+import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
+import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
+import { CollectionsComponent } from '@/core/features/collections/collections';
 
 type HomeTab = {
   name: string;
@@ -40,7 +40,7 @@ const homeFeatures: HomeTab[] = [
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
     label: 'My bookmark',
-    component: BookmarksListComponent
+    component: BookmarksComponent
   },
   {
     name: 'baskets',

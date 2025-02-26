@@ -31,10 +31,10 @@
             <i class="fa-fw far fa-chevron-right"></i>
 
             @if (locationSegments().length > 1) {
-              <Dropdown position="bottom" [autoClose]="true">
+              <Popover position="bottom">
                 <button class="rounded-full p-1">...</button>
 
-                <div class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-md" dropdown-content>
+                <PopoverContent class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-md">
                   @for (segment of locationSegments().slice(0, -1); track $index) {
                     <button class="rounded-full px-2 py-1 hover:bg-blue-100" (click)="navigateToSegment($index)">
                       {{ segment }}
@@ -44,8 +44,8 @@
                       <i class="fa-fw far fa-chevron-right"></i>
                     }
                   }
-                </div>
-              </Dropdown>
+                </PopoverContent>
+              </Popover>
             }
 
             <i class="fa-fw far fa-chevron-right"></i>
@@ -95,7 +95,7 @@
               [article]="article()!"
               className="cursor-pointer"
               metadata="docformat"
-              (onMetadataClick)="onMetadataClick($event)" />
+              (click)="onMetadataClick($event)" />
           </td>
         </tr>
       </table>

@@ -1,27 +1,30 @@
-import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
-import { Component, computed, inject, OnDestroy, signal, viewChild } from '@angular/core';
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
+import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
 import {
   ApplicationStore,
   AppStore,
-  DropdownComponent,
+  ButtonComponent,
   LabelService,
+  MenuComponent,
+  MenuContentComponent,
+  MenuItemComponent,
   QueryParamsStore,
   SearchService,
   SelectArticleOnClickDirective,
   SelectionStore,
+  SelectionStrategy,
   ShowBookmarkDirective
 } from '@sinequa/atomic-angular';
 
-import { EditLabelsComponent } from '@/core/features/dialog/labels/edit-labels';
+import { CollectionsDialog } from '@/core/features/collections/collections-add.dialog';
+import { LabelsEditComponent } from '@/core/features/labels/labels-edit.dialog';
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
-import { BaseArticle } from '@/core/registry/base-article';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
-import { LegacyFilter } from '@sinequa/atomic';
+import { Article, LegacyFilter } from '@sinequa/atomic';
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 import { MissingTermsComponent } from '../missing-terms/missing-terms.component';
-import { AddToCollectionDialog } from '@/core/features/collections/add-to-collection';
 
 type Tab = 'attachments' | 'similars';
 
@@ -42,10 +45,13 @@ const loader = ['en', 'fr'].reduce(
     BookmarkButtonComponent,
     SourceIconComponent,
     TranslocoDateImpurePipe,
-    DropdownComponent,
+    ButtonComponent,
+    MenuComponent,
+    MenuContentComponent,
+    MenuItemComponent,
     TranslocoPipe,
-    EditLabelsComponent,
-    AddToCollectionDialog,
+    LabelsEditComponent,
+    CollectionsDialog,
     MissingTermsComponent
   ],
   templateUrl: './article-default.component.html',
@@ -62,7 +68,10 @@ const loader = ['en', 'fr'].reduce(
   ],
   providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
-export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
+export class ArticleDefaultComponent implements OnDestroy {
+  public readonly article = input.required<Article>();
+  public readonly strategy = input<SelectionStrategy>();
+
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
@@ -70,8 +79,8 @@ export class ArticleDefaultComponent extends BaseArticle implements OnDestroy {
   searchService = inject(SearchService);
   labelService = inject(LabelService);
 
-  readonly editLabelsDialog = viewChild(EditLabelsComponent);
-  readonly addToCollectionDialog = viewChild(AddToCollectionDialog);
+  readonly editLabelsDialog = viewChild(LabelsEditComponent);
+  readonly addToCollectionDialog = viewChild(CollectionsDialog);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {

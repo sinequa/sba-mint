@@ -10,10 +10,10 @@
         <div class="ms-4">
           @if (hasFilter()) {
             <button
-              type="button"
-              class="me-2"
-              [attr.title]="'filters.clearFilter' | transloco"
-              [attr.aria-label]="'filters.clearFilter' | transloco"
+              variant="ghost"
+              size="sm"
+              [attr.title]="'filters.clearFilters' | transloco"
+              [attr.aria-label]="'filters.clearFilters' | transloco"
               (click)="clear()"
               (keydown.enter)="clear()">
               <i class="fa-fw far fa-filter-circle-xmark" aria-hidden="true"></i>
@@ -22,9 +22,10 @@
 
           @if (hasFilter()) {
             <button
-              type="button"
-              [attr.title]="'filters.applyFilter' | transloco"
-              [attr.aria-label]="'filters.applyFilter' | transloco"
+              variant="ghost"
+              size="sm"
+              [attr.title]="'filters.applyFilters' | transloco"
+              [attr.aria-label]="'filters.applyFilters' | transloco"
               (click)="apply()"
               (keydown.enter)="apply()">
               <i class="fa-fw far fa-filter" aria-hidden="true"></i>
@@ -34,14 +35,16 @@
       </div>
     </legend>
 
-    <ul class="data-list pt-2">
+    <ul class="flex flex-col gap-1 pt-2" role="list">
       @for (option of dateOptions(); track $index) {
         <li
+          role="listitem"
+          [attr.aria-label]="option.display | syslang | transloco"
           tabindex="0"
-          [ngClass]="
+          [class]="
             cn(
-              'data-list-item flex px-2 leading-7',
-              form.get('option')?.value === option.display && 'selected',
+              'flex p-0 px-2 leading-7',
+              form.get('option')?.value === option.display && 'bg-accent',
               option.hidden && 'hidden',
               option.disabled && 'disabled pointer-events-none text-neutral-300'
             )
@@ -56,7 +59,7 @@
             [attr.aria-disabled]="option.disabled"
             value="{{ option.display }}" />
 
-          <span class="fa-fw radio me-1 cursor-pointer p-1" (click)="radio.click()" (keydown.enter)="radio.click()" tabindex="-1"></span>
+          <span class="fa-fw radio me-1 cursor-pointer p-1" (click)="radio.click()" (keydown.enter)="radio.click()" tabindex="-1" aria-hidden="true"></span>
 
           <label for="date-filter-{{ option.display }}" class="grow cursor-pointer p-1">
             {{ option.display | syslang | transloco }}
@@ -65,10 +68,10 @@
       }
 
       @if (allowCustomRange) {
-        <li class="data-list-item flex px-2 leading-7" [ngClass]="{ selected: form.get('option')?.value === 'custom-range' }">
+        <li role="listitem" aria-label="custom range" class="flex px-2 leading-7" [ngClass]="{ selected: form.get('option')?.value === 'custom-range' }">
           <input #radio type="radio" formControlName="option" id="date-filter-custom-range" value="custom-range" />
 
-          <span class="fa-fw radio me-1 cursor-pointer p-1" tabindex="-1" (click)="radio.click()" (keydown.enter)="radio.click()"></span>
+          <span class="fa-fw radio me-1 cursor-pointer p-1" tabindex="-1" (click)="radio.click()" (keydown.enter)="radio.click()" aria-hidden="true"></span>
 
           <div class="grid grow grid-cols-[4rem_auto] p-1 *:cursor-pointer" formGroupName="customRange" (click)="radio.click()">
             <label for="date-filter-custom-from">{{ 'from' | transloco }}</label>

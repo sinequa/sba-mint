@@ -1,0 +1,44 @@
+<div class="p-2">
+  @if(floating) {
+  <label class="text-xl font-bold">Saved searches</label>
+  <MenuSeparator />
+  }
+</div>
+
+<ul class="flex max-h-[460px] flex-col overflow-auto px-2 pb-2" role="list">
+  @for (search of paginatedSearches(); track $index) {
+  <li role="listitem" class="group h-10" tabindex="0" (click)="onClick(search)" (keydown.enter)="onClick(search)">
+    <i class="fa-fw fas fa-star"></i>
+
+    <p class="truncate">{{ search.label }}</p>
+
+    @if ((search.filterCount ?? 0) > 0) {
+    <p class="text-neutral-500" aria-hidden="true">
+      <i class="fa-fw far fa-filter"></i>
+
+      {{ 'savedSearches.filterCount' | transloco: { count: search.filterCount } }}
+    </p>
+    } @if (search.date) {
+    <p class="ms-auto text-neutral-500 first-letter:capitalize">{{ getRelativeDate(transloco.getActiveLang(), search.date) }}</p>
+    }
+
+    <button
+      variant="icon"
+      size="sm"
+      class="invisible ms-auto text-destructive transition-transform hover:scale-125 hover:text-destructive group-hover:visible"
+      [ngClass]="{ 'ms-auto': !search.date }"
+      title="{{'savedSearches.removeSavedSearch' | transloco}}"
+      [attr.aria-label]="'savedSearches.removeSavedSearch' | transloco"
+      (click)="onDelete($index, $event)">
+      <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+    </button>
+  </li>
+  } @empty {
+  <li class="py-4 text-center text-neutral-500">{{ 'savedSearches.noSavedSearches' | transloco }}</li>
+  }
+</ul>
+@if (hasMore()) {
+<div class="px-2 pb-2">
+  <button variant="outline" class="w-full" tabindex="0" [attr.title]="'loadMore' | transloco" (click)="loadMore($event)">{{ 'loadMore' | transloco }}</button>
+</div>
+}

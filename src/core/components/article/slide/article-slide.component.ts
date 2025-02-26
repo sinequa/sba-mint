@@ -1,11 +1,11 @@
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
-import { SelectArticleOnClickDirective, SelectionStore, ShowBookmarkDirective } from '@sinequa/atomic-angular';
+import { SelectArticleOnClickDirective, SelectionStore, SelectionStrategy, ShowBookmarkDirective } from '@sinequa/atomic-angular';
 
-import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
-import { BaseArticle } from '@/core/registry/base-article';
+import { Article } from '@sinequa/atomic';
 
 @Component({
   selector: 'app-article-slide',
@@ -27,7 +27,10 @@ import { BaseArticle } from '@/core/registry/base-article';
     }
   ]
 })
-export class ArticleSlideComponent extends BaseArticle implements OnDestroy {
+export class ArticleSlideComponent implements OnDestroy {
+  public readonly article = input.required<Article>();
+  public readonly strategy = input<SelectionStrategy>();
+
   selectionStore = inject(SelectionStore);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
     this.showBookmark.set(value);

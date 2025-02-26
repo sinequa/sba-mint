@@ -1,14 +1,13 @@
-import { NgClass } from '@angular/common';
-import { Component, EventEmitter, HostBinding, Output, computed, input } from '@angular/core';
+import { Component, computed, EventEmitter, HostBinding, input, Output } from '@angular/core';
 
-import { AggregationListItem, cn } from '@sinequa/atomic-angular';
+import { AggregationListItem, cn, MenuItemComponent } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
 @Component({
   selector: 'aggregation-row, AggregationRow',
   standalone: true,
-  imports: [NgClass, SyslangPipe],
+  imports: [MenuItemComponent, SyslangPipe],
   templateUrl: './aggregation-row.component.html',
   styles: `
     :host {
@@ -17,9 +16,6 @@ import { SyslangPipe } from '@/core/pipes/syslang';
     }
     :host a {
       padding-left: calc((1rem * var(--level)));
-    }
-    :host:has(input:checked) {
-      color: theme('colors.primary');
     }
   `
 })
@@ -33,10 +29,6 @@ export class AggregationRowComponent {
   @Output() onOpen = new EventEmitter<AggregationListItem>();
 
   node = input.required<AggregationListItem>();
-
-  @HostBinding('class.selected') get selected() {
-    return this.node().$selected;
-  }
 
   name = computed(() => {
     const value = this.node().display || this.node().value;
