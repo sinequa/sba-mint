@@ -10,6 +10,7 @@ import {
   AppStore,
   ApplicationStore,
   ArticleMetadata,
+  ButtonComponent,
   MetadataComponent,
   PreviewService,
   QueryParamsStore,
@@ -52,7 +53,7 @@ const loader = ['en', 'fr'].reduce(
       }
     `
   ],
-  imports: [NgTemplateOutlet, FormsModule, MetadataComponent, TranslocoPipe, SourceIconComponent, SelectArticleOnClickDirective],
+  imports: [NgTemplateOutlet, FormsModule, ButtonComponent, MetadataComponent, TranslocoPipe, SourceIconComponent, SelectArticleOnClickDirective],
   providers: [provideTranslocoScope({ scope: 'drawers', loader })]
 })
 export class AdvancedSearchComponent implements OnDestroy {

@@ -2,7 +2,18 @@ import { NgClass } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { AggregationsStore, AppStore, cn, DropdownComponent, QueryParamsStore } from '@sinequa/atomic-angular';
+import {
+  AggregationsStore,
+  AppStore,
+  ButtonComponent,
+  ButtonVariants,
+  cn,
+  DropdownComponent,
+  DropdownContentComponent,
+  PopoverComponent,
+  PopoverContentComponent,
+  QueryParamsStore
+} from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '../../../pipes/syslang';
 import { AggregationComponent } from '../aggregation/aggregation.component';
@@ -11,13 +22,14 @@ import { CFilterEx } from '../filters.models';
 @Component({
   selector: 'filter-button, FilterButton',
   standalone: true,
-  imports: [NgClass, DropdownComponent, TranslocoPipe, AggregationComponent, SyslangPipe],
+  imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, AggregationComponent, SyslangPipe],
   template: `
-    <Dropdown [disabled]="filter().disabled">
+    <Popover [disabled]="filter().disabled">
       <button
+        [variant]="variant()"
         [attr.data-disabled]="filter().disabled"
         [disabled]="filter().disabled || null"
-        [ngClass]="cn('btn w-max gap-1 font-semibold', filter().count ? 'btn-primary' : 'btn-tertiary')">
+        [class]="cn('btn w-max gap-1 font-semibold', filter().count ? 'btn-primary' : 'btn-tertiary')">
         @if (filter().icon) {
           <i class="fa-fw {{ filter().icon }} " aria-hidden="true"></i>
         }
@@ -33,8 +45,10 @@ import { CFilterEx } from '../filters.models';
           </span>
         }
       </button>
-      <Aggregation class="dropdown-content w-max" dropdown-content [name]="filter().name" [searchable]="true" />
-    </Dropdown>
+      <PopoverContent class="w-max">
+        <Aggregation [name]="filter().name" [searchable]="true" />
+      </PopoverContent>
+    </Popover>
   `,
   host: {
     '[class.hidden]': 'filter().hidden'
@@ -42,6 +56,8 @@ import { CFilterEx } from '../filters.models';
 })
 export class FilterButtonComponent {
   cn = cn;
+
+  variant = signal<ButtonVariants['variant']>('secondary');
 
   nativeElement = inject(ElementRef).nativeElement;
 
@@ -85,6 +101,14 @@ export class FilterButtonComponent {
         };
 
         this.filter.set(r);
+      },
+      { allowSignalWrites: true }
+    );
+
+    effect(
+      () => {
+        const f = this.filter();
+        this.variant.update(v => (f.count ? 'default' : 'secondary'));
       },
       { allowSignalWrites: true }
     );

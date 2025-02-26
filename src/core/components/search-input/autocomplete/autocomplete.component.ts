@@ -6,7 +6,15 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { combineLatest, map, of, switchMap, catchError } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
-import { AppStore, AuditService, AutocompleteService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AppStore,
+  AuditService,
+  AutocompleteService,
+  HighlightWordPipe,
+  MenuItemComponent,
+  MenuSeparatorComponent,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 
 import { SearchInputComponent } from '../search-input.component';
 
@@ -29,8 +37,15 @@ const loader = ['en', 'fr'].reduce(
   selector: 'app-autocomplete',
   standalone: true,
   templateUrl: './autocomplete.component.html',
-  imports: [NgClass, HighlightWordPipe, TranslocoPipe],
-  providers: [provideTranslocoScope({ scope: 'search-input', loader })]
+  imports: [NgClass, HighlightWordPipe, TranslocoPipe, MenuItemComponent, MenuSeparatorComponent],
+  providers: [provideTranslocoScope({ scope: 'search-input', loader })],
+  styles: [
+    `
+      ul {
+        scrollbar-width: thin;
+      }
+    `
+  ]
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');

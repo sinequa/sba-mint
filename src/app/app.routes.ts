@@ -4,7 +4,7 @@ import { AuthGuard, InitializationGuard, queryNameResolver } from '@sinequa/atom
 
 import { ErrorComponent } from '@/core/components/error/error.component';
 import { LoadingComponent } from '@/core/components/loading/loading.component';
-import { LoginComponent } from '@/core/features/login/login.component';
+import { LoginComponent } from '@/core/features/sign-in/sign-in';
 
 import { HomeComponent } from './pages/home/home.component';
 import { RecentSearchesComponent } from './pages/recent-searches/recent-searches.component';

@@ -1,13 +1,10 @@
 @if (items()) {
-  <ul
-    class="data-list-xs z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black shadow-md"
-    aria-labelledby="dropdownDefaultButton"
-    role="listbox">
+  <ul class="z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black shadow-md" aria-labelledby="dropdownDefaultButton" role="list">
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
-        <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
+        <MenuSeparator />
       } @else if (!item.display) {
-        <li role="presentation" class="cursor-pointer p-2 text-xs font-semibold text-neutral-500">
+        <li role="presentation" class="px-2 py-1 text-xs font-semibold">
           @switch (item.category) {
             @case ('recent-search') {
               {{ 'recentSearches' | transloco }}
@@ -30,13 +27,8 @@
           }
         </li>
       } @else {
-        <li role="option" tabindex="0">
-          <a
-            class="data-list-item flex cursor-pointer items-baseline gap-2 p-2"
-            role="button"
-            aria-keyshortcuts="enter"
-            (keypress.enter)="itemClicked(item)"
-            (click)="itemClicked(item)">
+        <li role="listitem" tabindex="0" aria-keyshortcuts="enter" (keypress.enter)="itemClicked(item)" (click)="itemClicked(item)">
+          <a class="flex items-baseline gap-2">
             @switch (item.category) {
               @case ('recent-search') {
                 <i class="fa-fw far fa-clock-rotate-left"></i>

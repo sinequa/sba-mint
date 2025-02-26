@@ -1,0 +1,48 @@
+<div class="p-2">
+  @if(floating) {
+  <label class="text-xl font-bold">Bookmarks</label>
+  <MenuSeparator />
+  }
+</div>
+
+<ul class="flex max-h-[460px] flex-col overflow-auto px-2 pb-2" role="list">
+  @for (bookmark of paginatedBookmarks(); track $index) {
+  <li role="listitem" class="group h-10" tabindex="0" (click)="onClick(bookmark)" (keydown.enter)="onClick(bookmark)">
+    <i class="fa-fw fas fa-bookmark shrink-0" aria-hidden="true"></i>
+
+    <p class="line-clamp-1">{{ bookmark.label }}</p>
+
+    @if (bookmark.author) {
+    <p class="line-clamp-1 text-neutral-500">
+      <i class="fa-fw far fa-user" aria-hidden="true"></i>
+      {{ bookmark.author }}
+    </p>
+    } @if (bookmark.parentFolder) {
+    <p class="line-clamp-1 text-neutral-500">
+      <i class="fa-fw far fa-folder" aria-hidden="true"></i>
+      {{ bookmark.parentFolder }}
+    </p>
+    }
+
+    <button
+      variant="icon"
+      size="sm"
+      title="{{'bookmark.openBookmark' | transloco}}"
+      class="invisible ms-auto text-destructive transition-transform hover:scale-125 hover:text-destructive group-hover:visible"
+      [attr.title]="'bookmark.removeBookmark' | transloco"
+      [attr.aria-label]="'bookmark.removeBookmark' | transloco"
+      (click)="onDelete(bookmark, $event)">
+      <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+    </button>
+  </li>
+  } @empty {
+  <li class="py-4 text-center text-neutral-500">{{ 'bookmark.noBookmarks' | transloco }}</li>
+  }
+</ul>
+
+<div class="flex flex-col px-2">
+  @if (hasMore()) {
+  <button variant="outline" class="w-full" tabindex="0" [attr.title]="'loadMore' | transloco" (click)="loadMore($event)">{{ 'loadMore' | transloco }}</button>
+  }
+  <button variant="link" class="ml-auto" [attr.title]="'seeMore' | transloco" [routerLink]="['/bookmarks']">{{ 'seeMore' | transloco }}</button>
+</div>

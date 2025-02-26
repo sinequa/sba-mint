@@ -13,7 +13,7 @@
         <p class="line-clamp-1 text-base font-bold text-primary">{{ article().title }}</p>
 
         @if (showBookmark()) {
-          <app-bookmark-button [article]="article()" />
+          <bookmark-button [article]="article()" />
         }
       </div>
 

@@ -4,9 +4,9 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
-import { DrawerStackService, PreviewService, cn } from '@sinequa/atomic-angular';
+import { ButtonComponent, CircleCheckIconComponent, DrawerStackService, LinkIconComponent, PreviewService, cn } from '@sinequa/atomic-angular';
 
-import { BookmarkButtonComponent } from '@/core/features/bookmarks/button/bookmark-button.component';
+import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { DrawerService } from '../../drawer/drawer.service';
 
 export type PreviewNavbarConfig = {
@@ -30,9 +30,8 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [BookmarkButtonComponent, TranslocoPipe],
+  imports: [BookmarkButtonComponent, TranslocoPipe, ButtonComponent, LinkIconComponent, CircleCheckIconComponent],
   templateUrl: './preview-navbar.component.html',
-  styleUrl: './preview-navbar.component.scss',
   providers: [provideTranslocoScope({ scope: 'preview', loader })]
 })
 export class PreviewNavbarComponent {

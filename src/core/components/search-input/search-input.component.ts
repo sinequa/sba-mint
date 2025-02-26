@@ -1,10 +1,19 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, Signal, booleanAttribute, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AppStore,
+  AutocompleteService,
+  ButtonComponent,
+  CJson,
+  debouncedSignal,
+  DrawerStackService,
+  QueryParamsStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
 
 const DEBOUNCE_DELAY = 300;
@@ -20,7 +29,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, TranslocoPipe],
+  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
@@ -147,14 +156,9 @@ export class SearchInputComponent {
     this.validated.emit(this.input());
   }
 
-  protected clearInput(): void {
+  protected clearInput(e: Event): void {
     this.input.set('');
-
-    if (this.allowEmptySearch()) {
-      this.validated.emit('');
-    } else {
-      this.popoverElement().hidePopover();
-    }
+    this.popoverElement().hidePopover();
   }
 
   protected saveQuery(): void {

@@ -3,6 +3,7 @@
     "prettier-plugin-tailwindcss",
     "prettier-plugin-package"
   ],
+  "tailwindFunctions": ["tv"],
   "tabWidth": 2,
   "useTabs": false,
   "singleQuote": true,

@@ -6,27 +6,31 @@ import { debounceTime, Subscription } from 'rxjs';
 
 import {
   AutocompleteService,
+  ButtonComponent,
   DrawerStackService,
-  DropdownComponent,
+  MenuComponent,
+  MenuContentComponent,
+  MenuItemComponent,
   NavigationService,
   OverflowItemDirective,
   OverflowManagerDirective,
   OverflowStopDirective,
+  PopoverComponent,
+  PopoverContentComponent,
   QueryParamsStore,
   SavedSearchesService
 } from '@sinequa/atomic-angular';
 
-import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
-import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
+import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
+import { CollectionsComponent } from '@/core/features/collections/collections';
+import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
+import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 import { SyslangPipe } from '@/core/pipes/syslang';
 
+import { AlertsComponent } from '@/core/features/alerts/alerts';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { CollectionsComponent } from '@/core/features/collections/collections.component';
-import { AlertsComponent } from '@/core/features/alerts/alerts/alerts.component';
 
 export type NavbarMenu = {
   display: string;
@@ -55,10 +59,15 @@ export type NavbarTab = {
     AsyncPipe,
     RouterLink,
     RouterLinkActive,
+    ButtonComponent,
     SearchInputComponent,
     AutocompleteComponent,
     UserMenuComponent,
-    DropdownComponent,
+    PopoverComponent,
+    PopoverContentComponent,
+    MenuComponent,
+    MenuContentComponent,
+    MenuItemComponent,
     TranslocoPipe,
     SyslangPipe,
     OverflowManagerDirective,
@@ -80,7 +89,7 @@ export class NavbarComponent implements OnDestroy {
 
   protected readonly menus: NavbarMenu[] = [
     { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
-    { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksListComponent },
+    { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
     { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
     { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
     { display: 'Alerts', iconClass: 'far fa-bell', component: AlertsComponent }

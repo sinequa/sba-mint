@@ -1,0 +1,12 @@
+{
+  "username": "Username",
+  "password": "Password",
+  "connect": "Login",
+  "back": "Back",
+  "disconnect": "Logout",
+  "loginWith": "Login with { provider }",
+  "or": "Or",
+  "welcomeBack": "Welcome back{ name, select, other { , {name}} undefined {}}!",
+  "youAreLoggedIn": "You are logged in",
+  "invalidCredentials": "Invalid username or password"
+}

@@ -4,7 +4,7 @@
       <header
         id="panel-control"
         class="group flex rounded focus-within:outline focus-within:outline-1 focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
-        <div class="flex grow items-center gap-2 rounded-e-none rounded-s bg-neutral-50 px-2 group-hover:bg-white">
+        <div class="flex grow items-center gap-2 rounded-e-none rounded-s bg-neutral-50 pl-2 group-hover:bg-white">
           <input
             type="search"
             class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
@@ -17,14 +17,20 @@
             (keydown.enter)="executeSearch()" />
 
           @if (input() !== '') {
-            <button [attr.title]="'clear' | transloco" [attr.aria-label]="'clear' | transloco" (click)="clearInput()" (keydown.enter)="clearInput()">
+            <button
+              variant="icon"
+              size="icon"
+              [attr.title]="'clear' | transloco"
+              [attr.aria-label]="'clear' | transloco"
+              (click)="clearInput()"
+              (keydown.enter)="clearInput()">
               <i class="fa-fw far fa-circle-xmark"></i>
             </button>
           }
         </div>
 
         <button
-          class="btn btn-primary rounded-e rounded-s-none"
+          class="size-4 h-full rounded-e rounded-s-none group-focus-within:rounded-br-none"
           [disabled]="input() === '' || null"
           [attr.title]="'search' | transloco"
           [attr.aria-label]="'search' | transloco"
@@ -77,11 +83,11 @@
         <div>
           <ul class="mt-4 flex flex-col flex-wrap gap-2">
             <li>
-              <Metadata class="badge badge-sm flex gap-1 border-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.public" />
+              <Metadata variant="outline" [article]="article()!" [metadata]="labels.public" />
             </li>
 
             <li>
-              <Metadata class="badge badge-sm flex gap-1 border-neutral-600 font-semibold" [article]="article()!" [metadata]="labels.private" />
+              <Metadata variant="outline" [article]="article()!" [metadata]="labels.private" />
             </li>
           </ul>
         </div>

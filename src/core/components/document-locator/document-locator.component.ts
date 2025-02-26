@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 
 import { Article, LegacyFilter } from '@sinequa/atomic';
-import { DropdownComponent, QueryParamsStore } from '@sinequa/atomic-angular';
+import { BadgeComponent, ButtonComponent, PopoverComponent, PopoverContentComponent, QueryParamsStore } from '@sinequa/atomic-angular';
 
 import { SourceIconComponent } from '../source-icon/source-icon.component';
 
 @Component({
   selector: 'DocumentLocator',
   standalone: true,
-  imports: [SourceIconComponent, DropdownComponent],
+  imports: [SourceIconComponent, BadgeComponent, ButtonComponent, PopoverComponent, PopoverContentComponent],
   template: `
     <!-- Renders all segment hidden to user to compute width -->
     <div #shadowRender class="pointer-events-none invisible absolute left-0 top-0 -z-10 flex gap-2">
@@ -27,7 +27,7 @@ import { SourceIconComponent } from '../source-icon/source-icon.component';
 
     <i class="fal fa-chevron-right"></i>
 
-    <div #documentLocator class="flex grow gap-2">
+    <div #documentLocator class="flex grow gap-2 overflow-auto">
       @for (segment of visibleSegments(); track $index) {
         <div class="whitespace-nowrap" role="button" (click)="navigateToSegment($index)">
           {{ segment }}
@@ -43,21 +43,21 @@ import { SourceIconComponent } from '../source-icon/source-icon.component';
       }
 
       @if (invisibleSegments().length > 0) {
-        <Dropdown position="bottom" [autoClose]="true">
-          <button class="rounded-full px-1">...</button>
+        <Popover>
+          <button variant="outline" class="h-0 w-full p-2">...</button>
 
-          <div class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-md" dropdown-content>
+          <PopoverContent position="bottom" class="rounded-full px-1">
             @for (segment of invisibleSegments(); track $index) {
-              <button class="rounded-full px-2 py-1 hover:bg-blue-100" (click)="navigateToSegment($index)">
+              <Badge variant="outline" class="hover:cursor-pointer hover:bg-accent" (click)="navigateToSegment($index)">
                 {{ segment }}
-              </button>
+              </Badge>
 
               @if (!$last) {
                 <i class="fa-fw far fa-chevron-right"></i>
               }
             }
-          </div>
-        </Dropdown>
+          </PopoverContent>
+        </Popover>
       }
     </div>
   `,
@@ -80,7 +80,7 @@ export class DocumentLocatorComponent implements OnDestroy {
   readonly invisibleSegments = signal<string[]>([]);
 
   // margin for dropdown segment with separator
-  readonly margin = 50;
+  readonly margin = 70;
 
   previousCount?: number;
   resizeObserver?: ResizeObserver = new ResizeObserver(() => this.onResize());

@@ -6,14 +6,14 @@ import { InfinityScrollDirective } from '@sinequa/atomic-angular';
 
 import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
 import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
-import { FiltersListComponent } from '@/core/components/filters/filters-list.component';
+import { FiltersBarComponent } from '@/core/components/filters/filters-bar.component';
 import { NoResultPanelComponent } from '@/core/components/no-result-panel/no-result-panel.component';
 import { SponsoredResultsComponent } from '@/core/components/sponsored-results/sponsored-results.component';
-import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean.component';
-import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector.component';
+import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean';
+import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selector/sort-selector';
 
 import { SearchBase } from '../search.abstract';
-import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback.component';
+import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -27,12 +27,19 @@ type R = Result & { nextPage?: number; previousPage?: number };
     DidYouMeanComponent,
     InfinityScrollDirective,
     SponsoredResultsComponent,
-    FiltersListComponent,
     NoResultPanelComponent,
-    SearchFeedbackComponent
+    SearchFeedbackComponent,
+    FiltersBarComponent,
+    NoResultPanelComponent
   ],
   templateUrl: './search-all.component.html',
-  styleUrl: './search-all.component.scss',
+  styles: [
+    `
+      app-overview-people:not(.hidden) + app-overview-slides {
+        margin-top: 1rem;
+      }
+    `
+  ],
   host: {
     class: 'layout-search overflow-auto h-full'
   }

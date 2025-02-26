@@ -8,8 +8,8 @@
 
       @if (hasFilters()) {
         <button
-          type="button"
-          class="btn btn-ghost"
+          variant="ghost"
+          size="sm"
           [attr.title]="'filters.clearFilters' | transloco"
           [attr.aria-label]="'filters.clearFilters' | transloco"
           (click)="clear()">
@@ -18,8 +18,8 @@
       }
       @if (selectionCount()) {
         <button
-          type="button"
-          class="btn btn-ghost"
+          variant="ghost"
+          size="sm"
           [attr.title]="'filters.applyFilters' | transloco"
           [attr.aria-label]="'filters.applyFilters' | transloco"
           (click)="apply()">
@@ -41,7 +41,7 @@
     </div>
   }
 
-  <ul class="data-list max-h-52 snap-y snap-start overflow-auto">
+  <ul class="max-h-52 snap-y snap-start overflow-auto" role="list" [attr.aria-label]="aggregation()?.display | syslang | transloco">
     @for (item of items(); track $index) {
       <AggregationRow [node]="item" (onSelect)="select($event)" (onOpen)="open($event)" />
     }
@@ -49,7 +49,7 @@
 </fieldset>
 
 @if (aggregation()?.$hasMore) {
-  <button class="btn btn-secondary mt-1 flex w-full justify-center" [attr.aria-label]="'loadMore' | transloco" (click)="loadMore()">
+  <button variant="secondary" class="mt-1 flex w-full justify-center" [attr.aria-label]="'loadMore' | transloco" (click)="loadMore()">
     {{ 'loadMore' | transloco }}
   </button>
 }

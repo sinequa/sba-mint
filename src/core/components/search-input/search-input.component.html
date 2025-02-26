@@ -1,9 +1,12 @@
 <div
   id="autocomplete-anchor"
   class="group relative flex h-8 grow rounded focus-within:z-[1001] focus-within:rounded-b-none focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
-  <div class="flex grow items-center gap-2 rounded-s bg-neutral-50 px-2 focus-within:rounded-b-none group-hover:bg-white">
+  <div class="flex grow items-center gap-2 rounded-s bg-neutral-50 pl-2 focus-within:rounded-b-none group-hover:bg-white">
     @if (showSave() && input() !== '') {
       <button
+        variant="icon"
+        size="icon"
+        class="w-4"
         [ngClass]="{ 'animate-save': saveAnimation() }"
         [attr.title]="'searchInput.saveSearch' | transloco"
         [attr.aria-label]="'searchInput.saveSearch' | transloco"
@@ -33,10 +36,12 @@
     <!-- Clear search button -->
     @if (input() !== '') {
       <button
+        variant="icon"
+        size="icon"
         [attr.title]="'searchInput.clearSearch' | transloco"
         [attr.aria-label]="'searchInput.clearSearch' | transloco"
-        (click)="clearInput()"
-        (keydown.enter)="clearInput()">
+        (click)="clearInput($event)"
+        (keydown.enter)="clearInput($event)">
         <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
       </button>
     }
@@ -57,7 +62,7 @@
 
   <!-- Search button -->
   <button
-    class="btn btn-primary rounded-e rounded-s-none group-focus-within:rounded-br-none"
+    class="size-4 h-full rounded-e rounded-s-none group-focus-within:rounded-br-none"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"

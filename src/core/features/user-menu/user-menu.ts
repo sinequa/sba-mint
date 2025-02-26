@@ -5,9 +5,19 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { getState } from '@ngrx/signals';
 
 import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
-import { MenuComponent, MenuItemComponent, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { OverrideUserDialogComponent } from '../dialog/override-user';
-import { ResetUserSettingsDialogComponent } from '../dialog/reset-user-settings';
+import {
+  ChevronRightIconComponent,
+  FlagEnglishIconComponent,
+  FlagFrenchIconComponent,
+  MenuComponent,
+  MenuContentComponent,
+  MenuItemComponent,
+  MenuSeparatorComponent,
+  PrincipalStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
+import { OverrideUserDialogComponent } from '../dialogs/override-user.dialog';
+import { ResetUserSettingsDialogComponent } from '../dialogs/reset-user-settings.dialog';
 import { getHelpIndexUrl } from './help-folder-options';
 
 const loader = ['en', 'fr'].reduce(
@@ -21,7 +31,19 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [FormsModule, MenuComponent, MenuItemComponent, TranslocoPipe, OverrideUserDialogComponent, ResetUserSettingsDialogComponent],
+  imports: [
+    FormsModule,
+    MenuComponent,
+    MenuContentComponent,
+    MenuItemComponent,
+    MenuSeparatorComponent,
+    TranslocoPipe,
+    OverrideUserDialogComponent,
+    ResetUserSettingsDialogComponent,
+    FlagEnglishIconComponent,
+    FlagFrenchIconComponent,
+    ChevronRightIconComponent
+  ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope({ scope: 'user-menu', loader })]
 })
@@ -62,8 +84,6 @@ export class UserMenuComponent {
     this.userSettingsStore.updateLanguage(lang);
 
     if (this.transloco.getActiveLang() !== lang) this.transloco.setActiveLang(lang);
-
-    this.close();
   }
 
   handleLogout() {
@@ -72,7 +92,6 @@ export class UserMenuComponent {
   }
 
   handleOverride() {
-    this.close();
     this.overrideUserDialog()?.showModal();
   }
 
@@ -81,7 +100,6 @@ export class UserMenuComponent {
   }
 
   handleResetUserSettings() {
-    this.close();
     this.resetUserSettingsDialog()?.showModal();
   }
 
@@ -102,15 +120,5 @@ export class UserMenuComponent {
       useLocaleAsPrefix: true
     });
     window.open(url, '_blank', 'noopener');
-  }
-
-  /**
-   * Closes all menus in the user menu.
-   *
-   * This method iterates over all menus returned by the `menus` method
-   * and calls the `close` method on each menu to close it.
-   */
-  close() {
-    this.menus()?.forEach(menu => menu.close());
   }
 }

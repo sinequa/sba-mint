@@ -1,14 +1,13 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article as A, LegacyFilter } from '@sinequa/atomic';
+import { Article as A, LegacyFilter, PreviewData } from '@sinequa/atomic';
 import { AppStore, MetadataComponent, PreviewService, QueryParamsStore, SearchService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
-import { BasePreview } from '@/core/registry/base-preview';
 
 import { DocumentLocatorComponent } from '../../document-locator/document-locator.component';
 import { PreviewActionsComponent } from '../actions/preview-actions';
@@ -29,7 +28,8 @@ type Article = A & {
   },
   styleUrl: './preview-default.component.scss'
 })
-export class PreviewDefaultComponent extends BasePreview {
+export class PreviewDefaultComponent {
+  public readonly previewData = input.required<PreviewData>();
   public iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
   public readonly article = computed(() => this.previewData()?.record as Article);
@@ -60,8 +60,6 @@ export class PreviewDefaultComponent extends BasePreview {
   readonly loading = signal<boolean>(false);
 
   constructor() {
-    super();
-
     effect(() => {
       if (!this.iframe()) return;
 

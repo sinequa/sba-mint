@@ -1,11 +1,11 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject, InjectionToken, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, InjectionToken, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Aggregation, AggregationItem, FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
-import { cn } from '@sinequa/atomic-angular';
+import { ButtonComponent, cn, MenuItemComponent } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
@@ -49,14 +49,14 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'date-filter,DateFilter',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
+  imports: [NgClass, ButtonComponent, MenuItemComponent, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
   templateUrl: './date.component.html',
   styles: `
     :host {
       display: block;
     }
 
-    .data-list {
+    ul[role='list'] {
       scrollbar-width: thin;
     }
   `,
