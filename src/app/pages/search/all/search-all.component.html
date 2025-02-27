@@ -36,7 +36,7 @@
       <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
-    <ul class="mt-4 flex flex-col gap-2">
+    <ul class="mt-4 flex flex-col gap-2" role="listbox">
       @for (page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id + $index) {
           <li>

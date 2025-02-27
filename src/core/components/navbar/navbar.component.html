@@ -38,13 +38,15 @@
 </nav>
 
 <div overflowManager class="relative col-span-2 col-start-2 row-start-2 flex" (count)="visibleTabCount.set($event)">
-  <ul class="flex">
+  <ul class="flex" role="tablist">
     @for (tab of tabs(); track $index) {
       <li
         overflowItem
         class="cursor-pointer select-none px-2 py-3 font-semibold"
         routerLinkActive="text-primary border-b border-primary aria-selected:border-primary aria-selected:text-primary">
         <a
+          role="tab"
+          id="tab-{{ tab.name }}"
           class="inline-block whitespace-nowrap first-letter:capitalize"
           [routerLink]="[tab.routerLink]"
           [queryParams]="{ queryName: tab.queryName, q: searchText(), t: tab.name, f: undefined, sort: undefined, id: undefined, page: undefined }"

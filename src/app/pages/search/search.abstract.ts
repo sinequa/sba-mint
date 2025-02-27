@@ -1,4 +1,4 @@
-import { Component, computed, Directive, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
+import { Component, computed, Directive, effect, HostBinding, HostListener, inject, input, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
@@ -14,6 +14,7 @@ import {
   SelectionService,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
+import { isNotInputEvent } from '@/core/features/is-not-input-event/is-not-input-event';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 type QP = {
@@ -189,5 +190,11 @@ export abstract class SearchBase<T> implements OnDestroy {
       return { ...article, value: article.title, type: 'default' };
     });
     return result;
+  }
+
+  @HostListener('keydown.Enter', ['$event']) openResultPreview(event: KeyboardEvent) {
+    if (isNotInputEvent(event)) {
+      event.stopImmediatePropagation(); // required for the drawer to open properly
+    }
   }
 }
