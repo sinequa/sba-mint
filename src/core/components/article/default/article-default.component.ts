@@ -77,7 +77,7 @@ const loader = ['en', 'fr'].reduce(
 })
 export class ArticleDefaultComponent implements OnDestroy {
   public readonly myarticle = input<Article>();
-  public readonly customMetadata = input<CustomMetadata[]>();
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'article.jobTitles', field: 'entity13' }]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
@@ -97,6 +97,8 @@ export class ArticleDefaultComponent implements OnDestroy {
   });
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
+
+  customMetadataItems = computed(() => this.customMetadata()?.map(metadata => (this.article() as any)[metadata.field] ?? {}));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;

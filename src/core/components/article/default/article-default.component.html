@@ -60,14 +60,16 @@
       <p class="article-extract line-clamp-2" [innerHTML]="extract()"></p>
     </main>
 
-    @if (customMetadata()?.length && article()) {
+    @if (customMetadata()?.length && customMetadataItems()?.length && article()) {
       @for (metadata of customMetadata(); track $index) {
-        <div class="flex">
-          @if (metadata.title) {
-            <label class="border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
-          }
-          <Metadata class="badge badge-sm flex gap-1 border-neutral-600 font-semibold" [article]="article()" [metadata]="metadata.field" />
-        </div>
+        @if (customMetadataItems()![$index].length) {
+          <div class="flex">
+            @if (metadata.title) {
+              <label class="me-2 border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
+            }
+            <Metadata variant="outline" [article]="article()" [metadata]="metadata.field" />
+          </div>
+        }
       }
     }
 
