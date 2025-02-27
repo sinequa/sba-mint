@@ -1,3 +1,4 @@
+import { MetadataComponent } from '@sinequa/atomic-angular';
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
@@ -28,6 +29,11 @@ import { MissingTermsComponent } from '../missing-terms/missing-terms.component'
 
 type Tab = 'attachments' | 'similars';
 
+export interface CustomMetadata {
+  field: string;
+  title?: string;
+}
+
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 const loader = ['en', 'fr'].reduce(
@@ -52,7 +58,8 @@ const loader = ['en', 'fr'].reduce(
     TranslocoPipe,
     LabelsEditComponent,
     CollectionsDialog,
-    MissingTermsComponent
+    MissingTermsComponent,
+    MetadataComponent
   ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
@@ -69,6 +76,8 @@ const loader = ['en', 'fr'].reduce(
   providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
 export class ArticleDefaultComponent implements OnDestroy {
+  public readonly myarticle = input<Article>();
+  public readonly customMetadata = input<CustomMetadata[]>();
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
@@ -111,6 +120,10 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
+  }
+
+  isArticle(value: any): value is { [key: string]: any } {
+    return value && typeof value === 'object' && 'entity13' in value;
   }
 
   public toggleTab(tab: Tab): void {
