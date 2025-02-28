@@ -29,7 +29,7 @@ import { MissingTermsComponent } from '../missing-terms/missing-terms.component'
 
 type Tab = 'attachments' | 'similars';
 
-export interface CustomMetadata {
+type CustomMetadata {
   field: string;
   title?: string;
 }
