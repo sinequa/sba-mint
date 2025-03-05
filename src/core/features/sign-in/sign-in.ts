@@ -21,7 +21,7 @@ const loader = ['en', 'fr'].reduce(
  * This component is used to authenticate users and manage the user's authentication status.
  */
 @Component({
-  selector: 'sq-login',
+  selector: 'signIn, signin, sign-in',
   standalone: true,
   imports: [RouterModule, FormsModule, TranslocoPipe],
   templateUrl: './sign-in.html',
@@ -42,7 +42,7 @@ const loader = ['en', 'fr'].reduce(
   ],
   providers: [provideTranslocoScope({ scope: 'login', loader })]
 })
-export class LoginComponent implements OnDestroy {
+export class SignInComponent implements OnDestroy {
   config = globalConfig;
 
   /**

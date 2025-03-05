@@ -1,7 +1,7 @@
 import { NgClass, NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
 import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
@@ -9,10 +9,10 @@ import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } f
 import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
 import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
+import { CollectionsComponent } from '@/core/features/collections/collections';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
-import { CollectionsComponent } from '@/core/features/collections/collections';
 
 type HomeTab = {
   name: string;
@@ -58,7 +58,14 @@ const homeFeatures: HomeTab[] = [
   host: {
     class: 'layout-search h-screen'
   },
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TranslocoPipe]
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent],
+  styles: [
+    `
+      #logo {
+        content: var(--logo-large) / var(--logo-large-alt-text);
+      }
+    `
+  ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;

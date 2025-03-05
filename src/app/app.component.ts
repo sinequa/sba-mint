@@ -1,20 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { globalConfig, login, logout } from '@sinequa/atomic';
-import { ApplicationService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, ApplicationStore, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
+import { LoginService } from '@sinequa/core/login';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
-  templateUrl: './app.component.html'
+  imports: [CommonModule, RouterLink, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
+  templateUrl: './app.component.html',
+  styles: [
+    `
+      #logo {
+        content: var(--logo-small) / var(--logo-small-alt-text);
+      }
+    `
+  ]
 })
 export class AppComponent {
   private readonly applicationService = inject(ApplicationService);
@@ -22,6 +30,10 @@ export class AppComponent {
   private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
+
+  // SBA dependencies for the Assistant
+  private readonly loginService = inject(LoginService);
+  private readonly applicationStore = inject(ApplicationStore);
 
   constructor() {
     logout();
@@ -54,6 +66,11 @@ export class AppComponent {
       this.setupApplicationLanguage();
       if (this.router.url === '/error') {
         this.router.navigate(['/']);
+      } else {
+        this.loginService.login().subscribe(values => {
+          console.log('Login successful!', values);
+          this.applicationStore.updateAssistantReady();
+        });
       }
     } else {
       console.warn('An error occured while logging in (app component) after auto login');
