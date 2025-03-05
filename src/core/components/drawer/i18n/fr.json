@@ -1,5 +1,22 @@
 {
   "inputPlaceholder": "Rechercher dans le document",
   "noRelevantExtracts": "Aucun extrait trouvé.",
-  "similarDocuments": "Documents similaires"
+  "similarDocuments": "Documents similaires",
+  "filterContainsAll": "contient tous ces mots",
+  "filterContainsExact": "contient exactement ces mots",
+  "filterContainsAny": "contient n'importe lequel de ces mots",
+  "filterContainsNone": "contient aucun de ces mots",
+  "filterMatches": "correspond à",
+  "findInContent": "Chercher dans le contenu",
+  "findInTitle": "Chercher dans le titre",
+  "findInLocation": "Chercher dans la localisation",
+  "inScope": "Scope",
+  "applyFilters": "Filtres",
+  "noSuggestion": "Aucune suggestion",
+  "search": "Chercher",
+  "searchWords": "Contenu de la recherche...",
+  "mentioned": "Mentionné",
+  "startTyping": "Commencez à écrire pour chercher...",
+  "noResult": "Aucun résultat à afficher...",
+  "noFilters": "Aucun fitre défini dans la configuration"
 }

@@ -69,5 +69,15 @@
         {{ 'searchInput.noSuggestions' | transloco }}
       </span>
     }
+    @if (advancedSearch()) {
+      <li class="m-2 h-[1px] bg-neutral-300"></li>
+    }
   </ul>
+
+  @if (advancedSearch()) {
+    <div class="data-list-item flex cursor-pointer items-baseline gap-2 p-2" (click)="openAdvancedSearch()">
+      <i class="fa-fw far fa-sliders"></i>
+      {{ 'searchInput.advancedSearch' | transloco }}
+    </div>
+  }
 }

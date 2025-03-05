@@ -1,4 +1,4 @@
-import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, inject } from '@angular/core';
+import { Component, ComponentRef, HostBinding, OnDestroy, Type, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
@@ -52,7 +52,15 @@ export class DrawerStackComponent implements OnDestroy {
   protected readonly subscriptions = new Subscription();
 
   constructor() {
-    this.subscriptions.add(this.drawerStackService.isOpened.subscribe(state => (this.drawerOpened = state)));
+    this.subscriptions.add(
+      this.drawerStackService.isOpened.subscribe(state => {
+        this.drawerOpened = state;
+
+        if (state && !!this.drawerStackService.componentType) {
+          this.openTopDrawer(undefined, this.drawerStackService.componentType);
+        }
+      })
+    );
 
     this.subscriptions.add(
       this.selectionHistory$.subscribe(event => {
@@ -75,13 +83,13 @@ export class DrawerStackComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private openTopDrawer(index: number): void {
+  private openTopDrawer(index?: number, componentType?: Type<DrawerComponent>): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
       console.log('Drawer stack is full');
       this.shiftDrawer();
     }
 
-    this.pushDrawer(index);
+    this.pushDrawer(index, componentType);
   }
 
   private closeTopDrawer(): void {
@@ -113,10 +121,12 @@ export class DrawerStackComponent implements OnDestroy {
     top?.instance.drawer.toggleExtension();
   }
 
-  private pushDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
+  private pushDrawer(index?: number, componentType?: Type<DrawerComponent>): void {
+    const drawer = this.viewContainer.createComponent(componentType || DrawerPreviewComponent);
 
-    drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
+    if (index !== undefined) {
+      drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
+    }
 
     this.drawers.push(drawer);
 

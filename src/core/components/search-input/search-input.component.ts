@@ -15,6 +15,7 @@ import {
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
+import { DrawerAdvancedFiltersComponent } from '../drawer/advanced-filters/advanced-filters.component';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -64,6 +65,9 @@ export class SearchInputComponent {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
   });
+
+  allowAdvancedFilters = computed(() => true /*this.appStore.customizationJson()?.allowAdvancedFilters?.enabled*/);
+  protected readonly overlayOpen = this.autocompleteService.opened;
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
   protected isSavedSearch = computed(() => {
@@ -146,6 +150,11 @@ export class SearchInputComponent {
   }
 
   protected emitText(): void {
+    if (this.allowAdvancedFilters() && this.input() === '') {
+      this.overlayOpen.set(false);
+      this.drawerStack.open(DrawerAdvancedFiltersComponent);
+      return;
+    }
     if (this.allowEmptySearch() === false && this.input() === '') {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
       toast.info(message);

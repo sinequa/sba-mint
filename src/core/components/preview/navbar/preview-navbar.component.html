@@ -1,13 +1,4 @@
-<nav class="btn-sm flex list-none items-center gap-2 p-4 *:*:font-semibold">
-  <li>
-    <button variant="ghost" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
-      <i class="fa-fw far fa-arrow-left"></i>
-      {{ 'back' | transloco }}
-    </button>
-  </li>
-
-  <li class="h-8 w-[1px] self-center bg-neutral-200"></li>
-
+<app-drawer-navbar>
   @if (navConfig.showOpenButton) {
     <li>
       <button variant="ghost" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
@@ -54,4 +45,4 @@
       }
     </li>
   }
-</nav>
+</app-drawer-navbar>

@@ -3,5 +3,6 @@
   "placeholder": "Recherchez par mots clés ou posez une question",
   "saveSearch": "Enregistrer la recherche",
   "noSuggestions": "Nous n'avons trouvé aucune suggestion pour votre recherche. Essayez avec d'autres mots clés ou lancez votre recherche.",
-  "allowEmptySearch": "La recherche vide n'est pas autorisée."
+  "allowEmptySearch": "La recherche vide n'est pas autorisée.",
+  "advancedSearch": "Recherche avancée"
 }

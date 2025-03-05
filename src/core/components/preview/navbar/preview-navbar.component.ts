@@ -8,6 +8,7 @@ import { ButtonComponent, CircleCheckIconComponent, DrawerStackService, LinkIcon
 
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { DrawerService } from '../../drawer/drawer.service';
+import { DrawerNavbarComponent } from '../../drawer/navbar/drawer-navbar.component';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -30,7 +31,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
-  imports: [BookmarkButtonComponent, TranslocoPipe, ButtonComponent, LinkIconComponent, CircleCheckIconComponent],
+  imports: [BookmarkButtonComponent, TranslocoPipe, ButtonComponent, LinkIconComponent, CircleCheckIconComponent, DrawerNavbarComponent],
   templateUrl: './preview-navbar.component.html',
   providers: [provideTranslocoScope({ scope: 'preview', loader })]
 })
