@@ -26,6 +26,7 @@ import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat'
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchComponent } from './pages/search/search.component';
 import { TranslocoHttpLoader } from './transloco-loader';
+import { sbaProviders } from './sba.config';
 
 registerLocaleData(localeFr);
 
@@ -71,6 +72,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
     provideExperimentalZonelessChangeDetection(),
+    ...sbaProviders,
     // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },

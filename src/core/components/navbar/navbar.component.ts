@@ -77,7 +77,14 @@ export type NavbarTab = {
   host: {
     class: 'layout-search',
     '[attr.drawer-opened]': 'drawerOpened()'
-  }
+  },
+  styles: [
+    `
+      #logo {
+        content: var(--logo-large) / var(--logo-large-alt-text);
+      }
+    `
+  ]
 })
 export class NavbarComponent implements OnDestroy {
   readonly searchInput = viewChild(SearchInputComponent);

@@ -1,4 +1,38 @@
-<router-outlet></router-outlet>
+<div class="flex h-full">
+  <div class="h-full w-14 bg-gray-800 text-white">
+    <a id="navbar-logo" routerLink="/home" class="cursor-pointer px-2 py-2.5" title="Go to home page">
+      <img id="logo" class="mx-auto max-h-6" aria-hidden="true" alt="logo" />
+    </a>
+
+    <nav role="navigation" class="mt-10">
+      <a routerLink="/assistant" class="block rounded py-2.5 transition duration-200 hover:bg-gray-700" title="Go to assistant page">
+        <svg
+          class="mx-auto"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 6V2H8" />
+          <path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" />
+          <path d="M2 12h2" />
+          <path d="M9 11v2" />
+          <path d="M15 11v2" />
+          <path d="M20 12h2" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+  <div class="flex-1">
+    <!-- Main content goes here -->
+    <router-outlet></router-outlet>
+  </div>
+</div>
 
 <app-backdrop />
 

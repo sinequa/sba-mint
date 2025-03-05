@@ -36,7 +36,7 @@
             },
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [],
+            "polyfills": ["zone.js", "src/polyfills.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -48,10 +48,7 @@
                 "output": "preview/"
               }
             ],
-            "styles": [
-              "src/styles.scss",
-              { "input": "src/assets/preview.css", "inject": false }
-            ],
+            "styles": ["src/styles.scss", { "input": "src/assets/preview.css", "inject": false }],
             "scripts": []
           },
           "configurations": {

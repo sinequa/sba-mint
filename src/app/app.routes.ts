@@ -4,12 +4,13 @@ import { AuthGuard, InitializationGuard, queryNameResolver } from '@sinequa/atom
 
 import { ErrorComponent } from '@/core/components/error/error.component';
 import { LoadingComponent } from '@/core/components/loading/loading.component';
-import { LoginComponent } from '@/core/features/sign-in/sign-in';
 
+import { AssistantLayoutComponent } from './pages/assistant/assistant.layout';
+import { BookmarksComponent } from './pages/bookmarks/bookmarks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RecentSearchesComponent } from './pages/recent-searches/recent-searches.component';
 import { SearchComponent } from './pages/search/search.component';
-import { BookmarksComponent } from './pages/bookmarks/bookmarks.component';
+import { SignInComponent } from '@/core/features/sign-in/sign-in';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -26,8 +27,9 @@ type ExtendedRoute = Route & {
 type ExtendedRoutes = ExtendedRoute[];
 
 export const routes: ExtendedRoutes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LoginComponent },
+  { path: 'login', component: SignInComponent },
+  { path: 'logout', component: SignInComponent },
+  { path: 'assistant', component: AssistantLayoutComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   { path: 'recent-searches', component: RecentSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   { path: 'bookmarks', component: BookmarksComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
