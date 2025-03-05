@@ -29,10 +29,10 @@ import { MissingTermsComponent } from '../missing-terms/missing-terms.component'
 
 type Tab = 'attachments' | 'similars';
 
-type CustomMetadata {
+type CustomMetadata = {
   field: string;
   title?: string;
-}
+};
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
@@ -122,10 +122,6 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
-  }
-
-  isArticle(value: any): value is { [key: string]: any } {
-    return value && typeof value === 'object' && 'entity13' in value;
   }
 
   public toggleTab(tab: Tab): void {
