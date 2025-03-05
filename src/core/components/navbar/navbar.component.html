@@ -38,7 +38,7 @@
 </nav>
 
 <div overflowManager class="relative col-span-2 col-start-2 row-start-2 flex" (count)="visibleTabCount.set($event)">
-  <ul class="flex" role="tablist">
+  <ul class="flex">
     @for (tab of tabs(); track $index) {
       <li
         overflowItem

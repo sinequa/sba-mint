@@ -4,7 +4,7 @@ import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 
-import { Aggregation, Article, Query, QueryParams, Result } from '@sinequa/atomic';
+import { Aggregation, Article, Query, QueryParams, Result, isNotInputEvent } from '@sinequa/atomic';
 import {
   AggregationsStore,
   DrawerStackService,
@@ -14,7 +14,6 @@ import {
   SelectionService,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { isNotInputEvent } from '@/core/features/is-not-input-event/is-not-input-event';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 type QP = {
@@ -26,7 +25,11 @@ type QP = {
   b?: string; // basket
 };
 
-@Directive({})
+@Directive({
+  host: {
+    '(keydown.enter)': 'handleKeydownEnter($event)'
+  }
+})
 export abstract class SearchBase<T> implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
@@ -192,9 +195,9 @@ export abstract class SearchBase<T> implements OnDestroy {
     return result;
   }
 
-  @HostListener('keydown.Enter', ['$event']) openResultPreview(event: KeyboardEvent) {
+  handleKeydownEnter(e: KeyboardEvent) {
     if (isNotInputEvent(event)) {
-      event.stopImmediatePropagation(); // required for the drawer to open properly
+      e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }
 }
