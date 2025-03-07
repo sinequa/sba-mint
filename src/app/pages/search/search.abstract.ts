@@ -1,10 +1,10 @@
-import { Component, computed, Directive, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
+import { computed, Directive, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 
-import { Aggregation, Article, Query, QueryParams, Result } from '@sinequa/atomic';
+import { Aggregation, Article, Query, QueryParams, Result, isNotInputEvent } from '@sinequa/atomic';
 import {
   AggregationsStore,
   DrawerStackService,
@@ -25,7 +25,11 @@ type QP = {
   b?: string; // basket
 };
 
-@Directive({})
+@Directive({
+  host: {
+    '(keydown.enter)': 'handleKeydownEnter($event)'
+  }
+})
 export abstract class SearchBase<T> implements OnDestroy {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
@@ -189,5 +193,11 @@ export abstract class SearchBase<T> implements OnDestroy {
       return { ...article, value: article.title, type: 'default' };
     });
     return result;
+  }
+
+  handleKeydownEnter(e: KeyboardEvent) {
+    if (isNotInputEvent(e)) {
+      e.stopImmediatePropagation(); // required for the drawer to open properly
+    }
   }
 }

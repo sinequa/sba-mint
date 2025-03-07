@@ -11,6 +11,8 @@ import {
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  OpenArticleOnCtrlEnterDirective,
+  PreviewService,
   QueryParamsStore,
   SearchService,
   SelectArticleOnClickDirective,
@@ -87,6 +89,7 @@ export class ArticleDefaultComponent implements OnDestroy {
   queryParamStore = inject(QueryParamsStore);
   searchService = inject(SearchService);
   labelService = inject(LabelService);
+  previewService = inject(PreviewService);
 
   readonly editLabelsDialog = viewChild(LabelsEditComponent);
   readonly addToCollectionDialog = viewChild(CollectionsDialog);
@@ -151,5 +154,11 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   addToCollection(): void {
     this.addToCollectionDialog()?.showModal();
+  }
+
+  onCtrlEnter(): void {
+    if (this.article()) {
+      this.previewService.openExternal(this.article());
+    }
   }
 }

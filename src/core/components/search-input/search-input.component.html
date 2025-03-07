@@ -22,7 +22,7 @@
 
     <input
       type="search"
-      id="serach-navbar"
+      id="search-navbar"
       class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
       [attr.placeholder]="'searchInput.placeholder' | transloco"
       [attr.aria-label]="'searchInput.placeholder' | transloco"
@@ -31,7 +31,8 @@
       [ngModel]="input()"
       (ngModelChange)="input.set($event)"
       (keyup)="onKeyDown($event)"
-      (click)="inputClicked()" />
+      (click)="inputClicked()"
+      aria-keyshortcuts="/" />
 
     <!-- Clear search button -->
     @if (input() !== '') {
