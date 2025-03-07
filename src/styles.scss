@@ -19,6 +19,11 @@
 
 @layer base {
   :root {
+    --logo-small: url('assets/logo/small.svg');
+    --logo-large: url('assets/logo/large.svg');
+    --logo-small-alt-text: 'Sinequa logo';
+    --logo-large-alt-text: 'Sinequa logo';
+
     --background: #ffffff;
     --foreground: #1c1c1c;
     --card: #ffffff;
@@ -26,17 +31,17 @@
     --popover: #ffffff;
     --popover-foreground: #1c1c1c;
 
-    --primary: 214 100% 50%;
-    --secondary: 0 0% 96%;
-    --accent: 0 0% 95.29%;
-    --destructive: 0 72.22% 50.59%;
-    --muted: 246 100% 96%;
+    --primary: 214 100% 50%; /* #0066ff */
+    --secondary: 0 0% 96%; /* #f5f5f5 */
+    --accent: 0 0% 95.29%; /* #f3f3f3 */
+    --destructive: 0 72.22% 50.59%; /* #b30000 */
+    --muted: 246 100% 96%; /* #f0f8ff */
 
-    --primary-foreground: 210 40% 98%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive-foreground: 210 40% 98%;
+    --primary-foreground: 210 40% 98%; /* #e6f7ff */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* #1c1c1c */
+    --muted-foreground: 215.4 16.3% 46.9%; /* #6e6e6e */
+    --accent-foreground: 222.2 47.4% 11.2%; /* #1c1c1c */
+    --destructive-foreground: 210 40% 98%; /* #e6f7ff */
 
     --border: #e4e4e4;
     --input: #e4e4e4;

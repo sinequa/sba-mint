@@ -1,3 +1,4 @@
+import { MetadataComponent } from '@sinequa/atomic-angular';
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
@@ -30,6 +31,11 @@ import { MissingTermsComponent } from '../missing-terms/missing-terms.component'
 
 type Tab = 'attachments' | 'similars';
 
+type CustomMetadata = {
+  field: string;
+  title?: string;
+};
+
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 const loader = ['en', 'fr'].reduce(
@@ -54,7 +60,8 @@ const loader = ['en', 'fr'].reduce(
     TranslocoPipe,
     LabelsEditComponent,
     CollectionsDialog,
-    MissingTermsComponent
+    MissingTermsComponent,
+    MetadataComponent
   ],
   templateUrl: './article-default.component.html',
   styleUrl: './article-default.component.scss',
@@ -71,6 +78,8 @@ const loader = ['en', 'fr'].reduce(
   providers: [provideTranslocoScope({ scope: 'article', loader })]
 })
 export class ArticleDefaultComponent implements OnDestroy {
+  public readonly myarticle = input<Article>();
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'article.jobTitles', field: 'entity13' }]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
 
@@ -91,6 +100,8 @@ export class ArticleDefaultComponent implements OnDestroy {
   });
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
+
+  customMetadataItems = computed(() => this.customMetadata()?.map(metadata => (this.article() as any)[metadata.field] ?? {}));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
