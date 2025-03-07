@@ -1,4 +1,4 @@
-<article class="group/article group article" [class.selected]="selected()">
+<article class="group/article group article" [class.selected]="selected()" role="option" tabindex="0" (keydown.control.enter)="onCtrlEnter()">
   <section class="shrink-0">
     <div class="flex size-[40px] items-center justify-center rounded-full bg-neutral-50 text-primary">
       <app-source-icon [collection]="article().collection" [connector]="article().connector" class="max-w-7 text-lg" />
