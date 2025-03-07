@@ -1,4 +1,4 @@
-import { Component, computed, Directive, effect, HostBinding, HostListener, inject, input, OnDestroy, signal } from '@angular/core';
+import { computed, Directive, effect, HostBinding, inject, input, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
@@ -196,7 +196,7 @@ export abstract class SearchBase<T> implements OnDestroy {
   }
 
   handleKeydownEnter(e: KeyboardEvent) {
-    if (isNotInputEvent(event)) {
+    if (isNotInputEvent(e)) {
       e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }
