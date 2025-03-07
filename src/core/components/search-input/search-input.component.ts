@@ -66,7 +66,7 @@ export class SearchInputComponent {
     return this.appStore.allowEmptySearch(queryName);
   });
 
-  allowAdvancedFilters = computed(() => true /*this.appStore.customizationJson()?.allowAdvancedFilters?.enabled*/);
+  allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
