@@ -1,5 +1,22 @@
 {
   "inputPlaceholder": "Search in document",
   "noRelevantExtracts": "No relevant extracts found.",
-  "similarDocuments": "Similar documents"
+  "similarDocuments": "Similar documents",
+  "filterContainsAll": "contains all these words",
+  "filterContainsExact": "contains this exact words",
+  "filterContainsAny": "contains any of these words",
+  "filterContainsNone": "contains none of these words",
+  "filterMatches": "matches",
+  "findInContent": "Find in content",
+  "findInTitle": "Find in title",
+  "findInLocation": "Find in location",
+  "inScope": "In scope",
+  "applyFilters": "Apply filters",
+  "noSuggestion": "No suggestion",
+  "search": "Search",
+  "searchWords": "Search words...",
+  "mentioned": "Mentioned",
+  "startTyping": "Start typing to search...",
+  "noResult": "No results to be displayed...",
+  "noFilters": "No filters defined in the configuration"
 }

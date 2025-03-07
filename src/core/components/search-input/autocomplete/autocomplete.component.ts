@@ -10,6 +10,7 @@ import {
   AppStore,
   AuditService,
   AutocompleteService,
+  DrawerStackService,
   HighlightWordPipe,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -17,6 +18,7 @@ import {
 } from '@sinequa/atomic-angular';
 
 import { SearchInputComponent } from '../search-input.component';
+import { DrawerAdvancedFiltersComponent } from '../../drawer/advanced-filters/advanced-filters.component';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -57,8 +59,16 @@ export class AutocompleteComponent {
   readonly auditService = inject(AuditService);
   readonly appStore = inject(AppStore);
   readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly drawerStack = inject(DrawerStackService);
+
+  protected readonly overlayOpen = this.autocompleteService.opened;
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
+  advancedSearch = computed(() => {
+    const features = this.appStore.customizationJson()?.features;
+    // return features ? features['advancedSearch'] : false;
+    return true; // todo remove
+  });
 
   readonly items = toSignal(
     combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)]).pipe(
@@ -122,5 +132,10 @@ export class AutocompleteComponent {
       }
     });
     this.onClick.emit(item);
+  }
+
+  openAdvancedSearch(): void {
+    this.overlayOpen.set(false);
+    this.drawerStack.open(DrawerAdvancedFiltersComponent);
   }
 }

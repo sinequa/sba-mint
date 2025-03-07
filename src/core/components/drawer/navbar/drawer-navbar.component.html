@@ -1,0 +1,12 @@
+<menu class="btn-sm flex items-center gap-2 p-4 *:*:font-semibold">
+  <li>
+    <button class="btn btn-ghost flex items-center gap-2" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
+      <i class="fa-fw far fa-arrow-left"></i>
+      {{ 'back' | transloco }}
+    </button>
+  </li>
+
+  <li class="h-8 w-[1px] self-center bg-neutral-200"></li>
+
+  <ng-content></ng-content>
+</menu>

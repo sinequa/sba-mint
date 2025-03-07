@@ -1,10 +1,11 @@
-import { Component, ComponentRef, HostBinding, OnDestroy, ViewContainerRef, inject } from '@angular/core';
+import { Component, ComponentRef, DestroyRef, HostBinding, OnDestroy, Type, ViewContainerRef, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
 
 import { DrawerComponent } from '../drawer.component';
 import { DrawerPreviewComponent } from '../preview/drawer-preview.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 const DRAWER_STACK_MAX_COUNT = 3;
 
@@ -34,7 +35,7 @@ const DRAWER_STACK_MAX_COUNT = 3;
     `
   ]
 })
-export class DrawerStackComponent implements OnDestroy {
+export class DrawerStackComponent {
   @HostBinding('attr.drawer-opened')
   public drawerOpened: boolean = false;
 
@@ -49,39 +50,38 @@ export class DrawerStackComponent implements OnDestroy {
     return this.drawers.length;
   }
 
-  protected readonly subscriptions = new Subscription();
+  constructor(destroyRef: DestroyRef) {
+    this.drawerStackService.isOpened.pipe(takeUntilDestroyed(destroyRef)).subscribe(state => {
+      this.drawerOpened = state;
 
-  constructor() {
-    this.subscriptions.add(this.drawerStackService.isOpened.subscribe(state => (this.drawerOpened = state)));
+      if (state && !!this.drawerStackService.componentType) {
+        this.openTopDrawer(undefined, this.drawerStackService.componentType);
+      }
+    });
 
-    this.subscriptions.add(
-      this.selectionHistory$.subscribe(event => {
-        if (event !== 'new') return;
+    this.selectionHistory$.pipe(takeUntilDestroyed(destroyRef)).subscribe(event => {
+      if (event !== 'new') return;
 
-        this.openTopDrawer(this.selectionHistory.getCurrentSelectionIndex());
-      })
-    );
+      this.openTopDrawer(this.selectionHistory.getCurrentSelectionIndex());
+    });
 
-    this.subscriptions.add(this.drawerStackService.toggleTopDrawerExtension$.subscribe(() => this.toggleTopDrawerExtension()));
-    this.subscriptions.add(this.drawerStackService.forceTopDrawerCollapse$.subscribe(() => this.collapseTopDrawer()));
-    this.subscriptions.add(this.drawerStackService.closeTopDrawer$.subscribe(() => this.closeTopDrawer()));
-    this.subscriptions.add(this.drawerStackService.closeAllDrawers$.subscribe(() => this.closeAllDrawers()));
+    this.drawerStackService.toggleTopDrawerExtension$.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => this.toggleTopDrawerExtension());
+    this.drawerStackService.forceTopDrawerCollapse$.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => this.collapseTopDrawer());
+    this.drawerStackService.closeTopDrawer$.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => this.closeTopDrawer());
+    this.drawerStackService.closeAllDrawers$.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => this.closeAllDrawers());
   }
 
   protected toggleAssistant(): void {
     this.drawerStackService.toggleAssistant();
   }
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
 
-  private openTopDrawer(index: number): void {
+  private openTopDrawer(index?: number, componentType?: Type<DrawerComponent>): void {
     if (this.drawers.length >= DRAWER_STACK_MAX_COUNT) {
       console.log('Drawer stack is full');
       this.shiftDrawer();
     }
 
-    this.pushDrawer(index);
+    this.pushDrawer(index, componentType);
   }
 
   private closeTopDrawer(): void {
@@ -113,10 +113,12 @@ export class DrawerStackComponent implements OnDestroy {
     top?.instance.drawer.toggleExtension();
   }
 
-  private pushDrawer(index: number): void {
-    const drawer = this.viewContainer.createComponent(DrawerPreviewComponent);
+  private pushDrawer(index?: number, componentType?: Type<DrawerComponent>): void {
+    const drawer = this.viewContainer.createComponent(componentType || DrawerPreviewComponent);
 
-    drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
+    if (index !== undefined) {
+      drawer.setInput('articleId', this.selectionHistory.getSelection(index)?.id);
+    }
 
     this.drawers.push(drawer);
 

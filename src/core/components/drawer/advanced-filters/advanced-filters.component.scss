@@ -1,0 +1,45 @@
+:host {
+  --drawer-width: 46;
+  --drawer-subdrawer-width: 400px;
+
+  display: grid;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: -100%;
+
+  /* Makes drawer x% the size of the screen + space for subdrawer */
+  width: calc(100vw / 100 * var(--drawer-width) + var(--drawer-subdrawer-width));
+
+  z-index: theme('zIndex.drawer');
+  grid-template-columns: 0 1fr var(--drawer-subdrawer-width);
+
+  transition:
+    right 300ms ease-in-out,
+    transform 300ms ease-in-out;
+
+  &[drawer-opened='true'] {
+    @apply -right-[var(--drawer-subdrawer-width)];
+
+    box-shadow: var(--drawer-box-shadow);
+  }
+
+  &[drawer-extended='true'] {
+    @apply right-0 w-screen;
+
+    grid-template-columns: 1fr calc(var(--drawer-width) * 1%) var(--drawer-subdrawer-width);
+
+    box-shadow: unset;
+  }
+
+  &::ng-deep {
+    .dropdown {
+      width: 100%;
+    }
+
+    .dropdown-content {
+      width: 50%;
+    }
+  }
+}

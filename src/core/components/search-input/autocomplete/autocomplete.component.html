@@ -1,5 +1,5 @@
 @if (items()) {
-  <ul class="z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black shadow-md" aria-labelledby="dropdownDefaultButton" role="list">
+  <ul class="z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black" aria-labelledby="dropdownDefaultButton" role="list">
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
         <MenuSeparator />
@@ -70,4 +70,15 @@
       </span>
     }
   </ul>
+
+  @if (advancedSearch()) {
+    <MenuSeparator />
+
+    <div
+      class="flex cursor-pointer items-baseline gap-2 p-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
+      (click)="openAdvancedSearch()">
+      <i class="fa-fw far fa-sliders"></i>
+      {{ 'searchInput.advancedSearch' | transloco }}
+    </div>
+  }
 }

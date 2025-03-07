@@ -1,0 +1,95 @@
+<div (click)="drawer.toggleExtension()" (keydown.escape)="drawer.toggleExtension()" [attr.aria-hidden]="true"></div>
+
+<div class="flex h-full flex-col overflow-auto bg-white">
+  <app-drawer-navbar class="block border-b border-neutral-300 bg-white">
+    <li>
+      <button class="btn btn-tertiary flex items-center px-4" [attr.title]="'drawers.search' | transloco" (click)="onSearch()">
+        {{ 'drawers.search' | transloco }}
+      </button>
+    </li>
+  </app-drawer-navbar>
+
+  <div class="flex h-full flex-grow flex-col overflow-auto">
+    <section class="flex flex-col gap-4 p-6" [formGroup]="form">
+      <!-- FIND IN -->
+      <h1 class="text-xl font-bold">{{ 'drawers.findInContent' | transloco }}</h1>
+      <div class="flex items-center gap-4" formGroupName="content">
+        <span class="w-1/5 font-semibold">{{ 'drawers.findInContent' | transloco }}</span>
+        <select id="content-operator" class="rounded bg-neutral-50 p-2" formControlName="operator">
+          @for (data of selectData; track $index) {
+            <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
+          }
+        </select>
+        <input
+          id="content-value"
+          type="search"
+          class="grow rounded border border-neutral-200 p-2 focus:outline-none group-hover:bg-white"
+          autocomplete="off"
+          spellcheck="false"
+          [placeholder]="getPlaceholder('content.operator')"
+          formControlName="value" />
+      </div>
+      <div class="flex items-center gap-4" formGroupName="title">
+        <span class="w-1/5 font-semibold">{{ 'drawers.findInTitle' | transloco }}</span>
+        <select id="title-operator" class="rounded bg-neutral-50 p-2" formControlName="operator">
+          @for (data of selectData; track $index) {
+            <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
+          }
+        </select>
+        <input
+          id="title-value"
+          type="search"
+          class="grow rounded border border-neutral-200 p-2 focus:outline-none group-hover:bg-white"
+          autocomplete="off"
+          spellcheck="false"
+          [placeholder]="getPlaceholder('title.operator')"
+          formControlName="value" />
+      </div>
+      <div class="flex items-center gap-4" formGroupName="location">
+        <span class="w-1/5 font-semibold">{{ 'drawers.findInLocation' | transloco }}</span>
+        <select id="location-operator" class="rounded bg-neutral-50 p-2" formControlName="operator">
+          @for (data of selectData; track $index) {
+            <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
+          }
+        </select>
+        <input
+          id="location-value"
+          type="search"
+          class="grow rounded border border-neutral-200 p-2 focus:outline-none group-hover:bg-white"
+          autocomplete="off"
+          spellcheck="false"
+          [placeholder]="getPlaceholder('location.operator')"
+          formControlName="value" />
+      </div>
+
+      <!-- TABS -->
+      <h1 class="mt-4 text-xl font-bold">{{ 'drawers.inScope' | transloco }}</h1>
+      <div class="flex gap-2">
+        @for (tab of tabs(); track $index) {
+          <button [variant]="tab !== currentTab() ? 'outline' : 'default'" (click)="onTabChange(tab)">
+            {{ tab }}
+          </button>
+        }
+      </div>
+
+      <!-- FILTERS -->
+      <h1 class="mt-4 text-xl font-bold">{{ 'drawers.applyFilters' | transloco }}</h1>
+      @if (generatedFilters) {
+        @for (filter of filters(); track $index) {
+          <DropdownInput
+            [suggestions]="suggestions()"
+            [selected]="getItems(filter.column)"
+            [label]="filter.alias"
+            [placeholder]="'drawers.startTyping' | transloco"
+            [noResultLabel]="'drawers.noResult' | transloco"
+            (onFocus)="setFilterFocus($event, filter)"
+            (onKeyUp)="onInputTyping($event)"
+            (removeItem)="removeItem($event, filter)"
+            (addItem)="addItem($event, filter)" />
+        } @empty {
+          {{ 'drawers.noFilters' | transloco }}
+        }
+      }
+    </section>
+  </div>
+</div>
