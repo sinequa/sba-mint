@@ -1,8 +1,10 @@
 import { Component, inject, viewChild } from '@angular/core';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { CCApp, ExportOutputFormat, ExportSourceType } from '@sinequa/atomic';
-import { AppStore, ButtonComponent, ExportQueryModel, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import { CCApp } from '@sinequa/atomic';
+import { AppStore, ExportQueryModel, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import { ButtonComponent } from '@sinequa/ui';
+
 import { ExportDialog } from './export-dialog';
 
 const loader = ['en', 'fr'].reduce(

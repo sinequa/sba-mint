@@ -13,6 +13,7 @@ import { CollectionsComponent } from '@/core/features/collections/collections';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
+import { TabComponent, TabsComponent } from '@sinequa/ui';
 
 type HomeTab = {
   name: string;
@@ -58,7 +59,7 @@ const homeFeatures: HomeTab[] = [
   host: {
     class: 'layout-search h-screen'
   },
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent],
+  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   styles: [
     `
       #logo {

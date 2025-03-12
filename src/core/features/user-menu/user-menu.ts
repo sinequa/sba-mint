@@ -5,17 +5,22 @@ import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTransloco
 import { getState } from '@ngrx/signals';
 
 import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
+import { PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
+
 import {
+  AvatarComponent,
+  AvatarImageComponent,
+  AvatarFallbackComponent,
   ChevronRightIconComponent,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  UserRoundIconComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  MenuSeparatorComponent,
-  PrincipalStore,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+  HorizontalDividerComponent
+} from '@sinequa/ui';
+
 import { OverrideUserDialogComponent } from '../dialogs/override-user.dialog';
 import { ResetUserSettingsDialogComponent } from '../dialogs/reset-user-settings.dialog';
 import { getHelpIndexUrl } from './help-folder-options';
@@ -36,13 +41,17 @@ const loader = ['en', 'fr'].reduce(
     MenuComponent,
     MenuContentComponent,
     MenuItemComponent,
-    MenuSeparatorComponent,
+    HorizontalDividerComponent,
     TranslocoPipe,
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     FlagEnglishIconComponent,
     FlagFrenchIconComponent,
-    ChevronRightIconComponent
+    UserRoundIconComponent,
+    ChevronRightIconComponent,
+    AvatarComponent,
+    AvatarImageComponent,
+    AvatarFallbackComponent
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope({ scope: 'user-menu', loader })]

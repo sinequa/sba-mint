@@ -1,23 +1,14 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { NgClass } from '@angular/common';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Aggregation, AggregationItem, fetchSuggestField, FilterOperator, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
-import {
-  AppStore,
-  buildQuery,
-  ButtonComponent,
-  DrawerStackService,
-  DropdownComponent,
-  DropdownInputComponent,
-  DropdownItem,
-  QueryParamsStore,
-  QueryService
-} from '@sinequa/atomic-angular';
+import { Aggregation, AggregationItem, FilterOperator, LegacyFilter, TreeAggregation, TreeAggregationNode } from '@sinequa/atomic';
+import { AppStore, buildQuery, DrawerStackService, DropdownInputComponent, DropdownItem, QueryParamsStore, QueryService } from '@sinequa/atomic-angular';
+
+import { ButtonComponent, InputComponent } from '@sinequa/ui';
 
 import { DrawerComponent } from '@/core/components/drawer/drawer.component';
 import { DrawerService } from '@/core/components/drawer/drawer.service';
@@ -45,7 +36,7 @@ const searchRoute = 'search';
 @Component({
   selector: 'app-drawer-advanced-filters',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslocoPipe, DrawerNavbarComponent, DropdownComponent, DropdownInputComponent, ButtonComponent],
+  imports: [ReactiveFormsModule, TranslocoPipe, DrawerNavbarComponent, DropdownInputComponent, ButtonComponent, InputComponent],
   providers: [DrawerService, provideTranslocoScope({ scope: 'drawers', loader })],
   templateUrl: './advanced-filters.component.html',
   styleUrls: ['./advanced-filters.component.scss']

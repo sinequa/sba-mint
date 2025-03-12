@@ -4,12 +4,12 @@
     -webkit-appearance: none;
   }
 
-  border-radius: theme('borderRadius.DEFAULT');
+  /* border-radius: theme('borderRadius.DEFAULT'); */
 
   &:has([popover]:popover-open) {
     z-index: 5000;
     box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, 0.3);
-    border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
+    /* border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0; */
   }
 
   [popover]::backdrop {

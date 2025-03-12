@@ -5,16 +5,8 @@ import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 
 import { globalConfig, login, setGlobalConfig } from '@sinequa/atomic';
-import {
-  ApplicationService,
-  ButtonComponent,
-  DialogComponent,
-  DialogContentComponent,
-  DialogFooterComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent,
-  PrincipalStore
-} from '@sinequa/atomic-angular';
+import { ApplicationService, PrincipalStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -68,7 +60,7 @@ const loader = ['en', 'fr'].reduce(
       </DialogContent>
 
       <DialogFooter>
-        <button variant="ghost" (click)="dialog.close()">
+        <button variant="outline" (click)="dialog.close()">
           {{ 'cancel' | transloco }}
         </button>
 

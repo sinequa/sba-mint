@@ -3,7 +3,8 @@ import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsv
 import { getState } from '@ngrx/signals';
 
 import { CCApp, Result } from '@sinequa/atomic';
-import { AppStore, ButtonComponent, DropdownComponent, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/atomic-angular';
+import { AppStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DropdownComponent, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
 
 export type SortingChoice = {
   name: string;

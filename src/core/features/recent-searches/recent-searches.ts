@@ -4,7 +4,8 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoSe
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { ButtonComponent, MenuSeparatorComponent, PopoverContentComponent, RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
+import { RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, HorizontalDividerComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { RecentSearchComponent } from './recent-search';
 
@@ -21,7 +22,7 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
 @Component({
   selector: 'RecentSearches',
   standalone: true,
-  imports: [RouterModule, TranslocoPipe, MenuSeparatorComponent, RecentSearchComponent, ButtonComponent],
+  imports: [RouterModule, TranslocoPipe, HorizontalDividerComponent, RecentSearchComponent, ButtonComponent],
   template: `
     <div class="p-2">
       @if (floating) {
@@ -30,10 +31,9 @@ const RECENT_SEARCHES_ITEMS_PER_PAGE = 10;
       }
     </div>
 
-    <ul class="flex max-h-[460px] flex-col overflow-auto px-2 pb-2">
+    <ul class="flex max-h-[460px] flex-col overflow-auto px-2 pb-2" role="list" aria-label="Recent searches">
       @for (recentSearch of paginatedRecentSearches(); track $index) {
         <RecentSearch [recentSearch]="recentSearch" (remove)="remove($index, $event)" />
-
       } @empty {
         <li class="py-4 text-center text-neutral-500">
           {{ 'recentSearches.noRecentSearches' | transloco }}

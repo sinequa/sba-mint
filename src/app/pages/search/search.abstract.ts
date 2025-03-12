@@ -7,6 +7,7 @@ import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 import { Aggregation, Article, Query, QueryParams, Result, isNotInputEvent } from '@sinequa/atomic';
 import {
   AggregationsStore,
+  AppStore,
   DrawerStackService,
   PrincipalStore,
   QueryParamsStore,
@@ -27,12 +28,12 @@ type QP = {
 
 @Directive({
   host: {
-    '(keydown.enter)': 'handleKeydownEnter($event)'
+    '(keydown.enter)': 'handleKeydownEnter($event)',
+    '[attr.drawer-opened]': 'drawerOpened() || false'
   }
 })
 export abstract class SearchBase<T> implements OnDestroy {
-  @HostBinding('attr.drawer-opened')
-  public drawerOpened: boolean = false;
+  drawerOpened = signal(false);
 
   protected readonly result = signal<Result | undefined>(undefined);
   protected readonly queryText = signal<string>('');
@@ -42,6 +43,7 @@ export abstract class SearchBase<T> implements OnDestroy {
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
+  protected readonly appStore = inject(AppStore);
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
@@ -166,7 +168,7 @@ export abstract class SearchBase<T> implements OnDestroy {
       { allowSignalWrites: true }
     );
 
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => (this.drawerOpened = state)));
+    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
   }
 
   ngOnDestroy(): void {
@@ -200,4 +202,19 @@ export abstract class SearchBase<T> implements OnDestroy {
       e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }
+
+  /**
+   * Checks if the tab search is active.
+   *
+   * This method retrieves the current query from the query parameters store,
+   * then fetches the corresponding query from the app store by its name.
+   * It returns the active status of the tab search if available, otherwise returns false.
+   *
+   * @returns {boolean} - True if the tab search is active, otherwise false.
+   */
+  isTabSearchActive = computed(() => {
+    const q = this.queryParamsStore.getQuery();
+    const ccQuery = this.appStore.getQueryByName(q.name);
+    return ccQuery?.tabSearch.isActive ?? false;
+  });
 }

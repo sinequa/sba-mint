@@ -1,24 +1,16 @@
-import { NgClass } from '@angular/common';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
-import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
-import { combineLatest, map, of, switchMap, catchError } from 'rxjs';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { catchError, combineLatest, map, of, switchMap } from 'rxjs';
 
 import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
-import {
-  AppStore,
-  AuditService,
-  AutocompleteService,
-  DrawerStackService,
-  HighlightWordPipe,
-  MenuItemComponent,
-  MenuSeparatorComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+import { AppStore, AuditService, AutocompleteService, DrawerStackService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
 
-import { SearchInputComponent } from '../search-input.component';
+import { ButtonComponent, ListItemComponent, HorizontalDividerComponent } from '@sinequa/ui';
+
 import { DrawerAdvancedFiltersComponent } from '../../drawer/advanced-filters/advanced-filters.component';
+import { SearchInputComponent } from '../search-input.component';
 
 export type Suggestion = Partial<SuggestionBasic> & {
   $isDivider: boolean;
@@ -39,7 +31,7 @@ const loader = ['en', 'fr'].reduce(
   selector: 'app-autocomplete',
   standalone: true,
   templateUrl: './autocomplete.component.html',
-  imports: [NgClass, HighlightWordPipe, TranslocoPipe, MenuItemComponent, MenuSeparatorComponent],
+  imports: [HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   providers: [provideTranslocoScope({ scope: 'search-input', loader })],
   styles: [
     `
@@ -81,7 +73,6 @@ export class AutocompleteComponent {
           fromUserSettings,
           this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
             catchError(error => {
-              console.error(error);
               return of([]);
             })
           )

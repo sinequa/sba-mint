@@ -1,59 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* @import "../node_modules/@sinequa/atomic-angular/assets/tailwind.css"; */
-
-@import './styles/layouts.scss';
-@import './styles/box-shadows.scss';
+@import 'styles/drawer-stack.css';
+/*
+@import 'styles/panel.css';
+@import 'styles/box-shadows.css';
 @import './styles/colors.scss';
-@import './styles/collapse.scss';
 @import './styles/design-system/design-system.scss';
 @import './styles/animations.scss';
-@import './styles/drawer-stack.scss';
-@import './styles/panel.scss';
 @import './styles/dropdown.scss';
-/* @import "./styles/checkbox.scss"; */
+@import "./styles/checkbox.scss";
 @import './styles/radio.scss';
-
-@layer base {
-  :root {
-    --logo-small: url('assets/logo/small.svg');
-    --logo-large: url('assets/logo/large.svg');
-    --logo-small-alt-text: 'Sinequa logo';
-    --logo-large-alt-text: 'Sinequa logo';
-
-    --background: #ffffff;
-    --foreground: #1c1c1c;
-    --card: #ffffff;
-    --card-foreground: #1c1c1c;
-    --popover: #ffffff;
-    --popover-foreground: #1c1c1c;
-
-    --primary: 214 100% 50%; /* #0066ff */
-    --secondary: 0 0% 96%; /* #f5f5f5 */
-    --accent: 0 0% 95.29%; /* #f3f3f3 */
-    --destructive: 0 72.22% 50.59%; /* #b30000 */
-    --muted: 246 100% 96%; /* #f0f8ff */
-
-    --primary-foreground: 210 40% 98%; /* #e6f7ff */
-    --secondary-foreground: 222.2 47.4% 11.2%; /* #1c1c1c */
-    --muted-foreground: 215.4 16.3% 46.9%; /* #6e6e6e */
-    --accent-foreground: 222.2 47.4% 11.2%; /* #1c1c1c */
-    --destructive-foreground: 210 40% 98%; /* #e6f7ff */
-
-    --border: #e4e4e4;
-    --input: #e4e4e4;
-    --ring: #0a0a0a;
-    --radius: 0.5rem;
-    --chart-1: #f5b342;
-    --chart-2: #2ba58e;
-    --chart-3: #2b4d63;
-    --chart-4: #f5c542;
-    --chart-5: #f5a142;
-  }
-}
+*/
 
 *,
 *::before,
@@ -70,6 +31,111 @@ body {
   position: relative;
 }
 
+@layer base {
+  :root {
+    --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+    --backdrop: rgba(0, 0, 0, 0.4);
+    --backdrop-filter: blur(2px);
+
+    --logo-small: url('assets/logo/small.svg');
+    --logo-large: url('assets/logo/large.svg');
+    --logo-small-alt-text: 'Sinequa logo';
+    --logo-large-alt-text: 'Sinequa logo';
+
+    --background: #ffffff;
+    --foreground: #23272e;
+    --card: #ffffff;
+    --card-foreground: #1c1c1c;
+    --popover: #ffffff;
+    --popover-foreground: #1c1c1c;
+
+    --primary: 214 100% 50%; /* #0084ff */
+    --primary-hover: 221 100% 50%; /* #0056FF */
+    --primary-active: 214 100% 37.25%; /* #0040BF */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --secondary: 210 17% 38%; /* #526077 */
+    --secondary-hover: 220 17% 33.14%; /* #434E61 */
+    --secondary-active: 210 17% 25.49%; /* #3A4252 */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --muted: 210 17% 96.08%; /* #f6f7f9 */
+    --muted-foreground: 214 17% 74%; /* #B1BBC8 */
+
+    --accent: 0 0% 95.29%; /* #F2F2F2 */
+    --accent-foreground: 222.2 47.4% 11.2%; /* #1C1C1C */
+
+    --destructive: 0 100% 54.9%; /* #FF2A1D */
+    --destructive-hover: 0 87.5% 42.35%; /* #C8180D */
+    --destructive-active: 0 83.33% 36.47%; /* #A5180F */
+    --destructive-disable: 0 100% 86.67%; /* #FFC8C5 */
+    --destructive-foreground: 210 40% 98%;
+
+    --border: #e4e4e4;
+    --input: 220 17% 87.84%; /* #d5d9e2 */
+    --ring: 221.2 83.2% 53.3%; /* #1a73e8 */
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer components {
+  .collapse:not(td):not(tr):not(colgroup) {
+    @apply visible;
+  }
+
+  .collapse {
+    @apply relative grid overflow-hidden;
+    grid-template-rows: auto 0fr;
+    transition: grid-template-rows 0.2s;
+  }
+
+  .collapse-title,
+  .collapse > input[type='checkbox'],
+  .collapse > input[type='radio'],
+  .collapse-content {
+    @apply col-start-1 row-start-1;
+  }
+
+  .collapse > input[type='checkbox'],
+  .collapse > input[type='radio'] {
+    @apply appearance-none opacity-0;
+  }
+
+  .collapse-content {
+    @apply invisible col-start-1 row-start-2 min-h-0;
+    transition: visibility 0.2s;
+  }
+
+  .collapse[open],
+  .collapse-open,
+  .collapse:focus:not(.collapse-close) {
+    grid-template-rows: auto 1fr;
+  }
+
+  .collapse:not(.collapse-close):has(> input[type='checkbox']:checked),
+  .collapse:not(.collapse-close):has(> input[type='radio']:checked) {
+    grid-template-rows: auto 1fr;
+  }
+
+  .collapse[open] > .collapse-content,
+  .collapse-open > .collapse-content,
+  .collapse:focus:not(.collapse-close) > .collapse-content,
+  .collapse:not(.collapse-close) > input[type='checkbox']:checked ~ .collapse-content,
+  .collapse:not(.collapse-close) > input[type='radio']:checked ~ .collapse-content {
+    @apply visible min-h-fit;
+  }
+
+  /*
+   * Dropdown compatibility
+   * https://github.com/saadeghi/daisyui/issues/2761
+   */
+  .dropdown:not(:focus-within) .collapse,
+  .dropdown:not(:focus-within) .collapse > * {
+    visibility: collapse !important;
+  }
+}
+
 /* Override to hide bootstrap spinner */
 .spinner-grow {
   display: none !important;
@@ -83,4 +149,8 @@ body {
 ::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
+}
+
+.panel-h-full {
+  --panel-max-height: 100%;
 }

@@ -3,16 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import {
-  AggregationsStore,
-  AppStore,
-  ButtonComponent,
-  cn,
-  OverflowItemDirective,
-  OverflowManagerDirective,
-  OverflowStopDirective,
-  QueryParamsStore
-} from '@sinequa/atomic-angular';
+import { AggregationsStore, AppStore, OverflowItemDirective, OverflowManagerDirective, OverflowStopDirective, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent } from '@sinequa/ui';
 
 import { debounceTime, Subscription } from 'rxjs';
 import { FilterButtonComponent } from './buttons/filter-button.component';
@@ -44,7 +36,7 @@ const loader = ['en', 'fr'].reduce(
   template: `
     <ng-container overflowManager [target]="el.nativeElement" (count)="adjustFiltersCount($event)">
       @if (hasFilters()) {
-        <button variant="destructive" aria-label="clear all filters" (click)="clearFilters()" (keydown.enter)="clearFilters()">
+        <button variant="destructive" size="icon" aria-label="clear all filters" (click)="clearFilters()" (keydown.enter)="clearFilters()">
           <i class="fa-fw far fa-trash-can" aria-hidden="true"></i>
         </button>
       }
@@ -70,8 +62,6 @@ const loader = ['en', 'fr'].reduce(
   }
 })
 export class FiltersBarComponent implements OnDestroy {
-  cn = cn;
-
   moreFilterElement = viewChild<MoreButtonComponent>(MoreButtonComponent);
   dropdownElements = viewChildren<FilterButtonComponent>(FilterButtonComponent);
   readonly overflowManager = viewChild<OverflowManagerDirective>(OverflowManagerDirective);

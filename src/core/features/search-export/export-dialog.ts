@@ -3,16 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { CCApp, CCWebService, ExportOutputFormat } from '@sinequa/atomic';
-import {
-  AppStore,
-  ButtonComponent,
-  DialogComponent,
-  DialogContentComponent,
-  DialogFooterComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent,
-  ExportQueryModel
-} from '@sinequa/atomic-angular';
+import { AppStore, ExportQueryModel } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 interface CCQueryExport extends CCWebService {
   webServiceType: 'queryexport';
@@ -59,39 +51,46 @@ const loader = ['en', 'fr'].reduce(
         <DialogTitle>{{ 'searchExport.export' | transloco }}</DialogTitle>
       </DialogHeader>
 
-      <DialogContent>
-        <div class="flex flex-col">
-          <span>{{ 'searchExport.outputFormat' | transloco }}</span>
-          <select class="rounded bg-neutral-50 p-2" id="format" [ngModel]="format()" (ngModelChange)="format.set($event)">
-            @for (format of supportedFormats; track $index) {
-              <option [value]="format">{{ format.toUpperCase() }}</option>
-            }
-          </select>
+      <DialogContent class="flex flex-col gap-2">
+        <span>{{ 'searchExport.outputFormat' | transloco }}</span>
+        <select
+          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          id="format"
+          [ngModel]="format()"
+          (ngModelChange)="format.set($event)">
+          @for (format of supportedFormats; track $index) {
+            <option [value]="format">{{ format.toUpperCase() }}</option>
+          }
+        </select>
 
-          <span>{{ 'searchExport.exportColumns' | transloco }}</span>
-          <select id="exportedColumns" class="rounded bg-neutral-50 p-2" multiple [ngModel]="columnsToExport()" (ngModelChange)="columnsToExport.set($event)">
-            @for (column of exportableColumns; track $index) {
-              <option [value]="column">{{ column }}</option>
-            }
-          </select>
+        <span>{{ 'searchExport.exportColumns' | transloco }}</span>
+        <select
+          id="exportedColumns"
+          class="w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          multiple
+          [ngModel]="columnsToExport()"
+          (ngModelChange)="columnsToExport.set($event)">
+          @for (column of exportableColumns; track $index) {
+            <option [value]="column">{{ column }}</option>
+          }
+        </select>
 
-          <span>{{ 'searchExport.maxLines' | transloco }}</span>
-          <input
-            type="number"
-            id="maxCount"
-            autocomplete="off"
-            spellcheck="off"
-            class="grow rounded border border-neutral-200 p-2 focus:outline-none group-hover:bg-white"
-            [ngModel]="maxCount()"
-            (ngModelChange)="maxCount.set($event)" />
-        </div>
+        <span>{{ 'searchExport.maxLines' | transloco }}</span>
+        <input
+          type="number"
+          id="maxCount"
+          autocomplete="off"
+          spellcheck="off"
+          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          [ngModel]="maxCount()"
+          (ngModelChange)="maxCount.set($event)" />
       </DialogContent>
 
       <DialogFooter>
         <button variant="outline" (click)="dialog.close()">
           {{ 'collection.cancel' | transloco }}
         </button>
-        <button class="w-full" tabindex="0" [attr.title]="'collection.download' | transloco" (click)="onDownload()">
+        <button tabindex="0" [attr.title]="'collection.download' | transloco" (click)="onDownload()">
           {{ 'searchExport.download' | transloco }}
         </button>
       </DialogFooter>

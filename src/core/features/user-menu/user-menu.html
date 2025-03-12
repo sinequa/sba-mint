@@ -1,5 +1,14 @@
 <menu>
-  <span class="avatar bg-primary" role="button">{{ initials() }}</span>
+  <Avatar class="size-11 cursor-pointer">
+    <AvatarImage src="" width="44" height="44" alt="avatar" />
+    <AvatarFallback class="bg-primary text-sm font-semibold text-primary-foreground">
+      @if(initials()) {
+      <span>{{ initials() }}</span>
+      } @else {
+      <UserRound class="size-8" />
+      }
+    </AvatarFallback>
+  </Avatar>
 
   <MenuContent position="bottom-start" class="min-w-fit">
     <menu position="left-start" className="dropdown-content max-w-40">

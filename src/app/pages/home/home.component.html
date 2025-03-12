@@ -5,33 +5,30 @@
   </header>
 
   <main class="flex h-[50vh] flex-col gap-16">
-    <app-search-input class="h-7 w-full" (debounced)="searchText.set($event)" (validated)="search($event)">
+    <app-search-input class="rounded-md" (debounced)="searchText.set($event)" (validated)="search($event)">
       <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
     </app-search-input>
 
     <div class="flex max-h-full grow flex-col">
-      <menu class="flex font-semibold">
+      <tabs class="flex font-semibold" role="tablist" aria-label="widgets tabs">
         @for (tab of tabs(); track tab.label) {
-          <li>
-            <button
-              class="tab aria-selected:border-primary aria-selected:text-primary"
-              [attr.disabled]="tab.disabled ?? null"
-              [attr.tabindex]="tab.disabled ? -1 : 0"
-              [attr.aria-selected]="selectedTabId() === $index"
-              (click)="selectTab(tab)"
-              (keydown.enter)="selectTab(tab)">
-              <i class="fa-fw {{ tab.iconClass }}"></i>
-              {{ tab.label }}
-            </button>
-          </li>
+          <tab
+            role="tab"
+            [value]="tab.label"
+            class="w-fit"
+            [attr.disabled]="tab.disabled ?? null"
+            [active]="selectedTabId() === $index"
+            (click)="selectTab(tab)"
+            (keydown.enter)="selectTab(tab)">
+            <i class="fa-fw {{ tab.iconClass }}" aria-hidden="true"></i>
+            {{ tab.label }}
+          </tab>
         }
+      </tabs>
 
-        <li class="grow border-b border-neutral-300"></li>
-      </menu>
-
-      <div class="scrollbar-thin my-8 overflow-y-auto">
+      <div class="my-2 overflow-y-auto scrollbar-thin">
         @for (tab of tabs(); track tab.label) {
-          <div [ngClass]="{ hidden: selectedTabId() !== $index }">
+          <div [class.hidden]="selectedTabId() !== $index">
             <ng-container *ngComponentOutlet="tab.component; inputs: tab.inputs" />
           </div>
         }

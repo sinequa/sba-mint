@@ -5,7 +5,7 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsv
 import { Subscription } from 'rxjs';
 
 import { Aggregation, AggregationItem, FilterOperator, LegacyFilter, translateAggregationToDateOptions } from '@sinequa/atomic';
-import { ButtonComponent, cn, MenuItemComponent } from '@sinequa/atomic-angular';
+import { ButtonComponent, cn, ListItemComponent } from '@sinequa/ui';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
@@ -49,7 +49,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'date-filter,DateFilter',
   standalone: true,
-  imports: [NgClass, ButtonComponent, MenuItemComponent, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
+  imports: [NgClass, ButtonComponent, ListItemComponent, ReactiveFormsModule, TranslocoPipe, SyslangPipe],
   templateUrl: './date.component.html',
   styles: `
     :host {

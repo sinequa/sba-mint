@@ -9,8 +9,9 @@ import { AssistantLayoutComponent } from './pages/assistant/assistant.layout';
 import { BookmarksComponent } from './pages/bookmarks/bookmarks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RecentSearchesComponent } from './pages/recent-searches/recent-searches.component';
-import { SearchComponent } from './pages/search/search.component';
+import { SearchLayoutComponent } from './pages/search/search.layout';
 import { SignInComponent } from '@/core/features/sign-in/sign-in';
+import { SearchAllComponent } from './pages/search/all/search-all.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -35,11 +36,11 @@ export const routes: ExtendedRoutes = [
   { path: 'bookmarks', component: BookmarksComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'search',
-    component: SearchComponent,
+    component: SearchLayoutComponent,
     canActivate: [AuthGuard(), InitializationGuard()],
     resolve: { queryName: queryNameResolver },
     children: [
-      { path: 'all', component: LoadingComponent },
+      { path: 'all', component: SearchAllComponent, resolve: { queryName: queryNameResolver } },
       { path: '**', redirectTo: 'all', pathMatch: 'full' }
     ]
   },

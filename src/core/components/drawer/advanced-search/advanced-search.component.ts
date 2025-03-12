@@ -10,13 +10,14 @@ import {
   AppStore,
   ApplicationStore,
   ArticleMetadata,
-  ButtonComponent,
   MetadataComponent,
   PreviewService,
   QueryParamsStore,
   SelectArticleOnClickDirective,
   SelectionStore
 } from '@sinequa/atomic-angular';
+
+import { ButtonComponent } from '@sinequa/ui';
 
 import { SourceIconComponent } from '../../source-icon/source-icon.component';
 
@@ -44,7 +45,7 @@ const loader = ['en', 'fr'].reduce(
   styles: [
     `
       :host {
-        // disable default max-height for panel
+        /* disable default max-height for panel */
         --panel-max-height: none;
       }
       /* Hides cancel button from input that as type='search' */

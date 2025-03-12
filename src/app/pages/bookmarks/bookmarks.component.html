@@ -10,10 +10,8 @@
     <ul class="mt-4 flex flex-col gap-2">
       @for (bookmark of bookmarksArticle(); track bookmark.bookmark.id + $index) {
         <li>
-          @if (bookmark.article) {
-            @if (bookmark.article.docformat) {
-              <ng-container *ngComponentOutlet="getArticleType(bookmark.article.docformat)!; inputs: { article: bookmark.article, strategy: 'replace' }" />
-            }
+          @if (bookmark.article && bookmark.article.docformat) {
+            <ng-container *ngComponentOutlet="getArticleType(bookmark.article.docformat)!; inputs: { article: bookmark.article, strategy: 'replace' }" />
           } @else {
             <div class="flex">
               <span class="line-clamp-1 grow text-neutral-500">{{ bookmark.bookmark.id }}</span>

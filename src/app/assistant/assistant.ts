@@ -16,6 +16,7 @@ import {
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppStore, NavigationService, PreviewHighlights, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { catchError } from 'rxjs';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -107,8 +108,17 @@ export class AssistantComponent {
     console.log('Assistant component initialized', this.query(), this.mode(), this.instanceId());
     afterNextRender(() => {
       this.sqChat()
-        ?.chatService?.streaming$.pipe(takeUntilDestroyed(destroyRef))
-        .subscribe(streaming => this.isStreaming.emit(streaming));
+        ?.chatService?.streaming$.pipe(
+          takeUntilDestroyed(destroyRef),
+          catchError(error => {
+            console.error('Unhandled error in streaming', error);
+            return [];
+          })
+        )
+        .subscribe({
+          next: streaming => this.isStreaming.emit(streaming),
+          error: error => console.error('Error in streaming', error)
+        });
     });
 
     destroyRef.onDestroy(() => console.log('Assistant component destroyed'));

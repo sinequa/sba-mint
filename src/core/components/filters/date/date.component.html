@@ -1,37 +1,34 @@
 <form [formGroup]="form">
   <fieldset class="overflow-auto">
-    <legend class="w-full cursor-default px-2 pt-2">
-      <div class="dropdown-header">
-        <p class="me-4">
-          <i class="fa-fw {{ title().icon }}" aria-hidden="true"></i>
-          {{ title().label | syslang | transloco }}
-        </p>
+    <legend class="mb-1 flex h-8 w-full select-none items-center pl-1 text-sm font-semibold text-gray-600">
+      <p class="me-4 grow">
+        <i class="fa-fw {{ title().icon }}" aria-hidden="true"></i>
+        {{ title().label | syslang | transloco }}
+      </p>
+      <div class="ms-4">
+        @if (hasFilter()) {
+          <button
+            variant="ghost"
+            size="icon"
+            [attr.title]="'filters.clearFilters' | transloco"
+            [attr.aria-label]="'filters.clearFilters' | transloco"
+            (click)="clear()"
+            (keydown.enter)="clear()">
+            <i class="fa-fw far fa-filter-circle-xmark" aria-hidden="true"></i>
+          </button>
+        }
 
-        <div class="ms-4">
-          @if (hasFilter()) {
-            <button
-              variant="ghost"
-              size="sm"
-              [attr.title]="'filters.clearFilters' | transloco"
-              [attr.aria-label]="'filters.clearFilters' | transloco"
-              (click)="clear()"
-              (keydown.enter)="clear()">
-              <i class="fa-fw far fa-filter-circle-xmark" aria-hidden="true"></i>
-            </button>
-          }
-
-          @if (hasFilter()) {
-            <button
-              variant="ghost"
-              size="sm"
-              [attr.title]="'filters.applyFilters' | transloco"
-              [attr.aria-label]="'filters.applyFilters' | transloco"
-              (click)="apply()"
-              (keydown.enter)="apply()">
-              <i class="fa-fw far fa-filter" aria-hidden="true"></i>
-            </button>
-          }
-        </div>
+        @if (hasFilter()) {
+          <button
+            variant="ghost"
+            size="icon"
+            [attr.title]="'filters.applyFilters' | transloco"
+            [attr.aria-label]="'filters.applyFilters' | transloco"
+            (click)="apply()"
+            (keydown.enter)="apply()">
+            <i class="fa-fw far fa-filter" aria-hidden="true"></i>
+          </button>
+        }
       </div>
     </legend>
 

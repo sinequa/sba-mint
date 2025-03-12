@@ -1,20 +1,11 @@
-import { Component, computed, inject, signal, SkipSelf } from '@angular/core';
-import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { Component, computed, inject, signal } from '@angular/core';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { LegacyFilter, Query } from '@sinequa/atomic';
-import {
-  Bookmark,
-  ButtonComponent,
-  DrawerStackService,
-  MenuItemComponent,
-  MenuSeparatorComponent,
-  PopoverComponent,
-  PopoverContentComponent,
-  QueryService,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
 import { RouterModule } from '@angular/router';
+import { LegacyFilter, Query } from '@sinequa/atomic';
+import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, ListItemComponent, HorizontalDividerComponent, PopoverContentComponent } from '@sinequa/ui';
 
 const BOOKMARKS_ITEMS_PER_PAGE = 10;
 
@@ -29,7 +20,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'bookmarks, Bookmarks',
   standalone: true,
-  imports: [TranslocoPipe, RouterModule, ButtonComponent, MenuSeparatorComponent, MenuItemComponent],
+  imports: [TranslocoPipe, RouterModule, ButtonComponent, HorizontalDividerComponent, ListItemComponent],
   templateUrl: './bookmarks.html',
   styles: [
     `

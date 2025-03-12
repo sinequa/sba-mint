@@ -143,7 +143,7 @@ export class SignInComponent implements OnDestroy {
     if (!this.valid()) return;
 
     this.appService
-      .autoLogin({ credentials: this.credentials() })
+      .autoSignIn({ credentials: this.credentials() })
       .then(value => {
         this.router.navigateByUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
       })

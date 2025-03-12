@@ -1,8 +1,9 @@
 import { Component, computed, inject, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { Alert, QueryParamsStore, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+
 import {
-  Alert,
   ButtonComponent,
   DialogComponent,
   DialogContentComponent,
@@ -10,10 +11,9 @@ import {
   DialogFooterComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-  QueryParamsStore,
-  QueryService,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+  InputComponent
+} from '@sinequa/ui';
+
 import { toast } from 'ngx-sonner';
 import { firstValueFrom } from 'rxjs';
 
@@ -36,7 +36,8 @@ const loader = ['en', 'fr'].reduce(
     DialogHeaderComponent,
     DialogTitleComponent,
     DialogContentComponent,
-    DialogFooterComponent
+    DialogFooterComponent,
+    InputComponent
   ],
   providers: [provideTranslocoScope({ scope: 'alert', loader })],
   template: `
@@ -47,7 +48,6 @@ const loader = ['en', 'fr'].reduce(
 
       <DialogContent class="flex flex-col gap-2">
         <input
-          class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
           type="text"
           autocomplete="off"
           spellcheck="false"
@@ -57,7 +57,7 @@ const loader = ['en', 'fr'].reduce(
           (ngModelChange)="alertName.set($event)" />
 
         <select
-          class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
           id="alertFrequency"
           [ngModel]="alertFrequency()"
           (ngModelChange)="alertFrequency.set($event)">
@@ -66,7 +66,7 @@ const loader = ['en', 'fr'].reduce(
           }
         </select>
 
-        <div class="weekdays-grid">
+        <div class="weekdays-grid p-2.5">
           @for (day of weekdays; track $index) {
             <div>
               <input class="me-1" type="checkbox" id="day_{{ day.value }}" [checked]="dayChecked(day.value)" (change)="dayChange($event, day.value)" />
@@ -77,36 +77,31 @@ const loader = ['en', 'fr'].reduce(
           }
         </div>
 
-        <input
-          type="text"
-          class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
-          id="alertTimes"
-          autocomplete="off"
-          spellcheck="off"
-          [ngModel]="alertTimes()"
-          (ngModelChange)="alertTimes.set($event)" />
+        <input type="text" id="alertTimes" autocomplete="off" spellcheck="off" [ngModel]="alertTimes()" (ngModelChange)="alertTimes.set($event)" />
 
-        <div>
+        <div class="px-2.5">
           <input class="me-1" type="checkbox" id="alertActive" [checked]="alertActive()" (change)="alertActive.set(!alertActive())" />
           <label role="button" for="alertActive" class="form-check-label user-select-none cursor-pointer">{{ 'alert.alertActive' | transloco }}</label>
         </div>
       </DialogContent>
 
-      <DialogFooter class="flex flex-col">
-        <div class="flex flex-col gap-2">
-          @if (alert) {
-            <button variant="outline" (click)="execute()">
-              {{ 'alert.execute' | transloco }}
-            </button>
-          }
-          @if (canUpdateQuery()) {
-            <button variant="outline" (click)="updateQuery()">
-              {{ 'alert.updateQuery' | transloco }}
-            </button>
-          }
-        </div>
-        <div class="flex justify-end gap-2">
-          <button variant="ghost" (click)="dialog.close()">
+      <DialogFooter class="flex-col">
+        @if (alert || canUpdateQuery()) {
+          <div class="flex w-full flex-col gap-2">
+            @if (alert) {
+              <button variant="outline" (click)="execute()">
+                {{ 'alert.execute' | transloco }}
+              </button>
+            }
+            @if (canUpdateQuery()) {
+              <button variant="outline" (click)="updateQuery()">
+                {{ 'alert.updateQuery' | transloco }}
+              </button>
+            }
+          </div>
+        }
+        <div class="ml-auto flex justify-end gap-2">
+          <button variant="outline" (click)="dialog.close()">
             {{ 'cancel' | transloco }}
           </button>
           <button (click)="confirm()" [disabled]="invalidForm()">

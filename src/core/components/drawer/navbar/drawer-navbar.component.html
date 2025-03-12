@@ -1,12 +1,10 @@
-<menu class="btn-sm flex items-center gap-2 p-4 *:*:font-semibold">
-  <li>
-    <button class="btn btn-ghost flex items-center gap-2" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
-      <i class="fa-fw far fa-arrow-left"></i>
-      {{ 'back' | transloco }}
-    </button>
-  </li>
+<menu class="flex items-center gap-2 p-4 font-semibold">
+  <button variant="ghost" class="group" [attr.title]="'back' | transloco" (click)="drawerStack.close()">
+    <i class="fa-fw far fa-arrow-left [&_svg]-ms-1 [&_svg]transition-transform opacity-60 group-hover:-translate-x-0.5"></i>
+    {{ 'back' | transloco }}
+  </button>
 
-  <li class="h-8 w-[1px] self-center bg-neutral-200"></li>
+  <VerticalDivider />
 
   <ng-content></ng-content>
 </menu>

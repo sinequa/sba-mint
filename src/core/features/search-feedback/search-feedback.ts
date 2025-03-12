@@ -1,9 +1,11 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { HashMap, provideTranslocoScope, Translation, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { Result } from '@sinequa/atomic';
-import { AuditService, ButtonComponent, QueryParamsStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
+
+import { Result } from '@sinequa/atomic';
+import { AuditService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent } from '@sinequa/ui';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {

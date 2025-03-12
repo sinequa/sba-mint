@@ -1,12 +1,24 @@
-<div
-  id="autocomplete-anchor"
-  class="group relative flex h-8 grow rounded focus-within:z-[1001] focus-within:rounded-b-none focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
-  <div class="flex grow items-center gap-2 rounded-s bg-neutral-50 pl-2 focus-within:rounded-b-none group-hover:bg-white">
+<div id="autocomplete-anchor" class="group relative flex w-full focus-within:z-[1001]">
+  <div class="relative w-full">
+    <input
+      [class]="cn('peer rounded-e-none pe-8 ps-9 group-focus-within:rounded-bl-none', allowChatDrawer() && 'pe-32')"
+      type="search"
+      id="search-navbar"
+      [attr.placeholder]="'searchInput.placeholder' | transloco"
+      [attr.aria-label]="'searchInput.placeholder' | transloco"
+      autocomplete="off"
+      spellcheck="false"
+      [ngModel]="input()"
+      (ngModelChange)="input.set($event)"
+      (keyup)="onKeyDown($event)"
+      (click)="inputClicked()"
+      aria-keyshortcuts="/" />
+
     @if (showSave() && input() !== '') {
       <button
         variant="icon"
         size="icon"
-        class="w-4"
+        class="absolute inset-y-0 start-0 w-4 ps-3 peer-disabled:opacity-50"
         [ngClass]="{ 'animate-save': saveAnimation() }"
         [attr.title]="'searchInput.saveSearch' | transloco"
         [attr.aria-label]="'searchInput.saveSearch' | transloco"
@@ -20,25 +32,12 @@
       </button>
     }
 
-    <input
-      type="search"
-      id="search-navbar"
-      class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
-      [attr.placeholder]="'searchInput.placeholder' | transloco"
-      [attr.aria-label]="'searchInput.placeholder' | transloco"
-      autocomplete="off"
-      spellcheck="false"
-      [ngModel]="input()"
-      (ngModelChange)="input.set($event)"
-      (keyup)="onKeyDown($event)"
-      (click)="inputClicked()"
-      aria-keyshortcuts="/" />
-
     <!-- Clear search button -->
     @if (input() !== '') {
       <button
         variant="icon"
         size="icon"
+        class="absolute inset-y-0 end-0 pe-3 peer-disabled:opacity-50"
         [attr.title]="'searchInput.clearSearch' | transloco"
         [attr.aria-label]="'searchInput.clearSearch' | transloco"
         (click)="clearInput($event)"
@@ -50,7 +49,8 @@
     <!-- Ask AI button -->
     @if (input() !== '' && allowChatDrawer()) {
       <button
-        class="btn btn-xs my-1 rounded-sm bg-blue-100 text-sm text-primary"
+        variant="ai"
+        class="absolute inset-y-0 end-8 m-1 h-6 rounded-sm text-xs"
         title="Ask AI"
         aria-label="Ask AI"
         (click)="askAI()"
@@ -63,7 +63,8 @@
 
   <!-- Search button -->
   <button
-    class="size-4 h-full rounded-e rounded-s-none group-focus-within:rounded-br-none"
+    size="icon"
+    class="rounded-e rounded-s-none group-focus-within:rounded-br-none"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"
@@ -73,6 +74,6 @@
   </button>
 </div>
 
-<div popover #autocompletePopover>
+<div popover #autocompletePopover (click)="handlePopoverClick($event)">
   <ng-content></ng-content>
 </div>

@@ -1,14 +1,15 @@
 import { Component, computed, EventEmitter, HostBinding, input, Output } from '@angular/core';
 
-import { AggregationListItem, cn, MenuItemComponent } from '@sinequa/atomic-angular';
+import { AggregationListItem, cn } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
+import { ListItemComponent } from '@sinequa/ui';
 
 @Component({
-  selector: 'aggregation-row, AggregationRow',
+  selector: 'aggregation-item, AggregationItem, aggregationitem',
   standalone: true,
-  imports: [MenuItemComponent, SyslangPipe],
-  templateUrl: './aggregation-row.component.html',
+  imports: [ListItemComponent, SyslangPipe],
+  templateUrl: './aggregation-item.component.html',
   styles: `
     :host {
       display: block;
@@ -19,7 +20,7 @@ import { SyslangPipe } from '@/core/pipes/syslang';
     }
   `
 })
-export class AggregationRowComponent {
+export class AggregationItemComponent {
   cn = cn;
   @HostBinding('attr.disabled') get disabled() {
     return this.node().count === 0 ? 'disabled' : null;

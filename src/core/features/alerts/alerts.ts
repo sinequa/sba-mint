@@ -2,16 +2,9 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Query } from '@sinequa/atomic';
-import {
-  Alert,
-  buildQuery,
-  ButtonComponent,
-  DialogService,
-  MenuItemComponent,
-  MenuSeparatorComponent,
-  PopoverComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+import { Alert, buildQuery, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogService, ListItemComponent, HorizontalDividerComponent, PopoverComponent } from '@sinequa/ui';
+
 import { AlertDialog } from './alert.dialog';
 
 const loader = ['en', 'fr'].reduce(
@@ -25,7 +18,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'Alerts',
   standalone: true,
-  imports: [TranslocoPipe, ButtonComponent, MenuSeparatorComponent, MenuItemComponent, DragDropModule],
+  imports: [TranslocoPipe, ButtonComponent, HorizontalDividerComponent, ListItemComponent, DragDropModule],
   templateUrl: './alerts.html',
   providers: [provideTranslocoScope({ scope: 'alert', loader })]
 })

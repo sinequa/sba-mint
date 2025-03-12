@@ -1,5 +1,4 @@
 import { Component, ComponentRef, DestroyRef, HostBinding, OnDestroy, Type, ViewContainerRef, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
 
 import { DrawerStackService, SelectionHistoryService } from '@sinequa/atomic-angular';
 

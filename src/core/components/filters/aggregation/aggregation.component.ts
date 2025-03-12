@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   Aggregation,
   AggregationItem,
+  fetchSuggest,
   fetchSuggestField,
   FieldValue,
   LegacyFilter,
@@ -22,17 +23,18 @@ import {
   AggregationsStore,
   AppStore,
   buildQuery,
-  ButtonComponent,
   CFilter,
   CFilterItem,
   debouncedSignal,
   QueryParamsStore,
   SearchService
 } from '@sinequa/atomic-angular';
+import { ButtonComponent, InputComponent } from '@sinequa/ui';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AggregationRowComponent } from './aggregation-row.component';
+import { AggregationItemComponent } from './aggregation-item.component';
+import { toast } from 'ngx-sonner';
 
 export type AggEx = Aggregation & {
   display?: string;
@@ -60,7 +62,7 @@ export type AggregationTitle = {
       }
     `
   ],
-  imports: [FormsModule, ReactiveFormsModule, ButtonComponent, AggregationRowComponent, SyslangPipe, TranslocoPipe]
+  imports: [FormsModule, ReactiveFormsModule, ButtonComponent, InputComponent, AggregationItemComponent, SyslangPipe, TranslocoPipe]
 })
 export class AggregationComponent {
   cdr = inject(ChangeDetectorRef);
@@ -174,8 +176,13 @@ export class AggregationComponent {
           return;
         }
 
-        const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
-        this.suggests.set(suggests);
+        try {
+          const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
+          this.suggests.set(suggests);
+        } catch (e: any) {
+          console.log('fetch suggest field', e);
+          toast.warning('fetch suggest field', { description: e.errorMessage });
+        }
       },
       { allowSignalWrites: true }
     );

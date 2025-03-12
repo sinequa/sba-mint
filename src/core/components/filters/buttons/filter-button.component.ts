@@ -2,18 +2,8 @@ import { NgClass } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import {
-  AggregationsStore,
-  AppStore,
-  ButtonComponent,
-  ButtonVariants,
-  cn,
-  DropdownComponent,
-  DropdownContentComponent,
-  PopoverComponent,
-  PopoverContentComponent,
-  QueryParamsStore
-} from '@sinequa/atomic-angular';
+import { AggregationsStore, AppStore, cn, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, ButtonVariants, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { SyslangPipe } from '../../../pipes/syslang';
 import { AggregationComponent } from '../aggregation/aggregation.component';
@@ -24,22 +14,18 @@ import { CFilterEx } from '../filters.models';
   standalone: true,
   imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, AggregationComponent, SyslangPipe],
   template: `
-    <Popover [disabled]="filter().disabled">
-      <button
-        [variant]="variant()"
-        [attr.data-disabled]="filter().disabled"
-        [disabled]="filter().disabled || null"
-        [class]="cn('btn w-max gap-1 font-semibold', filter().count ? 'btn-primary' : 'btn-tertiary')">
+    <Popover [disabled]="filter().disabled" class="group">
+      <button [variant]="variant()" class="group-data-[open=true]:border" [attr.data-disabled]="filter().disabled" [disabled]="filter().disabled || null">
         @if (filter().icon) {
           <i class="fa-fw {{ filter().icon }} " aria-hidden="true"></i>
         }
         {{ filter().display || filter().name | syslang | transloco }}
         @if (filter().isTree && filter().count > 0) {
-          <span class="pill pill-ghost pill-xs flex size-5 place-content-center bg-white font-semibold text-blue-600">
+          <span class="flex size-5 place-content-center rounded-full bg-white font-semibold text-primary">
             {{ filter().count }}
           </span>
         } @else if (filter().count > 1) {
-          <span class="pill pill-ghost pill-xs flex size-5 place-content-center bg-white font-semibold text-blue-600">
+          <span class="flex size-5 place-content-center rounded-full bg-white font-semibold text-primary">
             <i class="fas fa-plus my-auto text-[0.5rem]" aria-hidden="true"></i>
             {{ filter().count - 1 }}
           </span>
@@ -57,7 +43,7 @@ import { CFilterEx } from '../filters.models';
 export class FilterButtonComponent {
   cn = cn;
 
-  variant = signal<ButtonVariants['variant']>('secondary');
+  variant = signal<ButtonVariants['variant']>('ghost');
 
   nativeElement = inject(ElementRef).nativeElement;
 
@@ -108,7 +94,7 @@ export class FilterButtonComponent {
     effect(
       () => {
         const f = this.filter();
-        this.variant.update(v => (f.count ? 'default' : 'secondary'));
+        this.variant.update(v => (f.count ? 'default' : 'ghost'));
       },
       { allowSignalWrites: true }
     );

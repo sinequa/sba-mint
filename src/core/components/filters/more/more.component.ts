@@ -1,7 +1,8 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { AggregationsStore, AppStore, ButtonComponent, CFilter, cn, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AggregationsStore, AppStore, CFilter, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, cn } from '@sinequa/ui';
 import { AggregationComponent } from '../aggregation/aggregation.component';
 import { CFilterEx } from '../filters.models';
 
@@ -20,7 +21,7 @@ import { CFilterEx } from '../filters.models';
           class="w-full"
           [attr.title]="'filters.openFilter' | transloco: { filter: filter.display || filter.name }" />
 
-        <div [class]="cn('collapse-title dropdown-header flex items-center gap-1 p-2', filter.disabled && 'text-slate-300')">
+        <div [class]="cn('collapse-title flex items-center gap-1 px-2', filter.disabled && 'text-slate-300')">
           <!-- aggregation's icon -->
           <i class="fa-fw {{ filter.icon || 'fas fa-list' }} me-1"></i>
 
@@ -28,7 +29,7 @@ import { CFilterEx } from '../filters.models';
           <span class="me-4 grow">{{ filter.display || filter.name | transloco }}</span>
           @if (filter.count > 0) {
             <!-- count -->
-            <span class="pill pill-ghost pill-xs ms-2 flex size-5 place-content-center bg-primary font-semibold text-white">
+            <span class="ms-2 flex size-5 place-content-center rounded-full bg-primary font-semibold text-white">
               {{ filter.count }}
             </span>
           }

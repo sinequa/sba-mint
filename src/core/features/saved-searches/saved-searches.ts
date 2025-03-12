@@ -4,16 +4,10 @@ import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import {
-  ButtonComponent,
-  MenuItemComponent,
-  MenuSeparatorComponent,
-  PopoverContentComponent,
-  SavedSearch as S,
-  SavedSearchesService
-} from '@sinequa/atomic-angular';
+import { SavedSearch as S, SavedSearchesService } from '@sinequa/atomic-angular';
 
 import { getQueryParamsFromUrl, getRelativeDate, QueryParams } from '@sinequa/atomic';
+import { ButtonComponent, HorizontalDividerComponent, ListItemComponent, PopoverContentComponent } from '@sinequa/ui';
 
 const SAVED_SEARCHES_ITEMS_PER_PAGE = 5;
 
@@ -35,7 +29,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-saved-searches',
   standalone: true,
-  imports: [NgClass, TranslocoPipe, ButtonComponent, MenuSeparatorComponent, MenuItemComponent],
+  imports: [NgClass, TranslocoPipe, ButtonComponent, HorizontalDividerComponent, ListItemComponent],
   templateUrl: './saved-searches.html',
   styles: [
     `

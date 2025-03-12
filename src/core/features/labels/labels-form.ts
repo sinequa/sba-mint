@@ -43,7 +43,7 @@ const DEBOUNCE_DELAY = 300;
     </div>
     <div class="my-2 flex flex-wrap">
       @for (label of labels(); track $index) {
-        <span class="pill pill-ghost pill-sm float-left m-1 flex select-none place-content-center items-center bg-primary font-semibold text-white">
+        <span class="float-left m-1 flex select-none place-content-center items-center rounded-full bg-primary font-semibold text-white">
           {{ label }}
           @if (allowModification()) {
             <i class="fa-fw far fa-circle-xmark ms-1 cursor-pointer" (click)="removeLabel(label, isPublic())"></i>

@@ -44,6 +44,6 @@
 
 @if (node().hasChildren && node().$opened) {
   @for (item of node().items; track $index) {
-    <AggregationRow [node]="item" (onOpen)="onOpen.emit($event)" (onSelect)="onSelect.emit($event)" />
+    <AggregationItem [node]="item" (onOpen)="onOpen.emit($event)" (onSelect)="onSelect.emit($event)" />
   }
 }

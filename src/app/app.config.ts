@@ -24,7 +24,7 @@ import { routes } from '@/app/app.routes';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SearchComponent } from './pages/search/search.component';
+import { SearchLayoutComponent } from './pages/search/search.layout';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { sbaProviders } from './sba.config';
 
@@ -82,7 +82,7 @@ export const appConfig: ApplicationConfig = {
       useValue: [
         {
           path: 'search',
-          component: SearchComponent,
+          component: SearchLayoutComponent,
           isRoot: true
         },
         {

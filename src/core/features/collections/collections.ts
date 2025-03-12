@@ -2,17 +2,9 @@ import { Component, computed, inject, input, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Query } from '@sinequa/atomic';
-import {
-  Basket,
-  buildQuery,
-  ButtonComponent,
-  DialogService,
-  DrawerStackService,
-  MenuItemComponent,
-  MenuSeparatorComponent,
-  PopoverComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+import { Basket, buildQuery, DrawerStackService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogService, ListItemComponent, HorizontalDividerComponent, PopoverComponent } from '@sinequa/ui';
+
 import { DeleteCollectionDialog } from './collections-delete.dialog';
 import { ManageCollectionsDialog } from './collections-manage.dialog';
 
@@ -27,7 +19,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-collections',
   standalone: true,
-  imports: [TranslocoPipe, MenuSeparatorComponent, DeleteCollectionDialog, ButtonComponent, MenuItemComponent],
+  imports: [TranslocoPipe, HorizontalDividerComponent, DeleteCollectionDialog, ButtonComponent, ListItemComponent],
   templateUrl: './collections.html',
   providers: [provideTranslocoScope({ scope: 'collection', loader })]
 })

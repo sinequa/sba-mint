@@ -1,15 +1,19 @@
 <main class="z-0 col-span-2 col-start-2 mb-8">
+  @if (isTabSearchActive()) {
+    <navbar-tabs class="mt-2 block" />
+  }
+
   @if (query.isPending()) {
-    <div class="mt-4 flex justify-between">
+    <div class="mt-4 flex justify-between" aria-hidden="true">
       <div class="flex gap-2">
-        <div class="btn btn-tertiary h-9 w-24"></div>
-        <div class="btn btn-tertiary h-9 w-24"></div>
-        <div class="btn btn-tertiary h-9 w-24"></div>
-        <div class="btn btn-tertiary h-9 w-24"></div>
-        <div class="btn btn-tertiary h-9 w-24"></div>
+        <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+        <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+        <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+        <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+        <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
       </div>
 
-      <div class="btn btn-tertiary h-9 w-28"></div>
+      <button variant="inverse" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
     </div>
   } @else if (query.isSuccess()) {
     <filters-bar class="sticky top-0 z-filter flex gap-2 bg-gradient-to-b from-white from-80% pb-4 pt-4" />
@@ -21,10 +25,10 @@
 
   @if (query.isPending()) {
     <div class="mt-10 flex justify-end">
-      <div class="btn btn-tertiary h-9 w-28"></div>
+      <button variant="inverse" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
     </div>
 
-    <ul class="mt-4 flex flex-col gap-2">
+    <ul class="mt-4 flex flex-col gap-2" aria-hidden="true">
       <li><ArticleDefaultSkeleton /></li>
       <li><ArticleDefaultSkeleton /></li>
       <li><ArticleDefaultSkeleton /></li>
@@ -32,12 +36,12 @@
   } @else if (query.isSuccess() && query.data()?.pages) {
     <!-- the sort is always displayed excepts when no records are found -->
     <div class="mt-4 flex gap-1 has-[_+ul>li.no-records]:hidden">
-      <search-export class="ms-auto" />
+      <search-export class="me-auto" />
       <search-feedback [pages]="query.data()?.pages" />
       <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
-    <ul class="mt-4 flex flex-col gap-2" role="listbox">
+    <ul class="mt-4 flex flex-col gap-2" role="list">
       @for (page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id + $index) {
           <li>

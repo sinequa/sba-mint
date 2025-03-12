@@ -1,17 +1,18 @@
-const colors = require('tailwindcss/colors');
-const theme = require('tailwindcss/defaultTheme');
+// const colors = require('tailwindcss/colors');
+// const theme = require('tailwindcss/defaultTheme');
 const plugin = require('tailwindcss/plugin');
 
-const dropdown = require('./tailwind-plugin/dropdown');
-const button = require('./tailwind-plugin/button');
-const tab = require('./tailwind-plugin/tab');
+// const dropdown = require('./tailwind-plugin/dropdown');
+// const button = require('./tailwind-plugin/button');
+// const tab = require('./tailwind-plugin/tab');
 const article = require('./tailwind-plugin/article');
-const avatar = require('./tailwind-plugin/avatar');
-const pill = require('./tailwind-plugin/pill');
+const { input } = require('@angular/core');
+// const avatar = require('./tailwind-plugin/avatar');
+// const pill = require('./tailwind-plugin/pill');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{html,ts}', './node_modules/@sinequa/atomic-angular/**/*.mjs'],
+  content: ['src/**/*.{html,ts}', 'node_modules/@sinequa/atomic-angular/**/*.mjs', 'node_modules/@sinequa/ui/**/*.mjs'],
   theme: {
     fontFamily: {
       sans: ['Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif']
@@ -34,16 +35,37 @@ module.exports = {
         tooltip: 3000
       },
       colors: {
-        primary: 'hsl(var(--primary) / <alpha-value>)',
-        secondary: 'hsl(var(--secondary) / <alpha-value>)',
-        accent: 'hsl(var(--accent) / <alpha-value>)',
-        destructive: 'hsl(var(--destructive) / <alpha-value>)',
-        muted: 'hsl(var(--muted) / <alpha-value>)',
-        'primary-foreground': 'hsl(var(--primary-foreground) / <alpha-value>)',
-        'secondary-foreground': 'hsl(var(--secondary-foreground) / <alpha-value>)',
-        'accent-foreground': 'hsl(var(--accent-foreground) / <alpha-value>)',
-        'destructive-foreground': 'hsl(var(--destructive-foreground) / <alpha-value>)',
-        'muted-foreground': 'hsl(var(--muted-foreground) / <alpha-value>)',
+        background: 'var(--background)/<alpha-value>',
+        foreground: 'var(--foreground)/<alpha-value>',
+        input: 'hsl(var(--input)/<alpha-value>)',
+        ring: 'hsl(var(--ring)/<alpha-value>)',
+        primary: {
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
+          hover: 'hsl(var(--primary-hover) / <alpha-value>)',
+          active: 'hsl(var(--primary-active) / <alpha-value>)'
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
+          hover: 'hsl(var(--secondary-hover) / <alpha-value>)',
+          active: 'hsl(var(--secondary-active) / <alpha-value>)'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
+          foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)',
+          hover: 'hsl(var(--destructive-hover) / <alpha-value>)',
+          active: 'hsl(var(--destructive-active) / <alpha-value>)',
+          disable: 'hsl(var(--destructive-disable) / <alpha-value>)'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)'
+        },
         alert: '#FF2A1D',
         success: '#2ED73F',
         highlight: '#FFF7AB',
@@ -65,27 +87,39 @@ module.exports = {
     }
   },
   plugins: [
-    dropdown,
-    button,
-    tab,
+    // dropdown,
+    // button,
+    // tab,
     article,
-    avatar,
-    pill,
-    plugin(function ({ addBase, addUtilities, theme }) {
+    // avatar,
+    // pill,
+    plugin(function ({ addBase, addUtilities, addComponents, theme }) {
       addUtilities({
         '.scroll-stable': {
           'scrollbar-gutter': 'stable'
+        },
+        '.scrollbar-thin': {
+          scrollbarWidth: 'thin'
+        },
+        '.bg-backdrop': {
+          backgroundColor: 'var(--backdrop)'
         }
       }),
         addBase({
-          '.scrollbar-thin': {
-            scrollbarWidth: 'thin',
-            scrollbarGutter: 'stable'
-          },
           '.active:not([disabled])': {
             color: theme('colors.primary'),
             borderColor: theme('colors.primary'),
             backgroundColor: theme('colors.secondary')
+          }
+        }),
+        addComponents({
+          '.layout-search': {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            transition: '250ms ease-out',
+            '&[drawer-opened="true"]': {
+              gridTemplateColumns: '2% 25% 25% 48%'
+            }
           }
         });
     })

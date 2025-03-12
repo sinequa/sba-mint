@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, effect, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { Basket, UserSettingsStore } from '@sinequa/atomic-angular';
 import {
-  Basket,
   ButtonComponent,
   DialogComponent,
   DialogContentComponent,
@@ -10,8 +10,10 @@ import {
   DialogFooterComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+  InputComponent,
+  ListItemComponent
+} from '@sinequa/ui';
+
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { DeleteCollectionDialog } from './collections-delete.dialog';
 
@@ -36,7 +38,9 @@ const loader = ['en', 'fr'].reduce(
     DialogHeaderComponent,
     DialogTitleComponent,
     DialogContentComponent,
-    DialogFooterComponent
+    DialogFooterComponent,
+    ListItemComponent,
+    InputComponent
   ],
   providers: [provideTranslocoScope({ scope: 'collection', loader })],
   template: `
@@ -46,38 +50,33 @@ const loader = ['en', 'fr'].reduce(
       </DialogHeader>
 
       <DialogContent>
-        <ul class="flex flex-col" cdkDropList [cdkDropListData]="tmpCollections" (cdkDropListDropped)="dropped($event)">
+        <ul role="list" class="flex flex-col" cdkDropList [cdkDropListData]="tmpCollections" (cdkDropListDropped)="dropped($event)">
           @for (collection of tmpCollections; track $index) {
-            <li
-              class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-              tabindex="0"
-              cdkDrag
-              (click)="onClick(collection, $index)">
-              @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
+            @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
+              <li role="listitem" cdkDrag (click)="onClick(collection, $index)">
                 <i class="fas fa-inbox"></i>
                 <span class="grow">{{ collection.name }}</span>
                 <i class="fa-fw fa-regular fa-trash-can text-alert" (click)="$event.stopPropagation(); deleteCollection(collection, $index)"></i>
                 <i class="fa-fw fa-regular fa-bars"></i>
-              } @else {
-                <div class="flex grow">
-                  <input
-                    #renameInput
-                    class="h-10 w-full grow rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
-                    type="text"
-                    autocomplete="off"
-                    spellcheck="false"
-                    [attr.aria-label]="'collection.collectionName' | transloco"
-                    [attr.placeholder]="'collection.collectionName' | transloco"
-                    [ngModel]="collectionName()"
-                    (ngModelChange)="collectionName.set($event)"
-                    (keydown.enter)="onBlur()"
-                    (blur)="onBlur()" />
-                </div>
-              }
-            </li>
+              </li>
+            } @else {
+              <input
+                class="grow"
+                #renameInput
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                [attr.aria-label]="'collection.collectionName' | transloco"
+                [attr.placeholder]="'collection.collectionName' | transloco"
+                [ngModel]="collectionName()"
+                (ngModelChange)="collectionName.set($event)"
+                (keydown.enter)="onBlur($event)"
+                (keydown.escape)="onBlur($event)"
+                (blur)="onBlur($event)" />
+            }
           }
           @if (creating()) {
-            <li class="flex gap-2">
+            <span class="flex gap-2">
               <input
                 #createInput
                 class="h-10 grow rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
@@ -97,18 +96,18 @@ const loader = ['en', 'fr'].reduce(
               <button tabindex="0" [attr.title]="'collection.save' | transloco" (click)="save()">
                 {{ 'collection.save' | transloco }}
               </button>
-            </li>
+            </span>
           }
         </ul>
       </DialogContent>
 
       <DialogFooter class="flex flex-col">
         @if (!creating()) {
-          <button variant="outline" class="w-full" tabindex="0" [attr.title]="'collection.createCollection' | transloco" (click)="onCreate()">
+          <button class="w-full" tabindex="0" [attr.title]="'collection.createCollection' | transloco" (click)="onCreate()">
             {{ 'collection.createCollection' | transloco }}
           </button>
 
-          <button variant="secondary" class="ms-auto" tabindex="0" [attr.title]="'collection.close' | transloco" (click)="dialog.close()">
+          <button variant="outline" class="ms-auto" tabindex="0" [attr.title]="'collection.close' | transloco" (click)="dialog.close()">
             {{ 'close' | transloco }}
           </button>
         }
@@ -177,7 +176,9 @@ export class ManageCollectionsDialog {
     this.createInput()?.nativeElement.focus();
   }
 
-  onBlur(): void {
+  onBlur(e: Event): void {
+    e.preventDefault();
+    e.stopImmediatePropagation();
     let modifiedName = false;
     if (this.collectionName()) {
       const collection = this.tmpCollections[this.modifiedIndex()!];

@@ -1,34 +1,21 @@
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, computed, inject, OnDestroy, signal, Type, viewChild } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { debounceTime, Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal, Type, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+import { debounceTime } from 'rxjs';
 
-import {
-  AutocompleteService,
-  ButtonComponent,
-  DrawerStackService,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent,
-  NavigationService,
-  OverflowItemDirective,
-  OverflowManagerDirective,
-  OverflowStopDirective,
-  PopoverComponent,
-  PopoverContentComponent,
-  QueryParamsStore,
-  SavedSearchesService
-} from '@sinequa/atomic-angular';
+import { AutocompleteService, DrawerStackService, OverflowManagerDirective, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
 
+import { ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+
+import { AlertsComponent } from '@/core/features/alerts/alerts';
 import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
 import { CollectionsComponent } from '@/core/features/collections/collections';
 import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
-import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AlertsComponent } from '@/core/features/alerts/alerts';
 import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
@@ -40,15 +27,6 @@ export type NavbarMenu = {
   component?: Type<unknown>;
 };
 
-export type NavbarTab = {
-  display: string;
-  name: string;
-  path: string;
-  iconClass: string;
-  routerLink: string;
-  queryName?: string;
-};
-
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -56,23 +34,13 @@ export type NavbarTab = {
   styleUrl: './navbar.component.scss',
   imports: [
     CommonModule,
-    AsyncPipe,
     RouterLink,
-    RouterLinkActive,
     ButtonComponent,
     SearchInputComponent,
     AutocompleteComponent,
     UserMenuComponent,
     PopoverComponent,
-    PopoverContentComponent,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
-    TranslocoPipe,
-    SyslangPipe,
-    OverflowManagerDirective,
-    OverflowItemDirective,
-    OverflowStopDirective
+    PopoverContentComponent
   ],
   host: {
     class: 'layout-search',
@@ -86,13 +54,12 @@ export type NavbarTab = {
     `
   ]
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent {
   readonly searchInput = viewChild(SearchInputComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);
 
   readonly drawerOpened = signal(false);
   readonly searchText = signal<string>('');
-  readonly visibleTabCount = signal<number | undefined>(undefined);
 
   protected readonly menus: NavbarMenu[] = [
     { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
@@ -102,8 +69,6 @@ export class NavbarComponent implements OnDestroy {
     { display: 'Alerts', iconClass: 'far fa-bell', component: AlertsComponent }
   ];
 
-  protected readonly navigationService = inject(NavigationService);
-
   private readonly transloco = inject(TranslocoService);
   private readonly drawerStack = inject(DrawerStackService);
   private readonly savedSearchesService = inject(SavedSearchesService);
@@ -111,42 +76,12 @@ export class NavbarComponent implements OnDestroy {
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
 
-  private readonly sub = new Subscription();
-
-  // create tabs from the search routes
-  readonly tabs = computed(
-    () =>
-      this.router.config
-        .find(item => item.path === 'search')
-        ?.children?.filter(c => c.path !== '**')
-        .map(
-          child =>
-            ({
-              display: child.data?.['display'] || child.path,
-              name: child.data?.['wsQueryTab'] || child.path,
-              path: child.path,
-              routerLink: `${child.path}`,
-              iconClass: child.data?.['iconClass'],
-              queryName: child.data?.['queryName']
-            }) as NavbarTab
-        ) ?? []
-  );
-  readonly moreTabs = computed(() => this.tabs().slice(this.visibleTabCount()));
-
   constructor() {
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
+    this.drawerStack.isOpened.pipe(takeUntilDestroyed()).subscribe(state => this.drawerOpened.set(state));
 
     // register to transloco events to update the overflow manager when translations are loaded
     // otherwise the overflow manager will count size of items without text
-    this.sub.add(
-      this.transloco.events$.pipe(debounceTime(100)).subscribe(() => {
-        this.overflowManager()?.countItems();
-      })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    this.transloco.events$.pipe(takeUntilDestroyed(), debounceTime(100)).subscribe(() => this.overflowManager()?.countItems());
   }
 
   autocompleteItemClicked(item: Suggestion): void {
@@ -165,11 +100,6 @@ export class NavbarComponent implements OnDestroy {
 
     // ! we need to remove the page parameter from the query params when new search is performed
     this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'replace' });
-  }
-
-  protected changeTab(tab: NavbarTab): void {
-    // we use the routerlink to navigate, so just close the drawer and remove the id parameter from the query params
-    this.drawerStack.closeAll();
   }
 
   /**

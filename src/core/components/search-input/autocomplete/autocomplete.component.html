@@ -1,5 +1,5 @@
 @if (items()) {
-  <ul class="z-10 max-h-80 overflow-auto rounded-b-lg bg-white px-2 py-4 text-black" aria-labelledby="dropdownDefaultButton" role="list">
+  <ul class="z-10 -mb-2 max-h-80 overflow-auto rounded-b-lg bg-white p-2 text-black" aria-labelledby="dropdownDefaultButton" role="list">
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
         <MenuSeparator />
@@ -58,7 +58,7 @@
 
             <p class="line-clamp-1 text-ellipsis">
               @for (chunk of item.display! | highlightWord: text() : 10; track $index) {
-                <span [ngClass]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
+                <span [class]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
               }
             </p>
           </a>
@@ -70,15 +70,11 @@
       </span>
     }
   </ul>
-
-  @if (advancedSearch()) {
-    <MenuSeparator />
-
-    <div
-      class="flex cursor-pointer items-baseline gap-2 p-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-      (click)="openAdvancedSearch()">
-      <i class="fa-fw far fa-sliders"></i>
-      {{ 'searchInput.advancedSearch' | transloco }}
-    </div>
-  }
+}
+@if (advancedSearch()) {
+  <MenuSeparator />
+  <button variant="inverse" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
+    <i class="fa-fw far fa-sliders"></i>
+    {{ 'searchInput.advancedSearch' | transloco }}
+  </button>
 }

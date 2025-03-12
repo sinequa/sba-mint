@@ -1,7 +1,10 @@
 import { Component, computed, ElementRef, inject, input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { AppStore, ButtonComponent, PopoverComponent, PopoverContentComponent, QueryParamsStore } from '@sinequa/atomic-angular';
+
+import { AppStore, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+
 import { MoreComponent } from './more.component';
 
 @Component({
@@ -9,13 +12,13 @@ import { MoreComponent } from './more.component';
   standalone: true,
   imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, MoreComponent],
   template: `
-    <Popover>
-      <button variant="secondary" class="gap-1 truncate font-semibold" aria-label="more filters">
+    <Popover class="group">
+      <button variant="ghost" class="gap-1 truncate font-semibold group-data-[open=true]:border" aria-label="more filters">
         <i class="far fa-filters"></i>
         <span>{{ 'filters.moreFilters' | transloco }}</span>
 
         @if (totalFiltersCount() > 0) {
-          <span class="pill pill-ghost pill-xs ms-1 flex size-5 place-content-center bg-primary font-semibold text-white">
+          <span class="ms-1 flex size-5 place-content-center rounded-full bg-primary font-semibold text-white">
             {{ totalFiltersCount() }}
           </span>
         }

@@ -1,4 +1,10 @@
-<ul class="flex min-w-80 flex-col p-2" cdkDropList [cdkDropListData]="tmpAlerts" [cdkDropListDisabled]="!reordering()" (cdkDropListDropped)="dropped($event)">
+<ul
+  role="list"
+  class="flex min-w-80 flex-col p-2"
+  cdkDropList
+  [cdkDropListData]="tmpAlerts"
+  [cdkDropListDisabled]="!reordering()"
+  (cdkDropListDropped)="dropped($event)">
   @if(floating) {
   <label class="text-xl font-bold">Alerts</label>
   <MenuSeparator />
@@ -14,10 +20,10 @@
   } @empty {
   <li role="listitem" class="py-4 text-center text-neutral-500">{{ 'alert.noAlerts' | transloco }}</li>
   }
-  <li class="mt-2 flex flex-col gap-2">
-    <button variant="outline" class="w-full" tabindex="0" [attr.title]="'alert.manageAlerts' | transloco" [disabled]="!alerts().length" (click)="reorder()">
-      {{ (reordering() ? 'save' : 'alert.manageAlerts') | transloco }}
-    </button>
-    <button class="w-full" [attr.title]="'alert.createAlert' | transloco" (click)="createAlert()">{{ 'alert.createAlert' | transloco }}</button>
-  </li>
 </ul>
+<div class="flex flex-col gap-2 p-2">
+  <button variant="outline" class="w-full" tabindex="0" [attr.title]="'alert.manageAlerts' | transloco" [disabled]="!alerts().length" (click)="reorder()">
+    {{ (reordering() ? 'save' : 'alert.manageAlerts') | transloco }}
+  </button>
+  <button class="w-full" [attr.title]="'alert.createAlert' | transloco" (click)="createAlert()">{{ 'alert.createAlert' | transloco }}</button>
+</div>

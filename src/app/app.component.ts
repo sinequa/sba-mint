@@ -4,17 +4,18 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { globalConfig, login, logout } from '@sinequa/atomic';
+import { globalConfig, logout } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
 import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
 import { LoginService } from '@sinequa/core/login';
+import { RobotIconComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
+  imports: [CommonModule, RouterLink, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent, RobotIconComponent],
   templateUrl: './app.component.html',
   styles: [
     `
@@ -44,7 +45,7 @@ export class AppComponent {
     // Login and initialize the application when the user is logged in
     const { useCredentials } = globalConfig;
 
-    const success = await this.applicationService.autoLogin().catch(err => {
+    const success = await this.applicationService.autoSignIn().catch(err => {
       console.warn('An error occured while logging in (app component)', err);
       if (useCredentials) {
         this.router.navigate(['login']);

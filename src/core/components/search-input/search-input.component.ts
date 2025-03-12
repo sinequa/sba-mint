@@ -1,19 +1,12 @@
 import { NgClass } from '@angular/common';
-import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, output, Signal, signal, viewChild } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, ElementRef, inject, Input, input, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import {
-  AppStore,
-  AutocompleteService,
-  ButtonComponent,
-  CJson,
-  debouncedSignal,
-  DrawerStackService,
-  QueryParamsStore,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, InputComponent, cn } from '@sinequa/ui';
+
 import { toast } from 'ngx-sonner';
 import { DrawerAdvancedFiltersComponent } from '../drawer/advanced-filters/advanced-filters.component';
 
@@ -30,12 +23,16 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent],
+  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent, InputComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
+  host: {
+    class: 'rounded-md focus-within:rounded-bl-none'
+  },
   providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
 })
 export class SearchInputComponent {
+  cn = cn;
   readonly debounced = output<string>();
   readonly validated = output<string>();
   readonly saved = output<void>();
@@ -71,7 +68,6 @@ export class SearchInputComponent {
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
   protected isSavedSearch = computed(() => {
-    const params = getState(this.queryParamsStore); // to watch params update
     const savedSearches = this.userSettingsStore.savedSearches();
     const url = window.location.hash.substring(1);
     const filtersSplit = url.split('f=');
@@ -191,5 +187,11 @@ export class SearchInputComponent {
     } else if (this.input() !== '') {
       this.popoverElement().showPopover();
     }
+  }
+
+  handlePopoverClick(e: Event): void {
+    e.stopImmediatePropagation();
+    // When click event bubbles up to the document, we hide the popover
+    this.popoverElement().hidePopover();
   }
 }

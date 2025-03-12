@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [],
   template: `
-    <div class="bg-background text-foreground flex min-h-screen flex-col items-center justify-center">
+    <div class="flex min-h-screen flex-col items-center justify-center bg-background text-foreground">
       <svg
         class="mb-8 h-20 w-20 text-red-600"
         xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
         <path d="M12 17h.01" />
       </svg>
       <h1 class="mb-4 text-4xl font-bold">Oops! Something went wrong</h1>
-      <p class="text-muted-foreground mb-8 text-xl">We apologize for the inconvenience.</p>
+      <p class="mb-8 text-xl text-muted-foreground">We apologize for the inconvenience.</p>
       <div class="flex space-x-4">
         <button
           (click)="reload()"

@@ -3,26 +3,27 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { getRelativeDate, QueryParams } from '@sinequa/atomic';
-import { MenuItemComponent, RecentSearch } from '@sinequa/atomic-angular';
+import { RecentSearch } from '@sinequa/atomic-angular';
 
 import { countFilters, wrapFiltersToArray } from './utils';
+import { ListItemComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'RecentSearch',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, MenuItemComponent],
+  imports: [RouterLink, TranslocoPipe, ListItemComponent],
   template: `
-    <li
+    <span
       role="listitem"
-      class="group h-10 *:whitespace-nowrap"
       tabindex="0"
-      attr.data-href="{{ recentSearch().path || recentSearch().queryParams?.path }}"
+      class="group h-10 *:whitespace-nowrap"
       [routerLink]="[recentSearch().path || recentSearch().queryParams?.path]"
       [queryParams]="queryParams()"
-      (keydown.enter)="onKeyDown()">
+      (keydown.enter)="onKeyDown()"
+      [attr.aria-label]="display()">
       <i class="fa-fw far fa-clock-rotate-left" aria-hidden="true"></i>
 
-      <p class="truncate">{{ recentSearch().display || recentSearch().label }}</p>
+      <p class="truncate">{{ display() }}</p>
 
       @if (filterCount() > 0) {
         <p class="text-neutral-500" aria-hidden="true">
@@ -45,7 +46,7 @@ import { countFilters, wrapFiltersToArray } from './utils';
         (click)="remove.emit($event)">
         <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
       </button>
-    </li>
+    </span>
   `
 })
 export class RecentSearchComponent {
@@ -54,6 +55,8 @@ export class RecentSearchComponent {
   remove = output<Event>();
 
   recentSearch = input.required<RecentSearch>();
+  display = computed(() => this.recentSearch().display || this.recentSearch().label);
+
   queryParams = computed(() => {
     const { text, filters = [], tab, page, queryName } = this.recentSearch().queryParams || ({} as QueryParams);
     const wrapped = wrapFiltersToArray(filters) ?? [];
