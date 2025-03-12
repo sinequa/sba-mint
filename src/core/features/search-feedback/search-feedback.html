@@ -1,5 +1,5 @@
 <div class="flex">
-  <button tabindex="0" class="btn btn-tertiary me-2 font-semibold" [attr.title]="'searchFeedback.like'" (click)="like()">
+  <button tabindex="0" class="me-1" variant="secondary" size="sm" [attr.title]="'searchFeedback.like'" (click)="like()">
     @if (liked()) {
     <i class="fa-fw fas fa-thumbs-up"></i>
     } @else {
@@ -7,7 +7,7 @@
     }
   </button>
 
-  <button tabindex="0" class="btn btn-tertiary me-2 font-semibold" [attr.title]="'searchFeedback.dislike'" (click)="dislike()">
+  <button tabindex="0" variant="secondary" size="sm" [attr.title]="'searchFeedback.dislike'" (click)="dislike()">
     @if (disliked()) {
     <i class="fa-fw fas fa-thumbs-down"></i>
     } @else {

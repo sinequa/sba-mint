@@ -1,0 +1,7 @@
+{
+  "export": "Export",
+  "outputFormat": "Output format",
+  "exportColumns": "Columns to export",
+  "maxLines": "Max number of lines",
+  "download": "Download"
+}

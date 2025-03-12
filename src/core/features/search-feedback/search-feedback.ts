@@ -2,7 +2,7 @@ import { Component, inject, input, signal } from '@angular/core';
 import { HashMap, provideTranslocoScope, Translation, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Result } from '@sinequa/atomic';
-import { AuditService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AuditService, ButtonComponent, QueryParamsStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
 
 const loader = ['en', 'fr'].reduce(
@@ -16,7 +16,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'search-feedback',
   standalone: true,
-  imports: [],
+  imports: [ButtonComponent],
   providers: [provideTranslocoScope({ scope: 'searchFeedback', loader })],
   templateUrl: './search-feedback.html'
 })

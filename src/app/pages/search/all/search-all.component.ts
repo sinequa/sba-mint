@@ -14,6 +14,7 @@ import { SortSelectorComponent, SortingChoice } from '@/core/features/sort-selec
 
 import { SearchBase } from '../search.abstract';
 import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback';
+import { SearchExportComponent } from '@/core/features/search-export/search-export';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -30,7 +31,8 @@ type R = Result & { nextPage?: number; previousPage?: number };
     NoResultPanelComponent,
     SearchFeedbackComponent,
     FiltersBarComponent,
-    NoResultPanelComponent
+    NoResultPanelComponent,
+    SearchExportComponent
   ],
   templateUrl: './search-all.component.html',
   styles: [
