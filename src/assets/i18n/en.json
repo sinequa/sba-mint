@@ -3,15 +3,11 @@
   "bookmarks": "Bookmarks",
   "cancel": "Cancel",
   "clear": "Clear",
-  "collaborators": "Collaborators",
   "concepts": "Concepts",
   "save": "Save",
   "confirm": "Confirm",
   "create": "Create",
   "delete": "Delete",
-  "documents": "Documents",
-  "domain": "Domain",
-  "email": "Email",
   "extracts": "Extracts",
   "filters": "Filters",
   "from": "From",
@@ -22,37 +18,15 @@
   "lastUpdatedOn": "Last updated on",
   "loadMore": "Load more",
   "seeMore": "See more",
-  "loading": "Loading",
   "location": "Location",
-  "login": "Login",
   "logout": "Logout",
-  "matters": "Matters",
   "more": "More",
-  "msg#column": {
-    "authors": "Authors",
-    "companies": "Companies",
-    "documentlanguages": "Languages",
-    "geos": "Places",
-    "persons": "People",
-    "sizes": "Sizes"
-  },
-  "msg#results": {
-    "results_all_tab": "All Results",
-    "results_text_tab": "Text"
-  },
-  "msg#sort": {
-    "date": "Date",
-    "filename": "Filename",
-    "relevance": "Relevance",
-    "title": "Title"
-  },
   "bookmark": {
     "removeBookmark": "Remove bookmark",
     "myBookmarks": "My Bookmarks"
   },
   "nextPage": "Next page",
   "open": "Open",
-  "password": "Password",
   "people": "People",
   "previewUnavailable": "Sorry, preview is not available for this file.",
   "previousPage": "Previous page",
@@ -61,6 +35,5 @@
   "search": "Search",
   "title": "Title",
   "to": "To",
-  "type": "Type",
-  "username": "Username"
+  "type": "Type"
 }

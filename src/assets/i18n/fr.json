@@ -3,15 +3,11 @@
   "bookmarks": "Marque-pages",
   "cancel": "Annuler",
   "clear": "Effacer",
-  "collaborators": "Collaborateurs",
   "concepts": "Concepts",
   "save": "Sauvegarder",
   "confirm": "Confirmer",
   "create": "Créer",
   "delete": "Supprimer",
-  "documents": "Documents",
-  "domain": "Domaine",
-  "email": "Email",
   "extracts": "Extraits",
   "filters": "Filtres",
   "from": "De",
@@ -22,37 +18,15 @@
   "lastUpdatedOn": "Dernière mise à jour le",
   "loadMore": "Charger plus",
   "seeMore": "Voir plus",
-  "loading": "Chargement",
   "location": "Emplacement",
-  "login": "Connexion",
   "logout": "Déconnexion",
-  "matters": "Concepts",
   "more": "Plus",
-  "msg#column": {
-    "authors": "Auteurs",
-    "companies": "Sociétés",
-    "documentlanguages": "Langues",
-    "geos": "Lieux",
-    "persons": "Personnes",
-    "sizes": "Tailles"
-  },
-  "msg#results": {
-    "results_all_tab": "Tous",
-    "results_text_tab": "Texte"
-  },
-  "msg#sort": {
-    "date": "Date",
-    "filename": "Nom de fichier",
-    "relevance": "Pertinence",
-    "title": "Titre"
-  },
   "bookmark": {
     "removeBookmark": "Supprimer le marque-page",
     "myBookmarks": "Mes marque-pages"
   },
   "nextPage": "Page suivante",
   "open": "Ouvrir",
-  "password": "Mot de passe",
   "people": "Personnes",
   "previewUnavailable": "Désolé, la prévisualisation n'est pas disponible pour ce fichier.",
   "previousPage": "Page précédente",
@@ -61,6 +35,5 @@
   "search": "Rechercher",
   "title": "Titre",
   "to": "A",
-  "type": "Type",
-  "username": "Nom d'utilisateur"
+  "type": "Type"
 }
