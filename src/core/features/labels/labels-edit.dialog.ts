@@ -39,21 +39,21 @@ const loader = ['en', 'fr'].reduce(
     DialogContentComponent,
     LabelsFormComponent
   ],
-  providers: [provideTranslocoScope({ scope: 'dialog', loader })],
+  providers: [provideTranslocoScope({ scope: 'labelsEdit', loader })],
   template: `
     <dialog #dialog>
       <DialogHeader>
-        <DialogTitle>{{ 'dialog.editLabels.title' | transloco }}</DialogTitle>
+        <DialogTitle>{{ 'labelsEdit.title' | transloco }}</DialogTitle>
       </DialogHeader>
 
       <DialogContent>
         <div class="rounded bg-blue-100 p-3">
-          <i class="fa-fw fas fa-circle-info"></i><span class="mx-2 font-semibold">INFO</span>{{ 'dialog.editLabels.info' | transloco }}
+          <i class="fa-fw fas fa-circle-info"></i><span class="mx-2 font-semibold">INFO</span>{{ 'labelsEdit.info' | transloco }}
         </div>
 
         @if (!!labelsConfig()?.publicLabelsField) {
           <section class="flex flex-col gap-2">
-            <p class="font-semibold">{{ 'dialog.editLabels.publicLabels' | transloco }}</p>
+            <p class="font-semibold">{{ 'labelsEdit.publicLabels' | transloco }}</p>
             @if (labelsConfig()!.allowPublicLabelsCreation) {
               <labels-form
                 [article]="article()"
@@ -65,7 +65,7 @@ const loader = ['en', 'fr'].reduce(
         }
         @if (!!labelsConfig()?.privateLabelsField) {
           <section class="flex flex-col gap-2">
-            <p class="font-semibold">{{ 'dialog.editLabels.privateLabels' | transloco }}</p>
+            <p class="font-semibold">{{ 'labelsEdit.privateLabels' | transloco }}</p>
             <labels-form [article]="article()" [labelsField]="labelsConfig()?.privateLabelsField" [allowModification]="true" [isPublic]="false" />
           </section>
         }
@@ -73,7 +73,7 @@ const loader = ['en', 'fr'].reduce(
 
       <DialogFooter>
         <button variant="secondary" (click)="dialog.close()">
-          {{ 'dialog.editLabels.close' | transloco }}
+          {{ 'labelsEdit.close' | transloco }}
         </button>
       </DialogFooter>
     </dialog>
@@ -84,13 +84,13 @@ export class LabelsEditComponent implements OnDestroy {
 
   labelService = inject(LabelService);
 
-  readonly dialog = viewChild<ElementRef>('dialog');
+  readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
   protected readonly subscriptions = new Subscription();
   public readonly labelsConfig = signal<LabelsConfig | undefined>(undefined);
 
   showModal() {
-    this.dialog()!.nativeElement.showModal();
+    this.dialog()!.showModal();
 
     this.subscriptions.add(this.labelService.getLabelsConfig().subscribe(config => this.labelsConfig.set(config)));
   }

@@ -12,4 +12,4 @@ export type CFilterEx = CFilter & {
   legacyFilter?: LegacyFilter;
 };
 
-export const FILTERS_BREAKPOINT = new InjectionToken<number>('FILTERS_BREAKPOINT', { factory: () => 5 });
+export const FILTERS_BREAKPOINT = new InjectionToken<number>('FILTERS_BREAKPOINT', { factory: () => 4 });

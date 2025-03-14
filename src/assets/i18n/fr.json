@@ -35,5 +35,17 @@
   "search": "Rechercher",
   "title": "Titre",
   "to": "A",
-  "type": "Type"
+  "type": "Type",
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Nom de fichier",
+    "relevance": "Pertinence",
+    "title": "Titre"
+  },
+  "msg#results": {
+    "resultsAllTab": "Tout",
+    "tabPeople": "Personnes",
+    "tabBusiness": "Business",
+    "tabLocation": "Lieux"
+  }
 }

@@ -1,11 +1,17 @@
-import { Component, inject, input, signal } from '@angular/core';
-import { HashMap, provideTranslocoScope, Translation, TranslocoService } from '@jsverse/transloco';
+import { Component, inject, input, signal, viewChild } from '@angular/core';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 
 import { Result } from '@sinequa/atomic';
-import { AuditService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { AuditService, MenuComponent, MenuContentComponent, MenuItemComponent, QueryParamsStore } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
+import { FeedbackDialogComponent } from './feedback.dialog';
+
+interface FeedbackMenu {
+  type: string;
+  icon: string;
+}
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -18,7 +24,7 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'search-feedback',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe, FeedbackDialogComponent],
   providers: [provideTranslocoScope({ scope: 'searchFeedback', loader })],
   templateUrl: './search-feedback.html'
 })
@@ -28,10 +34,21 @@ export class SearchFeedbackComponent {
   protected readonly queryParamsStore = inject(QueryParamsStore);
   private readonly transloco = inject(TranslocoService);
 
+  readonly feedbackDialog = viewChild(FeedbackDialogComponent);
+
   liked = signal<boolean>(false);
   disliked = signal<boolean>(false);
 
+  menus: FeedbackMenu[] = [
+    { type: 'content', icon: 'far fa-file-alt' },
+    { type: 'ui', icon: 'fas fa-desktop' },
+    { type: 'lang', icon: 'far fa-comments' },
+    { type: 'other', icon: 'far fa-lightbulb' }
+  ];
+
   like(): void {
+    if (this.liked()) return;
+
     const state = getState(this.queryParamsStore);
     const articles: string[] = [];
     if (this.pages() && this.pages().length) {
@@ -49,6 +66,8 @@ export class SearchFeedbackComponent {
   }
 
   dislike(): void {
+    if (this.disliked()) return;
+
     const state = getState(this.queryParamsStore);
     const articles: string[] = [];
     if (this.pages() && this.pages().length) {
@@ -63,5 +82,9 @@ export class SearchFeedbackComponent {
     });
     this.disliked.set(true);
     toast.success(this.transloco.translate('searchFeedback.feedbackSuccess'), { duration: 2000 });
+  }
+
+  openFeedbackDialog(type: string): void {
+    this.feedbackDialog()?.showModal(type);
   }
 }
