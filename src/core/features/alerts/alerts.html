@@ -10,9 +10,10 @@
   <MenuSeparator />
   } @for (alert of tmpAlerts; track $index) {
   <li role="listitem" class="group h-10" tabindex="0" cdkDrag (click)="onClick($index)" (keydown.enter)="onClick($index)">
+    <i class="fa-fw fas fa-bell shrink-0" aria-hidden="true"></i>
     <span class="grow"> {{ alert.name }} </span>
     @if (!reordering()) {
-    <i class="fa-fw fa-regular fa-trash-can" (click)="deleteAlert($event, $index)"></i>
+    <i class="fa-fw fa-regular fa-trash-can text-destructive" (click)="deleteAlert($event, $index)"></i>
     } @else {
     <i class="fa-fw fa-regular fa-bars"></i>
     }

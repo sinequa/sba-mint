@@ -35,5 +35,17 @@
   "search": "Search",
   "title": "Title",
   "to": "To",
-  "type": "Type"
+  "type": "Type",
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Filename",
+    "relevance": "Relevance",
+    "title": "Title"
+  },
+  "msg#results": {
+    "resultsAllTab": "All",
+    "tabPeople": "People",
+    "tabBusiness": "Business",
+    "tabLocation": "Location"
+  }
 }

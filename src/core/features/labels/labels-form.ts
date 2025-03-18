@@ -1,16 +1,25 @@
 import { NgStyle } from '@angular/common';
 import { afterRender, Component, computed, effect, ElementRef, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Article, fetchLabels, guid, labels } from '@sinequa/atomic';
 import { debouncedSignal } from '@sinequa/atomic-angular';
 
 const DEBOUNCE_DELAY = 300;
 
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
+
 @Component({
   selector: 'labels-form, labelsform, LabelsForm',
   standalone: true,
   imports: [FormsModule, NgStyle, TranslocoPipe],
+  providers: [provideTranslocoScope({ scope: 'labelsForm', loader })],
   template: `
     <div class="anchor" [ngStyle]="{ 'anchor-name': anchor() }">
       <input
@@ -18,8 +27,8 @@ const DEBOUNCE_DELAY = 300;
         type="text"
         autocomplete="off"
         spellcheck="false"
-        [attr.aria-label]="'dialog.editLabels.startTyping' | transloco"
-        [attr.placeholder]="'dialog.editLabels.startTyping' | transloco"
+        [attr.aria-label]="'labelsForm.startTyping' | transloco"
+        [attr.placeholder]="'labelsForm.startTyping' | transloco"
         [ngModel]="labelInput()"
         (ngModelChange)="labelInput.set($event)"
         (keyup)="onKeyDown($event)"

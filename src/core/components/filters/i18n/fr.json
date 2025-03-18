@@ -5,5 +5,11 @@
   "dateFilter": "Filtre de date",
   "moreFilters": "Plus de filtres",
   "noFiltersAvailable": "Aucun filtre disponible",
-  "openFilter": "Ouvrir{filter, select, other { {filter} } undefined { filter } }"
+  "openFilter": "Ouvrir{filter, select, other { {filter} } undefined { filter } }",
+  "msg#results": {
+    "resultsAllTab": "Tout",
+    "tabPeople": "Personnes",
+    "tabBusiness": "Business",
+    "tabLocation": "Lieux"
+  }
 }

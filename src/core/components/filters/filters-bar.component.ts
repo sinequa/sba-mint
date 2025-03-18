@@ -41,6 +41,12 @@ const loader = ['en', 'fr'].reduce(
         </button>
       }
 
+      @if (currentBasket()) {
+        <button aria-label="clear basket" (click)="clearBasket()" (keydown.enter)="clearBasket()">
+          <i class="fa-fw far fa-inbox" aria-hidden="true"></i> {{ currentBasket() }}
+        </button>
+      }
+
       @if (hasAggregations()) {
         <DateButton />
 
@@ -82,7 +88,12 @@ export class FiltersBarComponent implements OnDestroy {
     // when the query parameters store updates, update the hasFilters signal
     // to show or hide the clear filters button
     const state = getState(this.queryParamsStore);
-    return Array.isArray(state.filters) && state.filters.length > 0;
+    return state.basket || (Array.isArray(state.filters) && state.filters.length > 0);
+  });
+
+  currentBasket = computed(() => {
+    const { basket } = getState(this.queryParamsStore);
+    return basket;
   });
 
   hasAggregations = computed(() => {
@@ -135,6 +146,14 @@ export class FiltersBarComponent implements OnDestroy {
    */
   clearFilters(): void {
     this.queryParamsStore.clearFilters();
+  }
+
+  /**
+   * Clears the basket by invoking the clearBasket method on the queryParamsStore.
+   * This method is typically used to reset the basket state to its default value.
+   */
+  clearBasket(): void {
+    this.queryParamsStore.clearBasket();
   }
 
   /**
