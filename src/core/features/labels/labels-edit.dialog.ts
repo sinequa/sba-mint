@@ -4,16 +4,9 @@ import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsv
 import { Subscription } from 'rxjs';
 
 import { Article } from '@sinequa/atomic';
-import {
-  ButtonComponent,
-  DialogComponent,
-  DialogContentComponent,
-  DialogFooterComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent,
-  LabelsConfig,
-  LabelService
-} from '@sinequa/atomic-angular';
+import { LabelsConfig, LabelService } from '@sinequa/atomic-angular';
+
+import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 import { LabelsFormComponent } from './labels-form';
 
@@ -44,35 +37,28 @@ const loader = ['en', 'fr'].reduce(
     <dialog #dialog>
       <DialogHeader>
         <DialogTitle>{{ 'labelsEdit.title' | transloco }}</DialogTitle>
+        <p class="text-muted-foreground">
+          <i class="fa-fw fas fa-circle-info"></i><span class="ps-1">{{ 'labelsEdit.info' | transloco }}</span>
+        </p>
       </DialogHeader>
 
       <DialogContent>
-        <div class="rounded bg-blue-100 p-3">
-          <i class="fa-fw fas fa-circle-info"></i><span class="mx-2 font-semibold">INFO</span>{{ 'labelsEdit.info' | transloco }}
-        </div>
-
         @if (!!labelsConfig()?.publicLabelsField) {
-          <section class="flex flex-col gap-2">
-            <p class="font-semibold">{{ 'labelsEdit.publicLabels' | transloco }}</p>
-            @if (labelsConfig()!.allowPublicLabelsCreation) {
-              <labels-form
-                [article]="article()"
-                [labelsField]="labelsConfig()?.publicLabelsField"
-                [allowModification]="labelsConfig()?.allowPublicLabelsModification || false"
-                [isPublic]="true" />
-            }
-          </section>
+          @if (labelsConfig()!.allowPublicLabelsCreation) {
+            <labels-form
+              [article]="article()"
+              [labelsField]="labelsConfig()?.publicLabelsField"
+              [allowModification]="labelsConfig()?.allowPublicLabelsModification || false"
+              [isPublic]="true" />
+          }
         }
         @if (!!labelsConfig()?.privateLabelsField) {
-          <section class="flex flex-col gap-2">
-            <p class="font-semibold">{{ 'labelsEdit.privateLabels' | transloco }}</p>
-            <labels-form [article]="article()" [labelsField]="labelsConfig()?.privateLabelsField" [allowModification]="true" [isPublic]="false" />
-          </section>
+          <labels-form [article]="article()" [labelsField]="labelsConfig()?.privateLabelsField" [allowModification]="true" [isPublic]="false" />
         }
       </DialogContent>
 
       <DialogFooter>
-        <button variant="secondary" (click)="dialog.close()">
+        <button (click)="dialog.close()">
           {{ 'labelsEdit.close' | transloco }}
         </button>
       </DialogFooter>

@@ -40,7 +40,7 @@ import { ListItemComponent } from '@sinequa/ui';
       }
 
       <button
-        class="invisible text-destructive hover:scale-125 group-hover:visible group-hover:block"
+        class="text-destructive invisible group-hover:visible group-hover:block hover:scale-125"
         [attr.title]="'recentSearches.removeRecentSearch' | transloco"
         [attr.aria-label]="'recentSearches.removeRecentSearch' | transloco"
         (click)="remove.emit($event)">

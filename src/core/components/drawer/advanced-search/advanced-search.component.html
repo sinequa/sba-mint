@@ -1,14 +1,14 @@
 @if (article()) {
-  <div class="flex h-screen flex-col overflow-y-auto pb-6 pl-6 pr-3 scroll-stable">
-    <section class="mb-4 mt-6 flex w-full flex-col gap-6">
+  <div class="scroll-stable flex h-screen flex-col overflow-y-auto pr-3 pb-6 pl-6">
+    <section class="mt-6 mb-4 flex w-full flex-col gap-6">
       <header
         id="panel-control"
-        class="group flex rounded focus-within:outline focus-within:outline-1 focus-within:outline-primary hover:outline hover:outline-1 [&:not(:focus-within)]:hover:outline-neutral-300">
-        <div class="flex grow items-center gap-2 rounded-e-none rounded-s bg-neutral-50 pl-2 group-hover:bg-white">
+        class="group focus-within:outline-primary flex rounded focus-within:outline hover:outline [&:not(:focus-within)]:hover:outline-neutral-300">
+        <div class="flex grow items-center gap-2 rounded-s rounded-e-none bg-neutral-50 pl-2 group-hover:bg-white">
           <input
             id="advanced-search-input"
             type="search"
-            class="grow bg-neutral-50 focus:outline-none group-hover:bg-white"
+            class="grow bg-neutral-50 group-hover:bg-white focus:outline-none"
             autocomplete="off"
             spellcheck="false"
             [attr.placeholder]="'drawers.inputPlaceholder' | transloco"
@@ -32,7 +32,7 @@
 
         <button
           size="icon"
-          class="rounded-e rounded-s-none group-focus-within:rounded-br-none"
+          class="rounded-s-none rounded-e group-focus-within:rounded-br-none"
           [disabled]="input() === '' || null"
           [attr.title]="'search' | transloco"
           [attr.aria-label]="'search' | transloco"
@@ -43,7 +43,7 @@
     </section>
 
     <details name="advanced-search-panels" class="group border-b border-neutral-300" open>
-      <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+      <summary class="sticky top-0 flex cursor-pointer items-baseline justify-between bg-white p-3 select-none">
         <p class="flex items-baseline gap-2 font-semibold">
           <i class="fa-fw far fa-magnifying-glass"></i>
           {{ 'extracts' | transloco }}
@@ -59,7 +59,7 @@
       } @else {
         <ul>
           @for (extract of extracts(); track $index) {
-            <li class="mr-2 rounded px-2 py-1 hover:bg-highlight">
+            <li class="hover:bg-highlight mr-2 rounded px-2 py-1">
               <p role="button" [id]="'extract-' + extract.id" [innerHTML]="extract.text" (click)="scrollTo('extractslocations', extract.textIndex, true)"></p>
             </li>
 
@@ -73,7 +73,7 @@
 
     @if (hasLabels()) {
       <details class="group border-b border-neutral-300" name="advanced-search-panels">
-        <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+        <summary class="sticky top-0 flex cursor-pointer items-baseline justify-between bg-white p-3 select-none">
           <p class="flex items-baseline gap-2 font-semibold">
             <i class="fa-fw far fa-tags"></i>
             {{ 'labels' | transloco }}
@@ -104,7 +104,7 @@
 
     @if (similarDocuments().length > 0) {
       <details class="group border-b border-neutral-300" name="advanced-search-panels">
-        <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+        <summary class="sticky top-0 flex cursor-pointer items-baseline justify-between bg-white p-3 select-none">
           <p class="flex items-baseline gap-2 font-semibold">
             <i class="fa-fw far fa-tags"></i>
             {{ 'drawers.similarDocuments' | transloco }}
@@ -114,10 +114,10 @@
         </summary>
 
         <div>
-          <ul class="mb-2 mt-4 flex flex-col flex-wrap px-2">
+          <ul class="mt-4 mb-2 flex flex-col flex-wrap px-2" role="list">
             @for (document of similarDocuments(); track $index) {
-              <li class="flex gap-1 rounded-md py-1 hover:bg-blue-50" role="button" selectArticleOnClick [article]="document" strategy="stack">
-                <div class="flex size-[20px] items-center justify-center rounded-full bg-neutral-50 text-primary">
+              <li role="listitem" class="flex gap-1 rounded-md py-1 hover:bg-blue-50" selectArticleOnClick [article]="document" strategy="stack">
+                <div class="text-primary flex size-[20px] items-center justify-center rounded-full bg-neutral-50">
                   <app-source-icon [collection]="article().collection" [connector]="article().connector" class="text-xs" />
                 </div>
 
@@ -133,7 +133,7 @@
 
 <ng-template #metadataPanel let-metadata="metadata" let-name="name" let-iconClass="iconClass" let-entity="entity">
   <details name="advanced-search-panels" class="group border-b border-neutral-300">
-    <summary class="sticky top-0 flex cursor-pointer select-none items-baseline justify-between bg-white p-3">
+    <summary class="sticky top-0 flex cursor-pointer items-baseline justify-between bg-white p-3 select-none">
       <p class="flex items-baseline gap-2 font-semibold capitalize">
         <i class="fa-fw {{ iconClass || 'far fa-list' }}"></i>
         {{ name | transloco }}

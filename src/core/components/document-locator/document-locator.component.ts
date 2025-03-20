@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
 
 import { Article, LegacyFilter } from '@sinequa/atomic';
-import { BadgeComponent, ButtonComponent, PopoverComponent, PopoverContentComponent, QueryParamsStore } from '@sinequa/atomic-angular';
+import { QueryParamsStore } from '@sinequa/atomic-angular';
+import { BadgeComponent, ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { SourceIconComponent } from '../source-icon/source-icon.component';
 
@@ -13,7 +14,7 @@ import { SourceIconComponent } from '../source-icon/source-icon.component';
   imports: [SourceIconComponent, BadgeComponent, ButtonComponent, PopoverComponent, PopoverContentComponent],
   template: `
     <!-- Renders all segment hidden to user to compute width -->
-    <div #shadowRender class="pointer-events-none invisible absolute left-0 top-0 -z-10 flex gap-2">
+    <div #shadowRender class="pointer-events-none invisible absolute top-0 left-0 -z-10 flex gap-2">
       @for (segment of locationSegments(); track $index) {
         <span class="whitespace-nowrap">{{ segment }}</span>
 
@@ -48,7 +49,7 @@ import { SourceIconComponent } from '../source-icon/source-icon.component';
 
           <PopoverContent position="bottom" class="rounded-full px-1">
             @for (segment of invisibleSegments(); track $index) {
-              <Badge variant="outline" class="hover:cursor-pointer hover:bg-accent" (click)="navigateToSegment($index)">
+              <Badge variant="outline" class="hover:bg-accent hover:cursor-pointer" (click)="navigateToSegment($index)">
                 {{ segment }}
               </Badge>
 

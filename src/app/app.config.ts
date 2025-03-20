@@ -4,6 +4,8 @@ import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+import { provideTransloco } from '@jsverse/transloco';
+import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
 import {
@@ -14,19 +16,16 @@ import {
   auditInterceptorFn,
   authInterceptorFn,
   bodyInterceptorFn,
-  errorInterceptorFn
+  errorInterceptorFn,
+  toastInterceptorFn
 } from '@sinequa/atomic-angular';
-
 import { appInitializerFn } from '@sinequa/atomic';
-import { toastInterceptorFn } from '@sinequa/atomic-angular';
 
 import { routes } from '@/app/app.routes';
-import { provideTransloco } from '@jsverse/transloco';
-import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/search.layout';
-import { TranslocoHttpLoader } from './transloco-loader';
 import { sbaProviders } from './sba.config';
+import { TranslocoHttpLoader } from './transloco-loader';
 
 registerLocaleData(localeFr);
 

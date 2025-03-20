@@ -54,7 +54,7 @@ const loader = ['en', 'fr'].reduce(
       <DialogContent class="flex flex-col gap-2">
         <span>{{ 'searchExport.outputFormat' | transloco }}</span>
         <select
-          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           id="format"
           [ngModel]="format()"
           (ngModelChange)="format.set($event)">
@@ -66,7 +66,7 @@ const loader = ['en', 'fr'].reduce(
         <span>{{ 'searchExport.exportColumns' | transloco }}</span>
         <select
           id="exportedColumns"
-          class="w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           multiple
           [ngModel]="columnsToExport()"
           (ngModelChange)="columnsToExport.set($event)">
@@ -81,7 +81,7 @@ const loader = ['en', 'fr'].reduce(
           id="maxCount"
           autocomplete="off"
           spellcheck="off"
-          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           [ngModel]="maxCount()"
           (ngModelChange)="maxCount.set($event)" />
       </DialogContent>

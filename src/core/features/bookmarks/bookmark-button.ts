@@ -25,6 +25,7 @@ const loader = ['en', 'fr'].reduce(
       <i class="fa-fw fa-bookmark fa-regular"></i>
     }`,
   host: {
+    class: 'cursor-pointer',
     '[title]': 'title()',
     '(click)': 'bookmark($event)'
   },

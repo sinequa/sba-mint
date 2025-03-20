@@ -1,5 +1,5 @@
 @if (items()) {
-  <ul class="z-10 -mb-2 max-h-80 overflow-auto rounded-b-lg bg-white p-2 text-black" aria-labelledby="dropdownDefaultButton" role="list">
+  <ul class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 text-black" aria-labelledby="dropdownDefaultButton" role="list">
     @for (item of items(); track $index) {
       @if (item.$isDivider) {
         <MenuSeparator />

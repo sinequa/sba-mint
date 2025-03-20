@@ -1,78 +1,50 @@
-<div id="autocomplete-anchor" class="group relative flex w-full focus-within:z-[1001]">
-  <div class="relative w-full">
-    <input
-      [class]="cn('peer rounded-e-none pe-8 ps-9 group-focus-within:rounded-bl-none', allowChatDrawer() && 'pe-32')"
-      type="search"
-      id="search-navbar"
-      [attr.placeholder]="'searchInput.placeholder' | transloco"
-      [attr.aria-label]="'searchInput.placeholder' | transloco"
-      autocomplete="off"
-      spellcheck="false"
-      [ngModel]="input()"
-      (ngModelChange)="input.set($event)"
-      (keyup)="onKeyDown($event)"
-      (click)="inputClicked()"
-      aria-keyshortcuts="/" />
+<Search
+  id="autocomplete-anchor"
+  [variant]="variant()"
+  [class]="
+    cn(
+      'relative w-full transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
+      variant() === 'basic' && 'focus-within:rounded-lg focus-within:rounded-br-none focus-within:rounded-bl-none'
+    )
+  "
+  [attr.placeholder]="'searchInput.placeholder' | transloco"
+  [attr.aria-label]="'searchInput.placeholder' | transloco"
+  [(ngModel)]="input"
+  (keydown)="onKeyDown($event)"
+  (click)="inputClicked()">
+  @if (showSave() && input() !== '') {
+    <button
+      variant="icon"
+      class="px-1 peer-disabled:opacity-50"
+      [attr.title]="'searchInput.saveSearch' | transloco"
+      [attr.aria-label]="'searchInput.saveSearch' | transloco"
+      (click)="saveQuery()"
+      (keydown.enter)="saveQuery()">
+      @if (isSavedSearch()) {
+        <i class="fa-fw fas fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
+      } @else {
+        <i class="fa-fw far fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
+      }
+    </button>
+  }
 
-    @if (showSave() && input() !== '') {
-      <button
-        variant="icon"
-        size="icon"
-        class="absolute inset-y-0 start-0 w-4 ps-3 peer-disabled:opacity-50"
-        [ngClass]="{ 'animate-save': saveAnimation() }"
-        [attr.title]="'searchInput.saveSearch' | transloco"
-        [attr.aria-label]="'searchInput.saveSearch' | transloco"
-        (click)="saveQuery()"
-        (keydown.enter)="saveQuery()">
-        @if (isSavedSearch()) {
-          <i class="fa-fw fas fa-star" aria-hidden="true"></i>
-        } @else {
-          <i class="fa-fw far fa-star" aria-hidden="true"></i>
-        }
-      </button>
-    }
-
-    <!-- Clear search button -->
-    @if (input() !== '') {
-      <button
-        variant="icon"
-        size="icon"
-        class="absolute inset-y-0 end-0 pe-3 peer-disabled:opacity-50"
-        [attr.title]="'searchInput.clearSearch' | transloco"
-        [attr.aria-label]="'searchInput.clearSearch' | transloco"
-        (click)="clearInput($event)"
-        (keydown.enter)="clearInput($event)">
-        <i class="fa-fw far fa-circle-xmark" aria-hidden="true"></i>
-      </button>
-    }
-
-    <!-- Ask AI button -->
-    @if (input() !== '' && allowChatDrawer()) {
-      <button
-        variant="ai"
-        class="absolute inset-y-0 end-8 m-1 h-6 rounded-sm text-xs"
-        title="Ask AI"
-        aria-label="Ask AI"
-        (click)="askAI()"
-        (keydown.enter)="askAI()">
-        <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
-        Ask AI
-      </button>
-    }
-  </div>
-
-  <!-- Search button -->
+  @if (input() !== '' && allowChatDrawer()) {
+    <button variant="ai" class="m-1 h-6 rounded-sm text-xs" title="Ask AI" aria-label="Ask AI" (click)="askAI()" (keydown.enter)="askAI()">
+      <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+      Ask AI
+    </button>
+  }
   <button
-    size="icon"
-    class="rounded-e rounded-s-none group-focus-within:rounded-br-none"
+    variant="icon"
+    class="px-1"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"
     [disabled]="!allowEmptySearch() && this.input() === ''"
-    (click)="emitText()">
-    <i class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
+    (click)="emitText($event)">
+    <SendHorizontalIcon />
   </button>
-</div>
+</Search>
 
 <div popover #autocompletePopover (click)="handlePopoverClick($event)">
   <ng-content></ng-content>

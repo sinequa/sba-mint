@@ -12,7 +12,7 @@
 </div>
 
 @if (article()) {
-  <div class="flex flex-col border-l bg-white">
+  <div class="flex flex-col border-l border-gray-200 bg-white">
     <div class="relative flex grow flex-col">
       <app-advanced-search class="absolute h-full w-full overflow-y-auto" [article]="article()!" (close)="drawer.collapse()" />
     </div>

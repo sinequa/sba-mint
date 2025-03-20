@@ -7,15 +7,8 @@ import { getState } from '@ngrx/signals';
 import { Subscription } from 'rxjs';
 
 import { Article as A, LegacyFilter, PreviewData } from '@sinequa/atomic';
-import {
-  AppStore,
-  MetadataComponent,
-  PopoverComponent,
-  PopoverContentComponent,
-  PreviewService,
-  QueryParamsStore,
-  SearchService
-} from '@sinequa/atomic-angular';
+import { AppStore, MetadataComponent, PreviewService, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
+import { PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { TranslocoDateImpurePipe } from '@/core/pipes/transloco-date.pipe';
 

@@ -1,15 +1,13 @@
 <div class="flex h-full">
-  <div class="h-full w-14 bg-gray-800 text-white">
+  <nav role="navigation" class="h-full w-14 bg-gray-800 text-white">
     <a id="navbar-logo" routerLink="/home" class="cursor-pointer px-2 py-2.5" title="Go to home page">
       <img id="logo" class="mx-auto max-h-6" aria-hidden="true" alt="logo" />
     </a>
 
-    <nav role="navigation" class="mt-10">
-      <a routerLink="/assistant" class="block rounded py-2.5 transition duration-200 hover:bg-gray-700" title="Go to assistant page">
-        <Robot />
-      </a>
-    </nav>
-  </div>
+    <a routerLink="/assistant" class="mt-10 flex justify-center rounded py-2.5 transition duration-200 hover:bg-gray-700" title="Go to assistant page">
+      <Robot />
+    </a>
+  </nav>
   <div class="flex-1">
     <!-- Main content goes here -->
     <router-outlet></router-outlet>

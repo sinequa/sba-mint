@@ -2,7 +2,7 @@
 
 <div class="layout-search" [attr.drawer-opened]="drawerOpened()">
   <div class="col-span-2 col-start-2">
-    <h1 class="mb-4 mt-6 flex gap-2 text-2xl font-semibold">
+    <h1 class="mt-6 mb-4 flex gap-2 text-2xl font-semibold">
       <i class="fa-fw fas fa-bookmark" aria-hidden></i>
       {{ 'bookmark.myBookmarks' | transloco }} <span class="ms-1 text-neutral-500">{{ bookmarks().length }}</span>
     </h1>
@@ -16,7 +16,7 @@
             <div class="flex">
               <span class="line-clamp-1 grow text-neutral-500">{{ bookmark.bookmark.id }}</span>
               <button
-                class="ms-1 text-alert hover:scale-125"
+                class="text-alert ms-1 hover:scale-125"
                 [attr.title]="'bookmark.removeBookmark' | transloco"
                 [attr.aria-label]="'bookmark.removeBookmark' | transloco"
                 (click)="onDelete(bookmark.bookmark)">

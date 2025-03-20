@@ -1,17 +1,10 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import {
-  Basket,
-  ButtonComponent,
-  DialogComponent,
-  DialogContentComponent,
-  DialogFooterComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
+
+import { Basket, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {

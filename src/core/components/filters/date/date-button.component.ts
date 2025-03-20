@@ -15,7 +15,11 @@ import { DateComponent } from './date.component';
   imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, DateComponent, OperatorPipe, SyslangPipe],
   template: `
     <Popover [disabled]="filter().disabled" class="group">
-      <button [variant]="variant()" class="group-data-[open=true]:border" [attr.data-disabled]="filter().disabled" [disabled]="filter().disabled || null">
+      <button
+        [variant]="variant()"
+        class="group-data-[open=true]:border group-data-[open=true]:border-gray-200"
+        [attr.data-disabled]="filter().disabled"
+        [disabled]="filter().disabled || null">
         @if (filter().icon) {
           <i class="fa-fw {{ filter().icon }} " aria-hidden="true"></i>
         }

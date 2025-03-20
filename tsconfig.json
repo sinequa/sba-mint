@@ -16,8 +16,8 @@
     "moduleResolution": "node",
     "importHelpers": false,
     "strictPropertyInitialization": false,
-    "target": "ES2022",
-    "module": "ES2022",
+    "target": "ESNext",
+    "module": "ESNext",
     "resolveJsonModule": true,
     "useDefineForClassFields": false,
     "lib": ["esnext", "dom"],
@@ -25,7 +25,7 @@
     "paths": {
       "@sinequa/atomic": ["./node_modules/@sinequa/atomic/dist"],
       "@sinequa/atomic-angular": ["./node_modules/@sinequa/atomic-angular"],
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
   "angularCompilerOptions": {

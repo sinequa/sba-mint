@@ -7,16 +7,13 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import {
   DrawerStackService,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent,
   NavigationService,
   OverflowItemDirective,
   OverflowManagerDirective,
   OverflowStopDirective,
   QueryParamsStore
 } from '@sinequa/atomic-angular';
-import { TabComponent, TabsComponent } from '@sinequa/ui';
+import { ButtonComponent, TabComponent, TabsComponent, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
 
 type NavbarTab = {
   display: string;
@@ -52,13 +49,12 @@ type NavbarTab = {
       </tabs>
 
       @if (moreTabs().length > 0) {
-        <Menu class="absolute -right-5" overflowStop>
+        <Menu class="absolute top-1 right-0" overflowStop>
           <button variant="ghost" class="mb-1 truncate" aria-label="more tabs">
-            <span>{{ 'more' | transloco }}</span>
-            <i class="fa-fw fal fa-chevron-down"></i>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
           </button>
 
-          <MenuContent class="w-fit" position="bottom-end">
+          <MenuContent class="z-500 w-fit" position="bottom-end">
             @for (tab of moreTabs(); track $index) {
               <MenuItem>
                 <a
@@ -86,6 +82,7 @@ type NavbarTab = {
     AsyncPipe,
     TranslocoPipe,
     SyslangPipe,
+    ButtonComponent,
     MenuComponent,
     MenuItemComponent,
     MenuContentComponent,

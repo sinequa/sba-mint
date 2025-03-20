@@ -11,7 +11,7 @@
         }
 
         <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
-          <p class="me-auto overflow-hidden text-ellipsis whitespace-nowrap font-bold text-primary">
+          <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap">
             {{ article().title }}
           </p>
         </a>
@@ -115,7 +115,7 @@
       } @else if (previewUrlError()) {
         <div class="flex h-full w-full items-center justify-center">
           <p class="text-center text-xl">
-            <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
+            <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
             {{ 'previewUnavailable' | transloco }}
           </p>
         </div>

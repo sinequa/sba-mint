@@ -7,7 +7,7 @@
 } @case ('correct') {
 <p>
   <span class="me-1">{{ 'didYouMean.showingResultsFor' | transloco }}</span>
-  <a class="font-bold text-primary" role="button" (click)="selectCorrected()">{{ correction() }}</a>
+  <a class="text-primary font-bold" role="button" (click)="selectCorrected()">{{ correction() }}</a>
 
   <span class="me-1">. {{ 'didYouMean.searchInsteadFor' | transloco }}</span>
   <a class="text-primary" role="button" (click)="selectOriginal()">{{ original() }}</a>
@@ -18,6 +18,6 @@
   <a class="text-primary" role="button" (click)="selectOriginal()">{{ original() }}</a>
 
   <span class="mx-1">and</span>
-  <a class="font-bold text-primary" role="button" (click)="selectCorrected()">{{ correction() }}</a>
+  <a class="text-primary font-bold" role="button" (click)="selectCorrected()">{{ correction() }}</a>
 </p>
 } }

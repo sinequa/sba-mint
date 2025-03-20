@@ -27,7 +27,7 @@
     <button
       variant="icon"
       title="{{'bookmark.openBookmark' | transloco}}"
-      class="invisible ms-auto text-destructive transition-transform hover:scale-125 hover:text-destructive group-hover:visible"
+      class="text-destructive hover:text-destructive invisible ms-auto transition-transform group-hover:visible hover:scale-125"
       [attr.title]="'bookmark.removeBookmark' | transloco"
       [attr.aria-label]="'bookmark.removeBookmark' | transloco"
       (click)="onDelete(bookmark, $event)">

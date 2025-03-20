@@ -1,17 +1,12 @@
-import { MetadataComponent } from '@sinequa/atomic-angular';
 import { BookmarkButtonComponent } from '@/core/features/bookmarks/bookmark-button';
 import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { getState } from '@ngrx/signals';
+import { MetadataComponent } from '@sinequa/atomic-angular';
 
 import {
   ApplicationStore,
   AppStore,
-  ButtonComponent,
   LabelService,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent,
-  OpenArticleOnCtrlEnterDirective,
   PreviewService,
   QueryParamsStore,
   SearchService,
@@ -20,6 +15,16 @@ import {
   SelectionStrategy,
   ShowBookmarkDirective
 } from '@sinequa/atomic-angular';
+import {
+  ButtonComponent,
+  MenuComponent,
+  MenuContentComponent,
+  MenuItemComponent,
+  CardComponent,
+  CardHeaderComponent,
+  CardContentComponent,
+  CardFooterComponent
+} from '@sinequa/ui';
 
 import { CollectionsDialog } from '@/core/features/collections/collections-add.dialog';
 import { LabelsEditComponent } from '@/core/features/labels/labels-edit.dialog';
@@ -61,10 +66,13 @@ const loader = ['en', 'fr'].reduce(
     LabelsEditComponent,
     CollectionsDialog,
     MissingTermsComponent,
-    MetadataComponent
+    MetadataComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardContentComponent,
+    CardFooterComponent
   ],
   templateUrl: './article-default.component.html',
-  styleUrl: './article-default.component.scss',
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,

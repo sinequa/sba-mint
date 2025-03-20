@@ -13,12 +13,15 @@ import { MoreComponent } from './more.component';
   imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, MoreComponent],
   template: `
     <Popover class="group">
-      <button variant="ghost" class="gap-1 truncate font-semibold group-data-[open=true]:border" aria-label="more filters">
+      <button
+        variant="ghost"
+        class="gap-1 truncate font-semibold group-data-[open=true]:border group-data-[open=true]:border-gray-200"
+        aria-label="more filters">
         <i class="far fa-filters"></i>
         <span>{{ 'filters.moreFilters' | transloco }}</span>
 
         @if (totalFiltersCount() > 0) {
-          <span class="ms-1 flex size-5 place-content-center rounded-full bg-primary font-semibold text-white">
+          <span class="bg-primary ms-1 flex size-5 place-content-center rounded-full font-semibold text-white">
             {{ totalFiltersCount() }}
           </span>
         }

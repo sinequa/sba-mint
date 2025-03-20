@@ -1,4 +1,4 @@
-import { NgClass, NgComponentOutlet } from '@angular/common';
+import { NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -59,7 +59,7 @@ const homeFeatures: HomeTab[] = [
   host: {
     class: 'layout-search h-screen'
   },
-  imports: [NgClass, NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
+  imports: [NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   styles: [
     `
       #logo {

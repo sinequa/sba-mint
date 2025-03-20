@@ -1,14 +1,14 @@
 tr {
   display: grid;
   grid-template-columns: 25% auto;
-  margin-bottom: theme('spacing.1');
+  margin-bottom: --spacing(1);
 
   th {
     text-align: start;
-    color: theme('colors.neutral.500');
-    font-weight: theme('fontWeight.medium');
-    font-size: theme('fontSize.xs');
-    line-height: theme('fontSize.xs.1.lineHeight');
+    color: var(--color-neutral-500);
+    font-weight: var(--font-medium);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
     align-self: center;
   }
 }

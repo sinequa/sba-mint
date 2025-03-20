@@ -1,6 +1,6 @@
 <fieldset class="flex flex-col gap-2">
   @if (!headless()) {
-    <legend class="mb-1 flex h-8 w-full select-none items-center pl-1 text-sm font-semibold text-gray-600">
+    <legend class="mb-1 flex h-8 w-full items-center pl-1 text-sm font-semibold text-gray-600 select-none">
       @if (aggregation()?.icon) {
         <i class="fa-fw {{ aggregation()?.icon }} mr-1" aria-hidden="true"></i>
       }
@@ -30,7 +30,7 @@
   }
 
   @if (searchable()) {
-    <input type="search" [placeholder]="'search' | transloco" [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" />
+    <input type="text" [placeholder]="'search' | transloco" [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" />
   }
 
   <ul class="max-h-52 snap-y snap-start overflow-auto" role="list" [attr.aria-label]="aggregation()?.display | syslang | transloco">

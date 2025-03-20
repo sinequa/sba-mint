@@ -12,7 +12,7 @@ import { CFilterEx } from '../filters.models';
   imports: [ButtonComponent, AggregationComponent, TranslocoPipe],
   template: `
     @for (filter of filters(); track $index) {
-      <li [class]="cn('bg-base-200 collapse mb-1', filter.disabled && 'pointer-events-none cursor-default select-none', filter.hidden && 'hidden')">
+      <li [class]="cn('collapse mb-1', filter.disabled && 'pointer-events-none cursor-default select-none', filter.hidden && 'hidden')">
         <!-- header -->
         <input
           role="button"
@@ -29,7 +29,7 @@ import { CFilterEx } from '../filters.models';
           <span class="me-4 grow">{{ filter.display || filter.name | transloco }}</span>
           @if (filter.count > 0) {
             <!-- count -->
-            <span class="ms-2 flex size-5 place-content-center rounded-full bg-primary font-semibold text-white">
+            <span class="bg-primary ms-2 flex size-5 place-content-center rounded-full font-semibold text-white">
               {{ filter.count }}
             </span>
           }
@@ -49,12 +49,12 @@ import { CFilterEx } from '../filters.models';
             </button>
           }
         </div>
-        <Aggregation #agg class="collapse-content ml-2 mr-2" dropdown-content [name]="filter.column" kind="column" [headless]="true" [searchable]="true" />
+        <Aggregation #agg class="collapse-content mr-2 ml-2" dropdown-content [name]="filter.column" kind="column" [headless]="true" [searchable]="true" />
       </li>
     }
   `,
   host: {
-    class: 'divide-y'
+    class: 'divide-y divide-gray-200'
   },
   styles: [
     `

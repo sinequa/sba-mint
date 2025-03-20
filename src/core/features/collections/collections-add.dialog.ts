@@ -1,17 +1,19 @@
 import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+
 import { Article } from '@sinequa/atomic';
+import { Basket, UserSettingsStore } from '@sinequa/atomic-angular';
 import {
-  Basket,
   ButtonComponent,
   DialogComponent,
   DialogContentComponent,
   DialogFooterComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+  InputComponent,
+  ListItemComponent
+} from '@sinequa/ui';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -32,7 +34,9 @@ const loader = ['en', 'fr'].reduce(
     DialogHeaderComponent,
     DialogTitleComponent,
     DialogContentComponent,
-    DialogFooterComponent
+    DialogFooterComponent,
+    ListItemComponent,
+    InputComponent
   ],
   providers: [provideTranslocoScope({ scope: 'collection', loader })],
   template: `
@@ -42,12 +46,9 @@ const loader = ['en', 'fr'].reduce(
       </DialogHeader>
 
       <DialogContent>
-        <ul class="flex flex-col">
+        <ul class="flex flex-col" role="list">
           @for (collection of collections(); track $index) {
-            <li
-              class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-              tabindex="0"
-              (click)="addToCollection(collection, $index)">
+            <li role="listitem" (click)="addToCollection(collection, $index)">
               @if (containsArticle(collection)) {
                 <i class="fa-fw fa-regular fa-square-check"></i>
               } @else {
@@ -60,33 +61,27 @@ const loader = ['en', 'fr'].reduce(
               {{ 'collection.noCollections' | transloco }}
             </li>
           }
-          @if (creating()) {
-            <li
-              class="group flex h-10 cursor-pointer items-center gap-2 rounded px-3 py-2 hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary focus:outline-none"
-              tabindex="0">
-              <div class="flex grow">
-                <input
-                  #createInput
-                  class="h-10 w-full grow rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
-                  type="text"
-                  autocomplete="off"
-                  spellcheck="false"
-                  [attr.aria-label]="'collection.collectionName' | transloco"
-                  [attr.placeholder]="'collection.collectionName' | transloco"
-                  [ngModel]="newCollectionName()"
-                  (ngModelChange)="newCollectionName.set($event)"
-                  (blur)="onBlurCreate()" />
-              </div>
-            </li>
-          }
         </ul>
+        @if (creating()) {
+          <input
+            #createInput
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            [attr.aria-label]="'collection.collectionName' | transloco"
+            [attr.placeholder]="'collection.collectionName' | transloco"
+            [ngModel]="newCollectionName()"
+            (ngModelChange)="newCollectionName.set($event)"
+            (keydown.escape)="$event.preventDefault(); creating.set(false)"
+            (blur)="onBlurCreate()" />
+        }
       </DialogContent>
 
-      <DialogFooter>
+      <DialogFooter class="flex flex-col">
         <button variant="outline" class="w-full" tabindex="0" [attr.title]="'collection.createCollection' | transloco" (click)="onCreate()">
           {{ (creating() ? 'collection.cancelCreation' : 'collection.createCollection') | transloco }}
         </button>
-        <button (click)="dialog.close()">
+        <button (click)="dialog.close()" class="self-end">
           {{ 'collection.close' | transloco }}
         </button>
       </DialogFooter>
@@ -94,16 +89,19 @@ const loader = ['en', 'fr'].reduce(
   `
 })
 export class CollectionsDialog {
+  readonly createInputElement = viewChild<ElementRef<HTMLInputElement>>('createInput');
+  readonly dialogElement = viewChild<DialogComponent>(DialogComponent);
+
   readonly article = input.required<Article>();
+
   private readonly userSettingsStore = inject(UserSettingsStore);
-  readonly createInput = viewChild<ElementRef>('createInput');
-  readonly dialog = viewChild<DialogComponent>(DialogComponent);
   protected collections = computed<Basket[]>(() => this.userSettingsStore.baskets());
+
   newCollectionName = signal<string>('');
   creating = signal<boolean>(false);
 
   showModal() {
-    this.dialog()!.showModal();
+    this.dialogElement()!.showModal();
   }
 
   containsArticle(collection: Basket): boolean {
@@ -114,7 +112,11 @@ export class CollectionsDialog {
     if (this.creating()) return this.creating.set(false);
 
     this.creating.set(true);
-    this.createInput()?.nativeElement.focus();
+
+    // Focus the input element with a delay because the input element is not yet rendered
+    setTimeout(() => {
+      this.createInputElement()?.nativeElement.focus();
+    }, 1);
   }
 
   async addToCollection(collection: Basket, collectionIndex: number): Promise<void> {

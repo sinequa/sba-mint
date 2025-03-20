@@ -1,0 +1,248 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+
+@source "../node_modules/@sinequa/ui";
+@source "../node_modules/@sinequa/atomic-angular";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+html {
+  overflow-x: hidden;
+}
+body {
+  position: relative;
+}
+
+@theme {
+  --font-display: 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif';
+
+  --zindex-filter: 100;
+  --zindex-backdrop: 1000;
+  --zindex-drawer: 2000;
+  --zindex-drawer-chat: 2500;
+  --zindex-tooltip: 3000;
+
+  --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-small-alt-text: 'Sinequa logo';
+  --logo-large-alt-text: 'Sinequa logo';
+
+  --color-backdrop: rgba(0, 0, 0, 0.4);
+  --color-background: #ffffff;
+  --color-foreground: #23272e;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1c1c;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1c1c1c;
+
+  --color-primary: #0084ff;
+  --color-primary-hover: #0056ff;
+  --color-primary-active: #0040bf;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #526077;
+  --color-secondary-hover: #434e61;
+  --color-secondary-active: #3a4252;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted: #f6f7f9;
+  --color-muted-foreground: #8695aa;
+
+  --color-accent: #f2f2f2;
+  --color-accent-foreground: #1c1c1c;
+
+  --color-destructive: #ff2a1d;
+  --color-destructive-hover: #c8180d;
+  --color-destructive-active: #a5180f;
+  --color-destructive-disable: #ffc8c5;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #f6f7f9;
+  --color-input: #d5d9e2;
+  --color-ring: #1a73e8;
+
+  --color-alert: #ff2a1d;
+  --color-success: #2ed73f;
+  --color-highlight: #fff7ab;
+
+  --shadow-dropdown: 6px 4px 20px 0px rgba(0, 0, 0, 0.2);
+  --shadow-article: 4px 4px 12px 0px rgba(0, 0, 0, 0.15);
+
+  --animate-progress: progress 5s linear infinite;
+  @keyframes progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@utility z-* {
+  z-index: --value(--zindex- *, integer, [integer]);
+}
+
+@layer utilities {
+  .scroll-stable {
+    scrollbar-gutter: stable;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .bg-backdrop {
+    background-color: var(--color-backdrop);
+  }
+  .break-word {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+@layer base {
+  :root {
+    --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+    --backdrop: rgba(0, 0, 0, 0.4);
+    --backdrop-filter: blur(2px);
+  }
+
+  /* manage the backdrop with dialogs */
+  dialog {
+    opacity: 0;
+    transition: opacity 0.2s ease-out allow-discrete;
+
+    &:open {
+      opacity: 1;
+    }
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0%);
+      transition: background-color 0.7s allow-discrete;
+    }
+    &:open::backdrop {
+      background-color: var(--backdrop);
+      backdrop-filter: var(--backdrop-filter);
+    }
+  }
+
+  @starting-style {
+    dialog:open {
+      opacity: 0;
+    }
+  }
+
+  @starting-style {
+    dialog:open::backdrop {
+      background-color: rgb(0 0 0 / 0%);
+      backdrop-filter: none;
+    }
+  }
+
+  /* layout */
+  .layout-search {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    transition: 250ms ease-out;
+    &[drawer-opened='true'] {
+      grid-template-columns: 2% 25% 25% 48%;
+    }
+  }
+}
+
+/* drawer stack */
+app-drawer:has(+ app-drawer) {
+  transform: translateX(-5px);
+}
+
+app-drawer:has(+ app-drawer + app-drawer) {
+  transform: translateX(-8px);
+}
+
+/* collapse */
+.collapse:not(td):not(tr):not(colgroup) {
+  visibility: visible;
+}
+
+.collapse {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: auto 0fr;
+  transition: grid-template-rows 0.2s;
+}
+
+.collapse-title,
+.collapse > input[type='checkbox'],
+.collapse > input[type='radio'],
+.collapse-content {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+.collapse > input[type='checkbox'],
+.collapse > input[type='radio'] {
+  cursor: pointer;
+  appearance: none;
+  opacity: 0;
+}
+
+.collapse-content {
+  visibility: hidden;
+  grid-column-start: 1;
+  grid-row-start: 2;
+  min-height: calc(var(--spacing) * 0);
+  transition: visibility 0.2s;
+}
+
+.collapse[open],
+.collapse-open,
+.collapse:focus:not(.collapse-close) {
+  grid-template-rows: auto 1fr;
+}
+
+.collapse:not(.collapse-close):has(> input[type='checkbox']:checked),
+.collapse:not(.collapse-close):has(> input[type='radio']:checked) {
+  grid-template-rows: auto 1fr;
+}
+
+.collapse[open] > .collapse-content,
+.collapse-open > .collapse-content,
+.collapse:focus:not(.collapse-close) > .collapse-content,
+.collapse:not(.collapse-close) > input[type='checkbox']:checked ~ .collapse-content,
+.collapse:not(.collapse-close) > input[type='radio']:checked ~ .collapse-content {
+  visibility: visible;
+  min-height: fit-content;
+}
+/* Override to hide bootstrap spinner */
+.spinner-grow {
+  display: none !important;
+}
+
+/* allow multi-line text in the taost description */
+[data-description] {
+  white-space: pre-line;
+}
+
+.panel-h-full {
+  --panel-max-height: 100%;
+}
+
+.active:not([disabled]) {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: var(--color-secondary);
+}
+
+ul:has(card.selected) card:not(.selected) {
+  opacity: 0.5;
+}

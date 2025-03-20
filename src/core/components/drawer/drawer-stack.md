@@ -14,7 +14,7 @@ The constant `DRAWER_STACK_MAX_COUNT` defines the maximum number of **rendered**
   --drawer-width: 46;
   --drawer-subdrawer-width: 400px;
 
-  z-index: theme('zIndex.drawer');
+  z-index: var(--zindex-drawer);
 
   transition: right 300ms linear;           /* left instead of right */
 

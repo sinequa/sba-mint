@@ -15,17 +15,21 @@ import { CFilterEx } from '../filters.models';
   imports: [ButtonComponent, PopoverComponent, PopoverContentComponent, TranslocoPipe, AggregationComponent, SyslangPipe],
   template: `
     <Popover [disabled]="filter().disabled" class="group">
-      <button [variant]="variant()" class="group-data-[open=true]:border" [attr.data-disabled]="filter().disabled" [disabled]="filter().disabled || null">
+      <button
+        [variant]="variant()"
+        class="group-data-[open=true]:border group-data-[open=true]:border-gray-200"
+        [attr.data-disabled]="filter().disabled"
+        [disabled]="filter().disabled || null">
         @if (filter().icon) {
           <i class="fa-fw {{ filter().icon }} " aria-hidden="true"></i>
         }
         {{ filter().display || filter().name | syslang | transloco }}
         @if (filter().isTree && filter().count > 0) {
-          <span class="flex size-5 place-content-center rounded-full bg-white font-semibold text-primary">
+          <span class="text-primary flex size-5 place-content-center rounded-full bg-white font-semibold">
             {{ filter().count }}
           </span>
         } @else if (filter().count > 1) {
-          <span class="flex size-5 place-content-center rounded-full bg-white font-semibold text-primary">
+          <span class="text-primary flex size-5 place-content-center rounded-full bg-white font-semibold">
             <i class="fas fa-plus my-auto text-[0.5rem]" aria-hidden="true"></i>
             {{ filter().count - 1 }}
           </span>

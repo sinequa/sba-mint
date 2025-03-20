@@ -4,8 +4,9 @@ import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 
 import { Result } from '@sinequa/atomic';
-import { AuditService, MenuComponent, MenuContentComponent, MenuItemComponent, QueryParamsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { AuditService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
+
 import { FeedbackDialogComponent } from './feedback.dialog';
 
 interface FeedbackMenu {

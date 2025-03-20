@@ -1,4 +1,4 @@
-<div class="bg-card text-card-foreground mx-auto min-w-96 rounded-lg border shadow-lg">
+<div class="bg-card text-card-foreground mx-auto min-w-96 rounded-lg border border-gray-200 shadow-lg">
   <div class="flex flex-col space-y-1.5 p-6">
     <a href="#" title="Logo">
       <svg
@@ -90,8 +90,8 @@
       </svg>
     </a>
     @if (authenticated()) {
-    <h3 class="whitespace-nowrap text-2xl font-semibold tracking-tight">Welcome back, {{ user()?.fullName }}</h3>
-    <p class="text-sm text-muted-foreground">You are logged in</p>
+    <h3 class="text-2xl font-semibold tracking-tight whitespace-nowrap">Welcome back, {{ user()?.fullName }}</h3>
+    <p class="text-muted-foreground text-sm">You are logged in</p>
     }
   </div>
 
@@ -100,13 +100,13 @@
     <div class="grid gap-4">
       @if (!config.autoOAuthProvider && !config.autoSAMLProvider) {
       <div class="grid gap-2">
-        <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="username"
+        <label class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="username"
           >{{ 'login.username' | transloco }}</label
         >
 
         <input
           type="text"
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="border-input bg-background ring-offset-background placeholder:text-muted-foreground flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           id="username"
           required
           [ngModel]="credentials().username"
@@ -115,13 +115,13 @@
       </div>
       <div class="grid gap-2">
         <div class="flex items-center">
-          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="password"
+          <label class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="password"
             >{{ 'login.password' | transloco }}</label
           >
         </div>
         <input
           type="password"
-          class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-slate-400 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="border-input placeholder:text-muted-foreground flex h-10 w-full rounded-md border px-3 py-2 text-sm ring-offset-slate-400 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           id="password"
           required
           [ngModel]="credentials().password"
@@ -129,7 +129,7 @@
           (keydown.enter)="handleLoginWithCredentials()" />
       </div>
       <button
-        class="hover:bg-slate/90 btn-primary inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        class="hover:bg-slate/90 btn-primary inline-flex h-10 w-full items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium whitespace-nowrap text-white ring-offset-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         [disabled]="!valid()"
         (click)="handleLoginWithCredentials()">
         {{ 'login.connect' | transloco }}
@@ -137,7 +137,7 @@
       } @else {
       <button
         (click)="handleLogin()"
-        class="inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md border border-input px-4 py-2 text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+        class="border-input inline-flex h-10 w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap ring-offset-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
         Login with {{ config.autoOAuthProvider ? 'OAuth' : 'SAML' }}
       </button>
       }
@@ -145,14 +145,14 @@
     } @else {
     <button
       (click)="handleLogout()"
-      class="hover:bg-slate/90 btn-primary inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="hover:bg-slate/90 btn-primary inline-flex h-10 w-full items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium whitespace-nowrap text-white ring-offset-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
       type="submit">
       {{ 'login.disconnect' | transloco }}
     </button>
     <a
       role="button"
       routerLink="window.history.back()"
-      class="mt-2 inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md border border-input px-4 py-2 text-sm font-medium ring-offset-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="border-input mt-2 inline-flex h-10 w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap ring-offset-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
       >{{ 'login.back' | transloco }}</a
     >
     }

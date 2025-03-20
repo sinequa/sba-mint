@@ -12,7 +12,7 @@
   /* Makes drawer x% the size of the screen + space for subdrawer */
   width: calc(100vw / 100 * var(--drawer-width) + var(--drawer-subdrawer-width));
 
-  z-index: theme('zIndex.drawer');
+  z-index: var(--zindex-drawer);
   grid-template-columns: 0 1fr var(--drawer-subdrawer-width);
 
   transition:

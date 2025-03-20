@@ -1,9 +1,9 @@
-<a id="navbar-logo" routerLink="/home" class="self-center ps-10">
-  <img id="logo" alt="logo" class="max-h-8" />
+<a id="navbar-logo" routerLink="/home" class="place-self-start ps-10">
+  <img id="logo" alt="logo" class="max-h-8 w-full" />
 </a>
 
 <div class="col-span-2 flex h-full items-center">
-  <app-search-input class="flex grow" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)" (debounced)="debounced($event)">
+  <app-search-input class="flex grow" variant="basic" [showSave]="true" (saved)="saveSearch()" (validated)="validated($event)" (debounced)="debounced($event)">
     <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
   </app-search-input>
 </div>

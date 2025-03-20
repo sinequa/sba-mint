@@ -16,10 +16,10 @@
       <button variant="inverse" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
     </div>
   } @else if (query.isSuccess()) {
-    <filters-bar class="sticky top-0 z-filter flex gap-2 bg-gradient-to-b from-white from-80% pb-4 pt-4" />
+    <filters-bar class="z-filter sticky top-0 flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
   }
 
-  <app-did-you-mean class="py-1 text-alert" [result]="result()" />
+  <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
   <app-sponsored-results />
 
@@ -41,14 +41,12 @@
       <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
-    <ul class="mt-4 flex flex-col gap-2" role="list">
+    <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
       @for (page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id + $index) {
-          <li>
-            @if (article.docformat) {
-              <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: { article, strategy: 'replace' }" />
-            }
-          </li>
+          @if (article.docformat) {
+            <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: { article, strategy: 'replace' }" />
+          }
         } @empty {
           <li class="no-records">
             <NoResultPanel />

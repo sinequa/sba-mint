@@ -1,16 +1,15 @@
 import { NgClass } from '@angular/common';
-import { booleanAttribute, Component, computed, effect, ElementRef, inject, Input, input, output, Signal, signal, viewChild } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, InputComponent, cn } from '@sinequa/ui';
-
 import { toast } from 'ngx-sonner';
-import { DrawerAdvancedFiltersComponent } from '../drawer/advanced-filters/advanced-filters.component';
 
-const DEBOUNCE_DELAY = 300;
+import { AppStore, AutocompleteService, CJson, debouncedSignal, DrawerStackService, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
+
+import { DrawerAdvancedFiltersComponent } from '../drawer/advanced-filters/advanced-filters.component';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -20,19 +19,24 @@ const loader = ['en', 'fr'].reduce(
   {} as HashMap<() => Promise<Translation>>
 );
 
+const DEBOUNCE_DELAY = 300;
+
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent, InputComponent],
+  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   host: {
-    class: 'rounded-md focus-within:rounded-bl-none'
+    '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")'
   },
   providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
 })
 export class SearchInputComponent {
   cn = cn;
+  public readonly showSave = input(false, { transform: booleanAttribute });
+  public readonly variant = input<InputSearchVariants['variant']>('default');
+
   readonly debounced = output<string>();
   readonly validated = output<string>();
   readonly saved = output<void>();
@@ -49,9 +53,7 @@ export class SearchInputComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
 
-  public readonly showSave = input(false, { transform: booleanAttribute });
-
-  public readonly input = signal<string>('');
+  public readonly input = model<string>('');
 
   protected readonly allowChatDrawer = signal<boolean>(false);
   protected readonly saveAnimation = signal<boolean>(false);
@@ -138,14 +140,15 @@ export class SearchInputComponent {
     if (text === undefined) return;
 
     this.input.set(text);
-    if (!silent) this.emitText();
+    if (!silent) this.emitText(new Event('input'));
   }
 
   public askAI(): void {
     this.drawerStack.askAI(this.input());
   }
 
-  protected emitText(): void {
+  protected emitText(e: Event): void {
+    e.stopImmediatePropagation();
     if (this.allowAdvancedFilters() && this.input() === '') {
       this.overlayOpen.set(false);
       this.drawerStack.open(DrawerAdvancedFiltersComponent);
@@ -182,16 +185,20 @@ export class SearchInputComponent {
    * If the input is not empty and a different key is pressed, the popover is shown (if previously hidden).
    */
   protected onKeyDown(e: KeyboardEvent): void {
+    console.log('onKeyDown', e.key);
     if (e.key === 'Enter') {
-      this.emitText();
+      this.emitText(e);
+    } else if (e.key === 'Escape') {
+      this.popoverElement().hidePopover();
     } else if (this.input() !== '') {
       this.popoverElement().showPopover();
     }
   }
 
+  s = viewChild(SearchComponent);
   handlePopoverClick(e: Event): void {
     e.stopImmediatePropagation();
-    // When click event bubbles up to the document, we hide the popover
     this.popoverElement().hidePopover();
+    this.s()?.searchElement()?.nativeElement.blur();
   }
 }

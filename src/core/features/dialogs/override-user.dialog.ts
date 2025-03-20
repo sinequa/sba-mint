@@ -38,7 +38,7 @@ const loader = ['en', 'fr'].reduce(
 
       <DialogContent class="flex flex-col gap-4">
         <input
-          class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-10 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           type="text"
           autocomplete="off"
           spellcheck="false"
@@ -49,7 +49,7 @@ const loader = ['en', 'fr'].reduce(
 
         <input
           required
-          class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-10 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           type="text"
           autocomplete="off"
           spellcheck="false"

@@ -15,7 +15,7 @@
         <span class="w-1/3 font-semibold">{{ 'drawers.findInContent' | transloco }}</span>
         <select
           id="content-operator"
-          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           formControlName="operator">
           @for (data of selectData; track $index) {
             <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
@@ -23,7 +23,7 @@
         </select>
         <input
           id="content-value"
-          type="search"
+          type="text"
           autocomplete="off"
           spellcheck="false"
           [placeholder]="getPlaceholder('content.operator')"
@@ -33,26 +33,19 @@
         <span class="w-1/3 font-semibold">{{ 'drawers.findInTitle' | transloco }}</span>
         <select
           id="title-operator"
-          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           formControlName="operator">
           @for (data of selectData; track $index) {
             <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
           }
         </select>
-        <input
-          id="title-value"
-          type="search"
-          class="grow rounded border border-neutral-200 p-2 focus:outline-none group-hover:bg-white"
-          autocomplete="off"
-          spellcheck="false"
-          [placeholder]="getPlaceholder('title.operator')"
-          formControlName="value" />
+        <input id="title-value" type="text" autocomplete="off" spellcheck="false" [placeholder]="getPlaceholder('title.operator')" formControlName="value" />
       </div>
       <div class="flex items-center gap-4" formGroupName="location">
         <span class="w-1/3 font-semibold">{{ 'drawers.findInLocation' | transloco }}</span>
         <select
           id="location-operator"
-          class="h-8 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+          class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           formControlName="operator">
           @for (data of selectData; track $index) {
             <option [value]="data.operator">{{ 'drawers.' + data.display | transloco }}</option>
@@ -60,7 +53,7 @@
         </select>
         <input
           id="location-value"
-          type="search"
+          type="text"
           autocomplete="off"
           spellcheck="false"
           [placeholder]="getPlaceholder('location.operator')"

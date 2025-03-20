@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { Article, fetchLabels, guid, labels } from '@sinequa/atomic';
 import { debouncedSignal } from '@sinequa/atomic-angular';
+import { InputComponent } from '@sinequa/ui';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -18,12 +19,13 @@ const loader = ['en', 'fr'].reduce(
 @Component({
   selector: 'labels-form, labelsform, LabelsForm',
   standalone: true,
-  imports: [FormsModule, NgStyle, TranslocoPipe],
+  imports: [FormsModule, NgStyle, TranslocoPipe, InputComponent],
   providers: [provideTranslocoScope({ scope: 'labelsForm', loader })],
   template: `
     <div class="anchor" [ngStyle]="{ 'anchor-name': anchor() }">
+      <label [htmlFor]="id()" class="font-semibold">{{ (isPublic() ? 'labelsForm.publicLabels' : 'labelsForm.privateLabels') | transloco }}</label>
       <input
-        class="h-10 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+        [id]="id()"
         type="text"
         autocomplete="off"
         spellcheck="false"
@@ -33,7 +35,7 @@ const loader = ['en', 'fr'].reduce(
         (ngModelChange)="labelInput.set($event)"
         (keyup)="onKeyDown($event)"
         (click)="onInputClick()" />
-      <div popover class="popover m-0 mt-2 border shadow-md" #LabelsPopover>
+      <div popover class="popover m-0 mt-2 border border-gray-200 shadow-md" #LabelsPopover>
         <ul class="data-list-xs m-1 max-h-40 overflow-auto bg-white text-black" aria-labelledby="dropdownDefaultButton" role="listbox">
           @for (label of suggestedLabels(); track $index) {
             <li role="option" tabindex="0">
@@ -52,7 +54,7 @@ const loader = ['en', 'fr'].reduce(
     </div>
     <div class="my-2 flex flex-wrap">
       @for (label of labels(); track $index) {
-        <span class="float-left m-1 flex select-none place-content-center items-center rounded-full bg-primary font-semibold text-white">
+        <span class="bg-primary float-left m-1 flex place-content-center items-center rounded-full font-semibold text-white select-none">
           {{ label }}
           @if (allowModification()) {
             <i class="fa-fw far fa-circle-xmark ms-1 cursor-pointer" (click)="removeLabel(label, isPublic())"></i>
@@ -65,7 +67,7 @@ const loader = ['en', 'fr'].reduce(
     .anchor {
       &:has(.popover:popover-open) {
         z-index: 5000;
-        border-radius: theme('borderRadius.DEFAULT') theme('borderRadius.DEFAULT') 0 0;
+        border-radius: var(--radius) var(--radius) 0 0;
       }
 
       .popover::backdrop {
@@ -111,6 +113,8 @@ export class LabelsFormComponent {
   popoverElement = computed(() => this.popover()?.nativeElement);
 
   labels = signal<string[]>([]);
+
+  id = signal(`labels-form-${guid()}`);
 
   constructor() {
     afterRender(() => {

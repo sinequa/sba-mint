@@ -1,20 +1,12 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, model, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+import { toast } from 'ngx-sonner';
 
 import { CCApp } from '@sinequa/atomic';
-import {
-  AppStore,
-  AuditService,
-  ButtonComponent,
-  DialogComponent,
-  DialogContentComponent,
-  DialogFooterComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent
-} from '@sinequa/atomic-angular';
-import { toast } from 'ngx-sonner';
+import { AppStore, AuditService } from '@sinequa/atomic-angular';
+import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 export const AuditFeedbackType = 'UserFeedback_UserFeedback';
 
@@ -50,17 +42,16 @@ const loader = ['en', 'fr'].reduce(
         @if (type()) {
           <p>{{ 'searchFeedback.' + type() + '.description' | transloco }}</p>
           <textarea
-            class="mt-2 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
+            class="hover:outline-primary focus:outline-primary mt-2 w-full rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            [ngModel]="comment()"
-            (ngModelChange)="comment.set($event)"></textarea>
+            [(ngModel)]="comment"></textarea>
         }
       </DialogContent>
 
       <DialogFooter>
-        <button variant="secondary" (click)="dialog.close()">
+        <button variant="outline" (click)="dialog.close()">
           {{ 'cancel' | transloco }}
         </button>
         <button [disabled]="!comment()" (click)="submit()">
@@ -78,7 +69,7 @@ export class FeedbackDialogComponent {
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
   type = signal<string | undefined>(undefined);
-  comment = signal<string>('');
+  comment = model<string>('');
 
   showModal(type: string) {
     this.type.set(type);

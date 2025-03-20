@@ -44,7 +44,7 @@ const loader = ['en', 'fr'].reduce(
   ],
   providers: [provideTranslocoScope({ scope: 'collection', loader })],
   template: `
-    <dialog #dialog>
+    <dialog #dialog popover>
       <DialogHeader>
         <DialogTitle>{{ 'collection.manageCollections' | transloco }}</DialogTitle>
       </DialogHeader>
@@ -79,7 +79,6 @@ const loader = ['en', 'fr'].reduce(
             <span class="flex gap-2">
               <input
                 #createInput
-                class="h-10 grow rounded-md border bg-neutral-50 px-2 hover:bg-white hover:outline hover:outline-1 hover:outline-primary focus:bg-white focus:outline focus:outline-1 focus:outline-primary"
                 type="text"
                 autocomplete="off"
                 spellcheck="false"
@@ -88,6 +87,7 @@ const loader = ['en', 'fr'].reduce(
                 [ngModel]="newCollectionName()"
                 (ngModelChange)="newCollectionName.set($event)"
                 (keydown.enter)="onBlurCreate()"
+                (keydown.escape)="$event.preventDefault(); onCreate()"
                 (blur)="onBlurCreate()" />
 
               <button variant="outline" class="w-fit" tabindex="0" [attr.title]="'collection.cancelCreation' | transloco" (click)="onCreate()">
@@ -173,7 +173,9 @@ export class ManageCollectionsDialog {
     if (this.creating()) return this.creating.set(false);
 
     this.creating.set(true);
-    this.createInput()?.nativeElement.focus();
+    setTimeout(() => {
+      this.createInput()?.nativeElement.focus();
+    }, 1);
   }
 
   onBlur(e: Event): void {
