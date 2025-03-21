@@ -185,7 +185,6 @@ export class SearchInputComponent {
    * If the input is not empty and a different key is pressed, the popover is shown (if previously hidden).
    */
   protected onKeyDown(e: KeyboardEvent): void {
-    console.log('onKeyDown', e.key);
     if (e.key === 'Enter') {
       this.emitText(e);
     } else if (e.key === 'Escape') {

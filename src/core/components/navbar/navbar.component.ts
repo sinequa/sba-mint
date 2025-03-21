@@ -5,8 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { debounceTime } from 'rxjs';
 
+import { Suggestion } from '@sinequa/atomic';
 import { AutocompleteService, DrawerStackService, OverflowManagerDirective, QueryParamsStore, SavedSearchesService } from '@sinequa/atomic-angular';
-
 import { ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { AlertsComponent } from '@/core/features/alerts/alerts';
@@ -16,7 +16,7 @@ import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-
 import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
 import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
 
-import { AutocompleteComponent, Suggestion } from '../search-input/autocomplete/autocomplete.component';
+import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 
 export type NavbarMenu = {

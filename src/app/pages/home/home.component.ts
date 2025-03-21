@@ -4,9 +4,10 @@ import { EventType, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
+import { Suggestion } from '@sinequa/atomic';
 import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
 
-import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
+import { AutocompleteComponent } from '@/core/components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
 import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
 import { CollectionsComponent } from '@/core/features/collections/collections';

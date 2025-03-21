@@ -1,23 +1,34 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { KeyValuePipe } from '@angular/common';
+import { Component, computed, inject, InjectionToken, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { catchError, combineLatest, map, of, switchMap } from 'rxjs';
 
-import { Suggestion as SuggestionBasic } from '@sinequa/atomic';
+import { Suggestion } from '@sinequa/atomic';
 import { AppStore, AuditService, AutocompleteService, DrawerStackService, HighlightWordPipe, UserSettingsStore } from '@sinequa/atomic-angular';
 
-import { ButtonComponent, ListItemComponent, HorizontalDividerComponent } from '@sinequa/ui';
+import { ButtonComponent, HorizontalDividerComponent, ListItemComponent } from '@sinequa/ui';
 
 import { DrawerAdvancedFiltersComponent } from '../../drawer/advanced-filters/advanced-filters.component';
 import { SearchInputComponent } from '../search-input.component';
 
-export type Suggestion = Partial<SuggestionBasic> & {
-  $isDivider: boolean;
-};
-
-const titledSections = ['title', 'concepts', 'people', 'bookmark', 'recent-search', 'saved-search'];
-const autocompleteCategories = ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people'];
+const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by preference for suggestion's categories", {
+  factory: () => ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people']
+});
+// Icons mapping for each category
+const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>('Icons for each suggestion categories', {
+  factory: () => ({
+    'recent-search': 'fa-fw far fa-history',
+    'saved-search': 'fa-fw far fa-bookmark',
+    bookmark: 'fa-fw far fa-bookmark',
+    title: 'fa-fw far fa-file-alt',
+    concepts: 'fa-fw far fa-lightbulb',
+    people: 'fa-fw far fa-user',
+    company: 'fa-fw far fa-building',
+    location: 'fa-fw far fa-location-dot'
+  })
+});
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -31,7 +42,7 @@ const loader = ['en', 'fr'].reduce(
   selector: 'app-autocomplete',
   standalone: true,
   templateUrl: './autocomplete.component.html',
-  imports: [HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
+  imports: [KeyValuePipe, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   providers: [provideTranslocoScope({ scope: 'search-input', loader })],
   styles: [
     `
@@ -53,16 +64,20 @@ export class AutocompleteComponent {
   readonly userSettingsStore = inject(UserSettingsStore);
   private readonly drawerStack = inject(DrawerStackService);
 
+  // Order by preference for suggestion's categories
+  readonly autocompleteCategories = inject(AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES);
+  // Icons mapping for each category
+  readonly autocompleteIcons = inject(AUTOCOMPLETE_CATEGORIES_ICONS);
+
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
     const features = this.appStore.customizationJson()?.features;
-    // return features ? features['advancedSearch'] : false;
-    return true; // todo remove
+    return features ? features['advancedSearch'] : false;
   });
 
-  readonly items = toSignal(
+  readonly suggestions = toSignal(
     combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)]).pipe(
       switchMap(([testText]) => {
         const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
@@ -73,6 +88,7 @@ export class AutocompleteComponent {
           fromUserSettings,
           this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
             catchError(error => {
+              console.log('Error getting suggestions from suggest queries', error);
               return of([]);
             })
           )
@@ -82,28 +98,10 @@ export class AutocompleteComponent {
       // order the items to have full-text, recent search and saved search at the beginning
       map(items =>
         items.sort((a, b) => {
-          return autocompleteCategories.indexOf(a.category) - autocompleteCategories.indexOf(b.category);
+          return this.autocompleteCategories.indexOf(a.category) - this.autocompleteCategories.indexOf(b.category);
         })
       ),
-      map(items =>
-        items.reduce<Suggestion[]>((acc, curr) => {
-          if (acc.length > 0) {
-            const last = acc.at(-1);
-
-            // add a divider before specific categories
-            if (!last?.$isDivider && last?.category !== curr.category && titledSections.includes(curr.category)) {
-              acc.push({ $isDivider: true });
-              acc.push({ category: curr.category, $isDivider: false });
-            }
-            // handle the case when the first item is from a titled section
-          } else if (titledSections.includes(curr.category)) {
-            acc.push({ category: curr.category, $isDivider: false });
-          }
-
-          acc.push({ ...curr, $isDivider: false });
-          return acc;
-        }, [])
-      )
+      map(items => Object.groupBy(items, ({ category }) => category))
     )
   );
 
