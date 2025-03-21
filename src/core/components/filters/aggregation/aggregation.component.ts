@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -7,7 +7,6 @@ import { firstValueFrom } from 'rxjs';
 import {
   Aggregation,
   AggregationItem,
-  fetchSuggest,
   fetchSuggestField,
   FieldValue,
   LegacyFilter,
@@ -33,8 +32,8 @@ import { ButtonComponent, InputComponent } from '@sinequa/ui';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 
-import { AggregationItemComponent } from './aggregation-item.component';
 import { toast } from 'ngx-sonner';
+import { AggregationItemComponent } from './aggregation-item.component';
 
 export type AggEx = Aggregation & {
   display?: string;
@@ -136,7 +135,7 @@ export class AggregationComponent {
   });
 
   /* search feature */
-  searchText = signal('');
+  searchText = model<string>('');
   debouncedSearchText = debouncedSignal(this.searchText, 300);
 
   /* suggestions */
@@ -180,7 +179,7 @@ export class AggregationComponent {
           const suggests = await fetchSuggestField(this.debouncedSearchText(), [this.aggregation()!.column]);
           this.suggests.set(suggests);
         } catch (e: any) {
-          console.log('fetch suggest field', e);
+          console.error('fetch suggest field', e);
           toast.warning('fetch suggest field', { description: e.errorMessage });
         }
       },

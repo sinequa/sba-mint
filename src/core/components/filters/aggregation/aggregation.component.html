@@ -30,7 +30,7 @@
   }
 
   @if (searchable()) {
-    <input type="text" [placeholder]="'search' | transloco" [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" />
+    <input type="text" [placeholder]="'search' | transloco" [(ngModel)]="searchText" />
   }
 
   <ul class="max-h-52 snap-y snap-start overflow-auto" role="list" [attr.aria-label]="aggregation()?.display | syslang | transloco">
