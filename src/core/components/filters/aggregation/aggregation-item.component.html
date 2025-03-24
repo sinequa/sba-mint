@@ -38,8 +38,11 @@
   @if (node().icon) {
     <i class="fa-fw {{ node().icon }} self-center justify-self-center" aria-hidden="true"></i>
   }
-
-  <span class="line-clamp-1 text-ellipsis" [title]="name() | syslang">{{ name() | syslang }}</span>
+  <p class="line-clamp-1 text-ellipsis">
+    @for (chunk of (name() | syslang) ?? '' | highlightWord: searchText() : 10; track $index) {
+      <span [class]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
+    }
+  </p>
 </a>
 
 @if (node().hasChildren && node().$opened) {

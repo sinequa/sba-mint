@@ -1,14 +1,15 @@
-import { Component, computed, EventEmitter, HostBinding, input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, HostBinding, inject, input, Output } from '@angular/core';
 
-import { AggregationListItem, cn } from '@sinequa/atomic-angular';
+import { AggregationListItem, cn, HighlightWordPipe } from '@sinequa/atomic-angular';
 
 import { SyslangPipe } from '@/core/pipes/syslang';
 import { ListItemComponent } from '@sinequa/ui';
+import { AggregationComponent } from './aggregation.component';
 
 @Component({
   selector: 'aggregation-item, AggregationItem, aggregationitem',
   standalone: true,
-  imports: [ListItemComponent, SyslangPipe],
+  imports: [HighlightWordPipe, ListItemComponent, SyslangPipe],
   templateUrl: './aggregation-item.component.html',
   styles: `
     :host {
@@ -30,6 +31,8 @@ export class AggregationItemComponent {
   @Output() onOpen = new EventEmitter<AggregationListItem>();
 
   node = input.required<AggregationListItem>();
+
+  searchText = inject(AggregationComponent).searchText;
 
   name = computed(() => {
     const value = this.node().display || this.node().value;
