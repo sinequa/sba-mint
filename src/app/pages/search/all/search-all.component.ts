@@ -1,5 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, effect, Type } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Result } from '@sinequa/atomic';
 import { InfinityScrollDirective } from '@sinequa/atomic-angular';
@@ -13,10 +14,10 @@ import { SponsoredResultsComponent } from '@/core/components/sponsored-results/s
 import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean';
 import { SortingChoice, SortSelectorComponent } from '@/core/features/sort-selector/sort-selector';
 import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback';
-import { SearchExportComponent } from '@/core/features/search-export/search-export';
 import { NavbarTabsComponent } from '@/core/components/navbar/navbar-tabs.components';
 
 import { SearchBase } from '../search.abstract';
+import { ExportDialog } from '@/core/features/export/export-dialog';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -24,6 +25,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
   selector: 'app-search-all',
   standalone: true,
   imports: [
+    TranslocoPipe,
     NgComponentOutlet,
     ArticleDefaultSkeletonComponent,
     SortSelectorComponent,
@@ -36,7 +38,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
     NoResultPanelComponent,
     NavbarTabsComponent,
     ButtonComponent,
-    SearchExportComponent
+    ExportDialog
   ],
   templateUrl: './search-all.component.html',
   styles: [

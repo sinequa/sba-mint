@@ -1,14 +1,18 @@
 {
   "back": "Back",
+  "bookmark": {
+    "myBookmarks": "My Bookmarks",
+    "removeBookmark": "Remove bookmark"
+  },
   "bookmarks": "Bookmarks",
   "cancel": "Cancel",
   "clear": "Clear",
   "concepts": "Concepts",
-  "save": "Save",
   "confirm": "Confirm",
   "create": "Create",
   "delete": "Delete",
   "extracts": "Extracts",
+  "export": "Export",
   "filters": "Filters",
   "from": "From",
   "history": "History",
@@ -17,13 +21,25 @@
   "lastUpdatedBy": "Last updated by",
   "lastUpdatedOn": "Last updated on",
   "loadMore": "Load more",
-  "seeMore": "See more",
   "location": "Location",
   "logout": "Logout",
   "more": "More",
-  "bookmark": {
-    "removeBookmark": "Remove bookmark",
-    "myBookmarks": "My Bookmarks"
+  "msg#results": {
+    "results_all_tab": "All",
+    "results_text_tab": "Text",
+    "tabBusiness": "Business",
+    "tabLocation": "Location",
+    "web": "Internet",
+    "pdf": "PDF",
+    "word": "Word",
+    "excel": "Excel",
+    "powerpoint": "Powerpoint"
+  },
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Filename",
+    "relevance": "Relevance",
+    "title": "Title"
   },
   "nextPage": "Next page",
   "open": "Open",
@@ -31,21 +47,11 @@
   "previewUnavailable": "Sorry, preview is not available for this file.",
   "previousPage": "Previous page",
   "recentSearches": "Recent searches",
+  "save": "Save",
   "savedSearches": "Saved searches",
   "search": "Search",
+  "seeMore": "See more",
   "title": "Title",
   "to": "To",
-  "type": "Type",
-  "msg#sort": {
-    "date": "Date",
-    "filename": "Filename",
-    "relevance": "Relevance",
-    "title": "Title"
-  },
-  "msg#results": {
-    "resultsAllTab": "All",
-    "tabPeople": "People",
-    "tabBusiness": "Business",
-    "tabLocation": "Location"
-  }
+  "type": "Type"
 }

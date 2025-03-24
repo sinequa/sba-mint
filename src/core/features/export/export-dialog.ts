@@ -1,9 +1,10 @@
-import { Component, inject, output, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, inject, output, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { CCApp, CCWebService, ExportOutputFormat } from '@sinequa/atomic';
-import { AppStore, ExportQueryModel } from '@sinequa/atomic-angular';
+import { AppStore, ExportQueryModel, QueryParamsStore, SearchService } from '@sinequa/atomic-angular';
 import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 interface CCQueryExport extends CCWebService {
@@ -44,15 +45,15 @@ const loader = ['en', 'fr'].reduce(
     DialogContentComponent,
     DialogFooterComponent
   ],
-  providers: [provideTranslocoScope({ scope: 'searchExport', loader })],
+  providers: [provideTranslocoScope({ scope: 'dialogExport', loader })],
   template: `
     <dialog #dialog>
       <DialogHeader>
-        <DialogTitle>{{ 'searchExport.export' | transloco }}</DialogTitle>
+        <DialogTitle>{{ 'dialogExport.title' | transloco }}</DialogTitle>
       </DialogHeader>
 
       <DialogContent class="flex flex-col gap-2">
-        <span>{{ 'searchExport.outputFormat' | transloco }}</span>
+        <span>{{ 'dialogExport.outputFormat' | transloco }}</span>
         <select
           class="hover:outline-primary focus:outline-primary h-8 w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
           id="format"
@@ -63,7 +64,7 @@ const loader = ['en', 'fr'].reduce(
           }
         </select>
 
-        <span>{{ 'searchExport.exportColumns' | transloco }}</span>
+        <span>{{ 'dialogExport.exportColumns' | transloco }}</span>
         <select
           id="exportedColumns"
           class="hover:outline-primary focus:outline-primary w-full rounded-md border border-gray-200 bg-neutral-50 px-2 hover:bg-white hover:outline focus:bg-white focus:outline"
@@ -75,7 +76,7 @@ const loader = ['en', 'fr'].reduce(
           }
         </select>
 
-        <span>{{ 'searchExport.maxLines' | transloco }}</span>
+        <span>{{ 'dialogExport.maxLines' | transloco }}</span>
         <input
           type="number"
           id="maxCount"
@@ -88,10 +89,10 @@ const loader = ['en', 'fr'].reduce(
 
       <DialogFooter>
         <button variant="outline" (click)="dialog.close()">
-          {{ 'collection.cancel' | transloco }}
+          {{ 'cancel' | transloco }}
         </button>
-        <button tabindex="0" [attr.title]="'collection.download' | transloco" (click)="onDownload()">
-          {{ 'searchExport.download' | transloco }}
+        <button tabindex="0" [attr.title]="'dialogExport.download' | transloco" (click)="onDownload()">
+          {{ 'dialogExport.download' | transloco }}
         </button>
       </DialogFooter>
     </dialog>
@@ -101,6 +102,9 @@ export class ExportDialog {
   onExport = output<ExportQueryModel>();
 
   private appStore = inject(AppStore);
+  readonly searchService = inject(SearchService);
+  readonly queryParamsStore = inject(QueryParamsStore);
+
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
   public exportableColumns: string[] = [];
@@ -111,6 +115,7 @@ export class ExportDialog {
   public columnsToExport = signal<string[]>([]);
 
   private webService: string;
+  private destroyRef = inject(DestroyRef);
 
   showModal() {
     const app = getState(this.appStore) as CCApp;
@@ -138,13 +143,18 @@ export class ExportDialog {
   }
 
   onDownload() {
-    this.onExport.emit({
+    const model: ExportQueryModel = {
       format: this.format(),
       export: 'Result',
       maxCount: this.maxCount() && this.maxCount()! > 0 ? this.maxCount() : undefined,
       exportedColumns: this.columnsToExport().length ? this.columnsToExport() : undefined,
       webService: this.webService
-    });
+    };
+
+    const { name } = getState(this.appStore) as CCApp;
+    const query = this.queryParamsStore.getQuery();
+
+    this.searchService.download({ model, appName: name, query }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
 
     this.dialog()!.close();
   }

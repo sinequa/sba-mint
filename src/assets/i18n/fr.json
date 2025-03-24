@@ -1,14 +1,18 @@
 {
   "back": "Retour",
+  "bookmark": {
+    "myBookmarks": "Mes marque-pages",
+    "removeBookmark": "Supprimer le marque-page"
+  },
   "bookmarks": "Marque-pages",
   "cancel": "Annuler",
   "clear": "Effacer",
   "concepts": "Concepts",
-  "save": "Sauvegarder",
   "confirm": "Confirmer",
   "create": "Créer",
   "delete": "Supprimer",
   "extracts": "Extraits",
+  "export": "Export",
   "filters": "Filtres",
   "from": "De",
   "history": "Historique",
@@ -17,13 +21,26 @@
   "lastUpdatedBy": "Dernière mise à jour par",
   "lastUpdatedOn": "Dernière mise à jour le",
   "loadMore": "Charger plus",
-  "seeMore": "Voir plus",
   "location": "Emplacement",
   "logout": "Déconnexion",
   "more": "Plus",
-  "bookmark": {
-    "removeBookmark": "Supprimer le marque-page",
-    "myBookmarks": "Mes marque-pages"
+  "msg#results": {
+    "results_all_tab": "Tout",
+    "results_text_tab": "Texte",
+    "tabBusiness": "Business",
+    "tabLocation": "Lieux",
+    "tabPeople": "Personnes",
+    "web": "Internet",
+    "pdf": "PDF",
+    "word": "Word",
+    "excel": "Excel",
+    "powerpoint": "Powerpoint"
+  },
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Nom de fichier",
+    "relevance": "Pertinence",
+    "title": "Titre"
   },
   "nextPage": "Page suivante",
   "open": "Ouvrir",
@@ -31,21 +48,11 @@
   "previewUnavailable": "Désolé, la prévisualisation n'est pas disponible pour ce fichier.",
   "previousPage": "Page précédente",
   "recentSearches": "Recherches récentes",
+  "save": "Sauvegarder",
   "savedSearches": "Recherches sauvegardées",
   "search": "Rechercher",
+  "seeMore": "Voir plus",
   "title": "Titre",
   "to": "A",
-  "type": "Type",
-  "msg#sort": {
-    "date": "Date",
-    "filename": "Nom de fichier",
-    "relevance": "Pertinence",
-    "title": "Titre"
-  },
-  "msg#results": {
-    "resultsAllTab": "Tout",
-    "tabPeople": "Personnes",
-    "tabBusiness": "Business",
-    "tabLocation": "Lieux"
-  }
+  "type": "Type"
 }

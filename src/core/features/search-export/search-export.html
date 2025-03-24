@@ -1,6 +1,0 @@
-<button variant="inverse" [attr.title]="'searchExport.export'" (click)="onExport()">
-  <i class="fa-fw fas fa-file-export"></i>
-  {{ 'searchExport.export' | transloco }}
-</button>
-
-<export-dialog (onExport)="exportCsv($event)" />

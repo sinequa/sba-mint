@@ -36,7 +36,10 @@
   } @else if (query.isSuccess() && query.data()?.pages) {
     <!-- the sort is always displayed excepts when no records are found -->
     <div class="mt-4 flex gap-1 has-[_+ul>li.no-records]:hidden">
-      <search-export class="me-auto" />
+      <button variant="ghost" class="me-auto" aria-label="export" (click)="exportDialog.showModal()">
+        <i class="fa-fw fas fa-file-export"></i>
+        {{ 'export' | transloco }}
+      </button>
       <search-feedback [pages]="query.data()?.pages" />
       <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
@@ -60,3 +63,5 @@
     <div infinity-scroll (onScroll)="nextPage()"></div>
   }
 </main>
+
+<export-dialog #exportDialog />
