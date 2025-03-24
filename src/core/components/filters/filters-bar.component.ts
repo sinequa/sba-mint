@@ -36,7 +36,7 @@ const loader = ['en', 'fr'].reduce(
   template: `
     <ng-container overflowManager [target]="el.nativeElement" (count)="adjustFiltersCount($event)">
       @if (hasFilters()) {
-        <button variant="destructive" size="icon" aria-label="clear all filters" (click)="clearFilters()" (keydown.enter)="clearFilters()">
+        <button variant="destructive" size="icon" class="shrink-0" aria-label="clear all filters" (click)="clearFilters()" (keydown.enter)="clearFilters()">
           <i class="fa-fw far fa-trash-can" aria-hidden="true"></i>
         </button>
       }
