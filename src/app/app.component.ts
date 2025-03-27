@@ -4,12 +4,11 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { globalConfig, logout } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, UserSettingsStore } from '@sinequa/atomic-angular';
-
-import { BackdropComponent } from '@/core/components/drawer/backdrop/backdrop.component';
-import { DrawerStackComponent } from '@/core/components/drawer/drawer-stack/drawer-stack.component';
+/* TODO: to remove after v18 miggration */
 import { LoginService } from '@sinequa/core/login';
+
+import { globalConfig, logout } from '@sinequa/atomic';
+import { ApplicationService, ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 import { RobotIconComponent } from '@sinequa/ui';
 
 @Component({

@@ -4,7 +4,7 @@ import { getState } from '@ngrx/signals';
 
 import { CCApp, Query } from '@sinequa/atomic';
 
-import { AssistantComponent } from '../../assistant/assistant';
+import { AssistantComponent } from '../../components/assistant/assistant';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',

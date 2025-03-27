@@ -5,16 +5,20 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
 import { Suggestion } from '@sinequa/atomic';
-import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
-
-import { AutocompleteComponent } from '@/core/components/search-input/autocomplete/autocomplete.component';
-import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { BookmarksComponent } from '@/core/features/bookmarks/bookmarks';
-import { CollectionsComponent } from '@/core/features/collections/collections';
-import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches';
-import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches';
-import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
+import {
+  AppStore,
+  AutocompleteService,
+  BookmarksComponent,
+  CollectionsComponent,
+  DrawerStackService,
+  QueryParamsStore,
+  RecentSearchesComponent,
+  SavedSearchesComponent
+} from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
+import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
+import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
 type HomeTab = {
   name: string;

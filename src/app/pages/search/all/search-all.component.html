@@ -21,7 +21,7 @@
 
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
-  <app-sponsored-results />
+  <sponsored-results />
 
   @if (query.isPending()) {
     <div class="mt-10 flex justify-end">
@@ -40,8 +40,8 @@
         <i class="fa-fw fas fa-file-export"></i>
         {{ 'export' | transloco }}
       </button>
-      <search-feedback [pages]="query.data()?.pages" />
-      <app-sort-selector [result]="result()!" (onSort)="onSort($event)" />
+      <feedback [pages]="query.data()?.pages" />
+      <sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
     <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
@@ -52,7 +52,7 @@
           }
         } @empty {
           <li class="no-records">
-            <NoResultPanel />
+            <NoResult />
           </li>
         }
       }

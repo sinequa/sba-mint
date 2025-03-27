@@ -1,12 +1,13 @@
-import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
-import { NavbarComponent } from '@/core/components/navbar/navbar.component';
 import { NgComponentOutlet } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
 import { toast } from 'ngx-sonner';
 import { firstValueFrom, Subscription } from 'rxjs';
+
+import { Article, LegacyFilter, Query } from '@sinequa/atomic';
+import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { getComponentsForDocumentType } from '../../registry/document-type-registry';
 
 interface BookmarkArticle {
   bookmark: Bookmark;

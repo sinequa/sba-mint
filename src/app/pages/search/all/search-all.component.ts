@@ -3,21 +3,23 @@ import { Component, effect, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Result } from '@sinequa/atomic';
-import { InfinityScrollDirective } from '@sinequa/atomic-angular';
+import {
+  DidYouMeanComponent,
+  ExportDialog,
+  FiltersBarComponent,
+  InfinityScrollDirective,
+  NavbarTabsComponent,
+  NoResultComponent,
+  SearchFeedbackComponent,
+  SortingChoice,
+  SortSelectorComponent,
+  SponsoredResultsComponent
+} from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
-import { getComponentsForDocumentType } from '@/app/registry/document-type-registry';
-import { ArticleDefaultSkeletonComponent } from '@/core/components/article/default-skeleton/article-default-skeleton.component';
-import { FiltersBarComponent } from '@/core/components/filters/filters-bar.component';
-import { NoResultPanelComponent } from '@/core/components/no-result-panel/no-result-panel.component';
-import { SponsoredResultsComponent } from '@/core/components/sponsored-results/sponsored-results.component';
-import { DidYouMeanComponent } from '@/core/features/did-you-mean/did-you-mean';
-import { SortingChoice, SortSelectorComponent } from '@/core/features/sort-selector/sort-selector';
-import { SearchFeedbackComponent } from '@/core/features/search-feedback/search-feedback';
-import { NavbarTabsComponent } from '@/core/components/navbar/navbar-tabs.components';
-
 import { SearchBase } from '../search.abstract';
-import { ExportDialog } from '@/core/features/export/export-dialog';
+import { ArticleDefaultSkeletonComponent } from '../../../components/article/default-skeleton/article-default-skeleton.component';
+import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -32,10 +34,9 @@ type R = Result & { nextPage?: number; previousPage?: number };
     DidYouMeanComponent,
     InfinityScrollDirective,
     SponsoredResultsComponent,
-    NoResultPanelComponent,
+    NoResultComponent,
     SearchFeedbackComponent,
     FiltersBarComponent,
-    NoResultPanelComponent,
     NavbarTabsComponent,
     ButtonComponent,
     ExportDialog

@@ -4,11 +4,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { RecentSearch, UserSettingsStore } from '@sinequa/atomic-angular';
-
-import { countFilters, wrapFiltersToArray } from '@/core/features/recent-searches/utils';
-
-import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
+import { countFilters, RecentSearch, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-recent-searches',

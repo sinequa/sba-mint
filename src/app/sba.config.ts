@@ -1,11 +1,12 @@
-import { environment } from '@/environments/environment';
 import { BsSearchModule } from '@sinequa/components/search';
 import { IntlModule, Locale, LocalesConfig } from '@sinequa/core/intl';
 import { LoginModule } from '@sinequa/core/login';
 import { ModalModule } from '@sinequa/core/modal';
-import { StartConfig, WebServicesModule } from '@sinequa/core/web-services';
-import enLocale from './locales/en';
 import { importProvidersFrom, isDevMode } from '@angular/core';
+import { StartConfig, WebServicesModule } from '@sinequa/core/web-services';
+
+import enLocale from './locales/en';
+import { environment } from '../environments/environment';
 
 export class AppLocalesConfig implements LocalesConfig {
   defaultLocale: Locale;

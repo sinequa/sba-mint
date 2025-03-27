@@ -1,5 +1,0 @@
-@if (iconDetails()?.iconPath) {
-  <img [src]="iconDetails()?.iconPath" [alt]="collection()?.[0] || ('sources.sourceIcon' | transloco)" />
-} @else {
-  <i class="{{ iconDetails()?.iconClass }}" [attr.aria-label]="'sources.sourceIcon' | transloco"></i>
-}

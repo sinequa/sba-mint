@@ -8,9 +8,13 @@ import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
+import { appInitializerFn } from '@sinequa/atomic';
 import {
   AGGREGATIONS_NAMES,
   AGGREGATIONS_NAMES_PRESET_DEFAULT,
+  COMPONENTS_FOR_DOCUMENT_TYPE,
+  DRAWER_COMPONENT,
+  DrawerPreviewComponent,
   HIGHLIGHTS,
   ROUTE_COMPONENTS,
   auditInterceptorFn,
@@ -19,53 +23,16 @@ import {
   errorInterceptorFn,
   toastInterceptorFn
 } from '@sinequa/atomic-angular';
-import { appInitializerFn } from '@sinequa/atomic';
 
-import { routes } from '@/app/app.routes';
+import { routes } from './routes';
+import { PREVIEW_HIGHLIGHTS } from './highlight.config';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/search.layout';
 import { sbaProviders } from './sba.config';
 import { TranslocoHttpLoader } from './transloco-loader';
+import { getComponentsForDocumentType } from './registry/document-type-registry';
 
 registerLocaleData(localeFr);
-
-const PREVIEW_HIGHLIGHTS = [
-  {
-    name: 'company',
-    color: 'white',
-    bgColor: '#FF7675'
-  },
-  {
-    name: 'geo',
-    color: 'white',
-    bgColor: '#74B9FF'
-  },
-  {
-    name: 'person',
-    color: 'white',
-    bgColor: '#00ABB5'
-  },
-  {
-    name: 'money',
-    color: 'white',
-    bgColor: '#85BB65' // Hex color for dollar green
-  },
-  {
-    name: 'entity12',
-    color: 'white',
-    bgColor: '#FFD700' // Hex color for the sun (gold)
-  },
-  {
-    name: 'extractslocations',
-    color: 'black',
-    bgColor: '#fffacd'
-  },
-  {
-    name: 'matchlocations',
-    color: 'black',
-    bgColor: '#ff0'
-  }
-];
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -76,6 +43,8 @@ export const appConfig: ApplicationConfig = {
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },
+    { provide: COMPONENTS_FOR_DOCUMENT_TYPE, useValue: getComponentsForDocumentType },
+    { provide: DRAWER_COMPONENT, useValue: DrawerPreviewComponent },
     {
       provide: ROUTE_COMPONENTS,
       useValue: [
