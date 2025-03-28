@@ -9,6 +9,7 @@
     "docs:start": "npm run start:docs",
     "lint": "ng lint",
     "ng": "ng",
+    "postinstall": "npm run transloco:extract-scoped-libs",
     "prepare": "husky",
     "prettier:check": "prettier --config .prettierrc --check src/**/*.{js,ts,html,scss,css,json}",
     "prettier:write": "prettier --config .prettierrc --write src/**/*.{js,ts,html,scss,css,json}",
