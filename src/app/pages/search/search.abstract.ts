@@ -90,6 +90,7 @@ export abstract class SearchBase<T> implements OnDestroy {
       const q = this.queryParamsStore.getQuery();
 
       const query = { ...q, page: pageParam, tab: this.t(), basket: this.b() } as Query;
+      this.beforeSearch(query);
 
       // Add the current search to the user settings when the text is not empty
       if (query.text && query.text !== '') {
@@ -217,4 +218,8 @@ export abstract class SearchBase<T> implements OnDestroy {
     const ccQuery = this.appStore.getQueryByName(q.name);
     return ccQuery?.tabSearch.isActive ?? false;
   });
+
+  protected beforeSearch(query: Query): void {
+    // Override this method to perform any actions before the search is performed
+  }
 }

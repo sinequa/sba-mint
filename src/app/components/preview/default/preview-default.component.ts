@@ -1,11 +1,12 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article as A, LegacyFilter, PreviewData } from '@sinequa/atomic';
+import { Article as A, CCApp, LegacyFilter, PreviewData } from '@sinequa/atomic';
 import {
+  ApplicationStore,
   AppStore,
   DocumentLocatorComponent,
   MetadataComponent,
@@ -18,23 +19,44 @@ import {
 
 import { PreviewActionsComponent } from './actions/preview-actions';
 import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
+import { AssistantComponent } from '../../assistant/assistant';
+import { cn } from '@sinequa/ui';
 
 type Article = A & {
   [key: string]: string[] | undefined;
 };
 
+const loader = ['en', 'fr'].reduce(
+  (acc, lang) => {
+    acc[lang] = () => import(`../i18n/${lang}.json`);
+    return acc;
+  },
+  {} as HashMap<() => Promise<Translation>>
+);
+
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  imports: [NgClass, PreviewNavbarComponent, MetadataComponent, PreviewActionsComponent, TranslocoPipe, TranslocoDateImpurePipe, DocumentLocatorComponent],
+  providers: [provideTranslocoScope({ scope: 'preview', loader })],
+  imports: [
+    NgClass,
+    PreviewNavbarComponent,
+    MetadataComponent,
+    PreviewActionsComponent,
+    TranslocoPipe,
+    TranslocoDateImpurePipe,
+    DocumentLocatorComponent,
+    AssistantComponent
+  ],
   templateUrl: './preview-default.component.html',
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
     class: 'grow flex flex-col overflow-hidden'
   },
   styleUrl: './preview-default.component.scss'
 })
 export class PreviewDefaultComponent {
+  cn = cn;
+
   public readonly previewData = input.required<PreviewData>();
   public iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
@@ -64,6 +86,18 @@ export class PreviewDefaultComponent {
   readonly canLoadIframe = signal<boolean>(false);
   readonly previewUrlError = signal<boolean>(false);
   readonly loading = signal<boolean>(false);
+
+  appStore = inject(AppStore);
+  applicationStore = inject(ApplicationStore);
+  isAssistantReady = computed(() => this.applicationStore.assistantReady());
+  isStreaming = signal<boolean>(false);
+  assistantCollapsed = signal<boolean>(true);
+  displaySummary = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+
+  readonly instanceId = computed(() => {
+    const { name } = getState(this.appStore) as CCApp;
+    return `${name}-mini-preview-assistant`;
+  });
 
   constructor() {
     effect(() => {

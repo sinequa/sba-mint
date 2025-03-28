@@ -9,5 +9,6 @@
   "zoomIn": "Zoom in",
   "zoomOut": "Zoom out",
   "toggleExtracts": "Toggle extracts",
-  "toggleEntities": "Toggle entities"
+  "toggleEntities": "Toggle entities",
+  "summarize": "Summarize"
 }

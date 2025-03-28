@@ -19,6 +19,38 @@
     <filters-bar class="z-filter sticky top-0 flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
   }
 
+  @if (allowAIOverview() && isAssistantReady()) {
+    <div
+      [class]="
+        cn(
+          'assistant-container rounded-md border border-orange-100 bg-orange-50 p-2',
+          assistantCollapsed() && 'collapsed max-h-[80px] overflow-hidden bg-gradient-to-b from-orange-50 to-orange-100'
+        )
+      ">
+      <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
+        <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
+          @if (isStreaming()) {
+            <i class="fa-solid fa-spinner animate-spin"></i>
+          } @else {
+            <i class="fa-solid fa-sparkles"></i>
+          }
+        </div>
+
+        AI Overview
+
+        <button
+          variant="none"
+          [class]="cn('transition-rotate ms-auto size-8 cursor-pointer duration-150 ease-in-out', !assistantCollapsed() && 'rotate-180')"
+          (click)="assistantCollapsed.set(!assistantCollapsed())"
+          aria-label="toggle assistant">
+          <i class="fa-regular fa-chevron-down"></i>
+        </button>
+      </h2>
+
+      <assistant [class]="{ hidden: assistantCollapsed() }" mode="query" [instanceId]="instanceId()" (isStreaming)="isStreaming.set($event)" />
+    </div>
+  }
+
   <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
   <sponsored-results />

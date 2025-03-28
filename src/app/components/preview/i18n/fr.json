@@ -9,5 +9,6 @@
   "zoomIn": "Zoomer",
   "zoomOut": "Dézoomer",
   "toggleExtracts": "Afficher les extraits",
-  "toggleEntities": "Afficher les entités"
+  "toggleEntities": "Afficher les entités",
+  "summarize": "Résumer"
 }

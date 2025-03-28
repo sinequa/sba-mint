@@ -1,9 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, effect, Type } from '@angular/core';
+import { Component, computed, effect, inject, signal, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Result } from '@sinequa/atomic';
+import { CCApp, Query, Result } from '@sinequa/atomic';
 import {
+  ApplicationStore,
   DidYouMeanComponent,
   ExportDialog,
   FiltersBarComponent,
@@ -15,11 +16,14 @@ import {
   SortSelectorComponent,
   SponsoredResultsComponent
 } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { ButtonComponent, cn } from '@sinequa/ui';
 
-import { SearchBase } from '../search.abstract';
+import { MessageHandler } from '@sinequa/assistant/chat';
 import { ArticleDefaultSkeletonComponent } from '../../../components/article/default-skeleton/article-default-skeleton.component';
+import { AssistantComponent } from '../../../components/assistant/assistant';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { SearchBase } from '../search.abstract';
+import { getState } from '@ngrx/signals';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -39,7 +43,8 @@ type R = Result & { nextPage?: number; previousPage?: number };
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
-    ExportDialog
+    ExportDialog,
+    AssistantComponent
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -54,8 +59,29 @@ type R = Result & { nextPage?: number; previousPage?: number };
   }
 })
 export class SearchAllComponent extends SearchBase<R> {
+  cn = cn;
+
+  private readonly applicationStore = inject(ApplicationStore);
+
+  isStreaming = signal<boolean>(false);
+  hideAssistant = signal(true);
+
+  // ast-vanillAI-search-results-assistant
+  readonly instanceId = computed(() => {
+    const { name } = getState(this.appStore) as CCApp;
+    return `${name}-search-results-assistant`;
+  });
+
+  readonly allowAIOverview = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  isAssistantReady = computed(() => this.applicationStore.assistantReady());
+  assistantQuery: Query = { name: 'assistant' };
+
+  conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
+
   constructor() {
     super();
+    this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
+
     effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
   }
 
@@ -79,5 +105,18 @@ export class SearchAllComponent extends SearchBase<R> {
 
   getArticleType(docType: string): Type<unknown> {
     return getComponentsForDocumentType(docType).articleComponent;
+  }
+
+  handleConditionalDisplayMessage(message: any) {
+    const { result } = message as { result: string };
+    if (result.toLocaleLowerCase().includes('show overview')) {
+      this.hideAssistant.set(false);
+    } else {
+      this.hideAssistant.set(true);
+    }
+  }
+
+  protected override beforeSearch(query: Query): void {
+    this.assistantQuery = { ...this.assistantQuery, ...query };
   }
 }
