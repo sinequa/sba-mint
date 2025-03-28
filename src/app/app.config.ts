@@ -16,6 +16,7 @@ import {
   DRAWER_COMPONENT,
   DrawerPreviewComponent,
   HIGHLIGHTS,
+  PREVIEW_CONFIG,
   ROUTE_COMPONENTS,
   auditInterceptorFn,
   authInterceptorFn,
@@ -45,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },
     { provide: COMPONENTS_FOR_DOCUMENT_TYPE, useValue: getComponentsForDocumentType },
     { provide: DRAWER_COMPONENT, useValue: DrawerPreviewComponent },
+    { provide: PREVIEW_CONFIG, useValue: { allowWorker: true } },
     {
       provide: ROUTE_COMPONENTS,
       useValue: [
