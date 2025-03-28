@@ -4,6 +4,10 @@
     "myBookmarks": "My Bookmarks",
     "removeBookmark": "Remove bookmark"
   },
+  "saved-searches": {
+    "noSavedSearches": "No saved searches yet",
+    "mySavedSearches": "My Saved Searches"
+  },
   "bookmarks": "Bookmarks",
   "cancel": "Cancel",
   "clear": "Clear",

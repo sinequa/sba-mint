@@ -4,6 +4,10 @@
     "myBookmarks": "Mes marque-pages",
     "removeBookmark": "Supprimer le marque-page"
   },
+  "saved-searches": {
+    "noSavedSearches": "Aucune recherche enregistrée",
+    "mySavedSearches": "Mes recherches enregistrées"
+  },
   "bookmarks": "Marque-pages",
   "cancel": "Annuler",
   "clear": "Effacer",
