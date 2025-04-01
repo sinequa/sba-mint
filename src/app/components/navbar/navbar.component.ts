@@ -19,7 +19,7 @@ import {
   SavedSearchesComponent,
   SavedSearchesService
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+import { ButtonComponent, PageHeaderComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
@@ -46,16 +46,16 @@ export type NavbarMenu = {
     AutocompleteComponent,
     UserMenuComponent,
     PopoverComponent,
-    PopoverContentComponent
+    PopoverContentComponent,
+    PageHeaderComponent
   ],
   host: {
-    class: 'layout-search',
     '[attr.drawer-opened]': 'drawerOpened()'
   },
   styles: [
     `
       #logo {
-        content: var(--logo-large) / var(--logo-large-alt-text);
+        content: var(--logo-small) / var(--logo-small-alt-text);
       }
     `
   ]
@@ -68,11 +68,11 @@ export class NavbarComponent {
   readonly searchText = signal<string>('');
 
   protected readonly menus: NavbarMenu[] = [
-    { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
-    { display: 'Bookmarks', iconClass: 'far fa-bookmark', component: BookmarksComponent },
-    { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
-    { display: 'Saved queries', iconClass: 'far fa-star', component: SavedSearchesComponent },
-    { display: 'Alerts', iconClass: 'far fa-bell', component: AlertsComponent }
+    { display: 'Recent queries', iconClass: 'far fa-clock-rotate-left text-foreground', routerLink: '/recent-searches', component: RecentSearchesComponent },
+    { display: 'Bookmarks', iconClass: 'far fa-bookmark text-foreground', component: BookmarksComponent },
+    { display: 'Collections', iconClass: 'far fa-inbox text-foreground', component: CollectionsComponent, keepOnMouseLeave: true },
+    { display: 'Saved queries', iconClass: 'far fa-star text-foreground', component: SavedSearchesComponent },
+    { display: 'Alerts', iconClass: 'far fa-bell text-foreground', component: AlertsComponent }
   ];
 
   private readonly transloco = inject(TranslocoService);

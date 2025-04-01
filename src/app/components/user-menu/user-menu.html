@@ -1,11 +1,11 @@
 <menu>
   <Avatar class="cursor-pointer">
     <AvatarImage src="" width="44" height="44" alt="avatar" />
-    <AvatarFallback class="bg-primary text-primary-foreground text-sm font-semibold">
+    <AvatarFallback class="text-muted-foreground bg-gray-200 text-sm font-semibold">
       @if(initials()) {
       <span>{{ initials() }}</span>
       } @else {
-      <UserRound class="size-8 p-1" />
+      <UserRound class="size-7 p-1" />
       }
     </AvatarFallback>
   </Avatar>

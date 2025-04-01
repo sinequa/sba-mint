@@ -1,44 +1,46 @@
-<a id="navbar-logo" routerLink="/home" class="place-self-start ps-10">
-  <img id="logo" alt="logo" class="max-h-8 w-full" />
-</a>
+<PageHeader>
+  <a id="navbar-logo" routerLink="/home" class="place-self-start">
+    <img id="logo" alt="logo" class="max-h-8 w-full" />
+  </a>
 
-<div class="col-span-2 flex h-full items-center">
-  <app-search-input
-    class="flex grow"
-    variant="basic"
-    [showSave]="true"
-    (saved)="saveSearch($event)"
-    (validated)="validated($event)"
-    (debounced)="debounced($event)">
-    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
-  </app-search-input>
-</div>
+  <div class="col-span-2 flex h-full grow items-center px-32">
+    <app-search-input
+      class="flex grow"
+      variant="basic"
+      [showSave]="true"
+      (saved)="saveSearch()"
+      (validated)="validated($event)"
+      (debounced)="debounced($event)">
+      <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+    </app-search-input>
+  </div>
 
-<nav class="flex list-none items-center justify-end gap-1 pe-10">
-  @for (menu of menus; track $index) {
-    <li>
-      @if (menu.routerLink === router.url) {
-        <button title="{{ menu.display }}" [attr.aria-label]="menu.display">
-          <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
-        </button>
-      } @else if (menu.component) {
-        <Popover class="rounded-lg border-neutral-300">
-          <button variant="ghost" size="icon" title="{{ menu.display }}" [attr.aria-label]="menu.display">
+  <nav class="flex list-none items-center justify-end gap-1">
+    @for (menu of menus; track $index) {
+      <li>
+        @if (menu.routerLink === router.url) {
+          <button title="{{ menu.display }}" [attr.aria-label]="menu.display">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
+        } @else if (menu.component) {
+          <Popover class="rounded-lg border-neutral-300">
+            <button variant="ghost" size="icon" title="{{ menu.display }}" [attr.aria-label]="menu.display">
+              <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+            </button>
 
-          <PopoverContent class="w-[380px] max-w-md" position="bottom-end">
-            <ng-container [ngComponentOutlet]="menu.component"></ng-container>
-          </PopoverContent>
-        </Popover>
-      } @else {
-        <button variant="icon" size="icon" title="{{ menu.display }}" [attr.aria-label]="menu.display">
-          <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
-        </button>
-      }
+            <PopoverContent class="w-[380px] max-w-md" position="bottom-end">
+              <ng-container [ngComponentOutlet]="menu.component"></ng-container>
+            </PopoverContent>
+          </Popover>
+        } @else {
+          <button variant="icon" size="icon" title="{{ menu.display }}" [attr.aria-label]="menu.display">
+            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+          </button>
+        }
+      </li>
+    }
+    <li class="shrink-0">
+      <app-user-menu />
     </li>
-  }
-  <li class="shrink-0">
-    <app-user-menu />
-  </li>
-</nav>
+  </nav>
+</PageHeader>

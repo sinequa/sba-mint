@@ -12,7 +12,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   standalone: true,
   imports: [RouterModule, NavbarComponent, TranslocoPipe],
   template: `
-    <app-navbar class="pt-4" />
+    <app-navbar />
 
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
