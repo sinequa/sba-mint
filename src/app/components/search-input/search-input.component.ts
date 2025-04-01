@@ -14,6 +14,7 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   QueryParamsStore,
+  SavedSearch,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
@@ -46,7 +47,7 @@ export class SearchInputComponent {
 
   readonly debounced = output<string>();
   readonly validated = output<string>();
-  readonly saved = output<void>();
+  readonly saved = output<SavedSearch | undefined>();
   readonly clicked = output<void>();
 
   private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
@@ -76,7 +77,7 @@ export class SearchInputComponent {
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
-  protected isSavedSearch = computed(() => {
+  protected savedSearch = computed(() => {
     const savedSearches = this.userSettingsStore.savedSearches();
     const url = window.location.hash.substring(1);
     const filtersSplit = url.split('f=');
@@ -84,7 +85,7 @@ export class SearchInputComponent {
     const display = this.input();
 
     // returns true if a save search matches the display and filters
-    return savedSearches.some(search => {
+    return savedSearches.find(search => {
       const searchFiltersSplit = search.url.split('f=');
       const searchFilters = searchFiltersSplit.length > 1 ? JSON.parse(decodeURIComponent(searchFiltersSplit[1].split('&')[0]))[0] : undefined;
 
@@ -180,7 +181,7 @@ export class SearchInputComponent {
     this.saveAnimation.set(true);
     setTimeout(() => this.saveAnimation.set(false), 1000);
 
-    this.saved.emit();
+    this.saved.emit(this.savedSearch());
   }
 
   /**

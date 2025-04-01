@@ -15,6 +15,7 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
+  SavedSearch,
   SavedSearchesComponent,
   SavedSearchesService
 } from '@sinequa/atomic-angular';
@@ -129,7 +130,14 @@ export class NavbarComponent {
   /**
    * Occurs when the user clicks on the save button
    */
-  protected saveSearch(): void {
-    this.savedSearchesService.saveSearch();
+  protected saveSearch(savedSearch?: SavedSearch): void {
+    if (savedSearch) {
+      const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
+      if (index !== -1) {
+        this.savedSearchesService.deleteSavedSearch(index);
+      }
+    } else {
+      this.savedSearchesService.saveSearch();
+    }
   }
 }

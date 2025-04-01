@@ -20,7 +20,7 @@
       [attr.aria-label]="'searchInput.saveSearch' | transloco"
       (click)="saveQuery()"
       (keydown.enter)="saveQuery()">
-      @if (isSavedSearch()) {
+      @if (savedSearch()) {
         <i class="fa-fw fas fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
       } @else {
         <i class="fa-fw far fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
