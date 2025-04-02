@@ -1,20 +1,21 @@
 import {
-  Component,
-  DestroyRef,
-  Injector,
-  ViewEncapsulation,
   afterNextRender,
+  ChangeDetectorRef,
+  Component,
   computed,
+  DestroyRef,
   effect,
   inject,
+  Injector,
   input,
   output,
-  runInInjectionContext,
   signal,
-  viewChild
+  untracked,
+  viewChild,
+  ViewEncapsulation
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, combineLatest, filter } from 'rxjs';
+import { catchError } from 'rxjs';
 
 import { Query as Q } from '@sinequa/core/app-utils';
 import { LoginService } from '@sinequa/core/login';
@@ -31,8 +32,16 @@ import {
   SuggestedAction
 } from '@sinequa/assistant/chat';
 
-import { AppStore, buildQuery, DrawerStackService, NavigationService, PreviewHighlights, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { Article } from '@sinequa/atomic';
+import {
+  AppStore,
+  DrawerStackService,
+  NavigationService,
+  PreviewHighlights,
+  QueryParamsStore,
+  SelectionStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -98,8 +107,15 @@ export class AssistantComponent {
   initChat: InitChat | undefined = undefined;
   config = signal<ChatConfig | undefined>(undefined);
 
+  // used to retrieve the query text entered by the user
+  queryParamsStore = inject(QueryParamsStore);
+
+  // used to cronstruct a valid query object used by the sqChat component
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
   query = new Q(this.defaultQueryName());
+
+  // mandatory to refresh the sqChat component when the query changes manually
+  cdr = inject(ChangeDetectorRef);
 
   getChatConfig(config: ChatConfig): void {
     this.config.set(config);
@@ -110,20 +126,36 @@ export class AssistantComponent {
     destroyRef: DestroyRef,
     private readonly injector: Injector
   ) {
-    // event to watch
-    const loginService$ = this.loginService.events.pipe(filter(e => e.type === 'login-complete'));
-    const navigationEnd$ = this.navigationService.navigationEnd$.pipe(
-      takeUntilDestroyed(destroyRef),
-      catchError(error => {
-        console.error('Unhandled error in navigationEnd', error);
-        return [];
-      })
-    );
+    effect(() => {
+      if (this.instanceId() === undefined) return;
 
-    // Combine the observables to trigger when either emits
-    combineLatest([loginService$, navigationEnd$]).subscribe(() => {
-      const q = runInInjectionContext(this.injector, () => buildQuery());
-      this.query = { ...this.query, ...q } as Q;
+      // once the instanceId is set, we can set the assistant settings
+      untracked(() => {
+        const q = this.queryParamsStore.getQuery();
+        this.query = { ...this.query, ...q } as Q;
+
+        // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
+        if (this.query.text) {
+          const messages: RawMessage[] = [{ role: 'user', content: this.query.text || '', additionalProperties: { display: true, isUserInput: true } }];
+          const userMessage = messages[messages.length - 1];
+          this.initChat = { messages } as InitChat;
+        } else {
+          this.initChat = undefined;
+        }
+      });
+    });
+
+    effect(() => {
+      // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
+      const sqChatInstance = this.sqChat();
+      if (sqChatInstance) {
+        sqChatInstance.query = { ...this.query, text: this.query.text || '' } as Q;
+        sqChatInstance.question = this.query.text || '';
+        sqChatInstance.submitQuestion();
+
+        // do not forget to trigger the change detection manually
+        this.cdr.detectChanges();
+      }
     });
 
     afterNextRender(() => {
@@ -141,7 +173,10 @@ export class AssistantComponent {
         });
     });
 
-    destroyRef.onDestroy(() => console.log('Assistant component destroyed'));
+    destroyRef.onDestroy(() => {
+      // once the component is destroyed, we need to reset the query text to an empty string
+      this.queryParamsStore.patch({ text: '' });
+    });
   }
 
   handleCancel(event: ChatConfig) {
@@ -178,33 +213,6 @@ export class AssistantComponent {
 
   public newChat(): void {
     this.sqChat()?.newChat();
-  }
-
-  public askAI(messages: RawMessage[]): void {
-    // Send the latest message to have it recorded in the audit logs
-    if (messages.length) {
-      // the latest message is the user's, and it is the one we want in the audit event
-      const userMessage = messages[messages.length - 1];
-
-      const instanceService = this.instanceManagerService.getInstance(this.instanceId()!);
-
-      if (instanceService) {
-        instanceService.generateAuditEvent('message', {
-          duration: 0,
-          text: userMessage.content,
-          role: userMessage.role,
-          rank: messages.length - 1,
-          query: JSON.stringify(this.query),
-          'is-user-input': true,
-          'enabled-functions': this.config()
-            ?.defaultValues.functions?.filter(func => func.enabled)
-            .map(func => func.name),
-          'additional-workflow-properties': JSON.stringify(this.config()?.additionalWorkflowProperties)
-        });
-      }
-    }
-
-    this.initChat = { messages } as InitChat;
   }
 
   handleSuggestAction($event: SuggestedAction, argument: boolean) {

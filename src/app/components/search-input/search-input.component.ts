@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
@@ -18,6 +18,7 @@ import {
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
+import { CCApp } from '@sinequa/atomic';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -59,12 +60,18 @@ export class SearchInputComponent {
   protected readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly translocoService = inject(TranslocoService);
 
   public readonly input = model<string>('');
 
-  protected readonly allowChatDrawer = signal<boolean>(false);
   protected readonly saveAnimation = signal<boolean>(false);
+
+  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  readonly instanceId = computed(() => {
+    const { name } = getState(this.appStore) as CCApp;
+    return `${name}-standalone-assistant`;
+  });
 
   protected readonly debounceInputValue = debouncedSignal(this.input, DEBOUNCE_DELAY);
 
@@ -115,16 +122,6 @@ export class SearchInputComponent {
       this.debounced.emit(value);
     });
 
-    effect(
-      () => {
-        const { data } = getState(this.appStore);
-        const { features = { allowChatDrawer: false } } = data as CJson;
-
-        this.allowChatDrawer.set(features.allowChatDrawer);
-      },
-      { allowSignalWrites: true }
-    );
-
     // first time the component is created, we set the input value from the query params
     effect(
       () => {
@@ -151,8 +148,10 @@ export class SearchInputComponent {
     if (!silent) this.emitText(new Event('input'));
   }
 
-  public askAI(): void {
-    this.drawerStack.askAI(this.input());
+  public askAI(e: Event): void {
+    e.stopImmediatePropagation();
+    this.queryParamsStore.patch({ text: this.input() });
+    this.router.navigate(['/assistant']);
   }
 
   protected emitText(e: Event): void {
