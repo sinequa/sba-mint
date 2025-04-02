@@ -30,9 +30,11 @@
   "more": "More",
   "msg#results": {
     "results_all_tab": "All",
+    "resultsAllTab": "All",
     "results_text_tab": "Text",
     "tabBusiness": "Business",
     "tabLocation": "Location",
+    "tabPeople": "Persons",
     "web": "Internet",
     "pdf": "PDF",
     "word": "Word",

@@ -19,7 +19,7 @@
     <filters-bar class="z-filter sticky top-0 flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
   }
 
-  @if (allowAIOverview() && isAssistantReady()) {
+  @if (allowAIOverview()) {
     <div
       [class]="
         cn(

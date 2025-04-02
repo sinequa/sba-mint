@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { NgxSonnerToaster, toast } from 'ngx-sonner';
+import { NgxSonnerToaster } from 'ngx-sonner';
 
 /* TODO: to remove after v18 miggration */
 import { LoginService } from '@sinequa/core/login';
 
-import { globalConfig, logout } from '@sinequa/atomic';
+import { isAuthenticated } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 import { RobotIconComponent } from '@sinequa/ui';
 
@@ -36,46 +36,41 @@ export class AppComponent {
   private readonly applicationStore = inject(ApplicationStore);
 
   constructor() {
-    logout();
-    this.login();
-  }
+    addEventListener('authenticated', (event: Event) => {
+      const customEvent = event as CustomEvent;
 
-  async login() {
-    // Login and initialize the application when the user is logged in
-    const { useCredentials } = globalConfig;
-
-    const success = await this.applicationService.autoSignIn().catch(err => {
-      console.warn('An error occured while logging in (app component)', err);
-      if (useCredentials) {
-        this.router.navigate(['login']);
-      } else if (err instanceof Response) {
-        if (err.status === 401 || err.status === 403) {
-          toast.error('You are not authorized to access this page');
-        }
-        if (err.status === 500) {
-          toast.error('An error 500 occured while processing your request');
-          this.router.navigate(['error'], { skipLocationChange: true });
-        }
-      } else {
-        toast.error('An error occured while processing your request');
-        this.router.navigate(['error'], { skipLocationChange: true });
+      const { authenticated } = customEvent.detail;
+      if (authenticated) {
+        this.initApplication();
       }
     });
 
-    if (success) {
-      this.setupApplicationLanguage();
+    // used to works with the old Sinequa login service and the Assistant component
+    // Maybe this can be removed in the future
+    this.loginService.login().subscribe(values => {
+      this.applicationStore.updateAssistantReady();
+    });
+
+    if (isAuthenticated()) {
+      this.initApplication();
+
       if (this.router.url === '/error') {
         this.router.navigate(['/']);
-      } else {
-        this.loginService.login().subscribe(values => {
-          console.log('Login successful!', values);
-          this.applicationStore.updateAssistantReady();
-        });
       }
-    } else {
-      console.warn('An error occured while logging in (app component) after auto login');
-      this.router.navigate(['error'], { skipLocationChange: true });
     }
+  }
+
+  initApplication() {
+    this.applicationService
+      .initAndCreateRoutes()
+      .then(() => {
+        this.setupApplicationLanguage();
+        this.applicationStore.updateReadyState(true);
+      })
+      .catch(err => {
+        console.error('Error initializing application', err);
+        this.applicationStore.updateReadyState(false);
+      });
   }
 
   private setupApplicationLanguage() {

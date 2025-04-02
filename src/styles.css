@@ -261,128 +261,143 @@ ul:has(card.selected) card:not(.selected) {
     right: 0;
     background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
   }
+}
 
-  assistant {
-    --ast-input-bg: white;
+assistant {
+  --ast-input-bg: white;
 
-    padding: 0 !important;
-    padding-left: 28px !important;
+  padding: 0 !important;
+  padding-left: 28px !important;
 
-    sq-chat-v3 .sq-floating-scroll {
+  sq-chat-v3 .sq-floating-scroll {
+    display: none;
+  }
+
+  sq-chat-v3 ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    padding-top: 0px !important;
+    padding-right: 0.5rem !important;
+
+    &::-webkit-scrollbar {
       display: none;
     }
 
-    sq-chat-v3 ul {
-      padding-top: 0px !important;
-      padding-right: 0.5rem !important;
+    .list-group-item:nth-child(even) {
+      display: flex;
+      justify-content: flex-end;
 
-      &::-webkit-scrollbar {
+      .message-content {
+        --ast-secondary-bg: transparent;
+        border: 1px solid rgb(255, 200, 98);
+        border-bottom-right-radius: 0;
+      }
+    }
+
+    sq-chat-message {
+      & > span.message-icon {
         display: none;
       }
 
-      sq-chat-message {
-        & > span.message-icon {
-          display: none;
-        }
-
-        /* hide view progress */
-        & > div.message-assistant > div.small {
-          display: none;
-        }
-
-        .message-content {
-          background: none !important;
-          width: 100%;
-        }
+      /* hide view progress */
+      & > div.message-assistant > div.small {
+        display: none;
       }
 
-      remark p {
-        margin-top: 0;
+      .message-user .message-content {
+        --ast-primary-bg: white;
+        border-bottom-left-radius: 0;
       }
     }
 
-    .user-input {
-      display: flex;
-      align-items: center;
-      border-radius: 1rem;
-      border-width: 1px;
-      border-color: var(--color-orange-100);
-      background-color: var(--ast-input-bg, #f8f8f8);
+    remark p {
+      margin-top: 0;
     }
+  }
 
-    /* when textarea is missign, hide the user input */
-    .user-input:not(:has(textarea)) {
-      visibility: hidden;
+  .user-input {
+    display: flex;
+    align-items: center;
+    border-radius: 1rem;
+    border-width: 1px;
+    border-color: var(--color-orange-100);
+    background-color: var(--ast-input-bg, #f8f8f8);
+  }
+
+  /* when textarea is missign, hide the user input */
+  .user-input:not(:has(textarea)) {
+    visibility: hidden;
+  }
+
+  /* prompt styles */
+  .user-input .form-control {
+    outline: none;
+  }
+
+  .ast-input-container textarea {
+    flex-grow: 1;
+  }
+
+  .references ul {
+    list-style-type: none !important;
+    padding-left: 0 !important;
+  }
+
+  .sq-chat-message-actions {
+    display: flex;
+    gap: 0.5rem;
+    bottom: calc(0rem - var(--ast-size-3, 1.5rem)) !important;
+
+    button {
+      background-color: transparent;
+      color: grey;
     }
+  }
 
-    /* prompt styles */
-    .user-input .form-control {
-      outline: none;
-    }
+  .issue-report {
+    display: grid;
+    grid-template-rows: auto;
+    gap: 1rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
 
-    .ast-input-container textarea {
-      flex-grow: 1;
-    }
+  .issue-report h5 {
+    margin-bottom: 0.5rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: bold;
+  }
 
-    .references ul {
-      list-style-type: none !important;
-      padding-left: 0 !important;
-    }
+  .issue-report select,
+  .issue-report textarea {
+    width: 100%;
+    padding: 0.25rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    background-color: var(--ast-input-bg, #f8f8f8);
+  }
 
-    .sq-chat-message-actions {
-      display: flex;
-      gap: 0.5rem;
-      bottom: calc(0rem - var(--ast-size-3, 1.5rem)) !important;
+  .issue-report textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
 
-      button {
-        background-color: transparent;
-        color: grey;
-      }
-    }
+  .issue-report .btn {
+    display: inline-block !important;
+    min-width: 100px;
+    margin-left: 1rem;
+  }
 
-    .issue-report {
-      display: grid;
-      grid-template-rows: auto;
-      gap: 1rem;
-      padding: 0.75rem;
-      margin-top: 1rem;
-    }
+  .issue-report .btn-primary {
+    margin-left: 0;
+  }
 
-    .issue-report h5 {
-      margin-bottom: 0.5rem;
-      font-size: var(--text-xs);
-      line-height: var(--text-xs--line-height);
-      font-weight: bold;
-    }
-
-    .issue-report select,
-    .issue-report textarea {
-      width: 100%;
-      padding: 0.25rem;
-      font-size: var(--text-xs);
-      line-height: var(--text-xs--line-height);
-      background-color: var(--ast-input-bg, #f8f8f8);
-    }
-
-    .issue-report textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .issue-report .btn {
-      display: inline-block !important;
-      min-width: 100px;
-      margin-left: 1rem;
-    }
-
-    .issue-report .btn-primary {
-      margin-left: 0;
-    }
-
-    .issue-report .d-flex {
-      justify-content: flex-end;
-      gap: 1rem;
-    }
+  .issue-report .d-flex {
+    justify-content: flex-end;
+    gap: 1rem;
   }
 }
 

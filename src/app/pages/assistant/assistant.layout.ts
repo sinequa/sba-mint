@@ -1,16 +1,19 @@
 import { Component, computed, inject } from '@angular/core';
-import { AppStore } from '@sinequa/atomic-angular';
-import { getState } from '@ngrx/signals';
-
-import { CCApp, Query } from '@sinequa/atomic';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
+import { AppStore } from '@sinequa/atomic-angular';
+import { getState } from '@ngrx/signals';
+import { CCApp } from '@sinequa/atomic';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
   standalone: true,
   imports: [AssistantComponent],
-  template: ` <Assistant class="m-auto my-2 h-full w-1/2 rounded-lg bg-white p-4" [instanceId]="instanceId()" /> `,
+  template: `
+    <div class="m-auto my-2 h-full w-1/2 rounded-lg border border-orange-100 bg-orange-50 p-4">
+      <Assistant class="h-full" [instanceId]="instanceId()" />
+    </div>
+  `,
   styles: [
     `
       :host {
@@ -25,11 +28,7 @@ import { AssistantComponent } from '../../components/assistant/assistant';
   }
 })
 export class AssistantLayoutComponent {
-  private appStore = inject(AppStore);
-
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
-
-  protected query: Query = { name: this.defaultQueryName() };
+  private readonly appStore = inject(AppStore);
 
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;

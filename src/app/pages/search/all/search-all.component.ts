@@ -73,7 +73,6 @@ export class SearchAllComponent extends SearchBase<R> {
   });
 
   readonly allowAIOverview = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
-  isAssistantReady = computed(() => this.applicationStore.assistantReady());
   assistantQuery: Query = { name: 'assistant' };
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();

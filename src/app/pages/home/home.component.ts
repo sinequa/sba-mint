@@ -16,8 +16,8 @@ import {
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
-import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
 type HomeTab = {

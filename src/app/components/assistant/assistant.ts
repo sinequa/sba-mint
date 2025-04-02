@@ -14,7 +14,7 @@ import {
   viewChild
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, filter } from 'rxjs';
+import { catchError, combineLatest, filter } from 'rxjs';
 
 import { Query as Q } from '@sinequa/core/app-utils';
 import { LoginService } from '@sinequa/core/login';
@@ -42,7 +42,7 @@ type AssistantMode = 'prompt' | 'query';
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     <sq-chat-v3
-      class="block w-full"
+      class="block h-full w-full"
       #sqChat
       [query]="query"
       [chat]="initChat"
@@ -110,28 +110,21 @@ export class AssistantComponent {
     destroyRef: DestroyRef,
     private readonly injector: Injector
   ) {
-    console.log('Assistant component initialized', this.query, this.instanceId());
+    // event to watch
+    const loginService$ = this.loginService.events.pipe(filter(e => e.type === 'login-complete'));
+    const navigationEnd$ = this.navigationService.navigationEnd$.pipe(
+      takeUntilDestroyed(destroyRef),
+      catchError(error => {
+        console.error('Unhandled error in navigationEnd', error);
+        return [];
+      })
+    );
 
-    this.loginService.events.pipe(filter(e => e.type === 'login-complete')).subscribe(() => {
-      Object.assign(
-        this.query,
-        runInInjectionContext(this.injector, () => buildQuery())
-      );
+    // Combine the observables to trigger when either emits
+    combineLatest([loginService$, navigationEnd$]).subscribe(() => {
+      const q = runInInjectionContext(this.injector, () => buildQuery());
+      this.query = { ...this.query, ...q } as Q;
     });
-
-    this.navigationService.navigationEnd$
-      .pipe(
-        takeUntilDestroyed(destroyRef),
-        catchError(error => {
-          console.error('Unhandled error in navigationEnd', error);
-          return [];
-        })
-      )
-      .subscribe(() => {
-        const q = runInInjectionContext(this.injector, () => buildQuery());
-        console.log('Assistant component navigationEnd', q);
-        this.query = { ...this.query, ...q } as Q;
-      });
 
     afterNextRender(() => {
       this.sqChat()
@@ -165,8 +158,6 @@ export class AssistantComponent {
   }
 
   handlePreview(event: ChatContextAttachment, withQueryText = true) {
-    console.log('Preview event: ', event);
-
     this.drawerStack.stack(event.record as Article, withQueryText);
 
     const previewHighlights: PreviewHighlights | undefined =
