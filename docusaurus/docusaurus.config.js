@@ -4,11 +4,11 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Sinequa Mint',
+  title: 'Sinequa',
   tagline: 'Connect your modern workplace and drive innovation from the inside out',
   favicon: 'img/favicon.ico',
   staticDirectories: ['static'],
@@ -33,9 +33,8 @@ const config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en']
   },
-
 
   plugins: [require.resolve('docusaurus-lunr-search')],
 
@@ -47,7 +46,7 @@ const config = {
         docs: {
           routeBasePath: '/',
           // path: 'docs',
-          sidebarPath: './sidebars.js',
+          sidebarPath: './sidebars.js'
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
@@ -55,10 +54,10 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css',
-        },
-      }),
-    ],
+          customCss: './src/css/custom.css'
+        }
+      })
+    ]
   ],
 
   themeConfig:
@@ -69,14 +68,14 @@ const config = {
       docs: {
         sidebar: {
           hideable: true,
-          autoCollapseCategories: true,
-        },
+          autoCollapseCategories: true
+        }
       },
       navbar: {
         title: 'Mint',
         logo: {
           alt: 'Sinequa Logo',
-          src: 'img/sinequa-logo-light-sm.png',
+          src: 'img/sinequa-logo-light-sm.png'
         },
         items: [
           // {
@@ -89,20 +88,20 @@ const config = {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomic',
-            label: 'Atomic',
+            label: 'Atomic'
           },
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomicAngular',
-            label: 'Atomic for Angular',
+            label: 'Atomic for Angular'
           },
           {
             href: 'https://github.com/sinequa/sba-mint',
             label: 'GitHub',
-            position: 'right',
-          },
-        ],
+            position: 'right'
+          }
+        ]
       },
       footer: {
         style: 'dark',
@@ -112,25 +111,25 @@ const config = {
             items: [
               {
                 label: 'Twitter',
-                href: 'https://x.com/sinequa',
-              },
-            ],
+                href: 'https://x.com/sinequa'
+              }
+            ]
           },
           {
             title: 'More',
             items: [
               {
                 label: 'Website',
-                href: 'https://sinequa.com',
+                href: 'https://sinequa.com'
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/sinequa/sba-mint',
-              },
-            ],
-          },
+                href: 'https://github.com/sinequa/sba-mint'
+              }
+            ]
+          }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`,
+        copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`
       },
       prism: {
         theme: prismThemes.github,
@@ -140,20 +139,20 @@ const config = {
           {
             className: 'code-block-error-line',
             line: 'error',
-            block: {start: 'code-block-error-start', end: 'code-block-error-end'}
+            block: { start: 'code-block-error-start', end: 'code-block-error-end' }
           },
           {
             className: 'code-block-add-line',
             line: 'add',
-            block: {start: 'code-block-add-start', end: 'code-block-add-end'}
+            block: { start: 'code-block-add-start', end: 'code-block-add-end' }
           },
           {
             className: 'code-block-remove-line',
-            line: 'remove',
+            line: 'remove'
           }
         ]
-      },
-    }),
+      }
+    })
 };
 
 export default config;

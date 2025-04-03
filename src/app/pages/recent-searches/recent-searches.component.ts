@@ -14,7 +14,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   template: `
     <app-navbar />
 
-    <div class="layout-search overflow-auto">
+    <div class="layout-search mt-16 overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex gap-2 text-2xl font-semibold">
           <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>

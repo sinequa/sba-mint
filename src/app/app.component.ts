@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster } from 'ngx-sonner';
@@ -8,8 +8,9 @@ import { NgxSonnerToaster } from 'ngx-sonner';
 import { LoginService } from '@sinequa/core/login';
 
 import { isAuthenticated } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 import { RobotIconComponent } from '@sinequa/ui';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -27,9 +28,11 @@ import { RobotIconComponent } from '@sinequa/ui';
 export class AppComponent {
   private readonly applicationService = inject(ApplicationService);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
 
   // SBA dependencies for the Assistant
   private readonly loginService = inject(LoginService);
@@ -58,6 +61,22 @@ export class AppComponent {
         this.router.navigate(['/']);
       }
     }
+
+    effect(() => {
+      const { general } = this.appStore.customizationJson();
+
+      if (general) {
+        if (general.name) {
+          this.title.setTitle(general!.name);
+        }
+        if (general.logo?.light?.small) {
+          document.documentElement.style.setProperty(`--logo-small`, `url(${general.logo?.light?.small})`);
+        }
+        if (general.logo?.light?.large) {
+          document.documentElement.style.setProperty(`--logo-large`, `url(${general.logo?.light?.large})`);
+        }
+      }
+    });
   }
 
   initApplication() {
