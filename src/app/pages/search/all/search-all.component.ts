@@ -1,6 +1,7 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, effect, inject, signal, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 
 import { CCApp, Query, Result } from '@sinequa/atomic';
 import {
@@ -23,7 +24,6 @@ import { ArticleDefaultSkeletonComponent } from '../../../components/article/def
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { SearchBase } from '../search.abstract';
-import { getState } from '@ngrx/signals';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -72,6 +72,15 @@ export class SearchAllComponent extends SearchBase<R> {
     return `${name}-search-results-assistant`;
   });
 
+  readonly hasRowCount = computed(() => {
+    if (this.query.isSuccess()) {
+      // destructure the query to get the rowCount
+      // and return true if rowCount is greater than 0
+      const { pages = [{ rowCount: 0 }] } = this.query.data() || { pages: [] };
+      return pages[0].rowCount > 0;
+    }
+    return false;
+  });
   readonly allowAIOverview = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   assistantQuery: Query = { name: 'assistant' };
 

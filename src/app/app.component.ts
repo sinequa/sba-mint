@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster } from 'ngx-sonner';
 
 /* TODO: to remove after v18 miggration */
 import { LoginService } from '@sinequa/core/login';
 
-import { isAuthenticated } from '@sinequa/atomic';
+import { CCApp, isAuthenticated } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 import { RobotIconComponent } from '@sinequa/ui';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +20,17 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './app.component.html',
   styles: [
     `
-      #logo {
+      #navbar-logo {
         content: var(--logo-small) / var(--logo-small-alt-text);
+      }
+
+      /* hide the navbar's logo when the page header is present */
+      nav[role='navigation']:has(~ * pageheader) #navbar-logo {
+        visibility: hidden;
+      }
+      /* hide the navbar when the drawer is open */
+      nav[role='navigation']:has(~ * [drawer-opened='true']) {
+        transform: translateX(-100%);
       }
     `
   ]
@@ -37,6 +47,12 @@ export class AppComponent {
   // SBA dependencies for the Assistant
   private readonly loginService = inject(LoginService);
   private readonly applicationStore = inject(ApplicationStore);
+
+  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  readonly instanceId = computed(() => {
+    const { name } = getState(this.appStore) as CCApp;
+    return `${name}-standalone-assistant`;
+  });
 
   constructor() {
     addEventListener('authenticated', (event: Event) => {

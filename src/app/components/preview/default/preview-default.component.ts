@@ -89,9 +89,11 @@ export class PreviewDefaultComponent {
 
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);
-  isAssistantReady = computed(() => this.applicationStore.assistantReady());
+
   isStreaming = signal<boolean>(false);
   assistantCollapsed = signal<boolean>(true);
+  showAssistant = signal<boolean>(false);
+
   displaySummary = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
 
   readonly instanceId = computed(() => {

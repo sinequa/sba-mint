@@ -297,6 +297,7 @@ assistant {
     }
 
     sq-chat-message {
+      position: relative;
       & > span.message-icon {
         display: none;
       }

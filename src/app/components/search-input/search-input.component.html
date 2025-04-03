@@ -28,8 +28,15 @@
     </button>
   }
 
-  @if (input() !== '' && allowAI()) {
-    <button variant="ai" class="m-1 h-6 rounded-sm text-xs" title="Ask AI" aria-label="Ask AI" (click)="askAI($event)" (keydown.enter)="askAI($event)">
+  @if (allowAI()) {
+    <button
+      variant="ai"
+      class="m-1 h-6 rounded-sm text-xs transition ease-in"
+      title="Ask AI"
+      aria-label="Ask AI"
+      [disabled]="input() === ''"
+      [routerLink]="['/assistant']"
+      [queryParams]="{ q: input() }">
       <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
       Ask AI
     </button>

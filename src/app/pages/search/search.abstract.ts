@@ -38,6 +38,7 @@ export abstract class SearchBase<T> implements OnDestroy {
   protected readonly result = signal<Result | undefined>(undefined);
   protected readonly queryText = signal<string>('');
   protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly showAssistant = signal<boolean>(false);
 
   protected readonly searchService = inject(SearchService);
   protected readonly drawerStack = inject(DrawerStackService);

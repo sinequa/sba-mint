@@ -1,15 +1,15 @@
 import { NgClass } from '@angular/common';
 import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 
+import { CCApp } from '@sinequa/atomic';
 import {
   AppStore,
   AutocompleteService,
-  CJson,
   debouncedSignal,
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
@@ -18,7 +18,6 @@ import {
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
-import { CCApp } from '@sinequa/atomic';
 
 const loader = ['en', 'fr'].reduce(
   (acc, lang) => {
@@ -33,7 +32,7 @@ const DEBOUNCE_DELAY = 300;
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [NgClass, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
+  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   host: {
@@ -60,7 +59,6 @@ export class SearchInputComponent {
   protected readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly translocoService = inject(TranslocoService);
 
   public readonly input = model<string>('');
@@ -146,12 +144,6 @@ export class SearchInputComponent {
 
     this.input.set(text);
     if (!silent) this.emitText(new Event('input'));
-  }
-
-  public askAI(e: Event): void {
-    e.stopImmediatePropagation();
-    this.queryParamsStore.patch({ text: this.input() });
-    this.router.navigate(['/assistant']);
   }
 
   protected emitText(e: Event): void {

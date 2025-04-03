@@ -107,15 +107,20 @@
         </a>
       </div>
       <!-- <div id="error-content"></div> -->
-      <p class="error-digest" id="error-url"></p>
+      <pre class="error-digest" id="error"></pre>
     </div>
     <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const errorMessage = localStorage.getItem('errorMessage');
-      const errorUrl = urlParams.get('url');
+      const error = localStorage.getItem('errorMessage');
 
-      if (errorUrl) {
-        document.getElementById('error-url').textContent = `URL causing the error: ${decodeURIComponent(errorUrl)}`;
+      try {
+        const { errorCodeText, errorMessage, status } = JSON.parse(error);
+        document.getElementById('error').textContent = `Status: ${status} \r\n${errorCodeText}: ${errorMessage}`;
+      } catch (e) {
+        console.error('Error removing item from localStorage', e);
+      } finally {
+        // remove previous credentials from localStorage and sessionStorage
+        localStorage.removeItem('sinequa-credentials');
+        sessionStorage.removeItem('sinequa-credentials');
       }
     </script>
   </body>

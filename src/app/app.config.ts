@@ -21,6 +21,7 @@ import {
   auditInterceptorFn,
   authInterceptorFn,
   bodyInterceptorFn,
+  errorInterceptorFn,
   signIn,
   toastInterceptorFn
 } from '@sinequa/atomic-angular';
@@ -40,7 +41,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, toastInterceptorFn])),
+    provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
 
     // set the default OAuth2 and/or SAML authentication provider
     { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },

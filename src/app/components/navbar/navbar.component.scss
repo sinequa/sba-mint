@@ -1,11 +1,9 @@
 :host {
-  position: fixed;
-  left: 0;
-  width: 100%;
+  position: relative;
+  align-items: center;
+  grid-template-rows: 1fr;
   padding-bottom: 1rem;
   z-index: auto;
-  display: flex;
-  justify-content: flex-end;
 
   #navbar-logo {
     opacity: 1;

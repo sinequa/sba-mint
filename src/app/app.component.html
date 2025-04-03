@@ -1,13 +1,18 @@
 <div class="flex h-full">
-  <nav role="navigation" class="h-full w-14 bg-gray-800 text-white">
-    <a id="navbar-logo" routerLink="/home" class="cursor-pointer px-2 py-2.5" title="Go to home page">
-      <img id="logo" class="mx-auto max-h-6" aria-hidden="true" alt="logo" />
-    </a>
+  @if (allowAI()) {
+    <nav
+      role="navigation"
+      class="fixed top-0 flex h-full translate-0 flex-col items-center gap-16 bg-gray-100 px-6 pt-16 text-gray-400 transition duration-200 ease-in-out">
+      <a routerLink="/home" class="cursor-pointer" title="Go to home page">
+        <img id="navbar-logo" class="mx-auto h-6" aria-hidden="true" alt="logo" />
+      </a>
 
-    <a routerLink="/assistant" class="mt-10 flex justify-center rounded py-2.5 transition duration-200 hover:bg-gray-700" title="Go to assistant page">
-      <Robot />
-    </a>
-  </nav>
+      <a routerLink="/assistant" class="rounded transition duration-200 hover:text-gray-800" title="Go to assistant page">
+        <Robot />
+      </a>
+    </nav>
+  }
+
   <div class="flex-1">
     <!-- Main content goes here -->
     <router-outlet></router-outlet>

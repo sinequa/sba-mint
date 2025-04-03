@@ -6,11 +6,9 @@ import {
   DestroyRef,
   effect,
   inject,
-  Injector,
   input,
   output,
   signal,
-  untracked,
   viewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -122,46 +120,21 @@ export class AssistantComponent {
     this.configOutput.emit(config);
   }
 
-  constructor(
-    destroyRef: DestroyRef,
-    private readonly injector: Injector
-  ) {
+  constructor(private destroyRef: DestroyRef) {
     effect(() => {
       if (this.instanceId() === undefined) return;
 
-      // once the instanceId is set, we can set the assistant settings
-      untracked(() => {
-        const q = this.queryParamsStore.getQuery();
-        this.query = { ...this.query, ...q } as Q;
-
-        // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
-        if (this.query.text) {
-          const messages: RawMessage[] = [{ role: 'user', content: this.query.text || '', additionalProperties: { display: true, isUserInput: true } }];
-          const userMessage = messages[messages.length - 1];
-          this.initChat = { messages } as InitChat;
-        } else {
-          this.initChat = undefined;
-        }
-      });
-    });
-
-    effect(() => {
-      // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
-      const sqChatInstance = this.sqChat();
-      if (sqChatInstance) {
-        sqChatInstance.query = { ...this.query, text: this.query.text || '' } as Q;
-        sqChatInstance.question = this.query.text || '';
-        sqChatInstance.submitQuestion();
-
-        // do not forget to trigger the change detection manually
-        this.cdr.detectChanges();
-      }
+      const q = this.queryParamsStore.getQuery();
+      this.query = { ...this.query, ...q } as Q;
     });
 
     afterNextRender(() => {
+      // ATTENTION: takeUntilDestroyed works only in the context of a component
+      // that's why we need to use a reference of the DestroyRef class here
+
       this.sqChat()
         ?.chatService?.streaming$.pipe(
-          takeUntilDestroyed(destroyRef),
+          takeUntilDestroyed(this.destroyRef),
           catchError(error => {
             console.error('Unhandled error in streaming', error);
             return [];
@@ -171,11 +144,6 @@ export class AssistantComponent {
           next: streaming => this.isStreaming.emit(streaming),
           error: error => console.error('Error in streaming', error)
         });
-    });
-
-    destroyRef.onDestroy(() => {
-      // once the component is destroyed, we need to reset the query text to an empty string
-      this.queryParamsStore.patch({ text: '' });
     });
   }
 
@@ -228,6 +196,28 @@ export class AssistantComponent {
 
     if (url && typeof url === 'string' && url.trim() !== '') {
       window.open(url, '_blank');
+    }
+  }
+
+  askAI(question: string) {
+    // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
+    // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
+    const sqChatInstance = this.sqChat();
+    if (sqChatInstance) {
+      if (question) {
+        const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
+        const userMessage = messages[messages.length - 1];
+        this.initChat = { messages } as InitChat;
+      } else {
+        this.initChat = undefined;
+      }
+
+      sqChatInstance.submitQuestion();
+
+      // do not forget to trigger the change detection manually
+      this.cdr.detectChanges();
+    } else {
+      console.error('sqChat instance is not defined');
     }
   }
 }
