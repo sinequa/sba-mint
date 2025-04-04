@@ -6,8 +6,9 @@ import { firstValueFrom, Subscription } from 'rxjs';
 
 import { Article, LegacyFilter, Query } from '@sinequa/atomic';
 import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { getComponentsForDocumentType } from '../../registry/document-type-registry';
+import { NavbarComponent } from '../../../components/navbar/navbar.component';
+import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { PageHeaderComponent } from '@sinequa/ui';
 
 interface BookmarkArticle {
   bookmark: Bookmark;
@@ -17,8 +18,11 @@ interface BookmarkArticle {
 @Component({
   selector: 'Bookmarks',
   standalone: true,
-  imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet],
-  templateUrl: './bookmarks.component.html'
+  imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet, PageHeaderComponent],
+  templateUrl: './bookmarks.component.html',
+  host: {
+    class: 'flex flex-col h-full w-full'
+  }
 })
 export class BookmarksComponent {
   cdr = inject(ChangeDetectorRef);

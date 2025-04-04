@@ -5,14 +5,17 @@ import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { countFilters, RecentSearch, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { NavbarComponent } from '../../../components/navbar/navbar.component';
+import { PageHeaderComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-recent-searches',
   standalone: true,
-  imports: [RouterModule, NavbarComponent, TranslocoPipe],
+  imports: [RouterModule, NavbarComponent, TranslocoPipe, PageHeaderComponent],
   template: `
-    <app-navbar />
+    <PageHeader class="z-1 ml-8 bg-white">
+      <app-navbar class="layout-search py-4" />
+    </PageHeader>
 
     <div class="layout-search mt-16 overflow-auto">
       <div class="col-span-2 col-start-2">
@@ -61,7 +64,9 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
       </div>
     </div>
   `,
-  styles: ``
+  host: {
+    class: 'flex flex-col h-full w-full'
+  }
 })
 export class RecentSearchesComponent {
   readonly getRelativeDate = getRelativeDate;

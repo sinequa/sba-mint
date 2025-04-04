@@ -12,7 +12,7 @@
   @for (menu of menus; track $index) {
     <li>
       @if (menu.routerLink === router.url) {
-        <button title="{{ menu.display }}" [attr.aria-label]="menu.display">
+        <button variant="ghost" title="{{ menu.display }}" [attr.aria-label]="menu.display">
           <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
         </button>
       } @else if (menu.component) {
