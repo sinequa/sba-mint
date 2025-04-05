@@ -1,14 +1,5 @@
 {
   "back": "Retour",
-  "bookmark": {
-    "myBookmarks": "Mes marque-pages",
-    "removeBookmark": "Supprimer le marque-page"
-  },
-  "saved-searches": {
-    "noSavedSearches": "Aucune recherche enregistrée",
-    "mySavedSearches": "Mes recherches enregistrées"
-  },
-  "bookmarks": "Marque-pages",
   "cancel": "Annuler",
   "clear": "Effacer",
   "concepts": "Concepts",
@@ -52,12 +43,22 @@
   "people": "Personnes",
   "previewUnavailable": "Désolé, la prévisualisation n'est pas disponible pour ce fichier.",
   "previousPage": "Page précédente",
-  "recentSearches": "Recherches récentes",
   "save": "Sauvegarder",
-  "savedSearches": "Recherches sauvegardées",
   "search": "Rechercher",
   "seeMore": "Voir plus",
   "title": "Titre",
   "to": "A",
-  "type": "Type"
+  "type": "Type",
+  "Date": "Date",
+  "Formats": "Formats",
+  "Languages": "Langues",
+  "Concepts": "Concepts",
+  "Money": "Argent",
+  "Sources": "Sources",
+  "People": "Personnes",
+  "Places": "Lieux",
+  "Sizes": "Tailles",
+  "bookmark": "Marque-page",
+  "recent-search": "Recherche récente",
+  "saved-search": "Recherche enregistrée"
 }

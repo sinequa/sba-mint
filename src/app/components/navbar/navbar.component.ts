@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal, Type, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { debounceTime } from 'rxjs';
 
 import { Suggestion } from '@sinequa/atomic';
@@ -41,6 +41,7 @@ export type NavbarMenu = {
   imports: [
     CommonModule,
     RouterLink,
+    TranslocoPipe,
     ButtonComponent,
     SearchInputComponent,
     AutocompleteComponent,
@@ -66,13 +67,13 @@ export class NavbarComponent {
   readonly drawerOpened = signal(false);
   readonly searchText = signal<string>('');
 
-  protected readonly menus: NavbarMenu[] = [
-    { display: 'Recent searches', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
-    { display: 'Bookmarks', iconClass: 'far fa-bookmark', routerLink: '/bookmarks', component: BookmarksComponent },
-    { display: 'Collections', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
-    { display: 'Saved searches', iconClass: 'far fa-star', routerLink: '/saved-searches', component: SavedSearchesComponent },
-    { display: 'Alerts', iconClass: 'far fa-bell', component: AlertsComponent }
-  ];
+  protected readonly menus = signal<NavbarMenu[]>([
+    { display: 'recentSearches.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
+    { display: 'bookmarks.label', iconClass: 'far fa-bookmark', routerLink: '/bookmarks', component: BookmarksComponent },
+    { display: 'collections.label', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
+    { display: 'savedSearches.label', iconClass: 'far fa-star', routerLink: '/saved-searches', component: SavedSearchesComponent },
+    { display: 'alerts.label', iconClass: 'far fa-bell', component: AlertsComponent }
+  ]);
 
   private readonly transloco = inject(TranslocoService);
   private readonly drawerStack = inject(DrawerStackService);

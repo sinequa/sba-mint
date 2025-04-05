@@ -37,20 +37,11 @@ const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>
   })
 });
 
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`../i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
-
 @Component({
   selector: 'app-autocomplete',
   standalone: true,
   templateUrl: './autocomplete.component.html',
   imports: [KeyValuePipe, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
-  providers: [provideTranslocoScope({ scope: 'search-input', loader })],
   styles: [
     `
       ul {

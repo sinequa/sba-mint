@@ -22,7 +22,7 @@
             (click)="selectTab(tab)"
             (keydown.enter)="selectTab(tab)">
             <i class="fa-fw {{ tab.iconClass }}" aria-hidden="true"></i>
-            {{ tab.label }}
+            {{ tab.label | transloco }}
           </tab>
         }
       </tabs>

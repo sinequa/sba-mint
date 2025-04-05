@@ -1,14 +1,5 @@
 {
   "back": "Back",
-  "bookmark": {
-    "myBookmarks": "My Bookmarks",
-    "removeBookmark": "Remove bookmark"
-  },
-  "saved-searches": {
-    "noSavedSearches": "No saved searches yet",
-    "mySavedSearches": "My Saved Searches"
-  },
-  "bookmarks": "Bookmarks",
   "cancel": "Cancel",
   "clear": "Clear",
   "concepts": "Concepts",
@@ -52,12 +43,22 @@
   "people": "People",
   "previewUnavailable": "Sorry, preview is not available for this file.",
   "previousPage": "Previous page",
-  "recentSearches": "Recent searches",
   "save": "Save",
-  "savedSearches": "Saved searches",
   "search": "Search",
   "seeMore": "See more",
   "title": "Title",
   "to": "To",
-  "type": "Type"
+  "type": "Type",
+  "Date": "Date",
+  "Formats": "Formats",
+  "Languages": "Languages",
+  "Concepts": "Concepts",
+  "Money": "Money",
+  "Sources": "Sources",
+  "People": "People",
+  "Places": "Places",
+  "Sizes": "Sizes",
+  "bookmark": "Bookmark",
+  "recent-search": "Recent searches",
+  "saved-search": "Saved searches"
 }

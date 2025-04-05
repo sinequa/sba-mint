@@ -4,7 +4,7 @@
       <li role="presentation" class="text-muted-foreground px-2 py-1 text-xs font-semibold">
         {{ suggests.key | transloco }}
       </li>
-      @for (suggest of suggests.value; track suggest.id) {
+      @for (suggest of suggests.value; track $index) {
         <li role="listitem" aria-keyshortcuts="enter" (keypress.enter)="itemClicked(suggest)" (click)="itemClicked(suggest)">
           <span class="flex items-baseline gap-2">
             <i [class]="autocompleteIcons[suggest.category] || 'fa-fw far fa-search'"></i>

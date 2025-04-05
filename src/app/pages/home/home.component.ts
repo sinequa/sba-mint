@@ -1,7 +1,7 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
 import { EventType, Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { Subscription, filter } from 'rxjs';
 
 import { Suggestion } from '@sinequa/atomic';
@@ -33,25 +33,25 @@ const homeFeatures: HomeTab[] = [
   {
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
-    label: 'Recent searches',
+    label: 'recentSearches.label',
     component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
     iconClass: 'fa-regular fa-star',
-    label: 'Saved searches',
+    label: 'savedSearches.label',
     component: SavedSearchesComponent
   },
   {
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
-    label: 'My bookmark',
+    label: 'bookmarks.label',
     component: BookmarksComponent
   },
   {
     name: 'baskets',
     iconClass: 'fa-regular fa-inbox',
-    label: 'My collections',
+    label: 'collections.label',
     component: CollectionsComponent,
     inputs: { showButtons: false }
   }
@@ -64,14 +64,15 @@ const homeFeatures: HomeTab[] = [
   host: {
     class: 'layout-search h-screen'
   },
-  imports: [NgComponentOutlet, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
+  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   styles: [
     `
       #logo {
         content: var(--logo-large) / var(--logo-large-alt-text);
       }
     `
-  ]
+  ],
+  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches')]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
@@ -98,8 +99,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     recentSearches: true,
     savedSearches: true
   };
-
-  readonly translateService = inject(TranslocoService);
 
   constructor() {
     // react to tab changes
