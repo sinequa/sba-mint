@@ -111,7 +111,7 @@ export class SearchAllComponent extends SearchBase<R> {
     });
   }
 
-  getArticleType(docType: string): Type<unknown> {
+  getArticleType(docType?: string): Type<unknown> {
     return getComponentsForDocumentType(docType).articleComponent;
   }
 
