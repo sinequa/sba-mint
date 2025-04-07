@@ -90,7 +90,7 @@ export abstract class SearchBase<T> implements OnDestroy {
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
 
-      const query = { ...q, page: pageParam, tab: this.t(), basket: this.b() } as Query;
+      const query = { ...q, page: pageParam, tab: this.t(), basket: this.keys().basket } as Query;
       this.beforeSearch(query);
 
       // Add the current search to the user settings when the text is not empty
