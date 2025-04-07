@@ -61,7 +61,7 @@ export class SearchInputComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
 
-  public readonly input = model<string>('');
+  public readonly value = model<string>('');
 
   protected readonly saveAnimation = signal<boolean>(false);
 
@@ -71,7 +71,7 @@ export class SearchInputComponent {
     return `${name}-standalone-assistant`;
   });
 
-  protected readonly debounceInputValue = debouncedSignal(this.input, DEBOUNCE_DELAY);
+  protected readonly debounceInputValue = debouncedSignal(this.value, DEBOUNCE_DELAY);
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
@@ -87,7 +87,7 @@ export class SearchInputComponent {
     const url = window.location.hash.substring(1);
     const filtersSplit = url.split('f=');
     const filters = filtersSplit.length > 1 ? JSON.parse(decodeURIComponent(filtersSplit[1].split('&')[0]))[0] : undefined;
-    const display = this.input();
+    const display = this.value();
 
     // returns true if a save search matches the display and filters
     return savedSearches.find(search => {
@@ -142,29 +142,29 @@ export class SearchInputComponent {
   public setInput(text: string | undefined, silent: boolean = true): void {
     if (text === undefined) return;
 
-    this.input.set(text);
+    this.value.set(text);
     if (!silent) this.emitText(new Event('input'));
   }
 
   protected emitText(e: Event): void {
     e.stopImmediatePropagation();
-    if (this.allowAdvancedFilters() && this.input() === '') {
+    if (this.allowAdvancedFilters() && this.value() === '') {
       this.overlayOpen.set(false);
       this.drawerStack.open(DrawerAdvancedFiltersComponent);
       return;
     }
-    if (this.allowEmptySearch() === false && this.input() === '') {
+    if (this.allowEmptySearch() === false && this.value() === '') {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
       toast.info(message);
       return;
     }
 
     this.closeAutocompletePopover();
-    this.validated.emit(this.input());
+    this.validated.emit(this.value());
   }
 
   protected clearInput(e: Event): void {
-    this.input.set('');
+    this.value.set('');
     this.popoverElement().hidePopover();
   }
 
@@ -188,7 +188,7 @@ export class SearchInputComponent {
       this.emitText(e);
     } else if (e.key === 'Escape') {
       this.popoverElement().hidePopover();
-    } else if (this.input() !== '') {
+    } else if (this.value() !== '') {
       this.popoverElement().showPopover();
     }
   }

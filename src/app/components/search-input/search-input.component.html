@@ -9,10 +9,10 @@
   "
   [attr.placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
-  [(ngModel)]="input"
+  [(ngModel)]="value"
   (keydown)="onKeyDown($event)"
   (click)="inputClicked()">
-  @if (showSave() && input() !== '') {
+  @if (showSave() && value() !== '') {
     <button
       variant="icon"
       class="px-1 peer-disabled:opacity-50"
@@ -34,9 +34,9 @@
       class="m-1 h-6 rounded-sm text-xs transition ease-in"
       title="Ask AI"
       aria-label="Ask AI"
-      [disabled]="input() === ''"
+      [disabled]="value() === ''"
       [routerLink]="['/assistant']"
-      [queryParams]="{ q: input() }">
+      [queryParams]="{ q: value() }">
       <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
       Ask AI
     </button>
@@ -46,8 +46,8 @@
     class="px-1"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
-    [attr.aria-disabled]="!allowEmptySearch() && this.input() === ''"
-    [disabled]="!allowEmptySearch() && this.input() === ''"
+    [attr.aria-disabled]="!allowEmptySearch() && this.value() === ''"
+    [disabled]="!allowEmptySearch() && this.value() === ''"
     (click)="emitText($event)">
     <SendHorizontalIcon />
   </button>

@@ -1,8 +1,8 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
-import { EventType, Router } from '@angular/router';
+import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
-import { Subscription, filter } from 'rxjs';
 
 import { Suggestion } from '@sinequa/atomic';
 import {
@@ -16,6 +16,7 @@ import {
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
+
 import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
@@ -60,11 +61,12 @@ const homeFeatures: HomeTab[] = [
 @Component({
   selector: 'app-home',
   standalone: true,
+  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   templateUrl: './home.component.html',
   host: {
-    class: 'layout-search h-screen'
+    class: 'layout-search h-screen',
+    '[attr.drawer-opened]': 'drawerOpened'
   },
-  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   styles: [
     `
       #logo {
@@ -74,10 +76,8 @@ const homeFeatures: HomeTab[] = [
   ],
   providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches')]
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
-
-  @ViewChildren(RecentSearchesComponent) widgets!: QueryList<RecentSearchesComponent[]>;
+export class HomeComponent {
+  public drawerOpened: boolean = false;
 
   readonly searchText = signal<string>('');
 
@@ -92,15 +92,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
-  readonly sub = new Subscription();
-
   defaultUserFeatures = {
     bookmarks: true,
     recentSearches: true,
     savedSearches: true
   };
 
-  constructor() {
+  constructor(private destroyRef: DestroyRef) {
+    afterNextRender(() => {
+      this.queryParamsStore.patch({ filters: [], text: '' });
+    });
+
     // react to tab changes
     effect(
       () => {
@@ -109,20 +111,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       { allowSignalWrites: true }
     );
 
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => (this.drawerOpened = state)));
+    this.drawerStack.isOpened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(state => (this.drawerOpened = state));
 
-    this.sub.add(
-      // on navigation, close all tabs
-      this.router.events.pipe(filter(event => event.type === EventType.NavigationStart)).subscribe(() => this.drawerStack.closeAll())
-    );
-  }
-
-  ngOnInit(): void {
-    this.queryParamsStore.patch({ filters: [] });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    // when the component is destroyed, close all drawers
+    this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
   }
 
   public selectTab(tab: HomeTab): void {
@@ -134,7 +126,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public search(text: string): void {
-    this.drawerStack.closeAll();
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 
