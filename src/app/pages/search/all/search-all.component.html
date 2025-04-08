@@ -80,7 +80,7 @@
     <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
       @for (page of query.data()?.pages; track page) {
         @for (article of page.records; track article.id + $index) {
-          <ng-container *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace' }" />
+          <ng-container *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace', allowAI: allowAIOverview }" />
         } @empty {
           <li class="no-records">
             <NoResult />

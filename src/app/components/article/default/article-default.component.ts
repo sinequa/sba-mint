@@ -92,6 +92,7 @@ export class ArticleDefaultComponent implements OnDestroy {
   ]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
+  public readonly allowAI = input<boolean>();
 
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);
@@ -164,6 +165,17 @@ export class ArticleDefaultComponent implements OnDestroy {
 
   addToCollection(): void {
     this.addToCollectionDialog()?.showModal();
+  }
+
+  attachToAssistant(): void {
+    const { assistantIdsToAttach } = getState(this.selectionStore);
+    let ids = assistantIdsToAttach || [];
+
+    if ((assistantIdsToAttach || []).indexOf(this.article().id) === -1) {
+      ids.push(this.article().id);
+    }
+
+    this.selectionStore.update({ assistantIdsToAttach: ids });
   }
 
   onCtrlEnter(): void {

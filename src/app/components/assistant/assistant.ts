@@ -40,6 +40,7 @@ import {
   SelectionStore,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
+import { getState } from '@ngrx/signals';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -126,6 +127,11 @@ export class AssistantComponent {
 
       const q = this.queryParamsStore.getQuery();
       this.query = { ...this.query, ...q } as Q;
+    });
+
+    effect(() => {
+      const { assistantIdsToAttach } = getState(this.selectionStore);
+      this.attachToChat(assistantIdsToAttach);
     });
 
     afterNextRender(() => {
@@ -219,5 +225,9 @@ export class AssistantComponent {
     } else {
       console.error('sqChat instance is not defined');
     }
+  }
+
+  attachToChat(ids: string[]): void {
+    this.sqChat()?.attachToChat(ids);
   }
 }
