@@ -73,7 +73,6 @@
         <i class="fa-fw fas fa-file-export"></i>
         {{ 'export' | transloco }}
       </button>
-      <feedback [pages]="query.data()?.pages" />
       <sort-selector [result]="result()!" (onSort)="onSort($event)" />
     </div>
 
@@ -88,6 +87,11 @@
         }
       }
     </ul>
+
+    <feedback
+      [class]="cn('fixed right-8', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
+      [pages]="query.data()?.pages"
+      (onClose)="onFeedbackClose()" />
   }
 
   @if (query.hasNextPage()) {

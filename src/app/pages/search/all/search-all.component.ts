@@ -52,6 +52,12 @@ type R = Result & { nextPage?: number; previousPage?: number };
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
       }
+
+      feedback {
+        transition:
+          bottom 300ms ease-in-out,
+          transform 300ms ease-in-out;
+      }
     `
   ],
   host: {
@@ -126,5 +132,9 @@ export class SearchAllComponent extends SearchBase<R> {
 
   protected override beforeSearch(query: Query): void {
     this.assistantQuery = { ...this.assistantQuery, ...query };
+  }
+
+  onFeedbackClose(): void {
+    this.hideFeedback.set(true);
   }
 }

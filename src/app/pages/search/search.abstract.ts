@@ -76,6 +76,9 @@ export abstract class SearchBase<T> implements OnDestroy {
     return state.userOverrideActive;
   });
 
+  // Whether the feedback button is to hide
+  hideFeedback = signal(false);
+
   // input url bindings
   q = input<string>(); // text
   t = input<string>(); // tab
@@ -137,21 +140,26 @@ export abstract class SearchBase<T> implements OnDestroy {
     );
 
     // Update the URL with the query params
-    effect(() => {
-      const key = this.keys();
+    effect(
+      () => {
+        const key = this.keys();
 
-      const queryParams: QP = {};
-      const { text, filters = [], page, sort, tab, basket } = getState(this.queryParamsStore);
+        this.hideFeedback.set(false);
 
-      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
-      queryParams.p = page;
-      queryParams.s = sort;
-      queryParams.t = tab;
-      queryParams.q = text;
-      queryParams.b = basket;
+        const queryParams: QP = {};
+        const { text, filters = [], page, sort, tab, basket } = getState(this.queryParamsStore);
 
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
-    });
+        queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
+        queryParams.p = page;
+        queryParams.s = sort;
+        queryParams.t = tab;
+        queryParams.q = text;
+        queryParams.b = basket;
+
+        this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
+      },
+      { allowSignalWrites: true }
+    );
 
     // Make Result object available to children and update aggregations store
     effect(
