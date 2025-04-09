@@ -11,15 +11,19 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('message', receiveMessage);
   returnMessage('ready');
 
+  // will contain the worker instance if it is supported
   var worker;
+  // will be set to true if the worker is supported
+  var isWorkerSupported = false;
+
   function createWorker(appname) {
     if (!appname) console.error('appname is required');
 
     if (window.Worker) {
       console.log('Web Worker is supported');
 
-      // Utilise une URL absolue pour le fichier worker.js
-      const path = window.origin.includes('localhost') ? `${window.origin}/assets/worker.js` : `${window.origin}/app/${appname}/assets/worker.js`;
+      // Use an absolute URL for the worker.js file
+      const path = window.origin.includes('localhost:4200') ? `${window.origin}/assets/worker.js` : `${window.origin}/app/${appname}/assets/worker.js`;
 
       worker = new Worker(path);
 
@@ -37,7 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
       worker.onerror = function (error) {
         console.error('Error from worker:', error);
       };
+
+      isWorkerSupported = true;
     }
+
+    isWorkerSupported = false;
   }
 
   function receiveMessage(event) {
@@ -57,8 +65,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       case 'get-html-webworker': {
         const html = getHtml(data.ids);
-        worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
-        break;
+        // if worker cannot be created, use the "get-html" method instead
+        if (!isWorkerSupported) {
+          returnMessage('get-html-results', html);
+          break;
+        } else {
+          worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
+          break;
+        }
       }
       case 'get-text':
         getText(data.ids);
