@@ -1,17 +1,23 @@
 <div class="flex h-full">
-  @if (allowAI()) {
-    <nav
-      role="navigation"
-      class="fixed top-0 flex h-full translate-0 flex-col items-center gap-16 bg-gray-100 px-6 pt-16 text-gray-400 transition duration-200 ease-in-out">
-      <a routerLink="/home" class="cursor-pointer" title="Go to home page">
-        <img id="navbar-logo" class="mx-auto h-6" aria-hidden="true" alt="logo" />
-      </a>
-
-      <a routerLink="/assistant" class="rounded transition duration-200 hover:text-gray-800" title="Go to assistant page">
-        <Robot />
-      </a>
-    </nav>
-  }
+  <sidebar class="fixed top-0 h-full translate-0 transition duration-200 ease-in-out">
+    <sidebar-separator />
+    <div class="grow">
+      <sidebar-item title="Document search" [attr.aria-label]="'Document search'" routerLink="/home">
+        <i class="far fa-folders"></i>
+        <span>Document search</span>
+      </sidebar-item>
+      @if (allowAI()) {
+        <sidebar-item title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
+          <i class="far fa-comment"></i>
+          <span>Chats</span>
+        </sidebar-item>
+      }
+    </div>
+    <sidebar-item title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
+      <i class="fal fa-question-circle"></i>
+      <span>Help</span>
+    </sidebar-item>
+  </sidebar>
 
   <div class="flex-1">
     <!-- Main content goes here -->

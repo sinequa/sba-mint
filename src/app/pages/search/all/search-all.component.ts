@@ -61,7 +61,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
     `
   ],
   host: {
-    class: 'layout-search mt-16 overflow-auto h-full'
+    class: 'layout-search overflow-auto h-full'
   }
 })
 export class SearchAllComponent extends SearchBase<R> {

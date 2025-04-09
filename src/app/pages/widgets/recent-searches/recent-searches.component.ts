@@ -17,7 +17,7 @@ import { PageHeaderComponent } from '@sinequa/ui';
       <app-navbar class="layout-search py-4" />
     </PageHeader>
 
-    <div class="layout-search mt-16 overflow-auto">
+    <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex gap-2 text-2xl font-semibold">
           <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>

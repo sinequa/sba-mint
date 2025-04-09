@@ -11,12 +11,23 @@ import { LoginService } from '@sinequa/core/login';
 
 import { CCApp, isAuthenticated } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-import { RobotIconComponent } from '@sinequa/ui';
+import { SidebarComponent, SidebarItemComponent, SidebarSeparatorComponent, cn } from '@sinequa/ui';
+import { getHelpIndexUrl } from './components/user-menu/helpers';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent, RobotIconComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterOutlet,
+    NgxSonnerToaster,
+    BackdropComponent,
+    DrawerStackComponent,
+    SidebarComponent,
+    SidebarSeparatorComponent,
+    SidebarItemComponent
+  ],
   templateUrl: './app.component.html',
   styles: [
     `
@@ -24,18 +35,16 @@ import { RobotIconComponent } from '@sinequa/ui';
         content: var(--logo-small) / var(--logo-small-alt-text);
       }
 
-      /* hide the navbar's logo when the page header is present */
-      nav[role='navigation']:has(~ * pageheader) #navbar-logo {
-        visibility: hidden;
-      }
       /* hide the navbar when the drawer is open */
-      nav[role='navigation']:has(~ * [drawer-opened='true']) {
+      sidebar:has(~ * [drawer-opened='true']) {
         transform: translateX(-100%);
       }
     `
   ]
 })
 export class AppComponent {
+  cn = cn;
+
   private readonly applicationService = inject(ApplicationService);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
@@ -48,7 +57,9 @@ export class AppComponent {
   private readonly loginService = inject(LoginService);
   private readonly applicationStore = inject(ApplicationStore);
 
-  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  protected readonly allowAI = computed(
+    () => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']
+  );
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;
     return `${name}-standalone-assistant`;
@@ -112,5 +123,16 @@ export class AppComponent {
     if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
 
     this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+  }
+
+  openHelp() {
+    const url = getHelpIndexUrl(this.transloco.getActiveLang(), {
+      folder: 'mint-search',
+      path: '/r/_sinequa/webpackages/help',
+      indexFile: 'olh-index.html',
+      useLocale: true,
+      useLocaleAsPrefix: true
+    });
+    window.open(url, '_blank', 'noopener');
   }
 }
