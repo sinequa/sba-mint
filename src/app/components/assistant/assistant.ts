@@ -13,10 +13,11 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HubConnection } from '@microsoft/signalr';
 import { catchError } from 'rxjs';
+import { getState } from '@ngrx/signals';
 
 import { Query as Q } from '@sinequa/core/app-utils';
-import { LoginService } from '@sinequa/core/login';
 
 import {
   ChatComponent,
@@ -24,23 +25,13 @@ import {
   ChatContextAttachment,
   ChatSettingsV3Component,
   InitChat,
-  InstanceManagerService,
   MessageHandler,
   RawMessage,
   SuggestedAction
 } from '@sinequa/assistant/chat';
 
 import { Article } from '@sinequa/atomic';
-import {
-  AppStore,
-  DrawerStackService,
-  NavigationService,
-  PreviewHighlights,
-  QueryParamsStore,
-  SelectionStore,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { getState } from '@ngrx/signals';
+import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -58,6 +49,7 @@ type AssistantMode = 'prompt' | 'query';
       (openPreview)="handlePreview($event)"
       (openDocument)="handleRedirect($event)"
       (config)="getChatConfig($event)"
+      (connection)="onConnection.emit($event)"
       [messageHandlers]="messageHandlers()" />
 
     <ng-template #sqChatSettings>
@@ -79,12 +71,9 @@ export class AssistantComponent {
   sqChat = viewChild(ChatComponent);
 
   // Inject services
-  loginService = inject(LoginService);
-  navigationService = inject(NavigationService);
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
-  instanceManagerService = inject(InstanceManagerService);
 
   // If we use the component without inputs, we need to initialize the default values using computed()
   // This is because the input() function is not called when the component is used without inputs
@@ -93,6 +82,7 @@ export class AssistantComponent {
 
   isStreaming = output<boolean>();
   configOutput = output<ChatConfig | undefined>();
+  onConnection = output<HubConnection>();
 
   showProgress = input<boolean>(false);
   messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());

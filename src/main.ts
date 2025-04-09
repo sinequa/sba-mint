@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 
-import { applyConsoleLogLevels, setGlobalConfig } from '@sinequa/atomic';
+import { setGlobalConfig } from '@sinequa/atomic';
 import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
 import atomic from '../node_modules/@sinequa/atomic/package.json';
 
@@ -11,7 +11,7 @@ import { environment } from './environments/environment';
 
 setGlobalConfig(environment);
 
-applyConsoleLogLevels();
+// applyConsoleLogLevels();
 
 /**
  * keyux configuration
@@ -29,5 +29,5 @@ bootstrapApplication(AppComponent, appConfig)
 
     localStorage.setItem('errorMessage', JSON.stringify(err));
     // Redirect to the error page with the URL causing the error
-    window.location.href = '/assets/error.html';
+    window.location.href = 'assets/error.html';
   });

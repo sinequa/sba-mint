@@ -57,9 +57,7 @@ export class AppComponent {
   private readonly loginService = inject(LoginService);
   private readonly applicationStore = inject(ApplicationStore);
 
-  protected readonly allowAI = computed(
-    () => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']
-  );
+  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;
     return `${name}-standalone-assistant`;

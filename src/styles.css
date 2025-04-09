@@ -263,6 +263,32 @@ ul:has(card.selected) card:not(.selected) {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* chat v3 styles overrides */
+sq-chat-reference {
+  /* reference tooltip must keep their background white without opacity */
+  border-radius: 0.5rem;
+
+  &:hover {
+    --ast-reference-expanded-hover-bg: #fff9;
+  }
+
+  .reference-tooltip {
+    border-radius: 0.5rem;
+    background-color: var(--color-white);
+  }
+}
+
 assistant {
   --ast-input-bg: white;
 
@@ -278,21 +304,53 @@ assistant {
     flex-direction: column;
     gap: 0.5rem;
 
-    padding-top: 0px !important;
-    padding-right: 0.5rem !important;
+    /* padding-top: 0px !important;
+    padding-right: 0.5rem !important; */
+    margin-bottom: 1rem;
 
     &::-webkit-scrollbar {
       display: none;
     }
 
+    /* message from the assistant */
     .list-group-item:nth-child(even) {
+      display: flex;
+      justify-content: flex-start;
+
+      /* relative used to position the message actions buttions */
+      .message-content {
+        position: relative;
+      }
+
+      .sq-chat-message-actions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 0.5rem;
+        margin-right: 0.5rem;
+      }
+
+      .message-content {
+        --ast-secondary-bg: #ffeab9;
+        color: #502f06;
+        border: 3px solid rgb(251, 251, 251);
+        border-bottom-left-radius: 0;
+        @apply shadow;
+        /* animation: fadeIn 0.5s forwards; */
+      }
+    }
+
+    /* message from the user */
+    .list-group-item:nth-child(odd) {
       display: flex;
       justify-content: flex-end;
 
       .message-content {
-        --ast-secondary-bg: transparent;
-        border: 1px solid rgb(255, 200, 98);
+        --ast-user-font-weight: 600;
+        --ast-primary-bg: white;
         border-bottom-right-radius: 0;
+        @apply shadow;
+        /* animation: fadeIn 0.5s forwards; */
       }
     }
 
@@ -305,11 +363,6 @@ assistant {
       /* hide view progress */
       & > div.message-assistant > div.small {
         display: none;
-      }
-
-      .message-user .message-content {
-        --ast-primary-bg: white;
-        border-bottom-left-radius: 0;
       }
     }
 
@@ -325,6 +378,12 @@ assistant {
     border-width: 1px;
     border-color: var(--color-orange-100);
     background-color: var(--ast-input-bg, #f8f8f8);
+    margin-bottom: 1rem;
+    z-index: auto !important;
+
+    .small {
+      font-size: smaller;
+    }
   }
 
   /* when textarea is missign, hide the user input */
@@ -363,6 +422,8 @@ assistant {
     gap: 1rem;
     padding: 0.75rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.7rem;
   }
 
   .issue-report h5 {
@@ -379,6 +440,12 @@ assistant {
     font-size: var(--text-xs);
     line-height: var(--text-xs--line-height);
     background-color: var(--ast-input-bg, #f8f8f8);
+    border: 1px solid var(--color-muted);
+    border-radius: 4px;
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent-foreground);
+    }
   }
 
   .issue-report textarea {
@@ -390,15 +457,97 @@ assistant {
     display: inline-block !important;
     min-width: 100px;
     margin-left: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
   }
 
   .issue-report .btn-primary {
     margin-left: 0;
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    &:hover {
+      background-color: var(--color-primary-hover);
+    }
+  }
+
+  .issue-report .btn-light {
+    border: 1px solid var(--color-muted);
+    &:hover {
+      background-color: var(--color-muted);
+    }
   }
 
   .issue-report .d-flex {
     justify-content: flex-end;
     gap: 1rem;
+  }
+}
+
+/* add a thin scrollbar */
+sq-saved-chats-v3 {
+  scrollbar-width: thin;
+
+  /* stay on top the date of the saved chat while scrolling */
+  .saved-chats {
+    .saved-chat-date {
+      position: sticky;
+      top: 0;
+      /* fix the background color to hide the content behind */
+      background-color: white;
+    }
+  }
+}
+
+/* chat v3 modal overrides */
+sq-core-confirm,
+sq-core-prompt {
+  [cdktrapfocus] {
+    @apply rounded-2xl border-none! shadow-2xl;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  hr {
+    margin: 1rem 0;
+    color: var(--color-muted);
+  }
+
+  input {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-muted);
+    border-radius: 4px;
+    width: 100%;
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  button {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+
+    background-color: transparent;
+    &:hover {
+      background-color: var(--color-muted);
+    }
+
+    &[type='submit'] {
+      float: left;
+      background-color: var(--color-primary);
+      color: var(--color-primary-foreground);
+      &:hover {
+        background-color: var(--color-primary-hover);
+      }
+    }
+    cursor: pointer;
+    margin-right: 1rem;
   }
 }
 
