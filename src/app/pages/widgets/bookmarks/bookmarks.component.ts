@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { firstValueFrom, Subscription } from 'rxjs';
 
 import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { PageHeaderComponent } from '@sinequa/ui';
@@ -27,10 +27,12 @@ interface BookmarkArticle {
 export class BookmarksComponent {
   cdr = inject(ChangeDetectorRef);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly appStore = inject(AppStore);
   private readonly queryService = inject(QueryService);
   private readonly drawerStack = inject(DrawerStackService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
   readonly drawerOpened = signal(false);
 
@@ -47,12 +49,14 @@ export class BookmarksComponent {
   }
 
   public async loadBookmarks(): Promise<void> {
+    if (!this.bookmarks()) return;
+
     const list: BookmarkArticle[] = [];
     this.bookmarks().forEach(async bookmark => {
-      if (!bookmark.queryName) return;
-
+      const q = this.appStore.getQueryByName(bookmark.queryName || '');
+      const name = !!q ? q.name : this.defaultQueryName();
       const query: Partial<Query> = {
-        name: bookmark.queryName,
+        name,
         filters: {
           field: 'id',
           value: bookmark.id
