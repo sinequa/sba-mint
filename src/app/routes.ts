@@ -27,7 +27,12 @@ type ExtendedRoutes = ExtendedRoute[];
 export const routes: ExtendedRoutes = [
   { path: 'login', component: SignInComponent },
   { path: 'logout', component: SignInComponent },
-  { path: 'assistant', component: AssistantLayoutComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
+  {
+    path: 'assistant',
+    loadComponent: () => import('./pages/assistant/layout').then(m => m.AssistantLayoutComponent),
+    canActivate: [AuthGuard(), InitializationGuard()],
+    resolve: { queryName: queryNameResolver }
+  },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
 
   // TODO: regroup these routes in a single one

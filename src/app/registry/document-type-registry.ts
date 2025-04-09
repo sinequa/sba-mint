@@ -2,9 +2,9 @@ import { Type } from '@angular/core';
 
 import { Article } from '@sinequa/atomic';
 import { ArticleDefaultComponent } from '../components/article/default/article-default.component';
-import { PreviewDefaultComponent } from '../components/preview/default/preview-default.component';
+import { PreviewDefaultComponent } from '../components/preview/default/default.component';
 import { ArticleSlideComponent } from '../components/article/slide/article-slide.component';
-import { PreviewSlideComponent } from '../components/preview/slide/preview-slide.component';
+import { PreviewSlideComponent } from '../components/preview/slide/slide.component';
 
 // Define the default document type, should be linked to default article and preview components
 // This document type is used when the document type is not recognized

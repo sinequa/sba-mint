@@ -18,8 +18,8 @@ import {
 } from '@sinequa/atomic-angular';
 import { PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
-import { PreviewActionsComponent } from '../default/actions/preview-actions';
-import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
+import { PreviewActionsComponent } from '../actions';
+import { PreviewNavbarComponent } from '../navbar/navbar.component';
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -39,11 +39,11 @@ type Article = A & {
     PopoverComponent,
     PopoverContentComponent
   ],
-  templateUrl: './preview-slide.component.html',
+  templateUrl: './slide.component.html',
+  styleUrl: './slide.component.css',
   host: {
     class: 'grow flex flex-col overflow-hidden'
-  },
-  styleUrl: './preview-slide.component.scss'
+  }
 })
 export class PreviewSlideComponent implements OnDestroy {
   public readonly previewData = input.required<PreviewData>();

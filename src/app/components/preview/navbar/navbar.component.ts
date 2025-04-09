@@ -1,6 +1,6 @@
 import { Component, Input, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
@@ -17,14 +17,6 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
   showSearchButton: true
 };
 
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`../i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
-
 @Component({
   selector: 'app-preview-navbar',
   standalone: true,
@@ -37,8 +29,8 @@ const loader = ['en', 'fr'].reduce(
     DrawerNavbarComponent,
     VerticalDividerComponent
   ],
-  templateUrl: './preview-navbar.component.html',
-  providers: [provideTranslocoScope({ scope: 'preview', loader })]
+  templateUrl: './navbar.component.html',
+  providers: [provideTranslocoScope({ scope: 'preview' })]
 })
 export class PreviewNavbarComponent {
   cn = cn;

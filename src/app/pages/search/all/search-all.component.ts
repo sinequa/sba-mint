@@ -1,11 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, effect, inject, signal, Type } from '@angular/core';
+import { Component, computed, effect, signal, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { CCApp, Query, Result } from '@sinequa/atomic';
 import {
-  ApplicationStore,
   DidYouMeanComponent,
   ExportDialog,
   FiltersBarComponent,
@@ -67,8 +66,6 @@ type R = Result & { nextPage?: number; previousPage?: number };
 export class SearchAllComponent extends SearchBase<R> {
   cn = cn;
 
-  private readonly applicationStore = inject(ApplicationStore);
-
   isStreaming = signal<boolean>(false);
   hideAssistant = signal(true);
 
@@ -87,7 +84,7 @@ export class SearchAllComponent extends SearchBase<R> {
     }
     return false;
   });
-  readonly allowAIOverview = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   assistantQuery: Query = { name: 'assistant' };
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();

@@ -1,8 +1,8 @@
 import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
-import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article, LegacyFilter } from '@sinequa/atomic';
+import { Article, CCApp, LegacyFilter } from '@sinequa/atomic';
 import {
   ApplicationStore,
   AppStore,
@@ -42,14 +42,6 @@ type CustomMetadata = {
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`../i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
-
 @Component({
   selector: 'app-article-default',
   standalone: true,
@@ -82,7 +74,7 @@ const loader = ['en', 'fr'].reduce(
       inputs: ['article']
     }
   ],
-  providers: [provideTranslocoScope({ scope: 'article', loader })]
+  providers: [provideTranslocoScope({ scope: 'article' })]
 })
 export class ArticleDefaultComponent implements OnDestroy {
   public readonly myarticle = input<Article>();
@@ -92,7 +84,9 @@ export class ArticleDefaultComponent implements OnDestroy {
   ]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
-  public readonly allowAI = input<boolean>();
+
+  // by default add to assistant is disabled
+  public readonly allowAI = input<boolean>(false);
 
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);

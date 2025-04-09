@@ -83,6 +83,17 @@
                 }
               ]
             },
+            "assistant": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.assistant.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -97,8 +108,15 @@
             "production": {
               "buildTarget": "sinequa-mint:build:production"
             },
+            "assistant": {
+              "buildTarget": "sinequa-mint:build:assistant",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.assistant.json"
+            },
             "development": {
-              "buildTarget": "sinequa-mint:build:development"
+              "buildTarget": "sinequa-mint:build:development",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

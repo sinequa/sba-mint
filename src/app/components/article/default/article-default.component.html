@@ -1,5 +1,5 @@
 <Card
-  class="group/article group"
+  class="group/article group cursor-pointer"
   [class.selected]="selected()"
   [attr.aria-selected]="selected()"
   tabindex="0"
@@ -32,9 +32,7 @@
                 <MenuItem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
                 <MenuItem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </MenuItem>
                 @if (allowAI()) {
-                  <MenuItem
-                    (click)="attachToAssistant()"
-                    class="border border-orange-200 bg-orange-100 text-orange-400 hover:bg-orange-100 hover:text-orange-500">
+                  <MenuItem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
                     <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
                   </MenuItem>
                 }

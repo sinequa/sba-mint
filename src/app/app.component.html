@@ -1,28 +1,27 @@
-<div class="flex h-full">
-  <sidebar class="h-full translate-0 transition duration-200 ease-in-out">
-    <sidebar-separator />
-    <div class="grow">
-      <sidebar-item title="Document search" [attr.aria-label]="'Document search'" routerLink="/home">
-        <i class="far fa-folders"></i>
-        <span>Document search</span>
-      </sidebar-item>
-      @if (allowAI()) {
-        <sidebar-item title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
-          <i class="far fa-comment"></i>
-          <span>Chats</span>
-        </sidebar-item>
-      }
-    </div>
-    <sidebar-item title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
-      <i class="fal fa-question-circle"></i>
-      <span>Help</span>
+<sidebar class="peer fixed top-0 h-full">
+  <sidebar-separator />
+  <div class="grow">
+    <sidebar-item title="Document search" [attr.aria-label]="'Document search'" routerLink="/home">
+      <i class="far fa-folders"></i>
+      <span>Document search</span>
     </sidebar-item>
-  </sidebar>
-
-  <div class="flex-1">
-    <!-- Main content goes here -->
-    <router-outlet></router-outlet>
+    @if (allowAI()) {
+      <sidebar-item title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
+        <i class="far fa-comment"></i>
+        <span>Chats</span>
+      </sidebar-item>
+    }
   </div>
+  <sidebar-item title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
+    <i class="fal fa-question-circle"></i>
+    <span>Help</span>
+  </sidebar-item>
+</sidebar>
+
+<!-- Only the assistant layout's content slide when the slidebar is open -->
+<div class="h-full transition-all duration-150 ease-in-out peer-[[data-open='true']]:has-[assistant-layout]:ml-18">
+  <!-- Main content goes here -->
+  <router-outlet></router-outlet>
 </div>
 
 <app-backdrop />

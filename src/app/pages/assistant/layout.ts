@@ -44,7 +44,7 @@ import { AssistantComponent } from '../../components/assistant/assistant';
     `
   ],
   host: {
-    class: 'bg-neutral-50'
+    class: 'bg-neutral-50 ml-18 transition-all duration-300 ease-in-out'
   }
 })
 export class AssistantLayoutComponent {

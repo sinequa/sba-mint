@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, CCApp, LegacyFilter, PreviewData } from '@sinequa/atomic';
@@ -16,28 +16,20 @@ import {
   SelectionStore,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-
-import { PreviewActionsComponent } from './actions/preview-actions';
-import { PreviewNavbarComponent } from '../navbar/preview-navbar.component';
-import { AssistantComponent } from '../../assistant/assistant';
 import { cn } from '@sinequa/ui';
+
+import { AssistantComponent } from '../../assistant/assistant';
+import { PreviewActionsComponent } from '../actions';
+import { PreviewNavbarComponent } from '../navbar/navbar.component';
 
 type Article = A & {
   [key: string]: string[] | undefined;
 };
 
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`../i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
-
 @Component({
   selector: 'app-preview-default',
   standalone: true,
-  providers: [provideTranslocoScope({ scope: 'preview', loader })],
+  providers: [provideTranslocoScope({ scope: 'preview' })],
   imports: [
     NgClass,
     PreviewNavbarComponent,
@@ -48,11 +40,11 @@ const loader = ['en', 'fr'].reduce(
     DocumentLocatorComponent,
     AssistantComponent
   ],
-  templateUrl: './preview-default.component.html',
+  templateUrl: './default.component.html',
   host: {
     class: 'grow flex flex-col overflow-hidden'
   },
-  styleUrl: './preview-default.component.scss'
+  styleUrl: './default.component.css'
 })
 export class PreviewDefaultComponent {
   cn = cn;

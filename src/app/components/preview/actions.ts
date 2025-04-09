@@ -1,22 +1,14 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { HashMap, Translation, TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import { PreviewService } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
-
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`../../i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
 
 @Component({
   selector: 'preview-actions',
   standalone: true,
   imports: [TranslocoPipe, ButtonComponent],
-  providers: [provideTranslocoScope({ scope: 'preview', loader })],
+  providers: [provideTranslocoScope({ scope: 'preview' })],
   template: `
     <button variant="ghost" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
