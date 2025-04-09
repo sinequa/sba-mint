@@ -26,7 +26,7 @@ type HomeTab = {
   iconClass: string;
   label: string;
   component: Type<unknown>;
-  inputs?: any;
+  inputs?: Record<string, unknown>;
   disabled?: boolean;
 };
 
@@ -35,18 +35,21 @@ const homeFeatures: HomeTab[] = [
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
     label: 'recentSearches.label',
+    inputs: { options: { itemsPerPage: 5 } },
     component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
     iconClass: 'fa-regular fa-star',
     label: 'savedSearches.label',
+    inputs: { options: { itemsPerPage: 5 } },
     component: SavedSearchesComponent
   },
   {
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
     label: 'bookmarks.label',
+    inputs: { options: { itemsPerPage: 5 } },
     component: BookmarksComponent
   },
   {
@@ -74,7 +77,7 @@ const homeFeatures: HomeTab[] = [
       }
     `
   ],
-  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches')]
+  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections')]
 })
 export class HomeComponent {
   public drawerOpened: boolean = false;

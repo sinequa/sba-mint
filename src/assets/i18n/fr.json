@@ -19,6 +19,11 @@
   "location": "Emplacement",
   "logout": "Déconnexion",
   "more": "Plus",
+  "tab": {
+    "allresults": "All",
+    "wikipedia": "Wikipedia",
+    "sinequa": "Sinequa"
+  },
   "msg#results": {
     "results_all_tab": "Tout",
     "resultsAllTab": "Tout",
