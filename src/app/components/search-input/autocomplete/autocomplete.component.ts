@@ -39,7 +39,6 @@ const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>
 
 @Component({
   selector: 'app-autocomplete',
-  standalone: true,
   templateUrl: './autocomplete.component.html',
   imports: [KeyValuePipe, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [

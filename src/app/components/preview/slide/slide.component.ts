@@ -27,7 +27,6 @@ type Article = A & {
 
 @Component({
   selector: 'app-preview-slide',
-  standalone: true,
   imports: [
     NgClass,
     PreviewNavbarComponent,

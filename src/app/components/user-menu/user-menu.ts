@@ -33,7 +33,6 @@ const loader = ['en', 'fr'].reduce(
 
 @Component({
   selector: 'app-user-menu',
-  standalone: true,
   imports: [
     FormsModule,
     MenuComponent,

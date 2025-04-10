@@ -31,10 +31,9 @@ const DEBOUNCE_DELAY = 300;
 
 @Component({
   selector: 'app-search-input',
-  standalone: true,
   imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
   templateUrl: './search-input.component.html',
-  styleUrl: './search-input.component.scss',
+  styleUrl: './search-input.component.css',
   host: {
     '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")'
   },

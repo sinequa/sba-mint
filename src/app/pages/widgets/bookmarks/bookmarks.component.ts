@@ -17,7 +17,6 @@ interface BookmarkArticle {
 
 @Component({
   selector: 'Bookmarks',
-  standalone: true,
   imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet, PageHeaderComponent],
   templateUrl: './bookmarks.component.html',
   host: {

@@ -6,7 +6,6 @@ import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'preview-actions',
-  standalone: true,
   imports: [TranslocoPipe, ButtonComponent],
   providers: [provideTranslocoScope({ scope: 'preview' })],
   template: `

@@ -8,7 +8,6 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-search',
-  standalone: true,
   imports: [RouterOutlet, PageHeaderComponent, NavbarComponent],
   templateUrl: './search.layout.html',
   host: {

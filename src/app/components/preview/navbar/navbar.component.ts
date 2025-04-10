@@ -19,7 +19,6 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
 
 @Component({
   selector: 'app-preview-navbar',
-  standalone: true,
   imports: [
     BookmarkButtonComponent,
     TranslocoPipe,

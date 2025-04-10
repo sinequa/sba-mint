@@ -30,7 +30,8 @@ type QP = {
   host: {
     '(keydown.enter)': 'handleKeydownEnter($event)',
     '[attr.drawer-opened]': 'drawerOpened() || false'
-  }
+  },
+  standalone: false
 })
 export abstract class SearchBase<T> implements OnDestroy {
   drawerOpened = signal(false);

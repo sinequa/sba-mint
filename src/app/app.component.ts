@@ -16,7 +16,6 @@ import { getHelpIndexUrl } from './components/user-menu/helpers';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     CommonModule,
     RouterLink,

@@ -19,7 +19,6 @@ type SavedSearch = S & {
 
 @Component({
   selector: 'SavedSearches',
-  standalone: true,
   imports: [NavbarComponent, TranslocoPipe, PageHeaderComponent],
   templateUrl: './saved-searches.component.html',
   host: {

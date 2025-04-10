@@ -44,7 +44,6 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 
 @Component({
   selector: 'app-article-default',
-  standalone: true,
   imports: [
     BookmarkButtonComponent,
     SourceComponent,

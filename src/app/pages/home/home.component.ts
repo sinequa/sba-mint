@@ -63,7 +63,6 @@ const homeFeatures: HomeTab[] = [
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
   templateUrl: './home.component.html',
   host: {

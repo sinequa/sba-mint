@@ -37,7 +37,6 @@ type AssistantMode = 'prompt' | 'query';
 
 @Component({
   selector: 'assistant, Assistant',
-  standalone: true,
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     <sq-chat-v3

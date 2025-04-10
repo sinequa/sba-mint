@@ -28,7 +28,6 @@ type R = Result & { nextPage?: number; previousPage?: number };
 
 @Component({
   selector: 'app-search-all',
-  standalone: true,
   imports: [
     TranslocoPipe,
     NgComponentOutlet,

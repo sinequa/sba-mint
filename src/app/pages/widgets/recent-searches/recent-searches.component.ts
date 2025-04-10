@@ -10,7 +10,6 @@ import { PageHeaderComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-recent-searches',
-  standalone: true,
   imports: [RouterModule, NavbarComponent, TranslocoPipe, PageHeaderComponent],
   template: `
     <PageHeader class="z-1 ml-8 bg-white">

@@ -14,7 +14,6 @@ import { Article } from '@sinequa/atomic';
 
 @Component({
   selector: 'app-article-slide',
-  standalone: true,
   imports: [BookmarkButtonComponent, TranslocoDateImpurePipe],
   templateUrl: './article-slide.component.html',
   // eslint-disable-next-line @angular-eslint/no-host-metadata-property

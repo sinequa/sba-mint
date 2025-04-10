@@ -28,7 +28,6 @@ type Article = A & {
 
 @Component({
   selector: 'app-preview-default',
-  standalone: true,
   providers: [provideTranslocoScope({ scope: 'preview' })],
   imports: [
     NgClass,

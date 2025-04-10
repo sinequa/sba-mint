@@ -11,7 +11,6 @@ import { AssistantComponent } from '../../components/assistant/assistant';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  standalone: true,
   imports: [AssistantComponent, SavedChatsComponent, AggregationComponent],
   providers: [provideTranslocoScope('filters')],
   template: `
