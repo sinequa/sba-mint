@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HubConnection } from '@microsoft/signalr';
-import { catchError } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { getState } from '@ngrx/signals';
 
 import { Query as Q } from '@sinequa/core/app-utils';
@@ -32,6 +32,7 @@ import {
 
 import { Article } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { readSync } from 'fs';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -82,6 +83,7 @@ export class AssistantComponent {
   isStreaming = output<boolean>();
   configOutput = output<ChatConfig | undefined>();
   onConnection = output<HubConnection>();
+  onReady = output<boolean>();
 
   showProgress = input<boolean>(false);
   messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());
@@ -138,6 +140,18 @@ export class AssistantComponent {
         .subscribe({
           next: streaming => this.isStreaming.emit(streaming),
           error: error => console.error('Error in streaming', error)
+        });
+
+      this.sqChat()
+        ?.chatService?.initProcess$.pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError(error => {
+            console.error('Unhandled error in init process', error);
+            return of(false);
+          })
+        )
+        .subscribe({
+          next: value => this.onReady.emit(value)
         });
     });
   }

@@ -16,7 +16,7 @@ import { AssistantComponent } from '../../components/assistant/assistant';
   template: `
     <div class="flex h-full">
       <div class="flex w-1/4 flex-col p-4">
-        @if (connectionEstablished()) {
+        @if (connectionEstablished() && isReady()) {
           <div class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <h3 class="text-lg font-bold">Saved Chats</h3>
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
@@ -28,7 +28,7 @@ import { AssistantComponent } from '../../components/assistant/assistant';
       </div>
       <div class="w-3/4 p-4">
         <div class="m-auto h-full w-3xl rounded-2xl border border-orange-200 bg-orange-50 px-4 pb-4 shadow">
-          <Assistant class="h-full overflow-auto" [instanceId]="instanceId()" (onConnection)="handleConnection($event)" />
+          <Assistant class="h-full overflow-auto" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
         </div>
       </div>
     </div>
@@ -59,13 +59,14 @@ export class AssistantLayoutComponent {
 
   // this is the assistant component who triggers the connection is established
   connectionEstablished = signal(false);
+  isReady = signal(false);
 
   q = input<string>();
 
   constructor() {
     effect(() => {
       const question = this.q();
-      if (question) {
+      if (question && this.connectionEstablished()) {
         this.chat()?.askAI(question);
       }
     });
@@ -84,6 +85,12 @@ export class AssistantLayoutComponent {
     // to properly instanciate the saved-chats component, we need to wait for the connection to be established
     if (connection.state === 'Connected') {
       this.connectionEstablished.set(true);
+    }
+  }
+
+  handleReady(ready: boolean) {
+    if (ready) {
+      this.isReady.set(true);
     }
   }
 }
