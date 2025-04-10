@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function createWorker(appname) {
     if (!appname) console.error('appname is required');
 
+    isWorkerSupported = false;
+
     if (window.Worker) {
       console.log('Web Worker is supported');
 
@@ -44,8 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       isWorkerSupported = true;
     }
-
-    isWorkerSupported = false;
   }
 
   function receiveMessage(event) {
