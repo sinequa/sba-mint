@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HashMap, provideTranslocoScope, Translation, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 
@@ -19,16 +19,6 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
 
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`./i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
-
-const DEBOUNCE_DELAY = 300;
-
 @Component({
   selector: 'app-search-input',
   imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
@@ -37,7 +27,7 @@ const DEBOUNCE_DELAY = 300;
   host: {
     '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")'
   },
-  providers: [provideTranslocoScope({ scope: 'searchInput', loader })]
+  providers: [provideTranslocoScope('search-input')]
 })
 export class SearchInputComponent {
   cn = cn;
@@ -70,7 +60,7 @@ export class SearchInputComponent {
     return `${name}-standalone-assistant`;
   });
 
-  protected readonly debounceInputValue = debouncedSignal(this.value, DEBOUNCE_DELAY);
+  protected readonly debounceInputValue = debouncedSignal(this.value, 300);
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;

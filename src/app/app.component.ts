@@ -9,10 +9,9 @@ import { NgxSonnerToaster } from 'ngx-sonner';
 /* TODO: to remove after v18 miggration */
 import { LoginService } from '@sinequa/core/login';
 
-import { CCApp, isAuthenticated } from '@sinequa/atomic';
+import { CCApp, getHelpIndexUrl, isAuthenticated } from '@sinequa/atomic';
 import { ApplicationService, ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-import { SidebarComponent, SidebarItemComponent, SidebarSeparatorComponent, cn } from '@sinequa/ui';
-import { getHelpIndexUrl } from './components/user-menu/helpers';
+import { cn, SidebarComponent, SidebarItemComponent, SidebarSeparatorComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-root',

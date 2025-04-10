@@ -1,7 +1,7 @@
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { Router, provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
@@ -50,8 +50,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
 
     // set the default OAuth2 and/or SAML authentication provider
-    { provide: APP_INITIALIZER, useFactory: () => appInitializerFn, multi: true },
-    { provide: APP_INITIALIZER, useFactory: (router: Router) => () => signIn(router), deps: [Router], multi: true },
+    provideAppInitializer(appInitializerFn),
+    provideAppInitializer(() => signIn(inject(Router))),
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },

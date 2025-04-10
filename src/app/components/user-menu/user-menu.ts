@@ -1,35 +1,25 @@
 import { Component, computed, inject, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HashMap, Translation, TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
+import { getHelpIndexUrl, globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import {
   AvatarComponent,
-  AvatarImageComponent,
   AvatarFallbackComponent,
+  AvatarImageComponent,
   ChevronRightIconComponent,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
-  UserRoundIconComponent,
+  HorizontalDividerComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  HorizontalDividerComponent
+  UserRoundIconComponent
 } from '@sinequa/ui';
-
-import { getHelpIndexUrl } from './helpers';
-
-const loader = ['en', 'fr'].reduce(
-  (acc, lang) => {
-    acc[lang] = () => import(`./i18n/${lang}.json`);
-    return acc;
-  },
-  {} as HashMap<() => Promise<Translation>>
-);
 
 @Component({
   selector: 'app-user-menu',
@@ -51,7 +41,7 @@ const loader = ['en', 'fr'].reduce(
     AvatarFallbackComponent
   ],
   templateUrl: './user-menu.html',
-  providers: [provideTranslocoScope({ scope: 'user-menu', loader })]
+  providers: [provideTranslocoScope('user-menu')]
 })
 export class UserMenuComponent {
   readonly menus = viewChildren(MenuComponent);

@@ -7,7 +7,7 @@
       variant() === 'basic' && 'focus-within:rounded-lg focus-within:rounded-br-none focus-within:rounded-bl-none'
     )
   "
-  [attr.placeholder]="'searchInput.placeholder' | transloco"
+  [placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
   [(ngModel)]="value"
   (keydown)="onKeyDown($event)"
