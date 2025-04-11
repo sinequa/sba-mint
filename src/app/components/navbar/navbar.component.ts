@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, Type, viewChild } from '@angular/core';
+import { Component, inject, input, signal, Type, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -60,6 +60,8 @@ export type NavbarMenu = {
   ]
 })
 export class NavbarComponent {
+  readonly showInput = input<boolean>(true);
+
   readonly searchInput = viewChild(SearchInputComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);
 

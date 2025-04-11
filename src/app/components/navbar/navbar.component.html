@@ -3,15 +3,17 @@
 </a>
 
 <div class="col-span-2 flex h-full items-center">
-  <app-search-input
-    class="flex grow"
-    variant="basic"
-    [showSave]="true"
-    (saved)="saveSearch($event)"
-    (validated)="validated($event)"
-    (debounced)="debounced($event)">
-    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
-  </app-search-input>
+  @if (showInput()) {
+    <app-search-input
+      class="flex grow"
+      variant="basic"
+      [showSave]="true"
+      (saved)="saveSearch($event)"
+      (validated)="validated($event)"
+      (debounced)="debounced($event)">
+      <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+    </app-search-input>
+  }
 </div>
 
 <nav class="flex list-none items-center justify-end gap-1 pe-10">

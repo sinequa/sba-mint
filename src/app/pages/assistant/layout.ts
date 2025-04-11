@@ -8,13 +8,18 @@ import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
+import { PageHeaderComponent } from '@sinequa/ui';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  imports: [AssistantComponent, SavedChatsComponent, AggregationComponent],
+  imports: [AssistantComponent, SavedChatsComponent, AggregationComponent, PageHeaderComponent, NavbarComponent],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <div class="flex h-full">
+    <PageHeader class="z-1 ml-8 bg-white">
+      <app-navbar [showInput]="false" class="layout-search py-4" />
+    </PageHeader>
+    <div class="assistant-container ml-18 flex h-full">
       <div class="flex w-1/4 flex-col p-4">
         @if (connectionEstablished() && isReady()) {
           <div class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
@@ -43,7 +48,7 @@ import { AssistantComponent } from '../../components/assistant/assistant';
     `
   ],
   host: {
-    class: 'bg-neutral-50 ml-18 transition-all duration-300 ease-in-out'
+    class: 'bg-neutral-50 transition-all duration-300 ease-in-out'
   }
 })
 export class AssistantLayoutComponent {
