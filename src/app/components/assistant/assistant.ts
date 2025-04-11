@@ -32,7 +32,6 @@ import {
 
 import { Article } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { readSync } from 'fs';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -114,6 +113,7 @@ export class AssistantComponent {
 
   constructor(private destroyRef: DestroyRef) {
     effect(() => {
+      // each time the query params store changes, we need to update the query object
       if (this.instanceId() === undefined) return;
 
       const q = this.queryParamsStore.getQuery();
@@ -121,6 +121,7 @@ export class AssistantComponent {
     });
 
     effect(() => {
+      // each time the selection store changes, we need to update the attached IDs
       const { assistantIdsToAttach } = getState(this.selectionStore);
       this.attachToChat(assistantIdsToAttach);
     });
@@ -128,6 +129,10 @@ export class AssistantComponent {
     afterNextRender(() => {
       // ATTENTION: takeUntilDestroyed works only in the context of a component
       // that's why we need to use a reference of the DestroyRef class here
+
+      // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
+      const { assistantIdsToAttach } = getState(this.selectionStore);
+      this.attachToChat(assistantIdsToAttach);
 
       this.sqChat()
         ?.chatService?.streaming$.pipe(
@@ -215,7 +220,6 @@ export class AssistantComponent {
     if (sqChatInstance) {
       if (question) {
         const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
-        const userMessage = messages[messages.length - 1];
         this.initChat = { messages } as InitChat;
       } else {
         this.initChat = undefined;
@@ -231,6 +235,13 @@ export class AssistantComponent {
   }
 
   attachToChat(ids: string[]): void {
-    this.sqChat()?.attachToChat(ids);
+    if (!ids || ids.length === 0) return;
+
+    const sqChatInstance = this.sqChat();
+    if (sqChatInstance) {
+      sqChatInstance.attachToChat(ids);
+    } else {
+      console.error('sqChat instance is not defined');
+    }
   }
 }

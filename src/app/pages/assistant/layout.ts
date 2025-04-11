@@ -5,7 +5,7 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, AppStore } from '@sinequa/atomic-angular';
+import { AggregationComponent, AggregationsStore, AppStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
 
@@ -51,6 +51,7 @@ export class AssistantLayoutComponent {
 
   private readonly appStore = inject(AppStore);
   private readonly aggregationStore = inject(AggregationsStore);
+  private readonly selectionStore = inject(SelectionStore);
 
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;
@@ -71,6 +72,11 @@ export class AssistantLayoutComponent {
       }
     });
 
+    // clear the selection store
+    // this is needed to avoid the selection store to be populated with the assistant queries
+    this.selectionStore.clear();
+
+    // this is needed to populate the aggregation with the sources as no query is sent to the server
     this.getFirstPageQuery();
   }
 
