@@ -70,7 +70,7 @@
       <div
         [class]="
           cn(
-            'assistant-container border border-orange-100 bg-orange-50 p-2 px-4',
+            'assistant-container shrink-0 border border-orange-100 bg-orange-50 p-2 px-4',
             assistantCollapsed() && 'collapsed max-h-[50px] overflow-hidden bg-gradient-to-b from-orange-50 to-orange-100'
           )
         ">
@@ -94,7 +94,7 @@
           </button>
         </h2>
         @if (showAssistant()) {
-          <assistant [instanceId]="instanceId()" (isStreaming)="isStreaming.set($event)" class="block h-[300px] overflow-auto" />
+          <assistant [instanceId]="instanceId()" (isStreaming)="isStreaming.set($event)" class="h-[300px]" />
         }
       </div>
     }
