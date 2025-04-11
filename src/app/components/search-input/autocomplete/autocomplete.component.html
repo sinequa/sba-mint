@@ -1,11 +1,11 @@
 @if (suggestions()) {
-  <ul class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 text-black" role="list">
+  <ul class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 pb-1 text-black" role="listbox" aria-label="suggestions list">
     @for (suggests of suggestions() | keyvalue; track suggests.key) {
       <li role="presentation" class="text-muted-foreground px-2 py-1 text-xs font-semibold">
         {{ suggests.key | transloco }}
       </li>
       @for (suggest of suggests.value; track $index) {
-        <li role="listitem" aria-keyshortcuts="enter" (keypress.enter)="itemClicked(suggest)" (click)="itemClicked(suggest)">
+        <li tabindex="0" role="option" (keydown.enter)="itemClicked(suggest)" (click)="itemClicked(suggest)">
           <span class="flex items-baseline gap-2">
             <i [class]="autocompleteIcons[suggest.category] || 'fa-fw far fa-search'"></i>
             <p class="line-clamp-1 text-ellipsis">

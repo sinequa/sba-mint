@@ -15,7 +15,8 @@
   @if (showSave() && value() !== '') {
     <button
       variant="icon"
-      class="px-1 peer-disabled:opacity-50"
+      size="xs"
+      class="peer-disabled:opacity-50"
       [attr.title]="'searchInput.saveSearch' | transloco"
       [attr.aria-label]="'searchInput.saveSearch' | transloco"
       (click)="saveQuery()"
@@ -43,7 +44,7 @@
   }
   <button
     variant="icon"
-    class="px-1"
+    size="xs"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
     [attr.aria-disabled]="!allowEmptySearch() && this.value() === ''"
@@ -51,8 +52,8 @@
     (click)="emitText($event)">
     <SendHorizontalIcon />
   </button>
-</Search>
 
-<div popover #autocompletePopover (click)="handlePopoverClick($event)">
-  <ng-content></ng-content>
-</div>
+  <div popover #autocompletePopover (keydown.enter)="handlePopoverClick($event)" (click)="handlePopoverClick($event)">
+    <ng-content></ng-content>
+  </div>
+</Search>
