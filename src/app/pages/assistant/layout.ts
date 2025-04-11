@@ -21,7 +21,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
     </PageHeader>
     <div class="assistant-container ml-18 flex h-full">
       <div class="flex w-1/4 flex-col p-4">
-        @if (connectionEstablished() && isReady()) {
+        @if (showSavedChats()) {
           <div class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <h3 class="text-lg font-bold">Saved Chats</h3>
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
@@ -65,7 +65,17 @@ export class AssistantLayoutComponent {
 
   // this is the assistant component who triggers the connection is established
   connectionEstablished = signal(false);
-  isReady = signal(false);
+
+  // this is used to know if the assistant is ready to use (i.e. the assistant is ready to receive queries)
+  isAssistantReady = signal(false);
+
+  // this is used to know if the saved chats component should be displayed
+  readonly allowSavedChats = computed(
+    () => Boolean(this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['savedChatSettings']?.['display']) ?? false
+  );
+
+  // this is used to display the saved chats component
+  readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
 
   q = input<string>();
 
@@ -101,7 +111,7 @@ export class AssistantLayoutComponent {
 
   handleReady(ready: boolean) {
     if (ready) {
-      this.isReady.set(true);
+      this.isAssistantReady.set(true);
     }
   }
 }
