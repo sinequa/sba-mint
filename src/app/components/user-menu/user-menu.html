@@ -35,7 +35,7 @@
       <span>{{ 'userMenu.resetUserSettings' | transloco }}</span>
     </menuitem>
 
-    @if(isAdmin() || isOverridingUser()) {
+    @if(isOverridingUser()) {
     <MenuSeparator />
     } @if(allowUserOverride() && !isOverridingUser()) {
     <menuitem (click)="handleOverride()">
@@ -47,21 +47,7 @@
       <i class="fa-fw fal fa-user text-[16px]"></i>
       <span>{{ 'userMenu.revertOverride' | transloco }}</span>
     </menuitem>
-    } @if(isAdmin()) {
-    <menuitem (click)="openAdmin()">
-      <i class="fa-fw fal fa-user-tie text-[16px]"></i>
-      <span>{{ 'userMenu.administration' | transloco }}</span>
-      <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
-    </menuitem>
     }
-
-    <MenuSeparator />
-
-    <menuitem (click)="openHelp()" class="justify-between">
-      <i class="fa-fw fal fa-question-circle text-[16px]"></i>
-      <span class="grow">{{ 'userMenu.help' | transloco }}</span>
-      <i class="fa fw far fa-arrow-up-right-from-square text-[12px]"></i>
-    </menuitem>
 
     <MenuSeparator />
 

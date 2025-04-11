@@ -69,7 +69,6 @@ export class UserMenuComponent {
       .slice(0, 3);
   });
 
-  readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
@@ -99,22 +98,7 @@ export class UserMenuComponent {
     this.resetUserSettingsDialog()?.showModal();
   }
 
-  openAdmin() {
-    window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
-  }
-
   openSinequa() {
     window.open('https://sinequa.com', '_blank', 'noopener');
-  }
-
-  openHelp() {
-    const url = getHelpIndexUrl(this.transloco.getActiveLang(), {
-      folder: 'mint-search',
-      path: '/r/_sinequa/webpackages/help',
-      indexFile: 'olh-index.html',
-      useLocale: true,
-      useLocaleAsPrefix: true
-    });
-    window.open(url, '_blank', 'noopener');
   }
 }

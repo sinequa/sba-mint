@@ -10,7 +10,15 @@ import { NgxSonnerToaster } from 'ngx-sonner';
 import { LoginService } from '@sinequa/core/login';
 
 import { CCApp, getHelpIndexUrl, isAuthenticated } from '@sinequa/atomic';
-import { ApplicationService, ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  ApplicationService,
+  ApplicationStore,
+  AppStore,
+  BackdropComponent,
+  DrawerStackComponent,
+  PrincipalStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent, SidebarSeparatorComponent } from '@sinequa/ui';
 
 @Component({
@@ -54,12 +62,16 @@ export class AppComponent {
   // SBA dependencies for the Assistant
   private readonly loginService = inject(LoginService);
   private readonly applicationStore = inject(ApplicationStore);
+  private readonly principalStore = inject(PrincipalStore);
 
   protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;
     return `${name}-standalone-assistant`;
   });
+
+  protected readonly authenticated = computed(() => isAuthenticated());
+  readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 
   constructor() {
     addEventListener('authenticated', (event: Event) => {
@@ -130,5 +142,9 @@ export class AppComponent {
       useLocaleAsPrefix: true
     });
     window.open(url, '_blank', 'noopener');
+  }
+
+  openAdmin() {
+    window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
   }
 }
