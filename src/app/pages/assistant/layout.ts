@@ -82,9 +82,7 @@ export class AssistantLayoutComponent {
   constructor() {
     effect(() => {
       const question = this.q();
-      if (question && this.connectionEstablished()) {
-        this.chat()?.askAI(question);
-      }
+      this.chat()?.askAI(question);
     });
 
     // clear the selection store

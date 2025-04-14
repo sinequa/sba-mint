@@ -94,7 +94,7 @@
           </button>
         </h2>
         @if (showAssistant()) {
-          <assistant [instanceId]="instanceId()" (isStreaming)="isStreaming.set($event)" class="h-[300px]" />
+          <assistant [instanceId]="instanceId()" [showAssistant]="showAssistant()" (isStreaming)="isStreaming.set($event)" class="h-[300px]" />
         }
       </div>
     }

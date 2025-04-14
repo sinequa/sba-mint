@@ -47,7 +47,12 @@
         </button>
       </h2>
       @if (showAssistant()) {
-        <assistant [class]="{ hidden: assistantCollapsed() }" mode="query" [instanceId]="instanceId()" (isStreaming)="isStreaming.set($event)" />
+        <assistant
+          [class]="{ hidden: assistantCollapsed() }"
+          mode="query"
+          [showAssistant]="showAssistant()"
+          [instanceId]="instanceId()"
+          (isStreaming)="isStreaming.set($event)" />
       }
     </div>
   }

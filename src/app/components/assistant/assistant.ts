@@ -39,26 +39,27 @@ type AssistantMode = 'prompt' | 'query';
   selector: 'assistant, Assistant',
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
-    <sq-chat-v3
-      class="block h-full w-full"
-      #sqChat
-      [query]="query"
-      [chat]="initChat"
-      [instanceId]="instanceId()!"
-      (openPreview)="handlePreview($event)"
-      (openDocument)="handleRedirect($event)"
-      (config)="getChatConfig($event)"
-      (connection)="onConnection.emit($event)"
-      [messageHandlers]="messageHandlers()" />
-
-    <ng-template #sqChatSettings>
-      <sq-chat-settings-v3
-        [style.--ast-chat-settings-width]="'570px'"
+    @if (isChatInitialized() || showAssistant()) {
+      <sq-chat-v3
+        class="block h-full w-full"
+        #sqChat
+        [query]="query"
+        [chat]="initChat"
         [instanceId]="instanceId()!"
-        (update)="handleUpdate($event)"
-        (cancel)="handleCancel($event)">
-      </sq-chat-settings-v3>
-    </ng-template>
+        (openPreview)="handlePreview($event)"
+        (openDocument)="handleRedirect($event)"
+        (config)="getChatConfig($event)"
+        (connection)="onConnection.emit($event)"
+        [messageHandlers]="messageHandlers()" />
+      <ng-template #sqChatSettings>
+        <sq-chat-settings-v3
+          [style.--ast-chat-settings-width]="'570px'"
+          [instanceId]="instanceId()!"
+          (update)="handleUpdate($event)"
+          (cancel)="handleCancel($event)">
+        </sq-chat-settings-v3>
+      </ng-template>
+    }
   `,
   styleUrl: './assistant.css',
   host: {
@@ -68,6 +69,11 @@ type AssistantMode = 'prompt' | 'query';
 })
 export class AssistantComponent {
   sqChat = viewChild(ChatComponent);
+
+  // used to initialize the chat when the user clicks on the Ask AI button or when the component is created without "question"
+  isChatInitialized = signal<boolean | undefined>(undefined);
+  // Used to initialize the chat unconditionally
+  showAssistant = input<boolean | undefined>(false);
 
   // Inject services
   userSettingsStore = inject(UserSettingsStore);
@@ -213,25 +219,16 @@ export class AssistantComponent {
     }
   }
 
-  askAI(question: string) {
+  askAI(question?: string) {
     // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
     // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
-    const sqChatInstance = this.sqChat();
-    if (sqChatInstance) {
-      if (question) {
-        const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
-        this.initChat = { messages } as InitChat;
-      } else {
-        this.initChat = undefined;
-      }
-
-      sqChatInstance.submitQuestion();
-
-      // do not forget to trigger the change detection manually
-      this.cdr.detectChanges();
+    if (question) {
+      const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
+      this.initChat = { messages } as InitChat;
     } else {
-      console.error('sqChat instance is not defined');
+      this.initChat = undefined;
     }
+    this.isChatInitialized.set(true);
   }
 
   attachToChat(ids: string[]): void {
