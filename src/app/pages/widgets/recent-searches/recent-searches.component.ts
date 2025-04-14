@@ -1,10 +1,10 @@
-import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { countFilters, RecentSearch, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
+import { countFilters, RecentSearch, TranslocoDateImpurePipe, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { PageHeaderComponent } from '@sinequa/ui';
 
@@ -25,8 +25,8 @@ import { PageHeaderComponent } from '@sinequa/ui';
 
         <ul class="flex flex-col">
           @for (scope of history(); track $index) {
-            <li role="presentation" class="my-3 text-xl font-semibold capitalize">
-              {{ getRelativeDate('fr', scope.date) }}
+            <li role="presentation" class="my-3 text-lg font-semibold capitalize">
+              {{ getDate(scope.date) }}
             </li>
 
             @for (search of scope.searches; track $index) {
@@ -65,7 +65,8 @@ import { PageHeaderComponent } from '@sinequa/ui';
   `,
   host: {
     class: 'flex flex-col h-full w-full'
-  }
+  },
+  providers: [TranslocoDateImpurePipe]
 })
 export class RecentSearchesComponent {
   readonly getRelativeDate = getRelativeDate;
@@ -73,6 +74,8 @@ export class RecentSearchesComponent {
   readonly router = inject(Router);
   readonly userSettingsStore = inject(UserSettingsStore);
   readonly history = signal<{ date: string; searches: RecentSearch[] }[]>([]);
+  readonly transloco = inject(TranslocoService);
+  readonly datePipe = inject(TranslocoDateImpurePipe);
 
   constructor() {
     effect(
@@ -124,5 +127,18 @@ export class RecentSearchesComponent {
       p: search.queryParams?.page,
       queryName: search.queryParams?.queryName
     } as any;
+  }
+
+  getDate(date: string): string {
+    const d = getRelativeDate('en', date);
+    const formattedDate = this.datePipe.transform(date, 'fullDate');
+
+    // if today, add "Today - " in front of the formatted date
+    if (d.toLocaleLowerCase() === 'today') {
+      const langDate = getRelativeDate(this.transloco.getActiveLang(), date);
+      return `${langDate} - ${formattedDate}`;
+    }
+
+    return formattedDate || date;
   }
 }
