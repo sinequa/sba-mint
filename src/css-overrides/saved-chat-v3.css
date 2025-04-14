@@ -1,0 +1,66 @@
+sq-saved-chats-v3 {
+  scrollbar-width: thin;
+
+  /* stay on top the date of the saved chat while scrolling */
+  .saved-chats {
+    .saved-chat-date {
+      position: sticky;
+      top: 0;
+      /* fix the background color to hide the content behind */
+      background-color: white;
+    }
+  }
+}
+
+/* chat v3 modal overrides */
+sq-core-confirm,
+sq-core-prompt {
+  [cdktrapfocus] {
+    @apply rounded-2xl border-none! shadow-2xl;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  hr {
+    margin: 1rem 0;
+    color: var(--color-muted);
+  }
+
+  input {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-muted);
+    border-radius: 4px;
+    width: 100%;
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  button {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+
+    background-color: transparent;
+    &:hover {
+      background-color: var(--color-muted);
+    }
+
+    &[type='submit'] {
+      float: left;
+      background-color: var(--color-primary);
+      color: var(--color-primary-foreground);
+      &:hover {
+        background-color: var(--color-primary-hover);
+      }
+    }
+    cursor: pointer;
+    margin-right: 1rem;
+  }
+}
