@@ -98,7 +98,7 @@ export class AppComponent {
     }
 
     effect(() => {
-      const { general } = this.appStore.customizationJson();
+      const general = this.appStore.general();
 
       if (general) {
         if (general.name) {
