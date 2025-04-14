@@ -12,7 +12,7 @@
       </div>
       <div class="flex grow flex-col">
         <section class="flex items-baseline gap-2">
-          <p class="text-primary line-clamp-1 text-base font-bold">{{ article().title }}</p>
+          <p class="text-primary line-clamp-1 text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
 
           <div class="flex-grow">
             @if (showBookmark()) {
