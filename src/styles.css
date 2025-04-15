@@ -1,15 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
-
-@source "../node_modules/@sinequa/ui";
-@source "../node_modules/@sinequa/atomic-angular";
-
 /* css overrides */
 @import './css-overrides/angular-cdk';
 @import './css-overrides/bootstrap';
 @import './css-overrides/chat-v3';
 @import './css-overrides/saved-chat-v3';
 @import './css-overrides/collapse';
+
+@source "../node_modules/@sinequa/ui";
+@source "../node_modules/@sinequa/atomic-angular";
+@source not "../docusaurus/";
 
 *,
 *::before,
