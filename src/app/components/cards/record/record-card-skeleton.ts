@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-article-default-skeleton, ArticleDefaultSkeleton',
+  selector: 'record-card-skeleton, recordcardskeleton, RecordCardSkeleton',
   standalone: true,
   template: `
     <div class="size-10 animate-pulse rounded-full bg-gray-300"></div>
@@ -39,4 +39,4 @@ import { Component } from '@angular/core';
     }
   `
 })
-export class ArticleDefaultSkeletonComponent {}
+export class RecordCardSkeleton {}

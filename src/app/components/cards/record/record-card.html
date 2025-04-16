@@ -1,0 +1,88 @@
+<Card
+  class="group/article group cursor-pointer"
+  [class.selected]="selected()"
+  [attr.aria-selected]="selected()"
+  tabindex="0"
+  (keydown.control.enter)="onCtrlEnter()"
+  role="option">
+  <CardHeader class="shrink-0">
+    <header class="flex items-center gap-3">
+      <div class="text-primary flex size-[40px] items-center justify-center rounded-full bg-neutral-50">
+        <source [collection]="article().collection" [connector]="article().connector" class="max-w-7 text-lg" />
+      </div>
+      <div class="flex grow flex-col">
+        <section class="flex items-baseline gap-2">
+          <p class="text-primary line-clamp-1 text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
+
+          <div class="flex-grow">
+            @if (showBookmark()) {
+            <bookmark-button [article]="article()" />
+            }
+          </div>
+
+          @if (hasLabelsAccess()) {
+          <menu class="invisible group-hover:visible" (click)="$event.stopImmediatePropagation()">
+            @if (hasLabelsAccess()) {
+            <button variant="ghost" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
+              <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
+              <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+            </button>
+            }
+
+            <MenuContent>
+              <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
+              <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
+              @if (allowAI()) {
+              <menuitem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
+                <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
+              </menuitem>
+              }
+            </MenuContent>
+          </menu>
+          }
+        </section>
+
+        <section class="flex items-center gap-1 text-xs">
+          @if (docformatMetadata()) {
+          <div
+            class="rounded-full border-neutral-600 font-bold uppercase hover:bg-neutral-600 hover:text-white"
+            (click)="setFilter('docformat', docformatMetadata()!)">
+            {{ docformatMetadata() }}
+          </div>
+          }
+
+          <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
+            @if ((article().authors || { authors: [''] }).length > 0) {
+            <span>{{ article().authors[0] }}</span>
+            } @if (article().modified) {
+            <p class="flex items-baseline gap-1">
+              <i class="fa-fw far fa-calendar-day"></i>
+              <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
+            </p>
+            }
+          </div>
+        </section>
+      </div>
+    </header>
+  </CardHeader>
+
+  <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
+    <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
+
+    @if (customMetadata()?.length && customMetadataItems()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if
+    (customMetadataItems()![$index].length) {
+    <div class="flex items-center text-xs">
+      @if (metadata.title) {
+      <label class="me-2 border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
+      }
+      <Metadata variant="outline" [article]="article()" [metadata]="metadata.field" />
+    </div>
+    } } }
+  </CardContent>
+  <CardFooter>
+    <missing-terms [article]="article()" />
+  </CardFooter>
+</Card>
+
+<labels-edit-dialog [article]="article()" (click)="$event.stopPropagation()" />
+<add-to-collection-dialog [article]="article()" (click)="$event.stopPropagation()" />

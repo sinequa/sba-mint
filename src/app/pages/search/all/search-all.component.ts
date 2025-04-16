@@ -19,8 +19,9 @@ import {
 import { ButtonComponent, cn } from '@sinequa/ui';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
-import { ArticleDefaultSkeletonComponent } from '../../../components/article/default-skeleton/article-default-skeleton.component';
+
 import { AssistantComponent } from '../../../components/assistant/assistant';
+import { RecordCardSkeleton } from '../../../components/cards/record/record-card-skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { SearchBase } from '../search.abstract';
 
@@ -31,7 +32,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
   imports: [
     TranslocoPipe,
     NgComponentOutlet,
-    ArticleDefaultSkeletonComponent,
+    RecordCardSkeleton,
     SortSelectorComponent,
     DidYouMeanComponent,
     InfinityScrollDirective,
@@ -59,7 +60,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
     `
   ],
   host: {
-    class: 'layout-search overflow-auto h-full'
+    class: 'layout-search'
   }
 })
 export class SearchAllComponent extends SearchBase<R> {

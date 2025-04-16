@@ -23,7 +23,6 @@ import {
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
 import {
-  BadgeComponent,
   ButtonComponent,
   CardComponent,
   CardContentComponent,
@@ -44,7 +43,7 @@ type CustomMetadata = {
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 @Component({
-  selector: 'app-article-slide',
+  selector: 'record-card, recordcard, RecordCard',
   imports: [
     BookmarkButtonComponent,
     SourceComponent,
@@ -61,10 +60,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    CardFooterComponent,
-    BadgeComponent
+    CardFooterComponent
   ],
-  templateUrl: './article-slide.component.html',
+  templateUrl: './record-card.html',
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -77,7 +75,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   ],
   providers: [provideTranslocoScope({ scope: 'article' })]
 })
-export class ArticleSlideComponent implements OnDestroy {
+export class RecordCard implements OnDestroy {
   public readonly myarticle = input<Article>();
   public readonly customMetadata = input<CustomMetadata[] | undefined>([
     { title: 'article.jobTitles', field: 'entity13' },
@@ -85,8 +83,6 @@ export class ArticleSlideComponent implements OnDestroy {
   ]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
-
-  thumbnailFailed = signal(false);
 
   // by default add to assistant is disabled
   public readonly allowAI = input<boolean>(false);

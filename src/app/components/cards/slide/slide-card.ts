@@ -2,7 +2,7 @@ import { Component, computed, inject, input, OnDestroy, signal, viewChild } from
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article, CCApp, LegacyFilter } from '@sinequa/atomic';
+import { Article, LegacyFilter } from '@sinequa/atomic';
 import {
   ApplicationStore,
   AppStore,
@@ -23,6 +23,7 @@ import {
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
 import {
+  BadgeComponent,
   ButtonComponent,
   CardComponent,
   CardContentComponent,
@@ -43,7 +44,7 @@ type CustomMetadata = {
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 @Component({
-  selector: 'app-article-default',
+  selector: 'slide-card, slidecard, SlideCard',
   imports: [
     BookmarkButtonComponent,
     SourceComponent,
@@ -60,9 +61,10 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    CardFooterComponent
+    CardFooterComponent,
+    BadgeComponent
   ],
-  templateUrl: './article-default.component.html',
+  templateUrl: './slide-card.html',
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -75,7 +77,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   ],
   providers: [provideTranslocoScope({ scope: 'article' })]
 })
-export class ArticleDefaultComponent implements OnDestroy {
+export class SlideCard implements OnDestroy {
   public readonly myarticle = input<Article>();
   public readonly customMetadata = input<CustomMetadata[] | undefined>([
     { title: 'article.jobTitles', field: 'entity13' },
@@ -83,6 +85,8 @@ export class ArticleDefaultComponent implements OnDestroy {
   ]);
   public readonly article = input.required<Article>();
   public readonly strategy = input<SelectionStrategy>();
+
+  thumbnailFailed = signal(false);
 
   // by default add to assistant is disabled
   public readonly allowAI = input<boolean>(false);
