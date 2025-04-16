@@ -3,5 +3,4 @@
     <ZipFile>sba-mint</ZipFile>
     <Title>Mint Angular Workspace</Title>
     <Description>This is the Mint SBA workspace for Sinequa ES.</Description>
-    <AlphaBetaOnly>beta</AlphaBetaOnly>
 </Sinequa>
