@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
@@ -57,6 +57,7 @@ export class AssistantLayoutComponent {
   private readonly appStore = inject(AppStore);
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly instanceId = computed(() => {
     const { name } = getState(this.appStore) as CCApp;
@@ -80,6 +81,13 @@ export class AssistantLayoutComponent {
   q = input<string>();
 
   constructor() {
+    effect(() => {
+      // force the change detection when the AggregationStore is updated.
+      // This is needed because we use the ChatComponent which is not a signal component (i.e Angular v14)
+      getState(this.aggregationStore);
+      this.cdr.detectChanges();
+    });
+
     effect(() => {
       const question = this.q();
       this.chat()?.askAI(question);
