@@ -25,7 +25,7 @@ function getAllExtracts({ id, extracts, previewData }) {
 
   // extracts contains the html of extracts in chronological order
   // locations contains the list of start positions sorted by score
-  const locations = previewData.highlightsPerCategory[type]?.values[0]?.locations || [];
+  const locations = previewData?.highlightsPerCategory[type]?.values[0]?.locations || [];
 
   // first extract all the extracts locations
   let extractslocations = locations.map(function (l, relevanceIndex) {
