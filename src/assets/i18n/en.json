@@ -25,7 +25,7 @@
     "wikipedia": "Wikipedia",
     "sinequa": "Sinequa"
   },
-  "msg#results": {
+  "results": {
     "results_all_tab": "All",
     "resultsAllTab": "All",
     "results_text_tab": "Text",
@@ -38,11 +38,31 @@
     "excel": "Excel",
     "powerpoint": "Powerpoint"
   },
-  "msg#sort": {
+  "sort": {
     "date": "Date",
     "filename": "Filename",
     "relevance": "Relevance",
     "title": "Title"
+  },
+  "column": {
+    "authors": "Authors",
+    "treepath": "Source",
+    "concepts": "Concepts",
+    "sizes": "Sizes",
+    "companies": "Companies",
+    "company": "Company",
+    "docformats": "Formats",
+    "docformat": "Format",
+    "doctypes": "Document Types",
+    "doctype": "Document Type",
+    "documentlanguages": "Languages",
+    "fileexts": "File Extensions",
+    "filenames": "Filenames",
+    "geos": "Places",
+    "geo": "Place",
+    "modified": "Date",
+    "persons": "People",
+    "person": "People"
   },
   "nextPage": "Next page",
   "open": "Open",
