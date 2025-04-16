@@ -20,17 +20,16 @@
             }
           </div>
 
-          @if (hasLabelsAccess()) {
           <menu class="invisible group-hover:visible" (click)="$event.stopImmediatePropagation()">
-            @if (hasLabelsAccess()) {
             <button variant="ghost" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
               <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
               <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
             </button>
-            }
 
             <MenuContent>
+              @if (hasLabelsAccess()) {
               <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
+              }
               <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
               @if (allowAI()) {
               <menuitem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
@@ -39,7 +38,6 @@
               }
             </MenuContent>
           </menu>
-          }
         </section>
 
         <section class="flex items-center gap-1 text-xs">
