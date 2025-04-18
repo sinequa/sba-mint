@@ -5,10 +5,11 @@ import { PageHeaderComponent } from '@sinequa/ui';
 
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { provideTranslocoScope } from '@jsverse/transloco';
+import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-search',
-  imports: [RouterOutlet, PageHeaderComponent, NavbarComponent],
+  imports: [RouterOutlet, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
   templateUrl: './search.layout.html',
   host: {
     class: 'flex flex-col h-full w-full'

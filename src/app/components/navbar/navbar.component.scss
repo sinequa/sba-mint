@@ -6,18 +6,20 @@
   z-index: auto;
 
   #navbar-logo {
-    opacity: 1;
-    transition: 0.2s ease-in;
+    transition: margin-left 0.2s;
   }
 
   /**
    * Styles for the navbar logo when the drawer is opened.
    *
    * When the `drawer-opened` attribute is set to `true` on the parent element,
-   * the `#navbar-logo` element will have an opacity of 0 and a transition of 0.2s ease-out.
+   * the host will have smaller colums to contain the logo and input.
    */
-  &[drawer-opened='true'] #navbar-logo {
-    opacity: 0;
-    transition: 0.2s ease-out;
+  &[drawer-opened='true'] {
+    grid-template-columns: 5% 22% 25% 25%;
+
+    #navbar-logo {
+      margin-left: 1rem;
+    }
   }
 }

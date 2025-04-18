@@ -61,6 +61,7 @@ export type NavbarMenu = {
 })
 export class NavbarComponent {
   readonly showInput = input<boolean>(true);
+  readonly showMenu = input<boolean>(true);
 
   readonly searchInput = viewChild(SearchInputComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);

@@ -1,31 +1,3 @@
-@if (authenticated()) {
-  <sidebar class="peer fixed top-0 h-full">
-    <sidebar-separator />
-    <div class="grow">
-      <sidebar-item title="Document search" [attr.aria-label]="'Document search'" routerLink="/home">
-        <i class="far fa-magnifying-glass"></i>
-        <span>Search</span>
-      </sidebar-item>
-      @if (allowAI()) {
-        <sidebar-item title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
-          <i class="far fa-comment"></i>
-          <span>Chats</span>
-        </sidebar-item>
-      }
-    </div>
-    @if (isAdmin()) {
-      <sidebar-item title="Administration" [attr.aria-label]="'Administration'" (click)="openAdmin()">
-        <i class="fas fa-gear"></i>
-        <span>Administration</span>
-      </sidebar-item>
-    }
-    <sidebar-item title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
-      <i class="far fa-question-circle"></i>
-      <span>Help</span>
-    </sidebar-item>
-  </sidebar>
-}
-
 <!-- Only the assistant layout's content slide when the slidebar is open -->
 <div class="h-full transition-all duration-150 ease-in-out peer-[[data-open='true']]:[&_assistant-layout]:[&_.assistant-container]:ml-46">
   <!-- Main content goes here -->

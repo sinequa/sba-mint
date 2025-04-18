@@ -10,14 +10,16 @@ import { AggregationComponent, AggregationsStore, AppStore, SelectionStore } fro
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { PageHeaderComponent } from '@sinequa/ui';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  imports: [AssistantComponent, SavedChatsComponent, AggregationComponent, PageHeaderComponent, NavbarComponent],
+  imports: [AssistantComponent, SavedChatsComponent, AggregationComponent, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
   providers: [provideTranslocoScope('filters')],
   template: `
+    <app-sidebar />
     <PageHeader class="z-1 ml-8 bg-white">
-      <app-navbar [showInput]="false" class="layout-search py-4" />
+      <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
     <div class="assistant-container ml-18 flex h-full">
       <div class="flex w-1/4 flex-col p-4">
