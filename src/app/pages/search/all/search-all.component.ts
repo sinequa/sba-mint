@@ -85,6 +85,9 @@ export class SearchAllComponent extends SearchBase<R> {
     return false;
   });
   readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  readonly enabledUserInput = computed(
+    () => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true
+  );
   assistantQuery: Query = { name: 'assistant' };
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
