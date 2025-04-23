@@ -9,6 +9,7 @@ import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { type SavedSearch as S } from '@sinequa/atomic-angular';
 import { Router } from '@angular/router';
 import { PageHeaderComponent } from '@sinequa/ui';
+import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 type SavedSearch = S & {
   label: string;
@@ -19,7 +20,7 @@ type SavedSearch = S & {
 
 @Component({
   selector: 'SavedSearches',
-  imports: [NavbarComponent, TranslocoPipe, PageHeaderComponent],
+  imports: [NavbarComponent, TranslocoPipe, PageHeaderComponent, AppSidebarComponent],
   templateUrl: './saved-searches.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

@@ -9,6 +9,7 @@ import { RecentSearchesComponent } from './pages/widgets/recent-searches/recent-
 import { SearchLayoutComponent } from './pages/search/search.layout';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SavedSearchesComponent } from './pages/widgets/saved-searches/saved-searches.component';
+import { CollectionsComponent } from './pages/widgets/collections/collections.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -39,6 +40,7 @@ export const routes: ExtendedRoutes = [
   { path: 'recent-searches', component: RecentSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   { path: 'bookmarks', component: BookmarksComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   { path: 'saved-searches', component: SavedSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()] },
+  { path: 'collections', component: CollectionsComponent, canActivate: [AuthGuard(), InitializationGuard()] },
   {
     path: 'search',
     component: SearchLayoutComponent,

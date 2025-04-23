@@ -7,11 +7,14 @@ import { getRelativeDate } from '@sinequa/atomic';
 import { countFilters, RecentSearch, TranslocoDateImpurePipe, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { PageHeaderComponent } from '@sinequa/ui';
+import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-recent-searches',
-  imports: [RouterModule, NavbarComponent, TranslocoPipe, PageHeaderComponent],
+  imports: [RouterModule, NavbarComponent, TranslocoPipe, PageHeaderComponent, AppSidebarComponent],
   template: `
+    <app-sidebar />
+
     <PageHeader class="z-1 ml-8 bg-white">
       <app-navbar class="layout-search py-4" />
     </PageHeader>

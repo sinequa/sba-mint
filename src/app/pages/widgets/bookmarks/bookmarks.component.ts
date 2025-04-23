@@ -9,6 +9,7 @@ import { AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { PageHeaderComponent } from '@sinequa/ui';
+import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 interface BookmarkArticle {
   bookmark: Bookmark;
@@ -17,7 +18,7 @@ interface BookmarkArticle {
 
 @Component({
   selector: 'Bookmarks',
-  imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet, PageHeaderComponent],
+  imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet, PageHeaderComponent, AppSidebarComponent],
   templateUrl: './bookmarks.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

@@ -57,8 +57,7 @@ const homeFeatures: HomeTab[] = [
     name: 'baskets',
     iconClass: 'fa-regular fa-inbox',
     label: 'collections.label',
-    component: CollectionsComponent,
-    inputs: { showButtons: false }
+    component: CollectionsComponent
   }
 ];
 
