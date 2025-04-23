@@ -1,4 +1,4 @@
-<main class="z-0 col-span-2 col-start-2 mb-8">
+<main class="z-0 col-span-2 col-start-2 mt-20 mb-8">
   @if (isTabSearchActive()) {
     <navbar-tabs class="mt-2 block" />
   }
@@ -29,14 +29,14 @@
       </ul>
     } @else if (query.isSuccess() && hasRowCount()) {
       <!-- if results have been found -->
-      <filters-bar class="z-filter sticky top-0 flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
+      <filters-bar class="z-filter relative flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
 
       <!-- if assistant is allowed -->
       @if (allowAI()) {
         <div
           [class]="
             cn(
-              'assistant-container rounded-md border border-orange-100 bg-orange-50 p-2',
+              'rounded-md border border-orange-100 p-2',
               assistantCollapsed() && 'collapsed max-h-[80px] overflow-hidden bg-gradient-to-b from-orange-50 to-orange-100'
             )
           ">
@@ -61,7 +61,7 @@
           </h2>
           @if (showAssistant()) {
             <assistant
-              [class]="{ hidden: assistantCollapsed() }"
+              [class]="cn('h-96', assistantCollapsed() && 'hidden')"
               mode="query"
               [showAssistant]="showAssistant()"
               [instanceId]="instanceId()"
@@ -75,11 +75,7 @@
       <sponsored-results />
 
       <!-- sort selector and export button -->
-      <div class="mt-4 flex gap-1 has-[_+ul>li.no-records]:hidden">
-        <button variant="ghost" class="me-auto" aria-label="export" (click)="exportDialog.showModal()">
-          <i class="fa-fw fas fa-file-export"></i>
-          {{ 'export' | transloco }}
-        </button>
+      <div class="mt-4 flex justify-end gap-1 has-[_+ul>li.no-records]:hidden">
         <sort-selector [result]="result()!" (onSort)="onSort($event)" />
       </div>
 
@@ -107,5 +103,3 @@
     }
   </div>
 </main>
-
-<export-dialog #exportDialog />

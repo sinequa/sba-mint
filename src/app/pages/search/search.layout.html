@@ -1,9 +1,7 @@
-<PageHeader class="z-1 ml-8 bg-white">
+<PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
   <app-navbar class="layout-search py-4" />
 </PageHeader>
 
-<app-sidebar />
+<app-sidebar class="fixed top-0 h-full" />
 
-<div>
-  <router-outlet />
-</div>
+<router-outlet />

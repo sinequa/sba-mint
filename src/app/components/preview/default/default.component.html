@@ -66,64 +66,72 @@
       </table>
     </section>
 
+    <!-- Tab Navigation only if the "display summary is available " -->
     @if (displaySummary()) {
-      <div
-        [class]="
-          cn(
-            'assistant-container shrink-0 border border-orange-100 bg-orange-50 p-2 px-4',
-            assistantCollapsed() && 'collapsed max-h-[50px] overflow-hidden bg-gradient-to-b from-orange-50 to-orange-100'
-          )
-        ">
-        <h2 class="flex items-baseline gap-2 pb-2 text-base font-bold text-orange-400">
-          <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
+      <div class="flex gap-2 bg-white px-6">
+        <button
+          type="button"
+          class="-mb-px border-b-2 px-4 py-2 text-sm font-medium focus:outline-none"
+          [ngClass]="activeTab() === 'preview' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+          (click)="activeTab.set('preview')">
+          {{ 'preview.documentPreview' | transloco }}
+        </button>
+        <button
+          type="button"
+          class="-mb-px flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium focus:outline-none"
+          [ngClass]="
+            activeTab() === 'summary' ? 'border-text-orange-400 text-orange-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+          "
+          (click)="showAssistant.set(true); activeTab.set('summary')">
+          <div class="-ml-2 flex size-4 items-center justify-center rounded-full bg-white">
             @if (isStreaming()) {
               <i class="fa-solid fa-spinner animate-spin"></i>
             } @else {
               <i class="fa-solid fa-sparkles"></i>
             }
           </div>
-
           {{ 'preview.summarize' | transloco }}
-
-          <button
-            variant="none"
-            [class]="cn('transition-rotate ms-auto size-8 cursor-pointer duration-150 ease-in-out', !assistantCollapsed() && 'rotate-180')"
-            (click)="assistantCollapsed.set(!assistantCollapsed()); showAssistant.set(true)"
-            aria-label="toggle assistant">
-            <i class="fa-regular fa-chevron-down"></i>
-          </button>
-        </h2>
-        @if (showAssistant()) {
-          <assistant [instanceId]="instanceId()" [showAssistant]="showAssistant()" (isStreaming)="isStreaming.set($event)" class="h-[300px]" />
-        }
+        </button>
       </div>
     }
-  }
 
-  @if (loading()) {
-    <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-      <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
-    </section>
-  }
-  @if (canLoadIframe()) {
-    <section class="flex grow flex-col gap-4 px-6 py-4">
-      <preview-actions class="flex justify-end" />
+    <div class="relative flex-grow overflow-auto">
+      <!-- Added relative positioning -->
+      <!-- Summary Tab Content -->
+      <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'summary'">
+        <assistant [instanceId]="instanceId()" [showAssistant]="showAssistant()" (isStreaming)="handleStreaming($event)" class="flex-grow" />
+      </div>
 
-      <iframe
-        #preview
-        frameborder="0"
-        class="h-full"
-        [src]="previewUrl()"
-        (load)="onLoaded()"
-        [attr.title]="'preview.documentPreview' | transloco"
-        [attr.aria-label]="'preview.documentPreview' | transloco"></iframe>
-    </section>
-  } @else if (previewUrlError()) {
-    <section class="flex h-full w-full items-center justify-center">
-      <p class="text-center text-xl">
-        <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
-        {{ 'previewUnavailable' | transloco }}
-      </p>
-    </section>
+      <!-- Preview Tab Content -->
+      <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'preview'">
+        <!-- Use hidden and absolute positioning -->
+        @if (loading()) {
+          <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+            <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
+          </section>
+        }
+        @if (canLoadIframe()) {
+          <section class="flex h-full flex-col gap-4 px-6 py-4">
+            <preview-actions class="flex justify-end" />
+
+            <iframe
+              #preview
+              frameborder="0"
+              class="h-full flex-grow"
+              [src]="previewUrl()"
+              (load)="onLoaded()"
+              [attr.title]="'preview.documentPreview' | transloco"
+              [attr.aria-label]="'preview.documentPreview' | transloco"></iframe>
+          </section>
+        } @else if (previewUrlError()) {
+          <section class="flex h-full w-full items-center justify-center">
+            <p class="text-center text-xl">
+              <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
+              {{ 'previewUnavailable' | transloco }}
+            </p>
+          </section>
+        }
+      </div>
+    </div>
   }
 </div>

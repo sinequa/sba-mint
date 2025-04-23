@@ -2,7 +2,7 @@ import { Data, Route } from '@angular/router';
 
 import { AuthGuard, ErrorComponent, InitializationGuard, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
 
-import { AssistantLayoutComponent } from './pages/assistant/layout';
+import { AssistantLayoutComponent } from './pages/assistant/assistant.layout';
 import { BookmarksComponent } from './pages/widgets/bookmarks/bookmarks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RecentSearchesComponent } from './pages/widgets/recent-searches/recent-searches.component';
@@ -29,7 +29,7 @@ export const routes: ExtendedRoutes = [
   { path: 'logout', component: SignInComponent },
   {
     path: 'assistant',
-    loadComponent: () => import('./pages/assistant/layout').then(m => m.AssistantLayoutComponent),
+    loadComponent: () => import('./pages/assistant/assistant.layout').then(m => m.AssistantLayoutComponent),
     canActivate: [AuthGuard(), InitializationGuard()],
     resolve: { queryName: queryNameResolver }
   },

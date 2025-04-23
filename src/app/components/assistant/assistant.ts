@@ -14,8 +14,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HubConnection } from '@microsoft/signalr';
-import { catchError, of } from 'rxjs';
 import { getState } from '@ngrx/signals';
+import { catchError, of } from 'rxjs';
 
 import { Query as Q } from '@sinequa/core/app-utils';
 
@@ -63,6 +63,7 @@ type AssistantMode = 'prompt' | 'query';
   `,
   styleUrl: './assistant.css',
   host: {
+    class: 'block relative',
     '[attr.no-progress]': 'noProgress'
   },
   encapsulation: ViewEncapsulation.None
@@ -127,18 +128,7 @@ export class AssistantComponent {
     });
 
     effect(() => {
-      // each time the selection store changes, we need to update the attached IDs
-      const { assistantIdsToAttach } = getState(this.selectionStore);
-      this.attachToChat(assistantIdsToAttach);
-    });
-
-    afterNextRender(() => {
-      // ATTENTION: takeUntilDestroyed works only in the context of a component
-      // that's why we need to use a reference of the DestroyRef class here
-
-      // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
-      const { assistantIdsToAttach } = getState(this.selectionStore);
-      this.attachToChat(assistantIdsToAttach);
+      if (this.sqChat() === undefined) return;
 
       this.sqChat()
         ?.chatService?.streaming$.pipe(
@@ -164,6 +154,21 @@ export class AssistantComponent {
         .subscribe({
           next: value => this.onReady.emit(value)
         });
+    });
+
+    effect(() => {
+      // each time the selection store changes, we need to update the attached IDs
+      const { assistantIdsToAttach } = getState(this.selectionStore);
+      this.attachToChat(assistantIdsToAttach);
+    });
+
+    afterNextRender(() => {
+      // ATTENTION: takeUntilDestroyed works only in the context of a component
+      // that's why we need to use a reference of the DestroyRef class here
+
+      // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
+      const { assistantIdsToAttach } = getState(this.selectionStore);
+      this.attachToChat(assistantIdsToAttach);
     });
   }
 

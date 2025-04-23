@@ -1,12 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, effect, signal, Type } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { CCApp, Query, Result } from '@sinequa/atomic';
 import {
   DidYouMeanComponent,
-  ExportDialog,
   FiltersBarComponent,
   InfinityScrollDirective,
   NavbarTabsComponent,
@@ -30,7 +28,6 @@ type R = Result & { nextPage?: number; previousPage?: number };
 @Component({
   selector: 'app-search-all',
   imports: [
-    TranslocoPipe,
     NgComponentOutlet,
     RecordCardSkeleton,
     SortSelectorComponent,
@@ -42,7 +39,6 @@ type R = Result & { nextPage?: number; previousPage?: number };
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
-    ExportDialog,
     AssistantComponent
   ],
   templateUrl: './search-all.component.html',

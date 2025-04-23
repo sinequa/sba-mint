@@ -5,38 +5,37 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, AppStore, SelectionStore } from '@sinequa/atomic-angular';
+import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
-import { PageHeaderComponent } from '@sinequa/ui';
+import { cn, PageHeaderComponent } from '@sinequa/ui';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
   imports: [AssistantComponent, SavedChatsComponent, AggregationComponent, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar />
-    <PageHeader class="z-1 ml-8 bg-white">
+    <app-sidebar class="fixed top-0 h-full" />
+    <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
-    <div class="assistant-container ml-18 flex h-full">
-      <div class="flex w-1/4 flex-col p-4">
+    <div class="assistant-container mt-[65px] ml-18 flex h-full">
+      <div [class]="cn('flex w-1/4 flex-col p-4 transition duration-300 ease-in-out', opened() ? 'z-[-1] -translate-x-full' : 'translate-x-0')">
         @if (showSavedChats()) {
-          <div class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
+          <section class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <h3 class="text-lg font-bold">Saved Chats</h3>
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
-          </div>
+          </section>
         }
         <section class="pt-6">
           <Aggregation name="Treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
       </div>
-      <div class="w-3/4 p-4">
-        <div class="m-auto h-full w-3xl rounded-2xl border border-orange-200 bg-orange-50 px-4 pb-4 shadow">
-          <Assistant class="h-full overflow-auto" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
-        </div>
+      <div [class]="cn('w-3/4 p-4 transition duration-300 ease-in-out', opened() ? '-translate-x-[35%]' : 'translate-x-0')">
+        <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
   `,
@@ -45,16 +44,16 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
       :host {
         display: flex;
         flex-direction: column;
-        height: 100%;
       }
     `
-  ],
-  host: {
-    class: 'bg-neutral-50 transition-all duration-300 ease-in-out'
-  }
+  ]
 })
 export class AssistantLayoutComponent {
+  cn = cn;
   chat = viewChild(AssistantComponent);
+
+  drawerStackService = inject(DrawerStackService);
+  opened = toSignal(this.drawerStackService.isOpened);
 
   private readonly appStore = inject(AppStore);
   private readonly aggregationStore = inject(AggregationsStore);

@@ -2,8 +2,7 @@
 @import 'tailwindcss';
 /* css overrides */
 @import './css-overrides/angular-cdk';
-@import './css-overrides/bootstrap';
-@import './css-overrides/chat-v3';
+@import './css-overrides/bootstrap-to-tailwind';
 @import './css-overrides/saved-chat-v3';
 @import './css-overrides/collapse';
 
@@ -169,7 +168,12 @@ body {
   }
 }
 
-/* drawer stack */
+/* drawer stack and drawer preview */
+app-drawer-preview {
+  /* removes the "important!" when the position: obsolute will be removed from the component */
+  position: fixed !important;
+  top: 0;
+}
 app-drawer:has(+ app-drawer) {
   transform: translateX(-5px);
 }

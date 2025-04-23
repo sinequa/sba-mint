@@ -77,12 +77,12 @@ export class PreviewDefaultComponent {
   readonly canLoadIframe = signal<boolean>(false);
   readonly previewUrlError = signal<boolean>(false);
   readonly loading = signal<boolean>(false);
+  readonly activeTab = signal<'summary' | 'preview'>('preview');
 
   appStore = inject(AppStore);
   applicationStore = inject(ApplicationStore);
 
   isStreaming = signal<boolean>(false);
-  assistantCollapsed = signal<boolean>(true);
   showAssistant = signal<boolean>(false);
 
   displaySummary = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
@@ -122,6 +122,10 @@ export class PreviewDefaultComponent {
         this.loading.set(false);
       }
     });
+
+    effect(() => {
+      document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
+    });
   }
 
   /**
@@ -149,5 +153,9 @@ export class PreviewDefaultComponent {
   onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
+  }
+
+  handleStreaming(isStreaming: boolean) {
+    this.isStreaming.set(isStreaming);
   }
 }
