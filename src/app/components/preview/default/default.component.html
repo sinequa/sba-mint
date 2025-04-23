@@ -10,8 +10,8 @@
           </p>
         </a>
 
-        <button title="Collapse preview header" (click)="headerCollapsed.set(!headerCollapsed())">
-          <i class="fa-fw fa-regular fa-chevron-up" [ngClass]="{ 'rotate-180': headerCollapsed() }"></i>
+        <button title="Collapse preview header" [ngClass]="{ 'rotate-180': headerCollapsed() }" (click)="headerCollapsed.set(!headerCollapsed())">
+          <i class="fa-fw fa-regular fa-chevron-up"></i>
         </button>
       </header>
 
