@@ -23,7 +23,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
     <div class="assistant-container mt-[65px] ml-18 flex h-full">
-      <div [class]="cn('flex w-1/4 flex-col p-4 transition duration-300 ease-in-out', opened() ? 'z-[-1] -translate-x-full' : 'translate-x-0')">
+      <div
+        [class]="
+          cn('flex w-1/4 flex-col p-4 transition duration-300 ease-in-out', opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100')
+        ">
         @if (showSavedChats()) {
           <section class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <h3 class="text-lg font-bold">Saved Chats</h3>
@@ -34,7 +37,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <Aggregation name="Treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
       </div>
-      <div [class]="cn('w-3/4 p-4 transition duration-300 ease-in-out', opened() ? '-translate-x-[35%]' : 'translate-x-0')">
+      <div [class]="cn('p-4 transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'w-3/4 translate-x-0')">
         <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
