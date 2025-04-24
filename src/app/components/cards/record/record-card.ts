@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -8,6 +9,7 @@ import {
   AppStore,
   BookmarkButtonComponent,
   CollectionsDialog,
+  DrawerStackService,
   LabelsEditComponent,
   LabelService,
   MetadataComponent,
@@ -94,6 +96,7 @@ export class RecordCard implements OnDestroy {
   searchService = inject(SearchService);
   labelService = inject(LabelService);
   previewService = inject(PreviewService);
+  drawerStack = inject(DrawerStackService);
 
   readonly editLabelsDialog = viewChild(LabelsEditComponent);
   readonly addToCollectionDialog = viewChild(CollectionsDialog);
@@ -126,6 +129,12 @@ export class RecordCard implements OnDestroy {
   });
 
   protected hasLabelsAccess = computed(() => this.applicationStore.hasLabelsAccess() || false);
+
+  readonly drawerOpened = signal(false);
+
+  constructor() {
+    this.drawerStack.isOpened.pipe(takeUntilDestroyed()).subscribe(state => this.drawerOpened.set(state));
+  }
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
