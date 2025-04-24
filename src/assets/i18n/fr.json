@@ -88,5 +88,9 @@
   "Sizes": "Tailles",
   "bookmark": "Marque-page",
   "recent-search": "Recherche récente",
-  "saved-search": "Recherche enregistrée"
+  "saved-search": "Recherche enregistrée",
+  "assistant": {
+    "saved-chats": "Discussions enregistrées",
+    "new-discussion": "Nouvelle discussion"
+  }
 }

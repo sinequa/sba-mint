@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
@@ -15,6 +15,7 @@ export class AppSidebarComponent {
   private readonly appStore = inject(AppStore);
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly router = inject(Router);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 
@@ -23,7 +24,12 @@ export class AppSidebarComponent {
     return `${name}-standalone-assistant`;
   });
 
-  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  // Updated allowAI computed signal
+  protected readonly allowAI = computed(() => {
+    const hasConfig = !!this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id'];
+    const isNotAssistantRoute = this.router.url !== '/assistant';
+    return hasConfig && isNotAssistantRoute;
+  });
 
   openHelp() {
     const url = getHelpIndexUrl(this.transloco.getActiveLang(), {

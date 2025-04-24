@@ -88,5 +88,9 @@
   "Sizes": "Sizes",
   "bookmark": "Bookmark",
   "recent-search": "Recent searches",
-  "saved-search": "Saved searches"
+  "saved-search": "Saved searches",
+  "assistant": {
+    "saved-chats": "Saved chats",
+    "new-discussion": "New discussion"
+  }
 }

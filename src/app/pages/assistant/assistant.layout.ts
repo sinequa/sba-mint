@@ -1,24 +1,41 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
+import { cn, PageHeaderComponent, SidebarItemComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
-import { cn, PageHeaderComponent } from '@sinequa/ui';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  imports: [AssistantComponent, SavedChatsComponent, AggregationComponent, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
+  imports: [
+    TranslocoPipe,
+    AssistantComponent,
+    SavedChatsComponent,
+    AggregationComponent,
+    PageHeaderComponent,
+    NavbarComponent,
+    AppSidebarComponent,
+    SidebarItemComponent
+  ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar class="fixed top-0 h-full" />
+    <app-sidebar class="fixed top-0 h-full">
+      <sidebar-item
+        class="mb-2"
+        [title]="'assistant.new-discussion' | transloco"
+        [attr.aria-label]="'assistant.new-discussion' | transloco"
+        (click)="chat()?.newChat()">
+        <i class="far fa-comment-dots"></i>
+      </sidebar-item>
+    </app-sidebar>
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
@@ -29,7 +46,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
         ">
         @if (showSavedChats()) {
           <section class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
-            <h3 class="text-lg font-bold">Saved Chats</h3>
+            <h3 class="text-lg font-bold">
+              <i class="far fa-comments me-1"></i>
+              {{ 'assistant.saved-chats' | transloco }}
+            </h3>
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
           </section>
         }
