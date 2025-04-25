@@ -1,5 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, effect, signal, Type } from '@angular/core';
+import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
 
 import { CCApp, Query, Result } from '@sinequa/atomic';
@@ -62,8 +63,30 @@ type R = Result & { nextPage?: number; previousPage?: number };
 export class SearchAllComponent extends SearchBase<R> {
   cn = cn;
 
+  /**
+   * Signal indicating whether streaming is currently active.
+   *
+   * @type {Signal<boolean>}
+   * - `true`: Streaming is active.
+   * - `false`: Streaming is inactive.
+   */
   isStreaming = signal<boolean>(false);
+  /**
+   * Signal to control the visibility of the assistant.
+   *
+   * When set to `true`, the assistant is hidden. When set to `false`, the assistant is visible.
+   */
   hideAssistant = signal(true);
+
+  /**
+   * Computes the placement of an element based on the state of the drawer.
+   * If the drawer is open, the placement is set to 'bottom-end'; otherwise, it is set to 'bottom-start'.
+   *
+   * This coomputed property is used to determine the position of the sort-selector component in the UI.
+   *
+   * @returns The computed placement value of type `Placement`.
+   */
+  position = computed<Placement>(() => (this.drawerOpened() ? 'bottom-end' : 'bottom-start'));
 
   // ast-vanillAI-search-results-assistant
   readonly instanceId = computed(() => {

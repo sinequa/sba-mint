@@ -76,7 +76,7 @@
 
       <!-- sort selector and export button -->
       <div class="mt-4 flex justify-end gap-1 has-[_+ul>li.no-records]:hidden">
-        <sort-selector [result]="result()!" (onSort)="onSort($event)" />
+        <sort-selector [result]="result()!" [position]="position()" (onSort)="onSort($event)" />
       </div>
 
       <!-- display all records -->

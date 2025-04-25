@@ -39,17 +39,21 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
-    <div class="assistant-container mt-[65px] ml-18 flex h-full">
+    <div class="mt-[65px] ml-18 flex h-full">
       <div
         [class]="
-          cn('flex w-1/4 flex-col p-4 transition duration-300 ease-in-out', opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100')
+          cn(
+            'sticky top-[66px] hidden h-full w-1/4 p-4 transition duration-300 ease-in-out lg:block',
+            opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
+          )
         ">
         @if (showSavedChats()) {
-          <section class="h-1/2 rounded-2xl border border-gray-200 bg-white p-4 shadow">
+          <section class="h-[300px] rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <h3 class="text-lg font-bold">
               <i class="far fa-comments me-1"></i>
               {{ 'assistant.saved-chats' | transloco }}
             </h3>
+            <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
           </section>
         }
@@ -57,7 +61,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
           <Aggregation name="Treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
       </div>
-      <div [class]="cn('p-4 transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'w-3/4 translate-x-0')">
+      <div [class]="cn('transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'w-3/4 translate-x-0')">
         <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>

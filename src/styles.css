@@ -31,12 +31,6 @@ body {
 
   --text-xxs: 0.625rem;
 
-  --zindex-filter: 100;
-  --zindex-backdrop: 1000;
-  --zindex-drawer: 2000;
-  --zindex-drawer-chat: 2500;
-  --zindex-tooltip: 3000;
-
   --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
 
   --logo-small: url('assets/logo/small.svg');
@@ -100,29 +94,19 @@ body {
   z-index: --value(--zindex- *, integer, [integer]);
 }
 
-@layer utilities {
-  .scroll-stable {
-    scrollbar-gutter: stable;
-  }
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-  .bg-backdrop {
-    background-color: var(--color-backdrop);
-  }
-  .break-word {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
-  }
-}
-
 @layer base {
   :root {
     --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
     --backdrop: rgba(0, 0, 0, 0.4);
     --backdrop-filter: blur(2px);
     --cdk-z-index-overlay: 5000;
+
+    /* z-indexes */
+    --z-menu: 100;
+    --z-popover: 100;
+    --z-dropdown: 100;
+    --z-drawer: 2000;
+    --z-backdrop: 1000;
   }
 
   /* manage the backdrop with dialogs */
@@ -165,6 +149,23 @@ body {
     &[drawer-opened='true'] {
       grid-template-columns: 4% 24% 25% 48%;
     }
+  }
+}
+
+@layer utilities {
+  .scroll-stable {
+    scrollbar-gutter: stable;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .bg-backdrop {
+    background-color: var(--color-backdrop);
+  }
+  .break-word {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
   }
 }
 
