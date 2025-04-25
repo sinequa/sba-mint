@@ -31,8 +31,8 @@ import { AppSidebarComponent } from '../../../components/sidebar/sidebar.compone
 
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
-        <h1 class="mt-6 mb-4 flex gap-2 text-2xl font-semibold">
-          <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
+        <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+          <i class="fa-fw fas fa-inbox" aria-hidden></i>
           {{ 'myCollections' | transloco }}
         </h1>
 
