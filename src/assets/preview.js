@@ -3,7 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var parentOrigin = '*';
   var styleElement;
 
+  // frameset cause an issue here
   var r = document.querySelector('body');
+  if (r === null) {
+    r = document.querySelector('frameset');
+  }
   var rs = getComputedStyle(r);
 
   var passageHighlighter;

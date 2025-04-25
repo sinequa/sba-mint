@@ -66,6 +66,12 @@
       </table>
     </section>
 
+    @if (loading()) {
+      <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+        <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
+      </section>
+    }
+
     <!-- Tab Navigation only if the "display summary is available " -->
     @if (displaySummary()) {
       <div class="flex gap-2 bg-white px-6">
@@ -105,11 +111,6 @@
       <!-- Preview Tab Content -->
       <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'preview'">
         <!-- Use hidden and absolute positioning -->
-        @if (loading()) {
-          <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-            <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
-          </section>
-        }
         @if (canLoadIframe()) {
           <section class="flex h-full flex-col gap-4 px-6 py-4">
             <preview-actions class="flex justify-end" />

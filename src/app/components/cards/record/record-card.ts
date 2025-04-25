@@ -25,6 +25,7 @@ import {
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
 import {
+  BadgeComponent,
   ButtonComponent,
   CardComponent,
   CardContentComponent,
@@ -47,6 +48,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'record-card, recordcard, RecordCard',
   imports: [
+    BadgeComponent,
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
