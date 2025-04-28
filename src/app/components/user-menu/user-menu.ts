@@ -72,9 +72,6 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
-  // used to hide the logout button when using SSO
-  useCredentials = globalConfig.useCredentials;
-
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);
 

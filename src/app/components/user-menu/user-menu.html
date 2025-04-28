@@ -57,12 +57,10 @@
       <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
     </menuitem>
 
-    @if(useCredentials) {
     <menuitem (click)="handleLogout()">
       <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
       <span class="grow">{{ 'logout' | transloco }} {{ user().fullName || user().name }}</span>
     </menuitem>
-    }
   </MenuContent>
 </menu>
 
