@@ -10,14 +10,16 @@
     </AvatarFallback>
   </Avatar>
 
-  <MenuContent position="bottom-start" class="min-w-fit">
-    <menu position="left-start" className="dropdown-content max-w-40">
+  <!-- min-w-max used to display all the content -->
+  <MenuContent position="bottom-start" class="min-w-max">
+    <menu position="left-start" class="dropdown-content">
       <menuitem>
         <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
         <ChevronRight class="size-4" />
       </menuitem>
 
-      <MenuContent position="left-start" class="max-w-40">
+      <!-- max with to fit content but min width is 10rem (160px) -->
+      <MenuContent position="left-start" class="max-w-fit min-w-40">
         <menuitem (click)="changeLanguage('en')" class="justify-between">
           <span>{{ 'userMenu.english' | transloco }}</span>
           <FlagEnglish class="size-4" />
