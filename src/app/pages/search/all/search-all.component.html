@@ -29,17 +29,11 @@
       </ul>
     } @else if (query.isSuccess() && hasRowCount()) {
       <!-- if results have been found -->
-      <filters-bar class="z-filter relative flex gap-2 bg-gradient-to-b from-white from-80% pt-4 pb-4" />
+      <filters-bar class="pt-4 pb-4" />
 
       <!-- if assistant is allowed -->
       @if (allowAI()) {
-        <div
-          [class]="
-            cn(
-              'rounded-md border border-orange-100 p-2',
-              assistantCollapsed() && 'collapsed max-h-[80px] overflow-hidden bg-gradient-to-b from-orange-50 to-orange-100'
-            )
-          ">
+        <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-[80px] overflow-hidden bg-orange-50')">
           <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
             <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
               @if (isStreaming()) {
@@ -60,12 +54,13 @@
             </button>
           </h2>
           @if (showAssistant()) {
-            <assistant
-              [class]="cn('h-96', assistantCollapsed() && 'hidden')"
-              mode="query"
-              [showAssistant]="showAssistant()"
-              [instanceId]="instanceId()"
-              (isStreaming)="isStreaming.set($event)" />
+            <div class="max-h-96 overflow-y-auto">
+              <assistant
+                [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
+                [showAssistant]="showAssistant()"
+                [instanceId]="instanceId()"
+                (isStreaming)="isStreaming.set($event)" />
+            </div>
           }
         </div>
       }

@@ -30,8 +30,9 @@ import {
   SuggestedAction
 } from '@sinequa/assistant/chat';
 
-import { Article } from '@sinequa/atomic';
+import { Article, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { cn } from '@sinequa/ui';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -41,9 +42,9 @@ type AssistantMode = 'prompt' | 'query';
   template: `
     @if (isChatInitialized() || showAssistant()) {
       <sq-chat-v3
-        class="block h-full w-full"
+        [class]="class()"
         #sqChat
-        [query]="query"
+        [query]="_query"
         [chat]="initChat"
         [instanceId]="instanceId()!"
         (openPreview)="handlePreview($event)"
@@ -51,6 +52,7 @@ type AssistantMode = 'prompt' | 'query';
         (config)="getChatConfig($event)"
         (connection)="onConnection.emit($event)"
         [messageHandlers]="messageHandlers()" />
+
       <ng-template #sqChatSettings>
         <sq-chat-settings-v3
           [style.--ast-chat-settings-width]="'570px'"
@@ -63,36 +65,34 @@ type AssistantMode = 'prompt' | 'query';
   `,
   styleUrl: './assistant.css',
   host: {
-    class: 'block relative',
     '[attr.no-progress]': 'noProgress'
   },
   encapsulation: ViewEncapsulation.None
 })
 export class AssistantComponent {
+  cn = cn;
   sqChat = viewChild(ChatComponent);
-
-  // used to initialize the chat when the user clicks on the Ask AI button or when the component is created without "question"
-  isChatInitialized = signal<boolean | undefined>(undefined);
-  // Used to initialize the chat unconditionally
-  showAssistant = input<boolean | undefined>(false);
 
   // Inject services
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
 
-  // If we use the component without inputs, we need to initialize the default values using computed()
-  // This is because the input() function is not called when the component is used without inputs
-  _mode = input<AssistantMode>('prompt', { alias: 'mode' });
+  class = input<string>('');
+  // Used to initialize the chat unconditionally
+  showAssistant = input<boolean | undefined>(false);
   instanceId = input<string>();
+
+  showProgress = input<boolean>(false);
+  messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());
 
   isStreaming = output<boolean>();
   configOutput = output<ChatConfig | undefined>();
   onConnection = output<HubConnection>();
   onReady = output<boolean>();
 
-  showProgress = input<boolean>(false);
-  messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());
+  // used to initialize the chat when the user clicks on the Ask AI button or when the component is created without "question"
+  isChatInitialized = signal<boolean | undefined>(undefined);
 
   open = signal(false);
 
@@ -108,7 +108,8 @@ export class AssistantComponent {
 
   // used to cronstruct a valid query object used by the sqChat component
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
-  query = new Q(this.defaultQueryName());
+  _query = new Q(this.defaultQueryName());
+  query = input<Query>();
 
   // mandatory to refresh the sqChat component when the query changes manually
   cdr = inject(ChangeDetectorRef);
@@ -123,8 +124,12 @@ export class AssistantComponent {
       // each time the query params store changes, we need to update the query object
       if (this.instanceId() === undefined) return;
 
-      const q = this.queryParamsStore.getQuery();
-      this.query = { ...this.query, ...q } as Q;
+      if (!this.query()) {
+        const q = this.queryParamsStore.getQuery();
+        this._query = { ...this._query, ...q } as Q;
+      } else {
+        this._query = { ...this._query, ...this.query() } as Q;
+      }
     });
 
     effect(() => {
