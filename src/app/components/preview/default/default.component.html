@@ -105,7 +105,12 @@
       <!-- Added relative positioning -->
       <!-- Summary Tab Content -->
       <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'summary'">
-        <assistant [instanceId]="instanceId()" [showAssistant]="showAssistant()" (isStreaming)="handleStreaming($event)" class="flex-grow" />
+        <assistant
+          [instanceId]="instanceId()"
+          [query]="miniPreviewQuery"
+          [showAssistant]="showAssistant()"
+          (isStreaming)="handleStreaming($event)"
+          class="flex-grow" />
       </div>
 
       <!-- Preview Tab Content -->

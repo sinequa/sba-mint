@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article as A, CCApp, LegacyFilter, PreviewData } from '@sinequa/atomic';
+import { Article as A, CCApp, LegacyFilter, PreviewData, Query } from '@sinequa/atomic';
 import {
   ApplicationStore,
   AppStore,
@@ -92,6 +92,8 @@ export class PreviewDefaultComponent {
     return `${name}-mini-preview-assistant`;
   });
 
+  miniPreviewQuery: Query = {} as Query;
+
   constructor() {
     effect(() => {
       if (!this.iframe()) return;
@@ -104,6 +106,14 @@ export class PreviewDefaultComponent {
 
       this.cdr.detectChanges();
       this.previewService.setPreviewData(this.previewData());
+
+      // create a new query for the mini preview assistant
+      const { record } = this.previewData();
+      this.miniPreviewQuery = {
+        name: this.appStore.getDefaultQuery()?.name || '_query',
+        text: record.title,
+        filters: { field: 'id', value: record.id, operator: 'eq' }
+      };
     });
 
     effect(async () => {
