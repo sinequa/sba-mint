@@ -146,28 +146,171 @@ deleteSavedSearch(index: number): void
 
 ### updateSavedSearches()
 
-Updates the user's saved searches in the store and optionally logs audit events.
+Updates the user's saved searches in the store.
 
 ```typescript
-updateSavedSearches(savedSearches: UserSettings['savedSearches'], auditEvents?: AuditEvents): void
+updateSavedSearches(savedSearches: UserSettings['savedSearches']): void
 ```
 
 | Parameter    | Type                              | Description                                      |
 |--------------|-----------------------------------|--------------------------------------------------|
 | savedSearches  | `UserSettings['savedSearches']`       | The new saved searches to be updated in the store.    |
-| auditEvents| `AuditEvents`         | Optional. Events to be logged for auditing purposes.       |
+
+
+## Baskets features
+
+### deleteBasket()
+
+Deletes a basket from the user's baskets list.
+
+```typescript
+deleteBasket(index: number): void
+```
+
+| Parameter | Type     | Description                           |
+|-----------|----------|---------------------------------------|
+| index      | `number` | The index of the basket to delete.|
+
+### createBasket()
+
+Adds a basket to the user's baskets list.
+
+```typescript
+createBasket(basket: Basket): void
+```
+
+| Parameter | Type     | Description                           |
+|-----------|----------|---------------------------------------|
+| basket      | `Basket` | The basket to add in the user's baskets list.|
+
+### updateBaskets()
+
+Updates the user's baskets in the store.
+
+```typescript
+updateBaskets(baskets: UserSettings['baskets']): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| baskets  | `UserSettings['baskets']`       | The new baskets to be updated in the store.    |
+
+### updateBasket()
+
+Updates the basket at a specific index.
+
+```typescript
+updateBasket(basket: Basket, index: number): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| basket  | `Basket`       | The updated basket data.    |
+| index  | `number`       | The index of the basket to update.    |
+
+### addToBasket()
+
+Adds one or multiple records' id into a basket.
+
+```typescript
+addToBasket(name: string, ids: string | string[]): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| name  | `string`       | The basket name.    |
+| ids  | `string` or `string[]`       | The id(s) to add to it.    |
+
+### removeFromBasket()
+
+Adds one or multiple records' id from a basket.
+
+```typescript
+removeFromBasket(name: string, ids: string | string[]): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| name  | `string`       | The basket name.    |
+| ids  | `string` or `string[]`       | The id(s) to remove from it.    |
+
+
+## Alerts features
+
+### deleteAlert()
+
+Deletes an alert from the user's alerts list.
+
+```typescript
+deleteAlert(index: number): void
+```
+
+| Parameter | Type     | Description                           |
+|-----------|----------|---------------------------------------|
+| index      | `number` | The index of the alert to delete.|
+
+### createAlert()
+
+Adds an alert to the user's alerts list.
+
+```typescript
+createAlert(alert: Alert): void
+```
+
+| Parameter | Type     | Description                           |
+|-----------|----------|---------------------------------------|
+| alert      | `Alert` | The alert to add in the user's alerts list.|
+
+### updateAlert()
+
+Updates the alert at a specific index.
+
+```typescript
+updateAlert(alert: Alert, index: number): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| alert  | `Alert`       | The updated alert data.    |
+| index  | `number`       | The index of the alert to update.    |
+
+### updateAlerts()
+
+Updates the user's alerts in the store.
+
+```typescript
+updateAlerts(alerts: Alert[]): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| alerts  | `Alert[]`       | The new alerts to be updated in the store.    |
+
 
 ## Assistant features
 
-### updateAssistant()
+### updateAssistantSettings()
 
-Updates the user's assistant settings in the store and optionally logs audit events.
+Updates the user's assistant settings in the store.
 
 ```typescript
-updateAssistant(assistant: UserSettings['assistant']): void
+updateAssistantSettings(assistantSettings: UserSettings['assistants']): void
 ```
 
 | Parameter    | Type                              | Description                                      |
 |--------------|-----------------------------------|--------------------------------------------------|
 | assistant  | `UserSettings['assistant']`       | The new assistant settings to be updated in the store.    |
+
+### updateLanguage()
+
+Update the user's language and optionally logs audit events.
+
+```typescript
+updateLanguage(language: UserSettings['language'], auditEvents?: AuditEvents): void
+```
+
+| Parameter    | Type                              | Description                                      |
+|--------------|-----------------------------------|--------------------------------------------------|
+| language  | `UserSettings['language']`       | The language to update with.    |
+| auditEvents  | `AuditEvents`       | Optional. Events to be logged for auditing purposes.    |
 

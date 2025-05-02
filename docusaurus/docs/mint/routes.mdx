@@ -6,13 +6,13 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 ## Customize Dynamic Routes
 The "Mint" application contains 2 main routes:
 
-| Path         | Description                                                                                                                                                     | Guard |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| **home**     | contains the latest searches<br/>allows performing a search<br/>allows viewing pinned documents                                                                 | yes   |
-| **search**   | allows performing searches                                                                                                                                      | yes   |
-| login/logout | are only useful if you want to manage specific login/logout states. They are not used here although the routes are accessible.                                  |       |
-| error        | is used in case an unexpected error occurs to prevent the application from being in an uncertain state.                                                         |       |
-| loading      | is used when the application is initializing to allow waiting while essential data is being loaded.                                                             |       |
+| Path           | Description                                                                                                                      | Guard |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------|-------|
+| `home`         | contains the latest searches<br/>allows performing a search<br/>allows viewing pinned documents                                  | yes   |
+| `search`       | allows performing searches                                                                                                       | yes   |
+| `login/logout` | are only useful if you want to manage specific login/logout states. They are not used here although the routes are accessible.   |       |
+| `error`        | is used in case an unexpected error occurs to prevent the application from being in an uncertain state.                          |       |
+| `loading`      | is used when the application is initializing to allow waiting while essential data is being loaded.                              |       |
 
 But it can contain much more according to your needs.
 
@@ -22,16 +22,16 @@ But this behavior can be changed as we will see later.
 :::
 
 :::note
-To add routes, simply modify the **app.routes.ts** file.
+To add routes, simply modify the `app.routes.ts` file.
 :::
 
-Some default routes are protected by "guards".
+Some default routes are protected by **guards**.
 These **guards** restrict access to routes:
-- if you are not authenticated **AuthGuard()**
-- if the application is not fully initialized **InitializationGuard()**
+- if you are not authenticated `AuthGuard()`
+- if the application is not fully initialized `InitializationGuard()`
 
 ### How does dynamic route generation work?
-Everything happens at the **app.component.ts** component level.
+Everything happens at the `app.component.ts` component level.
 
 ```ts title="app.component.ts"
 this.applicationService.autoLogin()
@@ -43,7 +43,7 @@ this.applicationService.autoLogin()
 	.catch((err) => { /* ... */ });
 ```
 
-The _autoLogin()_ function of the **Application** service dynamically constructs the **search** route if the authentication is successful, and only this part. All other routes you have added, except **search**, will not be affected.
+The `autoLogin()` function of the `Application` service dynamically constructs the **search** route if the authentication is successful, and only this part. All other routes you have added, except **search**, will not be affected.
 
 By default, the **search** route is as follows:
 ```ts title="app.route.ts"
@@ -73,7 +73,7 @@ If the file does not exist, you can simply create it, but it must **ABSOLUTELY**
 Correspondence between the fields of the Json configuration file and the Angular routes.
 
 | JSON configuration | Angular routes | Description                                                                                                                    |
-| ------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+|--------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------|
 | wsName             | queryName      | Query's name linked to this route. This parameter is usefull when you have multiples queries                                   |
 | wsQueryTab         | wsQueryTab     | The query tab title associated with the query.                                                                                 |
 | pathDisplayName    | display        | Text to display in the UI. When not set, the query's tab title is used if it's exists otherwise the route's path will be used. |
@@ -83,7 +83,7 @@ Correspondence between the fields of the Json configuration file and the Angular
 By default, "Mint" uses dynamic routes for the **search** part, however, if you wish, you can use your own route creation system or even use static routes.
 
 ### Disable Dynamic Creation
-The _autoLogin()_ function accepts a configuration parameter: `withCreateRoutes` which defaults to `true`. Once set to `false`, the application will use the routes you have defined in the **app.routes.ts** file.
+The `autoLogin()` function accepts a configuration parameter: `withCreateRoutes` which defaults to `true`. Once set to `false`, the application will use the routes you have defined in the `app.routes.ts` file.
 
 ```ts title="app.component.ts"
 this.applicationService.autoLogin({ withCreateRoutes: false })
@@ -100,22 +100,22 @@ You can also set up your own route creation system based on your own specificati
 :::
 
 :::warning
-Be careful, you must have valid routes previously defined in your **app.routes.ts** file. Otherwise, the application will not work properly.
+Be careful, you must have valid routes previously defined in your `app.routes.ts` file. Otherwise, the application will not work properly.
 :::
 
 Whether you use static routes or your own route creation method, you will need to provide each route with parameters so that they can be displayed correctly in the user interface.
 
 These parameters must be specified in the **data** part of your route.
 
-| Paramètre  | Description                                                                                               |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
+| Parameter  | Description                                                                                               |
+|------------|-----------------------------------------------------------------------------------------------------------|
 | queryName  | Name of a query set in the administration. If you don't specify anything, the default query will be used. |
 | display    | The label you want to display in the UI. If none, the path's label will be used.                          |
 | wsQueryTab | The name of the **tab** associated with the query you want to use.                                        |
 | icon       | The icon you want to associate with the label in the UI.                                                  |
 
 
-Exemple:
+Example:
 ```json title="app.route.ts"
 [
 	...
@@ -143,7 +143,7 @@ Of course, you can use any route name other than **search**.
 :::
 
 :::tip
-To automatically use the **query** defined by default in the Administration, you can use our resolver: **queryNameResolver**
+To automatically use the **query** defined by default in the Administration, you can use our resolver: `queryNameResolver`
 
  ```ts
  import { queryNameResolver } from "@sinequa/atomic-angular";
@@ -156,4 +156,3 @@ To automatically use the **query** defined by default in the Administration, you
 ```
 All children of the **search** route will automatically inherit the parent's `queryName`.
 :::
-

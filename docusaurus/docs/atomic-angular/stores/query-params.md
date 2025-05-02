@@ -21,6 +21,18 @@ setFromUrl(url: string): void
 | url       | string | The URL from which to extract params |
 
 
+### addFilter()
+
+Adds a filter to the store's state.
+
+```typescript
+addFilter(filter: LegacyFilter): void
+```
+
+| Parameter | Type         | Description          |
+|-----------|--------------|----------------------|
+| filter    | LegacyFilter | The filter to be added to the state |
+
 ### updateFilter()
 
 Updates the filter with the given value.
@@ -33,12 +45,44 @@ updateFilter(filter: LegacyFilter): void
 |-----------|--------------|----------------------|
 | filter    | LegacyFilter | The filter to update |
 
+### removeFilter()
+
+Removes a filter from the store based on the specified field.
+
+```typescript
+removeFilter(field?: string): void
+```
+
+| Parameter | Type         | Description          |
+|-----------|--------------|----------------------|
+| field    | string | The field of the filter to be removed |
+
+### removeFilterByName()
+
+Removes a filter from the state by its name.
+
+```typescript
+removeFilterByName(name?: string): void
+```
+
+| Parameter | Type         | Description          |
+|-----------|--------------|----------------------|
+| name    | string | The name of the filter to be removed |
+
 ### clearFilter()
 
 Clears the filter.
 
 ```typescript
 clearFilter(): void
+```
+
+### clearBasket()
+
+Clears the basket from the state.
+
+```typescript
+clearBasket(): void
 ```
 
 ### patch()
@@ -53,17 +97,17 @@ patch(params: Partial<QueryParams>): void
 |-----------|-------------------|----------------------|
 | params    | QueryParams | The params to patch |
 
-### getFilterFromColumn()
+### getFilter()
 
-Gets the filter from the column.
+Retrieves a filter object based on the provided field or name.
 
 ```typescript
-getFilterFromColumn(column: string): LegacyFilter | undefined
+getFilter(fieldOrName?: string): Partial<LegacyFilter & { count: number }> | null
 ```
 
 | Parameter | Type   | Description          |
 |-----------|--------|----------------------|
-| column    | string | The column to filter |
+| fieldOrName    | string | The field or name to search for in the filters |
 
 ### getQuery()
 

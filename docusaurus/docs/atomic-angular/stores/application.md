@@ -29,6 +29,18 @@ This function patches the current state of the store by setting the `ready` prop
 updateReadyState(): void
 ```
 
+### updateHasLabelsAccess()
+
+Updates the `hasLabelsAccess` property in the application store state.
+
+```typescript
+updateHasLabelsAccess(value: boolean = true): void
+```
+
+  | Parameter | Type     | Description                          |
+  |-----------|----------|--------------------------------------|
+  | value        | boolean   | A boolean value indicating whether the user has access to labels. Defaults to `true`.    |
+
 ## Extracts features
 
 ### extractsCount

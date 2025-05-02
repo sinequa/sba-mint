@@ -95,6 +95,37 @@ Available only in Sinequa 11.12+
 const json = inject(AppStore).filters;
 ```
 
+### general
+
+Get the general configuration object which allows to override the app title and the logos.
+
+:::caution
+Available only in Sinequa 11.12+
+:::
+
+```json
+{
+  "general": {
+    "name": "App Name",
+    "logo": {
+      "light": {
+        "small": "/assets/logo/small.png",
+        "large": "/assets/logo/large.png"
+      },
+      "dark": {
+        "small": "/assets/logo/small-dark.png",
+        "large": "/assets/logo/large-dark.png"
+      }
+    }
+  }
+}
+```
+
+#### Usage
+```ts
+const json = inject(AppStore).general;
+```
+
 ## Basic features
 
 ### initialize()
@@ -104,6 +135,18 @@ and updating the store with the retrieved data.
 
 ```ts	
 initialize(): void
+```
+
+:::warning
+This method must be called just after the login step because you need to be authenticated first.
+:::
+
+### initializeWithAppName()
+
+Initializes the application state with the provided app name.
+
+```ts	
+initializeWithAppName(appName: string): void
 ```
 
 :::warning
@@ -275,6 +318,79 @@ export class SomeComponent {
 }
 ```
 
+### getColumnAlias()
+
+Retrieves the alias for a given column name from the application's state.
+
+If the column has aliases defined, the first alias is returned. Otherwise, the original column name is returned.
+
+```ts	
+getColumnAlias(column: string): string
+```
+
+| parameter  | type   | description                                                        |
+|------------|--------|--------------------------------------------------------------------|
+| column  | string | The name of the column for which to retrieve the alias. |
+
+#### Usage
+```ts title="some-component.ts"
+@Component({ ... })
+export class SomeComponent {
+  
+  columnAlias: string = inject(AppStore).getColumnAlias('column');
+  // returns a string of the column alias or its original column name if not defined.
+}
+```
+
+### getColumn()
+
+Retrieves a column definition from the application's state schema by its name.
+
+```ts	
+getColumn(column: string): CCColumn | undefined
+```
+
+| parameter  | type   | description                                                        |
+|------------|--------|--------------------------------------------------------------------|
+| column  | string | The name of the column to retrieve. |
+
+#### Usage
+```ts title="some-component.ts"
+@Component({ ... })
+export class SomeComponent {
+  
+  column?: CCColumn = inject(AppStore).getColumn('column');
+  // returns, if found, the column definition from the application's state schema.
+}
+```
+
+### isDateColumn()
+
+Determines if the specified column is of a date-related type.
+
+This method checks if the column's type matches one of the following:
+- `EngineType.date`
+- `EngineType.dateTime`
+- `EngineType.time`
+
+```ts	
+isDateColumn(column: string): boolean
+```
+
+| parameter  | type   | description                                                        |
+|------------|--------|--------------------------------------------------------------------|
+| column  | string | The name of the column to check. |
+
+#### Usage
+```ts title="some-component.ts"
+@Component({ ... })
+export class SomeComponent {
+  
+  isDateColumn: boolean = inject(AppStore).isDateColumn('column');
+  // returns true if the column is of a date-related type; otherwise, false.
+}
+```
+
 ### getNamedCustomizationJson()
 
 Retrieves the customization json by name
@@ -300,6 +416,30 @@ const json = inject(AppStore).getNamedCustomizationJson("routes");
 ```
 
 ## Aggregations features
+### getAuthorizedFilters()
+
+Retrieves the sorted aggregations based on the query name included in the route data.
+
+```ts	
+getAuthorizedFilters(route: ActivatedRoute): Aggregation[]
+```
+
+| parameter  | type   | description                                                        |
+|------------|--------|--------------------------------------------------------------------|
+| route  | ActivatedRoute | The route including the query name to fetch the aggregations for. |
+
+#### Usage
+```ts title="some-component.ts"
+@Component({ ... })
+export class SomeComponent {
+  
+  route = inject(ActivatedRoute);
+
+  authorizedFilters: Aggregation[] = inject(AppStore).getAuthorizedFilters(this.route);
+  // returns an array of sorted aggregations.
+}
+```
+
 ### getAggregationIcon()
 
 Retrieves the icon associated with a given column's aggregation.
@@ -369,15 +509,15 @@ const items = inject(AppStore).getAggregationItemsCustomization("geo");
 
 Retrieves the customization for a specific aggregation column.
 
-Returns The customization object for the specified column, or undefined if not found.
+Returns the customization object for the specified column, or undefined if not found.
 
 ```ts	
-getAggregationCustomization(column: string): Aggregation | undefined
+getAggregationCustomization(column: string): CFilter | undefined
 ```
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| column  | string | he column name for which to retrieve the customization. |
+| column  | string | The column name for which to retrieve the customization. |
 
 ```ts title="get-aggregation-customization"
 // json Aggregation configuration extract

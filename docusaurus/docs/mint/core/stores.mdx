@@ -3,12 +3,12 @@ title: Stores
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Overview
+## Overview
 Angular applications generally rely on services for managing the state of components or the application.
 
-With "Mint", we have chosen to use **"signal stores"**.
+With "Mint", we have chosen to use `signal stores`.
 
-Overall, they behave the same as a standard Angular service, except here, the properties are **"signals"** (features provided by Angular 18).
+Overall, they behave the same as a standard Angular service, except here, the properties are `signals` (features provided by Angular 18).
 
 ## Schemas
 
@@ -23,9 +23,9 @@ A detailed description of the stores is available in the documentation related t
 
 ## Customize a store
 All stores can be extended so that you can add your own features to them.
-The store most likely to be modified is the **user-settings store**.
+The store most likely to be modified is the `user-settings store`.
 
-By default, this store contains all the useful functions to modify the **user-settings**.
+By default, this store contains all the useful functions to modify the user settings.
 But if you want to add your own features, here's how to do it:
 
 ### Step 1
@@ -53,18 +53,18 @@ export const MyUserSettingsStore = signalStore(
 	withBookmarkFeatures(),
 	withRecentSearchFeatures(),
 	withSavedSearchFeatures(),
-	withMetods((store) => {
+	withMethods((store) => {
 		/* put your code here */
 	})
 )
 ```
 line 9 indicates that this store will be accessible throughout the entire application.
-lines 2 to 5, import the existing _"features"_ from the original store. Feel free to import the features you want.
+lines 2 to 5, import the existing "features" from the original store. Feel free to import the features you want.
 line 10, determine the initial state of your "store".
 
 ### Step 3
 Inform the application to use your store instead of the original store when necessary.
-This operation is performed in the **app.config.ts** file in the "providers" section.
+This operation is performed in the `app.config.ts` file in the "providers" section.
 
 ```ts title="app.config.ts"
 import { UserSettingsStore } from "@sinequa/atomic-angular";
@@ -74,12 +74,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
 	  { provide: UserSettingsStore, useExisting: MyUserSettingsStore }
   ]
+}
 ```
 
-line 6, inform the application that when a component requests access to the original **UserSettingsStore**, it should be redirected to the new store: **MyUserSettingsStore**.
+line 6, inform the application that when a component requests access to the original `UserSettingsStore`, it should be redirected to the new store: `MyUserSettingsStore`.
 
 :::warning
-Be careful when using automatic imports by your IDE when you use the **user-settings** store to ensure that it is your store being imported.
+Be careful when using automatic imports by your IDE when you use the `user-settings` store to ensure that it is your store being imported.
 
 Normally, this should not have much impact thanks to the provider override done above.
 :::
