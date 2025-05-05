@@ -7,7 +7,7 @@ import { getState } from '@ngrx/signals';
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
-import { cn, PageHeaderComponent, SidebarItemComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -23,19 +23,11 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
     PageHeaderComponent,
     NavbarComponent,
     AppSidebarComponent,
-    SidebarItemComponent
+    ButtonComponent
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar class="fixed top-0 h-full">
-      <sidebar-item
-        class="mb-2"
-        [title]="'assistant.new-discussion' | transloco"
-        [attr.aria-label]="'assistant.new-discussion' | transloco"
-        (click)="chat()?.newChat()">
-        <i class="far fa-comment-dots"></i>
-      </sidebar-item>
-    </app-sidebar>
+    <app-sidebar class="fixed top-0 h-full"> </app-sidebar>
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
@@ -47,9 +39,21 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
             opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
           )
         ">
+        <button
+          class="mb-2 w-full justify-between"
+          [title]="'assistant.new-discussion' | transloco"
+          [attr.aria-label]="'assistant.new-discussion' | transloco"
+          (click)="chat()?.newChat()">
+          <span>
+            <i class="far fa-comment-medical"></i>
+            {{ 'assistant.new-discussion' | transloco }}
+          </span>
+          <i class="far fa-plus"></i>
+        </button>
+
         @if (showSavedChats()) {
-          <section class="h-[300px] rounded-2xl border border-gray-200 bg-white p-4 shadow">
-            <h3 class="text-lg font-bold">
+          <section class="h-64 max-h-64 rounded-2xl border border-gray-200 bg-white p-4 shadow">
+            <h3 class="text-sm font-semibold text-gray-600">
               <i class="far fa-comments me-1"></i>
               {{ 'assistant.saved-chats' | transloco }}
             </h3>
