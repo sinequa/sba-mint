@@ -4,7 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
 import { AppStore, PrincipalStore } from '@sinequa/atomic-angular';
-import { SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
+import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +12,7 @@ import { SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
   templateUrl: './sidebar.component.html'
 })
 export class AppSidebarComponent {
+  cn = cn;
   private readonly appStore = inject(AppStore);
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
@@ -26,9 +27,7 @@ export class AppSidebarComponent {
 
   // Updated allowAI computed signal
   protected readonly allowAI = computed(() => {
-    const hasConfig = !!this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id'];
-    const isNotAssistantRoute = this.router.url !== '/assistant';
-    return hasConfig && isNotAssistantRoute;
+    return !!this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id'];
   });
 
   openHelp() {

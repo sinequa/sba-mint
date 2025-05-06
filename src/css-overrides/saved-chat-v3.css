@@ -10,57 +10,23 @@ sq-saved-chats-v3 {
       background-color: white;
     }
   }
-}
 
-/* chat v3 modal overrides */
-sq-core-confirm,
-sq-core-prompt {
-  [cdktrapfocus] {
-    @apply rounded-2xl border-none! shadow-2xl;
-  }
+  /* chat v3 modal overrides */
+  /* center the modal in the screen */
+  dialog {
+    margin: auto;
 
-  h3 {
-    font-size: var(--text-lg);
-    line-height: var(--text-lg--line-height);
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
+    button {
+      cursor: pointer;
 
-  hr {
-    margin: 1rem 0;
-    color: var(--color-muted);
-  }
-
-  input {
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--color-muted);
-    border-radius: 4px;
-    width: 100%;
-    &:focus {
-      outline: none;
-      border-color: var(--color-primary);
-    }
-  }
-
-  button {
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-
-    background-color: transparent;
-    &:hover {
-      background-color: var(--color-muted);
-    }
-
-    &[type='submit'] {
-      float: left;
-      background-color: var(--color-primary);
-      color: var(--color-primary-foreground);
-      &:hover {
-        background-color: var(--color-primary-hover);
+      &.btn-danger {
+        /* make the delete button red */
+        background-color: var(--color-destructive);
+        color: white;
+        &:hover {
+          background-color: var(--color-destructive-hover);
+        }
       }
     }
-    cursor: pointer;
-    margin-right: 1rem;
   }
 }

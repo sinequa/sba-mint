@@ -17,8 +17,6 @@ import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 import { catchError, of } from 'rxjs';
 
-import { Query as Q } from '@sinequa/core/app-utils';
-
 import {
   ChatComponent,
   ChatConfig,
@@ -32,8 +30,6 @@ import {
 
 import { Article, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
-
-type AssistantMode = 'prompt' | 'query';
 
 @Component({
   selector: 'assistant, Assistant',
@@ -106,7 +102,7 @@ export class AssistantComponent {
 
   // used to cronstruct a valid query object used by the sqChat component
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
-  _query = new Q(this.defaultQueryName());
+  _query = { name: this.defaultQueryName() };
   query = input<Query>();
 
   // mandatory to refresh the sqChat component when the query changes manually
@@ -124,9 +120,9 @@ export class AssistantComponent {
 
       if (!this.query()) {
         const q = this.queryParamsStore.getQuery();
-        this._query = { ...this._query, ...q } as Q;
+        this._query = { ...this._query, ...q };
       } else {
-        this._query = { ...this._query, ...this.query() } as Q;
+        this._query = { ...this._query, ...this.query() };
       }
     });
 
