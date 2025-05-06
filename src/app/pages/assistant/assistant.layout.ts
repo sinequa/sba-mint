@@ -27,7 +27,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar class="fixed top-0 h-full"> </app-sidebar>
+    <app-sidebar class="fixed top-0 h-full" />
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>

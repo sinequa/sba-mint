@@ -33,7 +33,7 @@
 
       <!-- if assistant is allowed -->
       @if (allowAI()) {
-        <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-[80px] overflow-hidden bg-orange-50')">
+        <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-14 overflow-hidden bg-orange-50')">
           <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
             <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
               @if (isStreaming()) {
@@ -54,7 +54,7 @@
             </button>
           </h2>
           @if (showAssistant()) {
-            <div class="max-h-96 overflow-y-auto">
+            <div class="h-96">
               <assistant
                 [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
                 [showAssistant]="showAssistant()"

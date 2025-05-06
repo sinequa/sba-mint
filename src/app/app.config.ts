@@ -37,7 +37,6 @@ import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/search.layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
-import { sbaProviders } from './sba.config';
 import { TranslocoHttpLoader } from './transloco-loader';
 
 registerLocaleData(localeFr);
@@ -105,9 +104,6 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader
     }),
-    provideTranslocoMessageformat(),
-
-    // legacy providers from SBA dependencies
-    ...sbaProviders
+    provideTranslocoMessageformat()
   ]
 };

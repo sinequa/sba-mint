@@ -3,11 +3,9 @@
     <sidebar-item title="Search" [attr.aria-label]="'Search'" routerLink="/home">
       <i class="far fa-magnifying-glass"></i>
     </sidebar-item>
-    @if (allowAI()) {
-      <sidebar-item title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
-        <i class="far fa-comment"></i>
-      </sidebar-item>
-    }
+    <sidebar-item [class]="cn('invisible', allowAI() && 'visible')" title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
+      <i class="far fa-comment"></i>
+    </sidebar-item>
     <ng-content></ng-content>
   </div>
   @if (isAdmin()) {

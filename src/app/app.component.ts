@@ -1,14 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { NgxSonnerToaster } from 'ngx-sonner';
-
-/* TODO: to remove after v18 miggration */
-import { LoginService } from '@sinequa/core/login';
 
 import { CCApp, getHelpIndexUrl, globalConfig, isAuthenticated } from '@sinequa/atomic';
 import {
@@ -42,8 +38,6 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly title = inject(Title);
 
-  // SBA dependencies for the Assistant
-  private readonly loginService = inject(LoginService);
   private readonly applicationStore = inject(ApplicationStore);
   private readonly principalStore = inject(PrincipalStore);
 
@@ -88,15 +82,6 @@ export class AppComponent {
         }
       }
     }
-
-    // used to works with the old Sinequa login service and the Assistant component
-    // Maybe this can be removed in the future
-    this.loginService
-      .login()
-      .pipe(takeUntilDestroyed())
-      .subscribe(values => {
-        this.applicationStore.updateAssistantReady();
-      });
 
     effect(() => {
       const general = this.appStore.general();
