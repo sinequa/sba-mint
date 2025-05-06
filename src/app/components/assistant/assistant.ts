@@ -32,7 +32,6 @@ import {
 
 import { Article, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
 
 type AssistantMode = 'prompt' | 'query';
 
@@ -70,7 +69,6 @@ type AssistantMode = 'prompt' | 'query';
   encapsulation: ViewEncapsulation.None
 })
 export class AssistantComponent {
-  cn = cn;
   sqChat = viewChild(ChatComponent);
 
   // Inject services

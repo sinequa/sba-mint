@@ -39,24 +39,19 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
             opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
           )
         ">
-        <button
-          class="mb-2 w-full justify-between"
-          [title]="'assistant.new-discussion' | transloco"
-          [attr.aria-label]="'assistant.new-discussion' | transloco"
-          (click)="chat()?.newChat()">
-          <span>
-            <i class="far fa-comment-medical"></i>
-            {{ 'assistant.new-discussion' | transloco }}
-          </span>
-          <i class="far fa-plus"></i>
-        </button>
-
         @if (showSavedChats()) {
           <section class="h-64 max-h-64 rounded-2xl border border-gray-200 bg-white p-4 shadow">
-            <h3 class="text-sm font-semibold text-gray-600">
-              <i class="far fa-comments me-1"></i>
-              {{ 'assistant.saved-chats' | transloco }}
-            </h3>
+            <button
+              class="mb-2 w-full justify-between"
+              [title]="'assistant.new-discussion' | transloco"
+              [attr.aria-label]="'assistant.new-discussion' | transloco"
+              (click)="chat()?.newChat()">
+              <span>
+                <i class="far fa-comment-medical"></i>
+                {{ 'assistant.new-discussion' | transloco }}
+              </span>
+              <i class="far fa-plus"></i>
+            </button>
             <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
             <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
           </section>
