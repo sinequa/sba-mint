@@ -8,7 +8,7 @@ import {
   AppStore,
   BookmarkButtonComponent,
   CollectionsDialog,
-  LabelsEditComponent,
+  LabelsEditDialog,
   LabelService,
   MetadataComponent,
   MissingTermsComponent,
@@ -54,7 +54,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     MenuContentComponent,
     MenuItemComponent,
     TranslocoPipe,
-    LabelsEditComponent,
+    LabelsEditDialog,
     CollectionsDialog,
     MissingTermsComponent,
     MetadataComponent,
@@ -99,7 +99,7 @@ export class SlideCard implements OnDestroy {
   labelService = inject(LabelService);
   previewService = inject(PreviewService);
 
-  readonly editLabelsDialog = viewChild(LabelsEditComponent);
+  readonly editLabelsDialog = viewChild(LabelsEditDialog);
   readonly addToCollectionDialog = viewChild(CollectionsDialog);
 
   showBookmark = signal(false);
@@ -157,11 +157,11 @@ export class SlideCard implements OnDestroy {
   }
 
   editLabels(): void {
-    this.editLabelsDialog()?.showModal();
+    this.editLabelsDialog()?.open(this.article());
   }
 
   addToCollection(): void {
-    this.addToCollectionDialog()?.showModal();
+    this.addToCollectionDialog()?.open(this.article());
   }
 
   attachToAssistant(): void {

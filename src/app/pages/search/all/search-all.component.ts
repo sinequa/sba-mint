@@ -20,7 +20,7 @@ import { ButtonComponent, cn } from '@sinequa/ui';
 import { MessageHandler } from '@sinequa/assistant/chat';
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
-import { RecordCardSkeleton } from '../../../components/cards/record/record-card-skeleton';
+import { RecordSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { SearchBase } from '../search.abstract';
 
@@ -30,7 +30,7 @@ type R = Result & { nextPage?: number; previousPage?: number };
   selector: 'app-search-all',
   imports: [
     NgComponentOutlet,
-    RecordCardSkeleton,
+    RecordSkeleton,
     SortSelectorComponent,
     DidYouMeanComponent,
     InfinityScrollDirective,

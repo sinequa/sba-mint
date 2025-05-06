@@ -81,36 +81,33 @@ export class RecentSearchesComponent {
   readonly datePipe = inject(TranslocoDateImpurePipe);
 
   constructor() {
-    effect(
-      () => {
-        const recentSearches = this.userSettingsStore.recentSearches();
+    effect(() => {
+      const recentSearches = this.userSettingsStore.recentSearches();
 
-        untracked(() => {
-          const groupedByDay = recentSearches.reduce(
-            (acc, search) => {
-              const date = new Date(search.date).toISOString().split('T')[0];
+      untracked(() => {
+        const groupedByDay = recentSearches.reduce(
+          (acc, search) => {
+            const date = new Date(search.date).toISOString().split('T')[0];
 
-              if (!acc[date]) acc[date] = [];
+            if (!acc[date]) acc[date] = [];
 
-              acc[date].push(search);
+            acc[date].push(search);
 
-              // add filterCount on the fly
-              search.filterCount = countFilters(search.queryParams?.filters);
+            // add filterCount on the fly
+            search.filterCount = countFilters(search.queryParams?.filters);
 
-              if (search.queryParams?.filters) search.queryParams.filters = wrapFiltersToArray(search.queryParams.filters);
+            if (search.queryParams?.filters) search.queryParams.filters = wrapFiltersToArray(search.queryParams.filters);
 
-              return acc;
-            },
-            {} as Record<string, RecentSearch[]>
-          );
-          const sortedDates = Object.keys(groupedByDay).sort((a, b) => b.localeCompare(a));
-          const sortedGroupedByDay = sortedDates.map(date => ({ date, searches: groupedByDay[date] }));
+            return acc;
+          },
+          {} as Record<string, RecentSearch[]>
+        );
+        const sortedDates = Object.keys(groupedByDay).sort((a, b) => b.localeCompare(a));
+        const sortedGroupedByDay = sortedDates.map(date => ({ date, searches: groupedByDay[date] }));
 
-          this.history.set(sortedGroupedByDay);
-        });
-      },
-      { allowSignalWrites: true }
-    );
+        this.history.set(sortedGroupedByDay);
+      });
+    });
   }
 
   async remove(event: Event, search: RecentSearch) {

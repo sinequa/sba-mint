@@ -106,12 +106,9 @@ export class HomeComponent {
     });
 
     // react to tab changes
-    effect(
-      () => {
-        this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
+    });
 
     this.drawerStack.isOpened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(state => (this.drawerOpened = state));
 

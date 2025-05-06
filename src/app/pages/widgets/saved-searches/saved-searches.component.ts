@@ -40,28 +40,25 @@ export class SavedSearchesComponent {
   constructor() {
     this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
 
-    effect(
-      () => {
-        const savedSearches = this.savedSearchesService.getSavedSearches();
+    effect(() => {
+      const savedSearches = this.savedSearchesService.getSavedSearches();
 
-        this.savedSearches.set(
-          (savedSearches || []).reduce((acc, savedSearch) => {
-            const queryParams = getQueryParamsFromUrl(savedSearch.url);
+      this.savedSearches.set(
+        (savedSearches || []).reduce((acc, savedSearch) => {
+          const queryParams = getQueryParamsFromUrl(savedSearch.url);
 
-            acc.push(
-              Object.assign(savedSearch, {
-                label: queryParams?.text || '',
-                filterCount: queryParams?.filters?.length || 0,
-                queryParams
-              })
-            );
+          acc.push(
+            Object.assign(savedSearch, {
+              label: queryParams?.text || '',
+              filterCount: queryParams?.filters?.length || 0,
+              queryParams
+            })
+          );
 
-            return acc;
-          }, [] as SavedSearch[])
-        );
-      },
-      { allowSignalWrites: true }
-    );
+          return acc;
+        }, [] as SavedSearch[])
+      );
+    });
   }
 
   public onClick(savedSearch: SavedSearch): void {

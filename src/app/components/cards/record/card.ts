@@ -1,17 +1,10 @@
-import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, input, model, OnDestroy, signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article, LegacyFilter } from '@sinequa/atomic';
+import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import {
-  ApplicationStore,
-  AppStore,
   BookmarkButtonComponent,
-  CollectionsDialog,
-  DrawerStackService,
-  LabelsEditComponent,
-  LabelService,
   MetadataComponent,
   MissingTermsComponent,
   PreviewService,
@@ -24,23 +17,19 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import {
-  BadgeComponent,
-  ButtonComponent,
-  CardComponent,
-  CardContentComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent
-} from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+
+import { RecordMenuComponent } from './menu';
 
 type Tab = 'attachments' | 'similars';
 
 type CustomMetadata = {
-  field: string;
+  fields: string[];
   title?: string;
+};
+
+type Article = A & {
+  [key: string]: any;
 };
 
 const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
@@ -52,21 +41,16 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
-    ButtonComponent,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
     TranslocoPipe,
-    LabelsEditComponent,
-    CollectionsDialog,
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    CardFooterComponent
+    CardFooterComponent,
+    RecordMenuComponent
   ],
-  templateUrl: './record-card.html',
+  templateUrl: './card.html',
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -80,28 +64,20 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   providers: [provideTranslocoScope({ scope: 'article' })]
 })
 export class RecordCard implements OnDestroy {
-  public readonly myarticle = input<Article>();
   public readonly customMetadata = input<CustomMetadata[] | undefined>([
-    { title: 'article.jobTitles', field: 'entity13' },
-    { title: 'labels', field: 'labels' }
+    { title: 'article.jobTitles', fields: ['entity13'] },
+    { title: 'labels', fields: ['public_label', 'private_label'] }
   ]);
-  public readonly article = input.required<Article>();
+  public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
 
   // by default add to assistant is disabled
   public readonly allowAI = input<boolean>(false);
 
-  appStore = inject(AppStore);
-  applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
   searchService = inject(SearchService);
-  labelService = inject(LabelService);
   previewService = inject(PreviewService);
-  drawerStack = inject(DrawerStackService);
-
-  readonly editLabelsDialog = viewChild(LabelsEditComponent);
-  readonly addToCollectionDialog = viewChild(CollectionsDialog);
 
   showBookmark = signal(false);
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
@@ -109,8 +85,6 @@ export class RecordCard implements OnDestroy {
   });
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
-
-  customMetadataItems = computed(() => this.customMetadata()?.map(metadata => (this.article() as any)[metadata.field] ?? {}));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
@@ -130,13 +104,7 @@ export class RecordCard implements OnDestroy {
     return undefined;
   });
 
-  protected hasLabelsAccess = computed(() => this.applicationStore.hasLabelsAccess() || false);
-
-  readonly drawerOpened = signal(false);
-
-  constructor() {
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed()).subscribe(state => this.drawerOpened.set(state));
-  }
+  constructor() {}
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
@@ -161,25 +129,6 @@ export class RecordCard implements OnDestroy {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
     this.searchService.search([]);
-  }
-
-  editLabels(): void {
-    this.editLabelsDialog()?.showModal();
-  }
-
-  addToCollection(): void {
-    this.addToCollectionDialog()?.showModal();
-  }
-
-  attachToAssistant(): void {
-    const { assistantIdsToAttach } = getState(this.selectionStore);
-    let ids = assistantIdsToAttach || [];
-
-    if ((assistantIdsToAttach || []).indexOf(this.article().id) === -1) {
-      ids.push(this.article().id);
-    }
-
-    this.selectionStore.update({ assistantIdsToAttach: ids });
   }
 
   onCtrlEnter(): void {

@@ -46,7 +46,7 @@ export const routes: ExtendedRoutes = [
     component: SearchLayoutComponent,
     canActivate: [AuthGuard(), InitializationGuard()],
     resolve: { queryName: queryNameResolver },
-    children: []
+    children: [{ path: '**', component: SearchAllComponent, resolve: { queryName: queryNameResolver } }]
   },
   { path: 'loading', component: LoadingComponent },
   { path: 'error', component: ErrorComponent },

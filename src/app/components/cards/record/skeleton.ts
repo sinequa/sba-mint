@@ -39,4 +39,4 @@ import { Component } from '@angular/core';
     }
   `
 })
-export class RecordCardSkeleton {}
+export class RecordSkeleton {}

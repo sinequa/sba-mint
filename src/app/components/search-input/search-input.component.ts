@@ -110,13 +110,10 @@ export class SearchInputComponent {
     });
 
     // first time the component is created, we set the input value from the query params
-    effect(
-      () => {
-        const { text } = getState(this.queryParamsStore);
-        this.setInput(text);
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const { text } = getState(this.queryParamsStore);
+      this.setInput(text);
+    });
   }
 
   public closeAutocompletePopover(): void {
