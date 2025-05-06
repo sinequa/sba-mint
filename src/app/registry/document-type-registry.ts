@@ -4,7 +4,7 @@ import { Article } from '@sinequa/atomic';
 import { PreviewDefaultComponent } from '../components/preview/default/default.component';
 import { PreviewSlideComponent } from '../components/preview/slide/slide.component';
 import { SlideCard } from '../components/cards/slide/slide-card';
-import { RecordCard } from '../components/cards/record/record-card';
+import { RecordCard } from '../components/cards/record/card';
 
 // Define the default document type, should be linked to default article and preview components
 // This document type is used when the document type is not recognized

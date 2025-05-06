@@ -12,31 +12,17 @@
       </div>
       <!-- the overflow-hidden here constraints the flex to be inside it's parent -->
       <div class="flex grow flex-col overflow-hidden">
-        <section class="flex items-baseline gap-2">
-          <p class="text-primary max-w-4/5 truncate text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
+        <section class="flex items-baseline justify-between gap-2">
+          <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+            <p class="text-primary truncate text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
 
-          @if (showBookmark()) {
-          <bookmark-button [article]="article()" />
-          }
+            @if (showBookmark()) {
+            <bookmark-button [article]="article()" />
+            }
+          </span>
 
-          <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
-            <button variant="ghost" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
-              <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
-              <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
-            </button>
-
-            <MenuContent [position]="drawerOpened() ? 'left-start' : 'right-start'">
-              @if (hasLabelsAccess()) {
-              <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
-              }
-              <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
-              @if (allowAI()) {
-              <menuitem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
-                <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
-              </menuitem>
-              }
-            </MenuContent>
-          </menu>
+          <!-- card context-menu -->
+          <record-menu [(article)]="article" [allowAI]="allowAI()" />
         </section>
 
         <section class="flex items-center gap-2 text-xs">
@@ -67,13 +53,13 @@
   <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
     <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
 
-    @if (customMetadata()?.length && customMetadataItems()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if
-    (customMetadataItems()![$index].length) {
-    <div class="flex items-center text-xs">
+    @if (customMetadata()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if (metadata.fields) {
+    <div class="flex items-center gap-1 text-xs">
       @if (metadata.title) {
       <label class="me-2 border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
+      } @for(field of metadata.fields; track $index) {
+      <Metadata variant="outline" [article]="article()" [metadata]="field" />
       }
-      <Metadata variant="outline" [article]="article()" [metadata]="metadata.field" />
     </div>
     } } }
   </CardContent>
@@ -81,6 +67,3 @@
     <missing-terms [article]="article()" />
   </CardFooter>
 </Card>
-
-<labels-edit-dialog [article]="article()" (click)="$event.stopPropagation()" />
-<add-to-collection-dialog [article]="article()" (click)="$event.stopPropagation()" />

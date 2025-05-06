@@ -193,7 +193,7 @@ export class CollectionsComponent {
   }
 
   deleteCollection(collection: Basket, index: number) {
-    this.deleteCollectionDialog()?.showModal(collection, index);
+    this.deleteCollectionDialog()?.open(collection, index);
   }
 
   async create(): Promise<void> {

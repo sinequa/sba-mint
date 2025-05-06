@@ -111,12 +111,27 @@ body {
 
   /* manage the backdrop with dialogs */
   dialog {
-    transition: all 0.2s ease-out allow-discrete;
+    /* opacity: 0; */
+    transition: opacity 0.2s ease-out allow-discrete;
+
+    &:open {
+      opacity: 1;
+    }
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0%);
+      transition: background-color 0.7s allow-discrete;
+    }
+    &:open::backdrop {
+      background-color: var(--backdrop);
+      backdrop-filter: var(--backdrop-filter);
+    }
   }
 
-  dialog::backdrop {
-    background-color: var(--backdrop);
-    backdrop-filter: var(--backdrop-filter);
+  @starting-style {
+    dialog:open {
+      opacity: 0;
+    }
   }
 
   @starting-style {

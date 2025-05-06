@@ -134,52 +134,43 @@ export abstract class SearchBase<T> implements OnDestroy {
   constructor() {
     // Update the query params store with the filters from the query params
     // This allows Browser back/forward to work correctly
-    effect(
-      () => {
-        const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-        this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.queryName() });
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.queryName() });
+    });
 
     // Update the URL with the query params
-    effect(
-      () => {
-        const key = this.keys();
+    effect(() => {
+      const key = this.keys();
 
-        this.hideFeedback.set(false);
+      this.hideFeedback.set(false);
 
-        const queryParams: QP = {};
-        const { text, filters = [], page, sort, tab, basket } = getState(this.queryParamsStore);
+      const queryParams: QP = {};
+      const { text, filters = [], page, sort, tab, basket } = getState(this.queryParamsStore);
 
-        queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
-        queryParams.p = page;
-        queryParams.s = sort;
-        queryParams.t = tab;
-        queryParams.q = text;
-        queryParams.b = basket;
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
+      queryParams.p = page;
+      queryParams.s = sort;
+      queryParams.t = tab;
+      queryParams.q = text;
+      queryParams.b = basket;
 
-        this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
-      },
-      { allowSignalWrites: true }
-    );
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
+    });
 
     // Make Result object available to children and update aggregations store
-    effect(
-      () => {
-        this.query.isSuccess();
+    effect(() => {
+      this.query.isSuccess();
 
-        const result = this.query.data()?.pages[0];
+      const result = this.query.data()?.pages[0];
 
-        if (!result) return;
+      if (!result) return;
 
-        this.result.set(result);
+      this.result.set(result);
 
-        // Update the aggregations store with the new aggregations
-        this.aggregationsStore.update(result.aggregations);
-      },
-      { allowSignalWrites: true }
-    );
+      // Update the aggregations store with the new aggregations
+      this.aggregationsStore.update(result.aggregations);
+    });
 
     this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
   }
