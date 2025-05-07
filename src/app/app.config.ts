@@ -86,7 +86,7 @@ export const appConfig: ApplicationConfig = {
     },
     { provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, 'Money'] },
 
-    { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: true } } },
+    { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: false } } },
 
     provideTanStackQuery(
       new QueryClient({
