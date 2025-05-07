@@ -32,7 +32,7 @@
       <filters-bar class="pt-4 pb-4" />
 
       <!-- if assistant is allowed -->
-      @if (allowAI()) {
+      @if (allowAI() && !b()) {
         <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-14 overflow-hidden bg-orange-50')">
           <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
             <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
