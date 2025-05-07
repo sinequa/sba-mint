@@ -9,6 +9,7 @@ import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
+import { APP_FEATURES } from '../../app.config';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -81,14 +82,21 @@ export class AssistantLayoutComponent {
   drawerStackService = inject(DrawerStackService);
   opened = toSignal(this.drawerStackService.isOpened);
 
+  private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly cdr = inject(ChangeDetectorRef);
 
   readonly instanceId = computed(() => {
-    const { name } = getState(this.appStore) as CCApp;
-    return `${name}-standalone-assistant`;
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-standalone-assistant`;
+    }
+    return `standalone-assistant`;
   });
 
   // this is the assistant component who triggers the connection is established

@@ -1,18 +1,18 @@
-import { Component, inject, input, model, signal, viewChild } from '@angular/core';
+import { Component, inject, input, model, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A } from '@sinequa/atomic';
 import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, DialogService, DialogEvent } from '@sinequa/ui';
+import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
 
 type Article = A & {
   [key: string]: any;
 };
 
 @Component({
-  selector: 'record-menu, RecordMenu, recordmenu',
+  selector: 'card-menu, CarddMenu, cardmenu',
   standalone: true,
   imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe], // Add necessary imports
   template: `
@@ -36,7 +36,7 @@ type Article = A & {
     </menu>
   `
 })
-export class RecordMenuComponent {
+export class CardMenuComponent {
   dialogService = inject(DialogService);
   drawerStack = inject(DrawerStackService);
   selectionStore = inject(SelectionStore);

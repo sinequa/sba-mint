@@ -1,7 +1,15 @@
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  InjectionToken,
+  LOCALE_ID,
+  inject,
+  isDevMode,
+  provideAppInitializer,
+  provideExperimentalZonelessChangeDetection
+} from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { Router, provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
@@ -41,6 +49,8 @@ import { TranslocoHttpLoader } from './transloco-loader';
 
 registerLocaleData(localeFr);
 
+export const APP_FEATURES = new InjectionToken<{ assistant: { usePrefixName: boolean } }>('app.features');
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
@@ -75,6 +85,8 @@ export const appConfig: ApplicationConfig = {
       ]
     },
     { provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, 'Money'] },
+
+    { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: true } } },
 
     provideTanStackQuery(
       new QueryClient({

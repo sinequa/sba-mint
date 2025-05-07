@@ -22,7 +22,7 @@
           </span>
 
           <!-- card context-menu -->
-          <record-menu [(article)]="article" [allowAI]="allowAI()" />
+          <card-menu [(article)]="article" [allowAI]="allowAI()" />
         </section>
 
         <section class="flex items-center gap-2 text-xs">
@@ -56,9 +56,10 @@
     @if (customMetadata()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if (metadata.fields) {
     <div class="flex items-center gap-1 text-xs">
       @if (metadata.title) {
-      <label class="me-2 border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
+      <!-- hide it if the medata component is hidden -->
+      <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
       } @for(field of metadata.fields; track $index) {
-      <Metadata variant="outline" [article]="article()" [metadata]="field" />
+      <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
       }
     </div>
     } } }

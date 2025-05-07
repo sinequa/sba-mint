@@ -19,7 +19,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
 
-import { RecordMenuComponent } from './menu';
+import { CardMenuComponent } from '../menu';
 
 type Tab = 'attachments' | 'similars';
 
@@ -48,9 +48,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardHeaderComponent,
     CardContentComponent,
     CardFooterComponent,
-    RecordMenuComponent
+    CardMenuComponent
   ],
-  templateUrl: './card.html',
+  templateUrl: './record-card.html',
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -135,5 +135,10 @@ export class RecordCard implements OnDestroy {
     if (this.article()) {
       this.previewService.openExternal(this.article());
     }
+  }
+
+  onMetadataClick({ field, value }: { field: string; value: string }): void {
+    let filter: LegacyFilter = { field, value };
+    this.queryParamStore.updateFilter(filter);
   }
 }
