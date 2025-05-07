@@ -4,17 +4,17 @@ import { Article } from '@sinequa/atomic';
 import { PreviewDefaultComponent } from '../components/preview/default/default.component';
 import { PreviewSlideComponent } from '../components/preview/slide/slide.component';
 import { SlideCard } from '../components/cards/slide/slide-card';
-import { RecordCard } from '../components/cards/record/card';
+import { RecordCard } from '../components/cards/record/record-card';
 
 // Define the default document type, should be linked to default article and preview components
 // This document type is used when the document type is not recognized
 export const DEFAULT_DOCUMENT_TYPE = 'default';
 // Define the record key that contains the document type
 // Special care about typo and case sensitivity
-export const DOCUMENT_TYPE_RECORD_KEY = 'doctype';
+export const DOCUMENT_TYPE_RECORD_KEY = 'docformat';
 
 export type DocumentTypeMap = {
-  documentType: string;
+  documentTypes: string[];
   articleComponent: Type<unknown>;
   previewComponent: Type<unknown>;
 };
@@ -24,18 +24,18 @@ export type DocumentTypeMap = {
 // that the most specific document type is matched first
 export const documentTypeMap: DocumentTypeMap[] = [
   {
-    documentType: DEFAULT_DOCUMENT_TYPE,
+    documentTypes: [DEFAULT_DOCUMENT_TYPE],
     articleComponent: RecordCard,
     previewComponent: PreviewDefaultComponent
   },
   // --- Add new document types here ---
   {
-    documentType: 'pptx',
+    documentTypes: ['pptx', 'ppt', 'powerpoint'],
     articleComponent: SlideCard,
     previewComponent: PreviewSlideComponent
   }
   // ---
-].sort((a, b) => b.documentType.length - a.documentType.length);
+];
 
 export function getComponentsForArticle(article: Article): DocumentTypeMap {
   return getComponentsForDocumentType(article[DOCUMENT_TYPE_RECORD_KEY]);
@@ -43,10 +43,9 @@ export function getComponentsForArticle(article: Article): DocumentTypeMap {
 
 export function getComponentsForDocumentType(documentType?: string): DocumentTypeMap {
   if (documentType) {
-    const type = documentTypeMap.find(dtm => dtm.documentType === documentType);
-
+    const type = documentTypeMap.find(dtm => dtm.documentTypes.includes(documentType.toLocaleLowerCase()));
     if (type) return type;
   }
 
-  return documentTypeMap.find(dtm => dtm.documentType === DEFAULT_DOCUMENT_TYPE)!;
+  return documentTypeMap.find(dtm => dtm.documentTypes.includes(DEFAULT_DOCUMENT_TYPE))!;
 }

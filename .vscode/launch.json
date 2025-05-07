@@ -54,31 +54,6 @@
       "sourceMapPathOverrides": {
         "webpack:///./*": "${workspaceFolder}/*"
       }
-    },
-    {
-      "name": "Attach to Storybook",
-      "port": 9223,
-      "request": "attach",
-      "type": "chrome",
-      "urlFilter": "https://localhost:6006/*",
-      "webRoot": "${workspaceFolder}",
-      "sourceMapPathOverrides": {
-        "webpack:///./*": "${workspaceFolder}/*"
-      }
-    },
-    {
-      "name": "Attach to Karma",
-      "port": 9222,
-      "request": "attach",
-      "type": "chrome",
-      "address": "localhost",
-      "restart": true,
-      "timeout": 600000,
-      "sourceMaps": true,
-      "webRoot": "${workspaceFolder}",
-      "pathMapping": {
-        "/_karma_webpack_/": "${workspaceFolder}"
-      }
     }
   ]
 }

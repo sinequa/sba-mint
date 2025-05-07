@@ -6,7 +6,6 @@ import { getState } from '@ngrx/signals';
 
 import { Article as A, CCApp, LegacyFilter, PreviewData, Query } from '@sinequa/atomic';
 import {
-  ApplicationStore,
   AppStore,
   DocumentLocatorComponent,
   MetadataComponent,
@@ -18,6 +17,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
+import { APP_FEATURES } from '../../../app.config';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewActionsComponent } from '../actions';
 import { PreviewNavbarComponent } from '../navbar/navbar.component';
@@ -80,7 +80,7 @@ export class PreviewDefaultComponent {
   readonly activeTab = signal<'summary' | 'preview'>('preview');
 
   appStore = inject(AppStore);
-  applicationStore = inject(ApplicationStore);
+  appFeatures = inject(APP_FEATURES);
 
   isStreaming = signal<boolean>(false);
   showAssistant = signal<boolean>(false);
@@ -88,8 +88,15 @@ export class PreviewDefaultComponent {
   displaySummary = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
 
   readonly instanceId = computed(() => {
-    const { name } = getState(this.appStore) as CCApp;
-    return `${name}-mini-preview-assistant`;
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-mini-preview-assistant`;
+    } else {
+      return `mini-preview-assistant`;
+    }
   });
 
   miniPreviewQuery: Query = {} as Query;

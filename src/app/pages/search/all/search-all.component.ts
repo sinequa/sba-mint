@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, effect, signal, Type } from '@angular/core';
+import { Component, computed, effect, inject, signal, Type } from '@angular/core';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
 
@@ -19,10 +19,11 @@ import { ButtonComponent, cn } from '@sinequa/ui';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 
+import { APP_FEATURES } from '../../../app.config';
 import { AssistantComponent } from '../../../components/assistant/assistant';
-import { RecordSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { SearchBase } from '../search.abstract';
+import { CardSkeleton } from '../../../components/cards/record/skeleton';
 
 type R = Result & { nextPage?: number; previousPage?: number };
 
@@ -30,7 +31,6 @@ type R = Result & { nextPage?: number; previousPage?: number };
   selector: 'app-search-all',
   imports: [
     NgComponentOutlet,
-    RecordSkeleton,
     SortSelectorComponent,
     DidYouMeanComponent,
     InfinityScrollDirective,
@@ -40,7 +40,8 @@ type R = Result & { nextPage?: number; previousPage?: number };
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
-    AssistantComponent
+    AssistantComponent,
+    CardSkeleton
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -62,6 +63,8 @@ type R = Result & { nextPage?: number; previousPage?: number };
 })
 export class SearchAllComponent extends SearchBase<R> {
   cn = cn;
+
+  appFeatures = inject(APP_FEATURES);
 
   /**
    * Signal indicating whether streaming is currently active.
@@ -90,8 +93,14 @@ export class SearchAllComponent extends SearchBase<R> {
 
   // ast-vanillAI-search-results-assistant
   readonly instanceId = computed(() => {
-    const { name } = getState(this.appStore) as CCApp;
-    return `${name}-search-results-assistant`;
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-search-results-assistant`;
+    }
+    return `search-results-assistant`;
   });
 
   readonly hasRowCount = computed(() => {

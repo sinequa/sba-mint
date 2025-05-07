@@ -48,10 +48,16 @@
           <tr>
             <th>{{ 'labels' | transloco }}</th>
 
-            <td class="flex flex-col gap-2">
+            <td class="flex flex-col gap-1">
+              <!-- public labels-->
               <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
-
-              <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
+              <!-- private labels -->
+              <Metadata
+                variant="outline"
+                class="bg-secondary/20 cursor-pointer"
+                [article]="article()!"
+                [metadata]="labels.private"
+                (click)="onMetadataClick($event)" />
             </td>
           </tr>
         }

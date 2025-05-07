@@ -29,27 +29,8 @@
                 <bookmark-button [article]="article()" />
                 }
               </div>
-
-              @if (hasLabelsAccess()) {
-              <menu class="invisible group-hover:visible" (click)="$event.stopImmediatePropagation()">
-                @if (hasLabelsAccess()) {
-                <button variant="ghost" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
-                  <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
-                  <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
-                </button>
-                }
-
-                <MenuContent>
-                  <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
-                  <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
-                  @if (allowAI()) {
-                  <menuitem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
-                    <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
-                  </menuitem>
-                  }
-                </MenuContent>
-              </menu>
-              }
+              <!-- card context-menu -->
+              <card-menu [(article)]="article" [allowAI]="allowAI()" />
             </section>
 
             <section class="flex items-center gap-1 text-xs">
@@ -77,13 +58,14 @@
       <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
         <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
 
-        @if (customMetadata()?.length && customMetadataItems()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if
-        (customMetadataItems()![$index].length) {
-        <div class="flex items-center text-xs">
+        @if (customMetadata()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if (metadata.fields) {
+        <div class="flex items-center gap-1 text-xs">
           @if (metadata.title) {
-          <label class="me-2 border-neutral-600 font-bold uppercase">{{ metadata.title | transloco }}</label>
+          <!-- hide it if the medata component is hidden -->
+          <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
+          } @for(field of metadata.fields; track $index) {
+          <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" />
           }
-          <Metadata variant="outline" [article]="article()" [metadata]="metadata.field" />
         </div>
         } } }
       </CardContent>
@@ -94,6 +76,3 @@
     </div>
   </div>
 </Card>
-
-<labels-edit-dialog (click)="$event.stopPropagation()" />
-<add-to-collection-dialog (click)="$event.stopPropagation()" />

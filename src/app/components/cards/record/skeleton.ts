@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'record-card-skeleton, recordcardskeleton, RecordCardSkeleton',
+  selector: 'card-skeleton, cardskeleton, CardSkeleton',
   standalone: true,
   template: `
     <div class="size-10 animate-pulse rounded-full bg-gray-300"></div>
@@ -32,11 +32,6 @@ import { Component } from '@angular/core';
   `,
   host: {
     class: 'article pointer-events-none'
-  },
-  styles: `
-    div[stkSkeleton] {
-      background-color: var(--stk-skeleton-color, #e5e7eb);
-    }
-  `
+  }
 })
-export class RecordSkeleton {}
+export class CardSkeleton {}

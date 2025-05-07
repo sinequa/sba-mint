@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, input, model, OnDestroy, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -22,26 +22,16 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import {
-  BadgeComponent,
-  ButtonComponent,
-  CardComponent,
-  CardContentComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent
-} from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+
+import { CardMenuComponent } from '../menu';
 
 type Tab = 'attachments' | 'similars';
 
 type CustomMetadata = {
-  field: string;
+  fields: string[];
   title?: string;
 };
-
-const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 @Component({
   selector: 'slide-card, slidecard, SlideCard',
@@ -49,20 +39,15 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
-    ButtonComponent,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
     TranslocoPipe,
-    LabelsEditDialog,
-    CollectionsDialog,
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
     CardFooterComponent,
-    BadgeComponent
+    BadgeComponent,
+    CardMenuComponent
   ],
   templateUrl: './slide-card.html',
   hostDirectives: [
@@ -79,11 +64,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 })
 export class SlideCard implements OnDestroy {
   public readonly myarticle = input<Article>();
-  public readonly customMetadata = input<CustomMetadata[] | undefined>([
-    { title: 'article.jobTitles', field: 'entity13' },
-    { title: 'labels', field: 'labels' }
-  ]);
-  public readonly article = input.required<Article>();
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
+
+  public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
 
   thumbnailFailed = signal(false);
@@ -109,8 +92,6 @@ export class SlideCard implements OnDestroy {
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
-  customMetadataItems = computed(() => this.customMetadata()?.map(metadata => (this.article() as any)[metadata.field] ?? {}));
-
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
 
@@ -122,14 +103,8 @@ export class SlideCard implements OnDestroy {
   protected currentTab: Tab = 'attachments';
 
   protected docformatMetadata = computed(() => {
-    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase())) return this.article().docformat;
-
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return this.article().doctype;
-
-    return undefined;
+    return this.article().docformat ?? this.article().doctype;
   });
-
-  protected hasLabelsAccess = computed(() => this.applicationStore.hasLabelsAccess() || false);
 
   ngOnDestroy(): void {
     this.showBookmarkOutputSubscription.unsubscribe();
