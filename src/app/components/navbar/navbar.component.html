@@ -2,19 +2,17 @@
   <img id="logo" alt="logo" class="max-h-8 w-full" />
 </a>
 
-<div class="col-span-2 flex h-full items-center">
-  @if (showInput()) {
-    <app-search-input
-      class="flex grow"
-      variant="basic"
-      [showSave]="true"
-      (saved)="saveSearch($event)"
-      (validated)="validated($event)"
-      (debounced)="debounced($event)">
-      <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
-    </app-search-input>
-  }
-</div>
+@if (showInput()) {
+  <app-search-input
+    class="col-span-2 h-full w-full"
+    variant="basic"
+    [showSave]="true"
+    (saved)="saveSearch($event)"
+    (validated)="validated($event)"
+    (debounced)="debounced($event)">
+    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+  </app-search-input>
+}
 
 <nav class="flex list-none items-center justify-end gap-1 pe-10">
   @if (showMenu()) {

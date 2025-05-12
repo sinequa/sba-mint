@@ -22,6 +22,8 @@ import {
   AGGREGATIONS_NAMES_PRESET_DEFAULT,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
+  COLLECTIONS_CONFIG,
+  COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
   DRAWER_COMPONENT,
   DrawerPreviewComponent,
@@ -42,7 +44,7 @@ import {
 
 import { PREVIEW_HIGHLIGHTS } from './highlight.config';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SearchLayoutComponent } from './pages/search/search.layout';
+import { SearchLayoutComponent } from './pages/search/layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
 import { TranslocoHttpLoader } from './transloco-loader';
@@ -66,9 +68,10 @@ export const appConfig: ApplicationConfig = {
     { provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS },
     { provide: COMPONENTS_FOR_DOCUMENT_TYPE, useValue: getComponentsForDocumentType },
     { provide: DRAWER_COMPONENT, useValue: DrawerPreviewComponent },
-    { provide: RECENT_SEARCHES_CONFIG, useValue: { ...RECENT_SEARCHES_OPTIONS, showLoadMore: false } },
-    { provide: SAVED_SEARCHES_CONFIG, useValue: { ...SAVED_SEARCHES_OPTIONS, showLoadMore: false } },
-    { provide: BOOKMARKS_CONFIG, useValue: { ...BOOKMARKS_OPTIONS, showLoadMore: false } },
+    { provide: RECENT_SEARCHES_CONFIG, useValue: { ...RECENT_SEARCHES_OPTIONS, routerLink: '/widgets/recent-searches', showLoadMore: false } },
+    { provide: SAVED_SEARCHES_CONFIG, useValue: { ...SAVED_SEARCHES_OPTIONS, routerLink: '/widgets/saved-searches', showLoadMore: false } },
+    { provide: BOOKMARKS_CONFIG, useValue: { ...BOOKMARKS_OPTIONS, routerLink: '/widgets/bookmarks', showLoadMore: false } },
+    { provide: COLLECTIONS_CONFIG, useValue: { ...COLLECTIONS_OPTIONS, routerLink: '/widgets/collections', showLoadMore: false } },
     { provide: PREVIEW_CONFIG, useValue: { allowWorker: true } },
     {
       provide: ROUTE_COMPONENTS,

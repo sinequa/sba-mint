@@ -1,16 +1,25 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { PageHeaderComponent } from '@sinequa/ui';
-
-import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { provideTranslocoScope } from '@jsverse/transloco';
+import { PageHeaderComponent } from '@sinequa/ui';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
-  selector: 'app-search',
+  selector: 'app-search-layout',
   imports: [RouterOutlet, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
-  templateUrl: './search.layout.html',
+  template: `
+    <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
+      <app-navbar class="layout-search py-4" />
+    </PageHeader>
+
+    <app-sidebar class="fixed top-0 h-full" />
+
+    <div class="mt-16">
+      <router-outlet />
+    </div>
+  `,
   host: {
     class: 'flex flex-col h-full w-full'
   },

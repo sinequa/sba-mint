@@ -1,24 +1,15 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { countFilters, RecentSearch, TranslocoDateImpurePipe, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../../components/navbar/navbar.component';
-import { PageHeaderComponent } from '@sinequa/ui';
-import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-recent-searches',
-  imports: [RouterModule, NavbarComponent, TranslocoPipe, PageHeaderComponent, AppSidebarComponent],
+  imports: [RouterModule, TranslocoPipe],
   template: `
-    <app-sidebar />
-
-    <PageHeader class="z-1 ml-8 bg-white">
-      <app-navbar class="layout-search py-4" />
-    </PageHeader>
-
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
