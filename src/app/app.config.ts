@@ -49,6 +49,10 @@ import { getComponentsForDocumentType } from './registry/document-type-registry'
 import { routes } from './routes';
 import { TranslocoHttpLoader } from './transloco-loader';
 
+// @ts-ignore
+import Flow from '@flowjs/flow.js';
+import { FlowInjectionToken } from '@flowjs/ngx-flow';
+
 registerLocaleData(localeFr);
 
 export const APP_FEATURES = new InjectionToken<{ assistant: { usePrefixName: boolean } }>('app.features');
@@ -90,6 +94,8 @@ export const appConfig: ApplicationConfig = {
     { provide: AGGREGATIONS_NAMES, useValue: [...AGGREGATIONS_NAMES_PRESET_DEFAULT, 'Money'] },
 
     { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: false } } },
+
+    { provide: FlowInjectionToken, useValue: Flow },
 
     provideTanStackQuery(
       new QueryClient({

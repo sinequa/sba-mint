@@ -1,6 +1,7 @@
 {
   "back": "Retour",
   "cancel": "Annuler",
+  "close": "Fermer",
   "clear": "Effacer",
   "concepts": "Concepts",
   "confirm": "Confirmer",
@@ -91,6 +92,11 @@
   "saved-search": "Recherche enregistrée",
   "assistant": {
     "saved-chats": "Discussions",
-    "new-discussion": "Nouvelle discussion"
+    "new-discussion": "Nouvelle discussion",
+    "my-documents": "Mes Documents",
+    "upload": "Upload",
+    "uploaded": "Importé",
+    "delete-all": "Tout supprimer",
+    "refresh": "Refraîchir"
   }
 }

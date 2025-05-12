@@ -13,6 +13,7 @@ import { APP_FEATURES } from '../../app.config';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
+import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -20,6 +21,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
     TranslocoPipe,
     AssistantComponent,
     SavedChatsComponent,
+    AssistantUploadComponent,
     AggregationComponent,
     PageHeaderComponent,
     NavbarComponent,
@@ -41,7 +43,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
           )
         ">
         @if (showSavedChats()) {
-          <section class="h-64 max-h-64 rounded-2xl border border-gray-200 bg-white p-4 shadow">
+          <section class="h-56 max-h-56 rounded-2xl border border-gray-200 bg-white p-4 shadow">
             <div class="flex items-center justify-between">
               <h3 class="pointer-events-none text-sm font-semibold text-gray-600">
                 <i class="far fa-comments me-1"></i>
@@ -62,6 +64,9 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
         <section class="pt-6">
           <Aggregation name="Treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
+        @if (showDocumentUploader()) {
+          <assistant-upload [instanceId]="instanceId()" />
+        }
       </div>
       <div [class]="cn('transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'w-3/4 translate-x-0')">
         <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
@@ -112,8 +117,14 @@ export class AssistantLayoutComponent {
     () => Boolean(this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['savedChatSettings']?.['display']) ?? false
   );
 
+  // this is used to know if the document uploader component should be displayed
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']) ?? false);
+
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
+
+  // this is used to display the saved chats component
+  readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
   q = input<string>();
 
