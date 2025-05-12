@@ -70,10 +70,10 @@ export class NavbarComponent {
   readonly searchText = signal<string>('');
 
   protected readonly menus = signal<NavbarMenu[]>([
-    { display: 'recentSearches.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/recent-searches', component: RecentSearchesComponent },
-    { display: 'bookmarks.label', iconClass: 'far fa-bookmark', routerLink: '/bookmarks', component: BookmarksComponent },
-    { display: 'collections.label', iconClass: 'far fa-inbox', component: CollectionsComponent, keepOnMouseLeave: true },
-    { display: 'savedSearches.label', iconClass: 'far fa-star', routerLink: '/saved-searches', component: SavedSearchesComponent },
+    { display: 'recentSearches.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/widgets/recent-searches', component: RecentSearchesComponent },
+    { display: 'bookmarks.label', iconClass: 'far fa-bookmark', routerLink: '/widgets/bookmarks', component: BookmarksComponent },
+    { display: 'collections.label', iconClass: 'far fa-inbox', routerLink: '/widgets/collections', component: CollectionsComponent },
+    { display: 'savedSearches.label', iconClass: 'far fa-star', routerLink: '/widgets/saved-searches', component: SavedSearchesComponent },
     { display: 'alerts.label', iconClass: 'far fa-bell', component: AlertsComponent }
   ]);
 

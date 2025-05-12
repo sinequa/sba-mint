@@ -2,33 +2,15 @@ import { ChangeDetectorRef, Component, effect, ElementRef, inject, signal, viewC
 import { Router, RouterModule } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../../components/navbar/navbar.component';
-import { ButtonComponent, PageHeaderComponent } from '@sinequa/ui';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
-import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
+import { Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'Collections',
-  imports: [
-    RouterModule,
-    FormsModule,
-    NavbarComponent,
-    TranslocoPipe,
-    PageHeaderComponent,
-    DragDropModule,
-    DeleteCollectionDialog,
-    ButtonComponent,
-    AppSidebarComponent
-  ],
+  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent],
   template: `
-    <app-sidebar />
-
-    <PageHeader class="z-1 ml-8 bg-white">
-      <app-navbar class="layout-search py-4" />
-    </PageHeader>
-
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">

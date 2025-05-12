@@ -3,13 +3,9 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 
-import { getQueryParamsFromUrl, QueryParams } from '@sinequa/atomic';
-import { DrawerStackService, SavedSearchesService } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../../components/navbar/navbar.component';
-import { type SavedSearch as S } from '@sinequa/atomic-angular';
 import { Router } from '@angular/router';
-import { PageHeaderComponent } from '@sinequa/ui';
-import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
+import { getQueryParamsFromUrl, QueryParams } from '@sinequa/atomic';
+import { DrawerStackService, SavedSearchesService, type SavedSearch as S } from '@sinequa/atomic-angular';
 
 type SavedSearch = S & {
   label: string;
@@ -20,7 +16,7 @@ type SavedSearch = S & {
 
 @Component({
   selector: 'SavedSearches',
-  imports: [NavbarComponent, TranslocoPipe, PageHeaderComponent, AppSidebarComponent],
+  imports: [TranslocoPipe],
   templateUrl: './saved-searches.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

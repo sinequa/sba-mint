@@ -6,10 +6,7 @@ import { firstValueFrom, Subscription } from 'rxjs';
 
 import { Article, LegacyFilter, Query } from '@sinequa/atomic';
 import { AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
-import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
-import { PageHeaderComponent } from '@sinequa/ui';
-import { AppSidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 interface BookmarkArticle {
   bookmark: Bookmark;
@@ -18,7 +15,7 @@ interface BookmarkArticle {
 
 @Component({
   selector: 'Bookmarks',
-  imports: [NavbarComponent, TranslocoPipe, NgComponentOutlet, PageHeaderComponent, AppSidebarComponent],
+  imports: [TranslocoPipe, NgComponentOutlet],
   templateUrl: './bookmarks.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

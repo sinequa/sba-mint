@@ -150,6 +150,14 @@ body {
       grid-template-columns: 4% 24% 25% 48%;
     }
   }
+  @media (max-width: 1200px) {
+    .layout-search {
+      grid-template-columns: 10% 40% 40% 10%;
+      &[drawer-opened='true'] {
+        grid-template-columns: 6% 23% 23% 48%;
+      }
+    }
+  }
 }
 
 @layer utilities {
