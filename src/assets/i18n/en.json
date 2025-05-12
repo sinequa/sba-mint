@@ -1,6 +1,7 @@
 {
   "back": "Back",
   "cancel": "Cancel",
+  "close": "Close",
   "clear": "Clear",
   "concepts": "Concepts",
   "confirm": "Confirm",
@@ -91,6 +92,11 @@
   "saved-search": "Saved searches",
   "assistant": {
     "saved-chats": "Discussions",
-    "new-discussion": "New discussion"
+    "new-discussion": "New discussion",
+    "my-documents": "My Documents",
+    "upload": "Upload",
+    "uploaded": "Uploaded",
+    "delete-all": "Delete All",
+    "refresh": "Refresh"
   }
 }
