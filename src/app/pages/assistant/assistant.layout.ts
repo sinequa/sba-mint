@@ -9,28 +9,16 @@ import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../app.config';
+import { APP_FEATURES } from '../../tokens';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  imports: [
-    TranslocoPipe,
-    AssistantComponent,
-    SavedChatsComponent,
-    AssistantUploadComponent,
-    AggregationComponent,
-    PageHeaderComponent,
-    NavbarComponent,
-    AppSidebarComponent,
-    ButtonComponent
-  ],
+  imports: [TranslocoPipe, AssistantComponent, SavedChatsComponent, AssistantUploadComponent, AggregationComponent, PageHeaderComponent, NavbarComponent, ButtonComponent],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar class="fixed top-0 h-full" />
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>

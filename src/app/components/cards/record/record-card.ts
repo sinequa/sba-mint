@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, model, OnDestroy, signal } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -41,7 +41,6 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
-    TranslocoPipe,
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
@@ -64,10 +63,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
   providers: [provideTranslocoScope({ scope: 'article' })]
 })
 export class RecordCard implements OnDestroy {
-  public readonly customMetadata = input<CustomMetadata[] | undefined>([
-    { title: 'article.jobTitles', fields: ['entity13'] },
-    { title: 'labels', fields: ['public_label', 'private_label'] }
-  ]);
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
   public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
 

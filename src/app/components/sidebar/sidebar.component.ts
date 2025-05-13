@@ -1,10 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
 import { AppStore, PrincipalStore } from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
+
+import { APP_FEATURES } from '../../tokens';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,13 +19,20 @@ export class AppSidebarComponent {
   private readonly appStore = inject(AppStore);
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly router = inject(Router);
+  private readonly appFeatures = inject(APP_FEATURES);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 
   readonly instanceId = computed(() => {
-    const { name } = getState(this.appStore) as CCApp;
-    return `${name}-standalone-assistant`;
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-standalone-assistant`;
+    } else {
+      return 'standalone-assistant';
+    }
   });
 
   // Updated allowAI computed signal

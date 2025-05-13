@@ -19,6 +19,8 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
 
+import { APP_FEATURES } from '../../tokens';
+
 @Component({
   selector: 'app-search-input',
   imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
@@ -49,6 +51,7 @@ export class SearchInputComponent {
   private readonly appStore = inject(AppStore);
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
+  private readonly appFeatures = inject(APP_FEATURES);
 
   public readonly value = model<string>('');
 
@@ -56,8 +59,15 @@ export class SearchInputComponent {
 
   protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   readonly instanceId = computed(() => {
-    const { name } = getState(this.appStore) as CCApp;
-    return `${name}-standalone-assistant`;
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-standalone-assistant`;
+    } else {
+      return 'standalone-assistant';
+    }
   });
 
   protected readonly debounceInputValue = debouncedSignal(this.value, 300);

@@ -34,16 +34,7 @@
               "base": "dist/sinequa-mint",
               "browser": ""
             },
-            "allowedCommonJsDependencies": [
-              "prismjs",
-              "@microsoft/teams-js",
-              "@messageformat/core",
-              "diacritics",
-              "lodash",
-              "intl",
-              "js-polyfills",
-              "atomicjs"
-            ],
+            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend"],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js", "src/polyfills.js"],

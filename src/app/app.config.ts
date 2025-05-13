@@ -48,14 +48,13 @@ import { SearchLayoutComponent } from './pages/search/layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
 import { TranslocoHttpLoader } from './transloco-loader';
+import { APP_FEATURES } from './tokens';
 
 // @ts-ignore
 import Flow from '@flowjs/flow.js';
 import { FlowInjectionToken } from '@flowjs/ngx-flow';
 
 registerLocaleData(localeFr);
-
-export const APP_FEATURES = new InjectionToken<{ assistant: { usePrefixName: boolean } }>('app.features');
 
 export const appConfig: ApplicationConfig = {
   providers: [
