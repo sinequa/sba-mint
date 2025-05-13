@@ -17,7 +17,7 @@
             <p class="text-primary truncate text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
 
             @if (showBookmark()) {
-            <bookmark-button [article]="article()" />
+              <bookmark-button [article]="article()" />
             }
           </span>
 
@@ -27,22 +27,26 @@
 
         <section class="flex items-center gap-2 text-xs">
           @if (docformatMetadata()) {
-          <Badge
-            variant="outline"
-            class="hover:bg-foreground hover:text-accent transition-colors duration-75 ease-in"
-            (click)="setFilter('docformat', docformatMetadata()!)">
-            {{ docformatMetadata() }}
-          </Badge>
+            <Badge
+              variant="outline"
+              class="hover:bg-foreground hover:text-accent transition-colors duration-75 ease-in"
+              (click)="setFilter('docformat', docformatMetadata()!)">
+              {{ docformatMetadata() }}
+            </Badge>
           }
 
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
             @if ((article().authors || { authors: [''] }).length > 0) {
-            <span><i class="far fa-user mr-1"></i>{{ article().authors[0] }}</span>
-            } @if (article().modified) {
-            <p class="flex items-baseline gap-1">
-              <i class="fa-fw far fa-calendar-day"></i>
-              <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
-            </p>
+              <span>
+                <i class="far fa-user mr-1"></i>
+                {{ article().authors[0] }}
+              </span>
+            }
+            @if (article().modified) {
+              <p class="flex items-baseline gap-1">
+                <i class="fa-fw far fa-calendar-day"></i>
+                <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
+              </p>
             }
           </div>
         </section>
@@ -53,16 +57,17 @@
   <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
     <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
 
-    @if (customMetadata()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if (metadata.fields) {
-    <div class="flex items-center gap-1 text-xs">
-      @if (metadata.title) {
-      <!-- hide it if the medata component is hidden -->
-      <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
-      } @for(field of metadata.fields; track $index) {
-      <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
+    @if (customMetadata()?.length && article()) {
+      @for (metadata of customMetadata(); track $index) {
+        @if (metadata.fields) {
+          <div class="flex items-center gap-1 text-xs">
+            @for (field of metadata.fields; track $index) {
+              <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
+            }
+          </div>
+        }
       }
-    </div>
-    } } }
+    }
   </CardContent>
   <CardFooter>
     <missing-terms [article]="article()" />
