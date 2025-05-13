@@ -24,13 +24,22 @@
     </ul>
   } @else if (query.isSuccess() && hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="sticky top-16 -mx-1 bg-white pt-1">
+    <div class="sticky top-16 z-10 -mx-1 bg-white pt-1">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
 
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" />
+
+      <app-did-you-mean class="text-alert py-1" [result]="result()" />
+
+      <sponsored-results />
+
+      <!-- sort selector and export button -->
+      <div class="mt-1 flex justify-end gap-1 has-[_+ul>li.no-records]:hidden">
+        <sort-selector [result]="result()!" [position]="position()" (onSort)="onSort($event)" />
+      </div>
     </div>
 
     <!-- if assistant is allowed -->
@@ -67,15 +76,6 @@
       </div>
     }
 
-    <app-did-you-mean class="text-alert py-1" [result]="result()" />
-
-    <sponsored-results />
-
-    <!-- sort selector and export button -->
-    <div class="mt-1 flex justify-end gap-1 has-[_+ul>li.no-records]:hidden">
-      <sort-selector [result]="result()!" [position]="position()" (onSort)="onSort($event)" />
-    </div>
-
     <!-- display all records -->
     <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
       @for (page of query.data()?.pages; track page) {
@@ -95,6 +95,12 @@
       <div infinity-scroll (onScroll)="nextPage()"></div>
     }
   } @else {
+    <!-- tabs and filters -->
+    <div class="sticky top-16 z-10 -mx-1 bg-white pt-1">
+      @if (isTabSearchActive()) {
+        <navbar-tabs class="mt-2 block" />
+      }
+    </div>
     <!-- display a panel to inform the user that no results were found -->
     <NoResult class="mt-4" />
   }

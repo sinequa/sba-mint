@@ -1,8 +1,7 @@
 import { Type } from '@angular/core';
 
 import { Article } from '@sinequa/atomic';
-import { PreviewDefaultComponent } from '../components/preview/default/default.component';
-import { PreviewSlideComponent } from '../components/preview/slide/slide.component';
+import { PreviewComponent } from '../components/preview/preview';
 import { SlideCard } from '../components/cards/slide/slide-card';
 import { RecordCard } from '../components/cards/record/record-card';
 
@@ -26,13 +25,13 @@ export const documentTypeMap: DocumentTypeMap[] = [
   {
     documentTypes: [DEFAULT_DOCUMENT_TYPE],
     articleComponent: RecordCard,
-    previewComponent: PreviewDefaultComponent
+    previewComponent: PreviewComponent
   },
   // --- Add new document types here ---
   {
     documentTypes: ['pptx', 'ppt', 'powerpoint'],
     articleComponent: SlideCard,
-    previewComponent: PreviewSlideComponent
+    previewComponent: PreviewComponent
   }
   // ---
 ];

@@ -17,9 +17,11 @@ import {
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 
+import { AppSidebarComponent } from './components/sidebar/sidebar.component';
+
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
+  imports: [CommonModule, RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent, AppSidebarComponent],
   templateUrl: './app.component.html',
   styles: [
     `

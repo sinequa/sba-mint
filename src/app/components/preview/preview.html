@@ -1,0 +1,45 @@
+<app-preview-navbar class="block border-b border-gray-200 bg-white" [article]="article()" />
+
+<div class="flex h-full flex-col gap-0.5 overflow-auto">
+  @if (previewData() && article()) {
+  <section class="flex flex-col gap-4 border-b border-gray-200 p-6">
+    <app-preview-header [article]="article()" />
+  </section>
+
+  @if (loading()) {
+  <section class="h-[2px] w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+    <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
+  </section>
+  }
+
+  <!-- Tab Navigation only if the "display summary is available " -->
+  <app-preview-tabs [(activeTab)]="activeTab" [(showAssistants)]="showAssistants" [isStreaming]="isStreaming()" />
+
+  <!-- tab contents -->
+  <div class="relative flex-grow overflow-auto">
+    <!-- Summary Tab Content -->
+    @if(displaySummaryContent()) {
+    <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'summary'">
+      <assistant
+        [instanceId]="summarizeInstanceId()"
+        [query]="miniPreviewQuery"
+        [showAssistant]="showSummarizeAssistant()"
+        (isStreaming)="handleStreaming($event)"
+        class="flex-grow" />
+    </div>
+    }
+
+    <!-- Chat with Doc Tab Content -->
+    @if(displayChatWithDocContent()) {
+    <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'discussion'">
+      <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+    </div>
+    }
+
+    <!-- Preview Tab Content -->
+    <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'preview'">
+      <preview-content class="px-6 py-4" [previewData]="previewData()" [(loading)]="loading" />
+    </div>
+  </div>
+  }
+</div>

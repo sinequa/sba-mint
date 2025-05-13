@@ -4,17 +4,14 @@ import { RouterOutlet } from '@angular/router';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { PageHeaderComponent } from '@sinequa/ui';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-search-layout',
-  imports: [RouterOutlet, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
+  imports: [RouterOutlet, PageHeaderComponent, NavbarComponent],
   template: `
-    <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
+    <PageHeader class="fixed top-0 z-100 ml-8 w-full bg-white">
       <app-navbar class="layout-search py-4" />
     </PageHeader>
-
-    <app-sidebar class="fixed top-0 h-full" />
 
     <div class="mt-16">
       <router-outlet />

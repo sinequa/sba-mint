@@ -19,7 +19,7 @@ import { ButtonComponent, cn } from '@sinequa/ui';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 
-import { APP_FEATURES } from '../../../app.config';
+import { APP_FEATURES } from '../../../tokens';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { SearchBase } from '../search.abstract';
