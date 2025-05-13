@@ -3,7 +3,9 @@
     "prettier-plugin-tailwindcss",
     "prettier-plugin-package"
   ],
-  "tailwindFunctions": ["tv"],
+  "tailwindFunctions": [
+    "tv"
+  ],
   "tabWidth": 2,
   "useTabs": false,
   "singleQuote": true,
@@ -13,5 +15,13 @@
   "trailingComma": "none",
   "bracketSameLine": true,
   "printWidth": 160,
-  "endOfLine": "crlf"
+  "endOfLine": "crlf",
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }
