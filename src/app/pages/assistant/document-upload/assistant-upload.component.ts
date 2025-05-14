@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { DocumentUploadComponent, DocumentOverviewComponent, DocumentListComponent } from '@sinequa/assistant/chat';
@@ -39,27 +39,29 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
       <DialogContent class="flex flex-col gap-4">
         <sq-document-upload [instanceId]="instanceId()" />
 
-        <div class="flex items-center">
-          <h3 class="pointer-events-none grow text-sm font-semibold text-gray-600">
-            <i class="far fa-folder-open me-1"></i>
-            {{ 'assistant.uploaded' | transloco }}
-          </h3>
-          <button
-            variant="ghost"
-            [title]="'assistant.refresh' | transloco"
-            [attr.aria-label]="'assistant.refresh' | transloco"
-            (click)="documentList?.updateUploadedDocumentsList()">
-            <i class="fas fa-sync"></i>
-          </button>
-          <button
-            variant="ghost"
-            [title]="'assistant.delete-all' | transloco"
-            [attr.aria-label]="'assistant.delete-all' | transloco"
-            (click)="documentList?.deleteAllDocuments()">
-            <i class="fas fa-trash"></i>
-          </button>
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow">
+          <div class="flex items-center">
+            <h3 class="pointer-events-none grow text-sm font-semibold text-gray-600">
+              <i class="far fa-folder-open me-1"></i>
+              {{ 'assistant.uploaded' | transloco }}
+            </h3>
+            <button
+              variant="ghost"
+              [title]="'assistant.refresh' | transloco"
+              [attr.aria-label]="'assistant.refresh' | transloco"
+              (click)="documentList?.updateUploadedDocumentsList()">
+              <i class="fas fa-sync"></i>
+            </button>
+            <button
+              variant="ghost"
+              [title]="'assistant.delete-all' | transloco"
+              [attr.aria-label]="'assistant.delete-all' | transloco"
+              (click)="documentList?.deleteAllDocuments()">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <sq-document-list #documentList [instanceId]="instanceId()"> </sq-document-list>
         </div>
-        <sq-document-list #documentList [instanceId]="instanceId()"> </sq-document-list>
       </DialogContent>
 
       <DialogFooter>
