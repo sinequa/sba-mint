@@ -19,7 +19,7 @@ import {
   SavedSearchesComponent,
   SavedSearchesService
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
@@ -60,6 +60,7 @@ export type NavbarMenu = {
   ]
 })
 export class NavbarComponent {
+  cn = cn;
   readonly showInput = input<boolean>(true);
   readonly showMenu = input<boolean>(true);
 
