@@ -16,7 +16,16 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
-  imports: [TranslocoPipe, AssistantComponent, SavedChatsComponent, AssistantUploadComponent, AggregationComponent, PageHeaderComponent, NavbarComponent, ButtonComponent],
+  imports: [
+    TranslocoPipe,
+    AssistantComponent,
+    SavedChatsComponent,
+    AssistantUploadComponent,
+    AggregationComponent,
+    PageHeaderComponent,
+    NavbarComponent,
+    ButtonComponent
+  ],
   providers: [provideTranslocoScope('filters')],
   template: `
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
@@ -50,7 +59,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           </section>
         }
         <section class="pt-6">
-          <Aggregation name="Treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
+          <Aggregation name="Treepath" column="treepath" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
