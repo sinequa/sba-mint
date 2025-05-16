@@ -12,15 +12,15 @@
   [(ngModel)]="value"
   (keydown)="onKeyDown($event)"
   (click)="inputClicked()">
-  @if (showSave() && value() !== '') {
+  @if (showSave() && (value() !== '' || hasFilters())) {
     <button
       variant="icon"
       size="xs"
       class="peer-disabled:opacity-50"
       [attr.title]="'searchInput.saveSearch' | transloco"
       [attr.aria-label]="'searchInput.saveSearch' | transloco"
-      (click)="saveQuery()"
-      (keydown.enter)="saveQuery()">
+      (click)="saveQuery($event)"
+      (keydown.enter)="saveQuery($event)">
       @if (savedSearch()) {
         <i class="fa-fw fas fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
       } @else {

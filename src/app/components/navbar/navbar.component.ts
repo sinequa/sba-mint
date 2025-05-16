@@ -139,8 +139,6 @@ export class NavbarComponent {
       if (index !== -1) {
         this.savedSearchesService.deleteSavedSearch(index);
       }
-    } else {
-      this.savedSearchesService.saveSearch();
     }
   }
 }

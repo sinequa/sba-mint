@@ -12,12 +12,13 @@ import {
   AutocompleteService,
   debouncedSignal,
   DrawerAdvancedFiltersComponent,
+  SavedSearchDialog,
   DrawerStackService,
   QueryParamsStore,
   SavedSearch,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
 
 import { APP_FEATURES } from '../../tokens';
 
@@ -51,11 +52,19 @@ export class SearchInputComponent {
   private readonly appStore = inject(AppStore);
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
+  private readonly dialogService = inject(DialogService);
   private readonly appFeatures = inject(APP_FEATURES);
 
   public readonly value = model<string>('');
 
   protected readonly saveAnimation = signal<boolean>(false);
+
+  hasFilters = computed(() => {
+    // when the query parameters store updates, update the hasFilters signal
+    // to show or hide the clear filters button
+    const state = getState(this.queryParamsStore);
+    return Array.isArray(state.filters) && state.filters.length > 0;
+  });
 
   protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
   readonly instanceId = computed(() => {
@@ -86,7 +95,7 @@ export class SearchInputComponent {
     const url = window.location.hash.substring(1);
     const filtersSplit = url.split('f=');
     const filters = filtersSplit.length > 1 ? JSON.parse(decodeURIComponent(filtersSplit[1].split('&')[0]))[0] : undefined;
-    const display = this.value();
+    const text = this.value();
 
     // returns true if a save search matches the display and filters
     return savedSearches.find(search => {
@@ -108,7 +117,7 @@ export class SearchInputComponent {
         }
       }
 
-      return search.display === display; // lastly, if the text is similar
+      return (search as any).label === text; // lastly, if the text is similar
     });
   });
 
@@ -164,11 +173,21 @@ export class SearchInputComponent {
     this.popoverElement().hidePopover();
   }
 
-  protected saveQuery(): void {
-    this.saveAnimation.set(true);
-    setTimeout(() => this.saveAnimation.set(false), 1000);
+  protected saveQuery(event: Event): void {
+    event.stopPropagation();
 
-    this.saved.emit(this.savedSearch());
+    if (this.savedSearch()) {
+      this.saveAnimation.set(true);
+      setTimeout(() => this.saveAnimation.set(false), 1000);
+      this.saved.emit(this.savedSearch());
+    } else {
+      this.dialogService.open(SavedSearchDialog, this.value()).then((event: any) => {
+        if (event === 'dialog-confirm') {
+          this.saveAnimation.set(true);
+          setTimeout(() => this.saveAnimation.set(false), 1000);
+        }
+      });
+    }
   }
 
   /**
