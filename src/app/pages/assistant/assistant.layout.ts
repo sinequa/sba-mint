@@ -13,6 +13,7 @@ import { APP_FEATURES } from '../../tokens';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
+import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -24,10 +25,13 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
     AggregationComponent,
     PageHeaderComponent,
     NavbarComponent,
-    ButtonComponent
+    ButtonComponent,
+    AppSidebarComponent
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
+    <app-sidebar class="fixed top-0 h-full" />
+
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
