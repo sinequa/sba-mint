@@ -84,7 +84,7 @@ export class UserMenuComponent {
   }
 
   handleOverride() {
-    this.overrideUserDialog()?.showModal();
+    this.overrideUserDialog()?.open();
   }
 
   handleOverrideUser() {
@@ -92,7 +92,7 @@ export class UserMenuComponent {
   }
 
   handleResetUserSettings() {
-    this.resetUserSettingsDialog()?.showModal();
+    this.resetUserSettingsDialog()?.open();
   }
 
   openSinequa() {
