@@ -10,6 +10,8 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   selector: 'widgets-layout',
   imports: [RouterOutlet, PageHeaderComponent, NavbarComponent, AppSidebarComponent],
   template: `
+    <app-sidebar class="fixed top-0 h-full" />
+
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar class="layout-search py-4" />
     </PageHeader>

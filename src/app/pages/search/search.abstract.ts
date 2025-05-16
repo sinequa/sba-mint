@@ -40,8 +40,8 @@ export abstract class SearchBase<T> implements OnDestroy {
   protected readonly queryText = signal<string>('');
 
   // the Assistant is expanded and visible by default
-  protected readonly assistantCollapsed = signal<boolean>(false);
-  protected readonly showAssistant = signal<boolean>(true);
+  protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly showAssistant = signal<boolean>(false);
 
   protected readonly searchService = inject(SearchService);
   protected readonly drawerStack = inject(DrawerStackService);

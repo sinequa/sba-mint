@@ -20,6 +20,7 @@ import { TabComponent, TabsComponent } from '@sinequa/ui';
 import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
+import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 type HomeTab = {
   name: string;
@@ -62,7 +63,7 @@ const homeFeatures: HomeTab[] = [
 
 @Component({
   selector: 'app-home',
-  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent],
+  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent, AppSidebarComponent],
   templateUrl: './home.component.html',
   host: {
     class: 'layout-search h-screen',
