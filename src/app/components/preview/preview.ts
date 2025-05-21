@@ -44,10 +44,6 @@ export class PreviewComponent {
   // this signal is used by the summarize assistant to know if the assistant is streaming
   isStreaming = signal<boolean>(false);
 
-  // displaySummary = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.summarizeInstanceId()]?.['defaultValues']?.['service_id']);
-
-  // displayChatWithDoc = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.chatWithDocIntanceId()]?.['defaultValues']?.['service_id'])
-
   readonly summarizeInstanceId = computed(() => {
     const {
       assistant: { usePrefixName = true }
@@ -72,10 +68,8 @@ export class PreviewComponent {
     }
   });
 
-  displaySummaryContent = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.summarizeInstanceId()]?.['defaultValues']?.['service_id']);
-  displayChatWithDocContent = computed(
-    () => this.appStore.customizationJson()?.['assistants']?.[this.chatWithDocIntanceId()]?.['defaultValues']?.['service_id']
-  );
+  displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
+  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocIntanceId()));
 
   // this is set by the tabs component
   showAssistants = signal<{ name: 'summary' | 'discussion'; enabled: boolean; visible: boolean }[]>([

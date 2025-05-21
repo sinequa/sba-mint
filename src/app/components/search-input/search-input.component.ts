@@ -66,7 +66,7 @@ export class SearchInputComponent {
     return Array.isArray(state.filters) && state.filters.length > 0;
   });
 
-  protected readonly allowAI = computed(() => this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id']);
+  protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
   readonly instanceId = computed(() => {
     const {
       assistant: { usePrefixName = true }
