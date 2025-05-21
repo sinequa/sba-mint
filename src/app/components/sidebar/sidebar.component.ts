@@ -37,7 +37,7 @@ export class AppSidebarComponent {
 
   // Updated allowAI computed signal
   protected readonly allowAI = computed(() => {
-    return !!this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['defaultValues']?.['service_id'];
+    return !!this.appStore.isAssistantAllowed(this.instanceId());
   });
 
   openHelp() {

@@ -114,9 +114,7 @@ export class AssistantLayoutComponent {
   isAssistantReady = signal(false);
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(
-    () => Boolean(this.appStore.customizationJson()?.['assistants']?.[this.instanceId()]?.['savedChatSettings']?.['display']) ?? false
-  );
+  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']) ?? false);
 
   // this is used to know if the document uploader component should be displayed
   readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']) ?? false);
