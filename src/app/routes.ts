@@ -2,7 +2,6 @@ import { Data, Route } from '@angular/router';
 
 import { AuthGuard, ErrorComponent, InitializationGuard, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
 
-import { AssistantLayoutComponent } from './pages/assistant/assistant.layout';
 import { BookmarksComponent } from './pages/widgets/bookmarks/bookmarks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RecentSearchesComponent } from './pages/widgets/recent-searches/recent-searches.component';
