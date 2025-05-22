@@ -63,7 +63,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
           </section>
         }
         <section class="pt-6">
-          <Aggregation name="Treepath" column="treepath" [showCount]="true" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
+          <Aggregation name="Sources" column="treepath" [showCount]="true" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
