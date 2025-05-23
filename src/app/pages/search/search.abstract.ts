@@ -172,6 +172,17 @@ export abstract class SearchBase<T> implements OnDestroy {
       this.aggregationsStore.update(result.aggregations);
     });
 
+    effect(() => {
+      const { collapseAssistant } = getState(this.usersettingsStore);
+
+      if (collapseAssistant !== undefined) {
+        this.assistantCollapsed.set(collapseAssistant);
+        if (!this.showAssistant()) {
+          this.showAssistant.set(!collapseAssistant);
+        }
+      }
+    });
+
     this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
   }
 
@@ -224,5 +235,12 @@ export abstract class SearchBase<T> implements OnDestroy {
 
   protected beforeSearch(query: Query): void {
     // Override this method to perform any actions before the search is performed
+  }
+
+  /**
+   * Switch the assistant collapsed status.
+   */
+  onAssistantCollapse() {
+    this.usersettingsStore.updateAssistantCollapsed(!this.assistantCollapsed());
   }
 }
