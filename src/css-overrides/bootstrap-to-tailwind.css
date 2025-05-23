@@ -62,6 +62,10 @@
   .pb-2 {
     @apply pb-2;
   }
+  .list-unstyled {
+    /* Remove default list styling */
+    @apply list-none;
+  }
   .list-group-item {
     /* Basic list group item styling - adjust padding/border as needed */
     @apply block w-full px-4 py-2;

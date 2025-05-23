@@ -76,6 +76,7 @@
     "@angular/compiler-cli": "^19.2.6",
     "@floating-ui/dom": "^1.6.3",
     "@jsverse/transloco-scoped-libs": "^7.0.1",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/flowjs": "^2.13.14",
     "@types/node": "^22.15.12",
     "autoprefixer": "^10.4.16",

@@ -30,6 +30,7 @@ import {
 
 import { Article, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { cn } from '@sinequa/ui';
 
 @Component({
   selector: 'assistant, Assistant',
@@ -37,7 +38,7 @@ import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, Sele
   template: `
     @if (isChatInitialized() || showAssistant()) {
       <sq-chat-v3
-        [class]="class()"
+        [class]="cn('prose prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0', class())"
         #sqChat
         [query]="_query"
         [chat]="initChat"
@@ -65,6 +66,7 @@ import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, Sele
   encapsulation: ViewEncapsulation.None
 })
 export class AssistantComponent {
+  cn = cn;
   sqChat = viewChild(ChatComponent);
 
   // Inject services
