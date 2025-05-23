@@ -1,5 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
 /* css overrides */
 @import './css-overrides/angular-cdk';
 @import './css-overrides/bootstrap-to-tailwind';
@@ -9,7 +11,6 @@
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
 @source not "../docusaurus/";
-
 *,
 *::before,
 *::after {
@@ -218,4 +219,10 @@ ul:has(card.selected) card:not(.selected) {
 /* safari fix */
 summary::-webkit-details-marker {
   display: none;
+}
+
+sq-chat-v3 {
+  .references li {
+    list-style: none;
+  }
 }
