@@ -36,8 +36,7 @@ body {
 
   --logo-small: url('assets/logo/small.svg');
   --logo-large: url('assets/logo/large.svg');
-  --logo-small-alt-text: 'Sinequa logo';
-  --logo-large-alt-text: 'Sinequa logo';
+  --logo-alt-text: 'Sinequa logo';
 
   --color-backdrop: rgba(0, 0, 0, 0.4);
   --color-background: #ffffff;

@@ -1,10 +1,9 @@
-import { Component, effect, inject } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgxSonnerToaster } from 'ngx-sonner';
 
-import { RouterOutlet } from '@angular/router';
-import { ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-root',
@@ -13,37 +12,17 @@ import { ApplicationStore, AppStore, BackdropComponent, DrawerStackComponent, Us
   styles: [
     `
       #navbar-logo {
-        content: var(--logo-small) / var(--logo-small-alt-text);
+        content: var(--logo-small) / var(--logo-alt-text);
       }
     `
   ]
 })
 export class AppComponent {
-  private readonly userSettingsStore = inject(UserSettingsStore);
-  private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
-
-  private readonly title = inject(Title);
-
+  private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly applicationStore = inject(ApplicationStore);
 
   constructor() {
-    effect(() => {
-      const general = this.appStore.general();
-
-      if (general) {
-        if (general.name) {
-          this.title.setTitle(general!.name);
-        }
-        if (general.logo?.light?.small) {
-          document.documentElement.style.setProperty(`--logo-small`, `url(${general.logo?.light?.small})`);
-        }
-        if (general.logo?.light?.large) {
-          document.documentElement.style.setProperty(`--logo-large`, `url(${general.logo?.light?.large})`);
-        }
-      }
-    });
-
     this.setupApplicationLanguage();
     this.applicationStore.updateReadyState(true);
   }
