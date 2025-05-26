@@ -1,10 +1,13 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, effect, inject, input, signal, Type } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, CCApp, isNotInputEvent, Query, QueryParams, Result } from '@sinequa/atomic';
+import { Aggregation, Article, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
   AppStore,
@@ -26,15 +29,12 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn } from '@sinequa/ui';
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, Subscription, tap } from 'rxjs';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { APP_FEATURES } from '../../../tokens';
 
-type R = Result & { nextPage?: number; previousPage?: number };
+type Result = R & { nextPage?: number; previousPage?: number };
 type QP = {
   f?: string; // filters list
   p?: number; // page number
@@ -80,7 +80,7 @@ type QP = {
     '[attr.drawer-opened]': 'drawerOpened() || false'
   }
 })
-export class SearchAllComponent<T = R> {
+export class SearchAllComponent {
   cn = cn;
 
   // input url bindings
@@ -141,7 +141,7 @@ export class SearchAllComponent<T = R> {
   hideFeedback = signal(false);
 
   // tanstack query
-  query = injectInfiniteQuery<R, T>(() => ({
+  query = injectInfiniteQuery<Result>(() => ({
     queryKey: [`search-${this.t()}`, this.keys(), this.userOverrideActive()],
     queryFn: ({ pageParam }) => {
       const q = this.queryParamsStore.getQuery();
@@ -295,6 +295,17 @@ export class SearchAllComponent<T = R> {
       this.aggregationsStore.update(result.aggregations);
     });
 
+    effect(() => {
+      const { collapseAssistant } = getState(this.usersettingsStore);
+
+      if (collapseAssistant !== undefined) {
+        this.assistantCollapsed.set(collapseAssistant);
+        if (!this.showAssistant()) {
+          this.showAssistant.set(!collapseAssistant);
+        }
+      }
+    });
+
     this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
 
     this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
@@ -350,6 +361,13 @@ export class SearchAllComponent<T = R> {
 
   onFeedbackClose(): void {
     this.hideFeedback.set(true);
+  }
+
+  /**
+   * Switch the assistant collapsed status.
+   */
+  onAssistantCollapse() {
+    this.usersettingsStore.updateAssistantCollapsed(!this.assistantCollapsed());
   }
 
   /**
