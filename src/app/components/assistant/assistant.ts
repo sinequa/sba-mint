@@ -187,7 +187,7 @@ export class AssistantComponent {
   }
 
   handlePreview(event: ChatContextAttachment, withQueryText = true) {
-    this.drawerStack.stack(event.record as Article, withQueryText);
+    this.drawerStack.replace(event.record as Article);
 
     const previewHighlights: PreviewHighlights | undefined =
       event.parts && event.parts.length

@@ -1,15 +1,15 @@
 import { Data, Route } from '@angular/router';
 
-import { AuthGuard, ErrorComponent, InitializationGuard, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
+import { AuthGuard, ErrorComponent, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
 
-import { BookmarksComponent } from './pages/widgets/bookmarks/bookmarks.component';
 import { HomeComponent } from './pages/home/home.component';
-import { RecentSearchesComponent } from './pages/widgets/recent-searches/recent-searches.component';
-import { SearchLayoutComponent } from './pages/search/layout';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SavedSearchesComponent } from './pages/widgets/saved-searches/saved-searches.component';
+import { SearchLayoutComponent } from './pages/search/layout';
+import { BookmarksComponent } from './pages/widgets/bookmarks/bookmarks.component';
 import { CollectionsComponent } from './pages/widgets/collections/collections.component';
 import { WidgetsLayoutComponent } from './pages/widgets/layout';
+import { RecentSearchesComponent } from './pages/widgets/recent-searches/recent-searches.component';
+import { SavedSearchesComponent } from './pages/widgets/saved-searches/saved-searches.component';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -31,27 +31,25 @@ export const routes: ExtendedRoutes = [
   {
     path: 'assistant',
     loadComponent: () => import('./pages/assistant/assistant.layout').then(m => m.AssistantLayoutComponent),
-    canActivate: [AuthGuard(), InitializationGuard()],
+    canActivate: [AuthGuard()],
     resolve: { queryName: queryNameResolver }
   },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard(), InitializationGuard()], resolve: { queryName: queryNameResolver } },
-
-  // TODO: regroup these routes in a single one
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'widgets',
     component: WidgetsLayoutComponent,
-    canActivate: [AuthGuard(), InitializationGuard()],
+    canActivate: [AuthGuard()],
     children: [
-      { path: 'recent-searches', component: RecentSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()] },
-      { path: 'bookmarks', component: BookmarksComponent, canActivate: [AuthGuard(), InitializationGuard()] },
-      { path: 'saved-searches', component: SavedSearchesComponent, canActivate: [AuthGuard(), InitializationGuard()] },
-      { path: 'collections', component: CollectionsComponent, canActivate: [AuthGuard(), InitializationGuard()] }
+      { path: 'recent-searches', component: RecentSearchesComponent },
+      { path: 'bookmarks', component: BookmarksComponent },
+      { path: 'saved-searches', component: SavedSearchesComponent },
+      { path: 'collections', component: CollectionsComponent }
     ]
   },
   {
     path: 'search',
     component: SearchLayoutComponent,
-    canActivate: [AuthGuard(), InitializationGuard()],
+    canActivate: [AuthGuard()],
     resolve: { queryName: queryNameResolver },
     children: [{ path: '**', component: SearchAllComponent, resolve: { queryName: queryNameResolver } }]
   },

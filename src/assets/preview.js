@@ -180,16 +180,23 @@ document.addEventListener('DOMContentLoaded', function () {
       var box = el.getBoundingClientRect();
       return box.width && box.height;
     });
-    (visibleElements[0] || elements[0]).scrollIntoView({
-      block: 'center',
-      behavior: 'auto'
-    });
-    if (usePassageHighlighter) {
-      selectPassage(visibleElements);
-    } else {
-      selectHighlight(elements);
+
+    const el = elements.length > 0 ? visibleElements[0] || elements[0] : null;
+    if (el) {
+      el.scrollIntoView({
+        block: 'center',
+        behavior: 'auto'
+      });
+
+      if (usePassageHighlighter && visibleElements.length > 0) {
+        selectPassage(visibleElements);
+      } else if (elements.length > 0) {
+        selectHighlight(elements);
+      }
     }
-    returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
+    if (visibleElements.length > 0) {
+      returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
+    }
   }
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
@@ -242,7 +249,9 @@ document.addEventListener('DOMContentLoaded', function () {
     removeAllClasses('sq-first');
     removeAllClasses('sq-last');
     removeAllElements('svg line.sq-svg');
-    passageHighlighter.style.display = 'none';
+    if (passageHighlighter) {
+      passageHighlighter.style.display = 'none';
+    }
   }
   function getHtml(ids) {
     if (!ids) return [];

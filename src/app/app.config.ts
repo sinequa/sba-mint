@@ -12,6 +12,7 @@ import { appInitializerFn } from '@sinequa/atomic';
 import {
   AGGREGATIONS_NAMES,
   AGGREGATIONS_NAMES_PRESET_DEFAULT,
+  ApplicationService,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
   COLLECTIONS_CONFIG,
@@ -30,8 +31,8 @@ import {
   auditInterceptorFn,
   authInterceptorFn,
   bodyInterceptorFn,
+  bootstrapApp,
   errorInterceptorFn,
-  signIn,
   toastInterceptorFn
 } from '@sinequa/atomic-angular';
 
@@ -59,8 +60,8 @@ export const appConfig: ApplicationConfig = {
     // this function is used to configure the application before it is loaded
     provideAppInitializer(appInitializerFn),
 
-    // this function is used to sign in the user
-    provideAppInitializer(() => signIn(inject(Router))),
+    // this function is used to sign in the user and bootstrap the application
+    provideAppInitializer(() => bootstrapApp(inject(Router), inject(ApplicationService), { createRoutes: true })),
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },
 

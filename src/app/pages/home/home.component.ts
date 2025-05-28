@@ -72,7 +72,7 @@ const homeFeatures: HomeTab[] = [
   styles: [
     `
       #logo {
-        content: var(--logo-large) / var(--logo-large-alt-text);
+        content: var(--logo-large) / var(--logo-alt-text);
       }
     `
   ],

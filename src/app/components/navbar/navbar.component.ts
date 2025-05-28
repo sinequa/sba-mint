@@ -54,7 +54,7 @@ export type NavbarMenu = {
   styles: [
     `
       #logo {
-        content: var(--logo-small) / var(--logo-small-alt-text);
+        content: var(--logo-small) / var(--logo-alt-text);
       }
     `
   ]

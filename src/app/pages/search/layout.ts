@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-
 import { provideTranslocoScope } from '@jsverse/transloco';
+
 import { PageHeaderComponent } from '@sinequa/ui';
+
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 

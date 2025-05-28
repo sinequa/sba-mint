@@ -1,4 +1,4 @@
-# Sinequa Mint (Beta)
+# Sinequa Mint
 
 Please watch the [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy) and visit the [Documentation website](https://sinequa.github.io/sba-mint/).
 
