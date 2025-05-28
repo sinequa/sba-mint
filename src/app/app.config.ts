@@ -109,7 +109,8 @@ export const appConfig: ApplicationConfig = {
     // this token is used to add specific aggregations to the filters bar
     // in the case of the example, we add the Money aggregation when available
     // in the search result
-    { provide: AGGREGATIONS_NAMES, useValue: ['Money', 'Dates2', 'Companies2', 'Companies', ...AGGREGATIONS_NAMES_PRESET_DEFAULT] },
+    // { provide: AGGREGATIONS_NAMES, useValue: ['Money', 'Companies', ...AGGREGATIONS_NAMES_PRESET_DEFAULT] },
+
     // this token is use to configure how many filters are displayed in the filter bar before to be moved to the "More" button
     // in the case of the example, we set the number of filters to 10, so if we have 15 filters, 10 will be displayed in the filter bar and 5 will be moved to the "More" button
     // if the space is not enough, the filters will be moved to the "More" button
