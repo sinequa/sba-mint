@@ -1,16 +1,15 @@
 import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, model, signal, viewChild } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { PreviewActionsComponent } from './actions';
-import { PreviewData } from '@sinequa/atomic';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+import { PreviewData } from '@sinequa/atomic';
 import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { PreviewActionsComponent } from './actions';
 
 @Component({
   selector: 'preview-content',
   standalone: true,
   imports: [TranslocoPipe, PreviewActionsComponent],
-  providers: [provideTranslocoScope({ scope: 'preview' })],
   template: `
     <!-- Use hidden and absolute positioning -->
     @if (canLoadIframe()) {

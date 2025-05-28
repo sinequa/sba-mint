@@ -224,4 +224,8 @@ sq-chat-v3 {
   .references li {
     list-style: none;
   }
+
+  .sq-chat-message-actions {
+    z-index: 1 !important;
+  }
 }
