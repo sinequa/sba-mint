@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { PreviewService } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
@@ -7,7 +7,6 @@ import { ButtonComponent } from '@sinequa/ui';
 @Component({
   selector: 'preview-actions',
   imports: [TranslocoPipe, ButtonComponent],
-  providers: [provideTranslocoScope({ scope: 'preview' })],
   template: `
     <button variant="ghost" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>

@@ -1,6 +1,6 @@
 import { Component, Input, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
@@ -28,8 +28,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     DrawerNavbarComponent,
     VerticalDividerComponent
   ],
-  templateUrl: './navbar.component.html',
-  providers: [provideTranslocoScope({ scope: 'preview' })]
+  templateUrl: './navbar.component.html'
 })
 export class PreviewNavbarComponent {
   cn = cn;

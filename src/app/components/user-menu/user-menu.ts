@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { getHelpIndexUrl, globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
+import { logout, setGlobalConfig } from '@sinequa/atomic';
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import {
