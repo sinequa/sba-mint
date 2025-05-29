@@ -2,7 +2,7 @@ import { KeyValuePipe } from '@angular/common';
 import { Component, computed, inject, InjectionToken, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
-import { HashMap, provideTranslocoScope, Translation, TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, combineLatest, map, of, switchMap } from 'rxjs';
 
 import { Suggestion } from '@sinequa/atomic';

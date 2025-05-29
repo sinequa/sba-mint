@@ -116,7 +116,7 @@ export class RecentSearchesComponent {
       f: (search.queryParams?.filters ?? []).length > 0 ? JSON.stringify(search.queryParams?.filters) : undefined,
       t: search.queryParams?.tab,
       p: search.queryParams?.page,
-      queryName: search.queryParams?.queryName
+      n: search.queryParams?.name
     } as any;
   }
 
