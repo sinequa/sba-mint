@@ -5,7 +5,7 @@ name: Build for PR CI
 
 on:
   pull_request:
-    branches: 
+    branches:
         - "release/*"
         - "dev/*"
 
