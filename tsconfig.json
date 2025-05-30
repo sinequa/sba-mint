@@ -13,7 +13,7 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "importHelpers": false,
     "strictPropertyInitialization": false,
     "target": "ESNext",
