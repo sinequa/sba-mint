@@ -5,18 +5,18 @@ name: Build for PR CI
 
 on:
   pull_request:
-    branches: 
+    branches:
         - "release/*"
         - "dev/*"
 
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: code-scanning
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v2
