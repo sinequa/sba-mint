@@ -4,7 +4,9 @@ title: User Settings
 ---
 
 ## Overview
+
 This module provides functionality to interact with user settings:
+
 - Retrieve current user settings from the backend
 - Save complete user settings to the backend
 - Update partial user settings in the backend
@@ -13,11 +15,13 @@ These operations allow for efficient management and synchronization
 of user preferences and configurations within the application.
 
 ### fetchUserSettings\<T\>()
+
 Fetches the user settings from the backend API.
 
 __Returns__ A promise that resolves to the user settings.
 
 #### Example
+
 ```js title="example-fetch-user-settings.js"
 import { fetchUserSettings } from "@sinequa/atomic";
 
@@ -33,8 +37,8 @@ console.log("settings", settings);
 // Output: a UserSettings object
 ```
 
-
 ### saveUserSettings\<T\>()
+
 Saves user settings to the server.
 
 | Parameter | Type | Description |
@@ -45,6 +49,7 @@ Saves user settings to the server.
 __Returns__ A promise that resolves to the saved user settings object.
 
 #### Example
+
 ```js title="example-save-user-settings.js"
 import { saveUserSettings } from "@sinequa/atomic";
 
@@ -52,6 +57,7 @@ saveUserSettings(usersettings).then(_ => console.log("save succeeded!"))
 ```
 
 ### patchUserSettings\<T\>()
+
 Patches (partially updates) user settings on the server.
 
 | Parameter | Type | Description |
@@ -62,6 +68,7 @@ Patches (partially updates) user settings on the server.
 __Returns__ A promise that resolves to the updated user settings object.
 
 #### Example
+
 ```js title="example-patch-user-settings.js"
 import { patchUserSettings } from "@sinequa/atomic";
 
@@ -75,6 +82,7 @@ console.log("settings", settings);
 ```
 
 ### deleteUserSettings()
+
 Deletes all user settings by saving an empty object.
 :::warning
 This effectively resets the user settings to their default state.
@@ -83,6 +91,7 @@ This effectively resets the user settings to their default state.
 __Returns__ A promise that resolves when the user settings have been successfully deleted.
 
 #### Example
+
 ```js title="example-delete-user-settings.js"
 import { deleteUserSettings } from "@sinequa/atomic";
 
@@ -93,4 +102,3 @@ deleteUserSettings().then(() => {
   console.error("Failed to delete user settings:", error);
 });
 ```
-

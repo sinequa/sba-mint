@@ -20,6 +20,17 @@ setFromUrl(url: string): void
 |-----------|--------|--------------------------------------|
 | url       | string | The URL from which to extract params |
 
+### addFilter()
+
+Adds a filter to the store's state.
+
+```typescript
+addFilter(filter: LegacyFilter): void
+```
+
+| Parameter | Type         | Description          |
+|-----------|--------------|----------------------|
+| filter    | LegacyFilter | The filter to add    |
 
 ### updateFilter()
 
@@ -41,34 +52,35 @@ Clears the filter.
 clearFilter(): void
 ```
 
+### clearBasket()
+
+Clears the basket from the state.
+
+```typescript
+clearBasket(): void
+```
+
 ### patch()
 
 Patches the query parameters with the given value.
 
 ```typescript
-patch(params: Partial<QueryParams>): void
+patch(params: Partial<QueryParamsState>): void
 ```
 
-| Parameter | Type              | Description          |
-|-----------|-------------------|----------------------|
-| params    | QueryParams | The params to patch |
+| Parameter | Type                     | Description                |
+|-----------|--------------------------|----------------------------|
+| params    | Partial\<QueryParamsState\> | The parameters to patch with |
 
-### getFilterFromColumn()
+### getFilter()
 
-Gets the filter from the column.
+Retrieves a filter object based on the provided field or name.
 
 ```typescript
-getFilterFromColumn(column: string): LegacyFilter | undefined
+getFilter({ field, name }: { field: string | undefined; name: string | undefined }): Partial<LegacyFilter & { count: number }> | null
 ```
 
-| Parameter | Type   | Description          |
-|-----------|--------|----------------------|
-| column    | string | The column to filter |
-
-### getQuery()
-
-Constructs and returns a query object based on the current state of the store.
-  
-  ```typescript
-  getQuery(): Query
-  ```
+| Parameter     | Type    | Description                          |
+|---------------|---------|--------------------------------------|
+| field         | string  | The field to search for in filters   |
+| name          | string  | The name to search for in filters    |

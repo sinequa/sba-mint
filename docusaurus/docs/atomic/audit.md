@@ -12,9 +12,8 @@ The Audit module provides essential functions for managing audit-related activit
 
 By utilizing these capabilities, you can maintain comprehensive audit trails, track user actions, and enrich your application's data with valuable context for auditing and analysis.
 
-
-
 ### notify()
+
 Notifies the server about audit events.
 
 | parameter | type | description |
@@ -27,8 +26,8 @@ __Returns__ A promise that resolves to the updated audit events.
 Unlike others functions, this function is contained within an `Audit` namespace.
 :::
 
-
 #### Example
+
 ```js title="notify.js"
 import { Audit } from "@sinequa/atomic";
 
@@ -43,10 +42,9 @@ console.log("notify response", auditEvents);
 // will display the response
 ```
 
-
 ### addAuditAdditionalInfo()
-Adds additional audit information to the provided body object. As the _`body`_ reference is used here, the function does not returns nothing.
 
+Adds additional audit information to the provided body object. As the _`body`_ reference is used here, the function does not returns nothing.
 
 | parameter | type | description |
 | --- | --- | --- |
@@ -58,6 +56,7 @@ This is something that is likely to change in the future to ensure the immutabil
 :::
 
 #### Example
+
 ```ts title="example-add-audit-additional-info.ts"
 import { addAuditAdditionalInfo } from "@sinequa/atomic";
 
@@ -73,12 +72,14 @@ const body = {
 addAuditAdditionalInfo(body);
 // `$auditRecord` will contains { auditEvents: [{ type: "audit-info", details: { id: "abc", message: "audit message", sessionId: "...", url: "..." } }]}
 ```
+
 :::warning
 The following functions are used internally, use them with caution.  
 Prefers using the [`addAuditAdditionalInfo()`](#addauditadditionalinfo)
 :::
 
 ### ensureAuditRecord(_obj_)
+
 Handle legacy calls where auditEvents is either an AuditEvent, AuditEvent[] or AuditRecord.  
 
 | parameter | type | description |
@@ -88,6 +89,7 @@ Handle legacy calls where auditEvents is either an AuditEvent, AuditEvent[] or A
 __Returns__ The AuditRecord if the object is valid, otherwise undefined.
 
 ### addSessionId()
+
 Add a sessionid to all the audit events
 
 | parameter | type | description |
@@ -104,6 +106,7 @@ export type AuditRecord = {
 __Returns__ The modified audit record with the session ID added.
 
 ### addUrl()
+
 Add the URL to all the audit events
 
 | parameter | type | description |

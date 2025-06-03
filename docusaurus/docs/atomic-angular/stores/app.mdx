@@ -17,11 +17,11 @@ By default the custom json is empty
 :::
 
 #### Usage
+
 ```ts
 const json = inject(AppStore).customizationJson;
 // Output: {}
 ```
-
 
 ### sources
 
@@ -70,6 +70,7 @@ Available only in Sinequa 11.12+
 </details>
 
 #### Usage
+
 ```ts
 const json = inject(AppStore).sources;
 ```
@@ -91,6 +92,7 @@ Available only in Sinequa 11.12+
 ```
 
 #### Usage
+
 ```ts
 const json = inject(AppStore).filters;
 ```
@@ -102,13 +104,25 @@ const json = inject(AppStore).filters;
 Initializes the application state by fetching the app data from the appService
 and updating the store with the retrieved data.
 
-```ts	
-initialize(): void
+```ts
+initialize(): Promise<void>
 ```
 
 :::warning
 This method must be called just after the login step because you need to be authenticated first.
 :::
+
+### initializeWithAppName()
+
+Initializes the application state with the provided app name.
+
+```ts
+initializeWithAppName(appName: string): Promise<void>
+```
+
+| Parameter | Type   | Description                                      |
+|-----------|--------|--------------------------------------------------|
+| appName   | string | The name of the application to fetch the configuration for. |
 
 ### update()
 
@@ -122,8 +136,53 @@ Updates the application state with the provided `CCApp` object.
   |-----------|-------|--------------------------------------|
   | app       | CCApp | The new `CCApp` object to update the state with. |
   
+### getColumnAlias()
+
+Retrieves the alias of a column from the store.
+
+Returns The alias of the specified column, or the column name if no alias is found.
+
+```ts
+getColumnAlias(column: string): string
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| column  | string | The name of the column for which to retrieve the alias. |
+
+#### Usage
+
+```ts
+const alias = inject(AppStore).getColumnAlias("geo");
+// Output: "geo"
+```
+
+### getNamedCustomizationJson()
+
+Retrieves the customization json by name
+
+Returns The customization json object or undefined if not found
+
+:::caution
+Available only in Sinequa 11.12+
+:::
+  
+  ```ts
+  getNamedCustomizationJson(name: string): any
+  ```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| name  | string | The name of the customization json. |
+
+#### Usage
+
+```ts
+const json = inject(AppStore).getNamedCustomizationJson("routes");
+```
 
 ## Web Services features
+
 ### getWebServiceByType()
 
 Returns the web service object if found, otherwise `undefined`.
@@ -131,7 +190,6 @@ Returns the web service object if found, otherwise `undefined`.
 ```ts
 getWebServiceByType(type: CCWebService['webServiceType']): CCWebService | undefined
 ```
-
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
@@ -144,6 +202,7 @@ Value can be `'Autocomplete'` | `'DataSets'` | `'Labels'` | `'Preview'` | `'Quer
 :::
 
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -153,6 +212,7 @@ export class SomeComponent {
 ```
 
 ## Labels features
+
 ### getLabels()
 
 Retrieves the private and public labels from the web service.
@@ -160,12 +220,12 @@ Retrieves the private and public labels from the web service.
 Returns An object `{ private: string, public: string }` containing the private and public labels.  
 If the labels are not found, returns an object with empty strings for both fields.
 
-```ts	
+```ts
 getLabels(): { private: string, public: string }
 ```
 
-
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -176,13 +236,14 @@ export class SomeComponent {
 ```
 
 ## Queries features
+
 ### getQueryByName()
 
 Retrieves a query by its name from the store.
 
 Returns The `CCQuery` object if found, otherwise `undefined`.
 
-```ts	
+```ts
 getQueryByName(name: string): CCQuery | undefined
 ```
 
@@ -191,6 +252,7 @@ getQueryByName(name: string): CCQuery | undefined
 | name | string  | The name of the query to retrieve.   |
 
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -214,6 +276,7 @@ getQueryByIndex(index: number): CCQuery | undefined
 | index | number  | The index of the query to retrieve.   |
 
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -237,8 +300,8 @@ getDefaultQuery(): CCQuery | undefined
 The default query is __always__ the first query in the list of queries.
 :::
 
-
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -247,6 +310,7 @@ export class SomeComponent {
   // returns the default query set in the Sinequa administration
 }
 ```
+
 :::tip
 This is a convenient way instead of [`getQueryNameByIndex(0)`](#getquerybyindex)
 :::
@@ -257,7 +321,7 @@ Retrieves the allowEmptySearch flag for a specific query.
 
 Returns The allowEmptySearch value for the specified query, or false if not found.
 
-```ts	
+```ts
 allowEmptySearch(queryName: string): boolean
 ```
 
@@ -266,6 +330,7 @@ allowEmptySearch(queryName: string): boolean
 | queryName  | string | The name of the query for which to retrieve allow empty search flag. |
 
 #### Usage
+
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
@@ -275,45 +340,21 @@ export class SomeComponent {
 }
 ```
 
-### getNamedCustomizationJson()
-
-Retrieves the customization json by name
-
-Returns The customization json object or undefined if not found
-
-:::caution
-Available only in Sinequa 11.12+
-:::
-  
-  ```ts
-  getNamedCustomizationJson(name: string): any
-  ```
-
-
-| parameter  | type   | description |
-|------------|--------|-------------|
-| name  | string | The name of the customization json. |
-
-#### Usage
-```ts
-const json = inject(AppStore).getNamedCustomizationJson("routes");
-```
-
 ## Aggregations features
+
 ### getAggregationIcon()
 
 Retrieves the icon associated with a given column's aggregation.
 
 Returns the icon value associated with the specified column's aggregation, or undefined if no matching aggregation is found.
 
-```ts	
+```ts
 getAggregationIcon(column: string): string | undefined
 ```
 
 | parameter  | type   | description |
 |------------|--------|-------------|
 | column  | string | The name of the column for which to retrieve the aggregation icon. |
-
 
 ```ts title="get-aggregation-icon.ts"
 // json Aggregation configuration extract
@@ -333,45 +374,13 @@ const icon = inject(AppStore).getAggregationIcon("geo");
 // Output: "fas fa-globe"
 ```
 
-### getAggregationItemsCustomization()
-
-Retrieves the customization items for a given column from the store's filters.  
-
-Returns An array of `CFilterItem` objects if found, otherwise `undefined`.
-
-```ts	
-getAggregationItemsCustomization(column: string): CFilterItem[] | undefined
-```
-
-| parameter  | type   | description |
-|------------|--------|-------------|
-| column  | string | The name of the column for which to retrieve the aggregation icon. |
-
-```ts title="get-aggregation-items-customization.ts"
-// json Aggregation configuration extract
-{
-  aggregations: [
-    { 
-      column: "geo", 
-      icon?: "fas fa-globe",
-      display?: "Places", 
-      hidden?: false, 
-      items?: [{ value: "Madrid", icon?: "fas fa-map" }]
-    }
-  ]
-}
-
-const items = inject(AppStore).getAggregationItemsCustomization("geo");
-// Output: [{ value: "Madrid", icon: "fas fa-map" }]
-```
-
 ### getAggregationCustomization()
 
 Retrieves the customization for a specific aggregation column.
 
 Returns The customization object for the specified column, or undefined if not found.
 
-```ts	
+```ts
 getAggregationCustomization(column: string): Aggregation | undefined
 ```
 
@@ -402,4 +411,53 @@ const conf = inject(AppStore).getAggregationCustomization("geo");
   hidden?: false, 
   items?: [{ value: "Madrid", icon?: "fas fa-map" }]
 }
+```
+
+### getAggregationItemsCustomization()
+
+Retrieves the customization items for a given column from the store's filters.  
+
+Returns An array of `CFilterItem` objects if found, otherwise `undefined`.
+
+```ts
+getAggregationItemsCustomization(column: string): CFilterItem[] | undefined
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| column  | string | The name of the column for which to retrieve the aggregation icon. |
+
+```ts title="get-aggregation-items-customization.ts"
+// json Aggregation configuration extract
+{
+  aggregations: [
+    { 
+      column: "geo", 
+      icon?: "fas fa-globe",
+      display?: "Places", 
+      hidden?: false, 
+      items?: [{ value: "Madrid", icon?: "fas fa-map" }]
+    }
+  ]
+}
+
+const items = inject(AppStore).getAggregationItemsCustomization("geo");
+// Output: [{ value: "Madrid", icon: "fas fa-map" }]
+```
+
+### isAssistantAllowed()
+
+Determines whether a specific assistant is allowed based on its presence and configuration in the store.
+
+```ts
+isAssistantAllowed(assistantName: string): boolean
+```
+
+| Parameter     | Type    | Description                          |
+|---------------|---------|--------------------------------------|
+| assistantName | string  | The name of the assistant to check.  |
+
+```ts title="check-assistant-allowed.ts"
+const isAllowed = inject(AppStore).isAssistantAllowed("summarization");
+// Output: true/false based on whether the assistant exists and has service_id configured
 ```
