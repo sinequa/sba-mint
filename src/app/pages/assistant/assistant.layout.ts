@@ -30,8 +30,6 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <app-sidebar class="fixed top-0 h-full" />
-
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
@@ -73,6 +71,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
         <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
+    <app-sidebar class="fixed top-0 h-full" />
   `,
   styles: [
     `
@@ -114,10 +113,10 @@ export class AssistantLayoutComponent {
   isAssistantReady = signal(false);
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']) ?? false);
+  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']));
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']) ?? false);
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']));
 
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());

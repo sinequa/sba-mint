@@ -37,20 +37,38 @@ export const routes: ExtendedRoutes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'widgets',
-    component: WidgetsLayoutComponent,
+    loadComponent: () => import('./pages/widgets/layout').then(m => m.WidgetsLayoutComponent),
     canActivate: [AuthGuard()],
     children: [
-      { path: 'recent-searches', component: RecentSearchesComponent },
-      { path: 'bookmarks', component: BookmarksComponent },
-      { path: 'saved-searches', component: SavedSearchesComponent },
-      { path: 'collections', component: CollectionsComponent }
+      {
+        path: 'recent-searches',
+        loadComponent: () => import('./pages/widgets/recent-searches/recent-searches.component').then(m => m.RecentSearchesComponent)
+      },
+      {
+        path: 'bookmarks',
+        loadComponent: () => import('./pages/widgets/bookmarks/bookmarks.component').then(m => m.BookmarksComponent)
+      },
+      {
+        path: 'saved-searches',
+        loadComponent: () => import('./pages/widgets/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent)
+      },
+      {
+        path: 'collections',
+        loadComponent: () => import('./pages/widgets/collections/collections.component').then(m => m.CollectionsComponent)
+      }
     ]
   },
   {
     path: 'search',
-    component: SearchLayoutComponent,
+    loadComponent: () => import('./pages/search/layout').then(m => m.SearchLayoutComponent),
     canActivate: [AuthGuard()],
-    children: [{ path: '**', component: SearchAllComponent, resolve: { queryName: queryNameResolver } }]
+    children: [
+      {
+        path: '**',
+        loadComponent: () => import('./pages/search/all/search-all.component').then(m => m.SearchAllComponent),
+        resolve: { queryName: queryNameResolver }
+      }
+    ]
   },
   { path: 'loading', component: LoadingComponent },
   { path: 'error', component: ErrorComponent },
