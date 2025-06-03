@@ -21,9 +21,8 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
-import { SearchInputComponent } from '../search-input/search-input.component';
 import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
-import { UserMenuComponent } from '../user-menu/user-menu';
+import { SearchInputComponent } from '../search-input/search-input.component';
 
 export type NavbarMenu = {
   display: string;
@@ -37,17 +36,7 @@ export type NavbarMenu = {
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [
-    CommonModule,
-    RouterLink,
-    TranslocoPipe,
-    ButtonComponent,
-    SearchInputComponent,
-    AutocompleteComponent,
-    UserMenuComponent,
-    PopoverComponent,
-    PopoverContentComponent
-  ],
+  imports: [CommonModule, RouterLink, TranslocoPipe, ButtonComponent, SearchInputComponent, AutocompleteComponent, PopoverComponent, PopoverContentComponent],
   host: {
     '[attr.drawer-opened]': 'drawerOpened()'
   },

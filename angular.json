@@ -30,11 +30,12 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "preserveSymlinks": true,
             "outputPath": {
               "base": "dist/sinequa-mint",
               "browser": ""
             },
-            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend"],
+            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend", "@flowjs/flow.js"],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js", "src/polyfills.js"],
@@ -57,7 +58,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
+                  "maximumWarning": "3mb",
                   "maximumError": "5mb"
                 },
                 {
@@ -85,6 +86,17 @@
                 }
               ]
             },
+            "insight": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.insight.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -103,6 +115,11 @@
               "buildTarget": "sinequa-mint:build:assistant",
               "ssl": true,
               "proxyConfig": "proxy.conf.assistant.json"
+            },
+            "insight": {
+              "buildTarget": "sinequa-mint:build:insight",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.insight.json"
             },
             "development": {
               "buildTarget": "sinequa-mint:build:development",
