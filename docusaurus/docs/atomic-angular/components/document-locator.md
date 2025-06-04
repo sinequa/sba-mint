@@ -1,25 +1,46 @@
 ---
-title: Document Locator
+title: DocumentLocator
 ---
 
 ## Overview
 
-The `DocumentLocator` component is an Angular component displaying properly the location of a document.
+The `DocumentLocatorComponent` displays a breadcrumb-like navigation for a document's location within a hierarchy, allowing users to navigate through segments of the document's path. It is typically used to help users understand and interact with the structure of collections or folders in which a document resides.
 
-### Properties
+## Features
 
-| Property      | Type                      | Description                                                                                             |
-|---------------|---------------------------|---------------------------------------------------------------------------------------------------------|
-| `article`  | `Input<Article>`         | The article to display the location of.                                                                          |
-| `aggregation`   | `Input<string>`          | The name of the aggregation to use for the document locator.                                                                              |
-| `locationSegments`    | `Signal<string[]>`                | All segments found from the article's `treepath` property.                                   |
-| `visibleSegments`    | `Signal<string[]>`                | Segments that are visible on the viewport.                                   |
-| `invisibleSegments`    | `Signal<string[]>`                | Segments that cannot be shown on the viewport because of the available space.                                   |
+- Displays the document's location as clickable segments (breadcrumbs)
+- Handles overflow by moving extra segments into a dropdown menu
+- Integrates with Angular routing and query parameters for navigation
+- Responsive to container resizing
 
-## Examples
+## Inputs
 
-The `DocumentLocatorComponent` can be used in the template of a parent component as follows:
+- `article` (**required**): The `Article` object whose location is to be displayed
+- `aggregation` (**required**): The name of the aggregation to use for navigation
+
+## Usage
 
 ```html
-<DocumentLocator [article]="article()" aggregation="Treepath" />
+<document-locator [article]="myArticle" [aggregation]="'myAggregation'" />
 ```
+
+## Example
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: `
+    <document-locator [article]="article" [aggregation]="'Collection'" />
+  `,
+  standalone: true,
+  imports: [DocumentLocatorComponent]
+})
+export class MyComponent {
+  article = { /* ... */ };
+}
+```
+
+## Notes
+
+- The component automatically manages visible and overflowed segments based on available width.
+- Clicking a segment updates the query parameters and navigates to the corresponding location.

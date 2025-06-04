@@ -3,21 +3,24 @@ title: App Service
 ---
 
 ## Overview
+
 The `AppService` is responsible for retrieving the application configuration from the server. It provides a method to fetch the configuration using an HTTP GET request.
 
-### getApp()
+## Methods
+
+### `getApp()`
 
 Retrieves the application configuration from the server.
 
-```typescript
-getApp(appName?: string): Observable<CCApp>
-```
+#### Returns
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `appName`| `string`         | Optional. The name of the application to fetch the configuration for. Defaults with `app` from the global configuration.                   |
+- `Observable<CCApp>`: An observable that emits the application configuration.
 
-**Usage Example:**
+#### Remarks
+
+This method constructs an HTTP GET request to fetch the application configuration using the `app` parameter from the global configuration. If the request fails, it logs the error to the console and returns an empty observable.
+
+#### Example
 
 ```typescript
 appService.getApp().subscribe(appConfig => {

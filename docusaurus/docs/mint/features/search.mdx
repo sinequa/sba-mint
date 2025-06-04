@@ -45,7 +45,7 @@ sequenceDiagram
             cmp-->>User: Shows autocomplete
         end
         User->>cmp: Applies search
-    else 
+    else
         User->>cmp: Applies filters or sorts
     end
 
@@ -89,7 +89,7 @@ Once you've triggered a search (by typing, clicking tabs, or applying filters), 
         This query is managed internally by our `QueryParamsStore`, which keeps track of all these details. The URL in your browser also updates to reflect this query, so you can bookmark or share your exact search!
     :::
 *   **Sending to the Server**: This structured query is then sent over the network to the main Sinequa search engine.
-    ::note
+    :::note
         Our `SearchService` is responsible for this communication.
     :::
 *   **The Server at Work**: The Sinequa engine receives your query and process to the search.

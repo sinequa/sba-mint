@@ -3,10 +3,11 @@ title: Query
 ---
 
 ## Overview
+
 The Query API provides functions for fetching data from the backend. These functions allow you to execute single or multiple queries, retrieve results, and optionally record audit events. The API supports both individual and bulk query operations, enabling efficient data retrieval for various use cases.
 
-
 ### fetchQuery()
+
 Fetches data from the backend using the specified query.
 
 __Returns__ A promise that resolves to the fetched data.
@@ -22,6 +23,7 @@ __Returns__ A promise that resolves to the fetched data.
 __Returns__ A promise that resolves to the query results.
 
 #### Example
+
 ```js title="example-fetch-query.js"
 import { fetchQuery } from "@sinequa/atomic";
 
@@ -50,6 +52,7 @@ Fetches multiple queries in bulk from the backend.
 __Returns__ A promise that resolves to an array of query results, corresponding to the input queries.
 
 #### Example
+
 ```js title="example-fetch-bulk-query.js"
 import { fetchBulkQuery } from "@sinequa/atomic";
 

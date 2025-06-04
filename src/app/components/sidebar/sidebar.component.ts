@@ -8,11 +8,10 @@ import { AppStore, PrincipalStore } from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
 import { APP_FEATURES } from '../../tokens';
-import { UserMenuComponent } from '../user-menu/user-menu';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, SidebarComponent, SidebarItemComponent, UserMenuComponent],
+  imports: [RouterLink, SidebarComponent, SidebarItemComponent],
   templateUrl: './sidebar.component.html'
 })
 export class AppSidebarComponent {

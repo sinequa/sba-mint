@@ -1,25 +1,55 @@
 ---
-title: Sort Selector
+title: SortSelector
 ---
 
 ## Overview
 
-The `SortSelector` component is an Angular component that allows to choose a way of sorting.
+The `SortSelectorComponent` provides a dropdown menu for selecting the sort order of search results. It displays available sorting options (such as relevance, date, etc.) and emits an event when the user selects a new sort option.
 
-It automatically gets the current query and gets the sorting choices from it.
+## Features
 
-### Properties
+- Displays current sort option and allows changing it via a dropdown menu
+- Integrates with application queries and configuration for available sorting choices
+- Emits the selected sort option to the parent component
+- Supports both ascending and descending order
+- Fully standalone and can be used in any Angular template
 
-| Property      | Type                      | Description                                                                                             |
-|---------------|---------------------------|---------------------------------------------------------------------------------------------------------|
-| `result`  | `Input<Result>`         | The result of the search.                                                                          |
-| `position`   | `Input<Placement>`          | Position for the dropdown. Defaults to `bottom-start`.                                                                              |
-| `onSort` | `Output<SortingChoice>` | Emits an event with the new sorting choice to be applied. |
+## Inputs
 
-## Examples
+- `result` (**required**): The `Result` object containing the current query and sort state
+- `position` (optional): The dropdown menu position (default: `'bottom-start'`)
 
-The `SortSelectorComponent` can be used in the template of a search page that can provide it with the results data:
+## Outputs
+
+- `onSort`: Emits the selected `SortingChoice` when the user selects a new sort option
+
+## Usage
 
 ```html
-<sort-selector [result]="result()" (onSort)="onSort($event)" />
+<sort-selector [result]="result" (onSort)="onSortChanged($event)"></sort-selector>
 ```
+
+## Example
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: `
+    <sort-selector [result]="result" (onSort)="onSortChanged($event)" />
+  `,
+  standalone: true,
+  imports: [SortSelectorComponent]
+})
+export class MyComponent {
+  result = { /* ... */ };
+  onSortChanged(sort) {
+    // handle sort change
+  }
+}
+```
+
+## Notes
+
+- The available sorting options are defined in the application's query configuration.
+- The component uses the `DropdownComponent` and other UI primitives for rendering.
+- The sort icon changes based on ascending/descending order.

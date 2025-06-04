@@ -3,28 +3,14 @@ title: OpenArticleOnCtrlEnter
 ---
 
 ## Overview
-Directive that opens an article in a new tab upon hitting `Ctrl + Enter` on it.
+
+Directive that opens an article in the preview when pressing Ctrl + Enter.
 
 ### Usage
-#### Using host directives attribute
-```ts title="some-component.ts"
-@Component({
-  ...
-  standalone: true,
-  imports: [ OpenArticleOnCtrlEnterDirective ],
-  hostDirectives: [
-    {
-      directive: OpenArticleOnCtrlEnterDirective,
-      inputs: ['article']
-    }
-  ]
-})
-export class SomeComponent { 
-  article = {};
-}
+
+```html
+<div [article]="myArticle" openArticleOnCtrlEnter></div>
 ```
 
-#### Directly in the HTML template
-```html
-<div openArticleOnCtrlEnter [article]="{}">
-```
+- Requires an `article` input (of type `Article`)
+- Triggers the preview service to open the article externally when Ctrl+Enter is pressed while the element is focused.

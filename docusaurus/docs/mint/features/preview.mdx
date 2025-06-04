@@ -1,0 +1,51 @@
+---
+title: Preview
+---
+
+The Preview feature allows the viewing of the content of a document with many searching tools.
+It is included in the side drawer opening upon clicking on a document in the results list.
+
+## Architecture
+
+The Preview component (`PreviewComponent`) is composed of many components:
+- The Navbar (`PreviewNavbarComponent`) handling many actions related to the preview and document such as opening it in a new tab, adding it to the bookmarks or displaying the advanced search.
+- The Header (`PreviewHeaderComponent`) displays the document's data such as the title, location, modified date and type.
+- The Tabs (`PreviewTabsComponent`) displays some tabs navigation, used here to allow having a Summary and Discussion tabs to have the AI Assistant to respectively make a summary of the current document, and to chat about it. It is displayed if one of these assistants is allowed.
+- The Assistant (`AssistantComponent`) for both the summary and discussion tabs.
+- The Content (`PreviewContentComponent`) displaying the document content iframe.
+
+It is included in a drawer component (`DrawerPreviewComponent`), from the `@sinequa/atomic-angular` library, which couples it with a search component (`AdvancedSearchComponent`) offering ways to interact with the preview content such as navigating through the found entities and extracts.
+
+```mermaid
+block-beta
+columns 2
+  recordId
+  id1(("Selection Store\n{recordId}"))
+  space
+  block:Drawer
+  columns 3
+    block:Preview
+    columns 1
+      A["Preview navbar"]
+      B["Preview header"]
+      C["Preview tabs"]
+      D["Summary assistant"]
+      E["Discussion assistant"]
+      F["Preview document"]
+    end
+    space
+    G["Advanced Search"]
+  end
+
+  recordId --> id1
+  Preview --> id1
+  G-- "Extract/Entities\n navigating" -->F
+```
+
+## How does the preview opens itself?
+
+In order to open the preview drawer, multiple steps are at play:
+- Upon clicking on an article in the results list, it is selected in the Selection Store and the drawer is asked to be opened
+- When opening, the Drawer (`DrawerStackComponent`) takes the last selected article from the Selection Service (`SelectionHistoryService`) which is based on the Selection Store.
+- The found article is then injected into the children component, here being the Preview Drawer
+- The Preview then initializes itself based on the configuration to display the different elements (filters, tabs for the assistants)

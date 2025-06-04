@@ -3,6 +3,7 @@ title: Navigation Service
 ---
 
 ## Overview
+
 The `NavigationService` is responsible for handling navigation events and extracting relevant information from the URL.
 
 ### navigationEnd$
@@ -10,6 +11,7 @@ The `NavigationService` is responsible for handling navigation events and extrac
 Observable that emits events of type `NavigationEnd` from the Angular Router.
 
 **Operations:**
+
 - Maps all router events to `RouterEvent`.
 - Filters the events to only include instances of `NavigationEnd`.
 - Taps into the event stream to extract the route name from the URL and notify the audit service of route changes, excluding the "loading" route and duplicate navigations.
@@ -23,6 +25,7 @@ Observable that emits events of type `NavigationEnd` from the Angular Router.
 An observable that emits the tab extracted from the URL pathname or the last part of the URL.
 
 **Operations:**
+
 - Listens to navigation end events and processes the URL to determine the current tab.
 - Creates a fake URL object to extract the pathname.
 - Uses the `getQueryParamsFromUrl` function to extract the tab from the URL pathname or defaults to the last part of the URL if no tab is found.

@@ -4,6 +4,7 @@ title: Principal
 ---
 
 ## Overview
+
 This module provides functionality for retrieving and managing user information. It allows:
 
 - Fetching current user data from the backend
@@ -12,8 +13,8 @@ This module provides functionality for retrieving and managing user information.
 
 These operations enable efficient user management and personalization within the application.
 
-
 ### fetchPrincipal()
+
 Fetches the principal (current user) information from the backend API.
 
 This function sends a GET request to the "principal" endpoint with specific
@@ -51,6 +52,7 @@ export type Principal = {
 ```
 
 #### Example
+
 ```js title="example-fetch-principal.js"
 import { fetchPrincipal } from "@sinequa/atomic";
 

@@ -23,7 +23,7 @@ Updates the state with the provided aggregations.
 
 ### updateAggregation()
 
-Updates an existing aggregation in the store.
+Updates an aggregation in the store.
   
   ```typescript
   updateAggregation(aggregation: Aggregation): void
@@ -31,7 +31,7 @@ Updates an existing aggregation in the store.
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| aggregation | Aggregation  | The aggregation object to update.   |
+| aggregation  | Aggregation    | The aggregation to update the state with.        |
 
 ### clear()
 
@@ -40,7 +40,6 @@ Clears the aggregations in the store by setting the `aggregations` property to a
   ```typescript
   clear(): void
   ```
-
 
 :::info
 This method uses the `patchState` function to update the state of the store.
@@ -54,7 +53,6 @@ Retrieves an aggregation by name or column.
   getAggregation(name: string, kind?: 'column' | 'name'): Aggregation
   ```
   
-
 | parameter | type   | description                                      |
 |-----------|--------|--------------------------------------------------|
 | name      | string | The name or column of the aggregation to retrieve.|

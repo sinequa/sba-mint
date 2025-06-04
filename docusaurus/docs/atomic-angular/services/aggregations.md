@@ -3,57 +3,83 @@ title: Aggregations Service
 ---
 
 ## Overview
+
 The `AggregationsService` is responsible for handling aggregation-related operations in the application. It provides methods to load more aggregation items, open aggregation nodes, and retrieve sorted aggregations based on a query name.
 
-### loadMore()
+## Methods
+
+### `loadMore`
 
 Loads more items for a given aggregation.
 
-```typescript
-loadMore(
-  query: Partial<Query>,
-  aggregation: Aggregation,
-  audit?: AuditEvents
-): Observable<Aggregation>
-```
+#### Parameters
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `query`              | `Query`          | The query object containing the current query parameters.                                 |
-| `aggregation` | `Aggregation`         | The aggregation object for which more items need to be loaded.                  |
-| `audit`| `AuditEvents`         | (Optional) Audit events to be recorded                   |
+| Parameter     | Type                | Description                                                                 |
+|---------------|---------------------|-----------------------------------------------------------------------------|
+| `query`       | `Partial<Query>`    | The query object containing the current query parameters.                   |
+| `aggregation` | `Aggregation`       | The aggregation object for which more items need to be loaded.              |
+| `audit`       | `AuditEvents`       | (Optional) Audit events to be recorded.                                     |
 
-**Usage Example:**
+#### Returns
 
-```typescript
-aggregationsService.loadMore(
-  query,
-  aggregation
-).subscribe(agg => {
-  console.log(agg);
-});
-```
-### open()
+| Type                | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| `Observable<Aggregation>` | An observable that emits the updated aggregation with more items.     |
+
+### `open`
 
 Opens a node in a tree aggregation.
 
+#### Parameters
+
+| Parameter     | Type                    | Description                                                                 |
+|---------------|-------------------------|-----------------------------------------------------------------------------|
+| `query`       | `Partial<Query>`        | The query object containing the current query parameters.                   |
+| `aggregation` | `TreeAggregation`       | The tree aggregation object containing the node to be opened.               |
+| `item`        | `TreeAggregationNode`   | The node to be opened.                                                      |
+
+#### Returns
+
+| Type                    | Description                                                                 |
+|-------------------------|-----------------------------------------------------------------------------|
+| `Observable<TreeAggregation>` | An observable that emits the updated tree aggregation with the node opened. |
+
+### Note on Sorted Aggregations
+
+> **Note**: The functionality for retrieving sorted aggregations based on a query name is provided by the `getAuthorizedFilters` method in the `AppStore`, not in this service.
+>
+> See the AppStore documentation for details on retrieving sorted aggregations.
+
+## Example
+
 ```typescript
-open(
-  query: Partial<Query>,
-  aggregation: TreeAggregation,
-  item: TreeAggregationNode
-): Observable<TreeAggregation>
-```
+import { AggregationsService } from './services/aggregations.service';
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `query`              | `Query`          | The query object containing the current query parameters.                                 |
-| `aggregation` | `Aggregation`         | The tree aggregation object containing the node to be opened.                  |
-| `item`| `TreeAggregationNode`         | The node to be opened.                   |
+constructor(private aggregationsService: AggregationsService) {}
 
-**Usage Example:**
+loadMoreAggregations() {
+  const query = { /* query parameters */ };
+  const aggregation = { /* aggregation object */ };
+  
+  this.aggregationsService.loadMore(query, aggregation).subscribe(updatedAggregation => {
+    console.log(updatedAggregation);
+  });
+}
 
-```typescript
-const agg = await firstValueFrom(this.aggregationsService.open(query, aggregation, node));
-this.aggregationsStore.updateAggregation(agg);
+openAggregationNode() {
+  const query = { /* query parameters */ };
+  const aggregation = { /* tree aggregation object */ };
+  const item = { /* tree aggregation node */ };
+  
+  this.aggregationsService.open(query, aggregation, item).subscribe(updatedAggregation => {
+    console.log(updatedAggregation);
+  });
+}
+
+// To get sorted aggregations, use the AppStore instead
+getAuthorizedFilters() {
+  const route = this.router.routerState.root;
+  const sortedAggregations = this.appStore.getAuthorizedFilters(route);
+  console.log(sortedAggregations);
+}
 ```

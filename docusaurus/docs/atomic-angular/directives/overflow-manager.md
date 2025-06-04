@@ -2,10 +2,12 @@
 title: OverflowManager
 ---
 
-# Overview
+## Overview
+
 Directive that handles a list of elements and manages the overflow of the list. It listens to the resize event and emits a the number of elements that can be displayed in the list to a stop element.
 
 3 directives are available:
+
 - `overflowManager`: The directive that manages the overflow of the list.
 - `overflowItem`: The directive that represents an item in the list.
 - `overflowStop`: The directive that represents the stop marker in the list.
@@ -30,9 +32,9 @@ You can listen to `count` output to get the number of items that can fit before 
 If you use this directive with text translated with **Transloco**, see dedicated usage section for utility function.
 :::
 
-# Usage
+## Usage
 
-## Basic
+### Basic
 
 ```ts title="some-component.ts"
 @Component({
@@ -90,7 +92,7 @@ export class SomeComponent {
 `ng-container` here is used as a middleware for the container element and won't be rendered in the DOM.
 :::
 
-## Use with translated field with **Transloco**
+### Use with translated field with **Transloco**
 
 ```ts title="some-component.ts"
 @Component({
