@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.8.0",
-    "@docusaurus/types": "3.8.0"
+    "@docusaurus/types": "3.8.0",
+    "@tailwindcss/postcss": "^4.1.8"
   },
   "browserslist": {
     "production": [
