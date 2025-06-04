@@ -65,7 +65,7 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
       </DialogContent>
 
       <DialogFooter>
-        <button variant="outline" (click)="uploadDialog.close()">
+        <button variant="outline" (click)="uploadDialog.close($event)">
           {{ 'close' | transloco }}
         </button>
       </DialogFooter>

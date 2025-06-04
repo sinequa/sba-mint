@@ -67,3 +67,12 @@ docusaurus/node_modules/*
 /src/assets/i18n/filters
 /src/assets/i18n/sources
 /src/assets/i18n/drawers
+/src/assets/i18n/chat
+/src/assets/i18n/chat-message
+/src/assets/i18n/chat-settings
+/src/assets/i18n/chat-reference
+/src/assets/i18n/chat-debug-message
+/src/assets/i18n/chat-dialogs
+/src/assets/i18n/chat-documents-upload
+/src/assets/i18n/saved-chats
+/src/assets/i18n/token-consumption
