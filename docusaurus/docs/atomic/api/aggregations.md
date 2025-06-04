@@ -3,6 +3,7 @@ title: Aggregations
 ---
 
 ## Overview
+
 This module provides functionality for retrieving and managing aggregations based on user queries. It enables:
 
 - Fetching aggregated data for specific queries
@@ -14,6 +15,7 @@ These operations allow for efficient data analysis and visualization, enhancing 
 ## Aggregations
 
 ### fetchAggregation()
+
 Fetches an aggregation based on the provided parameters.
 
 | Parameter | Type | Description |
@@ -25,6 +27,7 @@ Fetches an aggregation based on the provided parameters.
 __Returns__ A promise&lt;Aggregation&gt; that resolves to the fetched aggregation.
 
 #### Example
+
 ```js title="fetch-aggregation"
 import { fetchAggregation } from '@sinequa/atomic';
 
