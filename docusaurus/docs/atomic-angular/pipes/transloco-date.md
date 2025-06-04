@@ -1,31 +1,45 @@
 ---
-title: Transloco Date
+title: TranslocoDate
 ---
 
 ## Overview
-The `TranslocoDateImpurePipe` class is a custom pipe extending `DatePipe` to also use `TranslocoService` for the display of dates.
+
+The `TranslocoDateImpurePipe` is an extension of Angular's `DatePipe` that updates automatically when the language changes using Transloco. This pipe provides reactive date formatting that respects the current language.
 
 ### API
 
 ```typescript
-override transform(value: Date | string | number, format?: string, timezone?: string): string | null
+transform(value: Date | string | number, format?: string, timezone?: string): string | null
 ```
 
-```typescript
-override transform(value: null | undefined, format?: string, timezone?: string): null
-```
+| Parameter   | Type                          | Description                                             |
+|-------------|-------------------------------|---------------------------------------------------------|
+| `value`     | `Date \| string \| number`    | The date to be formatted                                |
+| `format`    | `string`                      | Optional. The date format pattern                       |
+| `timezone`  | `string`                      | Optional. The timezone to use for formatting            |
 
-```typescript
-override transform(value: Date | string | number | null | undefined, format?: string, timezone?: string): string | null
-```
+#### Returns
 
-This pipe takes in a `value` which can be of types Date, string, number, null or undefined, and some optional strings `format` and `timezone`.
-It returns the formatted string.
-
+`string | null` - The formatted date string, or null if the date is invalid.
 
 ### Usage
 
+```typescript
+import { TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
 
-```html
-{{ article().modified | translocoDate: 'mediumDate' }}
+@Component({
+  selector: 'app-document-date',
+  standalone: true,
+  imports: [TranslocoDateImpurePipe],
+  template: `
+    <span>{{ documentDate | translocoDate:'medium' }}</span>
+  `
+})
+export class DocumentDateComponent {
+  documentDate = new Date();
+}
 ```
+
+### Notes
+
+This pipe is impure, which means it will be executed during every change detection cycle. It listens to Transloco language changes and updates the formatted date when the language changes.

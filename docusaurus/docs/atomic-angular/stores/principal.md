@@ -8,7 +8,7 @@ Methods, and computed properties related to the principal.
 
 ## Computed values
 
-### allowUsersOverride
+### allowUserOverride
 
 A computed boolean indicating if user override is allowed based on the principal's administrator status and the `userOverrideActive` state.
 
@@ -17,6 +17,7 @@ A computed boolean indicating if user override is allowed based on the principal
 A computed boolean indicating if the user override is currently active.
 
 ## Basic Features
+
 ### initialize()
 
 Initializes the principal store by fetching the principal data from the principal service.  
@@ -25,5 +26,3 @@ It patches the store with the fetched principal data and a user override active 
 ```typescript
 initialize(): void
 ```
-
-

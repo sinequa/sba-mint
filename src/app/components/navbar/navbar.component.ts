@@ -23,6 +23,7 @@ import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '
 
 import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { UserMenuComponent } from '../user-menu/user-menu';
 
 export type NavbarMenu = {
   display: string;
@@ -36,7 +37,17 @@ export type NavbarMenu = {
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [CommonModule, RouterLink, TranslocoPipe, ButtonComponent, SearchInputComponent, AutocompleteComponent, PopoverComponent, PopoverContentComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    TranslocoPipe,
+    ButtonComponent,
+    SearchInputComponent,
+    AutocompleteComponent,
+    UserMenuComponent,
+    PopoverComponent,
+    PopoverContentComponent
+  ],
   host: {
     '[attr.drawer-opened]': 'drawerOpened()'
   },

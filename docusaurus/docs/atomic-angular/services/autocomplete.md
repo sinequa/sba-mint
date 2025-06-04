@@ -3,46 +3,47 @@ title: Autocomplete Service
 ---
 
 ## Overview
-The `AutocompleteService` provides methods to retrieve autocomplete items for a given text.
 
-### getFromSuggestQueriesForText()
+The Autocomplete Service provides methods to retrieve autocomplete items for a given text.
+
+### `getFromSuggestQueriesForText`
 
 Retrieves autocomplete items for the given text, max count for each category handled by the service can be specified in the admin.
 
+#### Parameters
+
+| Parameter | Type     | Description                                                                 |
+|-----------|----------|-----------------------------------------------------------------------------|
+| `text`    | `string` | Text to retrieve autocomplete items for                                      |
+
+#### Returns
+
+`Observable<Suggestion[][]>`: An observable of an array of `Suggestion` arrays grouped by suggestion queries configured in the admin.
+
+#### Example
+
 ```typescript
-getFromSuggestQueriesForText(text: string): Observable<Suggestion[][]>
+autocompleteService.getFromSuggestQueriesForText('example text').subscribe(suggestions => {
+  console.log(suggestions);
+});
 ```
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `text`| `string`         | Text to retrieve autocomplete items for.                   |
-
-**Usage Example:**
-
-```typescript
-autocompleteService.getFromSuggestQueriesForText('example text')
-  .subscribe(suggestions => {
-    console.log(suggestions);
-  });
-```
-
-### getFromUserSettingsForText()
+### `getFromUserSettingsForText`
 
 Retrieves autocomplete items for the given text from the user settings.
 
-```typescript
-getFromUserSettingsForText(
-  text: string,
-  maxCount?: number | Autocomplete
-): Observable<Suggestion[][]>
-```
+#### Parameters
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `text`| `string`         | Text to retrieve autocomplete items.                   |
-| `maxCount`| `number \| Autocomplete`         | Maximum number of items to retrieve.                   |
+| Parameter | Type                         | Description                                                                 |
+|-----------|------------------------------|-----------------------------------------------------------------------------|
+| `text`    | `string`                     | Text to retrieve autocomplete items for                                      |
+| `maxCount`| `number \| Autocomplete`     | Maximum number of items to retrieve                                          |
 
-**Usage Example:**
+#### Returns
+
+`Suggestion[]`: An array of `Suggestion` arrays grouped by `recent-searches`, `saved-searches`, `bookmarks` from the user settings.
+
+#### Example
 
 ```typescript
 const suggestions = autocompleteService.getFromUserSettingsForText('example text', 5);

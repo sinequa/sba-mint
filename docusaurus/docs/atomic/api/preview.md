@@ -3,6 +3,7 @@ title: Preview
 ---
 
 ## Overview
+
 This module provides functionality for retrieving and displaying document previews. It allows users to:
 
 - Fetch preview data for specific documents based on queries
@@ -12,19 +13,16 @@ This module provides functionality for retrieving and displaying document previe
 
 These operations enable efficient document preview functionality, enhancing the user's ability to quickly assess document relevance and content without opening the full document.
 
-
 ### fetchPreview()
+
 Fetches preview data for a given id and query.
 
 __Returns__ A promise that resolves to the PreviewData.
-
 
 | Parameter | Type | Description |
 | --- | --- | --- |
 | id | `string` | The unique identifier of the document to fetch preview data for. |
 | query | `Query` | The query object used to retrieve the preview data. |
-
-
 
 ```js title="PreviewData Type"
 export type PreviewData = {
@@ -38,6 +36,7 @@ export type PreviewData = {
 ```
 
 #### Example
+
 ```js title="example-fetch-preview.js"
 import { fetchPreview } from "@sinequa/atomic";
 
@@ -51,8 +50,8 @@ const { documentCachedContentUrl } = response;
 console.log("document cache content url", documentCachedContentUrl);
 ```
 
-
 ### fetchPreviewUrl()
+
 Fetches preview document content from a given URL.
 
 | Parameter | Type | Description |
@@ -62,6 +61,7 @@ Fetches preview document content from a given URL.
 __Returns__ A promise that resolves to the preview document content as a string.
 
 #### Example
+
 ```js title="example-fetch-preview-url.js"
 import { fetchPreviewUrl } from "@sinequa/atomic";
 

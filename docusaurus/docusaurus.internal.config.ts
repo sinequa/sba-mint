@@ -1,11 +1,7 @@
-import { themes as prismThemes, Prism } from 'prism-react-renderer';
-(typeof global !== 'undefined' ? global : window).Prism = Prism;
-require('prismjs/components/prism-csharp');
-require('prismjs/components/prism-bash');
+import { themes as prismThemes } from 'prism-react-renderer';
 
-import { Config } from '@docusaurus/types';
-
-const config: Config = {
+/** @type {import('@docusaurus/types').Config} */
+const config = {
   title: 'Sinequa',
   tagline: 'Connect your modern workplace and drive innovation from the inside out',
   favicon: 'img/favicon.ico',
@@ -38,14 +34,6 @@ const config: Config = {
 
   plugins: [require.resolve('docusaurus-lunr-search')],
 
-  markdown: {
-    mdx1Compat: {
-      comments: false,
-      admonitions: false,
-      headingIds: false
-    }
-  },
-
   presets: [
     [
       'classic',
@@ -53,7 +41,8 @@ const config: Config = {
       {
         docs: {
           routeBasePath: '/',
-          sidebarPath: require.resolve('./sidebars.js')
+          // path: 'docs',
+          sidebarPath: './sidebars.js'
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
@@ -61,7 +50,7 @@ const config: Config = {
         },
         blog: false,
         theme: {
-          customCss: require.resolve('./src/css/custom.css')
+          customCss: './src/css/custom.css'
         }
       }
     ]
@@ -72,6 +61,12 @@ const config: Config = {
     {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true
+        }
+      },
       navbar: {
         title: 'Mint',
         logo: {
@@ -147,7 +142,13 @@ const config: Config = {
           }
         ]
       }
-    }
+    },
+  themes: ['@docusaurus/theme-mermaid'],
+  // In order for Mermaid code blocks in Markdown to work,
+  // you also need to enable the Remark plugin with this option
+  markdown: {
+    mermaid: true
+  }
 };
 
 export default config;

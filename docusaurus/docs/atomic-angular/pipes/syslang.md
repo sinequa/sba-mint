@@ -3,11 +3,8 @@ title: Syslang
 ---
 
 ## Overview
-The `SyslangPipe` class is a custom pipe that transforms a string value using the current language.
 
-This pipe is used to translate strings that are not part of the Angular i18n system.
-
-This pipe exists to keep the compatibility with a legacy system that uses a custom language syntax.
+The `SyslangPipe` is a custom pipe that transforms a string value using the current language. This pipe is used to translate strings that are not part of the Angular i18n system. It exists to maintain compatibility with a legacy system that uses a custom language syntax.
 
 ### API
 
@@ -15,18 +12,40 @@ This pipe exists to keep the compatibility with a legacy system that uses a cust
 transform(value?: string, lang?: string): string | null
 ```
 
-This pipe takes in a `value` string and a `lang` string.
-It returns the translated string.
+| Parameter   | Type       | Description                                                    |
+|-------------|------------|----------------------------------------------------------------|
+| `value`     | `string`   | Optional. The input string value to be transformed             |
+| `lang`      | `string`   | Optional. The language code to use for translation. If not provided, the active language from Transloco is used |
 
+#### Returns
+
+`string | null` - The transformed string value based on the specified or active language.
 
 ### Usage
 
+```typescript
+import { SyslangPipe } from '@sinequa/atomic-angular';
 
-```html
-<div>{{ 'Hello[fr]Bonjour' | syslang }}</div>
-<!-- output: `Bonjour` if your current language is 'fr' -->
-<!-- output: `Hello` if your current language is not 'fr' -->
-
-<div>{{ 'Hello[fr]Bonjour' | syslang: 'fr' }}</div>
-<!-- output: `Bonjour` even if your current language is not 'fr' -->
+@Component({
+  selector: 'app-multilingual-text',
+  standalone: true,
+  imports: [SyslangPipe],
+  template: `
+    <!-- Using active language -->
+    <div>{{ 'Hello[fr]Bonjour' | syslang }}</div>
+    
+    <!-- Forcing French language -->
+    <div>{{ 'Hello[fr]Bonjour' | syslang:'fr' }}</div>
+  `
+})
+export class MultilingualTextComponent {}
 ```
+
+### Notes
+
+This pipe is impure, which means it will be executed during every change detection cycle. It listens to Transloco language changes and updates the translation when the language changes.
+
+The input string should follow a specific format:
+
+- `'Hello[fr]Bonjour'` will display "Bonjour" if the language is 'fr', otherwise it will display "Hello".
+- You can include multiple language variants in one string: `'Hello[fr]Bonjour[de]Hallo[es]Hola'`
