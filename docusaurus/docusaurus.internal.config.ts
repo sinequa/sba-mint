@@ -1,7 +1,4 @@
-import { themes as prismThemes, Prism } from 'prism-react-renderer';
-(typeof global !== 'undefined' ? global : window).Prism = Prism;
-require('prismjs/components/prism-csharp');
-require('prismjs/components/prism-bash');
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -36,14 +33,6 @@ const config = {
   },
 
   plugins: [require.resolve('docusaurus-lunr-search')],
-
-  markdown: {
-    mdx1Compat: {
-      comments: false,
-      admonitions: false,
-      headingIds: false
-    }
-  },
 
   presets: [
     [
