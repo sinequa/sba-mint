@@ -60,12 +60,12 @@ export const routes: ExtendedRoutes = [
   },
   {
     path: 'search',
-    loadComponent: () => import('./pages/search/layout').then(m => m.SearchLayoutComponent),
+    component: SearchLayoutComponent,
     canActivate: [AuthGuard()],
     children: [
       {
         path: '**',
-        loadComponent: () => import('./pages/search/all/search-all.component').then(m => m.SearchAllComponent),
+        component: SearchAllComponent,
         resolve: { queryName: queryNameResolver }
       }
     ]
