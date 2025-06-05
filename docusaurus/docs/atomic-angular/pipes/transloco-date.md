@@ -29,7 +29,6 @@ import { TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-document-date',
-  standalone: true,
   imports: [TranslocoDateImpurePipe],
   template: `
     <span>{{ documentDate | translocoDate:'medium' }}</span>

@@ -26,7 +26,6 @@ import { getCurrentQueryName } from "@sinequa/atomic-angular";
 
 @Component({
   selector: "test",
-  standalone: true,
   ...
 })
 export class TestComponent
@@ -51,7 +50,6 @@ import { getCurrentPath } from "@sinequa/atomic-angular";
 
 @Component({
   selector: "test",
-  standalone: true,
   ...
 })
 export class TestComponent
