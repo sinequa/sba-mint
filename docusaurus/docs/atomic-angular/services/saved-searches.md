@@ -13,13 +13,11 @@ getSavedSearches(): SavedSearch[]
 ```
 
 #### Returns
-
 | Type           | Description                        |
 |----------------|------------------------------------|
 | `SavedSearch[]`| An array of saved searches.        |
 
 #### Example
-
 ```typescript
 const service = new SavedSearchesService();
 const searches = service.getSavedSearches();
@@ -33,7 +31,6 @@ saveSearch(): void
 ```
 
 #### Example
-
 ```typescript
 const service = new SavedSearchesService();
 service.saveSearch();
@@ -42,7 +39,6 @@ service.saveSearch();
 ### updateSavedSearches
 
 #### Signature
-
 ```typescript
 updateSavedSearches(savedSearches: SavedSearch[]): void
 ```
@@ -51,8 +47,8 @@ updateSavedSearches(savedSearches: SavedSearch[]): void
 |-----------------|----------------|------------------------------------|
 | `savedSearches` | `SavedSearch[]`| An array of SavedSearch objects to update. |
 
-#### Example
 
+#### Example
 ```typescript
 const service = new SavedSearchesService();
 const searches = [{ url: 'example.com', date: '2023-01-01', display: 'Example Search' }];
@@ -70,7 +66,6 @@ deleteSavedSearch(index: number): void
 | `index`   | `number`| The index of the saved search to delete. |
 
 #### Example
-
 ```typescript
 const service = new SavedSearchesService();
 service.deleteSavedSearch(0);

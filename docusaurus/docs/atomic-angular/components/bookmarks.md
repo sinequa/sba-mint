@@ -11,6 +11,7 @@ import { BookmarksComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [BookmarksComponent],
     template: `
     <bookmarks />
     `,
@@ -64,7 +65,6 @@ const customBookmarksOptions: BookmarksConfig = {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [BookmarksComponent],
   providers: [
     { provide: BOOKMARKS_CONFIG, useValue: customBookmarksOptions }

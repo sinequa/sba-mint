@@ -32,18 +32,6 @@ addFilter(filter: LegacyFilter): void
 |-----------|--------------|----------------------|
 | filter    | LegacyFilter | The filter to add    |
 
-### addFilter()
-
-Adds a filter to the store's state.
-
-```typescript
-addFilter(filter: LegacyFilter): void
-```
-
-| Parameter | Type         | Description          |
-|-----------|--------------|----------------------|
-| filter    | LegacyFilter | The filter to be added to the state |
-
 ### updateFilter()
 
 Updates the filter with the given value.

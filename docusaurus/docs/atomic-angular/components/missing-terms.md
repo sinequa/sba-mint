@@ -11,6 +11,7 @@ import { MissingTermsComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [MissingTermsComponent],
     template: `
     <missing-terms [article]="article" />
     `,

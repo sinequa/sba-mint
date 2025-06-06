@@ -11,6 +11,7 @@ import { RecentSearchesComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [RecentSearchesComponent],
     template: `
     <recent-searches />
     `,

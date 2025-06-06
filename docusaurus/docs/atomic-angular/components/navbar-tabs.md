@@ -11,6 +11,7 @@ import { NavbarTabsComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [NavbarTabsComponent],
     template: `
     <navbar-tabs />
     `,

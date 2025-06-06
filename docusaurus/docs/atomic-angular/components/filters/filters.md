@@ -24,7 +24,6 @@ Filters are a key part of the search experience, allowing users to refine result
     <!-- Optionally, advanced filters drawer -->
     <advanced-filters />
   `,
-  standalone: true,
   imports: [FiltersBarComponent, AdvancedFiltersComponent]
 })
 export class MyComponent {}

@@ -14,7 +14,6 @@ import { EditLabelDialog } from '@angular/atomic-angular';
   template: `
     <edit-label-dialog [article]="article" />
   `,
-  standalone: true,
   imports: [EditLabelDialog]
 })
 export class MyComponent {
