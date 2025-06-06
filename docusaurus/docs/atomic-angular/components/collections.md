@@ -11,6 +11,7 @@ import { CollectionsComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [CollectionsComponent],
     template: `
     <collections />
     `,
@@ -83,7 +84,6 @@ const customCollectionsOptions: CollectionsConfig = {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [CollectionsComponent],
   providers: [
     { provide: COLLECTIONS_CONFIG, useValue: customCollectionsOptions }

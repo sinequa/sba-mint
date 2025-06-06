@@ -31,7 +31,6 @@ import { SourceIconPipe } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-document-icon',
-  standalone: true,
   imports: [SourceIconPipe],
   template: `
     <i [class]="source | sourceIcon"></i>

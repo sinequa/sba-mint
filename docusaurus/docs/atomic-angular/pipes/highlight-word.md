@@ -38,7 +38,6 @@ import { HighlightWordPipe } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-autocomplete',
-  standalone: true,
   imports: [NgClass, HighlightWordPipe],
   template: `
 @for(chunk of message | highlightWord:text:10; track $index ) {

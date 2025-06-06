@@ -28,7 +28,6 @@ import { SyslangPipe } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-multilingual-text',
-  standalone: true,
   imports: [SyslangPipe],
   template: `
     <!-- Using active language -->

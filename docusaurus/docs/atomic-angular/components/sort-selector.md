@@ -37,7 +37,6 @@ The `SortSelectorComponent` provides a dropdown menu for selecting the sort orde
   template: `
     <sort-selector [result]="result" (onSort)="onSortChanged($event)" />
   `,
-  standalone: true,
   imports: [SortSelectorComponent]
 })
 export class MyComponent {

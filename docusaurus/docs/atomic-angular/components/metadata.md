@@ -11,6 +11,7 @@ import { MetadataComponent } from "@angular/atomic-anglar";
 
 @Component({
     selector: "sample-component",
+    imports: [MetadataComponent],
     template: `
     <metadata variant="outline" [article]="article" [metadata]="author" limit=3 />
     `,

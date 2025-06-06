@@ -27,7 +27,6 @@ The `SponsoredResultsComponent` displays a list of sponsored links (promoted res
   template: `
     <sponsored-results />
   `,
-  standalone: true,
   imports: [SponsoredResultsComponent]
 })
 export class MyComponent {}

@@ -11,6 +11,7 @@ import { AggregationComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [AggregationComponent],
     template: `
     <aggregation 
       name="People" 
