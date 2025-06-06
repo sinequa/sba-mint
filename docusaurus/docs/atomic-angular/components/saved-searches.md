@@ -76,7 +76,6 @@ const customSavedSearchesOptions: SavedSearchesConfig = {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [SavedSearchesComponent],
   providers: [
     { provide: SAVED_SEARCHES_CONFIG, useValue: customSavedSearchesOptions }

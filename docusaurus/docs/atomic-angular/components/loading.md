@@ -11,6 +11,7 @@ import { LoadingComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [LoadingComponent],
     template: `
     <app-wait />
     `,
@@ -45,7 +46,6 @@ import { LoadingComponent } from '@angular/atomic-angular';
 
 @Component({
   selector: 'custom-wait',
-  standalone: true,
   template: `
     <div class="custom-container">
       <div class="custom-spinner">

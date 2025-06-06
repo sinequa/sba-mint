@@ -40,7 +40,6 @@ import { OperatorPipe } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-filter-display',
-  standalone: true,
   imports: [OperatorPipe],
   template: `
     <span [innerHTML]="filter | operator"></span>

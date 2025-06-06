@@ -11,6 +11,7 @@ import { SignInComponent } from "@angular/atomic-angular";
 
 @Component({
     selector: "sample-component",
+    imports: [SignInComponent],
     template: `
     <sign-in />
     `,
@@ -50,7 +51,6 @@ import { SignInComponent } from '@angular/atomic-angular';
 
 @Component({
   selector: 'custom-sign-in',
-  standalone: true,
   template: `
     <div class="custom-signin-container">
       <form (ngSubmit)="handleLoginWithCredentials()">

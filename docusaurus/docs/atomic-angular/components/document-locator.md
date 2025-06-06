@@ -32,7 +32,6 @@ The `DocumentLocatorComponent` displays a breadcrumb-like navigation for a docum
   template: `
     <document-locator [article]="article" [aggregation]="'Collection'" />
   `,
-  standalone: true,
   imports: [DocumentLocatorComponent]
 })
 export class MyComponent {

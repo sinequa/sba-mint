@@ -17,7 +17,6 @@ Default open's strategy is 'stack'
 ```ts title="some-component.ts"
 @Component({
   ...
-  standalone: true,
   imports: [ SelectArticleOnClickDirective ],
   hostDirectives: [
     {

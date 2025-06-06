@@ -6,6 +6,7 @@ title: Preview Service
 
 The `PreviewService` is responsible for handling the preview of documents, including fetching and displaying highlighted extracts and entities.
 
+
 ### preview
 
 Previews the data for a given ID and query.
@@ -44,6 +45,7 @@ this.previewService.preview('documentId', { text: 'query' }, customHighlights).s
 });
 ```
 
+
 ### close
 
 Closes the preview with the specified ID and updates the audit log.
@@ -63,6 +65,7 @@ close(id: string, query: Partial<Query>): void
 this.previewService.close('documentId', { text: 'query' });
 ```
 
+
 ### openExternal
 
 Previews an article in a new browser's tab.
@@ -80,6 +83,7 @@ openExternal(article: Article): void
   ```typescript
   this.previewService.openExternal(article);
   ```
+
 
 ### setIframe
 
@@ -99,6 +103,7 @@ setIframe(iframe: Window | null): void
   this.previewService.setIframe(window);
   ```
 
+
 ### setPreviewData
 
 Sets the preview data and updates the highlight category based on the provided data.
@@ -107,15 +112,18 @@ Sets the preview data and updates the highlight category based on the provided d
 setPreviewData(data: PreviewData): void
 ```
 
+
 | Parameter | Type         | Description                                      |
 |-----------|--------------|--------------------------------------------------|
 | `data`    | `PreviewData`| The preview data to be set.                      |
+
 
 #### Usage
 
 ```typescript
 this.previewService.setPreviewData(previewData);
 ```
+
 
 ### sendMessage
 
@@ -147,14 +155,15 @@ Send a message to the preview iFrame with the required data to retrieve HTML con
 retrieveHtmlContent(id: string, highlightCategory: string, previewData: PreviewData): void
 ```
 
+
 | Parameter          | Type          | Description                                      |
 |--------------------|---------------|--------------------------------------------------|
 | `id`               | `string`      | The unique identifier for the request.           |
 | `highlightCategory`| `string`      | The category of highlights to retrieve.          |
 | `previewData`      | `PreviewData` | The data containing highlights and their locations. |
 
-#### Usage
 
+#### Usage
 ```typescript
 this.previewService.retrieveHtmlContent('documentId', 'highlightCategory', previewData);
 ```
@@ -182,6 +191,7 @@ Toggles the highlights based on the provided flags for extracts and entities.
 ```typescript
 toggle(extracts: boolean, entities: boolean): void
 ```
+
 
 | Parameter | Type    | Description                                      |
 |-----------|---------|--------------------------------------------------|

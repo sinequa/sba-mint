@@ -8,6 +8,10 @@ const config: TranslocoGlobalConfig = {
     {
       src: '@sinequa/atomic-angular',
       dist: ['src/assets/i18n']
+    },
+    {
+      src: '@sinequa/assistant',
+      dist: ['src/assets/i18n']
     }
   ]
 };

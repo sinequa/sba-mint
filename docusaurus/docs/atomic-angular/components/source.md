@@ -32,7 +32,6 @@ The `SourceComponent` displays an icon representing the source or collection of 
   template: `
     <source [collection]="['collection/myCollection']" [connector]="'myConnector'" />
   `,
-  standalone: true,
   imports: [SourceComponent]
 })
 export class MyComponent {}

@@ -23,7 +23,6 @@ import { MultiSelectLabelsComponent } from '@angular/atomic-angular';
   template: `
     <multiselect-labels [(article)]="article" [labelsField]="'publicLabels'" />
   `,
-  standalone: true,
   imports: [MultiSelectLabelsComponent]
 })
 export class MyComponent {
