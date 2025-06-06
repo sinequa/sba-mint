@@ -11,20 +11,27 @@ The `FiltersBarComponent` displays all active filters as buttons, provides clear
 - Integrates with aggregations and advanced filters
 - Handles overflow with a "More" button
 
-## Properties
+## Usage
 
-| Property         | Type     | Description                                 |
-|-----------------|----------|---------------------------------------------|
-| `filters`       | array    | List of active filters                      |
-| `hasFilters`    | boolean  | Whether any filters are currently applied   |
-| `currentBasket` | string   | Name of the current basket, if any          |
+```ts title="sample.component.ts"
+import { FiltersBarComponent } from "@angular/atomic-angular";
 
-## Events
+@Component({
+    selector: "sample-component",
+    imports: [FiltersBarComponent],
+    template: `
+    <filters-bar />
+    `,
+})
+export class SampleComponent {}
+```
 
-| Event         | Type                | Description                      |
-|---------------|---------------------|----------------------------------|
-| `clearFilters`| `() => void`        | Clears all filters               |
-| `clearBasket` | `() => void`        | Clears the basket                |
+## Methods
+
+| Method       | Signature     | Description                                                        |
+|--------------|--------------|--------------------------------------------------------------------|
+| clearFilters | () => void   | Removes all active filters from the filter bar. Use this to reset the filter state. |
+| clearBasket  | () => void   | Empties the basket, removing all selected items.                   |
 
 ## Component Interaction Schema
 

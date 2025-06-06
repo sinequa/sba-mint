@@ -10,7 +10,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 const config = {
   title: 'Sinequa',
   tagline: 'Connect your modern workplace and drive innovation from the inside out',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
   staticDirectories: ['static'],
 
   // Set the production url of your site here
@@ -75,7 +75,7 @@ const config = {
         title: 'Mint',
         logo: {
           alt: 'Sinequa Logo',
-          src: 'img/sinequa-logo-light-sm.png'
+          src: 'img/Logo_SINEQUA_RVB-170.png'
         },
         items: [
           // {
