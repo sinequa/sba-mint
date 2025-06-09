@@ -12,9 +12,16 @@ The `FilterButtonComponent` represents an individual filter as a button, allowin
 
 ## Usage Example
 
-```ts
+```html
 <filter-button [name]="filter.name" [column]="filter.column" />
 ```
+
+## Inputs
+
+| Name   | Type   | Description                       |
+|--------|--------|-----------------------------------|
+| name   | string | Name of the filter (required)     |
+| column | string | Column key for the filter (required) |
 
 ## Notes
 

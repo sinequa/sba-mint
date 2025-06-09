@@ -3,33 +3,272 @@
  * bundles Infima by default. Infima is a CSS framework designed to
  * work well for content-centric websites.
  */
-
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-}
+  --font-sans: 'Geist', 'Geist Fallback', Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', 'Courier New', Courier, monospace;
 
+  --ifm-font-weight-semibold: 400;
+
+  --ifm-color-primary-lightest: #f78a54;
+  --ifm-color-primary-lighter: #f5712f;
+  --ifm-color-primary-light: #f46923;
+  --ifm-color-primary: #f2590c;
+  --ifm-color-primary-dark: #da500b;
+  --ifm-color-primary-darker: #ce4c0a;
+  --ifm-color-primary-darkest: #a93e08;
+  --ifm-code-font-size: 13px;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --sinequa-blue: #0040bf;
+  --sinequa-orange: #ff854a;
+  --sinequa-third-color: #87a3ff;
+}
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary-lightest: #ffece2;
+  --ifm-color-primary-lighter: #ffc7aa;
+  --ifm-color-primary-light: #ffbb98;
+  --ifm-color-primary: #ffa273;
+  --ifm-color-primary-dark: #ff894e;
+  --ifm-color-primary-darker: #ff7d3c;
+  --ifm-color-primary-darkest: #ff5804;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+html,
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ifm-font-color-base);
+  background-color: var(--ifm-background-color);
+}
+
+/*** <5> Generic for docs pages content ***/
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1.1rem;
+}
+
+/* (2025-03-12) A <details> block is rendered by docusaurus as a details.alert.alert--info, that is blue-ish and we don't like.
+	The idea is to do it by over-riding the variables values in the same fashion the Infima file does it.
+	*/
+details.alert {
+  --ifm-alert-background-color: transparent;
+  --ifm-alert-background-color-highlight: var(--ifm-code-background);
+  --ifm-alert-foreground-color: var(--ifm-color-primary-contrast-foreground);
+  --ifm-alert-border-color: var(--ifm-color-secondary-darkest);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* (2025-03-12) Written to integrate a <ul> that is defined in an import in another ul.
+		For example <MinimumSinequaVersionsLatest> in updating-the-sinequa-assistant.md */
+/* Make two consecutive uls to look like one unified ul */
+ul + ul {
+  margin-top: calc(var(--ifm-list-margin) * -1 + var(--ifm-list-item-margin));
+}
+
+/* (2025-04-07) Inside cells, match bottom margins with top margins to make <p>s, <ul>s and friends to be centered in the cell when writing raw HTML table */
+
+th > p:last-child,
+td > p:last-child,
+th > ul:last-child,
+td > ul:last-child,
+th > ol:last-child,
+td > ol:last-child {
+  margin-bottom: 0;
+}
+/*** </5> ***/
+
+/*** <1> Sidebar ***/
+.menu {
+  font-size: 1rem;
+  --ifm-menu-link-padding-vertical: 0.25rem;
+}
+
+.sidebar-node-nolink > div > a {
+  /**/
+  font-weight: normal;
+}
+/*** </1> ***/
+
+/*** <2> Navbar ***/
+.navbar__logo {
+  margin-right: 1.2rem;
+}
+
+.version-number-navbar {
+  background: linear-gradient(90deg, var(--sinequa-blue) 0%, var(--sinequa-orange) 100%);
+  border-radius: 4px;
+  color: white;
+  font-size: small;
+  font-weight: bold;
+  padding: 0 7px;
+}
+
+input#search-bar-input::placeholder {
+  font-style: italic;
+  font-family: var(--ifm-font-family-base);
+  color: var(--ifm-navbar-search-input-placeholder-color);
+}
+
+input#search-bar-input {
+  appearance: none;
+  border: none;
+  outline: none;
+  border-bottom: 0.2em solid var(--ifm-color-primary-darker);
+  border-radius: 0.2em 0.2em 0 0;
+  padding: 0.4em 0.8em;
+  background-color: var(--ifm-navbar-search-input-background-color);
+}
+/*** </2> ***/
+
+/*** <4> Custom tags ***/
+.tag-version {
+  background-color: hsla(0, 0%, 50.196%, 0.1);
+  color: hsl(0, 0%, 50.196%);
+  font-size: small;
+  font-weight: bold;
+  font-style: italic;
+  padding-bottom: 2px;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+}
+
+.label {
+  position: relative;
+  top: -3px;
+  border-radius: 9px;
+  border: solid 1px;
+  font-size: small;
+  font-weight: bold;
+  padding-bottom: 2px;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  margin-left: 4px;
+}
+
+.label--rest {
+  background-color: hsla(226, 76%, 43%, 0.1);
+  color: hsl(226, 76%, 43%);
+}
+
+.label--rest-streaming {
+  background-color: hsla(263, 76%, 36%, 0.1);
+  color: hsl(263, 76%, 36%);
+}
+
+.label--signalr {
+  background-color: hsla(19, 69%, 59%, 0.1);
+  color: hsl(19, 69%, 59%);
+}
+/*** </4> ***/
+
+/*** <3> For images with captions ***/
+figure {
+  text-align: center;
+}
+
+figure img {
+  border-radius: 3px;
+  box-shadow: 0 0px 8px var(--ifm-color-secondary-darkest);
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  text-align: center;
+  font-style: italic;
+  color: var(--ifm-color-secondary-contrast-foreground);
+}
+/*** </3> ***/
+
+code {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  color: var(--ifm-color-primary);
+  border: 0.1rem solid rgba(0, 0, 0, 0.045);
+
+  font-family: var(--font-mono) !important;
+  font-optical-sizing: auto !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  /* white-space: nowrap; */
+}
+
+table {
+  border-collapse: collapse;
+  display: block;
+  margin-bottom: var(--ifm-spacing-vertical);
+  overflow: auto;
+}
+
+table thead tr {
+  border-bottom: 2px solid var(--ifm-table-border-color);
+}
+
+table thead {
+  background-color: transparent;
+}
+
+/* table tbody,
+code {
+  font-family: var(--font-mono) !important;
+  font-optical-sizing: auto !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+} */
+
+table thead tr {
+  border: none;
+  text-align: left;
+}
+
+table tr {
+  background-color: var(--ifm-table-background);
+  border-top: var(--ifm-table-border-width) solid var(--ifm-table-border-color);
+}
+
+table tr:nth-child(2n) {
+  background-color: transparent;
+}
+
+table th,
+table td {
+  border: none;
+  padding: var(--ifm-table-cell-padding);
+}
+
+table th {
+  background-color: transparent;
+  color: var(--ifm-table-head-color);
+  font-weight: var(--ifm-table-head-font-weight);
+}
+
+table td {
+  color: var(--ifm-table-cell-color);
+}
+
+/* magic comment */
 .code-block-error-line {
   background-color: #ff000020;
   display: block;
@@ -52,4 +291,10 @@
   padding: 0 var(--ifm-pre-padding);
   border-left: 3px solid #ff000080;
   /* text-decoration: line-through; */
+}
+
+.markdown li > p {
+  margin: 0;
+  margin-top: 0.125rem;
+  margin-bottom: 0.5rem;
 }

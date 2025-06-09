@@ -100,7 +100,7 @@ Build artifacts are stored in the `dist/` directory.
 
 ## 🛠️ Technical Stack
 
-- **Framework:** Angular 19+
+- **Framework:** Angular 20+
 - **State Management:** NgRx Signals, TanStack Query
 - **UI Libraries:** @sinequa/ui, @sinequa/atomic, @sinequa/atomic-angular, Angular CDK
 - **Internationalization:** Transloco

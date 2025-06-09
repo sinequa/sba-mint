@@ -1,5 +1,5 @@
 ---
-title: AdvancedFiltersComponent
+title: Advanced Filters Component
 ---
 
 The `AdvancedFiltersComponent` provides a drawer-based UI for advanced filter management, including custom fields, suggestions, and fielded search.
@@ -13,9 +13,17 @@ The `AdvancedFiltersComponent` provides a drawer-based UI for advanced filter ma
 
 ## Methods
 
-- `addItem(item, filter)`: Add a filter value
-- `removeItem(item, filter)`: Remove a filter value
-- `onSearch()`: Apply all filters and update query
+### `addItem(item, filter)`
+
+Adds a filter value to the selected filter.
+
+### `removeItem(item, filter)`
+
+Removes a filter value from the selected filter.
+
+### `onSearch()`
+
+Applies all filters and updates the query.
 
 ## Component Interaction Schema
 

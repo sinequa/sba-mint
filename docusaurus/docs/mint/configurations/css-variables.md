@@ -1,24 +1,8 @@
-# CSS Variables Reference
+---
+title: CSS Variables Reference
+---
 
-## Chat Variables
-
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| --ast-reference-expanded-hover-bg | #fff9 | Background color for expanded references on hover |
-| --ast-input-bg | white, #f8f8f8 | Background color for chat input area |
-| --ast-secondary-bg | #ffeab9 | Secondary background color for assistant messages |
-| --ast-user-font-weight | 600 | Font weight for user messages |
-| --ast-primary-bg | white | Primary background color for chat messages |
-| --ast-size-3 | 1.5rem | Base size for chat elements |
-| --text-xxs | 0.625rem | Extra small text size for chat interface |
-| --zindex-drawer-chat | 2500 | Z-index for chat drawer |
-| --color-primary | #0084ff | Primary color for interactive elements |
-| --color-primary-hover | #0056ff | Hover state for primary interactive elements |
-| --color-primary-foreground | #ffffff | Text color on primary background |
-| --color-muted | #f6f7f9 | Background color for muted elements |
-| --color-accent-foreground | #1c1c1c | Text color on accent background |
-
-## Other Variables
+## Variables
 
 ### Typography
 
@@ -44,8 +28,7 @@
 |----------|----------|-------------|
 | --logo-small | url('assets/logo/small.svg') | Path to small logo |
 | --logo-large | url('assets/logo/large.svg') | Path to large logo |
-| --logo-small-alt-text | 'Sinequa logo' | Alt text for small logo |
-| --logo-large-alt-text | 'Sinequa logo' | Alt text for large logo |
+| --logo-alt-text | 'Sinequa logo' | Alternative text for logo |
 
 ### Colors - Base
 
@@ -107,3 +90,21 @@
 | --backdrop | rgba(0, 0, 0, 0.4) | Modal backdrop color |
 | --backdrop-filter | blur(2px) | Blur effect for modal backdrop |
 | --animate-progress | progress 5s linear infinite | Progress bar animation |
+
+## Chat Variables
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| --ast-reference-expanded-hover-bg | #fff9 | Background color for expanded references on hover |
+| --ast-input-bg | white, #f8f8f8 | Background color for chat input area |
+| --ast-secondary-bg | #ffeab9 | Secondary background color for assistant messages |
+| --ast-user-font-weight | 600 | Font weight for user messages |
+| --ast-primary-bg | white | Primary background color for chat messages |
+| --ast-size-3 | 1.5rem | Base size for chat elements |
+| --text-xxs | 0.625rem | Extra small text size for chat interface |
+| --zindex-drawer-chat | 2500 | Z-index for chat drawer |
+| --color-primary | #0084ff | Primary color for interactive elements |
+| --color-primary-hover | #0056ff | Hover state for primary interactive elements |
+| --color-primary-foreground | #ffffff | Text color on primary background |
+| --color-muted | #f6f7f9 | Background color for muted elements |
+| --color-accent-foreground | #1c1c1c | Text color on accent background |
