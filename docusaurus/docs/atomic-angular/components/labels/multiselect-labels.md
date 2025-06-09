@@ -1,35 +1,55 @@
 ---
-title: MultiSelectLabelsComponent
+title: Multiselect Labels
 ---
 
-The `MultiSelectLabelsComponent` provides a user interface for adding, removing, and suggesting multiple labels (tags) on an article or item. It supports both public and private labels, keyboard navigation, and integrates with label suggestion services.
+The `Multiselect Labels` feature allows users to search within all labels, or to create some, to apply them on an article. It displays an input to search or create, and below it are the badges of all applied ones which can also be removed on click.
 
 ## Usage
 
-```ts
-import { MultiSelectLabelsComponent } from '@angular/atomic-angular';
+```ts title="sample.component.ts"
+import { MultiSelectLabelsComponent } from "@angular/atomic-angular";
 
 @Component({
-  selector: 'my-component',
-  template: `
-    <multiselect-labels [(article)]="article" [labelsField]="'publicLabels'" />
-  `,
-  imports: [MultiSelectLabelsComponent]
+    selector: "sample-component",
+    imports: [MultiSelectLabelsComponent],
+    template: `
+    <multiselect-labels
+        [(article)]="article"
+        labelsField="publicLabels"
+        [isPublic]="true"
+        [allowModification]="false"  
+    />
+    `,
 })
-export class MyComponent {
-  article = { /* ... */ };
+export class SampleComponent {
+    article = { /* ... */ };
 }
 ```
 
-## Properties
+### Properties
 
-| Property      | Type      | Description                                 |
-|--------------|-----------|---------------------------------------------|
-| `article`    | object    | The article or item to which labels are attached |
-| `labelsField`| string    | The field name for labels (e.g., 'publicLabels') |
+| Property             | Type                         | Description                                          |
+|----------------------|------------------------------|------------------------------------------------------|
+| `article`            | `model<Article>`             | The article to manage the labels for                 |
+| `isPublic`           | `input<boolean>`             | Whether it is for public or private labels           |
+| `allowModification`  | `input<boolean>`             | Whether the currently applied labels can be removed  |
+| `labelsField`        | `input<string \| undefined>` | The article field for labels                         |
 
-## Features
+### Methods
 
+| Method                      | Description                                               |
+|-----------------------------|-----------------------------------------------------------|
+| `itemClicked(label)`        | On click on a suggested item to apply it                  |
+| `onInputClick()`            | On input click to open the popover                        |
+| `onKeyDown(event)`          | Watches input keydown to create the label if Enter is hit |
+| `fetchLabels(text, isPublic)` | Fetches label suggestions based on the input text         |
+| `addLabel(label, isPublic)` | Adds a label to the article labels                        |
+| `updateArticleWithLabels()` | Updates the article object with the current labels         |
+
+### Features
+
+- Displays the currently applied labels
+- Displays an input to write some new label name or search for some displayed in a suggestion popover
 - Add and remove labels with keyboard or mouse
 - Suggest labels as you type (with debounced input)
 - Supports both public and private labels

@@ -2,7 +2,24 @@
 title: Assistant
 ---
 
-The Assistant page allows to chat with an assistant and to provide it with some context to find answers inside. For this, on the left side of the page are some components facilitate the filtering with a Sources aggregation filter component, and an upload component allowing to upload additional documents that can be choosen upon filtering in the "My Documents" source. 
+The Assistant page allows to chat with an assistant and to provide it with some context to find answers inside. For this, on the left side of the page are some components facilitate the filtering with a Sources aggregation filter component, and an upload component allowing to upload additional documents that can be choosen upon filtering in the "My Documents" source.
+
+:::caution
+A valid configuration for the assistant is required to be able to use it.
+The configuration can be set in the customization JSON [`assistant`](../configurations/customization#5-assistants) file of the Sinequa administration.
+:::
+
+To be allowed to use the assistant, the user needs to have the `service_id` sets in the Sinequa administration.
+
+```json
+{
+  "assistant": {
+    "default_values": {
+      "service_id": null
+    }
+  }
+}
+```
 
 ## Interactions
 
