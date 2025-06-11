@@ -9,8 +9,14 @@
   "
   [placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
+  [activeDescendant]="activeDescendant()?.id ?? ''"
   [(ngModel)]="value"
-  (keydown)="onKeyDown($event)"
+  (onArrowDown)="arrowdown()"
+  (onArrowUp)="arrowup()"
+  (onEnter)="enter()"
+  (onEscape)="escape()"
+  (onFocus)="focus()"
+  (onBlur)="blur()"
   (click)="inputClicked()">
   @if (showSave() && (value() !== '' || hasFilters())) {
     <button

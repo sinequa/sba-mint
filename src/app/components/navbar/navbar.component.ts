@@ -21,7 +21,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
-import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
+import { ActiveSuggestion, AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
 
@@ -66,9 +66,11 @@ export class NavbarComponent {
 
   readonly searchInput = viewChild(SearchInputComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);
+  readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 
   readonly drawerOpened = signal(false);
   readonly searchText = signal<string>('');
+  readonly activeDescendant = signal<ActiveSuggestion>(undefined);
 
   protected readonly menus = signal<NavbarMenu[]>([
     { display: 'recentSearches.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/widgets/recent-searches', component: RecentSearchesComponent },
@@ -140,5 +142,12 @@ export class NavbarComponent {
         this.savedSearchesService.deleteSavedSearch(index);
       }
     }
+  }
+
+  enter(value: string): void {
+    if (this.activeDescendant()) this.autocomplete()?.selectSuggestion();
+    else this.search(value);
+
+    this.searchInput()?.closeAutocompletePopover();
   }
 }

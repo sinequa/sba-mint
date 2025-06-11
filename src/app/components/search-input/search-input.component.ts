@@ -12,15 +12,17 @@ import {
   AutocompleteService,
   debouncedSignal,
   DrawerAdvancedFiltersComponent,
-  SavedSearchDialog,
   DrawerStackService,
   QueryParamsStore,
   SavedSearch,
+  SavedSearchDialog,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
 import { APP_FEATURES } from '../../tokens';
+import { ActiveSuggestion } from './autocomplete/autocomplete.component';
+import { SearchComponent } from './search';
 
 @Component({
   selector: 'app-search-input',
@@ -36,11 +38,19 @@ export class SearchInputComponent {
   cn = cn;
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<InputSearchVariants['variant']>('default');
+  public readonly activeDescendant = input<ActiveSuggestion>();
 
   readonly debounced = output<string>();
   readonly validated = output<string>();
   readonly saved = output<SavedSearch | undefined>();
   readonly clicked = output<void>();
+
+  readonly onArrowUp = output<void>();
+  readonly onArrowDown = output<void>();
+  readonly onEnter = output<string>();
+  readonly onEscape = output<void>();
+  readonly onBlur = output<void>();
+  readonly onFocus = output<void>();
 
   private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
   private readonly popoverElement: Signal<HTMLDivElement> = computed(() => this.autocompletePopover()?.nativeElement);
@@ -190,28 +200,48 @@ export class SearchInputComponent {
     }
   }
 
-  /**
-   * Handles the keydown event on the search input.
-   *
-   * @param e - The keyboard event triggered by the user.
-   *
-   * If the 'Enter' key is pressed, the current text is emitted.
-   * If the input is not empty and a different key is pressed, the popover is shown (if previously hidden).
-   */
-  protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Enter') {
-      this.emitText(e);
-    } else if (e.key === 'Escape') {
-      this.popoverElement().hidePopover();
-    } else if (this.value() !== '') {
-      this.popoverElement().showPopover();
-    }
-  }
-
   s = viewChild(SearchComponent);
   handlePopoverClick(e: Event): void {
     e.stopImmediatePropagation();
     this.popoverElement().hidePopover();
     this.s()?.searchElement()?.nativeElement.blur();
   }
+
+  // #region Keyboard mapping
+
+  arrowup(e?: Event): void {
+    e?.preventDefault();
+    this.onArrowUp.emit();
+  }
+
+  arrowdown(e?: Event): void {
+    e?.preventDefault();
+    this.onArrowDown.emit();
+  }
+
+  enter(e?: Event): void {
+    e?.preventDefault();
+    this.onEnter.emit(this.value());
+  }
+
+  escape(e?: Event): void {
+    e?.preventDefault();
+    this.onEscape.emit();
+  }
+
+  focus(): void {
+    this.onFocus.emit();
+    this.popoverElement().showPopover();
+  }
+
+  blur(): void {
+    this.onBlur.emit();
+    // setTimout is mandatory to allow suggestion click to be triggered
+    // otherwise the popover will be closed before the click event is processed
+    setTimeout(() => {
+      this.popoverElement().hidePopover();
+    }, 100);
+  }
+
+  // #endregion Keyboard mapping
 }

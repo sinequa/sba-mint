@@ -6,8 +6,14 @@
   </header>
 
   <main class="flex h-[50vh] flex-col gap-16">
-    <app-search-input (debounced)="searchText.set($event)" (validated)="search($event)">
-      <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+    <app-search-input
+      [activeDescendant]="activeDescendant()"
+      (debounced)="searchText.set($event)"
+      (validated)="search($event)"
+      (onArrowUp)="autocomplete.previousSuggestion()"
+      (onArrowDown)="autocomplete.nextSuggestion()"
+      (onEnter)="enter($event)">
+      <app-autocomplete #autocomplete [text]="searchText()" (activeDescendant)="activeDescendant.set($event)" (onClick)="autocompleteItemClicked($event)" />
     </app-search-input>
 
     <div class="flex max-h-full grow flex-col">

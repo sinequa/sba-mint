@@ -1,10 +1,9 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { Suggestion } from '@sinequa/atomic';
 import {
   AppStore,
   AutocompleteService,
@@ -17,10 +16,11 @@ import {
 } from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
 
-import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
+import { Suggestion } from '@sinequa/atomic';
+import { ActiveSuggestion, AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
-import { UserMenuComponent } from '../../components/user-menu/user-menu';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
+import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
 type HomeTab = {
   name: string;
@@ -81,10 +81,12 @@ const homeFeatures: HomeTab[] = [
 export class HomeComponent {
   public drawerOpened: boolean = false;
 
+  readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
+
   readonly searchText = signal<string>('');
 
   readonly tabs = signal(homeFeatures);
-
+  readonly activeDescendant = signal<ActiveSuggestion>(undefined);
   readonly selectedTabId = signal(0);
 
   readonly autocompleteService = inject(AutocompleteService);
@@ -135,5 +137,10 @@ export class HomeComponent {
     }
 
     this.search(item.display!);
+  }
+
+  enter(value: string): void {
+    if (this.activeDescendant()) this.autocomplete()?.selectSuggestion();
+    else this.search(value);
   }
 }

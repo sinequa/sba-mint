@@ -1,28 +1,87 @@
 @if (suggestions()) {
-  <ul class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 pb-1 text-black" role="listbox" aria-label="suggestions list">
-    @for (suggests of suggestions() | keyvalue; track suggests.key) {
-      <li role="presentation" class="text-muted-foreground px-2 py-1 text-xs font-semibold">
-        {{ suggests.key | transloco }}
-      </li>
-      @for (suggest of suggests.value; track $index) {
-        <li tabindex="0" role="option" (keydown.enter)="itemClicked(suggest)" (click)="itemClicked(suggest)">
-          <span class="flex items-baseline gap-2">
-            <i [class]="autocompleteIcons[suggest.category] || 'fa-fw far fa-search'"></i>
-            <p class="line-clamp-1 text-ellipsis">
-              @for (chunk of suggest.display! | highlightWord: text() : 10; track $index) {
-                <span [class]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
-              }
-            </p>
-          </span>
+  <ul
+    id="search-suggestions"
+    class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 pb-1 text-black"
+    role="listbox"
+    aria-label="suggestions list">
+    @for (suggest of suggestions(); track $index) {
+      @if (suggest.$isDivider) {
+        <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
+      } @else if (suggest.$isTitle) {
+        <li role="presentation" class="cursor-pointer p-2 text-xs font-semibold text-neutral-500">
+          @switch (suggest.category) {
+            @case ('company') {
+              {{ 'company' | transloco }}
+            }
+            @case ('location') {
+              {{ 'location' | transloco }}
+            }
+            @case ('full-text') {
+              {{ 'full-text' | transloco }}
+            }
+            @case ('recent-search') {
+              {{ 'recentSearches' | transloco }}
+            }
+            @case ('saved-search') {
+              {{ 'savedSearches' | transloco }}
+            }
+            @case ('bookmark') {
+              {{ 'bookmarks' | transloco }}
+            }
+            @case ('title') {
+              {{ 'documents' | transloco }}
+            }
+            @case ('concepts') {
+              {{ 'matters' | transloco }}
+            }
+            @case ('people') {
+              {{ 'collaborators' | transloco }}
+            }
+          }
+        </li>
+      } @else {
+        <li
+          role="option"
+          class="data-list-item flex cursor-pointer items-baseline gap-2 p-2 aria-selected:bg-blue-300"
+          [id]="'search-suggestion-' + $index"
+          [attr.aria-selected]="currentSuggestIndex() === $index"
+          [attr.aria-label]="suggest.display"
+          (keyup.enter)="itemClicked(suggest)"
+          (click)="itemClicked(suggest)">
+          @switch (suggest.category) {
+            @case ('recent-search') {
+              <i class="fa-fw far fa-clock-rotate-left"></i>
+            }
+            @case ('saved-search') {
+              <i class="fa-fw far fa-star"></i>
+            }
+            @case ('bookmark') {
+              <i class="fa-fw far fa-bookmark"></i>
+            }
+            @case ('full-text') {
+              <i class="fa-fw far fa-magnifying-glass"></i>
+            }
+            @case ('title') {
+              <i class="fa-fw far fa-file"></i>
+            }
+            @case ('concepts') {
+              <i class="fa-fw far fa-lightbulb"></i>
+            }
+            @case ('people') {
+              <i class="fa-fw far fa-user-circle"></i>
+            }
+            @default {
+              <i class="fa-fw far fa-magnifying-glass"></i>
+            }
+          }
+
+          <p class="line-clamp-1 text-ellipsis">
+            @for (chunk of suggest.display! | highlightWord: text() : 10; track $index) {
+              <span [class]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
+            }
+          </p>
         </li>
       }
-      @if (!$last) {
-        <MenuSeparator />
-      }
-    } @empty {
-      <span class="text-muted-foreground px-2">
-        {{ 'searchInput.noSuggestions' | transloco }}
-      </span>
     }
   </ul>
 }
