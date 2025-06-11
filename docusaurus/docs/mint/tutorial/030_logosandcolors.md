@@ -56,10 +56,12 @@ If you have access to your own Sinequa server, you can test this Customization J
 <img src={useBaseUrl('/img/tutorial/030_logosandcolors/trainingblue.png')} width="90%" alt="Training Blue Logo"/>
 </p>
 
-4. Finally, you can add new image file(s) to the **assets** > **logo** directory, and assuming you do not intend to use dark mode, you can comment out the effect() method from the **app.component.ts** file. Then you would simply need to modify the **styles.css** file to use your newly added images.
+4. Finally, you can add new image file(s) to the **assets** > **logo** directory. You would then modify the **styles.css** file to use your newly added images.
 
 :::note
-Since you do not have access to the Sinequa server backend, you will use this final option in the exercise that follows. 
+Since you do not have access to the Sinequa server backend, you will use this final option in the exercise that follows.
+
+Additionally, if a value is set in the App Customization JSON tab for the logo.light.small and logo.light.large, these will take precendence over changes to the styles.css file.
 :::
 
 ## Modifying the Logo Exercise
@@ -98,62 +100,20 @@ Alternatively, you can use your own images (e.g., svg, png, jpg). One should be 
   --logo-large-alt-text: 'Large training logo';
 ```
 
-5. Go to **app.component.ts** and locate the following:
-
-```
-      if (general) {
-        if (general.name) {
-          this.title.setTitle(general!.name);
-        }
-        if (general.logo?.light?.small) {
-          document.documentElement.style.setProperty(`--logo-small`, `url(${general.logo?.light?.small})`);
-        }
-        if (general.logo?.light?.large) {
-          document.documentElement.style.setProperty(`--logo-large`, `url(${general.logo?.light?.large})`);
-        }
-      }
-    });
-```
-
-6. Comment out this code:
-
-```
-    /* effect(() => {
-      const general = this.appStore.general();
-
-      if (general) {
-        if (general.name) {
-          this.title.setTitle(general!.name);
-        }
-        if (general.logo?.light?.small) {
-          document.documentElement.style.setProperty(`--logo-small`, `url(${general.logo?.light?.small})`);
-        }
-        if (general.logo?.light?.large) {
-          document.documentElement.style.setProperty(`--logo-large`, `url(${general.logo?.light?.large})`);
-        }
-      }
-    }); */
-
-```
-
-:::note
-This code is used when light and dark mode are available for your Mint implementation. 
-:::
-
-7. Save your changes.
+5. Save your changes.
 
 :::note
 If you followed the [Connecting to Sinequa tutorial](020_connection.md), Mint should recompile automatically. If not, run the `npm run start` command in the terminal.
 :::
 
-8. Go to your Mint application, and you should see the updated large logo.
+6. Go to your Mint application, and you should see the updated large logo.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/030_logosandcolors/homelogochanged.png')} width="70%" alt="Home Page with New Logo"/>
 </p>
 
 
-9. Execute a search for **life science**, and you should see the updated small logo  
+7. Execute a search for **life science**, and you should see the updated small logo  
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/030_logosandcolors/resultlogochanged.png')} width="70%" alt="Home Page with New Logo"/>
