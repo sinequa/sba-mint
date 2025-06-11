@@ -50,9 +50,9 @@ export class PreviewComponent {
     } = this.appFeatures;
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
-      return `${name}-preview-assistant`;
+      return `${name}-preview-summarize-assistant`;
     } else {
-      return 'preview-assistant';
+      return 'preview-summarize-assistant';
     }
   });
 

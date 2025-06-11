@@ -76,7 +76,7 @@ Search are triggered by few user interactions, search input, filters, tabs, etc.
         Keep in mind that `AutocompleteService` fetches suggestions from the Sinequa server based on your input. Which means, depending on several factors, each suggestion call could be heavy to process. In Mint we use a debounce mechanism to avoid too many requests.
     :::
 *   **Tabs (if available)**: Tabs are defined by your `query` configuration in the backend. You can override them in the code by defining a route in the code base.
-*   **Filters**: On the side or top, you'll often see filter categories (like "Date," "Author," "Document Type"). [See more about filters](../core/filters.mdx).
+*   **Filters**: On the side or top, you'll often see filter categories (like "Date," "Author," "Document Type"). [See more about filters](../configurations/filters).
 
 When you validate your search text, select a tab, or apply a filter, the application **immediately** takes note and the search triggers.
 

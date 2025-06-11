@@ -2,8 +2,15 @@
 title: Filters
 sidebar_position: 3
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This document explains how to customize the aggregations/filters in the Sinequa MINT application.
+
+## Overview
+
+<img src={useBaseUrl('img/configurations/json.png')} alt='authentication' />
+
+The `filters` configuration file allows you to define how various aggregations (filters) are displayed in the Sinequa MINT application. This includes specifying icons, display names, and whether they are searchable or hidden by default.
 
 ## Filters Configuration Format
 
@@ -56,7 +63,7 @@ The configuration is stored in custom JSON configuration file `filters` in Sineq
     "column": "your_column_id",
     "icon": "far fa-your-icon",
     // add
-    "display": "msg#column.your_column_display"
+    "display": "column.your_column_display"
   }
   ```
 

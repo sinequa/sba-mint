@@ -1,5 +1,6 @@
 ---
-title: Theme Body Hook
+title: WithThemes()
+sidebar_position: 2
 ---
 
 ## Overview
