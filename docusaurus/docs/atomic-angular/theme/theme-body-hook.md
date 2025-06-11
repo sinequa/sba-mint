@@ -1,5 +1,5 @@
 ---
-title: Theme Body Hook
+title: WithThemeBodyHook()
 ---
 ## Overview
 

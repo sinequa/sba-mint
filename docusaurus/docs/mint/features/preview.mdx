@@ -1,6 +1,7 @@
 ---
 title: Preview
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 The Preview feature allows the viewing of the content of a document with many searching tools.
 It is included in the side drawer opening upon clicking on a document in the results list.
@@ -8,6 +9,9 @@ It is included in the side drawer opening upon clicking on a document in the res
 ## Architecture
 
 The Preview component (`PreviewComponent`) is composed of many components:
+
+<img src={useBaseUrl('img/preview/preview-panel.png')} alt='preview component' />
+
 - The Navbar (`PreviewNavbarComponent`) handling many actions related to the preview and document such as opening it in a new tab, adding it to the bookmarks or displaying the advanced search.
 - The Header (`PreviewHeaderComponent`) displays the document's data such as the title, location, modified date and type.
 - The Tabs (`PreviewTabsComponent`) displays some tabs navigation, used here to allow having a Summary and Discussion tabs to have the AI Assistant to respectively make a summary of the current document, and to chat about it. It is displayed if one of these assistants is allowed.
@@ -45,6 +49,7 @@ columns 2
 ## How does the preview opens itself?
 
 In order to open the preview drawer, multiple steps are at play:
+
 - Upon clicking on an article in the results list, it is selected in the Selection Store and the drawer is asked to be opened
 - When opening, the Drawer (`DrawerStackComponent`) takes the last selected article from the Selection Service (`SelectionHistoryService`) which is based on the Selection Store.
 - The found article is then injected into the children component, here being the Preview Drawer
