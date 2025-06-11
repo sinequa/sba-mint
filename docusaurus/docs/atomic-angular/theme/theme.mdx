@@ -1,8 +1,10 @@
 ---
-title: Theme
+title: Introduction
+sidebar_position: 1
 ---
 
 ## Overview
+
 A theme is a collection of variables utilized in the DOM to apply consistent colors, spacing, and typography based on the specified collection. In this context, the theme exclusively provides color variables.
 
 For example, a "red" theme would define a range of red shades that vary according to the significance of the content. Additionally, it would include other shades to reflect different contexts, such as secondary, danger, or muted tones.
@@ -67,7 +69,6 @@ A scope defines which theme to apply to an identifier, including the associated 
 ```
 </details>
 
-
 ## ThemeStore
 
 ### Description
@@ -81,8 +82,6 @@ The `ThemeStore` fetches a collection of themes from a static files, saves scope
 | `loadDefaultTheme(scope: string, darkMode?: boolean)`                   | Load theme `Default` theme for given `scope`. |
 | `setCurrentTheme(scope: string, themeName: string, darkMode?: boolean)` | Update given `scope` to use `themeName`.      |
 | `setDarkMode(scope: string, darkMode: boolean)`                         | Update given `scope` to `darkMode`.           |
-
-
 
 ## Theme providers
 
@@ -114,8 +113,6 @@ bootstrapApplication(AppComponent, appConfig)
   .then(withThemeBodyHook)
   .catch((err) => console.error(err));
 ```
-
-
 
 ## ThemeProviderDirective
 

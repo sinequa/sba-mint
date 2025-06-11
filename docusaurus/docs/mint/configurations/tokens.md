@@ -3,6 +3,8 @@ title: Tokens
 sidebar_position: 3
 ---
 
+## Overview
+
 Mint can currently be configured in different ways: either through [JSON configuration](customization) from the Sinequa administration interface, or by using parameters (injection tokens) within the application code.
 
 This document focuses on the second method, which allows for more flexibility and customization in the application code.

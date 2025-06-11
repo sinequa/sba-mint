@@ -20,6 +20,10 @@
   --ifm-color-primary-darkest: #a93e08;
   --ifm-code-font-size: 13px;
 
+  --ifm-alert-border-width: 1px;
+  --ifm-alert-border-left-width: 1px;
+  --ifm-color-secondary-contrast-background: #fef2ff;
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --sinequa-blue: #0040bf;
   --sinequa-orange: #ff854a;

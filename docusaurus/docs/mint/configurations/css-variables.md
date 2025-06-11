@@ -2,6 +2,10 @@
 title: CSS Variables Reference
 ---
 
+## Overview
+
+CSS variables (also known as custom properties) are a powerful feature of CSS that allow you to define reusable values throughout your stylesheets. They enable you to create a consistent design system and make it easier to manage and update your styles.
+
 ## Variables
 
 ### Typography

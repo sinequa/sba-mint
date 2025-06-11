@@ -1,12 +1,11 @@
 ---
 layout: default
-title: Introduction
+title: Welcome to Mint 🍵
 sidebar_position: 1
 description: "Sinequa's SBA Framework Documentation"
 slug: /
 ---
 
-# Welcome to Mint
 
 Mint is a powerful application boilerplate designed to streamline the development of web applications integrated with Sinequa services. It provides a robust set of tools and features to help developers build efficient, secure, and highly configurable applications.
 
