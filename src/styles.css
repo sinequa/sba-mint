@@ -1,0 +1,231 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+/* css overrides */
+@import './css-overrides/angular-cdk';
+@import './css-overrides/bootstrap-to-tailwind';
+@import './css-overrides/saved-chat-v3';
+@import './css-overrides/collapse';
+
+@source "../node_modules/@sinequa/ui";
+@source "../node_modules/@sinequa/atomic-angular";
+@source not "../docusaurus/";
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+html {
+  overflow-x: hidden;
+}
+body {
+  position: relative;
+}
+
+@theme {
+  --font-display: 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif';
+
+  --text-xxs: 0.625rem;
+
+  --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-alt-text: 'Sinequa logo';
+
+  --color-backdrop: rgba(0, 0, 0, 0.4);
+  --color-background: #ffffff;
+  --color-foreground: #23272e;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1c1c;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1c1c1c;
+
+  --color-primary: #0084ff;
+  --color-primary-hover: #0056ff;
+  --color-primary-active: #0040bf;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #526077;
+  --color-secondary-hover: #434e61;
+  --color-secondary-active: #3a4252;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted: #f6f7f9;
+  --color-muted-foreground: #8695aa;
+
+  --color-accent: #f2f2f2;
+  --color-accent-foreground: #1c1c1c;
+
+  --color-destructive: #ff2a1d;
+  --color-destructive-hover: #c8180d;
+  --color-destructive-active: #a5180f;
+  --color-destructive-disable: #ffc8c5;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #f6f7f9;
+  --color-input: #d5d9e2;
+  --color-ring: #1a73e8;
+
+  --color-alert: #ff2a1d;
+  --color-success: #2ed73f;
+  --color-highlight: #fff7ab;
+
+  --shadow-dropdown: 6px 4px 20px 0px rgba(0, 0, 0, 0.2);
+  --shadow-article: 4px 4px 12px 0px rgba(0, 0, 0, 0.15);
+
+  --animate-progress: progress 5s linear infinite;
+  @keyframes progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@utility z-* {
+  z-index: --value(--zindex- *, integer, [integer]);
+}
+
+@layer base {
+  :root {
+    --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+    --backdrop: rgba(0, 0, 0, 0.4);
+    --backdrop-filter: blur(2px);
+    --cdk-z-index-overlay: 5000;
+
+    /* z-indexes */
+    --z-menu: 100;
+    --z-popover: 100;
+    --z-dropdown: 100;
+    --z-drawer: 2000;
+    --z-backdrop: 1000;
+  }
+
+  /* manage the backdrop with dialogs */
+  dialog {
+    /* opacity: 0; */
+    transition: opacity 0.2s ease-out allow-discrete;
+
+    &:open {
+      opacity: 1;
+    }
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0%);
+      transition: background-color 0.7s allow-discrete;
+    }
+    &:open::backdrop {
+      background-color: var(--backdrop);
+      backdrop-filter: var(--backdrop-filter);
+    }
+  }
+
+  @starting-style {
+    dialog:open {
+      opacity: 0;
+    }
+  }
+
+  @starting-style {
+    dialog:open::backdrop {
+      background-color: rgb(0 0 0 / 0%);
+      backdrop-filter: none;
+    }
+  }
+
+  /* layout */
+  .layout-search {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    transition: 250ms ease-out;
+    &[drawer-opened='true'] {
+      grid-template-columns: 4% 24% 25% 48%;
+    }
+  }
+  @media (max-width: 1200px) {
+    .layout-search {
+      grid-template-columns: 10% 40% 40% 10%;
+      &[drawer-opened='true'] {
+        grid-template-columns: 6% 23% 23% 48%;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .scroll-stable {
+    scrollbar-gutter: stable;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .bg-backdrop {
+    background-color: var(--color-backdrop);
+  }
+  .break-word {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+/* drawer stack and drawer preview */
+app-drawer-preview {
+  /* removes the "important!" when the position: obsolute will be removed from the component */
+  position: fixed !important;
+  top: 0;
+}
+app-drawer:has(+ app-drawer) {
+  transform: translateX(-5px);
+}
+
+app-drawer:has(+ app-drawer + app-drawer) {
+  transform: translateX(-8px);
+}
+
+/* Override to hide bootstrap spinner */
+.spinner-grow {
+  display: none !important;
+}
+
+/* allow multi-line text in the taost description */
+[data-description] {
+  white-space: pre-line;
+}
+
+.panel-h-full {
+  --panel-max-height: 100%;
+}
+
+.active:not([disabled]) {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: var(--color-secondary);
+}
+
+ul:has(card.selected) card:not(.selected) {
+  opacity: 0.5;
+}
+
+/* safari fix */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+sq-chat-v3 {
+  .references li {
+    list-style: none;
+  }
+
+  .sq-chat-message-actions {
+    z-index: 1 !important;
+  }
+}

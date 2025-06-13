@@ -47,7 +47,9 @@ body.bd {
   background-color: #eee;
 }
 body.bd > div.ph {
-  box-shadow: 0 4px 8px #0003, 0 6px 20px #00000030;
+  box-shadow:
+    0 4px 8px #0003,
+    0 6px 20px #00000030;
 }
 body.bd > div:not(.ph, .phe) {
   margin: 24px;
@@ -56,7 +58,9 @@ body.bd > div:not(.ph, .phe) {
 body.bd > div:not(.ph, .phe) > img {
   background-color: #fff;
   border: 1px solid lightgrey;
-  box-shadow: 0 4px 8px #0003, 0 6px 20px #00000030;
+  box-shadow:
+    0 4px 8px #0003,
+    0 6px 20px #00000030;
   margin-bottom: 16px;
   margin-right: 16px;
 }

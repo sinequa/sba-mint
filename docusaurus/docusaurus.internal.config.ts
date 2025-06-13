@@ -1,15 +1,10 @@
-import {themes as prismThemes, Prism} from 'prism-react-renderer';
-(typeof global !== "undefined" ? global : window).Prism = Prism
-require("prismjs/components/prism-csharp");
-require("prismjs/components/prism-bash");
+import { themes as prismThemes } from 'prism-react-renderer';
 
-import { Config } from "@docusaurus/types";
-
-
-const config: Config = {
-  title: 'Sinequa Mint',
+/** @type {import('@docusaurus/types').Config} */
+const config = {
+  title: 'Sinequa',
   tagline: 'Connect your modern workplace and drive innovation from the inside out',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
   staticDirectories: ['static'],
 
   // Set the production url of your site here
@@ -34,27 +29,20 @@ const config: Config = {
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en']
   },
 
   plugins: [require.resolve('docusaurus-lunr-search')],
-
-  markdown: {
-    mdx1Compat: {
-      comments: false,
-      admonitions: false,
-      headingIds: false
-    }
-  },
 
   presets: [
     [
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         docs: {
           routeBasePath: '/',
-          sidebarPath: require.resolve('./sidebars.js'),
+          // path: 'docs',
+          sidebarPath: './sidebars.js'
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
@@ -62,42 +50,48 @@ const config: Config = {
         },
         blog: false,
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      }),
-    ],
+          customCss: './src/css/custom.css'
+        }
+      }
+    ]
   ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true
+        }
+      },
       navbar: {
         title: 'Mint',
         logo: {
           alt: 'Sinequa Logo',
-          src: 'img/sinequa-logo-light-sm.png',
+          src: 'img/Logo_SINEQUA_RVB-170.png'
         },
         items: [
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomic',
-            label: 'Atomic',
+            label: 'Atomic'
           },
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomicAngular',
-            label: 'Atomic for Angular',
+            label: 'Atomic for Angular'
           },
           {
             href: 'https://github.com/sinequa/sba-mint',
             label: 'GitHub',
-            position: 'right',
-          },
-        ],
+            position: 'right'
+          }
+        ]
       },
       footer: {
         style: 'dark',
@@ -107,25 +101,25 @@ const config: Config = {
             items: [
               {
                 label: 'Twitter',
-                href: 'https://x.com/sinequa',
-              },
-            ],
+                href: 'https://x.com/sinequa'
+              }
+            ]
           },
           {
             title: 'More',
             items: [
               {
                 label: 'Website',
-                href: 'https://sinequa.com',
+                href: 'https://sinequa.com'
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/sinequa/sba-mint',
-              },
-            ],
-          },
+                href: 'https://github.com/sinequa/sba-mint'
+              }
+            ]
+          }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`,
+        copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`
       },
       prism: {
         theme: prismThemes.github,
@@ -135,20 +129,27 @@ const config: Config = {
           {
             className: 'code-block-error-line',
             line: 'error',
-            block: {start: 'code-block-error-start', end: 'code-block-error-end'}
+            block: { start: 'error-start', end: 'error-end' }
           },
           {
             className: 'code-block-add-line',
             line: 'add',
-            block: {start: 'code-block-add-start', end: 'code-block-add-end'}
+            block: { start: 'add-start', end: 'add-end' }
           },
           {
             className: 'code-block-remove-line',
             line: 'remove',
+            block: { start: 'remove-start', end: 'remove-end' }
           }
         ]
-      },
-    }),
+      }
+    },
+  themes: ['@docusaurus/theme-mermaid'],
+  // In order for Mermaid code blocks in Markdown to work,
+  // you also need to enable the Remark plugin with this option
+  markdown: {
+    mermaid: true
+  }
 };
 
 export default config;

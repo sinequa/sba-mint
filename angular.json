@@ -11,7 +11,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss",
+          "style": "css",
           "skipTests": true,
           "standalone": true
         },
@@ -28,17 +28,19 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
+            "preserveSymlinks": true,
             "outputPath": {
               "base": "dist/sinequa-mint",
               "browser": ""
             },
+            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend", "@flowjs/flow.js"],
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [],
+            "polyfills": ["zone.js", "src/polyfills.js"],
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "css",
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -48,10 +50,7 @@
                 "output": "preview/"
               }
             ],
-            "styles": [
-              "src/styles.scss",
-              { "input": "src/assets/preview.css", "inject": false }
-            ],
+            "styles": ["src/styles.css", { "input": "src/assets/preview.css", "inject": false }],
             "scripts": []
           },
           "configurations": {
@@ -59,7 +58,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
+                  "maximumWarning": "3mb",
                   "maximumError": "5mb"
                 },
                 {
@@ -76,6 +75,28 @@
                 }
               ]
             },
+            "assistant": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.assistant.ts"
+                }
+              ]
+            },
+            "insight": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.insight.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -85,13 +106,25 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "sinequa-mint:build:production"
             },
+            "assistant": {
+              "buildTarget": "sinequa-mint:build:assistant",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.assistant.json"
+            },
+            "insight": {
+              "buildTarget": "sinequa-mint:build:insight",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.insight.json"
+            },
             "development": {
-              "buildTarget": "sinequa-mint:build:development"
+              "buildTarget": "sinequa-mint:build:development",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -103,6 +136,32 @@
           }
         }
       }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }

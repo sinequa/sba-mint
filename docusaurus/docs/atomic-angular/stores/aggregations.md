@@ -21,6 +21,19 @@ Updates the state with the provided aggregations.
 |--------------|----------------|--------------------------------------------------|
 | aggregations | Aggregation[]  | The new aggregations to update the state with.   |
 
+### updateAggregation()
+
+Updates an aggregation in the store.
+  
+  ```typescript
+  updateAggregation(aggregation: Aggregation): void
+  ```
+
+| parameter    | type           | description                                      |
+|--------------|----------------|--------------------------------------------------|
+| aggregation  | Aggregation    | The aggregation to update the state with.        |
+
+
 ### clear()
 
 Clears the aggregations in the store by setting the `aggregations` property to an empty array.

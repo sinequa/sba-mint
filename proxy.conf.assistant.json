@@ -1,0 +1,9 @@
+[
+  {
+    "context": ["/api", "/xdownload", "/auth/redirect", "/saml/redirect", "/r", "/endpoints", "/assets"],
+    "target": "https://assistant-dev.demo.sinequa.com",
+    "secure": true,
+    "changeOrigin": true,
+    "ws": true
+  }
+]

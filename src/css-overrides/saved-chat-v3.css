@@ -1,0 +1,32 @@
+sq-saved-chats-v3 {
+  scrollbar-width: thin;
+
+  /* stay on top the date of the saved chat while scrolling */
+  .saved-chats {
+    .saved-chat-date {
+      position: sticky;
+      top: 0;
+      /* fix the background color to hide the content behind */
+      background-color: white;
+    }
+  }
+
+  /* chat v3 modal overrides */
+  /* center the modal in the screen */
+  dialog {
+    margin: auto;
+
+    button {
+      cursor: pointer;
+
+      &.btn-danger {
+        /* make the delete button red */
+        background-color: var(--color-destructive);
+        color: white;
+        &:hover {
+          background-color: var(--color-destructive-hover);
+        }
+      }
+    }
+  }
+}

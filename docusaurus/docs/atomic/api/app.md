@@ -4,6 +4,7 @@ sidebar_position: 1
 ---
 
 ## Overview
+
 This module provides functionality for initializing and retrieving application-related information. It allows users to:
 
 - Set up global configurations for the application
@@ -13,8 +14,8 @@ This module provides functionality for initializing and retrieving application-r
 
 These operations enable efficient application setup, configuration management, and access to crucial app-related data, enhancing the overall functionality and user experience of the application.
 
-
 ### appInitializerFn()
+
 Initializes the application by setting the global configuration and fetching app pre-login data.
 
 __Returns__ A promise that resolves to the application's initialization function.
@@ -24,6 +25,7 @@ Call this function once in your application to automatically [configure the app]
 :::
 
 #### Example
+
 ```js title="example-app-initializer.js"
 import { appInitializerFn, globalConfig } from "@sinequa/atomic";
 
@@ -43,11 +45,13 @@ console.log("config", config);
 ```
 
 ### fetchApp()
+
 Fetches the current CCApp object.
 
 __Returns__ A promise that resolves to the `CCApp` object.
 
 #### Example
+
 ```ts title="example-fetch-app.js"
 const app = await fetchApp();
 console.log("app", app);
@@ -55,6 +59,7 @@ console.log("app", app);
 ```
 
 ### fetchAppPreLogin()
+
 Fetches the pre-login information for the current app.
 
 __Returns__ A promise that resolves to the pre-login `CCAppPreLogin` information of the app.
@@ -70,8 +75,8 @@ export type CCAppPreLogin = {
 }
 ```
 
-
 #### Example
+
 ```js title="example-fetch-pre-login.js"
 import { fetchPreLogin } from "@sinequa/atomic";
 

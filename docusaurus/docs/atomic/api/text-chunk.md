@@ -3,6 +3,7 @@ title: Text Chunks
 ---
 
 ## Overview
+
 This module provides functionality for working with text chunks in documents. It allows users to:
 
 - Retrieve specific portions of text from documents
@@ -10,7 +11,6 @@ This module provides functionality for working with text chunks in documents. It
 - Fetch contextual sentences surrounding the main text chunks
 
 These operations enable efficient text analysis, extraction, and presentation of relevant document content.
-
 
 ### fetchTextChunks()
 

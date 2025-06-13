@@ -6,8 +6,8 @@ title: QueryParams from URL
 
 This utility functions to extract query parameters and filters from a URL. These functions help in parsing and handling URL parameters efficiently.
 
-
 ## Get Query Params
+
 ### getQueryParamsFromUrl()
 
 Extract params from the given URL and return a [`QueryParams`](#queryparams) Object which is a simplified `Query` Object.
@@ -16,8 +16,8 @@ Extract params from the given URL and return a [`QueryParams`](#queryparams) Obj
 |-----------|--------|----------------------------|
 | url       | string | The URL to extract params from |
 
-
 #### QueryParams
+
 ```ts
 import { LegacyFilter, Query, SpellingCorrectionMode } from "@sinequa/atomic";
 
@@ -30,6 +30,7 @@ export type QueryParams = Query & {
 ```
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
 const queryParams = getQueryParamsFromUrl(url);
@@ -47,6 +48,7 @@ console.log(queryParams);
 ```
 
 ## Get filters
+
 ### getFiltersFromUrl()
 
 Extract filters from the given URL and returns a `LegacyFilter` array.
@@ -56,6 +58,7 @@ Extract filters from the given URL and returns a `LegacyFilter` array.
 | url       | string | The URL to extract params from |
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
 console.log(getFiltersFromUrl(url));
@@ -79,7 +82,9 @@ Get a `LegacyFilter` array from URI string
 | uri       | string | The URI string to parse |
 
 #### Usage
+
 ##### From an URL
+
 ```ts
 const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
 const { f } = queryParamsFromUrl(url);  // retrieve filters URI value
@@ -94,7 +99,9 @@ console.log(getFiltersFromURI(f));      // convert URI value into a LegacyFilter
   }
 ]
 ```
+
 ##### From an URI value
+
 ```ts
 const uri = '%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
 console.log(getFiltersFromURI(uri));
@@ -108,8 +115,10 @@ console.log(getFiltersFromURI(uri));
   }
 ]
 ```
+
 :::tip
 Same can be achieved with `getQueryParamsFromUrl()` 👇
+
 ```ts
 const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
 const { filters } = getQueryParamsFromUrl(url) as { filters: [] };
@@ -124,6 +133,7 @@ console.log(filters);
   }
 ]
 ```
+
 :::
 
 ## Helpers
@@ -139,6 +149,7 @@ Retrieves the query Text from a URL or undefined.
 | url       | string | The URL to extract params from |
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
 const text  = getQueryTextFromUrl(url);
@@ -155,6 +166,7 @@ Retrieves the query Id from a URL or undefined.
 | url       | string | The URL to extract params from |
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3&id=ref123';
 const id  = getIdFromUrl(url);
@@ -171,6 +183,7 @@ Retrieves the query Page from a URL.
 | url       | string | The URL to extract params from |
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
 const page  = getQueryPageFromUrl(url);
@@ -187,6 +200,7 @@ Retrieves the query Tab from a URL.
 | url       | string | The URL to extract params from |
 
 #### Usage
+
 ```ts
 const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
 const tab  = getQueryTabFromUrl(url);

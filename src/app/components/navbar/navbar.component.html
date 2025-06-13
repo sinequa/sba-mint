@@ -1,0 +1,46 @@
+<a id="navbar-logo" routerLink="/home" class="ml-8 place-self-start">
+  <img id="logo" alt="logo" class="max-h-8 w-full" />
+</a>
+
+@if (showInput()) {
+  <app-search-input
+    class="col-span-2 h-full w-full"
+    variant="basic"
+    [showSave]="true"
+    (saved)="saveSearch($event)"
+    (validated)="validated($event)"
+    (debounced)="debounced($event)">
+    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+  </app-search-input>
+}
+
+<nav [class]="cn('flex list-none items-center justify-end gap-1 pe-10', !showMenu() && 'col-span-3')">
+  @if (showMenu()) {
+    @for (menu of menus(); track $index) {
+      <li>
+        @if (menu.routerLink === router.url) {
+          <button variant="ghost" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco" disabled>
+            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+          </button>
+        } @else if (menu.component) {
+          <Popover class="rounded-lg border-neutral-300">
+            <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+              <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+            </button>
+
+            <PopoverContent class="w-[380px] max-w-md" position="bottom-end">
+              <ng-container [ngComponentOutlet]="menu.component"></ng-container>
+            </PopoverContent>
+          </Popover>
+        } @else {
+          <button variant="icon" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+          </button>
+        }
+      </li>
+    }
+  }
+  <li class="shrink-0">
+    <app-user-menu />
+  </li>
+</nav>

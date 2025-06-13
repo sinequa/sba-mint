@@ -1,68 +1,85 @@
-import { NgClass, NgComponentOutlet } from '@angular/common';
-import { Component, HostBinding, OnDestroy, OnInit, QueryList, Type, ViewChildren, effect, inject, signal } from '@angular/core';
-import { EventType, Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Subscription, filter } from 'rxjs';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { AppStore, AutocompleteService, DrawerStackService, QueryParamsStore } from '@sinequa/atomic-angular';
+import { Suggestion } from '@sinequa/atomic';
+import {
+  AppStore,
+  AutocompleteService,
+  BookmarksComponent,
+  CollectionsComponent,
+  DrawerStackService,
+  QueryParamsStore,
+  RecentSearchesComponent,
+  SavedSearchesComponent
+} from '@sinequa/atomic-angular';
+import { TabComponent, TabsComponent } from '@sinequa/ui';
 
-import { AutocompleteComponent, Suggestion } from '@/core/components/search-input/autocomplete/autocomplete.component';
-import { SearchInputComponent } from '@/core/components/search-input/search-input.component';
-import { BookmarksListComponent } from '@/core/features/bookmarks/list/bookmarks-list.component';
-import { RecentSearchesComponent } from '@/core/features/recent-searches/recent-searches.component';
-import { SavedSearchesComponent } from '@/core/features/saved-searches/saved-searches.component';
-import { UserMenuComponent } from '@/core/features/user-menu/user-menu';
-
+import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
+import { UserMenuComponent } from '../../components/user-menu/user-menu';
+import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
 type HomeTab = {
   name: string;
   iconClass: string;
   label: string;
   component: Type<unknown>;
+  inputs?: Record<string, unknown>;
   disabled?: boolean;
-}
+};
 
 const homeFeatures: HomeTab[] = [
   {
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
-    label: 'Recent searches',
+    label: 'recentSearches.label',
+    inputs: { options: { itemsPerPage: 5 } },
     component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
     iconClass: 'fa-regular fa-star',
-    label: 'Saved searches',
+    label: 'savedSearches.label',
+    inputs: { options: { itemsPerPage: 5 } },
     component: SavedSearchesComponent
   },
   {
     name: 'bookmarks',
     iconClass: 'fa-regular fa-bookmark',
-    label: 'My bookmark',
-    component: BookmarksListComponent
+    label: 'bookmarks.label',
+    inputs: { options: { itemsPerPage: 5 } },
+    component: BookmarksComponent
+  },
+  {
+    name: 'baskets',
+    iconClass: 'fa-regular fa-inbox',
+    label: 'collections.label',
+    component: CollectionsComponent
   }
 ];
 
 @Component({
   selector: 'app-home',
-  standalone: true,
+  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent, AppSidebarComponent],
   templateUrl: './home.component.html',
   host: {
-    "class": "layout-search h-screen"
+    class: 'layout-search h-screen',
+    '[attr.drawer-opened]': 'drawerOpened'
   },
-  imports: [
-    NgClass,
-    NgComponentOutlet,
-    SearchInputComponent,
-    AutocompleteComponent,
-    UserMenuComponent,
-    TranslocoPipe
+  styles: [
+    `
+      #logo {
+        content: var(--logo-large) / var(--logo-alt-text);
+      }
+    `
   ],
+  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections')]
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  @HostBinding('attr.drawer-opened') public drawerOpened: boolean = false;
-
-  @ViewChildren(RecentSearchesComponent) widgets!: QueryList<RecentSearchesComponent[]>;
+export class HomeComponent {
+  public drawerOpened: boolean = false;
 
   readonly searchText = signal<string>('');
 
@@ -77,40 +94,26 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
-  readonly sub = new Subscription();
-
   defaultUserFeatures = {
     bookmarks: true,
     recentSearches: true,
-    savedSearches: true,
-  }
+    savedSearches: true
+  };
 
-  readonly translateService = inject(TranslocoService);
+  constructor(private destroyRef: DestroyRef) {
+    afterNextRender(() => {
+      this.queryParamsStore.patch({ filters: [], text: '' });
+    });
 
-  constructor() {
     // react to tab changes
     effect(() => {
-      this.selectedTabId.set(this.tabs().findIndex((tab) => !tab.disabled));
-    }, { allowSignalWrites: true });
+      this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
+    });
 
-    this.sub.add(
-      this.drawerStack.isOpened.subscribe(state => this.drawerOpened = state)
-    );
+    this.drawerStack.isOpened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(state => (this.drawerOpened = state));
 
-    this.sub.add(
-      // on navigation, close all tabs
-      this.router.events
-        .pipe(filter(event => event.type === EventType.NavigationStart))
-        .subscribe(() => this.drawerStack.closeAll())
-    );
-  }
-
-  ngOnInit(): void {
-    this.queryParamsStore.patch({ filters: [] });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    // when the component is destroyed, close all drawers
+    this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
   }
 
   public selectTab(tab: HomeTab): void {
@@ -122,7 +125,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public search(text: string): void {
-    this.drawerStack.closeAll();
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 
