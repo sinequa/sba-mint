@@ -58,8 +58,8 @@ For example, in the **Mint Query Web Service** on the Sinequa demo server, the t
 Notice the **Tab title** field includes the following values:
 ```
 tab.all
-tab.wiki
 tab.docs
+tab.wiki
 ```
 
 These are the keys that need to be modified in the **en.json** and **fr.json** found in the root of the i18n folder so that the tab labels are internationalized and can be easily changed from one language to another by the end user.
@@ -233,7 +233,7 @@ This folder contains two JSON files specific to the internationalization of the 
 "german": "Allemande",
 ```
 
-15. Create a new file in the user-menu folder name de.json and add the following: 
+15. Create a new file in the user-menu folder name **de.json** and add the following: 
    
 ```
 	{
