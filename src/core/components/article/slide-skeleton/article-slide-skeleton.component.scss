@@ -1,7 +1,0 @@
-:host {
-  @apply article flex-col p-0 pointer-events-none;
-}
-
-div[stkSkeleton] {
-  @apply bg-fixed;
-}

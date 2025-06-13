@@ -1,0 +1,25 @@
+:host {
+  position: relative;
+  align-items: center;
+  grid-template-rows: 1fr;
+  padding-bottom: 1rem;
+  z-index: auto;
+
+  #navbar-logo {
+    transition: margin-left 0.2s;
+  }
+
+  /**
+   * Styles for the navbar logo when the drawer is opened.
+   *
+   * When the `drawer-opened` attribute is set to `true` on the parent element,
+   * the host will have smaller colums to contain the logo and input.
+   */
+  &[drawer-opened='true'] {
+    grid-template-columns: 5% 22% 25% 25%;
+
+    #navbar-logo {
+      margin-left: 1rem;
+    }
+  }
+}

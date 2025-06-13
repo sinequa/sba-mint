@@ -3,6 +3,7 @@ title: Text Chunk Service
 ---
 
 ## Overview
+
 The `TextChunkService` is responsible for retrieving text chunks from the backend based on various parameters.
 
 ### getTextChunks()

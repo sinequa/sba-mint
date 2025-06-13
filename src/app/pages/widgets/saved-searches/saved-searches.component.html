@@ -1,0 +1,43 @@
+<div class="layout-search" [attr.drawer-opened]="drawerOpened()">
+  <div class="col-span-2 col-start-2">
+    <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+      <i class="fa-fw fas fa-star" aria-hidden></i>
+      {{ 'mySavedSearches' | transloco }}
+    </h1>
+
+    <ul class="mt-4 flex flex-col gap-2">
+      @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
+        <li
+          class="group grid grid-cols-[auto_20%_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
+          role="link"
+          (click)="onClick(savedSearch)"
+          (keydown.enter)="onClick(savedSearch)">
+          <span class="ms-2">
+            {{ savedSearch.display || savedSearch.label }}
+          </span>
+
+          <span class="text-gray-500">
+            {{ 'in' | transloco }}
+
+            <span class="font-semibold capitalize">
+              {{ savedSearch.queryParams?.tab ?? 'all' }}
+            </span>
+
+            @if (savedSearch.filterCount) {
+              ,
+              <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ 'filters' | transloco }} </span>
+            }
+          </span>
+
+          <button class="invisible text-red-500 group-hover:visible" (click)="$event.stopPropagation(); onDelete($index)">
+            <i class="fa-fw far fa-trash" aria-hidden></i>
+          </button>
+        </li>
+      } @empty {
+        <li class="no-records">
+          {{ 'saved-searches.noSavedSearches' | transloco }}
+        </li>
+      }
+    </ul>
+  </div>
+</div>

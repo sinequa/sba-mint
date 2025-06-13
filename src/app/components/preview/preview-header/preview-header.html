@@ -1,0 +1,70 @@
+<header class="flex items-center justify-between gap-4 text-base">
+  <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
+    <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap">{{ article().title }}</p>
+  </a>
+
+  <button
+    variant="ghost"
+    title="Collapse preview header"
+    [class]="cn('[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
+    (click)="headerCollapsed.set(!headerCollapsed())">
+    <i class="fa-fw fa-regular fa-chevron-up"></i>
+  </button>
+</header>
+
+<!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
+<div [class]="cn('w-full', headerCollapsed() && 'hidden')">
+  <table class="flex flex-col gap-1">
+    <tr>
+      <th>{{ 'location' | transloco }}</th>
+
+      <td class="flex items-center gap-2 overflow-hidden">
+        <DocumentLocator [article]="article()" aggregation="Treepath" />
+      </td>
+    </tr>
+
+    @if ((article().authors || []).length > 0) {
+      <tr>
+        <th>{{ 'lastUpdatedBy' | transloco }}</th>
+
+        <td class="flex flex-wrap gap-2">
+          <Metadata variant="outline" [article]="article()!" metadata="authors" />
+        </td>
+      </tr>
+    }
+    @if (article().modified) {
+      <tr>
+        <th>{{ 'lastUpdatedOn' | transloco }}</th>
+
+        <td class="flex gap-2">
+          <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
+        </td>
+      </tr>
+    }
+    @if (hasLabels()) {
+      <tr>
+        <th>{{ 'labels' | transloco }}</th>
+
+        <td class="flex flex-col gap-1">
+          <!-- public labels-->
+          <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
+          <!-- private labels -->
+          <Metadata
+            variant="outline"
+            class="bg-secondary/20 cursor-pointer"
+            [article]="article()!"
+            [metadata]="labels.private"
+            (click)="onMetadataClick($event)" />
+        </td>
+      </tr>
+    }
+
+    <tr>
+      <th>{{ 'type' | transloco }}</th>
+
+      <td>
+        <Metadata variant="outline" class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
+      </td>
+    </tr>
+  </table>
+</div>

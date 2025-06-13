@@ -1,34 +1,128 @@
-# Sinequa Mint (Beta)
+# Sinequa Mint
 
-Please watch the [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy) and visit the [Documentation website](https://sinequa.github.io/sba-mint/).
+A modern Angular 20+ application boilerplate for building scalable, maintainable, and Sinequa-integrated web apps.
 
+---
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
+## 📺 Introduction
 
-## Development server
+- [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy)
+- [Documentation website](https://sinequa.github.io/sba-mint/)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## 📁 Project Structure
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```ascii
+📁 src                 # Source folder
+├── 📁 app             # Main application folder (components, pages, config, routes)
+│   ├── 📁 components  # App-specific reusable components
+│   ├── 📁 pages       # Page-level components (home, search, widgets, etc.)
+│   ├── 📁 registry    # Document type registry and related logic
+│   ├── 🏷️ tokens.ts   # App-wide tokens
+│   ├── ⚙️ app.config.ts      # App configuration and providers
+│   ├── 🧩 app.component.ts   # Root component logic
+│   ├── 📝 app.component.html # Root component template
+│   ├── 🗺️ routes.ts          # Application routes
+│   └── 🌐 transloco-loader.ts# i18n loader
+├── 📁 assets          # Static assets (images, SVGs, error pages, preview scripts, i18n)
+├── 📁 environments    # Environment-specific configuration
+├── 🎨 styles.css      # Global styles (Tailwind, custom CSS)
+├── 🏠 index.html      # Main HTML entry point
+├── 🚀 main.ts         # Angular bootstrap
+└── 🧩 polyfills.js    # Polyfills for browser compatibility
+```
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🧩 Libraries Used
 
-## Running unit tests
+- [`@sinequa/ui`](https://www.npmjs.com/package/@sinequa/ui): Sinequa's UI component library (framework-agnostic)
+- [`@sinequa/atomic`](https://www.npmjs.com/package/@sinequa/atomic): Sinequa's core Atomic library (framework-agnostic logic, services, and utilities)
+- [`@sinequa/atomic-angular`](https://www.npmjs.com/package/@sinequa/atomic-angular): Angular-specific Sinequa components and features
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+---
 
-## Running end-to-end tests
+## 🚀 Getting Started
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Development Server
 
-## Further help
+```sh
+ng serve
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Navigate to [http://localhost:4200/](http://localhost:4200/). The app reloads automatically on file changes.
 
-## Contact Us
+### Code Scaffolding
 
-Interested in Sinequa? Contact us by [email](mailto:info@sinequa.com) or give us a call! (See our [contact page](https://www.sinequa.com/contact/) and [website](https://www.sinequa.com))
+```sh
+ng generate component component-name
+```
+
+You can also use:
+
+- `ng generate directive|pipe|service|class|guard|interface|enum|module`
+
+### Build
+
+```sh
+ng build
+```
+
+Build artifacts are stored in the `dist/` directory.
+
+---
+
+## 🧩 Features
+
+- Angular 20+ with Signals and Standalone Components
+- Modular structure: `/app` for business logic
+- Sinequa integration (search, analytics, user settings)
+- UI components from `@sinequa/ui`, core logic from `@sinequa/atomic`, and Angular features from `@sinequa/atomic-angular`
+- State management with NgRx Signals and TanStack Query
+- Internationalization with Transloco
+- TailwindCSS for utility-first styling and custom plugins
+- Modern UI components (Drawer, Preview, Bookmarks, etc.)
+- Authentication and user management
+- Audit and API interaction utilities
+
+---
+
+## 📚 Documentation
+
+- [Full Documentation](https://sinequa.github.io/sba-mint/)
+- [Core Concepts](docusaurus/docs/mint/overview.mdx)
+- [App Structure](docusaurus/docs/mint/pages.mdx)
+- [Stores & State](docusaurus/docs/mint/core/stores.mdx)
+- [Customizing Components](docusaurus/docs/mint/overview.mdx#corecomponents)
+
+---
+
+## 🛠️ Technical Stack
+
+- **Framework:** Angular 20+
+- **State Management:** NgRx Signals, TanStack Query
+- **UI Libraries:** @sinequa/ui, @sinequa/atomic, @sinequa/atomic-angular, Angular CDK
+- **Internationalization:** Transloco
+- **Styling:** TailwindCSS, CSS
+- **Linting & Formatting:** ESLint, Prettier
+- **Build Tools:** Angular CLI, TypeScript
+- **Other:** Husky (git hooks), lint-staged, ngx-sonner, RxJS
+
+---
+
+## 🛠️ Further Help
+
+- [Angular CLI Overview and Command Reference](https://angular.io/cli)
+- [Sinequa Documentation](https://doc.sinequa.com/)
+
+---
+
+## 📞 Contact Us
+
+Interested in Sinequa?  
+Contact us by [email](mailto:info@sinequa.com) or visit our [contact page](https://www.sinequa.com/contact/) and [website](https://www.sinequa.com).
+
+---
+
+© Sinequa. Distributed under the terms of the [MIT license](license.txt).

@@ -1,0 +1,135 @@
+/* Tailwind CSS 4 equivalents for Bootstrap 5.3.1 classes found in assistant.html */
+@layer utilities {
+  .d-flex {
+    @apply flex;
+  }
+  .flex-column {
+    @apply flex-col;
+  }
+  .h-100 {
+    @apply h-full;
+  }
+  .ms-1 {
+    @apply ms-1; /* Tailwind uses margin-start */
+  }
+  .me-4 {
+    @apply me-4; /* Tailwind uses margin-end */
+  }
+  .flex-row {
+    @apply flex-row;
+  }
+  .gap-2 {
+    @apply gap-2;
+  }
+  .p-2 {
+    @apply p-2;
+  }
+  .list-group {
+    /* Basic list group styling - adjust border/rounding as needed */
+    @apply rounded-md;
+  }
+  .list-group.list-group-flush {
+    padding-bottom: 1rem !important; /* Adjust padding as needed */
+  }
+  .list-group ul > li {
+    list-style: none; /* Remove default list styling */
+  }
+  .list-group-flush {
+    /* Removes borders and rounding for flush appearance */
+    @apply rounded-none border-x-0 border-t-0;
+  }
+  .list-group-flush > .list-group-item {
+    /* Ensure flush items have no side borders */
+    @apply rounded-none border-x-0;
+  }
+  .list-group-flush > .list-group-item:first-child {
+    /* Remove top border for the first flush item */
+    @apply border-t-0;
+  }
+  .list-group-flush > .list-group-item:last-child {
+    /* Ensure last flush item has no bottom border if it's the last child */
+    @apply border-b-0;
+  }
+  .flex-grow-1 {
+    @apply grow;
+  }
+  .overflow-auto {
+    @apply overflow-auto;
+  }
+  .pe-2 {
+    @apply pe-2; /* Tailwind uses padding-end */
+  }
+  .pb-2 {
+    @apply pb-2;
+  }
+  .list-unstyled {
+    /* Remove default list styling */
+    @apply list-none;
+  }
+  .list-group-item {
+    /* Basic list group item styling - adjust padding/border as needed */
+    @apply block w-full px-4 py-2;
+    position: relative;
+  }
+  /* Ensure last item doesn't have a bottom border within a standard list-group */
+  .list-group > .list-group-item:last-child {
+    @apply border-b-0;
+  }
+  /* Ensure first item's top corners match the group's rounding */
+  .list-group > .list-group-item:first-child {
+    @apply rounded-t-md;
+  }
+  /* Ensure last item's bottom corners match the group's rounding */
+  .list-group > .list-group-item:last-child {
+    @apply rounded-b-md;
+  }
+  .btn {
+    /* Base button styles - adjust as needed */
+    @apply inline-block rounded border border-transparent px-4 py-2 text-center align-middle text-base leading-normal font-normal whitespace-nowrap transition duration-150 ease-in-out select-none;
+  }
+  .btn-sm {
+    /* Small button sizing */
+    @apply rounded-sm px-3 py-1.5 text-sm; /* BS uses .875rem padding-y, .5rem padding-x, .875rem font-size */
+  }
+  .mt-auto {
+    @apply mt-auto;
+  }
+  .py-2 {
+    @apply py-2;
+  }
+  .px-3 {
+    @apply px-3;
+  }
+  .py-1 {
+    @apply py-1;
+  }
+  .btn-primary {
+    /* Primary button variant - colors are approximate */
+    @apply border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus:ring focus:ring-blue-300/50 active:bg-blue-800;
+  }
+  .btn-light {
+    /* Light button variant - colors are approximate */
+    @apply border-gray-200 bg-gray-200 text-black hover:border-gray-300 hover:bg-gray-300 focus:ring focus:ring-gray-300/50 active:bg-gray-400;
+  }
+  .form-control {
+    /* Basic form control styling */
+    @apply m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none;
+  }
+  .ms-2 {
+    @apply ms-2;
+  }
+  .mb-4 {
+    @apply mb-4;
+  }
+  .small {
+    /* Smaller text size */
+    @apply text-sm; /* Corresponds to Bootstrap's 87.5% */
+  }
+  .text-muted {
+    /* Muted text color - adjust color as needed */
+    @apply text-gray-500;
+  }
+  .text-end {
+    @apply text-right; /* Tailwind uses text-right */
+  }
+}

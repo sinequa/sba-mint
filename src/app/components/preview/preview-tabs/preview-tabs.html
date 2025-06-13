@@ -1,0 +1,42 @@
+@if (displaySummary() || displayChatWithDoc()) {
+  <div class="flex gap-2 bg-white px-6">
+    <button
+      type="button"
+      class="-mb-px border-b-2 px-4 py-2 text-sm font-medium focus:outline-none"
+      [class]="activeTab() === 'preview' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+      (click)="activeTab.set('preview')">
+      {{ 'preview.documentPreview' | transloco }}
+    </button>
+
+    @if (displaySummary()) {
+      <button
+        type="button"
+        class="-mb-px flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium focus:outline-none"
+        [class]="
+          activeTab() === 'summary' ? 'border-text-orange-400 text-orange-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+        "
+        (click)="setSummaryAssistant()">
+        <div class="-ml-2 flex size-4 items-center justify-center rounded-full bg-white">
+          @if (isStreaming()) {
+            <i class="fa-solid fa-spinner animate-spin"></i>
+          } @else {
+            <i class="fa-solid fa-sparkles"></i>
+          }
+        </div>
+        {{ 'preview.summarize' | transloco }}
+      </button>
+    }
+    @if (displayChatWithDoc()) {
+      <button
+        type="button"
+        class="-mb-px flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium focus:outline-none"
+        [class]="
+          activeTab() === 'discussion' ? 'border-text-orange-400 text-orange-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+        "
+        (click)="setChatWithDocAssistant()">
+        <i class="fa-solid fa-comments"></i>
+        {{ 'preview.discussion' | transloco }}
+      </button>
+    }
+  </div>
+}

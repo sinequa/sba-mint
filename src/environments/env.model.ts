@@ -1,5 +1,5 @@
-import { AppGlobalConfig } from "@sinequa/atomic";
+import { AppGlobalConfig } from '@sinequa/atomic';
 
-export type Environment = AppGlobalConfig & {
+export type Environment = Partial<AppGlobalConfig> & {
   production: boolean;
-}
+};
