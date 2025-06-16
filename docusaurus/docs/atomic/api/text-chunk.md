@@ -2,8 +2,6 @@
 title: Text Chunks
 ---
 
-## Overview
-
 This module provides functionality for working with text chunks in documents. It allows users to:
 
 - Retrieve specific portions of text from documents
@@ -12,18 +10,20 @@ This module provides functionality for working with text chunks in documents. It
 
 These operations enable efficient text analysis, extraction, and presentation of relevant document content.
 
+## Functions
+
 ### fetchTextChunks()
 
 Fetches text chunks for a given document based on the provided parameters.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| id | `string` | The unique identifier of the document. |
-| textChunks | `TextLocations[]` | An array of text chunks to fetch. |
-| highlights | `string[]` | An array of highlights to apply to the text chunks. |
-| query | `Query` | The query object used to retrieve the text chunks. |
-| leftSentencesCount | `number` | The number of sentences to include before the main text chunk. |
-| rightSentencesCount | `number` | The number of sentences to include after the main text chunk. |
+| `id` | `string` | The unique identifier of the document. |
+| `textChunks` | `TextLocations[]` | An array of text chunks to fetch. |
+| `highlights` | `string[]` | An array of highlights to apply to the text chunks. |
+| `query` | `Query` | The query object used to retrieve the text chunks. |
+| `leftSentencesCount` | `number` | The number of sentences to include before the main text chunk. |
+| `rightSentencesCount` | `number` | The number of sentences to include after the main text chunk. |
 
 __Returns__ A promise that resolves to an `{ chunks: TextChunk [] }` object type.
 

@@ -6,11 +6,11 @@ Generates a globally unique identifier (GUID).
 
 | parameter | type | description |
 | --- | --- | --- |
-| withHypens | `boolean` | Optional. If true, includes hyphens in the GUID. Default is true. |
+| `withHyphens` | `boolean` | Optional. If true, includes hyphens in the GUID. Default is true. |
 
 __Returns__ `string`: A newly generated GUID.
 
-## Example
+#### Example
 
 ```js title="guid-with-hypens.js"
   import { guid } from "@sinequa/atomic";

@@ -6,11 +6,11 @@ Checks if the given value is an object.
 
 | parameter | type | description |
 | --- | --- | --- |
-| obj | `unknown` | The value to check |
+| `obj` | `unknown` | The value to check |
 
 __Returns__ `boolean`: True if the value is an object, false otherwise.
 
-## Example
+#### Example
 
 ```js title="is-object.js"
 import { isObject } from "@sinequa/atomic";

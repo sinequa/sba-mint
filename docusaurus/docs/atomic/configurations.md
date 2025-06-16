@@ -2,17 +2,17 @@
 title: Configurations
 ---
 
-## Overview
-
-This module provides functionality for managing global configuration settings essential for connecting to the Sinequa platform. It includes:
+This module provides functionality for managing global configuration settings essential for connecting to the Sinequa platform.
+It includes:
 
 - A global configuration object with default values for API paths and backend URLs
 - A function to set and customize the global configuration
 - Various configuration options to control authentication methods, user overrides, logging, and API interactions
 
-These tools allow developers to centralize and easily adjust application-wide settings, ensuring consistent configuration across the application for seamless integration with Sinequa services.
+These tools allow developers to centralize and easily adjust application-wide settings, ensuring consistent configuration across
+the application for seamless integration with Sinequa services.
 
-### globalConfig
+## globalConfig
 
 This object contains the global configuration to enable connection to the Sinequa platform.  
 
@@ -50,7 +50,7 @@ export type AppGlobalConfig = {
 };
 ```
 
-#### Example
+### Example
 
 ```js title="example-config.ts"
 import { globalConfig } from "@sinequa/atomic";
@@ -59,7 +59,7 @@ console.log("configuration", globalConfig);
 // Output: { apiPath: "api/v1", loginPath: "/login", backendUrl: <your-current-url> }
 ```
 
-### setGlobalConfig()
+## setGlobalConfig()
 
 Sets the global configuration for the application.  
 Use this function when you need to customize the global configuration within your application.
@@ -68,7 +68,7 @@ Use this function when you need to customize the global configuration within you
 | --- | --- | --- |
 | config | `Partial<AppGlobalConfig>` | The partial configuration object to be merged with the existing global configuration. |
 
-#### Example
+### Example
 
 ```js title="example-get-global-config.ts"
 import { globalConfig, setGlobalConfig } from "@sinequa/atomic";
@@ -94,21 +94,21 @@ graph TD
 
 ## Summary Table
 
-| Property                | Purpose                                                      |
+| Property                | Description                                                  |
 |-------------------------|--------------------------------------------------------------|
-| app                     | Sinequa application name                                     |
-| backendUrl              | URL of the backend server                                    |
-| apiPath                 | API path for requests                                        |
-| autoOAuthProvider       | Name of the OAuth provider                                   |
-| autoSAMLProvider        | Name of the SAML provider                                    |
-| loginPath               | Login path                                                   |
-| userOverride            | User override credentials (username, domain)                 |
-| userOverrideActive      | Whether user override is active                              |
-| useCredentials          | Use credentials for authentication                           |
-| useSSO                  | Use SSO for authentication                                   |
-| useCredentialsOrSSO     | Use SSO or credentials for authentication                    |
-| useSAML                 | Use SAML even if OAuth is available                          |
-| logLevel                | Application log level                                        |
+| `app`                   | Sinequa application name                                     |
+| `backendUrl`            | URL of the backend server                                    |
+| `apiPath`               | API path for requests                                        |
+| `autoOAuthProvider`     | Name of the OAuth provider                                   |
+| `autoSAMLProvider`      | Name of the SAML provider                                    |
+| `loginPath`             | Login path                                                   |
+| `userOverride`          | User override credentials (username, domain)                 |
+| `userOverrideActive`    | Whether user override is active                              |
+| `useCredentials`        | Use credentials for authentication                           |
+| `useSSO`                | Use SSO for authentication                                   |
+| `useCredentialsOrSSO`   | Use SSO or credentials for authentication                    |
+| `useSAML`               | Use SAML even if OAuth is available                          |
+| `logLevel`              | Application log level                                        |
 
 ---
 

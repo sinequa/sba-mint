@@ -1,10 +1,10 @@
 ---
-title: Logger Module
+title: Logger
 ---
 
-## Introduction
-
-This module provides a centralized and configurable logging system. It allows for standardized logging across the application with different severity levels. The logger can be configured to control the minimum log level to output and whether messages should be displayed in the console.
+This module provides a centralized and configurable logging system. It allows for standardized logging across
+the application with different severity levels. The logger can be configured to control the minimum log level
+to output and whether messages should be displayed in the console.
 
 ## Configuration
 
@@ -20,7 +20,7 @@ configureLogger({
 });
 ```
 
-### Configuration Options
+### Options
 
 | Option                | Default Value     | Description                                                                 |
 | --------------------- | ---------------- | --------------------------------------------------------------------------- |
@@ -137,8 +137,8 @@ interface LoggerConfig {
 
 | Function           | Purpose                                                      |
 |--------------------|--------------------------------------------------------------|
-| configureLogger    | Configure the logger's level and output options              |
-| debug              | Log a debug message                                          |
-| info               | Log an informational message                                 |
-| warn               | Log a warning message                                        |
-| error              | Log an error message                                         |
+| `configureLogger`    | Configure the logger's level and output options              |
+| `debug`              | Log a debug message                                          |
+| `info`               | Log an informational message                                 |
+| `warn`               | Log a warning message                                        |
+| `error`              | Log an error message                                         |

@@ -1,16 +1,16 @@
 ---
-title: Date Utilities Module
+title: Date Utilities
 ---
 
-## Introduction
-
-This module provides utility functions for working with dates in a standardized way. It focuses on comparing dates and generating human-readable relative time strings (such as "in 3 days", "4 days ago", etc.). The utilities use the `Intl.RelativeTimeFormat` API to provide localized date representations.
+This module provides utility functions for working with dates in a standardized way.
+It focuses on comparing dates and generating human-readable relative time strings (such as "in 3 days", "4 days ago", etc.).
+The utilities use the `Intl.RelativeTimeFormat` API to provide localized date representations.
 
 ## Types
 
 ### RelativeDate
 
-The module defines a `RelativeDate` type that represents the difference between two dates:
+The `RelativeDate` type represents the difference between two dates:
 
 ```typescript
 export type RelativeDate = {
@@ -28,7 +28,7 @@ export type RelativeDate = {
 
 ## Functions
 
-### getRelativeDate
+### getRelativeDate()
 
 Generates a human-readable string representing the relative time between two dates using the browser's `Intl.RelativeTimeFormat` API.
 
@@ -67,7 +67,7 @@ const frenchRelative = getRelativeDate('fr-FR', pastDate, baseDate);
 // Result: "il y a 4 jours"
 ```
 
-### getOffsetFromDates
+### getOffsetFromDates()
 
 Calculates the difference between two dates and returns a structured `RelativeDate` object. The difference is always in days.
 
