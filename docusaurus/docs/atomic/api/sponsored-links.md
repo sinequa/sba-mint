@@ -2,25 +2,27 @@
 title: Sponsored Links
 ---
 
-## Overview
-
 This module provides functionality for retrieving sponsored links based on user queries. It enables:
 
 - Fetching relevant sponsored content tied to search terms
 - Integrating promotional or featured links into search results
 - Enhancing search experiences with targeted, context-specific links
 
-These operations allow for the seamless incorporation of sponsored content alongside regular search results, potentially improving user engagement and monetization opportunities.
+These operations allow for the seamless incorporation of sponsored content alongside regular search results,
+ potentially improving user engagement and monetization opportunities.
+
+## Functions
 
 ### fetchSponsoredLinks()
 
 Fetches sponsored links based on the provided webservice and query.  
-This function sends a POST request to the "query.links" endpoint with the specified webservice and query parameters to retrieve sponsored links.
+This function sends a POST request to the "query.links" endpoint with the specified webservice and query parameters
+to retrieve sponsored links.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| webservice | `string` | The name of the webservice to use for fetching sponsored links. |
-| query | `Query` | The query object containing search parameters. |
+| `webservice` | `string` | The name of the webservice to use for fetching sponsored links. |
+| `query` | `Query` | The query object containing search parameters. |
 
 __Returns__ A promise that resolves to an array of LinkResult objects, each representing a sponsored link with the original query attached.
 

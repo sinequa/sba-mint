@@ -3,9 +3,8 @@ title: Tokens
 sidebar_position: 3
 ---
 
-## Overview
-
-Mint can currently be configured in different ways: either through [JSON configuration](customization) from the Sinequa administration interface, or by using parameters (injection tokens) within the application code.
+Mint can currently be configured in different ways: either through [JSON configuration](customization.mdx) from the
+Sinequa administration interface, or by using parameters (injection tokens) within the application code.
 
 This document focuses on the second method, which allows for more flexibility and customization in the application code.
 
@@ -280,7 +279,8 @@ export const appConfig: ApplicationConfig = {
     // { provide: AGGREGATIONS_NAMES, useValue: ['Money', 'Companies', ...AGGREGATIONS_NAMES_PRESET_DEFAULT] },
 
     // this token is use to configure how many filters are displayed in the filter bar before to be moved to the "More" button
-    // in the case of the example, we set the number of filters to 10, so if we have 15 filters, 10 will be displayed in the filter bar and 5 will be moved to the "More" button
+    // in the case of the example, we set the number of filters to 10, so if we have 15 filters, 10 will be displayed in the 
+    // filter bar and 5 will be moved to the "More" button
     // if the space is not enough, the filters will be moved to the "More" button
     { provide: FILTERS_BREAKPOINT, useValue: 10 },
 

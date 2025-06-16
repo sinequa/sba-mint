@@ -1,10 +1,9 @@
 ---
-title: Query Params Utilities
+title: Query Params
 ---
 
-## Introduction
-
-This module provides utility functions for extracting and parsing query parameters from URLs, especially for search and filter operations. It is useful for handling URL-based navigation and state in search-driven applications.
+This module provides utility functions for extracting and parsing query parameters from URLs,
+especially for search and filter operations. It is useful for handling URL-based navigation and state in search-driven applications.
 
 ## Types
 
@@ -23,7 +22,7 @@ export type QueryParams = Query & {
 
 ## Functions
 
-### getQueryParamsFromUrl
+### getQueryParamsFromUrl()
 
 Parses a URL string and returns a `QueryParams` object.
 
@@ -31,7 +30,7 @@ Parses a URL string and returns a `QueryParams` object.
 function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined
 ```
 
-### getFiltersFromUrl
+### getFiltersFromUrl()
 
 Extracts an array of `LegacyFilter` objects from a URL string.
 
@@ -39,7 +38,7 @@ Extracts an array of `LegacyFilter` objects from a URL string.
 function getFiltersFromUrl(url: string | undefined): LegacyFilter[]
 ```
 
-### getFiltersFromURI
+### getFiltersFromURI()
 
 Parses a URI-encoded string and returns an array of `LegacyFilter` objects.
 
@@ -47,7 +46,7 @@ Parses a URI-encoded string and returns an array of `LegacyFilter` objects.
 function getFiltersFromURI(uri: string): LegacyFilter[]
 ```
 
-### queryParamsFromUrl
+### queryParamsFromUrl()
 
 Returns an object of query parameters from the given URL.
 
@@ -55,7 +54,7 @@ Returns an object of query parameters from the given URL.
 function queryParamsFromUrl(url: string): Record<string, string>
 ```
 
-## Example
+#### Example
 
 ```typescript
 import { getQueryParamsFromUrl, getFiltersFromUrl } from '@sinequa/atomic';

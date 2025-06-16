@@ -2,9 +2,9 @@
 title: Datasets
 ---
 
-## Overview
-
-The `datasets` module offers a suite of functions to interact with datasets through various web services. It allows users to fetch individual datasets, multiple datasets, and lists of dataset descriptions based on specific queries and parameters. This module is essential for applications that need to retrieve and manage data dynamically from different sources.
+The `datasets` module offers a suite of functions to interact with datasets through various web services.
+It allows users to fetch individual datasets, multiple datasets, and lists of dataset descriptions based on specific queries
+and parameters. This module is essential for applications that need to retrieve and manage data dynamically from different sources.
 
 Key functionalities include:
 
@@ -14,7 +14,9 @@ Key functionalities include:
 
 These functions ensure that users can efficiently access and handle datasets as per their requirements.
 
-### fetchDataset
+## Functions
+
+### fetchDataset()
 
 Fetches a dataset from the specified web service and query name.
 
@@ -49,7 +51,7 @@ async function getSingleDataset() {
 getSingleDataset();
 ```
 
-### fetchDatasets
+### fetchDatasets()
 
 Fetches datasets from a specified web service.
 
@@ -89,7 +91,7 @@ async function getMultipleDatasets() {
 getMultipleDatasets();
 ```
 
-### fetchDatasetList
+### fetchDatasetList()
 
 Fetches a list of dataset descriptions from the specified web service.
 

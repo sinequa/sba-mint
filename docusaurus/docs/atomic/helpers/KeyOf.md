@@ -4,9 +4,11 @@ title: KeyOf
 
 Type alias that extracts the keys of a given type `T`.
 
-## Example
+#### Example
 
 ```js title="example.js"
+import { KeyOf } from '@sinequa/atomic';
+
 // Define a sample interface
 interface User {
   id: number;

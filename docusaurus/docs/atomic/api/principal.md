@@ -3,8 +3,6 @@ sidebar_position: 2
 title: Principal
 ---
 
-## Overview
-
 This module provides functionality for retrieving and managing user information. It allows:
 
 - Fetching current user data from the backend
@@ -12,6 +10,8 @@ This module provides functionality for retrieving and managing user information.
 - Determining user permissions and administrative status
 
 These operations enable efficient user management and personalization within the application.
+
+## Functions
 
 ### fetchPrincipal()
 
@@ -23,7 +23,9 @@ automatic authentication.
 
 __Returns__ A promise that resolves to the Principal object, representing the current user's information.
 
-```js title="Principal Type"
+<details>
+<summary>Principal interface</summary>
+```js
 export type Principal = {
     id: string,
     id2: string,
@@ -50,6 +52,7 @@ export type Principal = {
     param10: string
 }
 ```
+</details>
 
 #### Example
 

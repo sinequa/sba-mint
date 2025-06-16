@@ -6,11 +6,11 @@ Checks if the given value is a string.
 
 | parameter | type | description |
 | --- | --- | --- |
-| value | `unknown` | The value to check |
+| `value` | `unknown` | The value to check |
 
 __Returns__ `boolean`: True if the value is a string, false otherwise.
 
-## Example
+#### Example
 
 ```js title="is-string.js"
 import { isString } from "@sinequa/atomic";

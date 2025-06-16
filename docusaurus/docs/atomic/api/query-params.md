@@ -2,9 +2,8 @@
 title: QueryParams from URL
 ---
 
-## Overview
-
-This utility functions to extract query parameters and filters from a URL. These functions help in parsing and handling URL parameters efficiently.
+This utility functions to extract query parameters and filters from a URL.
+These functions help in parsing and handling URL parameters efficiently.
 
 ## Get Query Params
 
