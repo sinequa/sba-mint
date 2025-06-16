@@ -44,30 +44,6 @@ updateFilter(filter: LegacyFilter): void
 |-----------|--------------|----------------------|
 | filter    | LegacyFilter | The filter to update |
 
-### removeFilter()
-
-Removes a filter from the store based on the specified field.
-
-```typescript
-removeFilter(field?: string): void
-```
-
-| Parameter | Type         | Description          |
-|-----------|--------------|----------------------|
-| field    | string | The field of the filter to be removed |
-
-### removeFilterByName()
-
-Removes a filter from the state by its name.
-
-```typescript
-removeFilterByName(name?: string): void
-```
-
-| Parameter | Type         | Description          |
-|-----------|--------------|----------------------|
-| name    | string | The name of the filter to be removed |
-
 ### clearFilter()
 
 Clears the filter.

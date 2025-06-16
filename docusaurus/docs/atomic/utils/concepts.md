@@ -2,9 +2,9 @@
 title: Concepts
 ---
 
-## Introduction
-
-This module provides utility functions for parsing, rewriting, and manipulating concepts and patterns in text. It is useful for handling advanced search queries or text processing where concepts are represented using specific patterns (e.g., groups, adjacent, exact, regex, token).
+This module provides utility functions for parsing, rewriting, and manipulating concepts and patterns in text.
+It is useful for handling advanced search queries or text processing where concepts are represented using
+specific patterns (e.g., groups, adjacent, exact, regex, token).
 
 ## Types
 
@@ -28,7 +28,7 @@ export type FullTextPattern = {
 
 ## Functions
 
-### parseText
+### parseText()
 
 ```typescript
 function parseText(text: string): FullTextPattern[]
@@ -53,7 +53,7 @@ parseText('+(foo) -[bar] "baz" /qux/ token');
 // ]
 ```
 
-### rewriteText
+### rewriteText()
 
 Rewrites the text based on an array of `FullTextPattern` objects.
 
@@ -61,7 +61,7 @@ Rewrites the text based on an array of `FullTextPattern` objects.
 function rewriteText(patterns: FullTextPattern[]): string
 ```
 
-### addConcepts
+### addConcepts()
 
 Adds concepts to the given text by modifying the patterns.
 
@@ -69,7 +69,7 @@ Adds concepts to the given text by modifying the patterns.
 function addConcepts(text: string, concepts: string[], op?: '+'|'-'): string
 ```
 
-### removeConcept
+### removeConcept()
 
 Removes a single concept from the given text.
 
@@ -77,7 +77,7 @@ Removes a single concept from the given text.
 function removeConcept(concept: string, text: string): string
 ```
 
-### removeConcepts
+### removeConcepts()
 
 Removes all concepts (adjacent patterns) from the given text.
 
@@ -85,7 +85,7 @@ Removes all concepts (adjacent patterns) from the given text.
 function removeConcepts(text: string): string
 ```
 
-### getConcepts
+### getConcepts()
 
 Retrieves all concepts (adjacent patterns) from the given text.
 

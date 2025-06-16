@@ -25,7 +25,7 @@ const json = inject(AppStore).customizationJson;
 
 ### sources
 
-Get the sources's customizations object.
+Get the sources's customizations object.  
 _This configuration is pre-configured in Sinequa 11.12+._
 
 :::caution
@@ -85,7 +85,7 @@ Available only in Sinequa 11.12+
 
 ```json
 {
-  "filters": [
+  "filters": [ 
       { "column": "geo", "icon": "fa-solid fa-earth-europe", "hidden": false }
   ]
 }
@@ -95,37 +95,6 @@ Available only in Sinequa 11.12+
 
 ```ts
 const json = inject(AppStore).filters;
-```
-
-### general
-
-Get the general configuration object which allows to override the app title and the logos.
-
-:::caution
-Available only in Sinequa 11.12+
-:::
-
-```json
-{
-  "general": {
-    "name": "App Name",
-    "logo": {
-      "light": {
-        "small": "/assets/logo/small.png",
-        "large": "/assets/logo/large.png"
-      },
-      "dark": {
-        "small": "/assets/logo/small-dark.png",
-        "large": "/assets/logo/large-dark.png"
-      }
-    }
-  }
-}
-```
-
-#### Usage
-```ts
-const json = inject(AppStore).general;
 ```
 
 ## Basic features
@@ -158,15 +127,15 @@ initializeWithAppName(appName: string): Promise<void>
 ### update()
 
 Updates the application state with the provided `CCApp` object.
-
+  
   ```ts
   update(app: CCApp): void
   ```
-
+  
   | parameter | type  | description                          |
   |-----------|-------|--------------------------------------|
   | app       | CCApp | The new `CCApp` object to update the state with. |
-
+  
 ### getColumnAlias()
 
 Retrieves the alias of a column from the store.
@@ -197,7 +166,7 @@ Returns The customization json object or undefined if not found
 :::caution
 Available only in Sinequa 11.12+
 :::
-
+  
   ```ts
   getNamedCustomizationJson(name: string): any
   ```
@@ -248,7 +217,7 @@ export class SomeComponent {
 
 Retrieves the private and public labels from the web service.
 
-Returns An object `{ private: string, public: string }` containing the private and public labels.
+Returns An object `{ private: string, public: string }` containing the private and public labels.  
 If the labels are not found, returns an object with empty strings for both fields.
 
 ```ts
@@ -319,7 +288,7 @@ export class SomeComponent {
 
 ### getDefaultQuery()
 
-Retrieves the default query.
+Retrieves the default query.  
 
 Returns the default `CCQuery` if it exists, otherwise undefined.
 
@@ -336,7 +305,7 @@ The default query is __always__ the first query in the list of queries.
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
-
+  
   query: CCQuery = inject(AppStore).getDefaultQuery();
   // returns the default query set in the Sinequa administration
 }
@@ -365,7 +334,7 @@ allowEmptySearch(queryName: string): boolean
 ```ts title="some-component.ts"
 @Component({ ... })
 export class SomeComponent {
-
+  
   allowEmptySearch: boolean = inject(AppStore).allowEmptySearch('_query');
   // returns true or false depending the flag set in Sinequa Administration
 }
@@ -391,11 +360,11 @@ getAggregationIcon(column: string): string | undefined
 // json Aggregation configuration extract
 {
   aggregations: [
-    {
-      column: "geo",
+    { 
+      column: "geo", 
       icon?: "fas fa-globe",
-      display?: "Places",
-      hidden?: false,
+      display?: "Places", 
+      hidden?: false, 
       items?: [{ value: "Madrid", icon?: "fas fa-map" }]
     }
   ]
@@ -423,11 +392,11 @@ getAggregationCustomization(column: string): Aggregation | undefined
 // json Aggregation configuration extract
 {
   aggregations: [
-    {
-      column: "geo",
+    { 
+      column: "geo", 
       icon?: "fas fa-globe",
-      display?: "Places",
-      hidden?: false,
+      display?: "Places", 
+      hidden?: false, 
       items?: [{ value: "Madrid", icon?: "fas fa-map" }]
     }
   ]
@@ -435,18 +404,18 @@ getAggregationCustomization(column: string): Aggregation | undefined
 
 const conf = inject(AppStore).getAggregationCustomization("geo");
 // Output:
-{
-  column: "geo",
+{ 
+  column: "geo", 
   icon?: "fas fa-globe",
-  display?: "Places",
-  hidden?: false,
+  display?: "Places", 
+  hidden?: false, 
   items?: [{ value: "Madrid", icon?: "fas fa-map" }]
 }
 ```
 
 ### getAggregationItemsCustomization()
 
-Retrieves the customization items for a given column from the store's filters.
+Retrieves the customization items for a given column from the store's filters.  
 
 Returns An array of `CFilterItem` objects if found, otherwise `undefined`.
 
@@ -462,11 +431,11 @@ getAggregationItemsCustomization(column: string): CFilterItem[] | undefined
 // json Aggregation configuration extract
 {
   aggregations: [
-    {
-      column: "geo",
+    { 
+      column: "geo", 
       icon?: "fas fa-globe",
-      display?: "Places",
-      hidden?: false,
+      display?: "Places", 
+      hidden?: false, 
       items?: [{ value: "Madrid", icon?: "fas fa-map" }]
     }
   ]

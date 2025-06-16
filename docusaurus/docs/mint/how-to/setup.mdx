@@ -7,12 +7,12 @@ sidebar_position: 1
 
 Follow these steps to create a new Angular 20 Mint clone application:
 
-### 1. Prerequisites
+### 1. 🧰 Prerequisites
 
 - **Node.js**: Install Node.js (v20.x or later recommended) from [nodejs.org](https://nodejs.org/).
 - **npm**: Comes with Node.js. Verify with `npm -v`.
 
-### 2. Install Angular CLI
+### 2. 🛠️ Install Angular CLI
 
 Open your terminal and run:
 
@@ -20,15 +20,15 @@ Open your terminal and run:
 npm install -g @angular/cli@20
 ```
 
-### 3. Create a New Angular Project
+### 3. 🚀 Create a New Angular Project
 
 ```sh
-ng new mint-clone
+ng new mint-clone --style css
 ```
 
 - Choose options as needed (e.g., add Angular routing, stylesheet format).
 
-### 4. Add Mint Clone Dependencies
+### 4. 📦 Add Mint Clone Dependencies
 
 Navigate to your project folder:
 
@@ -54,7 +54,7 @@ npm install @angular-architects/ngrx-toolkit @angular/cdk @floating-ui/dom @jsve
 ```
 
 <details>
-  <summary>Dependencies</summary>
+  <summary>package.json file</summary>
 ```json
 {
   "name": "mint-clone",
@@ -104,15 +104,19 @@ npm install @angular-architects/ngrx-toolkit @angular/cdk @floating-ui/dom @jsve
 ```
 </details>
 
-### 5. Configure Your Project
+### 5. 🎨 Install Tailwind CSS
 
-- Set up [Tailwind CSS](https://tailwindcss.com/docs/installation/framework-guides/angular), Transloco, and any other required configuration for Mint features.
-- Add your custom components, pages, and styles to match Mint's UI and functionality.
+To install Tailwind CSS, follow the official [Tailwind CSS Angular guide](https://tailwindcss.com/docs/installation/framework-guides/angular).
 
-### 6. Start the Development Server
+### 6. ✨ Download Starter Template
+
+If you prefer to start with a pre-configured setup, you can download the starter template:
+[starter.zip](/starter/starter.zip) contains a basic setup of the Mint clone application with the necessary dependencies and configurations.
+
+### 7. 🚦 Start the Development Server
 
 ```sh
-ng serve
+npm run start
 ```
 
 - Open your browser at [http://localhost:4200](http://localhost:4200) to view your Mint clone app.

@@ -18,7 +18,7 @@ loadDefaultTheme(scope: string, darkMode?: boolean): void
 | Parameter | Type      | Description                      |
 |-----------|-----------|----------------------------------|
 | scope     | `string`  | The scope for the theme.         |
-| darkMode  | `boolean` | Optional. Enables dark mode.      |
+| darkMode  | `boolean` | Optional. Enable dark mode.      |
 
 **Usage Example:**
 
