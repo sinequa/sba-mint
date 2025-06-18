@@ -302,3 +302,30 @@ table td {
   margin-top: 0.125rem;
   margin-bottom: 0.5rem;
 }
+
+/* badges for new features and updates */
+.new,
+.draft {
+  position: relative;
+}
+.new::after,
+.draft::after {
+  position: absolute;
+  font-size: 10px;
+  color: white;
+  top: 0;
+  right: 0;
+  transform: translateY(50%);
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  border-radius: 0.25rem;
+}
+.new::after {
+  content: 'new';
+  background-color: var(--ifm-color-primary);
+}
+.draft::after {
+  content: 'draft';
+  color: var(--ifm-color-warning-contrast-foreground);
+  background-color: var(--ifm-color-warning);
+}
