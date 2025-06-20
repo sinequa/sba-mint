@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
@@ -174,17 +174,21 @@ export class AssistantLayoutComponent {
 
   watchAssistantNotification(): void {
     const controller = new AbortController();
-    
-    addEventListener('notification', (event: Event) => {
-      const customEvent = event as CustomEvent<{
-        type: NotificationType;
-        title?: string;
-        message: string;
-      }>;
-      const { type, message } = customEvent.detail;
-      toast[type](message);
-    }{ signal: controller.signal });
-    
+
+    addEventListener(
+      'notification',
+      (event: Event) => {
+        const customEvent = event as CustomEvent<{
+          type: NotificationType;
+          title?: string;
+          message: string;
+        }>;
+        const { type, message } = customEvent.detail;
+        toast[type](message);
+      },
+      { signal: controller.signal }
+    );
+
     this.destroyRef.onDestroy(() => controller.abort());
   }
 }
