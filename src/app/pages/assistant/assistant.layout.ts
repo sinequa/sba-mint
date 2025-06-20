@@ -170,7 +170,11 @@ export class AssistantLayoutComponent {
     }
   }
 
+  private readonly destroyRef = inject(DestroyRef);
+
   watchAssistantNotification(): void {
+    const controller = new AbortController();
+    
     addEventListener('notification', (event: Event) => {
       const customEvent = event as CustomEvent<{
         type: NotificationType;
@@ -179,6 +183,8 @@ export class AssistantLayoutComponent {
       }>;
       const { type, message } = customEvent.detail;
       toast[type](message);
-    });
+    }{ signal: controller.signal });
+    
+    this.destroyRef.onDestroy(() => controller.abort());
   }
 }
