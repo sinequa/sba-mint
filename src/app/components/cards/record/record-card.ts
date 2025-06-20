@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, model, OnDestroy, signal } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -17,7 +16,7 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 
@@ -50,6 +49,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardMenuComponent
   ],
   templateUrl: './record-card.html',
+  host: {
+    '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
+  },
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -59,10 +61,10 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
       directive: ShowBookmarkDirective,
       inputs: ['article']
     }
-  ],
-  providers: [provideTranslocoScope({ scope: 'article' })]
+  ]
 })
 export class RecordCard implements OnDestroy {
+  cn = cn;
   public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
   public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
@@ -79,6 +81,7 @@ export class RecordCard implements OnDestroy {
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
     this.showBookmark.set(value);
   });
+  isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 

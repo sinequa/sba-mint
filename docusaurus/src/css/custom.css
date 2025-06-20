@@ -68,6 +68,23 @@ h5 {
   font-size: 1.1rem;
 }
 
+kbd {
+  height: 20px;
+  line-height: 20px;
+  border-radius: 6px;
+  padding: 0 6px;
+  font-size: 12px;
+  color: hsla(0, 0%, 9%, 1);
+  background: hsla(0, 0%, 100%, 1);
+  font-weight: 500;
+  font-family: inherit;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border: none;
+  text-align: center;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
 /* (2025-03-12) A <details> block is rendered by docusaurus as a details.alert.alert--info, that is blue-ish and we don't like.
 	The idea is to do it by over-riding the variables values in the same fashion the Infima file does it.
 	*/
