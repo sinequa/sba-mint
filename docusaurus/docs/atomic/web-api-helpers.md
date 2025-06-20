@@ -2,8 +2,6 @@
 title: Web API Helpers
 ---
 
-## Introduction
-
 This module provides a comprehensive set of utilities for making HTTP requests to the Sinequa API endpoints. It includes:
 
 - Error handling classes for API communication
@@ -16,7 +14,7 @@ This module provides a comprehensive set of utilities for making HTTP requests t
 
 The module defines several error classes for handling different types of API errors:
 
-### `ApiError`
+### ApiError
 
 Base class for all API errors.
 
@@ -42,7 +40,7 @@ try {
 
 ## Interfaces
 
-### `RequestOptions`
+### RequestOptions
 
 Configuration options for HTTP requests.
 
@@ -67,7 +65,7 @@ interface RequestOptions {
 
 ### Request Creation
 
-#### `createHeaders`
+#### createHeaders
 
 Creates headers for web API requests with the necessary Sinequa-specific headers.
 
@@ -78,7 +76,7 @@ const headers = createHeaders();
 // Headers now include Sinequa-Force-Camel-Case and CSRF token if available
 ```
 
-#### `createTimeoutController`
+#### createTimeoutController
 
 Creates an `AbortController` with a timeout.
 
@@ -91,7 +89,7 @@ const { controller, signal } = createTimeoutController(5000); // 5 second timeou
 
 ### Response Handling
 
-#### `handleResponse`
+#### handleResponse
 
 Processes API responses, handling token refresh and error conditions.
 
@@ -104,7 +102,7 @@ const data = await handleResponse(response);
 
 ### Request Execution
 
-#### `withRetry`
+#### withRetry
 
 Executes a fetch function with configurable retry logic.
 

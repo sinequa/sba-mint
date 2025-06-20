@@ -1,5 +1,6 @@
 ---
-title: Authentication
+title: Flow
+description: Overview of the authentication flow in Sinequa, including supported methods and session management.
 ---
 
 ## Authentication Flow Explanation

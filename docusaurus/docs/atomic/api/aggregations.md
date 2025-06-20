@@ -2,8 +2,6 @@
 title: Aggregations
 ---
 
-## Overview
-
 This module provides functionality for retrieving and managing aggregations based on user queries. It enables:
 
 - Fetching aggregated data for specific queries
@@ -12,7 +10,7 @@ This module provides functionality for retrieving and managing aggregations base
 
 These operations allow for efficient data analysis and visualization, enhancing the ability to gain insights from search results and improve the overall user experience.
 
-## Aggregations
+## Functions
 
 ### fetchAggregation()
 
@@ -20,11 +18,11 @@ Fetches an aggregation based on the provided parameters.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| aggregation | `Aggregation` | The aggregation to fetch. |
-| query | `Query` | The query object to use for fetching the aggregation. |
-| audit | `AuditEvents` | Optional. Audit events to be logged with the request. |
+| `aggregation` | `Aggregation` | The aggregation to fetch. |
+| `query` | `Query` | The query object to use for fetching the aggregation. |
+| `audit` | `AuditEvents` | Optional. Audit events to be logged with the request. |
 
-__Returns__ A promise&lt;Aggregation&gt; that resolves to the fetched aggregation.
+__Returns__ A `promise<Aggregation>` that resolves to the fetched aggregation.
 
 #### Example
 

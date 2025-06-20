@@ -1,14 +1,11 @@
 ---
-title: isNotInputEvent Utility
+title: isNotInputEvent
 ---
 
-## Introduction
+This utility provides a function to determine if a keyboard event did not originate from an input or textarea element.
+This is useful for handling global keyboard shortcuts or events that should not trigger when the user is typing in a form field.
 
-This utility provides a function to determine if a keyboard event did not originate from an input or textarea element. This is useful for handling global keyboard shortcuts or events that should not trigger when the user is typing in a form field.
-
-## Function
-
-### isNotInputEvent
+### isNotInputEvent()
 
 Returns `true` if the event target is not an `<input>` or `<textarea>` element.
 

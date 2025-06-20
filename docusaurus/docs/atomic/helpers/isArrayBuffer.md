@@ -6,11 +6,11 @@ Checks if the given value is an ArrayBuffer.
 
 | parameter | type | description |
 | --- | --- | --- |
-| value | `unknown` | The value to check |
+| `value` | `unknown` | The value to check |
 
 __Returns__ `boolean`: True if the value is an ArrayBuffer, false otherwise.
 
-## Example
+#### Example
 
 ```js title="is-array-buffer.js"
 import { isArrayBuffer } from "@sinequa/atomic";

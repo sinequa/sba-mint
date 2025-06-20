@@ -1,14 +1,11 @@
 ---
-title: Bisect Module
+title: Bisect
 ---
 
-## Introduction
+The bisect module provides a utility function for splitting an array into two separate arrays based on a predicate function.
+This is useful for partitioning collections of items into distinct groups according to specific criteria.
 
-The bisect module provides a utility function for splitting an array into two separate arrays based on a predicate function. This is useful for partitioning collections of items into distinct groups according to specific criteria.
-
-## Usage
-
-Import the `bisect` function from the module to partition arrays.
+#### Example
 
 ```typescript
 import { bisect, Bisections } from '@sinequa/atomic';

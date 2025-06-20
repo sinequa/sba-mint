@@ -8,13 +8,14 @@ are prefixed by a backslash. Finally, the string is enclosed in backquotes.
 
 | parameter | type | description |
 |---|---|---|
-| expression | `string` | Optional |
+| `value` | `string` | The string to escape (optional) |
 
 :::tip examples
 
 ```text
-`` a\`\b `` => `` a\\\`\\b ``   \\ => \\\\  
-` => \\`  
+`` a\`\b `` => `` a\\\`\\b ``
+\ => \\  
+` => \`  
 ```
 
 :::
@@ -23,7 +24,7 @@ are prefixed by a backslash. Finally, the string is enclosed in backquotes.
 This function has very specific use cases.
 :::
 
-## Example
+#### Example
 
 ```js title="escapeExpr.js"
 import { escapeExpr } from "@sinequa/atomic";

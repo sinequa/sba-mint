@@ -1,0 +1,122 @@
+---
+title: Setup
+sidebar_position: 1
+---
+
+## Step-by-Step Guide to Create an Angular 20 Mint Clone Application
+
+Follow these steps to create a new Angular 20 Mint clone application:
+
+### 1. 🧰 Prerequisites
+
+- **Node.js**: Install Node.js (v20.x or later recommended) from [nodejs.org](https://nodejs.org/).
+- **npm**: Comes with Node.js. Verify with `npm -v`.
+
+### 2. 🛠️ Install Angular CLI
+
+Open your terminal and run:
+
+```sh
+npm install -g @angular/cli@20
+```
+
+### 3. 🚀 Create a New Angular Project
+
+```sh
+ng new mint-clone --style css
+```
+
+- Choose options as needed (e.g., add Angular routing, stylesheet format).
+
+### 4. 📦 Add Mint Clone Dependencies
+
+Navigate to your project folder:
+
+```sh
+cd mint-clone
+```
+
+Install the required dependencies:
+
+:::note
+The following three dependencies are mandatory to work with Sinequa:
+
+| Dependency                | Description                                                      |
+|---------------------------|------------------------------------------------------------------|
+| `@sinequa/atomic`         | Core Sinequa and utilities.                 |
+| `@sinequa/atomic-angular` | Angular integration for Sinequa Atomic.               |
+| `@sinequa/ui`             | Shared Sinequa UI components and design system utilities.        |
+
+:::
+
+```sh
+npm install @angular-architects/ngrx-toolkit @angular/cdk @floating-ui/dom @jsverse/transloco @ngrx/signals @sinequa/atomic @sinequa/atomic-angular @sinequa/ui class-variance-authority highlight-words ngx-sonner tailwind-merge
+```
+
+<details>
+  <summary>package.json file</summary>
+```json
+{
+  "name": "mint-clone",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build"
+  },
+  "dependencies": {
+    // add
+    "@angular-architects/ngrx-toolkit": "^18.1.1",
+    "@angular/animations": "^20.0.0",
+    // add
+    "@angular/cdk": "^20.0.2",
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    // add-start
+    "@floating-ui/dom": "^1.7.1",
+    "@jsverse/transloco": "^7.6.1",
+    "@ngrx/signals": "^18.1.1",
+    "@sinequa/atomic": "^0.0.100",
+    "@sinequa/atomic-angular": "^0.1.3",
+    "@sinequa/ui": "^0.1.2",
+    "class-variance-authority": "^0.7.1",
+    "highlight-words": "^2.0.0",
+    "ngx-sonner": "^3.1.0",
+    // add-end
+    "rxjs": "^7.8.1",
+    // add
+    "tailwind-merge": "^3.3.0",
+    "tslib": "^2.5.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.0.0",
+    "@angular/cli": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "typescript": "^5.8.2"
+  }
+}
+```
+</details>
+
+### 5. 🎨 Install Tailwind CSS
+
+To install Tailwind CSS, follow the official [Tailwind CSS Angular guide](https://tailwindcss.com/docs/installation/framework-guides/angular).
+
+### 6. ✨ Download Starter Template
+
+If you prefer to start with a pre-configured setup, you can download the starter template:
+[starter.zip](/starter/starter.zip) contains a basic setup of the Mint clone application with the necessary dependencies and configurations.
+
+### 7. 🚦 Start the Development Server
+
+```sh
+npm run start
+```
+
+- Open your browser at [http://localhost:4200](http://localhost:4200) to view your Mint clone app.

@@ -41,10 +41,12 @@ on the `ApplicationService` as part of the bootstrapping process.
 ## How to Use the Configuration
 
 ### Set Up Your Customization
+
 Set the configuration in customization (JSON) section of the Sinequa administration.
 <img src={useBaseUrl('img/configurations/json.png')} alt='authentication' />
 
 ### Customize Logos and Title
+
 Ensure the `general` custom file is present with the required properties.
 
 ```json title="general: JSON configuration in Sinequa Administration"
@@ -69,6 +71,7 @@ Ensure the `general` custom file is present with the required properties.
 - `logo.alt`: Alternate text for accessibility (used in CSS variable `--logo-alt-text`).
 
 ### Usage in Your Application
+
 Use the CSS variables in your styles or HTML to display the logos, for example:
 
    ```css
@@ -121,8 +124,10 @@ If the configuration JSON (`general` object) does not exist or is not loaded, yo
 - You can customize the default logo and title by editing these variables directly in `styles.css`.
 
 :::note
+
 - If no configuration JSON is present, `styles.css` provides the default branding.
 - Edit the CSS variables in `styles.css` to set your application's logo and title appearance.
+
 :::
 
 ## Summary

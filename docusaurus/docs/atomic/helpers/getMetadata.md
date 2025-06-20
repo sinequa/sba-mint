@@ -6,12 +6,12 @@ Retrieves metadata from an article object.
 
 | parameter | type | description |
 | --- | --- | --- |
-| article | `Article` | The article object containing the metadata |
-| metadata | _KeyOf_ \<`Article`\> | The key of the metadata to retrieve. |
+| `article` | `Article` | The article object containing the metadata |
+| `metadata` | `KeyOf<Article>` | The key of the metadata to retrieve. |
 
 __Returns__ An array of objects with a `display` property representing the metadata.
 
-## Example
+#### Example
 
 ```js title="get-metadata.js"
 import { getMetadata } from "@sinequa/atomic";

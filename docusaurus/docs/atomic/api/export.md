@@ -2,13 +2,13 @@
 title: Fetch Query Export
 ---
 
-## Overview
-
 This module provides functionality for exporting query results from the web service. It allows users to:
 
 - Export query results based on specified parameters including the application name, query details, and optional article information.
 
 These operations enable efficient export of search results, enhancing user experience in data handling and reporting scenarios.
+
+## Functions
 
 ### fetchQueryExport()
 
@@ -23,7 +23,7 @@ Fetches the export of a query result from the web service.
 
 __Returns__ A promise that resolves to the response of the export request.
 
-### Example
+#### Example
 
 ```typescript
 import { ExportQueryModel, Query, Article, fetchQueryExport } from '@sineuqa/atomic';

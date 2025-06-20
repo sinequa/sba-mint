@@ -139,16 +139,17 @@ const config = {
           {
             className: 'code-block-error-line',
             line: 'error',
-            block: { start: 'code-block-error-start', end: 'code-block-error-end' }
+            block: { start: 'error-start', end: 'error-end' }
           },
           {
             className: 'code-block-add-line',
             line: 'add',
-            block: { start: 'code-block-add-start', end: 'code-block-add-end' }
+            block: { start: 'add-start', end: 'add-end' }
           },
           {
             className: 'code-block-remove-line',
-            line: 'remove'
+            line: 'remove',
+            block: { start: 'remove-start', end: 'remove-end' }
           }
         ]
       }
