@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, model, OnDestroy, signal, viewChild } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article, LegacyFilter } from '@sinequa/atomic';
@@ -22,7 +22,7 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 
@@ -50,6 +50,9 @@ type CustomMetadata = {
     CardMenuComponent
   ],
   templateUrl: './slide-card.html',
+  host: {
+    '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
+  },
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -59,10 +62,10 @@ type CustomMetadata = {
       directive: ShowBookmarkDirective,
       inputs: ['article']
     }
-  ],
-  providers: [provideTranslocoScope({ scope: 'article' })]
+  ]
 })
 export class SlideCard implements OnDestroy {
+  cn = cn;
   public readonly myarticle = input<Article>();
   public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
 
@@ -89,6 +92,7 @@ export class SlideCard implements OnDestroy {
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
     this.showBookmark.set(value);
   });
+  isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 

@@ -170,10 +170,9 @@ body {
   .bg-backdrop {
     background-color: var(--color-backdrop);
   }
-  .break-word {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
+  /* neural search passages */
+  .matchlocations {
+    font-weight: 700;
   }
 }
 
