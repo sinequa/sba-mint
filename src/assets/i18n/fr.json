@@ -98,5 +98,6 @@
     "uploaded": "Importé",
     "delete-all": "Tout supprimer",
     "refresh": "Refraîchir"
-  }
+  },
+  "homeWidgetTabs": "Liste d'onglets des widgets de la page d'accueil"
 }

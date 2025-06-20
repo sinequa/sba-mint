@@ -10,13 +10,13 @@ import {
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
 
-import { Suggestion } from '@sinequa/atomic';
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -96,6 +96,14 @@ export class HomeComponent {
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
+  navigatorOptions = signal<KeyboardNavigatorOptions>({
+    name: 'tabsNavigator',
+    optionSelector: '[role="tab"]:not([aria-disabled="true"])',
+    direction: 'horizontal',
+    selectOnFocus: true,
+    resetSelectionOnBlur: true
+  });
+
   defaultUserFeatures = {
     bookmarks: true,
     recentSearches: true,
@@ -130,17 +138,7 @@ export class HomeComponent {
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 
-  autocompleteItemClicked(item: Suggestion): void {
-    if (!item.display) {
-      console.error('No display property found on item', item);
-      return;
-    }
-
-    this.search(item.display!);
-  }
-
-  enter(value: string): void {
-    if (this.activeDescendant()) this.autocomplete()?.selectSuggestion();
-    else this.search(value);
+  selected(element: HTMLElement | null): void {
+    this.search(element?.getAttribute('data-text') || this.searchText());
   }
 }

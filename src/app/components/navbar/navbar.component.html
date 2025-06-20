@@ -4,17 +4,14 @@
 
 @if (showInput()) {
   <app-search-input
-    class="col-span-2 h-full w-full"
+    class="col-span-2 mr-8 h-full w-full"
     variant="basic"
-    [activeDescendant]="activeDescendant()"
     [showSave]="true"
     (saved)="saveSearch($event)"
     (validated)="validated($event)"
     (debounced)="debounced($event)"
-    (onArrowUp)="autocomplete.previousSuggestion()"
-    (onArrowDown)="autocomplete.nextSuggestion()"
-    (onEnter)="enter($event)">
-    <app-autocomplete #autocomplete [text]="searchText()" (activeDescendant)="activeDescendant.set($event)" (onClick)="autocompleteItemClicked($event)" />
+    (selected)="selected($event)">
+    <app-autocomplete #autocomplete [text]="searchText()" />
   </app-search-input>
 }
 

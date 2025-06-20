@@ -44,7 +44,7 @@
           role="option"
           class="data-list-item flex cursor-pointer items-baseline gap-2 p-2 aria-selected:bg-blue-300"
           [id]="'search-suggestion-' + $index"
-          [attr.aria-selected]="currentSuggestIndex() === $index"
+          [attr.data-text]="suggest.display"
           [attr.aria-label]="suggest.display"
           (keyup.enter)="itemClicked(suggest)"
           (click)="itemClicked(suggest)">

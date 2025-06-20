@@ -13,6 +13,7 @@ import {
   debouncedSignal,
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
+  SearchInputComponent as InputComponent,
   QueryParamsStore,
   SavedSearch,
   SavedSearchDialog,
@@ -22,11 +23,10 @@ import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontal
 
 import { APP_FEATURES } from '../../tokens';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
-import { SearchComponent } from './search';
 
 @Component({
   selector: 'app-search-input',
-  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
+  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.css',
   host: {
@@ -43,14 +43,7 @@ export class SearchInputComponent {
   readonly debounced = output<string>();
   readonly validated = output<string>();
   readonly saved = output<SavedSearch | undefined>();
-  readonly clicked = output<void>();
-
-  readonly onArrowUp = output<void>();
-  readonly onArrowDown = output<void>();
-  readonly onEnter = output<string>();
-  readonly onEscape = output<void>();
-  readonly onBlur = output<void>();
-  readonly onFocus = output<void>();
+  readonly selected = output<HTMLElement | null>();
 
   private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
   private readonly popoverElement: Signal<HTMLDivElement> = computed(() => this.autocompletePopover()?.nativeElement);
@@ -151,7 +144,6 @@ export class SearchInputComponent {
 
   public inputClicked(): void {
     this.popoverElement().showPopover();
-    this.clicked.emit();
   }
 
   public setInput(text: string | undefined, silent: boolean = true): void {
@@ -200,48 +192,11 @@ export class SearchInputComponent {
     }
   }
 
-  s = viewChild(SearchComponent);
-  handlePopoverClick(e: Event): void {
-    e.stopImmediatePropagation();
-    this.popoverElement().hidePopover();
-    this.s()?.searchElement()?.nativeElement.blur();
-  }
-
-  // #region Keyboard mapping
-
-  arrowup(e?: Event): void {
-    e?.preventDefault();
-    this.onArrowUp.emit();
-  }
-
-  arrowdown(e?: Event): void {
-    e?.preventDefault();
-    this.onArrowDown.emit();
-  }
-
-  enter(e?: Event): void {
-    e?.preventDefault();
-    this.onEnter.emit(this.value());
-  }
-
-  escape(e?: Event): void {
-    e?.preventDefault();
-    this.onEscape.emit();
-  }
-
   focus(): void {
-    this.onFocus.emit();
     this.popoverElement().showPopover();
   }
 
   blur(): void {
-    this.onBlur.emit();
-    // setTimout is mandatory to allow suggestion click to be triggered
-    // otherwise the popover will be closed before the click event is processed
-    setTimeout(() => {
-      this.popoverElement().hidePopover();
-    }, 100);
+    this.popoverElement().hidePopover();
   }
-
-  // #endregion Keyboard mapping
 }

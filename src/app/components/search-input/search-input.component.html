@@ -1,5 +1,6 @@
-<Search
+<SearchInput
   id="autocomplete-anchor"
+  controls="search-suggestions"
   [variant]="variant()"
   [class]="
     cn(
@@ -9,14 +10,10 @@
   "
   [placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
-  [activeDescendant]="activeDescendant()?.id ?? ''"
   [(ngModel)]="value"
-  (onArrowDown)="arrowdown()"
-  (onArrowUp)="arrowup()"
-  (onEnter)="enter()"
-  (onEscape)="escape()"
   (onFocus)="focus()"
   (onBlur)="blur()"
+  (onSelected)="selected.emit($event)"
   (click)="inputClicked()">
   @if (showSave() && (value() !== '' || hasFilters())) {
     <button
@@ -59,7 +56,7 @@
     <SendHorizontalIcon />
   </button>
 
-  <div popover #autocompletePopover (keydown.enter)="handlePopoverClick($event)" (click)="handlePopoverClick($event)">
+  <div popover #autocompletePopover>
     <ng-content></ng-content>
   </div>
-</Search>
+</SearchInput>

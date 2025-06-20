@@ -5,7 +5,6 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { debounceTime } from 'rxjs';
 
-import { Suggestion } from '@sinequa/atomic';
 import {
   AlertsComponent,
   AutocompleteService,
@@ -21,7 +20,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
-import { ActiveSuggestion, AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
+import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
 
@@ -70,7 +69,6 @@ export class NavbarComponent {
 
   readonly drawerOpened = signal(false);
   readonly searchText = signal<string>('');
-  readonly activeDescendant = signal<ActiveSuggestion>(undefined);
 
   protected readonly menus = signal<NavbarMenu[]>([
     { display: 'recentSearches.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/widgets/recent-searches', component: RecentSearchesComponent },
@@ -93,17 +91,6 @@ export class NavbarComponent {
     // register to transloco events to update the overflow manager when translations are loaded
     // otherwise the overflow manager will count size of items without text
     this.transloco.events$.pipe(takeUntilDestroyed(), debounceTime(100)).subscribe(() => this.overflowManager()?.countItems());
-  }
-
-  autocompleteItemClicked(item: Suggestion): void {
-    if (!item.display) {
-      console.error('No display property found on item', item);
-      return;
-    }
-
-    this.searchInput()?.closeAutocompletePopover();
-
-    this.search(item.display!);
   }
 
   protected search(text: string): void {
@@ -144,10 +131,13 @@ export class NavbarComponent {
     }
   }
 
-  enter(value: string): void {
-    if (this.activeDescendant()) this.autocomplete()?.selectSuggestion();
-    else this.search(value);
-
+  /**
+   * Occurs when the user selects a suggestion from the autocomplete.
+   * @param element - The selected suggestion element.
+   */
+  protected selected(element: HTMLElement | null): void {
     this.searchInput()?.closeAutocompletePopover();
+    // We should pass the focus somewhere else after selecting a suggestion
+    this.search(element?.getAttribute('data-text') || this.searchText());
   }
 }
