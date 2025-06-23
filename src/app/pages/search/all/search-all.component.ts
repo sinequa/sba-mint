@@ -91,6 +91,7 @@ export class SearchAllComponent {
   protected readonly s = input<string>(); // sort
   protected readonly f = input<string>(); // filters
   protected readonly n = input<string>(); // query param
+  protected readonly id = input<string>(); // record.id
 
   protected readonly drawerOpened = signal(false);
 
@@ -120,12 +121,6 @@ export class SearchAllComponent {
   protected readonly sub = new Subscription();
 
   currentKeys = signal<QueryParams | undefined>(undefined);
-
-  // get the id from the query params store to open the drawer with the preview of the article
-  id = computed(() => {
-    const state = getState(this.queryParamsStore);
-    return state.id;
-  });
 
   // the query must be retriggered when the user override is active
   userOverrideActive = computed(() => {
@@ -258,6 +253,24 @@ export class SearchAllComponent {
     effect(() => {
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
       this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.n() });
+    });
+
+    // Update the URL with the query params
+    effect(() => {
+      this.hideFeedback.set(false);
+
+      const queryParams: QueryParamsProps = {};
+      const { text, filters = [], page, sort, tab, basket, name } = getState(this.queryParamsStore);
+
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
+      queryParams.p = page;
+      queryParams.s = sort;
+      queryParams.t = tab;
+      queryParams.q = text;
+      queryParams.b = basket;
+      queryParams.n = name;
+
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
     });
 
     // Update the URL with the query params
