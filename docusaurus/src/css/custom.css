@@ -320,13 +320,17 @@ table td {
   margin-bottom: 0.5rem;
 }
 
-/* badges for new features and updates */
+/*
+  badges for new features and updates
+ */
 .new,
-.draft {
+.draft,
+.update {
   position: relative;
 }
 .new::after,
-.draft::after {
+.draft::after,
+.update::after {
   position: absolute;
   font-size: 10px;
   color: white;
@@ -345,4 +349,9 @@ table td {
   content: 'draft';
   color: var(--ifm-color-warning-contrast-foreground);
   background-color: var(--ifm-color-warning);
+}
+.update::after {
+  content: 'update';
+  /* color: var(--ifm-color-success-contrast-foreground); */
+  background-color: var(--ifm-color-success);
 }
