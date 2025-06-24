@@ -36,6 +36,15 @@ import { getComponentsForDocumentType } from '../../../registry/document-type-re
 import { APP_FEATURES } from '../../../tokens';
 
 type Result = R & { nextPage?: number; previousPage?: number };
+type QueryParamsProps = {
+  f?: string; // filters list
+  p?: number; // page number
+  s?: string; // sort name
+  t?: string; // tab name
+  q?: string; // query text
+  b?: string; // basket,
+  n?: string; // query name
+};
 
 @Component({
   selector: 'app-search-all',
@@ -76,24 +85,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
 export class SearchAllComponent {
   cn = cn;
 
-  // input url bindings
-  protected readonly q = input<string>(); // text
-  protected readonly t = input<string>(); // tab
-  protected readonly b = input<string>(); // basket
-  protected readonly s = input<string>(); // sort
-  protected readonly f = input<string>(); // filters
-  protected readonly n = input<string>(); // query param
-  protected readonly id = input<string>(); // record.id
-
-  protected readonly drawerOpened = signal(false);
-
-  protected readonly result = signal<Result | undefined>(undefined);
-  protected readonly queryText = signal<string>('');
-
-  // the Assistant is expanded and visible by default
-  protected readonly assistantCollapsed = signal<boolean>(true);
-  protected readonly showAssistant = signal<boolean>(false);
-
+  // all injected services and stores
   protected readonly searchService = inject(SearchService);
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
@@ -108,9 +100,29 @@ export class SearchAllComponent {
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
 
-  protected aggregations: Aggregation[];
+  // input url bindings
+  protected readonly q = input<string>(); // text
+  protected readonly t = input<string>(); // tab
+  protected readonly b = input<string>(); // basket
+  protected readonly s = input<string>(); // sort
+  protected readonly f = input<string>(); // filters
+  protected readonly n = input<string>(); // query param
+  protected readonly id = input<string>(); // record.id
 
-  currentKeys = signal<QueryParams | undefined>(undefined);
+  // all signals used in the component
+  protected readonly drawerOpened = signal(false);
+
+  protected readonly result = signal<Result | undefined>(undefined);
+  protected readonly queryText = signal<string>('');
+  protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
+
+  // the Assistant is expanded and visible by default
+  protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly showAssistant = signal<boolean>(false);
+
+  // the aggregations are used to display the filters in the UI
+  // and are updated when the query is successful
+  protected aggregations: Aggregation[];
 
   // the query must be retriggered when the user override is active
   userOverrideActive = computed(() => {
