@@ -2,8 +2,6 @@
 title: Backdrop
 ---
 
-## Overview
-
 The `Backdrop` component is an Angular component that is intended to be used in combination with the `Drawer` component, adding a darker shade on the background when the `Drawer` is opened.
 
 When placed in the template, it is automatically handled by the `Drawer` component.

@@ -1,7 +1,8 @@
 ---
-title: Sign In
+title: Authentication
 ---
-## Overview
+
+## signIn()
 
 The `signIn` function checks the authentication and redirects to the login page if needed.
 
@@ -12,6 +13,7 @@ The `signIn` function checks the authentication and redirects to the login page 
 | `router`   | `Router`      | The router of the application to redirect if needed.          |
 
 ### Usage
+
 ```ts title="app.config.ts"
 export const appConfig: ApplicationConfig = {
   providers: [

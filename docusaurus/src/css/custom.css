@@ -97,6 +97,13 @@ details.alert {
   box-shadow: none;
 }
 
+.alert {
+  a {
+    color: var(--ifm-color-primary);
+    text-decoration-color: var(--ifm-color-primary);
+  }
+}
+
 /* (2025-03-12) Written to integrate a <ul> that is defined in an import in another ul.
 		For example <MinimumSinequaVersionsLatest> in updating-the-sinequa-assistant.md */
 /* Make two consecutive uls to look like one unified ul */

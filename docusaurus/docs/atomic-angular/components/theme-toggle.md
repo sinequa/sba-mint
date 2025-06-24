@@ -2,8 +2,6 @@
 title: ThemeToggle
 ---
 
-## Overview
-
 The `ThemeToggle` component is an Angular component that allows toggling between dark and light mode.
 
 ### Properties

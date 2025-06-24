@@ -1,12 +1,14 @@
 ---
-title: Preview Service
+title: Preview
 sidebar_class_name: update
 description: Documentation for the Preview Service, which handles document previews, highlights, and interactions with the preview iframe.
 ---
 
 The `PreviewService` is responsible for handling the preview of documents, including fetching and displaying highlighted extracts and entities.
 
-### preview
+## Functions
+
+### preview()
 
 Previews the data for a given ID and query.
 
@@ -62,7 +64,7 @@ export class MyComponent {
 }
 ```
 
-### close
+### close()
 
 Closes the preview with the specified ID and updates the audit log.
 
@@ -88,7 +90,7 @@ export class MyComponent {
 }
 ```
 
-### openExternal
+### openExternal()
 
 Previews an article in a new browser's tab.
 
@@ -113,7 +115,7 @@ export class MyComponent {
 }
 ```
 
-### setIframe
+### setIframe()
 
 Sets the iframe window object.
 
@@ -139,7 +141,7 @@ export class MyComponent {
 }
 ```
 
-### setPreviewData
+### setPreviewData()
 
 Sets the preview data and updates the highlight category based on the provided data.
 
@@ -164,7 +166,7 @@ export class MyComponent {
 }
 ```
 
-### sendMessage
+### sendMessage()
 
 Sends a message to the iframe if it exists.
 
@@ -192,7 +194,7 @@ export class MyComponent {
 }
 ```
 
-### retrieveHtmlContent
+### retrieveHtmlContent()
 
 Send a message to the preview iFrame with the required data to retrieve HTML content for a specific highlight category.
 
@@ -219,7 +221,7 @@ export class MyComponent {
 }
 ```
 
-### zoomIn
+### zoomIn()
 
 Sends a message to zoom in.
 
@@ -233,7 +235,7 @@ export class MyComponent {
 }
 ```
 
-### zoomOut
+### zoomOut()
 
 Sends a message to zoom out the preview.
 
@@ -247,12 +249,12 @@ export class MyComponent {
 }
 ```
 
-### toggle AI description
+### toggleAIDescription()
 
 Toggles the AI description in the preview.
 
 ```typescript
-toggleAiDescription(enabled: boolean): void;
+toggleAIDescription(enabled: boolean): void;
 ```
 
 | Parameter | Type    | Description                                      |
@@ -271,7 +273,7 @@ export class MyComponent {
 }
 ```
 
-### toggle
+### toggle()
 
 Toggles the highlights based on the provided flags for extracts and entities.
 

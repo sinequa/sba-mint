@@ -1,9 +1,10 @@
 ---
-title: Selection History Service
+title: Selection History
 ---
-## Overview
 
 The `SelectionHistoryService` class is responsible for managing the selection history. It keeps track of the history of selected articles and provides methods to navigate through the history. The service also emits events when the selection history changes. This service is used by the Drawer.
+
+## Functions
 
 ### getCurrentSelectionIndex()
 
@@ -14,9 +15,11 @@ public getCurrentSelectionIndex(): number
 ```
 
 **Returns:**
+
 - `number`: The index of the current selection, which is the last element in the history array.
 
 **Usage Example:**
+
 ```typescript
 const currentIndex = selectionHistoryService.getCurrentSelectionIndex();
 console.log(currentIndex);
@@ -35,9 +38,11 @@ public getSelection(index: number): Article | undefined
 | `index`   | number | The index of the article to retrieve.            |
 
 **Returns:**
+
 - `Article | undefined`: The article at the specified index, or `undefined` if the index is out of bounds.
 
 **Usage Example:**
+
 ```typescript
 const article = selectionHistoryService.getSelection(0);
 console.log(article);
@@ -52,9 +57,11 @@ public getHistoryLength(): number
 ```
 
 **Returns:**
+
 - `number`: The number of entries in the history.
 
 **Usage Example:**
+
 ```typescript
 const historyLength = selectionHistoryService.getHistoryLength();
 console.log(historyLength);
@@ -69,6 +76,7 @@ public clearHistory(): void
 ```
 
 **Usage Example:**
+
 ```typescript
 selectionHistoryService.clearHistory();
 ```
@@ -82,9 +90,11 @@ public back(): Article | undefined
 ```
 
 **Returns:**
+
 - `Article | undefined`: The last article in the history, or `undefined` if the history is empty.
 
 **Usage Example:**
+
 ```typescript
 const previousArticle = selectionHistoryService.back();
 console.log(previousArticle);

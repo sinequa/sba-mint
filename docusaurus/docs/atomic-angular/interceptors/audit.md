@@ -2,8 +2,6 @@
 title: AuditInterceptorFn
 ---
 
-## Overview
-
 Intercepts HTTP requests to add audit information if the request URL includes the API path.
 
 This interceptor checks if the request URL contains the specified API path from the global configuration.  

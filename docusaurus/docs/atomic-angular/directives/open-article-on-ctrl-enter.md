@@ -2,8 +2,6 @@
 title: OpenArticleOnCtrlEnter
 ---
 
-## Overview
-
 Directive that opens an article in the preview when pressing Ctrl + Enter.
 
 ### Usage

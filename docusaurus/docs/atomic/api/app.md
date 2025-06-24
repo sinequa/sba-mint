@@ -22,7 +22,7 @@ Initializes the application by setting the global configuration and fetching app
 __Returns__ A promise that resolves to the application's initialization function.
 
 :::tip
-Call this function once in your application to automatically [configure the app](../configurations#globalconfig) with the pre-login data coming from the server.
+Call this function once in your application to automatically [configure the app](../features/configurations#globalconfig) with the pre-login data coming from the server.
 :::
 
 #### Example

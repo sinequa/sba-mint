@@ -1,8 +1,8 @@
 ---
-title: Other Utilities
+title: Help Resources
 ---
 
-This module provides utility types and functions for working with help/documentation folders and locale-based file resolution.
+Provides utility types and functions for working with help/documentation folders and locale-based file resolution.
 
 ## Types
 
