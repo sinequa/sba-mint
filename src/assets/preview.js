@@ -105,6 +105,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
+      case 'toggle-description':
+        // if data.show is true, show the description
+        // just set a new value to the css variable --desc-display
+        document.documentElement.style.setProperty('--desc-display', data.show ? 'inline-block' : 'none');
+        break;
     }
   }
   function zoom(value) {
