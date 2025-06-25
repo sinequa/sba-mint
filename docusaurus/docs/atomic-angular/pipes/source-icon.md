@@ -2,8 +2,6 @@
 title: SourceIcon
 ---
 
-## Overview
-
 The SourceIconPipe transforms a collection of strings into a corresponding icon class based on the source name. If the collection is empty or undefined, it returns a default icon class.
 
 :::warning

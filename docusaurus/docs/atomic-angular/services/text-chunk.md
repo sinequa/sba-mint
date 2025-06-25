@@ -1,10 +1,10 @@
 ---
-title: Text Chunk Service
+title: Text Chunk
 ---
 
-## Overview
-
 The `TextChunkService` is responsible for retrieving text chunks from the backend based on various parameters.
+
+## Functions
 
 ### getTextChunks()
 

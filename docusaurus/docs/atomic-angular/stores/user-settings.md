@@ -2,8 +2,6 @@
 title: User Settings
 ---
 
-## Overview
-
 This store is used to manage the user settings. It is used to store the user's preferences and settings, such as the language, the theme, and the highlights.
 
 ## Basic features

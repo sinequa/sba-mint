@@ -1,14 +1,18 @@
 ---
-title: Aggregations Service
+title: Aggregations
+sidebar_class_name: update
 ---
-
-## Overview
 
 The `AggregationsService` is responsible for handling aggregation-related operations in the application. It provides methods to load more aggregation items, open aggregation nodes, and retrieve sorted aggregations based on a query name.
 
-## Methods
+:::note
+The functionality for retrieving sorted aggregations based on a query name is provided by the [`getAuthorizedFilters`](../stores/app.mdx#getauthorizedfilters) method in the [`AppStore`](../stores/app.mdx), not in this service.
+See the AppStore documentation for details on retrieving sorted aggregations.
+:::
 
-### `loadMore`
+## Functions
+
+### loadMore()
 
 Loads more items for a given aggregation.
 
@@ -26,7 +30,7 @@ Loads more items for a given aggregation.
 |---------------------|-----------------------------------------------------------------------------|
 | `Observable<Aggregation>` | An observable that emits the updated aggregation with more items.     |
 
-### `open`
+### open()
 
 Opens a node in a tree aggregation.
 
@@ -43,12 +47,6 @@ Opens a node in a tree aggregation.
 | Type                    | Description                                                                 |
 |-------------------------|-----------------------------------------------------------------------------|
 | `Observable<TreeAggregation>` | An observable that emits the updated tree aggregation with the node opened. |
-
-### Note on Sorted Aggregations
-
-> **Note**: The functionality for retrieving sorted aggregations based on a query name is provided by the `getAuthorizedFilters` method in the `AppStore`, not in this service.
->
-> See the AppStore documentation for details on retrieving sorted aggregations.
 
 ## Example
 

@@ -1,7 +1,9 @@
 ---
-title: Debounced Signal
+title: debouncedSignal()
+sidebar_label: Debounced Signal
+description: Create a debounced signal that updates its value after a specified timeout.
+sidebar_class_name: update
 ---
-## Overview
 
 The `debouncedSignal` function creates a debounced signal that updates its value after a specified timeout.
 
@@ -18,18 +20,60 @@ The `debouncedSignal` function creates a debounced signal that updates its value
 |-------------|---------------------------------------------------------------|
 | `Signal<T>` | A new signal that updates its value after the specified debounce timeout. |
 
-#### Example
+## Basic Usages
+
+### Signal
 
 ```typescript
-const input = signal('');
-const debounced = debouncedSignal(input, 1000);
+import { Component, signal, effect } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { debouncedSignal } from 'atomic-angular/utils';
 
-constructor() {
-  effect(() => {
-    console.log(debounced());
-    // will log the input value after 1 second of inactivity.
-  });
+@Component({
+  selector: 'app-debounced-example',
+  imports: [FormsModule],
+  template: `
+    <input [ngModel]="input()" (ngModelChange)="input.set($event)" />
+    <p>Debounced value: {{ debounced() }}</p>
+  `,
+})
+export class DebouncedExampleComponent {
+  input = signal('');
+  debounced = debouncedSignal(this.input, 1000);
+
+  constructor() {
+    effect(() => {
+      console.log(this.debounced());
+      // Logs the debounced input value after 1 second of inactivity.
+    });
+  }
 }
-...
-<input [ngModel]="input()" (ngModelChange)="input.set($event)">
+```
+
+### Model Signal
+
+```typescript
+import { Component, signal, effect } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { debouncedSignal } from 'atomic-angular/utils';
+
+@Component({
+  selector: 'app-debounced-example',
+  imports: [FormsModule],
+  template: `
+    <input [(ngModel)]="input" />
+    <p>Debounced value: {{ debounced() }}</p>
+  `,
+})
+export class DebouncedExampleComponent {
+  input = model('');
+  debounced = debouncedSignal(this.input, 1000);
+
+  constructor() {
+    effect(() => {
+      console.log(this.debounced());
+      // Logs the debounced input value after 1 second of inactivity.
+    });
+  }
+}
 ```

@@ -1,8 +1,7 @@
 ---
 title: App
+sidebar_class_name: update
 ---
-
-## Overview
 
 Contains all the `CCApp` informations
 
@@ -120,9 +119,9 @@ Initializes the application state with the provided app name.
 initializeWithAppName(appName: string): Promise<void>
 ```
 
-| Parameter | Type   | Description                                      |
+| Parameter | Type   | Description                                    |
 |-----------|--------|--------------------------------------------------|
-| appName   | string | The name of the application to fetch the configuration for. |
+| `appName`   | `string` | The name of the application to fetch the configuration for. |
 
 ### update()
 
@@ -134,8 +133,22 @@ Updates the application state with the provided `CCApp` object.
   
   | parameter | type  | description                          |
   |-----------|-------|--------------------------------------|
-  | app       | CCApp | The new `CCApp` object to update the state with. |
+  | `app`       | `CCApp` | The new `CCApp` object to update the state with. |
   
+### getColumn()
+
+Retrieves a column definition from the application's state schema by its name.
+
+Returns The column definition as a `CCColumn` object if found, or `undefined` if the column does not exist.
+
+```ts
+getColumn(column: string): CCColumn | undefined
+```
+
+| parameter | type   | description                          |
+|-----------|-------|--------------------------------------|
+| `column`       | `string` | The name of the column to retrieve. |
+
 ### getColumnAlias()
 
 Retrieves the alias of a column from the store.
@@ -148,7 +161,7 @@ getColumnAlias(column: string): string
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| column  | string | The name of the column for which to retrieve the alias. |
+| `column`  | `string` | The name of the column for which to retrieve the alias. |
 
 #### Usage
 
@@ -156,6 +169,70 @@ getColumnAlias(column: string): string
 const alias = inject(AppStore).getColumnAlias("geo");
 // Output: "geo"
 ```
+
+### isDateColumn()
+
+Determines if the specified column is of a date-related type.  
+
+Returns `true` if the column is of a date-related type otherwise `false`.
+
+```ts
+isDateColumn(column: string): boolean
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| `column`  | `string` | The name of the column to check. |
+
+:::note
+This method checks if the column's type matches one of the following:
+
+- `EngineType.date`
+- `EngineType.dateTime`
+- `EngineType.time`
+
+:::
+
+#### Usage
+
+```ts title="is-date-column.ts"
+const isDate = inject(AppStore).isDateColumn("created");
+// Output: true if the column type is date, dateTime, or time
+```
+
+### getAuthorizedFilters()
+
+Retrieves the sorted aggregations based on the query name included in the route data.
+
+Returns an array of sorted aggregations.
+
+```ts
+getAuthorizedFilters(route: ActivatedRoute): Aggregation[]
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| `route`  | `ActivatedRoute` | The activated route containing the query name in its data. |
+
+#### Usage
+
+```ts
+const route = inject(ActivatedRoute);
+const aggregations = inject(AppStore).getAuthorizedFilters(route);
+// Output: [{ column: "geo", icon: "fa-solid fa-earth-europe", hidden: false }]
+```
+
+## Customization features
+
+### Customization JSON files
+
+| Name               | Description                                                    |
+|--------------------|----------------------------------------------------------------|
+| `customizationJson`| Retrieves the customization JSON object from the store.         |
+| `sources`          | Returns the `sources` customization object.                     |
+| `filters`          | Returns the `filters` customization object.                     |
+| `general`          | Returns the `general` customization object.                     |
+| `assistants`       | Returns the `assistants` customization object.                  |
 
 ### getNamedCustomizationJson()
 
@@ -173,7 +250,7 @@ Available only in Sinequa 11.12+
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| name  | string | The name of the customization json. |
+| `name`  | `string` | The name of the customization json. |
 
 #### Usage
 
@@ -193,7 +270,7 @@ getWebServiceByType(type: CCWebService['webServiceType']): CCWebService | undefi
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| type | `CCWebService['webServiceType']`  | Web service type name.   |
+| `type` | `CCWebService['webServiceType']`  | Web service type name.   |
 
 :::info
 `CCWebService['webServiceType']` is as special type to allow autocomplete.
@@ -224,6 +301,10 @@ If the labels are not found, returns an object with empty strings for both field
 getLabels(): { private: string, public: string }
 ```
 
+### allowLabels()
+
+Checks if the labels web service is available.
+
 #### Usage
 
 ```ts title="some-component.ts"
@@ -249,7 +330,7 @@ getQueryByName(name: string): CCQuery | undefined
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| name | string  | The name of the query to retrieve.   |
+| `name` | `string`  | The name of the query to retrieve.   |
 
 #### Usage
 
@@ -273,7 +354,7 @@ getQueryByIndex(index: number): CCQuery | undefined
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| index | number  | The index of the query to retrieve.   |
+| `index` | `number`  | The index of the query to retrieve.   |
 
 #### Usage
 
@@ -327,7 +408,7 @@ allowEmptySearch(queryName: string): boolean
 
 | parameter  | type   | description                                                        |
 |------------|--------|--------------------------------------------------------------------|
-| queryName  | string | The name of the query for which to retrieve allow empty search flag. |
+| `queryName`  | `string` | The name of the query for which to retrieve allow empty search flag. |
 
 #### Usage
 
@@ -354,7 +435,7 @@ getAggregationIcon(column: string): string | undefined
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| column  | string | The name of the column for which to retrieve the aggregation icon. |
+| `column`  | `string` | The name of the column for which to retrieve the aggregation icon. |
 
 ```ts title="get-aggregation-icon.ts"
 // json Aggregation configuration extract
@@ -386,7 +467,7 @@ getAggregationCustomization(column: string): Aggregation | undefined
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| column  | string | he column name for which to retrieve the customization. |
+| `column`  | `string` | The column name for which to retrieve the customization. |
 
 ```ts title="get-aggregation-customization"
 // json Aggregation configuration extract
@@ -425,7 +506,7 @@ getAggregationItemsCustomization(column: string): CFilterItem[] | undefined
 
 | parameter  | type   | description |
 |------------|--------|-------------|
-| column  | string | The name of the column for which to retrieve the aggregation icon. |
+| `column`  | `string` | The name of the column for which to retrieve the aggregation icon. |
 
 ```ts title="get-aggregation-items-customization.ts"
 // json Aggregation configuration extract
@@ -455,7 +536,7 @@ isAssistantAllowed(assistantName: string): boolean
 
 | Parameter     | Type    | Description                          |
 |---------------|---------|--------------------------------------|
-| assistantName | string  | The name of the assistant to check.  |
+| `assistantName` | `string`  | The name of the assistant to check.  |
 
 ```ts title="check-assistant-allowed.ts"
 const isAllowed = inject(AppStore).isAssistantAllowed("summarization");

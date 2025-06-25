@@ -19,8 +19,8 @@ This library is a comprehensive toolkit for developers building web applications
 
 These features collectively provide a robust foundation for building secure, configurable, and efficient web applications integrated with Sinequa services. The documentation covers each module and utility in detail for easy onboarding and reference.
 
-## Changelog
+## Recents changes
 
-### New Features
+### 🚀 New Features
 
-- [**Notification System**](utils/notification.md): A simple, event-based API for dispatching user notifications of various types (success, info, warning, error) throughout your application.
+- [Notification System](features/notification.md): A simple, event-based API for dispatching user notifications of various types (success, info, warning, error) throughout your application.

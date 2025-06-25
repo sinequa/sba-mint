@@ -2,18 +2,19 @@
 title: Highlights
 ---
 
-## Overview
-
 Allow you to customize the preview's highlights.
 
+## Types
 
-### PreviewHighlightName 
+### PreviewHighlightName
 
 `PreviewHighlightName` type is a TypeScript union type that restricts the possible values to a set of predefined strings: 'company', 'geo', 'person', 'extractslocations', and 'matchlocations'. This ensures that any variable of this type can only hold one of these specific string values.
 
 ### PreviewHighlight
 
 `PreviewHighlight` type is an object type that describes the shape of a highlight object. It has three properties: name, which must be one of the PreviewHighlightName values; color, which is a string representing the text color; and bgColor, which is a string representing the background color.
+
+## Injection Token
 
 ### HIGHLIGHTS
 

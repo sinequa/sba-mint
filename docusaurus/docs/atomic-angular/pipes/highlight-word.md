@@ -2,8 +2,6 @@
 title: HighlightWord
 ---
 
-## Overview
-
 The HighlightWordPipe is used to highlight a specific word within a given text. It normalizes both the input text and search word to handle accented characters.
 
 ### API

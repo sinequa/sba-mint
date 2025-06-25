@@ -2,11 +2,9 @@
 title: InitializationGuard
 ---
 
-## Overview
-
 The `InitializationGuard` is a functional route guard that ensures the application is ready before allowing navigation to a requested page.
 
-Key features:
+### Key features
 
 - Returns a `CanActivateFn` function (Angular's modern functional guard approach)
 - Checks if the application is fully initialized by verifying the readiness of the `ApplicationStore`

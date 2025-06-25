@@ -2,18 +2,19 @@
 title: Query
 ---
 
-## Overview
+## Functions
 
-### getQueryNameFromRoute
+### getQueryNameFromRoute()
 
 Retrieve the query's name from the __search__ Route recursively.  
 If no `queryName` property can be found, returns _undefined_ value
 
 :::important
-This function must be called in an injection context.
+This function must be called in an [injection context](https://angular.dev/guide/di/dependency-injection-context#run-within-an-injection-context).
 :::
 
 #### Usage
+
 ```ts title="routes configuration"
 const routes: Routes = [
   {
@@ -37,17 +38,16 @@ const name = getQueryNameFromRoute();
 // Output: "_query"
 ```
 
-
-
-### buildQuery
+### buildQuery()
 
 Builds a query object based on the provided partial query and the current URL.
 
 :::important
-This function must be called in an injection context.
+This function must be called in an [injection context](https://angular.dev/guide/di/dependency-injection-context#run-within-an-injection-context).
 :::
 
 #### Usage
+
 ##### Default usage
 
 Assuming we are using the same [routes configuration](#usage)
@@ -58,7 +58,9 @@ Assuming we are using the same [routes configuration](#usage)
 const query = buildQuery();
 // Output: { name: "_query", text: "Nikola Tesla", tab: "all" }
 ```
+
 ##### Override query properties
+
 ```ts title="override.ts"
 // the current url is: https://localhost:4200/#/search/all?q=Nikola%20Tesla&t=all"
 
