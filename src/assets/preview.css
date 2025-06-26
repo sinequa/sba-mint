@@ -77,3 +77,12 @@ body {
   border: 0;
   transform-origin: 0 0;
 }
+
+/*  hide multi-modal description */
+:root {
+  --desc-display: none;
+}
+
+.pn_page_visual_description {
+  display: var(--desc-display);
+}
