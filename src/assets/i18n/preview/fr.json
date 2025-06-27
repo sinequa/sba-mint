@@ -10,7 +10,7 @@
   "zoomOut": "Dézoomer",
   "toggleExtracts": "Afficher les extraits",
   "toggleEntities": "Afficher les entités",
-  "toggleAIDescription": "Afficher la description de l'IA",
+  "toggleAIDescription": "Afficher la description de l'IA / Cacher la description de l'IA",
   "summarize": "Résumer",
   "discussion": "Ask AI"
 }
