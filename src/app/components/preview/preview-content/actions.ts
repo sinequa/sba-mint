@@ -104,7 +104,7 @@ export class PreviewActionsComponent {
   }
 
   toggleAIDescription() {
-    this.previewService.toggleAIDescription(this.showAIDescription());
+    this.previewService.toggleAIDescription(!this.showAIDescription());
     this.showAIDescription.set(!this.showAIDescription());
   }
 
