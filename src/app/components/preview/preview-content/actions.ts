@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -72,9 +72,15 @@ export class PreviewActionsComponent {
    * Computed signal that checks if the article has an AI-generated description.
    * It checks the flags of the article in the selection store to see if it includes 'ps'.
    */
-  protected readonly hasAIDescription = computed(() => getState(this.selectionStore).article.flags?.includes('ps') ?? false);
+  protected readonly hasAIDescription = signal(false);
 
   constructor() {
+    effect(() => {
+      const { article } = getState(this.selectionStore);
+      if (!article) return;
+      this.hasAIDescription.set(article.flags?.includes('ps') ?? false);
+    });
+
     const controller = new AbortController();
 
     window.addEventListener(
