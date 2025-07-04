@@ -10,7 +10,7 @@
   "zoomOut": "Zoom out",
   "toggleExtracts": "Toggle extracts",
   "toggleEntities": "Toggle entities",
-  "toggleAIDescription": "Toggle AI description",
+  "toggleAIDescription": "Show AI description / Hide AI description",
   "summarize": "Summarize",
   "discussion": "Ask AI"
 }
