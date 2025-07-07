@@ -87,7 +87,7 @@ const config = {
         }
       },
       navbar: {
-        title: 'Mint',
+        title: '🍵 Mint',
         logo: {
           alt: 'Sinequa Logo',
           src: 'img/Logo_SINEQUA_RVB-170.png'
@@ -103,13 +103,13 @@ const config = {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomic',
-            label: 'Atomic'
+            label: '⚛️ Atomic'
           },
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomicAngular',
-            label: 'Atomic for Angular'
+            label: '🅰️ Atomic for Angular'
           },
           {
             href: 'https://github.com/sinequa/sba-mint',

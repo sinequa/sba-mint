@@ -6,6 +6,10 @@ sidebar_class_name: new
 
 Mint uses a custom notification system that leverages the browser's native event system and the [ngx-sonner](https://github.com/emilkowalski/sonner) library to display toast notifications. This system allows any part of the application (including external scripts) to trigger notifications in a decoupled and flexible way.
 
+:::tip
+More information about the notification system can be found in the [Atomic documentation](/atomic/features/notification).
+:::
+
 ## How It Works
 
 - The root `AppComponent` listens for custom `notification` events on the `window` object.

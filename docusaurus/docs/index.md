@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Welcome to Mint 🍵
+sidebar_label: 📣 Welcome to Mint
 sidebar_position: 1
 description: "Sinequa's SBA Framework Documentation"
 slug: /
