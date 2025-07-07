@@ -16,6 +16,7 @@ const sidebars = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   docs: [
     'index',
+    'changelog',
     {
       type: 'category',
       label: 'Configurations',
@@ -59,6 +60,7 @@ const sidebars = {
   ],
   atomic: [
     'atomic/intro',
+    'atomic/changelog',
     {
       type: 'category',
       label: 'Features',
@@ -112,6 +114,7 @@ const sidebars = {
   ],
   atomicAngular: [
     'atomic-angular/intro',
+    'atomic-angular/changelog',
     {
       type: 'category',
       label: 'Components',

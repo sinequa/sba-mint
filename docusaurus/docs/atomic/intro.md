@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: 📣 Introduction
 ---
 
 This library is a comprehensive toolkit for developers building web applications, offering essential modules for authentication, configuration management, API interactions, and a wide range of utility functions. Its modular structure and detailed documentation make it accessible for developers at all levels.
@@ -18,9 +18,3 @@ This library is a comprehensive toolkit for developers building web applications
   - **Other helpers**: Functions like `escapeExpr()`, `sha512()`, `resolveToColumnName()`, and more for string, security, and query handling.
 
 These features collectively provide a robust foundation for building secure, configurable, and efficient web applications integrated with Sinequa services. The documentation covers each module and utility in detail for easy onboarding and reference.
-
-## Recents changes
-
-### 🚀 New Features
-
-- [Notification System](features/notification.md): A simple, event-based API for dispatching user notifications of various types (success, info, warning, error) throughout your application.
