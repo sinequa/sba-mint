@@ -2,8 +2,6 @@
 title: DocumentLocator
 ---
 
-## Overview
-
 The `DocumentLocatorComponent` displays a breadcrumb-like navigation for a document's location within a hierarchy, allowing users to navigate through segments of the document's path. It is typically used to help users understand and interact with the structure of collections or folders in which a document resides.
 
 ## Features

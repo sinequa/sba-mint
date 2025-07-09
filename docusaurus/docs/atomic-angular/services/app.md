@@ -1,14 +1,12 @@
 ---
-title: App Service
+title: App
 ---
-
-## Overview
 
 The `AppService` is responsible for retrieving the application configuration from the server. It provides a method to fetch the configuration using an HTTP GET request.
 
-## Methods
+## Functions
 
-### `getApp()`
+### getApp()
 
 Retrieves the application configuration from the server.
 

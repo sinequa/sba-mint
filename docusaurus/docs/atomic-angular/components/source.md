@@ -2,8 +2,6 @@
 title: Source
 ---
 
-## Overview
-
 The `SourceComponent` displays an icon representing the source or collection of a document. It automatically selects the appropriate icon or image based on the provided collection and connector, using the application's source configuration.
 
 ## Features

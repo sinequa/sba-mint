@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: 📣 Introduction
 ---
 
 This library is a comprehensive toolkit for developers building web applications, offering essential modules for authentication, configuration management, API interactions, and a wide range of utility functions. Its modular structure and detailed documentation make it accessible for developers at all levels.

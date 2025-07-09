@@ -1,19 +1,19 @@
 ---
-title: JSON Method Plugin Service
+title: JSON Method Plugin
 ---
-
-## Overview
 
 The `JsonMethodPluginService` provides methods to call JSON plugins using HTTP GET and POST requests.
 
+## Functions
 
-### post
+### post()
 
 ```typescript
 post<U>(method: string, query: U, options?: Options): Observable<any>
 ```
 
 #### Parameters
+
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `method`  | `string` | The name of the JSON plugin method to call. |
@@ -21,11 +21,13 @@ post<U>(method: string, query: U, options?: Options): Observable<any>
 | `options` | `Options` | HTTP options for the request. |
 
 #### Returns
+
 | Type | Description |
 |------|-------------|
 | `Observable<any>` | An observable of the plugin's return value. |
 
 #### Example
+
 ```typescript
 const service = new JsonMethodPluginService();
 service.post('exampleMethod', { param1: 'value1' }).subscribe(response => {
@@ -33,13 +35,15 @@ service.post('exampleMethod', { param1: 'value1' }).subscribe(response => {
 });
 ```
 
-### get
+### get()
+
 ```typescript
 get<U extends Record<string, string | boolean | number | Date | object | undefined>>
   (method: string, query: U, options?: Options): Observable<any>
 ```
 
 #### Parameters
+
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `method`  | `string` | The name of the JSON plugin method to call. |
@@ -47,11 +51,13 @@ get<U extends Record<string, string | boolean | number | Date | object | undefin
 | `options` | `Options` | HTTP options for the request. |
 
 #### Returns
+
 | Type | Description |
 |------|-------------|
 | `Observable<any>` | An observable of the plugin's return value. |
 
 #### Example
+
 ```typescript
 const service = new JsonMethodPluginService();
 service.get('exampleMethod', { param1: 'value1' }).subscribe(response => {

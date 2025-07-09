@@ -1,8 +1,6 @@
 ---
-title: Audit Service
+title: Audit
 ---
-
-## Overview
 
 The `AuditService` class is responsible for notifying the Sinequa server of various audit events such as login, logout, document events, and route changes. Below are the details of each function provided by this service.
 
@@ -10,8 +8,10 @@ The `AuditService` class is responsible for notifying the Sinequa server of vari
 The AuditService is the same as the AuditService provided by the Sinequa SDK.  
 This service is used to notify the Sinequa server of various audit events and exists to maintain the compatibility of the Angular application with the Sinequa SDK.
 
-Use the [`notify()`](../../atomic/audit) function from the __@sinequa/atomic__ library whenever it's possible.
+Use the [`notify()`](/atomic/features/audit) function from the __@sinequa/atomic__ library whenever it's possible.
 :::
+
+## Functions
 
 ### notify()
 
@@ -25,7 +25,8 @@ notify(auditEvents: AuditEvents): void
 |-------------|-------------|----------------------------------|
 | `auditEvents` | `AuditEvents` | The audit events to notify. |
 
-**Usage Example:**
+__Usage Example:__
+
 ```typescript
 const auditEvents: AuditEvents = { type: "Custom_Event" };
 auditService.notify(auditEvents);
@@ -35,12 +36,12 @@ auditService.notify(auditEvents);
 
 It sends a login success audit event to the Audit Service.
 
-
 ```typescript
 notifyLogin(): void
 ```
 
-**Usage Example:**
+__Usage Example:__
+
 ```typescript
 auditService.notifyLogin();
 ```
@@ -53,7 +54,8 @@ Notify the Sinequa server of a logout event.
 notifyLogout(): void
 ```
 
-**Usage Example:**
+__Usage Example:__
+
 ```typescript
 auditService.notifyLogout();
 ```
@@ -80,7 +82,8 @@ notifyDocument(
 | `parameters`    | `Record<string, string \| number \| boolean \| undefined>`           | Optional. Additional parameters.                                            |
 | `rfmParameters` | `Record<string, string \| number \| boolean \| undefined>`           | Optional. Additional RFM parameters.                                        |
 
-**Usage Example:**
+__Usage Example:__
+
 ```typescript
 const article: Article = { /* article details */ };
 auditService.notifyDocument("Document_View", article, "resultId123", { param1: "value1" });
@@ -98,107 +101,8 @@ notifyRouteChange(url: string): void
 |------|----------|----------------------------|
 | `url`| `string` | The URL of the new route.  |
 
-**Usage Example:**
+__Usage Example:__
+
 ```typescript
 auditService.notifyRouteChange("/new-route");
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

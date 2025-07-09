@@ -2,8 +2,6 @@
 title: InfinityScroll
 ---
 
-## Overview
-
 Represents a directive that enables infinite scrolling behavior.
 This directive listens for the intersection of the element with the viewport
 and emits a `loadMore` event when the element becomes visible.

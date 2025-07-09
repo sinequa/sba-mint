@@ -2,8 +2,6 @@
 title: ThemeProvider
 ---
 
-## Overview
-
 Directive that applies a theme to a native element based on the theme scope.
 
 ### Usage
