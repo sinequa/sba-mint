@@ -38,43 +38,50 @@ body {
   --logo-large: url('assets/logo/large.svg');
   --logo-alt-text: 'Sinequa logo';
 
-  --color-backdrop: rgba(0, 0, 0, 0.4);
-  --color-background: #ffffff;
-  --color-foreground: #23272e;
-  --color-card: #ffffff;
-  --color-card-foreground: #1c1c1c;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #1c1c1c;
+  --color-backdrop: var(--backdrop);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-  --color-primary: #0084ff;
-  --color-primary-hover: #0056ff;
-  --color-primary-active: #0040bf;
-  --color-primary-foreground: #ffffff;
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-foreground: var(--primary-foreground);
 
-  --color-secondary: #526077;
-  --color-secondary-hover: #434e61;
-  --color-secondary-active: #3a4252;
-  --color-secondary-foreground: #ffffff;
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-active: var(--secondary-active);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-muted: #f6f7f9;
-  --color-muted-foreground: #8695aa;
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-  --color-accent: #f2f2f2;
-  --color-accent-foreground: #1c1c1c;
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-  --color-destructive: #ff2a1d;
-  --color-destructive-hover: #c8180d;
-  --color-destructive-active: #a5180f;
-  --color-destructive-disable: #ffc8c5;
-  --color-destructive-foreground: #ffffff;
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-destructive-active: var(--destructive-active);
+  --color-destructive-disable: var(--destructive-disable);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-  --color-border: #f6f7f9;
-  --color-input: #d5d9e2;
-  --color-ring: #1a73e8;
+  --color-agent: var(--agent);
+  --color-agent-100: var(--agent-100);
+  --color-agent-200: var(--agent-200);
+  --color-agent-300: var(--agent-300);
+  --color-agent-400: var(--agent-400);
+  --color-agent-500: var(--agent-500);
 
-  --color-alert: #ff2a1d;
-  --color-success: #2ed73f;
-  --color-highlight: #fff7ab;
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-alert: var(--alert);
+  --color-success: var(--success);
+  --color-highlight: var(--highlight);
 
   --shadow-dropdown: 6px 4px 20px 0px rgba(0, 0, 0, 0.2);
   --shadow-article: 4px 4px 12px 0px rgba(0, 0, 0, 0.15);
@@ -88,6 +95,102 @@ body {
       transform: translateX(100%);
     }
   }
+}
+
+:root {
+  --backdrop: rgba(0, 0, 0, 0.4);
+  --background: #ffffff;
+  --foreground: #23272e;
+  --card: #ffffff;
+  --card-foreground: #1c1c1c;
+  --popover: #ffffff;
+  --popover-foreground: #1c1c1c;
+
+  --primary: #0084ff;
+  --primary-hover: #0056ff;
+  --primary-active: #0040bf;
+  --primary-foreground: #ffffff;
+
+  --secondary: #526077;
+  --secondary-hover: #434e61;
+  --secondary-active: #3a4252;
+  --secondary-foreground: #ffffff;
+
+  --muted: #f6f7f9;
+  --muted-foreground: #8695aa;
+
+  --accent: #f2f2f2;
+  --accent-foreground: #1c1c1c;
+
+  --destructive: #ff2a1d;
+  --destructive-hover: #c8180d;
+  --destructive-active: #a5180f;
+  --destructive-disable: #ffc8c5;
+  --destructive-foreground: #ffffff;
+
+  --agent: var(--color-orange-400);
+  --agent-100: var(--color-orange-100);
+  --agent-200: var(--color-orange-200);
+  --agent-300: var(--color-orange-300);
+  --agent-400: var(--color-orange-400);
+  --agent-500: var(--color-orange-500);
+
+  --border: #f6f7f9;
+  --input: #d5d9e2;
+  --ring: #1a73e8;
+
+  --alert: #ff2a1d;
+  --success: #2ed73f;
+  --highlight: #fff7ab;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  --backdrop: rgba(0, 0, 0, 0.8);
+
+  --primary: #0084ff;
+  --primary-hover: #0056ff;
+  --primary-active: #0040bf;
+  --primary-foreground: #ffffff;
+
+  --secondary: #526077;
+  --secondary-hover: #434e61;
+  --secondary-active: #3a4252;
+  --secondary-foreground: #ffffff;
+
+  --destructive: #ff2a1d;
+  --destructive-hover: #c8180d;
+  --destructive-active: #a5180f;
+  --destructive-disable: #ffc8c5;
+  --destructive-foreground: #ffffff;
+
+  --agent: var(--color-orange-400);
+  --agent-100: var(--color-orange-100);
+  --agent-200: var(--color-orange-200);
+  --agent-300: var(--color-orange-300);
+  --agent-400: var(--color-orange-400);
+  --agent-500: var(--color-orange-500);
+
+  --ring: #1a73e8;
+
+  --alert: #ff2a1d;
+  --success: #2ed73f;
+  --highlight: #fff7ab;
 }
 
 @utility z-* {
