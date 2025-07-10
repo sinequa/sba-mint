@@ -4,9 +4,11 @@
   "contactAdmin": "Contact administrator",
   "english": "English",
   "french": "French",
+  "help": "Help",
   "overrideUser": "Override user",
   "resetUserSettings": "Reset user settings",
   "revertOverride": "Revert override user",
   "selectLanguage": "Select language",
-  "help": "Help"
+  "switchToDarkMode": "Switch to dark mode",
+  "switchToLightMode": "Switch to light mode"
 }

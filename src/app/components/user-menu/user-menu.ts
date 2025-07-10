@@ -1,4 +1,4 @@
-import { Component, computed, inject, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -6,7 +6,6 @@ import { getState } from '@ngrx/signals';
 
 import { logout, setGlobalConfig } from '@sinequa/atomic';
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-
 import {
   AvatarComponent,
   AvatarFallbackComponent,
@@ -18,6 +17,7 @@ import {
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  SwitchComponent,
   UserRoundIconComponent
 } from '@sinequa/ui';
 
@@ -38,7 +38,8 @@ import {
     ChevronRightIconComponent,
     AvatarComponent,
     AvatarImageComponent,
-    AvatarFallbackComponent
+    AvatarFallbackComponent,
+    SwitchComponent
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
@@ -58,6 +59,8 @@ export class UserMenuComponent {
     return principal;
   });
 
+  readonly toggled = signal<boolean>(false);
+
   readonly initials = computed(() => {
     const principal = this.user();
     const separator = principal.fullName ? ' ' : '.';
@@ -68,9 +71,16 @@ export class UserMenuComponent {
       .join('')
       .slice(0, 3);
   });
-
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
+
+  constructor() {
+    // Handle dark mode toggle
+    effect(() => {
+      if (this.toggled()) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    });
+  }
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);
