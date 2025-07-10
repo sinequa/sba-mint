@@ -21,7 +21,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
-    - run: |
+    - name: Get branch name
+      run: |
            if [ -z $GITHUB_HEAD_REF ]; then
              echo "Current branch:$GITHUB_REF_NAME"
            else
