@@ -330,8 +330,8 @@ export class SearchAllComponent {
     this.query.fetchNextPage();
   }
 
-  handleKeydownEnter(e: KeyboardEvent) {
-    if (isNotInputEvent(e)) {
+  handleKeydownEnter(e: Event) {
+    if (isNotInputEvent(e as KeyboardEvent)) {
       e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }

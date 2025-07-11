@@ -21,6 +21,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
+    - name: Get branch name
+      run: |
+           if [ -z $GITHUB_HEAD_REF ]; then
+             echo "Current branch:$GITHUB_REF_NAME"
+           else
+             echo "Current branch:$GITHUB_HEAD_REF"
+           fi
     - run: npm ci
     - run: npm run build --if-present
       env:
