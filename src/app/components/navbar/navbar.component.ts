@@ -5,7 +5,6 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { debounceTime } from 'rxjs';
 
-import { Suggestion } from '@sinequa/atomic';
 import {
   AlertsComponent,
   AutocompleteService,
@@ -53,6 +52,10 @@ export type NavbarMenu = {
   },
   styles: [
     `
+      :host {
+        /* shift navbar to the left to account for the ml-8 gap of its parent */
+        grid-template-columns: calc(25% - 32px) 25% 25% 25%;
+      }
       #logo {
         content: var(--logo-small) / var(--logo-alt-text);
       }
@@ -66,6 +69,7 @@ export class NavbarComponent {
 
   readonly searchInput = viewChild(SearchInputComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);
+  readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 
   readonly drawerOpened = signal(false);
   readonly searchText = signal<string>('');
@@ -91,17 +95,6 @@ export class NavbarComponent {
     // register to transloco events to update the overflow manager when translations are loaded
     // otherwise the overflow manager will count size of items without text
     this.transloco.events$.pipe(takeUntilDestroyed(), debounceTime(100)).subscribe(() => this.overflowManager()?.countItems());
-  }
-
-  autocompleteItemClicked(item: Suggestion): void {
-    if (!item.display) {
-      console.error('No display property found on item', item);
-      return;
-    }
-
-    this.searchInput()?.closeAutocompletePopover();
-
-    this.search(item.display!);
   }
 
   protected search(text: string): void {
@@ -140,5 +133,15 @@ export class NavbarComponent {
         this.savedSearchesService.deleteSavedSearch(index);
       }
     }
+  }
+
+  /**
+   * Occurs when the user selects a suggestion from the autocomplete.
+   * @param element - The selected suggestion element.
+   */
+  protected selected(element: HTMLElement | null): void {
+    this.searchInput()?.closeAutocompletePopover();
+    // We should pass the focus somewhere else after selecting a suggestion
+    this.search(element?.getAttribute('data-text') || this.searchText());
   }
 }

@@ -8,23 +8,25 @@ import { toast } from 'ngx-sonner';
 
 import { CCApp } from '@sinequa/atomic';
 import {
+  APP_FEATURES,
   AppStore,
   AutocompleteService,
   debouncedSignal,
   DrawerAdvancedFiltersComponent,
-  SavedSearchDialog,
   DrawerStackService,
+  SearchInputComponent as InputComponent,
   QueryParamsStore,
   SavedSearch,
+  SavedSearchDialog,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, InputSearchVariants, SearchComponent, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../tokens';
+import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({
   selector: 'app-search-input',
-  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SearchComponent, SendHorizontalIconComponent],
+  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.css',
   host: {
@@ -36,11 +38,12 @@ export class SearchInputComponent {
   cn = cn;
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<InputSearchVariants['variant']>('default');
+  public readonly activeDescendant = input<ActiveSuggestion>();
 
   readonly debounced = output<string>();
   readonly validated = output<string>();
   readonly saved = output<SavedSearch | undefined>();
-  readonly clicked = output<void>();
+  readonly selected = output<HTMLElement | null>();
 
   private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
   private readonly popoverElement: Signal<HTMLDivElement> = computed(() => this.autocompletePopover()?.nativeElement);
@@ -59,11 +62,16 @@ export class SearchInputComponent {
 
   protected readonly saveAnimation = signal<boolean>(false);
 
+  filters = computed(() => {
+    const { filters } = getState(this.queryParamsStore);
+    return filters ? JSON.stringify(filters) : undefined;
+  });
+
   hasFilters = computed(() => {
     // when the query parameters store updates, update the hasFilters signal
     // to show or hide the clear filters button
-    const state = getState(this.queryParamsStore);
-    return Array.isArray(state.filters) && state.filters.length > 0;
+    const { filters } = getState(this.queryParamsStore);
+    return Array.isArray(filters) && filters.length > 0;
   });
 
   protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
@@ -141,7 +149,6 @@ export class SearchInputComponent {
 
   public inputClicked(): void {
     this.popoverElement().showPopover();
-    this.clicked.emit();
   }
 
   public setInput(text: string | undefined, silent: boolean = true): void {
@@ -190,28 +197,11 @@ export class SearchInputComponent {
     }
   }
 
-  /**
-   * Handles the keydown event on the search input.
-   *
-   * @param e - The keyboard event triggered by the user.
-   *
-   * If the 'Enter' key is pressed, the current text is emitted.
-   * If the input is not empty and a different key is pressed, the popover is shown (if previously hidden).
-   */
-  protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Enter') {
-      this.emitText(e);
-    } else if (e.key === 'Escape') {
-      this.popoverElement().hidePopover();
-    } else if (this.value() !== '') {
-      this.popoverElement().showPopover();
-    }
+  focus(): void {
+    this.popoverElement().showPopover();
   }
 
-  s = viewChild(SearchComponent);
-  handlePopoverClick(e: Event): void {
-    e.stopImmediatePropagation();
+  blur(): void {
     this.popoverElement().hidePopover();
-    this.s()?.searchElement()?.nativeElement.blur();
   }
 }

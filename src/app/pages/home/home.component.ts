@@ -1,26 +1,26 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
-import { Suggestion } from '@sinequa/atomic';
 import {
   AppStore,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
 import { TabComponent, TabsComponent } from '@sinequa/ui';
 
-import { AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
+import { ActiveSuggestion, AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
-import { UserMenuComponent } from '../../components/user-menu/user-menu';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
+import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
 type HomeTab = {
   name: string;
@@ -81,10 +81,12 @@ const homeFeatures: HomeTab[] = [
 export class HomeComponent {
   public drawerOpened: boolean = false;
 
+  readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
+
   readonly searchText = signal<string>('');
 
   readonly tabs = signal(homeFeatures);
-
+  readonly activeDescendant = signal<ActiveSuggestion>(undefined);
   readonly selectedTabId = signal(0);
 
   readonly autocompleteService = inject(AutocompleteService);
@@ -93,6 +95,14 @@ export class HomeComponent {
   readonly drawerStack = inject(DrawerStackService);
 
   readonly queryParamsStore = inject(QueryParamsStore);
+
+  navigatorOptions = signal<KeyboardNavigatorOptions>({
+    name: 'tabsNavigator',
+    optionSelector: '[role="tab"]:not([aria-disabled="true"])',
+    direction: 'horizontal',
+    selectOnFocus: true,
+    resetSelectionOnBlur: true
+  });
 
   defaultUserFeatures = {
     bookmarks: true,
@@ -128,12 +138,7 @@ export class HomeComponent {
     this.router.navigate(['/search'], { queryParams: { q: text } });
   }
 
-  autocompleteItemClicked(item: Suggestion): void {
-    if (!item.display) {
-      console.error('No display property found on item', item);
-      return;
-    }
-
-    this.search(item.display!);
+  selected(element: HTMLElement | null): void {
+    this.search(element?.getAttribute('data-text') || this.searchText());
   }
 }

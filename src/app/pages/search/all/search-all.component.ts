@@ -10,6 +10,7 @@ import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
+  APP_FEATURES,
   AppStore,
   DidYouMeanComponent,
   DrawerStackService,
@@ -19,8 +20,8 @@ import {
   NoResultComponent,
   PrincipalStore,
   QueryParamsStore,
+  QueryService,
   SearchFeedbackComponent,
-  SearchService,
   SelectionService,
   SortingChoice,
   SortSelectorComponent,
@@ -33,7 +34,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
-import { APP_FEATURES } from '../../../tokens';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -86,7 +86,7 @@ export class SearchAllComponent {
   cn = cn;
 
   // all injected services and stores
-  protected readonly searchService = inject(SearchService);
+  protected readonly queryService = inject(QueryService);
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
@@ -149,7 +149,7 @@ export class SearchAllComponent {
       }
 
       return lastValueFrom(
-        this.searchService.getResult(query).pipe(
+        this.queryService.search(query).pipe(
           tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
           map(result => {
             result.records?.map((article: Article) => {
@@ -334,8 +334,8 @@ export class SearchAllComponent {
     this.query.fetchNextPage();
   }
 
-  handleKeydownEnter(e: KeyboardEvent) {
-    if (isNotInputEvent(e)) {
+  handleKeydownEnter(e: Event) {
+    if (isNotInputEvent(e as KeyboardEvent)) {
       e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }
@@ -346,16 +346,15 @@ export class SearchAllComponent {
   }
 
   onSort(sort: SortingChoice): void {
-    this.queryParamsStore.patch({ sort: sort.name });
-    this.searchService.search([], {
-      audit: {
-        type: 'Search_Sort',
-        detail: {
-          sort: sort.name,
-          orderByClause: sort.orderByClause
-        }
+    const audit = {
+      type: 'Search_Sort',
+      detail: {
+        sort: sort.name,
+        orderByClause: sort.orderByClause
       }
-    });
+    };
+    this.queryService.audit = audit;
+    this.queryParamsStore.patch({ sort: sort.name }, audit);
   }
 
   getArticleType(docType?: string): Type<unknown> {

@@ -1,5 +1,6 @@
-<Search
+<SearchInput
   id="autocomplete-anchor"
+  controls="search-suggestions"
   [variant]="variant()"
   [class]="
     cn(
@@ -10,7 +11,9 @@
   [placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
   [(ngModel)]="value"
-  (keydown)="onKeyDown($event)"
+  (onFocus)="focus()"
+  (onBlur)="blur()"
+  (onSelected)="selected.emit($event)"
   (click)="inputClicked()">
   @if (showSave() && (value() !== '' || hasFilters())) {
     <button
@@ -37,7 +40,7 @@
       aria-label="Ask AI"
       [disabled]="value() === ''"
       [routerLink]="['/assistant']"
-      [queryParams]="{ q: value() }">
+      [queryParams]="{ q: value(), f: filters() }">
       <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
       Ask AI
     </button>
@@ -53,7 +56,7 @@
     <SendHorizontalIcon />
   </button>
 
-  <div popover #autocompletePopover (keydown.enter)="handlePopoverClick($event)" (click)="handlePopoverClick($event)">
+  <div popover #autocompletePopover>
     <ng-content></ng-content>
   </div>
-</Search>
+</SearchInput>

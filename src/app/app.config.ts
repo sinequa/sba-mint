@@ -11,8 +11,7 @@ import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-exper
 
 import { appInitializerFn } from '@sinequa/atomic';
 import {
-  AGGREGATIONS_NAMES,
-  AGGREGATIONS_NAMES_PRESET_DEFAULT,
+  APP_FEATURES,
   ApplicationService,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
@@ -42,7 +41,6 @@ import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
-import { APP_FEATURES } from './tokens';
 import { TranslocoHttpLoader } from './transloco-loader';
 
 // @ts-ignore

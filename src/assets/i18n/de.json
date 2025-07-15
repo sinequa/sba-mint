@@ -98,5 +98,6 @@
     "uploaded": "Hochgeladen",
     "delete-all": "Alle löschen",
     "refresh": "Aktualisieren"
-  }
+  },
+  "toggleDocumentSelection": "Dokumentenauswahl umschalten"
 }

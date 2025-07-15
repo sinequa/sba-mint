@@ -207,11 +207,12 @@ document.addEventListener('DOMContentLoaded', function () {
     passageHighlighter.style.display = 'none';
     var box = getBoundingBox(elements);
     if (box) {
-      var margin = 4;
-      var left = Math.max(0, box.left - margin);
-      var top_1 = Math.max(0, box.top - margin);
-      var right = box.right + margin;
-      var bottom = box.bottom + margin;
+      var marginTopLeft = 12;
+      var marginBottomRight = -8;
+      var left = Math.max(0, box.left - marginTopLeft);
+      var top_1 = Math.max(0, box.top - marginTopLeft);
+      var right = box.right + marginBottomRight;
+      var bottom = box.bottom + marginBottomRight;
       passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
       passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
       passageHighlighter.style.width = right - left + 'px';

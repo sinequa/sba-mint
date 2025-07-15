@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, model, OnDestroy, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -8,7 +9,6 @@ import {
   MissingTermsComponent,
   PreviewService,
   QueryParamsStore,
-  SearchService,
   SelectArticleOnClickDirective,
   SelectionStore,
   SelectionStrategy,
@@ -18,6 +18,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
+import { TranslocoPipe } from '@jsverse/transloco';
 import { CardMenuComponent } from '../menu';
 
 type Tab = 'attachments' | 'similars';
@@ -40,6 +41,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
+    TranslocoPipe,
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
@@ -63,7 +65,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     }
   ]
 })
-export class RecordCard implements OnDestroy {
+export class RecordCard {
   cn = cn;
   public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
   public readonly article = model<Article>({} as Article);
@@ -72,9 +74,10 @@ export class RecordCard implements OnDestroy {
   // by default add to assistant is disabled
   public readonly allowAI = input<boolean>(false);
 
+  destroyRef = inject(DestroyRef);
+  sanitize = inject(DomSanitizer);
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
-  searchService = inject(SearchService);
   previewService = inject(PreviewService);
 
   showBookmark = signal(false);
@@ -84,12 +87,21 @@ export class RecordCard implements OnDestroy {
   isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
+  // state of checkbox for multi-select
+  checked = signal<boolean>(false);
+  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find(a => a.id === this.article().id));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
 
     const topPassage = this.article().matchingpassages!.passages.sort((a, b) => (a.score > b.score ? -1 : 1))[0];
     return topPassage.highlightedText;
+  });
+
+  protected title = computed(() => {
+    // article().displayTitle is the title used in the search results and may contain HTML tags, this will be sanitized
+    const { displayTitle, title, id } = this.article();
+    return this.sanitize.bypassSecurityTrustHtml(displayTitle || title || id || '');
   });
 
   protected showTab = signal(false);
@@ -103,10 +115,16 @@ export class RecordCard implements OnDestroy {
     return undefined;
   });
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      this.checked.set(!!this.multiSelected());
+      this.article().$selected = !!this.multiSelected();
+    });
 
-  ngOnDestroy(): void {
-    this.showBookmarkOutputSubscription.unsubscribe();
+    // Ensure that the component is destroyed properly
+    this.destroyRef.onDestroy(() => {
+      this.showBookmarkOutputSubscription.unsubscribe();
+    });
   }
 
   public toggleTab(tab: Tab): void {
@@ -127,7 +145,6 @@ export class RecordCard implements OnDestroy {
   setFilter(field: string, value: string): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
-    this.searchService.search([]);
   }
 
   onCtrlEnter(): void {
@@ -139,5 +156,18 @@ export class RecordCard implements OnDestroy {
   onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
+  }
+
+  onMultiSelectToggle(event: Event): void {
+    event.stopImmediatePropagation();
+
+    this.checked.set(!this.checked());
+
+    if (this.article()) {
+      this.article().$selected = !this.article().$selected;
+
+      if (this.article().$selected) this.selectionStore.addArticleToMultiSelection(this.article());
+      else this.selectionStore.removeArticleFromMultiSelection(this.article());
+    }
   }
 }

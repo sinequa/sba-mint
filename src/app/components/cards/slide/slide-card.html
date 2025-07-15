@@ -22,7 +22,7 @@
         <header class="flex items-center gap-3">
           <div class="flex grow flex-col">
             <section class="flex items-baseline gap-2">
-              <p class="text-primary line-clamp-1 text-base font-bold">{{ article().title.trim() || '...' }}</p>
+              <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
 
               <div class="flex-grow">
                 @if (showBookmark()) {

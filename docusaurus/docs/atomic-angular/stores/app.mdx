@@ -200,6 +200,32 @@ const isDate = inject(AppStore).isDateColumn("created");
 // Output: true if the column type is date, dateTime, or time
 ```
 
+### isTabSearch()
+
+Determines if the specified query has a tab search configuration.
+Returns `true` if the query has a tab search configuration, otherwise `false`.
+
+```ts
+isTabSearch(queryName: string): boolean
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| `queryName`  | `string` | The name of the query to check for tab search configuration. |
+
+### getAggregationCount()
+
+Retrieves the count of items in the specified aggregation.
+
+```ts
+getAggregationCount(queryName: string, aggregationName: string): number
+```
+
+| parameter  | type   | description |
+|------------|--------|-------------|
+| `queryName`  | `string` | The name of the query to retrieve the aggregation count for. |
+| `aggregationName`  | `string` | The name of the aggregation to retrieve the count for. |
+
 ### getAuthorizedFilters()
 
 Retrieves the sorted aggregations based on the query name included in the route data.

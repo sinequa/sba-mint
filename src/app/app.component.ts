@@ -3,11 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationStore, BackdropComponent, DrawerStackComponent, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
+  imports: [RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent, MultiSelectionToolbarComponent],
   templateUrl: './app.component.html',
   styles: [
     `
