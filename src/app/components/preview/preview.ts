@@ -3,7 +3,7 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, CCApp, PreviewData, Query } from '@sinequa/atomic';
-import { AppStore, QueryParamsStore, SearchService, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
 import { APP_FEATURES } from '../../tokens';
 import { AssistantComponent } from '../assistant/assistant';
@@ -32,7 +32,6 @@ export class PreviewComponent {
   protected readonly locationSegments = computed(() => this.article().treepath[0]?.split('/')?.slice(1, -1));
   protected readonly queryParamStore = inject(QueryParamsStore);
   protected readonly selectionStore = inject(SelectionStore);
-  protected readonly searchService = inject(SearchService);
   protected readonly cdr = inject(ChangeDetectorRef);
 
   readonly loading = signal<boolean>(false);

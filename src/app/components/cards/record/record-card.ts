@@ -9,7 +9,6 @@ import {
   MissingTermsComponent,
   PreviewService,
   QueryParamsStore,
-  SearchService,
   SelectArticleOnClickDirective,
   SelectionStore,
   SelectionStrategy,
@@ -72,7 +71,6 @@ export class RecordCard implements OnDestroy {
 
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
-  searchService = inject(SearchService);
   previewService = inject(PreviewService);
 
   showBookmark = signal(false);
@@ -124,7 +122,6 @@ export class RecordCard implements OnDestroy {
   setFilter(field: string, value: string): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
-    this.searchService.search([]);
   }
 
   onCtrlEnter(): void {

@@ -19,8 +19,8 @@ import {
   NoResultComponent,
   PrincipalStore,
   QueryParamsStore,
+  QueryService,
   SearchFeedbackComponent,
-  SearchService,
   SelectionService,
   SortingChoice,
   SortSelectorComponent,
@@ -102,7 +102,7 @@ export class SearchAllComponent {
   protected readonly assistantCollapsed = signal<boolean>(true);
   protected readonly showAssistant = signal<boolean>(false);
 
-  protected readonly searchService = inject(SearchService);
+  protected readonly queryService = inject(QueryService);
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
@@ -147,7 +147,7 @@ export class SearchAllComponent {
       }
 
       return lastValueFrom(
-        this.searchService.getResult(query).pipe(
+        this.queryService.search(query).pipe(
           tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
           map(result => {
             return this.updateArticleType(result);
@@ -342,16 +342,15 @@ export class SearchAllComponent {
   }
 
   onSort(sort: SortingChoice): void {
-    this.queryParamsStore.patch({ sort: sort.name });
-    this.searchService.search([], {
-      audit: {
-        type: 'Search_Sort',
-        detail: {
-          sort: sort.name,
-          orderByClause: sort.orderByClause
-        }
+    const audit = {
+      type: 'Search_Sort',
+      detail: {
+        sort: sort.name,
+        orderByClause: sort.orderByClause
       }
-    });
+    };
+    this.queryService.audit = audit;
+    this.queryParamsStore.patch({ sort: sort.name }, audit);
   }
 
   getArticleType(docType?: string): Type<unknown> {

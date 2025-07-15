@@ -14,7 +14,6 @@ import {
   MissingTermsComponent,
   PreviewService,
   QueryParamsStore,
-  SearchService,
   SelectArticleOnClickDirective,
   SelectionStore,
   SelectionStrategy,
@@ -78,7 +77,6 @@ export class SlideCard implements OnDestroy {
   applicationStore = inject(ApplicationStore);
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
-  searchService = inject(SearchService);
   labelService = inject(LabelService);
   previewService = inject(PreviewService);
 
@@ -128,7 +126,6 @@ export class SlideCard implements OnDestroy {
   setFilter(field: string, value: string): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
-    this.searchService.search([]);
   }
 
   editLabels(): void {
