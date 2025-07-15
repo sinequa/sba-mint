@@ -14,7 +14,7 @@
       <div class="flex grow flex-col overflow-hidden">
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
-            <p class="text-primary truncate text-base font-bold empty:hidden">{{ article().title.trim() || '...' }}</p>
+            <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
 
             @if (showBookmark()) {
               <bookmark-button [article]="article()" />
@@ -54,8 +54,8 @@
     </header>
   </CardHeader>
 
-  <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
-    <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
+  <CardContent class="flex grow flex-col gap-2 overflow-auto wrap-anywhere">
+    <p [class]="cn(isLineClamped() && 'line-clamp-2')" [innerHTML]="extract()"></p>
 
     @if (customMetadata()?.length && article()) {
       @for (metadata of customMetadata(); track $index) {

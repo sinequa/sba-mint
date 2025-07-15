@@ -1,5 +1,5 @@
-import { Component, computed, inject, input, model, OnDestroy, signal } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
+import { Component, computed, DestroyRef, inject, input, model, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -16,7 +16,7 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 
@@ -49,6 +49,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardMenuComponent
   ],
   templateUrl: './record-card.html',
+  host: {
+    '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
+  },
   hostDirectives: [
     {
       directive: SelectArticleOnClickDirective,
@@ -58,10 +61,10 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
       directive: ShowBookmarkDirective,
       inputs: ['article']
     }
-  ],
-  providers: [provideTranslocoScope({ scope: 'article' })]
+  ]
 })
-export class RecordCard implements OnDestroy {
+export class RecordCard {
+  cn = cn;
   public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
   public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
@@ -69,6 +72,8 @@ export class RecordCard implements OnDestroy {
   // by default add to assistant is disabled
   public readonly allowAI = input<boolean>(false);
 
+  destroyRef = inject(DestroyRef);
+  sanitize = inject(DomSanitizer);
   selectionStore = inject(SelectionStore);
   queryParamStore = inject(QueryParamsStore);
   previewService = inject(PreviewService);
@@ -77,6 +82,7 @@ export class RecordCard implements OnDestroy {
   showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
     this.showBookmark.set(value);
   });
+  isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
 
@@ -85,6 +91,12 @@ export class RecordCard implements OnDestroy {
 
     const topPassage = this.article().matchingpassages!.passages.sort((a, b) => (a.score > b.score ? -1 : 1))[0];
     return topPassage.highlightedText;
+  });
+
+  protected title = computed(() => {
+    // article().displayTitle is the title used in the search results and may contain HTML tags, this will be sanitized
+    const { displayTitle, title, id } = this.article();
+    return this.sanitize.bypassSecurityTrustHtml(displayTitle || title || id || '');
   });
 
   protected showTab = signal(false);
@@ -98,10 +110,11 @@ export class RecordCard implements OnDestroy {
     return undefined;
   });
 
-  constructor() {}
-
-  ngOnDestroy(): void {
-    this.showBookmarkOutputSubscription.unsubscribe();
+  constructor() {
+    // Ensure that the component is destroyed properly
+    this.destroyRef.onDestroy(() => {
+      this.showBookmarkOutputSubscription.unsubscribe();
+    });
   }
 
   public toggleTab(tab: Tab): void {

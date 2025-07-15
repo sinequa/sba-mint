@@ -7,26 +7,26 @@
   role="option">
   <div class="flex gap-2">
     @if (article().thumbnailUrl && !thumbnailFailed()) {
-    <img
-      class="ratio-video h-full w-[120px] rounded-s-lg object-cover"
-      [src]="article().thumbnailUrl"
-      (error)="thumbnailFailed.set(true)"
-      alt="{{ article().title || 'Thumbnail image for the article' }}" />
+      <img
+        class="ratio-video h-full w-[120px] rounded-s-lg object-cover"
+        [src]="article().thumbnailUrl"
+        (error)="thumbnailFailed.set(true)"
+        alt="{{ article().title || 'Thumbnail image for the article' }}" />
     } @else {
-    <div class="text-primary flex size-[40px] shrink-0 items-center justify-center rounded-full bg-neutral-50">
-      <source [collection]="article().collection" [connector]="article().connector" class="max-w-7 text-lg" />
-    </div>
+      <div class="text-primary flex size-[40px] shrink-0 items-center justify-center rounded-full bg-neutral-50">
+        <source [collection]="article().collection" [connector]="article().connector" class="max-w-7 text-lg" />
+      </div>
     }
     <div class="flex flex-col gap-2">
       <CardHeader class="shrink-0">
         <header class="flex items-center gap-3">
           <div class="flex grow flex-col">
             <section class="flex items-baseline gap-2">
-              <p class="text-primary line-clamp-1 text-base font-bold">{{ article().title.trim() || '...' }}</p>
+              <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
 
               <div class="flex-grow">
                 @if (showBookmark()) {
-                <bookmark-button [article]="article()" />
+                  <bookmark-button [article]="article()" />
                 }
               </div>
               <!-- card context-menu -->
@@ -35,19 +35,20 @@
 
             <section class="flex items-center gap-1 text-xs">
               @if (docformatMetadata()) {
-              <Badge variant="secondary" class="text-xxs font-bold text-white uppercase" (click)="setFilter('docformat', docformatMetadata()!)">
-                {{ docformatMetadata() }}
-              </Badge>
+                <Badge variant="secondary" class="text-xxs font-bold text-white uppercase" (click)="setFilter('docformat', docformatMetadata()!)">
+                  {{ docformatMetadata() }}
+                </Badge>
               }
 
               <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
                 @if ((article().authors || { authors: [''] }).length > 0) {
-                <span>{{ article().authors[0] }}</span>
-                } @if (article().modified) {
-                <p class="flex items-baseline gap-1">
-                  <i class="fa-fw far fa-calendar-day"></i>
-                  <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
-                </p>
+                  <span>{{ article().authors[0] }}</span>
+                }
+                @if (article().modified) {
+                  <p class="flex items-baseline gap-1">
+                    <i class="fa-fw far fa-calendar-day"></i>
+                    <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
+                  </p>
                 }
               </div>
             </section>
@@ -55,19 +56,24 @@
         </header>
       </CardHeader>
 
-      <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
-        <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
+      <CardContent class="flex grow flex-col gap-2 overflow-auto wrap-anywhere">
+        <p [class]="cn(isLineClamped() && 'line-clamp-2')" [innerHTML]="extract()"></p>
 
-        @if (customMetadata()?.length && article()) { @for (metadata of customMetadata(); track $index) { @if (metadata.fields) {
-        <div class="flex items-center gap-1 text-xs">
-          @if (metadata.title) {
-          <!-- hide it if the medata component is hidden -->
-          <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
-          } @for(field of metadata.fields; track $index) {
-          <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" />
+        @if (customMetadata()?.length && article()) {
+          @for (metadata of customMetadata(); track $index) {
+            @if (metadata.fields) {
+              <div class="flex items-center gap-1 text-xs">
+                @if (metadata.title) {
+                  <!-- hide it if the medata component is hidden -->
+                  <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
+                }
+                @for (field of metadata.fields; track $index) {
+                  <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" />
+                }
+              </div>
+            }
           }
-        </div>
-        } } }
+        }
       </CardContent>
 
       <CardFooter>
