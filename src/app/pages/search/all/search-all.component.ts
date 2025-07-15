@@ -85,6 +85,21 @@ type QueryParamsProps = {
 export class SearchAllComponent {
   cn = cn;
 
+  // all injected services and stores
+  protected readonly queryService = inject(QueryService);
+  protected readonly drawerStack = inject(DrawerStackService);
+  protected readonly selectionService = inject(SelectionService);
+
+  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly appStore = inject(AppStore);
+  protected readonly aggregationsStore = inject(AggregationsStore);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
+  protected readonly principalStore = inject(PrincipalStore);
+  protected readonly usersettingsStore = inject(UserSettingsStore);
+
+  protected readonly router = inject(Router);
+  protected readonly route = inject(ActivatedRoute);
+
   // input url bindings
   protected readonly q = input<string>(); // text
   protected readonly t = input<string>(); // tab
@@ -105,20 +120,8 @@ export class SearchAllComponent {
   protected readonly assistantCollapsed = signal<boolean>(true);
   protected readonly showAssistant = signal<boolean>(false);
 
-  protected readonly queryService = inject(QueryService);
-  protected readonly drawerStack = inject(DrawerStackService);
-  protected readonly selectionService = inject(SelectionService);
-
-  protected readonly appFeatures = inject(APP_FEATURES);
-  protected readonly appStore = inject(AppStore);
-  protected readonly aggregationsStore = inject(AggregationsStore);
-  protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly principalStore = inject(PrincipalStore);
-  protected readonly usersettingsStore = inject(UserSettingsStore);
-
-  protected readonly router = inject(Router);
-  protected readonly route = inject(ActivatedRoute);
-
+  // the aggregations are used to display the filters in the UI
+  // and are updated when the query is successful
   protected aggregations: Aggregation[];
 
   // the query must be retriggered when the user override is active
