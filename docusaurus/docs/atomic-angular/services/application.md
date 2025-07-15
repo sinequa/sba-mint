@@ -1,10 +1,10 @@
 ---
-title: Application Service
+title: Application
 ---
 
-## Overview
-
 The `ApplicationService` is responsible for handling application-related operations in the application. It provides methods to initialize the application and create routes dynamically based on queries and configuration.
+
+## Functions
 
 ### initAndCreateRoutes()
 
@@ -57,7 +57,7 @@ appService.init().then(() => {
 });
 ```
 
-### Component Registration
+## Component Registration
 
 Components are registered via the `ROUTE_COMPONENTS` injection token. This token accepts an array of `ComponentMapping` objects with the following structure:
 

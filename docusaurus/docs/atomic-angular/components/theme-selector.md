@@ -2,8 +2,6 @@
 title: ThemeSelector
 ---
 
-## Overview
-
 The `ThemeSelector` component is an Angular component that displays a list of available themes and allows users to switch between them.
 
 ### Properties

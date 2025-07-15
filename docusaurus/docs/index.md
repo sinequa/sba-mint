@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Welcome to Mint 🍵
+sidebar_label: 📣 Welcome to Mint
 sidebar_position: 1
 description: "Sinequa's SBA Framework Documentation"
 slug: /
@@ -74,8 +75,8 @@ This is where the application pages are located as described in the routes file:
 There are currently 4 main pages:
 
 - **Home**, the home page
-- **Search**, the search page. It is further divided into several other pages by existing tabs.
-  - **All**, which contains the component(s) that will be used to display search results for the "All" tab.
+- [**Search**](/mint/features/search), the search page. It is further divided into several other pages by existing tabs.
+  - [**All**](/mint/features/search/search-all.mdx), which contains the component(s) that will be used to display search results for the "All" tab.
   - Other tabs can be added as needed.
 - **Widgets**, which contains the widgets used in the application.
 - **Assistant**, which contains the layout for the assistant feature. This route needs a specific configuration to be enabled.

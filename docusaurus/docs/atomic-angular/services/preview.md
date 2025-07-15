@@ -1,13 +1,14 @@
 ---
-title: Preview Service
+title: Preview
+sidebar_class_name: update
+description: Documentation for the Preview Service, which handles document previews, highlights, and interactions with the preview iframe.
 ---
-
-## Overview
 
 The `PreviewService` is responsible for handling the preview of documents, including fetching and displaying highlighted extracts and entities.
 
+## Functions
 
-### preview
+### preview()
 
 Previews the data for a given ID and query.
 
@@ -34,19 +35,36 @@ preview(
 #### Usage
 
 ```typescript
-this.previewService.preview('documentId', { text: 'query' }).subscribe(data => {
-  console.log('Preview data:', data);
-});
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  previewDocument() {
+    // Assuming 'documentId' is the ID of the document to preview
+    this.previewService.preview('documentId', { text: 'query' }).subscribe(data => {
+      console.log('Preview data:', data);
+    });
+  }
+}
 ```
 
 ```typescript
-this.previewService.preview('documentId', { text: 'query' }, customHighlights).subscribe(data => {
-  console.log('Preview data:', data);
-});
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  previewDocument() {
+    const customHighlights: CustomHighlights[] = [
+      { id: 'highlight1', text: 'Custom highlight text', category: 'category1' },
+      // Add more custom highlights as needed
+    ];
+    // Assuming 'documentId' is the ID of the document to preview
+    this.previewService.preview('documentId', { text: 'query' }, customHighlights).subscribe(data => {
+      console.log('Preview data:', data);
+    });
+  }
+}
 ```
 
-
-### close
+### close()
 
 Closes the preview with the specified ID and updates the audit log.
 
@@ -62,11 +80,17 @@ close(id: string, query: Partial<Query>): void
 #### Usage
 
 ```typescript
-this.previewService.close('documentId', { text: 'query' });
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  closePreview() {
+    // Assuming 'documentId' is the ID of the document to close
+    this.previewService.close('documentId', { text: 'query' });
+  }
+}
 ```
 
-
-### openExternal
+### openExternal()
 
 Previews an article in a new browser's tab.
 
@@ -80,12 +104,18 @@ openExternal(article: Article): void
 
 #### Usage
   
-  ```typescript
-  this.previewService.openExternal(article);
-  ```
+```typescript
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
 
+  openArticlePreview(article: Article) {
+    // Assuming 'article' is an instance of Article
+    this.previewService.openExternal(article);
+  }
+}
+```
 
-### setIframe
+### setIframe()
 
 Sets the iframe window object.
 
@@ -99,12 +129,19 @@ setIframe(iframe: Window | null): void
 
 #### Usage
   
-  ```typescript
-  this.previewService.setIframe(window);
-  ```
+```typescript
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
 
+  setIframeWindow() {
+    // Assuming you have a reference to the iframe window
+    const iframeWindow: Window = document.getElementById('myIframe')?.contentWindow;
+    this.previewService.setIframe(iframeWindow);
+  }
+}
+```
 
-### setPreviewData
+### setPreviewData()
 
 Sets the preview data and updates the highlight category based on the provided data.
 
@@ -112,20 +149,24 @@ Sets the preview data and updates the highlight category based on the provided d
 setPreviewData(data: PreviewData): void
 ```
 
-
 | Parameter | Type         | Description                                      |
 |-----------|--------------|--------------------------------------------------|
 | `data`    | `PreviewData`| The preview data to be set.                      |
 
-
 #### Usage
 
 ```typescript
-this.previewService.setPreviewData(previewData);
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  setPreview() {
+    const previewData: PreviewData = { /* ... */ }; // Your preview data here
+    this.previewService.setPreviewData(previewData);
+  }
+}
 ```
 
-
-### sendMessage
+### sendMessage()
 
 Sends a message to the iframe if it exists.
 
@@ -140,14 +181,20 @@ sendMessage(message: unknown): void
 #### Usage
 
 ```typescript
-this.previewService.sendMessage({ type: 'message' });
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  sendMessageToPreview() {
+    this.previewService.sendMessage({ type: 'message', data: { /* your data */ } });
+  }
+
+  initPreview() {
+    this.previewService.sendMessage({ action: 'init' });
+  }
+}
 ```
 
-```typescript
-this.previewService.sendMessage({ action: 'init' });
-```
-
-### retrieveHtmlContent
+### retrieveHtmlContent()
 
 Send a message to the preview iFrame with the required data to retrieve HTML content for a specific highlight category.
 
@@ -155,43 +202,84 @@ Send a message to the preview iFrame with the required data to retrieve HTML con
 retrieveHtmlContent(id: string, highlightCategory: string, previewData: PreviewData): void
 ```
 
-
 | Parameter          | Type          | Description                                      |
 |--------------------|---------------|--------------------------------------------------|
 | `id`               | `string`      | The unique identifier for the request.           |
 | `highlightCategory`| `string`      | The category of highlights to retrieve.          |
 | `previewData`      | `PreviewData` | The data containing highlights and their locations. |
 
-
 #### Usage
+
 ```typescript
-this.previewService.retrieveHtmlContent('documentId', 'highlightCategory', previewData);
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  getHtmlContent() {
+    const previewData: PreviewData = { /* ... */ }; // Your preview data here
+    this.previewService.retrieveHtmlContent('documentId', 'highlightCategory', previewData);
+  }
+}
 ```
 
-### zoomIn
+### zoomIn()
 
 Sends a message to zoom in.
 
 ```typescript
-this.previewService.zoomIn();
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  zoomInPreview() {
+    this.previewService.zoomIn();
+  }
+}
 ```
 
-### zoomOut
+### zoomOut()
 
 Sends a message to zoom out the preview.
 
 ```typescript
-this.previewService.zoomOut();
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  zoomOutPreview() {
+    this.previewService.zoomOut();
+  }
+}
 ```
 
-### toggle
+### toggleAIDescription()
+
+Toggles the AI description in the preview.
+
+```typescript
+toggleAIDescription(enabled: boolean): void;
+```
+
+| Parameter | Type    | Description                                      |
+|-----------|---------|--------------------------------------------------|
+| `enabled` | `boolean` | A boolean flag indicating whether to enable or disable the AI description. |
+
+#### Usage
+
+```typescript
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  toggleDescription() {
+    this.previewService.toggleAiDescription(false); // Disable AI description
+  }
+}
+```
+
+### toggle()
 
 Toggles the highlights based on the provided flags for extracts and entities.
 
 ```typescript
 toggle(extracts: boolean, entities: boolean): void
 ```
-
 
 | Parameter | Type    | Description                                      |
 |-----------|---------|--------------------------------------------------|
@@ -201,5 +289,13 @@ toggle(extracts: boolean, entities: boolean): void
 #### Usage
 
 ```typescript
-this.previewService.toggle(true, false);
+export class MyComponent {
+  previewService: PreviewService = ...; // Assume this is injected or instantiated
+
+  toggleHighlights() {
+    const entities = true; // or false
+    const extracts = false; // or true
+    this.previewService.toggle(extracts, entities);
+  }
+}
 ```

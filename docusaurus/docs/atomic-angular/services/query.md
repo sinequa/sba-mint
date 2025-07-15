@@ -1,12 +1,12 @@
 ---
-title: Query Service
+title: Query
 ---
-
-## Overview
 
 The `QueryService` is responsible for handling search queries, including fetching and displaying search results.
 
-### search
+## Functions
+
+### search()
 
 ```typescript
 search(q?: Partial<Query>, includeQueryParams?: boolean, audit?: AuditEvents): Observable<Result>
@@ -30,7 +30,7 @@ this.queryService.search({ text: 'example' }).subscribe(results => {
 });
 ```
 
-### bulkSearch
+### bulkSearch()
 
 ```typescript
 bulkSearch(q: Query[], audit?: AuditEvents): Observable<Result[]>

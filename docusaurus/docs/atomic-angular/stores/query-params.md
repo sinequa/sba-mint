@@ -2,8 +2,6 @@
 title: Query Params
 ---
 
-## Overview
-
 This store is used to manage the query parameters. It is used to store the query parameters for the current page.
 
 ## Basic Features

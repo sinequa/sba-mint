@@ -46,11 +46,26 @@ const config = {
         docs: {
           routeBasePath: '/',
           // path: 'docs',
-          sidebarPath: './sidebars.js'
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
           //   'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          sidebarPath: './sidebars.js',
+          sidebarItemsGenerator: async function ({ defaultSidebarItemsGenerator, ...args }) {
+            // Use the default sidebar items generator to generate the sidebar items
+            const sidebarItems = await defaultSidebarItemsGenerator(args);
+            // Customize the folder names here
+            return sidebarItems.map(item => {
+              // Capitalize the first letter of the label for category items
+              if (item.type === 'category') {
+                return {
+                  ...item,
+                  label: item.label.charAt(0).toUpperCase() + item.label.slice(1)
+                };
+              }
+              return item;
+            });
+          }
         },
         blog: false,
         theme: {
@@ -72,7 +87,7 @@ const config = {
         }
       },
       navbar: {
-        title: 'Mint',
+        title: '🍵 Mint',
         logo: {
           alt: 'Sinequa Logo',
           src: 'img/Logo_SINEQUA_RVB-170.png'
@@ -88,13 +103,13 @@ const config = {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomic',
-            label: 'Atomic'
+            label: '⚛️ Atomic'
           },
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomicAngular',
-            label: 'Atomic for Angular'
+            label: '🅰️ Atomic for Angular'
           },
           {
             href: 'https://github.com/sinequa/sba-mint',

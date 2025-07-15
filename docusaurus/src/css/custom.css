@@ -68,6 +68,23 @@ h5 {
   font-size: 1.1rem;
 }
 
+kbd {
+  height: 20px;
+  line-height: 20px;
+  border-radius: 6px;
+  padding: 0 6px;
+  font-size: 12px;
+  color: hsla(0, 0%, 9%, 1);
+  background: hsla(0, 0%, 100%, 1);
+  font-weight: 500;
+  font-family: inherit;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border: none;
+  text-align: center;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
 /* (2025-03-12) A <details> block is rendered by docusaurus as a details.alert.alert--info, that is blue-ish and we don't like.
 	The idea is to do it by over-riding the variables values in the same fashion the Infima file does it.
 	*/
@@ -78,6 +95,13 @@ details.alert {
   --ifm-alert-border-color: var(--ifm-color-secondary-darkest);
   border-style: dashed;
   box-shadow: none;
+}
+
+.alert {
+  a {
+    color: var(--ifm-color-primary);
+    text-decoration-color: var(--ifm-color-primary);
+  }
 }
 
 /* (2025-03-12) Written to integrate a <ul> that is defined in an import in another ul.
@@ -301,4 +325,40 @@ table td {
   margin: 0;
   margin-top: 0.125rem;
   margin-bottom: 0.5rem;
+}
+
+/*
+  badges for new features and updates
+ */
+.new,
+.draft,
+.update {
+  position: relative;
+}
+.new::after,
+.draft::after,
+.update::after {
+  position: absolute;
+  font-size: 10px;
+  color: white;
+  top: 0;
+  right: 0;
+  transform: translateY(50%);
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  border-radius: 0.25rem;
+}
+.new::after {
+  content: 'new';
+  background-color: var(--ifm-color-primary);
+}
+.draft::after {
+  content: 'draft';
+  color: var(--ifm-color-warning-contrast-foreground);
+  background-color: var(--ifm-color-warning);
+}
+.update::after {
+  content: 'update';
+  /* color: var(--ifm-color-success-contrast-foreground); */
+  background-color: var(--ifm-color-success);
 }

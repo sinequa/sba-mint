@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "docusaurus build",
-    "build-internal": "docusaurus build --config docusaurus.internal.config.ts",
+    "build-internal": "docusaurus build --config docusaurus.internal.config.js",
     "clear": "docusaurus clear",
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",

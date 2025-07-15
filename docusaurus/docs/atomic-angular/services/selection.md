@@ -1,10 +1,10 @@
 ---
-title: Selection Service
+title: Selection
 ---
 
-## Overview
-
 The `SelectionService` is responsible for managing the current article selection and updating the query parameters accordingly.
+
+## Functions
 
 ### setCurrentArticle()
 
