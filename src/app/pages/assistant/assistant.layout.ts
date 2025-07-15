@@ -1,20 +1,18 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
-import { NotificationType, SavedChatsComponent } from '@sinequa/assistant/chat';
+import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
+import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../tokens';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { toast } from 'ngx-sonner';
+import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -146,8 +144,6 @@ export class AssistantLayoutComponent {
 
     // this is needed to populate the aggregation with the sources as no query is sent to the server
     this.getFirstPageQuery();
-
-    this.watchAssistantNotification();
   }
 
   async getFirstPageQuery() {
@@ -168,27 +164,5 @@ export class AssistantLayoutComponent {
     if (ready) {
       this.isAssistantReady.set(true);
     }
-  }
-
-  private readonly destroyRef = inject(DestroyRef);
-
-  watchAssistantNotification(): void {
-    const controller = new AbortController();
-
-    addEventListener(
-      'notification',
-      (event: Event) => {
-        const customEvent = event as CustomEvent<{
-          type: NotificationType;
-          title?: string;
-          message: string;
-        }>;
-        const { type, message } = customEvent.detail;
-        toast[type](message);
-      },
-      { signal: controller.signal }
-    );
-
-    this.destroyRef.onDestroy(() => controller.abort());
   }
 }

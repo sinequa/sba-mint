@@ -10,7 +10,7 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 import { RecordCard } from '../record/record-card';

@@ -3,9 +3,8 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, CCApp, PreviewData, Query } from '@sinequa/atomic';
-import { AppStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import { APP_FEATURES, AppStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 
-import { APP_FEATURES } from '../../tokens';
 import { AssistantComponent } from '../assistant/assistant';
 import { PreviewNavbarComponent } from './navbar/navbar.component';
 import { PreviewContentComponent } from './preview-content/preview-content';

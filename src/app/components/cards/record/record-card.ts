@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, model, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
 
@@ -18,6 +18,7 @@ import {
 } from '@sinequa/atomic-angular';
 import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
+import { TranslocoPipe } from '@jsverse/transloco';
 import { CardMenuComponent } from '../menu';
 
 type Tab = 'attachments' | 'similars';
@@ -40,6 +41,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     BookmarkButtonComponent,
     SourceComponent,
     TranslocoDateImpurePipe,
+    TranslocoPipe,
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
@@ -85,6 +87,9 @@ export class RecordCard {
   isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
+  // state of checkbox for multi-select
+  checked = signal<boolean>(false);
+  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find(a => a.id === this.article().id));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
@@ -111,6 +116,11 @@ export class RecordCard {
   });
 
   constructor() {
+    effect(() => {
+      this.checked.set(!!this.multiSelected());
+      this.article().$selected = !!this.multiSelected();
+    });
+
     // Ensure that the component is destroyed properly
     this.destroyRef.onDestroy(() => {
       this.showBookmarkOutputSubscription.unsubscribe();
@@ -146,5 +156,18 @@ export class RecordCard {
   onMetadataClick({ field, value }: { field: string; value: string }): void {
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
+  }
+
+  onMultiSelectToggle(event: Event): void {
+    event.stopImmediatePropagation();
+
+    this.checked.set(!this.checked());
+
+    if (this.article()) {
+      this.article().$selected = !this.article().$selected;
+
+      if (this.article().$selected) this.selectionStore.addArticleToMultiSelection(this.article());
+      else this.selectionStore.removeArticleFromMultiSelection(this.article());
+    }
   }
 }

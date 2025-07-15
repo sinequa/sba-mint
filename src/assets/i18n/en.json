@@ -99,5 +99,6 @@
     "delete-all": "Delete All",
     "refresh": "Refresh"
   },
+  "toggleDocumentSelection": "Toggle document selection",
   "homeWidgetTabs": "Home page widget list"
 }

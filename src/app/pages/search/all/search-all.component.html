@@ -28,7 +28,7 @@
       }
 
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" />
+      <filters-bar class="pt-4 pb-4" (onClearFilters)="onClearFilters()" />
 
       <app-did-you-mean class="text-alert py-1" [result]="result()" />
 

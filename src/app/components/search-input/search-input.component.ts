@@ -8,6 +8,7 @@ import { toast } from 'ngx-sonner';
 
 import { CCApp } from '@sinequa/atomic';
 import {
+  APP_FEATURES,
   AppStore,
   AutocompleteService,
   debouncedSignal,
@@ -21,7 +22,6 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../tokens';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({
