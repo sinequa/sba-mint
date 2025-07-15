@@ -62,11 +62,16 @@ export class SearchInputComponent {
 
   protected readonly saveAnimation = signal<boolean>(false);
 
+  filters = computed(() => {
+    const { filters } = getState(this.queryParamsStore);
+    return filters ? JSON.stringify(filters) : undefined;
+  });
+
   hasFilters = computed(() => {
     // when the query parameters store updates, update the hasFilters signal
     // to show or hide the clear filters button
-    const state = getState(this.queryParamsStore);
-    return Array.isArray(state.filters) && state.filters.length > 0;
+    const { filters } = getState(this.queryParamsStore);
+    return Array.isArray(filters) && filters.length > 0;
   });
 
   protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));

@@ -40,7 +40,7 @@
       aria-label="Ask AI"
       [disabled]="value() === ''"
       [routerLink]="['/assistant']"
-      [queryParams]="{ q: value() }">
+      [queryParams]="{ q: value(), f: filters() }">
       <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
       Ask AI
     </button>
