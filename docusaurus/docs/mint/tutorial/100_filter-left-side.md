@@ -76,7 +76,7 @@ This code block uses spacing (`ml-14`, `mt-4`), makes the filter sticky as you s
 8. Save your changes.
 
 :::note
-If you followed the *Connection to the Sinequa demo server* tutorial, Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
+If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md), Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
 :::
 
 9. Go to your Mint application and search for **assisstant**. 
