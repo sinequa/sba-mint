@@ -132,7 +132,7 @@ You can include additional metadata here above the extract such as the filename 
 3. Save your changes.
 
 :::note
-If you followed the *Connection to the Sinequa demo server* tutorial, Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
+If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md, Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
 :::
 
 4. Go to your Mint application and search for *connector*. 
