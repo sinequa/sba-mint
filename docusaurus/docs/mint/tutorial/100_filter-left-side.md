@@ -69,7 +69,7 @@ At the top, you should see a **`<main>`** element:
 
 
 :::note
-This code block uses spacing (ml-14, mt-4), makes the filter sticky as you scroll (sticky top-20), and conditionally shows or hides it based on whether the preview panel is opened or closed.
+This code block uses spacing (`ml-14`, `mt-4`), makes the filter sticky as you scroll (`sticky top-20`), and conditionally shows or hides it based on whether the preview panel is opened or closed.
 :::
 
 
