@@ -35,14 +35,14 @@ const homeFeatures: HomeTab[] = [
   {
     name: 'recentSearches',
     iconClass: 'fa-regular fa-clock-rotate-left',
-    label: 'recentSearches.label',
+    label: 'searches.recent.label',
     inputs: { options: { itemsPerPage: 5 } },
     component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
     iconClass: 'fa-regular fa-star',
-    label: 'savedSearches.label',
+    label: 'searches.saved.label',
     inputs: { options: { itemsPerPage: 5 } },
     component: SavedSearchesComponent
   },
@@ -76,7 +76,7 @@ const homeFeatures: HomeTab[] = [
       }
     `
   ],
-  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections')]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
   public drawerOpened: boolean = false;

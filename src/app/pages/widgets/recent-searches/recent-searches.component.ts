@@ -4,7 +4,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { countFilters, RecentSearch, TranslocoDateImpurePipe, UserSettingsStore, wrapFiltersToArray } from '@sinequa/atomic-angular';
+import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-recent-searches',
@@ -47,8 +47,8 @@ import { countFilters, RecentSearch, TranslocoDateImpurePipe, UserSettingsStore,
                   }
                 </span>
 
-                <button class="invisible text-red-500 group-hover:visible" (click)="remove($event, search)">
-                  <i class="fa-fw far fa-trash" aria-hidden></i>
+                <button class="invisible text-red-500 group-hover:visible hover:scale-125 hover:cursor-pointer" (click)="remove($event, search)">
+                  <i class="fa-fw far fa-trash-can" aria-hidden></i>
                 </button>
               </li>
             }
@@ -67,7 +67,7 @@ export class RecentSearchesComponent {
 
   readonly router = inject(Router);
   readonly userSettingsStore = inject(UserSettingsStore);
-  readonly history = signal<{ date: string; searches: RecentSearch[] }[]>([]);
+  readonly history = signal<{ date: string; searches: SearchItem[] }[]>([]);
   readonly transloco = inject(TranslocoService);
   readonly datePipe = inject(TranslocoDateImpurePipe);
 
@@ -84,14 +84,9 @@ export class RecentSearchesComponent {
 
             acc[date].push(search);
 
-            // add filterCount on the fly
-            search.filterCount = countFilters(search.queryParams?.filters);
-
-            if (search.queryParams?.filters) search.queryParams.filters = wrapFiltersToArray(search.queryParams.filters);
-
             return acc;
           },
-          {} as Record<string, RecentSearch[]>
+          {} as Record<string, SearchItem[]>
         );
         const sortedDates = Object.keys(groupedByDay).sort((a, b) => b.localeCompare(a));
         const sortedGroupedByDay = sortedDates.map(date => ({ date, searches: groupedByDay[date] }));
@@ -101,7 +96,7 @@ export class RecentSearchesComponent {
     });
   }
 
-  async remove(event: Event, search: RecentSearch) {
+  async remove(event: Event, search: SearchItem) {
     event.stopImmediatePropagation();
 
     const index = this.userSettingsStore.recentSearches().findIndex(s => s === search);
@@ -110,7 +105,7 @@ export class RecentSearchesComponent {
     toast.success('Recent search deleted');
   }
 
-  getQueryParams(search: RecentSearch): Record<string, string> {
+  getQueryParams(search: SearchItem): Record<string, string> {
     return {
       q: search.queryParams?.text,
       f: (search.queryParams?.filters ?? []).length > 0 ? JSON.stringify(search.queryParams?.filters) : undefined,

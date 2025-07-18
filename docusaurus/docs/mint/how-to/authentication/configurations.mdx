@@ -16,11 +16,15 @@ Usually, applications are hosted on a Sinequa backend, and the configuration is 
 However, you can also set the configuration manually in your application.
 :::
 
+:::caution
+Make sure to set the configuration before bootstrapping the application in the `main.ts` file.
+:::
+
 ### Example: OAuth Provider
 
 Here's how you can do it with an OAuth provider:
 
-```ts title="app.config.ts"
+```ts title="main.ts"
 import { setGlobalConfig } from '@sinequa/atomic';
 
 setGlobalConfig({
@@ -35,7 +39,7 @@ setGlobalConfig({
 
 Here's how you can do it with a SAML provider:
 
-```ts title="app.config.ts"
+```ts title="main.ts"
 import { setGlobalConfig } from '@sinequa/atomic';
 
 setGlobalConfig({
@@ -50,7 +54,7 @@ setGlobalConfig({
 
 Here's how you can do it with a Bearer Token:
 
-```ts title="app.config.ts"
+```ts title="main.ts"
 import { setGlobalConfig } from '@sinequa/atomic';
 
 setGlobalConfig({
@@ -58,6 +62,22 @@ setGlobalConfig({
   backendUrl: 'https://your-sinequa-backend.com', // Replace with your Sinequa backend URL (optional)
   // add
   autoBearerToken: 'your-bearer-token', // Replace with your Bearer Token
+});
+
+```
+
+### Example: Credentials
+
+Here's how you can do it with credentials:
+
+```ts title="main.ts"
+import { setGlobalConfig } from '@sinequa/atomic';
+
+setGlobalConfig({
+  app: 'your-app-name', // Replace with your application name (optional)
+  backendUrl: 'https://your-sinequa-backend.com', // Replace with your Sinequa backend URL (optional)
+  // add
+  useCredentials: true, // Set to true to use credentials for authentication
 });
 ```
 
@@ -98,14 +118,12 @@ The configurations above are generally set when you serve your application local
 In production you can provide automatically the configuration from the Sinequa backend by using the `appInitializerFn`
 function like this:
 
-```ts title="app.config.ts"
-import { appInitializerFn, setGlobalConfig } from '@sinequa/atomic';
+```ts title="main.ts"
+import { appInitializerFn } from '@sinequa/atomic';
 
 bootstrapApplication(App, {
   providers: [
-    provideZonelessChangeDetection(),
-    provideRouter([]),
-    provideHttpClient(/* ... */),
+    /* ... */,
     // add-start
     provideAppInitializer(appInitializerFn),  // This will automatically fetch the configuration
                                               // from the Sinequa backend
@@ -115,7 +133,7 @@ bootstrapApplication(App, {
 ```
 
 :::note
-The `appInitializerFn` function is used to bootstrap the application with the necessary providers and interceptors.
+The `appInitializerFn` function is used to bootstrap the application with the necessary providers.
 It initializes the application by fetching the configuration from the Sinequa backend.
 :::
 
@@ -129,16 +147,13 @@ The `bootstrapApp` function, under the hood sets up the authentication mechanism
 or other methods. The authentication credentials can be provided in the `setGlobalConfig` function or through the `appInitializerFn`.
 :::
 
-```ts title="app.config.ts"
+```ts title="main.ts"
 import { Router } from '@angular/router';
 import { ApplicationService } from '@sinequa/atomic-angular';
 
 bootstrapApplication(App, {
   providers: [
-    provideZonelessChangeDetection(),
-    provideRouter([]),
-    provideHttpClient(/*...*/),
-    provideAppInitializer(appInitializerFn),
+    /*...*/
     // add-start
     provideAppInitializer(() =>
       bootstrapApp(inject(Router), inject(ApplicationService), {

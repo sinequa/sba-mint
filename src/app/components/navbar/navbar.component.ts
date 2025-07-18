@@ -14,7 +14,7 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearch,
+  SearchItem,
   SavedSearchesComponent,
   SavedSearchesService
 } from '@sinequa/atomic-angular';
@@ -105,16 +105,6 @@ export class NavbarComponent {
   }
 
   /**
-   * Occurs when the search input is validated by the user
-   * (e.g. by pressing enter or clicking on a search button)
-   *
-   * @param text The validated text
-   */
-  protected validated(text: string): void {
-    this.search(text);
-  }
-
-  /**
    * Occurs when the search input is updated by the user and debounced by the system
    *
    * @param text The debounced text
@@ -126,7 +116,7 @@ export class NavbarComponent {
   /**
    * Occurs when the user clicks on the save button
    */
-  protected saveSearch(savedSearch?: SavedSearch): void {
+  protected saveSearch(savedSearch?: SearchItem): void {
     if (savedSearch) {
       const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
       if (index !== -1) {

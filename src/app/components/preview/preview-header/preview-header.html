@@ -19,42 +19,44 @@
       <th>{{ 'location' | transloco }}</th>
 
       <td class="flex items-center gap-2 overflow-hidden">
-        <DocumentLocator [article]="article()" aggregation="Treepath" />
+        <DocumentLocator [article]="article()" aggregation="Sources" />
       </td>
     </tr>
 
     @if ((article().authors || []).length > 0) {
-    <tr>
-      <th>{{ 'lastUpdatedBy' | transloco }}</th>
+      <tr>
+        <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
-      <td class="flex flex-wrap gap-2">
-        <Metadata variant="outline" [article]="article()!" metadata="authors" />
-      </td>
-    </tr>
-    } @if (article().modified) {
-    <tr>
-      <th>{{ 'lastUpdatedOn' | transloco }}</th>
+        <td class="flex flex-wrap gap-2">
+          <Metadata variant="outline" [article]="article()!" metadata="authors" />
+        </td>
+      </tr>
+    }
+    @if (article().modified) {
+      <tr>
+        <th>{{ 'lastUpdatedOn' | transloco }}</th>
 
-      <td class="flex gap-2">
-        <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
-      </td>
-    </tr>
-    } @if (hasLabels()) {
-    <tr>
-      <th>{{ 'labels' | transloco }}</th>
+        <td class="flex gap-2">
+          <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
+        </td>
+      </tr>
+    }
+    @if (hasLabels()) {
+      <tr>
+        <th>{{ 'labels' | transloco }}</th>
 
-      <td class="flex flex-col gap-1">
-        <!-- public labels-->
-        <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
-        <!-- private labels -->
-        <Metadata
-          variant="outline"
-          class="bg-secondary/20 cursor-pointer"
-          [article]="article()!"
-          [metadata]="labels.private"
-          (click)="onMetadataClick($event)" />
-      </td>
-    </tr>
+        <td class="flex flex-col gap-1">
+          <!-- public labels-->
+          <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
+          <!-- private labels -->
+          <Metadata
+            variant="outline"
+            class="bg-secondary/20 cursor-pointer"
+            [article]="article()!"
+            [metadata]="labels.private"
+            (click)="onMetadataClick($event)" />
+        </td>
+      </tr>
     }
 
     <tr>
