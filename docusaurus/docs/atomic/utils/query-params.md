@@ -1,5 +1,6 @@
 ---
 title: Query Params
+sidebar_class_name: update
 ---
 
 This module provides utility functions for extracting and parsing query parameters from URLs,
@@ -28,6 +29,51 @@ Parses a URL string and returns a `QueryParams` object.
 
 ```typescript
 function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined
+```
+
+#### Example
+
+```typescript
+import { getQueryParamsFromUrl } from '@sinequa/atomic';
+
+const url = 'https://example.com/search?q=test&f=%5B%7B%22field%22%3A%22type%22%2C%22value%22%3A%22document%22%7D%5D&id=abc123&n=main';
+const params = getQueryParamsFromUrl(url);
+/*
+params: {
+  path: '/search',
+  text: 'test',
+  filters: [{ field: 'type', value: 'document' }],
+  name: 'main'
+}
+*/
+```
+
+### getUrlParamsFromQueryParams()
+
+Converts a `QueryParams` object to a URL query string.
+
+```typescript
+function getUrlParamsFromQueryParams(queryParams: QueryParams | undefined): string
+```
+
+#### Example
+
+```typescript
+import { getUrlParamsFromQueryParams, QueryParams } from '@sinequa/atomic';
+
+const queryParams: QueryParams = {
+  path: "/search/all",
+  text: "example",
+  filters: [{ field: "type", value: "document" }],
+  page: 1,
+  sort: "relevance",
+  tab: "results",
+  name: "John Doe",
+  basket: "12345",
+};
+
+const urlParams = getUrlParamsFromQueryParams(queryParams);
+// urlParams: "q=example&f=%5B%7B%22field%22%3A%22type%22%2C%22value%22%3A%22document%22%7D%5D&p=1&s=relevance&t=results&n=John%20Doe&b=12345"
 ```
 
 ### getFiltersFromUrl()

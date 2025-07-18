@@ -6,7 +6,7 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
+import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
@@ -60,14 +60,14 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           </section>
         }
         <section class="pt-6">
-          <Aggregation name="Sources" column="treepath" [showCount]="true" class="rounded-2xl border border-gray-200 bg-white p-4 shadow" />
+          <Aggregation name="Sources" column="treepath" [showCount]="true" class="h-[540px] rounded-2xl border border-gray-200 bg-white p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
         }
       </div>
       <div [class]="cn('transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'w-3/4 translate-x-0')">
-        <Assistant [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
+        <Assistant [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
     <app-sidebar class="fixed top-0 h-full" />
@@ -92,7 +92,11 @@ export class AssistantLayoutComponent {
   private readonly appStore = inject(AppStore);
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  query = { name: this.defaultQueryName() };
 
   readonly instanceId = computed(() => {
     const {
@@ -126,6 +130,8 @@ export class AssistantLayoutComponent {
   q = input<string>();
 
   constructor() {
+    this.queryParamsStore.patch({ text: undefined, tab: undefined, filters: [], basket: undefined });
+
     effect(() => {
       // force the change detection when the AggregationStore is updated.
       // This is needed because we use the ChatComponent which is not a signal component (i.e Angular v14)

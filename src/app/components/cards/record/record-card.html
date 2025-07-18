@@ -36,7 +36,7 @@
             <Badge
               variant="outline"
               class="hover:bg-foreground hover:text-accent transition-colors duration-75 ease-in"
-              (click)="setFilter('docformat', docformatMetadata()!)">
+              (click)="setFilter('docformat', docformatMetadata()!, $event)">
               {{ docformatMetadata() }}
             </Badge>
           }

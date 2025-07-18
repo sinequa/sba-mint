@@ -26,29 +26,33 @@ document.addEventListener('DOMContentLoaded', function () {
     isWorkerSupported = false;
 
     if (window.Worker) {
-      console.log('Web Worker is supported');
-
       // Use an absolute URL for the worker.js file
       const path = window.origin.includes('localhost:4200') ? `${window.origin}/assets/worker.js` : `${window.origin}/app/${appname}/assets/worker.js`;
 
-      worker = new Worker(path);
+      try {
+        worker = new Worker(path);
 
-      worker.onmessage = function (event) {
-        window.parent.postMessage(
-          {
-            type: 'get-html-results-webworker',
-            data: event.data,
-            url: window.location.href
-          },
-          parentOrigin
-        );
-      };
+        worker.onmessage = function (event) {
+          window.parent.postMessage(
+            {
+              type: 'get-html-results-webworker',
+              data: event.data,
+              url: window.location.href
+            },
+            parentOrigin
+          );
+        };
 
-      worker.onerror = function (error) {
-        console.error('Error from worker:', error);
-      };
+        worker.onerror = function (error) {
+          console.error('Error from worker:', error);
+        };
 
-      isWorkerSupported = true;
+        console.log('Web Worker is supported');
+        isWorkerSupported = true;
+      } catch (error) {
+        console.error('Error creating worker:', error);
+        isWorkerSupported = false;
+      }
     }
   }
 

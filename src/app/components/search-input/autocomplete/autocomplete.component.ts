@@ -1,7 +1,7 @@
 import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
 import { Suggestion as S } from '@sinequa/atomic';
@@ -47,6 +47,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
   imports: [HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')],
   styles: [
     `
       ul {
