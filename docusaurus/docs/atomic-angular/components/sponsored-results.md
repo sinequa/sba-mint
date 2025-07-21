@@ -1,5 +1,6 @@
 ---
 title: SponsoredResults
+sidebar_class_name: update
 ---
 
 The `SponsoredResultsComponent` displays a list of sponsored links (promoted results) relevant to the current search query. It fetches and shows up to three sponsored results, each with a title, link, and a "PROMOTED" badge.
@@ -17,17 +18,29 @@ The `SponsoredResultsComponent` displays a list of sponsored links (promoted res
 <sponsored-results></sponsored-results>
 ```
 
-## Example
+## Inputs
 
-```ts
-@Component({
-  selector: 'my-component',
-  template: `
-    <sponsored-results />
-  `,
-  imports: [SponsoredResultsComponent]
-})
-export class MyComponent {}
+- `slice`: Number of sponsored results to display (default is 3).
+- `displayPromoted`: Boolean to control the visibility of the "PROMOTED" badge (default is true).
+
+### Example Basic Usage
+
+```html
+<sponsored-results></sponsored-results>
+```
+
+### Example with Custom Promoted Badge
+
+```html
+<sponsored-results>
+  <span *childMarker class="custom-promoted-badge">Custom PROMOTED</span>
+</sponsored-results>
+```
+
+### Example with Custom Slice
+
+```html
+<sponsored-results slice=5 />
 ```
 
 ## Notes
