@@ -1,10 +1,10 @@
 ---
-title: Query Params Utilities
+title: Query Params
+sidebar_class_name: update
 ---
 
-## Introduction
-
-This module provides utility functions for extracting and parsing query parameters from URLs, especially for search and filter operations. It is useful for handling URL-based navigation and state in search-driven applications.
+This module provides utility functions for extracting and parsing query parameters from URLs,
+especially for search and filter operations. It is useful for handling URL-based navigation and state in search-driven applications.
 
 ## Types
 
@@ -23,7 +23,7 @@ export type QueryParams = Query & {
 
 ## Functions
 
-### getQueryParamsFromUrl
+### getQueryParamsFromUrl()
 
 Parses a URL string and returns a `QueryParams` object.
 
@@ -31,7 +31,52 @@ Parses a URL string and returns a `QueryParams` object.
 function getQueryParamsFromUrl(url: string | undefined): QueryParams | undefined
 ```
 
-### getFiltersFromUrl
+#### Example
+
+```typescript
+import { getQueryParamsFromUrl } from '@sinequa/atomic';
+
+const url = 'https://example.com/search?q=test&f=%5B%7B%22field%22%3A%22type%22%2C%22value%22%3A%22document%22%7D%5D&id=abc123&n=main';
+const params = getQueryParamsFromUrl(url);
+/*
+params: {
+  path: '/search',
+  text: 'test',
+  filters: [{ field: 'type', value: 'document' }],
+  name: 'main'
+}
+*/
+```
+
+### getUrlParamsFromQueryParams()
+
+Converts a `QueryParams` object to a URL query string.
+
+```typescript
+function getUrlParamsFromQueryParams(queryParams: QueryParams | undefined): string
+```
+
+#### Example
+
+```typescript
+import { getUrlParamsFromQueryParams, QueryParams } from '@sinequa/atomic';
+
+const queryParams: QueryParams = {
+  path: "/search/all",
+  text: "example",
+  filters: [{ field: "type", value: "document" }],
+  page: 1,
+  sort: "relevance",
+  tab: "results",
+  name: "John Doe",
+  basket: "12345",
+};
+
+const urlParams = getUrlParamsFromQueryParams(queryParams);
+// urlParams: "q=example&f=%5B%7B%22field%22%3A%22type%22%2C%22value%22%3A%22document%22%7D%5D&p=1&s=relevance&t=results&n=John%20Doe&b=12345"
+```
+
+### getFiltersFromUrl()
 
 Extracts an array of `LegacyFilter` objects from a URL string.
 
@@ -39,7 +84,7 @@ Extracts an array of `LegacyFilter` objects from a URL string.
 function getFiltersFromUrl(url: string | undefined): LegacyFilter[]
 ```
 
-### getFiltersFromURI
+### getFiltersFromURI()
 
 Parses a URI-encoded string and returns an array of `LegacyFilter` objects.
 
@@ -47,7 +92,7 @@ Parses a URI-encoded string and returns an array of `LegacyFilter` objects.
 function getFiltersFromURI(uri: string): LegacyFilter[]
 ```
 
-### queryParamsFromUrl
+### queryParamsFromUrl()
 
 Returns an object of query parameters from the given URL.
 
@@ -55,7 +100,7 @@ Returns an object of query parameters from the given URL.
 function queryParamsFromUrl(url: string): Record<string, string>
 ```
 
-## Example
+#### Example
 
 ```typescript
 import { getQueryParamsFromUrl, getFiltersFromUrl } from '@sinequa/atomic';

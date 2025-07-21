@@ -25,6 +25,6 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   host: {
     class: 'flex flex-col h-full w-full'
   },
-  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections', 'alerts')]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections', 'alerts')]
 })
 export class WidgetsLayoutComponent {}

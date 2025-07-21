@@ -2,9 +2,15 @@
 title: Syslang
 ---
 
-## Overview
+The `SyslangPipe` is a custom pipe that transforms a string value using the current language. This pipe is used to translate strings that are not part of the Angular i18n system.
 
-The `SyslangPipe` is a custom pipe that transforms a string value using the current language. This pipe is used to translate strings that are not part of the Angular i18n system. It exists to maintain compatibility with a legacy system that uses a custom language syntax.
+:::caution
+This pipe exists to maintain compatibility with a legacy system that uses a old custom language syntax.
+:::
+
+:::note
+This pipe is impure, which means it will be executed during every change detection cycle. It listens to Transloco language changes and updates the translation when the language changes.
+:::
 
 ### API
 
@@ -41,8 +47,6 @@ export class MultilingualTextComponent {}
 ```
 
 ### Notes
-
-This pipe is impure, which means it will be executed during every change detection cycle. It listens to Transloco language changes and updates the translation when the language changes.
 
 The input string should follow a specific format:
 

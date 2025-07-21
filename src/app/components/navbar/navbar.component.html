@@ -4,13 +4,14 @@
 
 @if (showInput()) {
   <app-search-input
-    class="col-span-2 h-full w-full"
+    class="col-span-2 mr-8 h-full w-full"
     variant="basic"
     [showSave]="true"
     (saved)="saveSearch($event)"
-    (validated)="validated($event)"
-    (debounced)="debounced($event)">
-    <app-autocomplete [text]="searchText()" (onClick)="autocompleteItemClicked($event)" />
+    (validated)="search($event)"
+    (debounced)="debounced($event)"
+    (selected)="selected($event)">
+    <app-autocomplete #autocomplete [text]="searchText()" />
   </app-search-input>
 }
 
@@ -28,7 +29,7 @@
               <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
             </button>
 
-            <PopoverContent class="w-[380px] max-w-md" position="bottom-end">
+            <PopoverContent class="w-[380px] max-w-md min-w-sm" position="bottom-end">
               <ng-container [ngComponentOutlet]="menu.component"></ng-container>
             </PopoverContent>
           </Popover>

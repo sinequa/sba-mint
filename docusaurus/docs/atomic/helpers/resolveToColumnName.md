@@ -6,11 +6,11 @@ Resolves an alias to a column name from a query or indexes schema
 
 | parameter | type | description |
 | --- | --- | --- |
-| alias | `string` | The alias of the column to resolve |
-| app | `CCApp` | The application state object |
-| queryName | `string` | Optional. The name of the query to use for resolution |
+| `alias` | `string` | The alias of the column to resolve |
+| `app` | `CCApp` | The application state object |
+| `queryName` | `string` | Optional. The name of the query to use for resolution |
 
-## Example
+#### Example
 
 ```js title="resolve-to-column-name.js"
 import { resolveToColumnName } from "@sinequa/atomic";

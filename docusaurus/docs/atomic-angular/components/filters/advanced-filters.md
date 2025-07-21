@@ -1,5 +1,6 @@
 ---
 title: Advanced Filters Component
+sidebar_class_name: draft
 ---
 
 The `AdvancedFiltersComponent` provides a drawer-based UI for advanced filter management, including custom fields, suggestions, and fielded search.
@@ -11,19 +12,15 @@ The `AdvancedFiltersComponent` provides a drawer-based UI for advanced filter ma
 - Provides suggestions and custom filter logic
 - Integrates with query parameters and stores
 
-## Methods
+## API Reference
 
-### `addItem(item, filter)`
+### Methods
 
-Adds a filter value to the selected filter.
-
-### `removeItem(item, filter)`
-
-Removes a filter value from the selected filter.
-
-### `onSearch()`
-
-Applies all filters and updates the query.
+| Method                       | Description                                              |
+|------------------------------|----------------------------------------------------------|
+| `addItem(item: DropdownItem, filter: Filter)`      | Adds a filter value to the selected filter.              |
+| `removeItem(item: DropdownItem, filter: Filter)`   | Removes a filter value from the selected filter.         |
+| `onSearch()`                 | Applies all filters and updates the query.               |
 
 ## Component Interaction Schema
 

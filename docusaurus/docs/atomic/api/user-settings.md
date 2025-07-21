@@ -3,8 +3,6 @@ sidebar_position: 3
 title: User Settings
 ---
 
-## Overview
-
 This module provides functionality to interact with user settings:
 
 - Retrieve current user settings from the backend
@@ -13,6 +11,8 @@ This module provides functionality to interact with user settings:
 
 These operations allow for efficient management and synchronization
 of user preferences and configurations within the application.
+
+## Functions
 
 ### fetchUserSettings\<T\>()
 
@@ -43,8 +43,8 @@ Saves user settings to the server.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| usersettings | `T` | The user settings object to be saved. |
-| audit | `AuditEvents` | Optional audit event to be recorded with the save action. |
+| `usersettings` | `T` | The user settings object to be saved. |
+| `audit` | `AuditEvents` | Optional audit event to be recorded with the save action. |
 
 __Returns__ A promise that resolves to the saved user settings object.
 
@@ -62,8 +62,8 @@ Patches (partially updates) user settings on the server.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| usersettings | `Partial<T>` | The partial user settings object containing the properties to be updated. |
-| audit | `AuditEvents` | Optional audit event to be recorded with the save action. |
+| `usersettings` | `Partial<T>` | The partial user settings object containing the properties to be updated. |
+| `audit` | `AuditEvents` | Optional audit event to be recorded with the save action. |
 
 __Returns__ A promise that resolves to the updated user settings object.
 

@@ -1,10 +1,8 @@
 ---
-title: Utilities
+title: Help Resources
 ---
 
-## Introduction
-
-This module provides utility types and functions for working with help/documentation folders and locale-based file resolution.
+Provides utility types and functions for working with help/documentation folders and locale-based file resolution.
 
 ## Types
 
@@ -32,7 +30,7 @@ export type HelpFolderOptions = {
 
 ## Functions
 
-### getHelpIndexUrl
+### getHelpIndexUrl()
 
 Resolves the help index file URL based on locale and options.
 

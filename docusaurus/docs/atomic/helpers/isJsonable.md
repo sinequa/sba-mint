@@ -6,11 +6,11 @@ Checks if the given value can be safely converted to JSON.
 
 | parameter | type | description |
 | --- | --- | --- |
-| obj | `unknown` | The value to check |
+| `obj` | `unknown` | The value to check |
 
 __Returns__ `boolean`: True if the value can be safely converted to JSON, false otherwise.
 
-## Example
+#### Example
 
 ```js title="is-jsonable.js"
 import { isJsonable } from "@sinequa/atomic";

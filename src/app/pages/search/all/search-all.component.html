@@ -28,7 +28,7 @@
       }
 
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" />
+      <filters-bar class="pt-4 pb-4" (onClearFilters)="onClearFilters()" />
 
       <app-did-you-mean class="text-alert py-1" [result]="result()" />
 
@@ -41,7 +41,7 @@
     </div>
 
     <!-- if assistant is allowed -->
-    @if (allowAI() && !b()) {
+    @if (allowAI()) {
       <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-14 overflow-hidden bg-orange-50')">
         <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
           <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
@@ -100,6 +100,8 @@
       }
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" />
+
+      <app-did-you-mean class="text-alert py-1" [result]="result()" />
     </div>
     <!-- display a panel to inform the user that no results were found -->
     <NoResult class="mt-4" />

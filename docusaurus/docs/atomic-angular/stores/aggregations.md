@@ -2,8 +2,6 @@
 title: Aggregations
 ---
 
-## Overview
-
 Each time a search is performed, the result's aggregations are stored in this store.
 It is thus easier to access this information directly than from the `Result` object returned by the backend.
 
@@ -19,7 +17,7 @@ Updates the state with the provided aggregations.
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| aggregations | Aggregation[]  | The new aggregations to update the state with.   |
+| `aggregations` | `Aggregation[]`  | The new aggregations to update the state with.   |
 
 ### updateAggregation()
 
@@ -31,8 +29,7 @@ Updates an aggregation in the store.
 
 | parameter    | type           | description                                      |
 |--------------|----------------|--------------------------------------------------|
-| aggregation  | Aggregation    | The aggregation to update the state with.        |
-
+| `aggregation`  | `Aggregation`    | The aggregation to update the state with.        |
 
 ### clear()
 
@@ -41,7 +38,6 @@ Clears the aggregations in the store by setting the `aggregations` property to a
   ```typescript
   clear(): void
   ```
-
 
 :::info
 This method uses the `patchState` function to update the state of the store.
@@ -55,8 +51,7 @@ Retrieves an aggregation by name or column.
   getAggregation(name: string, kind?: 'column' | 'name'): Aggregation
   ```
   
-
 | parameter | type   | description                                      |
 |-----------|--------|--------------------------------------------------|
-| name      | string | The name or column of the aggregation to retrieve.|
-| kind      | `column` \| `name` | The kind of the name parameter. Default is aggregation's __"name"__.|
+| `name`      | `string` | The name or column of the aggregation to retrieve.|
+| `kind`      | `column \| name` | The kind of the name parameter. Default is aggregation's __"name"__.|

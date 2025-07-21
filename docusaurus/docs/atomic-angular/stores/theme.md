@@ -2,8 +2,6 @@
 title: Theme
 ---
 
-## Overview
-
 This document provides an overview of the `ThemeStore` and its methods.  
 See [Theme](../theme) for more information.
 

@@ -1,7 +1,8 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 
-import { PreviewService } from '@sinequa/atomic-angular';
+import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
@@ -15,6 +16,21 @@ import { ButtonComponent } from '@sinequa/ui';
     <button variant="ghost" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
       <i class="fa-regular fa-magnifying-glass-minus shrink-0"></i>
     </button>
+
+    @if (hasAIDescription()) {
+      @if (showAIDescription()) {
+        <button variant="ghost" size="icon" [attr.title]="'preview.toggleAIDescription' | transloco" (click)="toggleAIDescription()">
+          <i class="fa-regular fa-sparkles shrink-0"></i>
+        </button>
+      } @else {
+        <button variant="ghost" size="icon" [attr.title]="'preview.toggleAIDescription' | transloco" (click)="toggleAIDescription()">
+          <span class="fa-stack shrink-0 items-center justify-center">
+            <i class="fa-regular fa-sparkles fa-stack-1x"></i>
+            <i class="fa-regular fa-slash fa-stack-1x"></i>
+          </span>
+        </button>
+      }
+    }
 
     @if (extracts()) {
       <button variant="ghost" size="icon" [attr.title]="'preview.toggleExtracts' | transloco" (click)="toggleExtracts()">
@@ -41,13 +57,30 @@ import { ButtonComponent } from '@sinequa/ui';
   `
 })
 export class PreviewActionsComponent {
-  protected readonly extracts = signal(true);
-  protected readonly entities = signal(false);
-
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly selectionStore = inject(SelectionStore);
+
+  protected readonly extracts = signal(true);
+  protected readonly entities = signal(false);
+  /**
+   * Signal to control the visibility of AI-generated descriptions.
+   * Initially set to false, indicating that the AI description is not shown.
+   */
+  protected readonly showAIDescription = signal(false);
+  /**
+   * Computed signal that checks if the article has an AI-generated description.
+   * It checks the flags of the article in the selection store to see if it includes 'ps'.
+   */
+  protected readonly hasAIDescription = signal(false);
 
   constructor() {
+    effect(() => {
+      const { article } = getState(this.selectionStore);
+      if (!article) return;
+      this.hasAIDescription.set(article.flags?.includes('ps') ?? false);
+    });
+
     const controller = new AbortController();
 
     window.addEventListener(
@@ -68,29 +101,40 @@ export class PreviewActionsComponent {
     this.destroyRef.onDestroy(() => controller.abort());
   }
 
-  public zoomIn(): void {
+  zoomIn(): void {
     this.previewService.zoomIn();
   }
 
-  public zoomOut(): void {
+  zoomOut(): void {
     this.previewService.zoomOut();
   }
 
+  toggleAIDescription() {
+    this.previewService.toggleAIDescription(!this.showAIDescription());
+    this.showAIDescription.set(!this.showAIDescription());
+  }
+
   toggleExtracts() {
-    const value = !this.extracts();
-    this.extracts.set(value);
-    if (value === true) {
-      this.entities.set(false);
-    }
-    this.previewService.toggle(this.extracts(), this.entities());
-    this.previewService.sendMessage({ action: 'unselect' });
+    this.toggle('extracts');
   }
 
   toggleEntities() {
-    const value = !this.entities();
-    this.entities.set(value);
+    this.toggle('entities');
+  }
+
+  /**
+   * Toggles the visibility of extracts or entities.
+   * If the specified type is already active, it will be deactivated.
+   * If the other type is active, it will be deactivated.
+   * @param type - The type to toggle ('extracts' or 'entities').
+   */
+  private toggle(type: 'extracts' | 'entities') {
+    const currentSignal = type === 'extracts' ? this.extracts : this.entities;
+    const otherSignal = type === 'extracts' ? this.entities : this.extracts;
+    const value = !currentSignal();
+    currentSignal.set(value);
     if (value === true) {
-      this.extracts.set(false);
+      otherSignal.set(false);
     }
     this.previewService.toggle(this.extracts(), this.entities());
     this.previewService.sendMessage({ action: 'unselect' });

@@ -55,8 +55,8 @@ export class PreviewHeaderComponent {
    * @param field field to filter on
    * @param value value from the filter
    */
-  onMetadataClick({ field, value }: { field: string; value: string }): void {
-    let filter: LegacyFilter = { field, value };
+  onMetadataClick({ filter, event }: { filter: LegacyFilter; event: Event }): void {
+    event.stopImmediatePropagation();
     this.queryParamStore.updateFilter(filter);
   }
 }

@@ -4,10 +4,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
-import { AppStore, PrincipalStore } from '@sinequa/atomic-angular';
+import { APP_FEATURES, AppStore, PrincipalStore } from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
-
-import { APP_FEATURES } from '../../tokens';
 
 @Component({
   selector: 'app-sidebar',

@@ -2,8 +2,6 @@
 title: AuthInterceptorFn
 ---
 
-## Overview
-
 Intercepts HTTP requests to add authentication headers and handle CSRF tokens.
 
 This interceptor checks if the user is logged in and adds necessary headers

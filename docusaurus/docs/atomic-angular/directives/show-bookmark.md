@@ -2,8 +2,6 @@
 title: ShowBookmark
 ---
 
-## Overview
-
 Directive that handles the behavior of showing a bookmark for an article.
 
 :::info

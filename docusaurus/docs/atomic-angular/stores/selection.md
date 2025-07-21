@@ -2,8 +2,6 @@
 title: Selection
 ---
 
-## Overview
-
 A store that manages the selection state of articles.
 
 ## Basic features
