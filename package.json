@@ -50,7 +50,7 @@
     "@sinequa/assistant": "3.9.1",
     "@sinequa/atomic": "^0.0.108",
     "@sinequa/atomic-angular": "^0.1.39",
-    "@sinequa/ui": "^0.1.7",
+    "@sinequa/ui": "^0.1.8",
     "@tailwindcss/postcss": "^4.1.3",
     "@tanstack/angular-query-experimental": "^5.40.0",
     "chart.js": "^4.4.3",
