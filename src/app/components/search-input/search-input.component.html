@@ -1,7 +1,8 @@
+<!-- [variant]="variant()" -->
 <SearchInput
   id="autocomplete-anchor"
   controls="search-suggestions"
-  [variant]="variant()"
+  [variant]="'default'"
   [class]="
     cn(
       'relative w-full transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
@@ -17,7 +18,6 @@
   (click)="inputClicked()">
   @if (showSave() && (value() !== '' || hasFilters())) {
     <button
-      variant="icon"
       size="xs"
       class="peer-disabled:opacity-50"
       [attr.title]="'searchInput.saveSearch' | transloco"
@@ -46,7 +46,6 @@
     </button>
   }
   <button
-    variant="icon"
     size="xs"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"

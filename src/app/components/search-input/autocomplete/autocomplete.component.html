@@ -86,8 +86,8 @@
   </ul>
 }
 @if (advancedSearch()) {
-  <MenuSeparator />
-  <button variant="inverse" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
+  <HorizontalDivider />
+  <button variant="primary" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
     <i class="fa-fw far fa-sliders"></i>
     {{ 'searchInput.advancedSearch' | transloco }}
   </button>

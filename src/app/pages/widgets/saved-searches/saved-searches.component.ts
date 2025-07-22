@@ -1,18 +1,11 @@
 import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 
-import { Router } from '@angular/router';
-import { getQueryParamsFromUrl, QueryParams } from '@sinequa/atomic';
-import { DrawerStackService, SavedSearchesService, type SavedSearch as S } from '@sinequa/atomic-angular';
-
-type SavedSearch = S & {
-  label: string;
-  filterCount?: number;
-  date?: string;
-  queryParams?: QueryParams;
-};
+import { getQueryParamsFromUrl } from '@sinequa/atomic';
+import { DrawerStackService, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'SavedSearches',
@@ -29,7 +22,7 @@ export class SavedSearchesComponent {
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
   readonly drawerOpened = signal(false);
-  protected readonly savedSearches = signal<SavedSearch[]>([]);
+  protected readonly savedSearches = signal<SearchItem[]>([]);
 
   private readonly sub = new Subscription();
 
@@ -52,12 +45,12 @@ export class SavedSearchesComponent {
           );
 
           return acc;
-        }, [] as SavedSearch[])
+        }, [] as SearchItem[])
       );
     });
   }
 
-  public onClick(savedSearch: SavedSearch): void {
+  public onClick(savedSearch: SearchItem): void {
     const queryParams = {
       q: savedSearch.queryParams?.text
     } as { q: string; f?: string };

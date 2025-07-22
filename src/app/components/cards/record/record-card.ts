@@ -133,8 +133,7 @@ export class RecordCard implements OnDestroy {
     }
   }
 
-  onMetadataClick({ field, value }: { field: string; value: string }): void {
-    let filter: LegacyFilter = { field, value };
+  onMetadataClick({ filter }: { filter: LegacyFilter; event: Event }): void {
     this.queryParamStore.updateFilter(filter);
   }
 }

@@ -3,15 +3,13 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { Router, provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
 import { appInitializerFn } from '@sinequa/atomic';
 import {
-  AGGREGATIONS_NAMES,
-  AGGREGATIONS_NAMES_PRESET_DEFAULT,
   ApplicationService,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
@@ -61,7 +59,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(appInitializerFn),
 
     // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => bootstrapApp(inject(Router), inject(ApplicationService), { createRoutes: true })),
+    provideAppInitializer(() => bootstrapApp(inject(ApplicationService), { createRoutes: true })),
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },
 

@@ -15,8 +15,8 @@ import {
   DrawerStackService,
   SearchInputComponent as InputComponent,
   QueryParamsStore,
-  SavedSearch,
   SavedSearchDialog,
+  SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
@@ -42,7 +42,7 @@ export class SearchInputComponent {
 
   readonly debounced = output<string>();
   readonly validated = output<string>();
-  readonly saved = output<SavedSearch | undefined>();
+  readonly saved = output<SearchItem | undefined>();
   readonly selected = output<HTMLElement | null>();
 
   private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');

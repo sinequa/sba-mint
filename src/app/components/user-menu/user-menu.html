@@ -38,7 +38,7 @@
     </menuitem>
 
     @if (isOverridingUser()) {
-      <MenuSeparator />
+      <HorizontalDivider />
     }
 
     @if (allowUserOverride() && !isOverridingUser()) {
@@ -65,7 +65,7 @@
       <Switch [(toggled)]="toggled" />
     </menuitem>
 
-    <MenuSeparator />
+    <HorizontalDivider />
 
     <menuitem (click)="openSinequa()" class="justify-between">
       <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />

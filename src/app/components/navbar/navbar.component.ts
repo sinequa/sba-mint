@@ -14,9 +14,9 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearch,
   SavedSearchesComponent,
-  SavedSearchesService
+  SavedSearchesService,
+  SearchItem
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
@@ -126,7 +126,7 @@ export class NavbarComponent {
   /**
    * Occurs when the user clicks on the save button
    */
-  protected saveSearch(savedSearch?: SavedSearch): void {
+  protected saveSearch(savedSearch?: SearchItem): void {
     if (savedSearch) {
       const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
       if (index !== -1) {
