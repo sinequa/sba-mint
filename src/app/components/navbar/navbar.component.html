@@ -34,7 +34,7 @@
             </PopoverContent>
           </Popover>
         } @else {
-          <button size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+          <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
         }

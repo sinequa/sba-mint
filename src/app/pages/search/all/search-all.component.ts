@@ -27,12 +27,13 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn } from '@sinequa/ui';
+import { cn } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 import { APP_FEATURES } from '../../../tokens';
+import { ButtonComponent } from '../../../ui/button/button';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {

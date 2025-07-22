@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
-import { PageHeaderComponent } from '@sinequa/ui';
-
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
+import { PageHeaderComponent } from '../../ui/page-header/page-header';
 
 @Component({
   selector: 'app-search-layout',
@@ -13,11 +12,11 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   template: `
     <app-sidebar class="fixed top-0 h-full" />
 
-    <PageHeader class="fixed top-0 z-100 ml-8 w-full bg-white">
+    <PageHeader class="h-20" position="fixed">
       <app-navbar class="layout-search py-4" />
     </PageHeader>
 
-    <div class="mt-16">
+    <div class="mt-20">
       <router-outlet />
     </div>
   `,

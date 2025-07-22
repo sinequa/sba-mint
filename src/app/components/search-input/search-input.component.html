@@ -18,6 +18,7 @@
   (click)="inputClicked()">
   @if (showSave() && (value() !== '' || hasFilters())) {
     <button
+      variant="ghost"
       size="xs"
       class="peer-disabled:opacity-50"
       [attr.title]="'searchInput.saveSearch' | transloco"
@@ -46,6 +47,7 @@
     </button>
   }
   <button
+    variant="ghost"
     size="xs"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"

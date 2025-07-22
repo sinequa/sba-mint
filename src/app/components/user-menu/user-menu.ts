@@ -6,20 +6,15 @@ import { getState } from '@ngrx/signals';
 
 import { logout, setGlobalConfig } from '@sinequa/atomic';
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-import {
-  AvatarComponent,
-  AvatarFallbackComponent,
-  AvatarImageComponent,
-  ChevronRightIconComponent,
-  FlagEnglishIconComponent,
-  FlagFrenchIconComponent,
-  HorizontalDividerComponent,
-  MenuComponent,
-  MenuContentComponent,
-  MenuItemComponent,
-  SwitchComponent,
-  UserRoundIconComponent
-} from '@sinequa/ui';
+import { ChevronRightIconComponent, FlagEnglishIconComponent, FlagFrenchIconComponent, UserRoundIconComponent } from '@sinequa/ui';
+import { AvatarComponent } from '../../ui/avatar/avatar';
+import { AvatarFallbackComponent } from '../../ui/avatar/avatar-fallback';
+import { AvatarImageComponent } from '../../ui/avatar/avatar-image';
+import { HorizontalDividerComponent } from '../../ui/divider/horizontal-divider';
+import { MenuComponent } from '../../ui/menu/menu';
+import { MenuContentComponent } from '../../ui/menu/menu-content';
+import { MenuItemComponent } from '../../ui/menu/menu-item';
+import { SwitchComponent } from '../../ui/switch/switch';
 
 @Component({
   selector: 'app-user-menu',
@@ -59,7 +54,7 @@ export class UserMenuComponent {
     return principal;
   });
 
-  readonly toggled = signal<boolean>(false);
+  readonly isDarkMode = signal<boolean>(Boolean(localStorage.getItem('use-dark-mode')));
 
   readonly initials = computed(() => {
     const principal = this.user();
@@ -77,8 +72,10 @@ export class UserMenuComponent {
   constructor() {
     // Handle dark mode toggle
     effect(() => {
-      if (this.toggled()) document.documentElement.classList.add('dark');
+      if (this.isDarkMode()) document.documentElement.classList.add('dark');
       else document.documentElement.classList.remove('dark');
+
+      localStorage.setItem('use-dark-mode', String(this.isDarkMode()));
     });
   }
 

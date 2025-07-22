@@ -127,7 +127,7 @@
   }
   .text-muted {
     /* Muted text color - adjust color as needed */
-    @apply text-gray-500;
+    @apply text-muted;
   }
   .text-end {
     @apply text-right; /* Tailwind uses text-right */

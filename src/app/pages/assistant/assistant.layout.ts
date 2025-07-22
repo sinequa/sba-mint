@@ -9,12 +9,12 @@ import { CCApp, fetchQuery } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../tokens';
+import { toast } from 'ngx-sonner';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { toast } from 'ngx-sonner';
+import { APP_FEATURES } from '../../tokens';
+import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -34,6 +34,7 @@ import { toast } from 'ngx-sonner';
     <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
+
     <div class="mt-[65px] ml-18 flex h-full">
       <div
         [class]="

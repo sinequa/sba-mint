@@ -18,8 +18,11 @@ import {
   SavedSearchesService,
   SearchItem
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+import { cn } from '@sinequa/ui';
 
+import { ButtonComponent } from '../../ui/button/button';
+import { PopoverComponent } from '../../ui/popover/popover';
+import { PopoverContentComponent } from '../../ui/popover/popover-content';
 import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { UserMenuComponent } from '../user-menu/user-menu';

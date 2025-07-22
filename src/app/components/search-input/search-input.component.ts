@@ -19,9 +19,11 @@ import {
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import { cn, DialogService, SendHorizontalIconComponent } from '@sinequa/ui';
 
 import { APP_FEATURES } from '../../tokens';
+import { ButtonComponent } from '../../ui/button/button';
+import { InputSearchVariants } from '../../ui/input/search';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({

@@ -1,7 +1,7 @@
 <menu>
   <Avatar class="cursor-pointer">
     <AvatarImage src="" width="44" height="44" alt="avatar" />
-    <AvatarFallback class="text-muted-foreground bg-gray-200 text-sm font-semibold">
+    <AvatarFallback>
       @if (initials()) {
         <span>{{ initials() }}</span>
       } @else {
@@ -53,8 +53,8 @@
       </menuitem>
     }
 
-    <menuitem (click)="toggled.set(!toggled())">
-      @if (toggled()) {
+    <menuitem (click)="isDarkMode.set(!isDarkMode())">
+      @if (isDarkMode()) {
         <i class="fa-fw fal fa-sun-bright text-[16px]"></i>
         <span class="me-auto">{{ 'userMenu.switchToLightMode' | transloco }}</span>
       } @else {
@@ -62,7 +62,7 @@
         <span class="me-auto">{{ 'userMenu.switchToDarkMode' | transloco }}</span>
       }
 
-      <Switch [(toggled)]="toggled" />
+      <Switch [(toggled)]="isDarkMode" />
     </menuitem>
 
     <HorizontalDivider />
