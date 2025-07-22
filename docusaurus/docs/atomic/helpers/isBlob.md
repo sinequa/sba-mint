@@ -6,11 +6,11 @@ Checks if the given value is a Blob.
 
 | parameter | type | description |
 | --- | --- | --- |
-| value | `unknown` | The value to check |
+| `value` | `unknown` | The value to check |
 
 __Returns__ `boolean`: True if the value is a Blob, false otherwise.
 
-## Example
+#### Example
 
 ```js title="is-blob.js"
 import { isBlob } from "@sinequa/atomic";

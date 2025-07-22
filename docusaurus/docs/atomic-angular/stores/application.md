@@ -2,8 +2,6 @@
 title: Application
 ---
 
-## Overview
-
 This is our Application's store. Here we can manage differents flags used by __"Mint"__
 
 :::info
@@ -22,7 +20,7 @@ update(state: Partial<ApplicationState>): void
 
 | Parameter | Type                    | Description                                      |
 |-----------|-------------------------|--------------------------------------------------|
-| state     | Partial\<ApplicationState\> | The partial state object containing properties to update. |
+| `state`     | `Partial<ApplicationState>` | The partial state object containing properties to update. |
 
 ### updateReadyState()
 
@@ -34,7 +32,7 @@ updateReadyState(value: boolean = true): void
 
 | Parameter | Type     | Description                           |
 |-----------|----------|---------------------------------------|
-| value     | boolean  | Optional. The ready state to set. Defaults to true. |
+| `value`     | `boolean`  | Optional. The ready state to set. Defaults to true. |
 
 ## Extracts features
 
@@ -52,8 +50,8 @@ updateExtracts(id: string, extracts: Extract[]): void
 
 | Parameter | Type     | Description                          |
 |-----------|----------|--------------------------------------|
-| id        | string   | The ID of the extracts to update.    |
-| extracts  | Extract[]| The extracts to set for the given ID.|
+| `id`        | `string`   | The ID of the extracts to update.    |
+| `extracts`  | `Extract[]`| The extracts to set for the given ID.|
 
 ### getExtracts()
 
@@ -65,4 +63,4 @@ getExtracts(id: string): Extract[]
 
 | Parameter | Type     | Description                          |
 |-----------|----------|--------------------------------------|
-| id        | string   | The ID of the extracts to retrieve.  |
+| `id`        | `string`   | The ID of the extracts to retrieve.  |

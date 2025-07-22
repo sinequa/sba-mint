@@ -2,8 +2,6 @@
 title: Pager
 ---
 
-## Overview
-
 The `Pager` component is an Angular component that handles pagination, using results from the Search service.
 
 ### Properties

@@ -2,9 +2,11 @@
 title: Query
 ---
 
-## Overview
+The Query API provides functions for fetching data from the backend. These functions allow you to execute single or
+ multiple queries, retrieve results, and optionally record audit events. The API supports both individual and
+ bulk query operations, enabling efficient data retrieval for various use cases.
 
-The Query API provides functions for fetching data from the backend. These functions allow you to execute single or multiple queries, retrieve results, and optionally record audit events. The API supports both individual and bulk query operations, enabling efficient data retrieval for various use cases.
+## Functions
 
 ### fetchQuery()
 
@@ -16,9 +18,9 @@ __Returns__ A promise that resolves to the fetched data.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| query | `string` | The query string to be executed on the backend |
-| audit | `AuditEvents` | Optional. audit event to be recorded with the save action. |
-| queryItentData | `QueryIntentData` | Optional. Additional data to be sent with the query for intent processing |
+| `query` | `string` | The query string to be executed on the backend |
+| `audit` | `AuditEvents` | Optional. audit event to be recorded with the save action. |
+| `queryIntentData` | `QueryIntentData` | Optional. Additional data to be sent with the query for intent processing |
 
 __Returns__ A promise that resolves to the query results.
 
@@ -45,9 +47,9 @@ Fetches multiple queries in bulk from the backend.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| queries | `Query[]` | An array of query objects to be executed on the backend |
-| mode | `"parallel"` | Optional. Specifies the execution mode. If set to "parallel", queries are executed concurrently. Default is "parallel". |
-| auditEvents | `AuditEvents` | Optional. Audit events to be recorded with the bulk query action. |
+| `queries` | `Query[]` | An array of query objects to be executed on the backend |
+| `mode` | `"parallel"` | Optional. Specifies the execution mode. If set to "parallel", queries are executed concurrently. Default is "parallel". |
+| `auditEvents` | `AuditEvents` | Optional. Audit events to be recorded with the bulk query action. |
 
 __Returns__ A promise that resolves to an array of query results, corresponding to the input queries.
 

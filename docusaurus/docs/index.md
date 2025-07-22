@@ -1,13 +1,15 @@
 ---
 layout: default
 title: Welcome to Mint 🍵
+sidebar_label: 📣 Welcome to Mint
 sidebar_position: 1
 description: "Sinequa's SBA Framework Documentation"
 slug: /
 ---
 
-
-Mint is a powerful application boilerplate designed to streamline the development of web applications integrated with Sinequa services. It provides a robust set of tools and features to help developers build efficient, secure, and highly configurable applications.
+Mint is a powerful application boilerplate designed to streamline the development of web applications integrated
+with Sinequa services. It provides a robust set of tools and features to help developers build efficient, secure,
+and highly configurable applications.
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
@@ -36,15 +38,15 @@ Node.js v20+ is required to run the project.
 ## General structure of the application
 
 ```ascii
-📁 app                // Contains files related to the application
-├── 📁 components     // Groups components specific to the application
-├── 📁 pages          // Contains components related to pages
-├── 📁 registry       // Contains the registry of components used in the application (subject to change)
-📁 assets             // Contains static resources like images, global CSS files, and other necessary files
-                      // for the application
-📁 css-overrides      // Contains CSS overrides (mandatory) to use the Assistant component.
-📁 environments       // Contains environment-specific configuration files to manage environment variables
-                       // and other deployment-specific configurations
+📁 app                # Contains files related to the application
+├── 📁 components     # Groups components specific to the application
+├── 📁 pages          # Contains components related to pages
+├── 📁 registry       # Contains the registry of components used in the application (subject to change)
+📁 assets             # Contains static resources like images, global CSS files, and other necessary files
+                        for the application
+📁 css-overrides      # Contains CSS overrides (mandatory) to use the Assistant component.
+📁 environments       # Contains environment-specific configuration files to manage environment variables
+                        and other deployment-specific configurations
 ```
 
 ### 📁 app
@@ -73,13 +75,12 @@ This is where the application pages are located as described in the routes file:
 There are currently 4 main pages:
 
 - **Home**, the home page
-- **Search**, the search page. It is further divided into several other pages by existing tabs.
-  - **All**, which contains the component(s) that will be used to display search results for the "All" tab.
+- [**Search**](/mint/features/search), the search page. It is further divided into several other pages by existing tabs.
+  - [**All**](/mint/features/search/search-all.mdx), which contains the component(s) that will be used to display search results for the "All" tab.
   - Other tabs can be added as needed.
 - **Widgets**, which contains the widgets used in the application.
 - **Assistant**, which contains the layout for the assistant feature. This route needs a specific configuration to be enabled.
 
-```ascii
 ```ascii
 📂 pages
 ├── 📁 assistant/               # Contains the layout for the assistant feature.

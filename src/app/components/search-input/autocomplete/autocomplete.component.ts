@@ -1,11 +1,10 @@
-import { KeyValuePipe } from '@angular/common';
-import { Component, computed, inject, InjectionToken, input, output, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, combineLatest, map, of, switchMap } from 'rxjs';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
-import { Suggestion } from '@sinequa/atomic';
+import { Suggestion as S } from '@sinequa/atomic';
 import {
   AppStore,
   AuditService,
@@ -37,10 +36,18 @@ const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>
   })
 });
 
+type Suggestion = Partial<S> & {
+  $isDivider?: boolean;
+  $isTitle?: boolean;
+};
+
+export type ActiveSuggestion = { id: string; item: S } | undefined;
+
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [KeyValuePipe, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
+  imports: [HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')],
   styles: [
     `
       ul {
@@ -51,9 +58,11 @@ const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>
 })
 export class AutocompleteComponent {
   readonly text = input<string>('');
-  readonly onClick = output<Suggestion>();
+  readonly onClick = output<S>();
+  readonly activeDescendant = output<ActiveSuggestion>();
 
   readonly wasSearchClicked = signal(false);
+  readonly currentSuggestIndex = signal(-1);
 
   readonly autocompleteService = inject(AutocompleteService);
   readonly auditService = inject(AuditService);
@@ -65,6 +74,8 @@ export class AutocompleteComponent {
   readonly autocompleteCategories = inject(AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES);
   // Icons mapping for each category
   readonly autocompleteIcons = inject(AUTOCOMPLETE_CATEGORIES_ICONS);
+  // used to scroll the selected suggest in view
+  private readonly elRef = inject(ElementRef);
 
   protected readonly overlayOpen = this.autocompleteService.opened;
 
@@ -76,6 +87,7 @@ export class AutocompleteComponent {
 
   readonly suggestions = toSignal(
     combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)]).pipe(
+      tap(() => this.currentSuggestIndex.set(-1)),
       switchMap(([testText]) => {
         const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
 
@@ -98,7 +110,24 @@ export class AutocompleteComponent {
           return this.autocompleteCategories.indexOf(a.category) - this.autocompleteCategories.indexOf(b.category);
         })
       ),
-      map(items => Object.groupBy(items, ({ category }) => category))
+      map(items =>
+        items.reduce<Suggestion[]>((acc, curr) => {
+          if (acc.length > 0) {
+            const last = acc.at(-1);
+
+            // add a divider before specific categories
+            if (!last?.$isDivider && last?.category !== curr.category) {
+              acc.push({ $isDivider: true });
+              acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
+            }
+          } else {
+            acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
+          }
+
+          acc.push({ ...curr, $isDivider: false });
+          return acc;
+        }, [])
+      )
     )
   );
 
@@ -107,9 +136,24 @@ export class AutocompleteComponent {
     private eventManager: EventManager
   ) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
+
+    effect(() => {
+      if (!this.suggestions() || this.suggestions()!.length === 0) return;
+
+      const index = this.currentSuggestIndex();
+
+      if (index < 0 || index >= this.suggestions()!.length) this.activeDescendant.emit(undefined);
+      else
+        this.activeDescendant.emit({
+          id: `search-suggestion-${index}`,
+          item: this.suggestions()![index] as S
+        });
+    });
   }
 
-  public itemClicked(item: Suggestion): void {
+  public itemClicked(item: Suggestion | undefined): void {
+    if (!item || item.$isDivider || item.$isTitle) return;
+
     this.auditService.notify({
       type: 'Search_Autocomplete',
       detail: {
@@ -117,11 +161,36 @@ export class AutocompleteComponent {
         category: item.category
       }
     });
-    this.onClick.emit(item);
+    this.onClick.emit(item as S);
   }
 
   openAdvancedSearch(): void {
     this.overlayOpen.set(false);
     this.drawerStack.open(DrawerAdvancedFiltersComponent);
   }
+
+  // #region Keyboard navigation
+
+  selectSuggestion = () => this.itemClicked(this.suggestions()?.[this.currentSuggestIndex()]);
+  nextSuggestion = () => this.findSuggestion(1);
+  previousSuggestion = () => this.findSuggestion(-1);
+
+  private findSuggestion(direction: number): void {
+    if (!this.suggestions() || this.suggestions()!.length === 0) return;
+
+    let index = this.currentSuggestIndex();
+
+    do {
+      index += direction;
+      if (index < 0) index = this.suggestions()!.length - 1;
+      else if (index >= this.suggestions()!.length) index = 0;
+    } while (this.suggestions()![index].$isDivider || this.suggestions()![index].$isTitle);
+
+    this.currentSuggestIndex.set(index);
+    this.elRef.nativeElement.querySelector(`#search-suggestion-${index}`)?.scrollIntoView({
+      block: 'nearest'
+    });
+  }
+
+  // #endregion Keyboard navigation
 }

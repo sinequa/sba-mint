@@ -1,0 +1,119 @@
+---
+title: CSS Variables Reference
+---
+export const Color = ({children, value}) => (
+  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+    <span style={{ backgroundColor: value, border: '1px solid black', padding: '0.5rem', height: '16px', width: '16px' }}></span>
+    {children}
+  </div>
+)
+
+CSS variables (also known as custom properties) are a powerful feature of CSS that allow you to define reusable values throughout
+your stylesheets. They enable you to create a consistent design system and make it easier to manage and update your styles.
+
+## Variables
+
+### Typography
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--font-display` | 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif' | Main display font family |
+| `--text-xxs` | 0.625rem | Extra small text size |
+
+### Layout & Stacking
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--zindex-filter` | 100 | Z-index level for filters |
+| `--zindex-backdrop` | 1000 | Z-index level for modal backdrop |
+| `--zindex-drawer` | 2000 | Z-index level for side drawers |
+| `--zindex-tooltip` | 3000 | Z-index level for tooltips |
+| `--cdk-z-index-overlay` | 5000 | Z-index for CDK overlays |
+| `--panel-max-height` | 100% | Maximum panel height |
+
+### Branding
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--logo-small` | url('assets/logo/small.svg') | Path to small logo |
+| `--logo-large` | url('assets/logo/large.svg') | Path to large logo |
+| `--logo-alt-text` | 'Sinequa logo' | Alternative text for logo |
+
+### Colors - Base
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--color-background` | <Color value="#ffffff">#ffffff</Color> | Main background color |
+| `--color-foreground` | <Color value="#23272e">#23272e</Color> | Main text color |
+| `--color-border` | <Color value="#f6f7f9">#f6f7f9</Color> | Border color |
+| `--color-input` | <Color value="#d5d9e2">#d5d9e2</Color> | Input field color |
+| `--color-ring` | <Color value="#1a73e8">#1a73e8</Color> | Focus ring color |
+
+### Colors - Components
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--color-card` | <Color value="#ffffff">#ffffff</Color> | Card background color |
+| `--color-card-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Card text color |
+| `--color-popover` | <Color value="#ffffff">#ffffff</Color> | Popover background color |
+| `--color-popover-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Popover text color |
+| `--color-backdrop` | <Color value="rgba(0, 0, 0, 0.4)">rgba(0, 0, 0, 0.4)</Color> | Semi-transparent backdrop color |
+
+### Colors - Interactive
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--color-primary` | <Color value="#0084ff">#0084ff</Color> | Primary color |
+| `--color-primary-hover` | <Color value="#0056ff">#0056ff</Color> | Primary color hover state |
+| `--color-primary-active` | <Color value="#0040bf">#0040bf</Color> | Primary color active state |
+| `--color-primary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on primary background |
+| `--color-secondary` | <Color value="#526077">#526077</Color> | Secondary color |
+| `--color-secondary-hover` | <Color value="#434e61">#434e61</Color> | Secondary color hover state |
+| `--color-secondary-active` | <Color value="#3a4252">#3a4252</Color> | Secondary color active state |
+| `--color-secondary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on secondary background |
+| `--color-muted` | <Color value="#f6f7f9">#f6f7f9</Color> | Muted state color |
+| `--color-muted-foreground` | <Color value="#8695aa">#8695aa</Color> | Muted text color |
+| `--color-accent` | <Color value="#f2f2f2">#f2f2f2</Color> | Accent color |
+| `--color-accent-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Text color on accent background |
+
+### Colors - Status
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--color-destructive` | <Color value="#ff2a1d">#ff2a1d</Color> | Color for destructive actions |
+| `--color-destructive-hover` | <Color value="#c8180d">#c8180d</Color> | Destructive hover state |
+| `--color-destructive-active` | <Color value="#a5180f">#a5180f</Color> | Destructive active state |
+| `--color-destructive-disable` | <Color value="#ffc8c5">#ffc8c5</Color> | Destructive disabled state |
+| `--color-destructive-foreground` | <Color value="#ffffff">#ffffff</Color> | Text on destructive background |
+| `--color-alert` | <Color value="#ff2a1d">#ff2a1d</Color> | Alert color |
+| `--color-success` | <Color value="#2ed73f">#2ed73f</Color> | Success color |
+| `--color-highlight` | <Color value="#fff7ab">#fff7ab</Color> | Highlight color |
+
+### Effects
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--drawer-box-shadow` | -10px 0px 10px rgba(0, 0, 0, 0.1) | Shadow for side drawers |
+| `--shadow-dropdown` | 6px 4px 20px 0px rgba(0, 0, 0, 0.2) | Shadow for dropdowns |
+| `--shadow-article` | 4px 4px 12px 0px rgba(0, 0, 0, 0.15) | Shadow for articles |
+| `--backdrop` | rgba(0, 0, 0, 0.4) | Modal backdrop color |
+| `--backdrop-filter` | blur(2px) | Blur effect for modal backdrop |
+| `--animate-progress` | progress 5s linear infinite | Progress bar animation |
+
+## Chat Variables
+
+| Variable | Value(s) | Description |
+|----------|----------|-------------|
+| `--ast-reference-expanded-hover-bg` | <Color value="#fff9">#fff9</Color> | Background color for expanded references on hover |
+| `--ast-input-bg` | <Color value="white">white</Color>, <Color value="#f8f8f8">#f8f8f8</Color> | Background color for chat input area |
+| `--ast-secondary-bg` | <Color value="#ffeab9">#ffeab9</Color> | Secondary background color for assistant messages |
+| `--ast-user-font-weight` | 600 | Font weight for user messages |
+| `--ast-primary-bg` | white | Primary background color for chat messages |
+| `--ast-size-3` | 1.5rem | Base size for chat elements |
+| `--text-xxs` | 0.625rem | Extra small text size for chat interface |
+| `--zindex-drawer-chat` | 2500 | Z-index for chat drawer |
+| `--color-primary` | <Color value="#0084ff">#0084ff</Color> | Primary color for interactive elements |
+| `--color-primary-hover` | <Color value="#0056ff">#0056ff</Color> | Hover state for primary interactive elements |
+| `--color-primary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on primary background |
+| `--color-muted` | <Color value="#f6f7f9">#f6f7f9</Color> | Background color for muted elements |
+| `--color-accent-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Text color on accent background |

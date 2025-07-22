@@ -1,10 +1,10 @@
 ---
-title: Query Intent Service
+title: Query Intent
 ---
 
-## Overview
-
 The `QueryIntentService` is responsible for analyzing queries to identify their intent. It maintains a cache to prevent analyzing the same query multiple times.
+
+## Functions
 
 ### getQueryIntent()
 

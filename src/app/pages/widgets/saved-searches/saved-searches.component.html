@@ -29,13 +29,13 @@
             }
           </span>
 
-          <button class="invisible text-red-500 group-hover:visible" (click)="$event.stopPropagation(); onDelete($index)">
-            <i class="fa-fw far fa-trash" aria-hidden></i>
+          <button class="invisible text-red-500 group-hover:visible hover:scale-125 hover:cursor-pointer" (click)="$event.stopPropagation(); onDelete($index)">
+            <i class="fa-fw far fa-trash-can" aria-hidden></i>
           </button>
         </li>
       } @empty {
         <li class="no-records">
-          {{ 'saved-searches.noSavedSearches' | transloco }}
+          {{ 'savedSearches.noSavedSearches' | transloco }}
         </li>
       }
     </ul>

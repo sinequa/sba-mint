@@ -3,8 +3,6 @@ title: App
 sidebar_position: 1
 ---
 
-## Overview
-
 This module provides functionality for initializing and retrieving application-related information. It allows users to:
 
 - Set up global configurations for the application
@@ -12,7 +10,10 @@ This module provides functionality for initializing and retrieving application-r
 - Retrieve the current application object and its settings
 - Access authentication-related information
 
-These operations enable efficient application setup, configuration management, and access to crucial app-related data, enhancing the overall functionality and user experience of the application.
+These operations enable efficient application setup, configuration management, and access to crucial app-related data,
+enhancing the overall functionality and user experience of the application.
+
+## Functions
 
 ### appInitializerFn()
 
@@ -21,7 +22,7 @@ Initializes the application by setting the global configuration and fetching app
 __Returns__ A promise that resolves to the application's initialization function.
 
 :::tip
-Call this function once in your application to automatically [configure the app](../configurations#globalconfig) with the pre-login data coming from the server.
+Call this function once in your application to automatically [configure the app](../features/configurations#globalconfig) with the pre-login data coming from the server.
 :::
 
 #### Example

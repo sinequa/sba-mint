@@ -1,15 +1,16 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, effect, inject, input, signal, Type } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, Subscription, tap } from 'rxjs';
+import { lastValueFrom, map, tap } from 'rxjs';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
+  APP_FEATURES,
   AppStore,
   DidYouMeanComponent,
   DrawerStackService,
@@ -19,8 +20,8 @@ import {
   NoResultComponent,
   PrincipalStore,
   QueryParamsStore,
+  QueryService,
   SearchFeedbackComponent,
-  SearchService,
   SelectionService,
   SortingChoice,
   SortSelectorComponent,
@@ -29,10 +30,10 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn } from '@sinequa/ui';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
-import { APP_FEATURES } from '../../../tokens';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -84,24 +85,8 @@ type QueryParamsProps = {
 export class SearchAllComponent {
   cn = cn;
 
-  // input url bindings
-  protected readonly q = input<string>(); // text
-  protected readonly t = input<string>(); // tab
-  protected readonly b = input<string>(); // basket
-  protected readonly s = input<string>(); // sort
-  protected readonly f = input<string>(); // filters
-  protected readonly n = input<string>(); // query param
-
-  protected readonly drawerOpened = signal(false);
-
-  protected readonly result = signal<Result | undefined>(undefined);
-  protected readonly queryText = signal<string>('');
-
-  // the Assistant is expanded and visible by default
-  protected readonly assistantCollapsed = signal<boolean>(true);
-  protected readonly showAssistant = signal<boolean>(false);
-
-  protected readonly searchService = inject(SearchService);
+  // all injected services and stores
+  protected readonly queryService = inject(QueryService);
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
@@ -115,17 +100,29 @@ export class SearchAllComponent {
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
 
+  // input url bindings
+  protected readonly q = input<string>(); // text
+  protected readonly t = input<string>(); // tab
+  protected readonly b = input<string>(); // basket
+  protected readonly s = input<string>(); // sort
+  protected readonly f = input<string>(); // filters
+  protected readonly n = input<string>(); // query param
+  protected readonly id = input<string>(); // record.id
+
+  // all signals used in the component
+  protected readonly drawerOpened = signal(false);
+
+  protected readonly result = signal<Result | undefined>(undefined);
+  protected readonly queryText = signal<string>('');
+  protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
+
+  // the Assistant is expanded and visible by default
+  protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly showAssistant = signal<boolean>(false);
+
+  // the aggregations are used to display the filters in the UI
+  // and are updated when the query is successful
   protected aggregations: Aggregation[];
-
-  protected readonly sub = new Subscription();
-
-  currentKeys = signal<QueryParams | undefined>(undefined);
-
-  // get the id from the query params store to open the drawer with the preview of the article
-  id = computed(() => {
-    const state = getState(this.queryParamsStore);
-    return state.id;
-  });
 
   // the query must be retriggered when the user override is active
   userOverrideActive = computed(() => {
@@ -144,7 +141,7 @@ export class SearchAllComponent {
       const q = this.queryParamsStore.getQuery();
 
       const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket } as Query;
-      this.beforeSearch(query);
+      this.assistantQuery = { ...this.assistantQuery, ...query };
 
       // Add the current search to the user settings when the text is not empty
       if (query.text && query.text !== '') {
@@ -152,10 +149,13 @@ export class SearchAllComponent {
       }
 
       return lastValueFrom(
-        this.searchService.getResult(query).pipe(
+        this.queryService.search(query).pipe(
           tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
           map(result => {
-            return this.updateArticleType(result);
+            result.records?.map((article: Article) => {
+              return { ...article, value: article.title, type: 'default' };
+            });
+            return result;
           }),
           map(result => {
             // If the id is set, open the drawer with the preview of the article
@@ -246,18 +246,36 @@ export class SearchAllComponent {
     }
     return `search-results-assistant`;
   });
-  readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
+  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
   readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true);
   assistantQuery: Query = { name: 'assistant' };
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
 
-  constructor() {
+  constructor(destroyRef: DestroyRef) {
     // Update the query params store with the filters from the query params
     // This allows Browser back/forward to work correctly
     effect(() => {
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
       this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.n() });
+    });
+
+    // Update the URL with the query params
+    effect(() => {
+      this.hideFeedback.set(false);
+
+      const queryParams: QueryParamsProps = {};
+      const { text, filters = [], page, sort, tab, basket, name } = getState(this.queryParamsStore);
+
+      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
+      queryParams.p = page;
+      queryParams.s = sort;
+      queryParams.t = tab;
+      queryParams.q = text;
+      queryParams.b = basket;
+      queryParams.n = name;
+
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
     });
 
     // Update the URL with the query params
@@ -301,24 +319,23 @@ export class SearchAllComponent {
       }
     });
 
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
+    effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
+
+    this.drawerStack.isOpened.pipe(takeUntilDestroyed(destroyRef)).subscribe(state => this.drawerOpened.set(state));
 
     this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
 
-    effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-    this.aggregationsStore.clear();
+    // When the component is destroyed, clear the aggregations store
+    // to avoid memory leaks and ensure that the aggregations are reset
+    destroyRef.onDestroy(() => this.aggregationsStore.clear());
   }
 
   nextPage() {
     this.query.fetchNextPage();
   }
 
-  handleKeydownEnter(e: KeyboardEvent) {
-    if (isNotInputEvent(e)) {
+  handleKeydownEnter(e: Event) {
+    if (isNotInputEvent(e as KeyboardEvent)) {
       e.stopImmediatePropagation(); // required for the drawer to open properly
     }
   }
@@ -329,16 +346,15 @@ export class SearchAllComponent {
   }
 
   onSort(sort: SortingChoice): void {
-    this.queryParamsStore.patch({ sort: sort.name });
-    this.searchService.search([], {
-      audit: {
-        type: 'Search_Sort',
-        detail: {
-          sort: sort.name,
-          orderByClause: sort.orderByClause
-        }
+    const audit = {
+      type: 'Search_Sort',
+      detail: {
+        sort: sort.name,
+        orderByClause: sort.orderByClause
       }
-    });
+    };
+    this.queryService.audit = audit;
+    this.queryParamsStore.patch({ sort: sort.name }, audit);
   }
 
   getArticleType(docType?: string): Type<unknown> {
@@ -365,24 +381,7 @@ export class SearchAllComponent {
     this.usersettingsStore.updateAssistantCollapsed(!this.assistantCollapsed());
   }
 
-  /**
-   * Updates the article type for each record in the result.
-   *
-   * This method maps over the `records` array in the `result` object and updates each
-   * `article` by adding a `value` property set to the `article.title` and a `type` property
-   * set to `'default'`. The updated `result` object is then returned.
-   *
-   * @param {Result} result - The result object containing an array of records to be updated.
-   * @returns {Result} The updated result object with modified article records.
-   */
-  protected updateArticleType(result: Result) {
-    result.records?.map((article: Article) => {
-      return { ...article, value: article.title, type: 'default' };
-    });
-    return result;
-  }
-
-  protected beforeSearch(query: Query): void {
-    this.assistantQuery = { ...this.assistantQuery, ...query };
+  onClearFilters(): void {
+    this.router.navigate(['/search'], { queryParams: {} });
   }
 }

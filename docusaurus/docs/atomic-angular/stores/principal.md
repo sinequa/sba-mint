@@ -2,8 +2,6 @@
 title: Principal
 ---
 
-## Overview
-
 Methods, and computed properties related to the principal.
 
 ## Computed values

@@ -2,15 +2,16 @@
 title: Audit
 ---
 
-
-## Overview
-
-The Audit module provides essential functions for managing audit-related activities in your application. These functions allow you to:
+The Audit module provides essential functions for managing audit-related activities in your application.  
+These functions allow you to:
 
 - Send audit events to the server for logging and tracking purposes
 - Enhance existing data objects with additional audit information
 
-By utilizing these capabilities, you can maintain comprehensive audit trails, track user actions, and enrich your application's data with valuable context for auditing and analysis.
+By utilizing these capabilities, you can maintain comprehensive audit trails, track user actions, and enrich your
+application's data with valuable context for auditing and analysis.
+
+## Functions
 
 ### notify()
 
@@ -18,7 +19,7 @@ Notifies the server about audit events.
 
 | parameter | type | description |
 | --- | --- | --- |
-| auditEvents | `AuditEvents` | The audit events to be sent to the server |
+| `auditEvents` | `AuditEvents` | The audit events to be sent to the server |
 
 __Returns__ A promise that resolves to the updated audit events.
 
@@ -48,7 +49,7 @@ Adds additional audit information to the provided body object. As the _`body`_ r
 
 | parameter | type | description |
 | --- | --- | --- |
-| body | `unknown` | Reference to the body object to add audit information to |
+| `body` | `unknown` | Reference to the body object to add audit information to |
 
 :::caution
 _`body`_ is modified via its reference.  
@@ -84,7 +85,7 @@ Handle legacy calls where auditEvents is either an AuditEvent, AuditEvent[] or A
 
 | parameter | type | description |
 | --- | --- | --- |
-| obj | `AuditEvents` | The object to be checked |
+| `obj` | `AuditEvents` | The object to be checked |
 
 __Returns__ The AuditRecord if the object is valid, otherwise undefined.
 
@@ -94,7 +95,7 @@ Add a sessionid to all the audit events
 
 | parameter | type | description |
 | --- | --- | --- |
-| auditRecord | `AuditRecord` | The audit record to modify. |
+| `auditRecord` | `AuditRecord` | The audit record to modify. |
 
 ```js title="AuditRecord Type"
 export type AuditRecord = {
@@ -111,7 +112,7 @@ Add the URL to all the audit events
 
 | parameter | type | description |
 | --- | --- | --- |
-| auditRecord | `AuditRecord` | The audit record to modify. |
+| `auditRecord` | `AuditRecord` | The audit record to modify. |
 
 __Returns__ The updated audit record with the URL added.
 

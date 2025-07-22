@@ -42,11 +42,26 @@ const config = {
         docs: {
           routeBasePath: '/',
           // path: 'docs',
-          sidebarPath: './sidebars.js'
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
           //   'https://github.com/sinequa/sba-angular/tree/main/',
+          sidebarPath: './sidebars.js',
+          sidebarItemsGenerator: async function ({ defaultSidebarItemsGenerator, ...args }) {
+            // Use the default sidebar items generator to generate the sidebar items
+            const sidebarItems = await defaultSidebarItemsGenerator(args);
+            // Customize the folder names here
+            return sidebarItems.map(item => {
+              // Capitalize the first letter of the label for category items
+              if (item.type === 'category') {
+                return {
+                  ...item,
+                  label: item.label.charAt(0).toUpperCase() + item.label.slice(1)
+                };
+              }
+              return item;
+            });
+          }
         },
         blog: false,
         theme: {

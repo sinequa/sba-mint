@@ -6,6 +6,7 @@ import { getState } from '@ngrx/signals';
 import { Article as A } from '@sinequa/atomic';
 import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
+import { QueryClient } from '@tanstack/angular-query-experimental';
 
 type Article = A & {
   [key: string]: any;
@@ -41,6 +42,7 @@ export class CardMenuComponent {
   drawerStack = inject(DrawerStackService);
   selectionStore = inject(SelectionStore);
   appStore = inject(AppStore);
+  queryClient = inject(QueryClient);
 
   article = model<Article>();
 
@@ -63,7 +65,11 @@ export class CardMenuComponent {
   }
 
   addToCollection(): void {
-    this.dialogService.open(CollectionsDialog, this.article());
+    this.dialogService.open(CollectionsDialog, this.article()).then((event: any) => {
+      if (event === 'dialog-confirm') {
+        this.queryClient.invalidateQueries();
+      }
+    });
   }
 
   attachToAssistant(): void {

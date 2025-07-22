@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
+import { SelectionStore } from '@sinequa/atomic-angular';
 import { PageHeaderComponent } from '@sinequa/ui';
 
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -24,6 +25,13 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   host: {
     class: 'flex flex-col h-full w-full'
   },
-  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections', 'alerts')]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections', 'alerts', 'sort-selector', 'article')]
 })
-export class SearchLayoutComponent {}
+export class SearchLayoutComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly selectionStore = inject(SelectionStore, { optional: true });
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.selectionStore?.clearMultiSelection());
+  }
+}

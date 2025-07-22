@@ -2,8 +2,6 @@
 title: Error
 ---
 
-## Overview
-
 The `Error` component is an Angular component that displays a stylized error page, allowing the user to reload the page.
 
 ### Methods

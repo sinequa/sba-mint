@@ -1,16 +1,18 @@
 ---
-title: sysLang Utility
+title: sysLang
 ---
 
-## Introduction
+This utility provides a function to extract and translate system language-formatted text to a specified locale.
+It is useful for handling multilingual strings where different translations are embedded in a single string.
 
-This utility provides a function to extract and translate system language-formatted text to a specified locale. It is useful for handling multilingual strings where different translations are embedded in a single string.
+:::caution
+This utility exists for compatibility with legacy systems and is not recommended for new applications.
+:::
 
-## Function
+### sysLang()
 
-### sysLang
-
-Translates a system language formatted text to the specified locale. If a matching language is found, returns the translated text; otherwise, returns the default language text.
+Translates a system language formatted text to the specified locale. If a matching language is found,
+returns the translated text; otherwise, returns the default language text.
 
 ```typescript
 function sysLang(text: string, currentLocale: string): string

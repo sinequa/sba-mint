@@ -2,8 +2,6 @@
 title: Preview
 ---
 
-## Overview
-
 This module provides functionality for retrieving and displaying document previews. It allows users to:
 
 - Fetch preview data for specific documents based on queries
@@ -11,20 +9,25 @@ This module provides functionality for retrieving and displaying document previe
 - Access highlighted text segments within previews
 - Obtain full document content from cached URLs
 
-These operations enable efficient document preview functionality, enhancing the user's ability to quickly assess document relevance and content without opening the full document.
+These operations enable efficient document preview functionality, enhancing the user's ability to quickly assess document
+relevance and content without opening the full document.
+
+## Functions
 
 ### fetchPreview()
 
 Fetches preview data for a given id and query.
 
-__Returns__ A promise that resolves to the PreviewData.
+__Returns__ A promise that resolves to the [`PreviewData`](#previewdata-type).
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| id | `string` | The unique identifier of the document to fetch preview data for. |
-| query | `Query` | The query object used to retrieve the preview data. |
+| `id` | `string` | The unique identifier of the document to fetch preview data for. |
+| `query` | `Query` | The query object used to retrieve the preview data. |
 
-```js title="PreviewData Type"
+#### PreviewData Type
+
+```js
 export type PreviewData = {
     record: Article,
     resultId: string,
@@ -56,7 +59,7 @@ Fetches preview document content from a given URL.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| url | `string` | The URL from which to fetch the preview document content. |
+| `url` | `string` | The URL from which to fetch the preview document content. |
 
 __Returns__ A promise that resolves to the preview document content as a string.
 

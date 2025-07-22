@@ -1,7 +1,8 @@
 ---
-title: Tailwind Utils
+title: Tailwindcss
 ---
-## Overview
+
+## cn()
 
 The `cn` function handles the proper merging of CSS classes to have cleaner CSS properties.
 
@@ -18,6 +19,7 @@ The `cn` function handles the proper merging of CSS classes to have cleaner CSS 
 | `string` | The merged classes. |
 
 ### Usage
+
 ```ts
 import { cn } from '@sinequa/ui';
 
