@@ -10,12 +10,12 @@
   "
   [placeholder]="'searchInput.placeholder' | transloco"
   [attr.aria-label]="'searchInput.placeholder' | transloco"
-  [(ngModel)]="value"
+  [(ngModel)]="searchInputText"
   (onFocus)="focus()"
   (onBlur)="blur()"
-  (onSelected)="selected.emit($event)"
+  (onSelected)="onSelected($event)"
   (click)="inputClicked()">
-  @if (showSave() && (value() !== '' || hasFilters())) {
+  @if (showSave() && (searchInputText() !== '' || hasFilters())) {
     <button
       variant="icon"
       size="xs"
@@ -38,9 +38,9 @@
       class="m-1 h-6 rounded-sm text-xs transition ease-in"
       title="Ask AI"
       aria-label="Ask AI"
-      [disabled]="value() === ''"
+      [disabled]="searchInputText() === ''"
       [routerLink]="['/assistant']"
-      [queryParams]="{ q: value(), f: filters() }">
+      [queryParams]="{ q: searchInputText(), f: filters() }">
       <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
       Ask AI
     </button>
@@ -50,8 +50,8 @@
     size="xs"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
-    [attr.aria-disabled]="!allowEmptySearch() && this.value() === ''"
-    [disabled]="!allowEmptySearch() && this.value() === ''"
+    [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+    [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
     (click)="emitText($event)">
     <SendHorizontalIcon />
   </button>

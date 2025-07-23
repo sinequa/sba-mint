@@ -25,7 +25,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   host: {
     class: 'flex flex-col h-full w-full'
   },
-  providers: [provideTranslocoScope('bookmarks', 'saved-searches', 'recent-searches', 'collections', 'alerts', 'sort-selector', 'article')]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections', 'alerts', 'sort-selector', 'article')]
 })
 export class SearchLayoutComponent {
   private readonly destroyRef = inject(DestroyRef);

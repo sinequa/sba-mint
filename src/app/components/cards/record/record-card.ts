@@ -142,7 +142,8 @@ export class RecordCard {
    * @param field field to filter on
    * @param value value from the filter
    */
-  setFilter(field: string, value: string): void {
+  setFilter(field: string, value: string, event: Event): void {
+    event.stopImmediatePropagation();
     let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }
@@ -153,8 +154,8 @@ export class RecordCard {
     }
   }
 
-  onMetadataClick({ field, value }: { field: string; value: string }): void {
-    let filter: LegacyFilter = { field, value };
+  onMetadataClick({ filter, event }: { filter: LegacyFilter; event: Event }): void {
+    event.stopImmediatePropagation();
     this.queryParamStore.updateFilter(filter);
   }
 
