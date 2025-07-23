@@ -380,9 +380,7 @@ export class SearchAllComponent {
   onAssistantCollapse() {
     const collapsed = !this.assistantCollapsed();
     this.usersettingsStore.updateAssistantCollapsed(collapsed);
-    if (this.isStreaming()) {
-      this.assistantCollapsed.set(collapsed);
-    }
+    this.assistantCollapsed.set(collapsed);
   }
 
   onClearFilters(): void {
