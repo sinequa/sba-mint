@@ -54,8 +54,7 @@ If none is specified, the default variant is `dark`.
 @tab Default
 
 ```html
-<MultiSelectionToolbar />
-<MultiSelectionToolbar variant="dark" />
+<MultiSelectionToolbar /> <MultiSelectionToolbar variant="dark" />
 ```
 
 @tab Light
@@ -95,7 +94,7 @@ import { Article } from '@sinequa/atomic';
 })
 export class RecordCard {
   public readonly article = model<Article>({} as Article);
-  
+
   selectionStore = inject(SelectionStore);
 
   // state of checkbox for multi-select
@@ -147,3 +146,85 @@ In your component's HTML template (e.g., `record-card.html`), add a checkbox or 
 4.  **`effect`**: The effect is used to automatically update the `checked` signal whenever the `multiSelected` computed signal changes.
 
 When a document is added to or removed from the `SelectionStore`, the multi-selection toolbar will automatically update to reflect the number of selected items.
+
+# Adding the _Select All_ Button
+
+In your component's TypeScript file, you can add a method to handle the _Select All_ functionality.
+
+```ts
+import { Component, inject } from '@angular/core';
+
+import { Article, bisect } from '@sinequa/atomic';
+import { SelectionStore } from '@sinequa/atomic-angular';
+
+@Component({
+  ...
+})
+export class SearchPageComponent {
+  selectionStore = inject(SelectionStore);
+
+  articles = signal<Article[]>([]); // Assuming you have a signal for articles
+  selectedAll = signal<'all' | 'some' | 'none'>('none'); // Signal to track selection state
+
+  constructor() {
+    // Effect to update the selectedAll signal based on the selection store
+    effect(() => {
+      // Get the IDs of articles and selected articles
+      const articlesIds = this.articles().map(x => x.id));
+      const selectionIds = this.selectionStore.multiSelection().map(x => x.id);
+
+      // Use bisect to determine the selection state
+      const b = bisect(articlesIds, x => selectionIds.includes(x));
+
+      // For no truthy values, no articles from query has been selected yet
+      if (b.true.length === 0) this.selectedAll.set('none');
+      // For no falsy values, all articles from query are selected
+      else if (b.false.length === 0) this.selectedAll.set('all');
+      // Otherwise, some articles are selected
+      else this.selectedAll.set('some');
+    });
+  }
+
+  // Method to select all articles
+  selectAll() {
+    if (this.selectedAll() === 'all') {
+      this.unselectAll();
+      return;
+    }
+
+    this.articles().forEach(article => {
+      article.$selected = true;
+      this.selectionStore.addArticleToMultiSelection(article as Article);
+    });
+  }
+
+  // Method to unselect all articles
+  unselectAll() {
+    this.articles().forEach(article => {
+      article.$selected = false;
+      this.selectionStore.removeArticleFromMultiSelection(article as Article);
+    });
+  }
+}
+```
+
+In your component's HTML template, you can add a button to trigger the _Select All_ functionality.
+
+```html
+<button variant="ghost" (click)="selectAll()">
+  @switch (selectedAll()) {
+    @case ('all') {
+      <i class="fa-fw fa-regular fa-square-check"></i>
+      Unselect All
+    }
+    @case ('some') {
+      <i class="fa-fw fa-regular fa-square-minus"></i>
+      Select All
+    }
+    @default {
+      <i class="fa-fw fa-regular fa-square"></i>
+      Select All
+    }
+  }
+</button>
+```
