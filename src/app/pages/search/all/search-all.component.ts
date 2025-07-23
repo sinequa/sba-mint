@@ -378,7 +378,9 @@ export class SearchAllComponent {
    * Switch the assistant collapsed status.
    */
   onAssistantCollapse() {
-    this.usersettingsStore.updateAssistantCollapsed(!this.assistantCollapsed());
+    const collapsed = !this.assistantCollapsed();
+    this.usersettingsStore.updateAssistantCollapsed(collapsed);
+    this.assistantCollapsed.set(collapsed);
   }
 
   onClearFilters(): void {
