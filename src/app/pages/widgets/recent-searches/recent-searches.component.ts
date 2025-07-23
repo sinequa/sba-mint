@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';

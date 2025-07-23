@@ -53,18 +53,6 @@
       </menuitem>
     }
 
-    <menuitem (click)="isDarkMode.set(!isDarkMode())">
-      @if (isDarkMode()) {
-        <i class="fa-fw fal fa-sun-bright text-[16px]"></i>
-        <span class="me-auto">{{ 'userMenu.switchToLightMode' | transloco }}</span>
-      } @else {
-        <i class="fa-fw fal fa-moon text-[16px]"></i>
-        <span class="me-auto">{{ 'userMenu.switchToDarkMode' | transloco }}</span>
-      }
-
-      <Switch [(toggled)]="isDarkMode" />
-    </menuitem>
-
     <HorizontalDivider />
 
     <menuitem (click)="openSinequa()" class="justify-between">

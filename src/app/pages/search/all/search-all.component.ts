@@ -29,7 +29,7 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
+import { ButtonComponent, cn } from '@sinequa/ui';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';

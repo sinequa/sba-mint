@@ -20,7 +20,7 @@ import {
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { cn, DialogService, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 

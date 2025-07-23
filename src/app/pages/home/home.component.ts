@@ -15,14 +15,12 @@ import {
   RecentSearchesComponent,
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
+import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
-import { HorizontalDividerComponent } from '../../ui/divider/horizontal-divider';
-import { TabComponent } from '../../ui/tabs/tab';
-import { TabsComponent } from '../../ui/tabs/tabs';
 
 type HomeTab = {
   name: string;
