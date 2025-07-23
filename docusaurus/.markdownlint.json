@@ -1,11 +1,8 @@
 {
   "MD033": {
-    "allowed_elements": ["color", "details", "summary", "br"]
+    "allowed_elements": ["color", "details", "summary", "br", "kbd"]
   },
-  "MD013": {
-    "line_length": 130,
-    "tables": false
-  },
+  "MD013": false,
   "MD029": false,
   "MD024": false
 }

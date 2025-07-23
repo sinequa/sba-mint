@@ -22,7 +22,7 @@
         <header class="flex items-center gap-3">
           <div class="flex grow flex-col">
             <section class="flex items-baseline gap-2">
-              <p class="text-primary line-clamp-1 text-base font-bold">{{ article().title.trim() || '...' }}</p>
+              <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
 
               <div class="flex-grow">
                 @if (showBookmark()) {
@@ -35,7 +35,7 @@
 
             <section class="flex items-center gap-1 text-xs">
               @if (docformatMetadata()) {
-                <Badge variant="accent" class="text-xxs font-bold text-white uppercase" (click)="setFilter('docformat', docformatMetadata()!)">
+                <Badge variant="accent" class="text-xxs font-bold text-white uppercase" (click)="setFilter('docformat', docformatMetadata()!, $event)">
                   {{ docformatMetadata() }}
                 </Badge>
               }
@@ -56,8 +56,8 @@
         </header>
       </CardHeader>
 
-      <CardContent class="flex grow flex-col gap-2 overflow-auto break-words">
-        <p class="break-word line-clamp-2" [innerHTML]="extract()"></p>
+      <CardContent class="flex grow flex-col gap-2 overflow-auto wrap-anywhere">
+        <p [class]="cn(isLineClamped() && 'line-clamp-2')" [innerHTML]="extract()"></p>
 
         @if (customMetadata()?.length && article()) {
           @for (metadata of customMetadata(); track $index) {

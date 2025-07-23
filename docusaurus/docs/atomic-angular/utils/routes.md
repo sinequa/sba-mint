@@ -2,13 +2,13 @@
 title: Routes
 ---
 
-## Overview
 The `getCurrentQueryName` and `getCurrentTab` functions are utility functions designed to work within Angular's dependency injection context. They help in retrieving specific route-related information, such as the current query name and the current tab's URL, respectively. These functions leverage Angular's router and dependency injection mechanisms to provide the required data based on the active route configuration.
-
 
 :::important
 This functions must be called in an injection context.
 :::
+
+## Functions
 
 ### getCurrentQueryName()
 
@@ -21,6 +21,7 @@ and a child route matching the current tab. If found, it returns the 'queryName'
 data associated with that child route.
 
 #### Usage
+
 ```ts title="test.component.ts"
 import { getCurrentQueryName } from "@sinequa/atomic-angular";
 
@@ -45,6 +46,7 @@ This function asserts that it is being called within an Angular injection contex
 and then injects the `ActivatedRoute` service to access the current route's snapshot URL.
 
 #### Usage
+
 ```ts title="test.component.ts"
 import { getCurrentPath } from "@sinequa/atomic-angular";
 

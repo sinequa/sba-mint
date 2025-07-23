@@ -1,10 +1,11 @@
 ---
-title: Search Service
+title: Search
+sidebar_class_name: deprecated
 ---
 
-## Overview
-
 The `SearchService` is responsible for performing search operations and managing search navigation. It handles query parameters, navigation state, and audit trails.
+
+## Functions
 
 ### search()
 

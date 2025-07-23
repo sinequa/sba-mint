@@ -8,6 +8,7 @@ import { toast } from 'ngx-sonner';
 
 import { CCApp } from '@sinequa/atomic';
 import {
+  APP_FEATURES,
   AppStore,
   AutocompleteService,
   debouncedSignal,
@@ -21,9 +22,6 @@ import {
 } from '@sinequa/atomic-angular';
 import { cn, DialogService, SendHorizontalIconComponent } from '@sinequa/ui';
 
-import { APP_FEATURES } from '../../tokens';
-import { ButtonComponent } from '../../ui/button/button';
-import { InputSearchVariants } from '../../ui/input/search';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({
@@ -32,7 +30,8 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.css',
   host: {
-    '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")'
+    '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
+    '(keydown.enter)': 'emitText($event)'
   },
   providers: [provideTranslocoScope('search-input')]
 })
@@ -60,15 +59,20 @@ export class SearchInputComponent {
   private readonly dialogService = inject(DialogService);
   private readonly appFeatures = inject(APP_FEATURES);
 
-  public readonly value = model<string>('');
+  public readonly searchInputText = model<string>('');
 
   protected readonly saveAnimation = signal<boolean>(false);
+
+  filters = computed(() => {
+    const { filters } = getState(this.queryParamsStore);
+    return filters ? JSON.stringify(filters) : undefined;
+  });
 
   hasFilters = computed(() => {
     // when the query parameters store updates, update the hasFilters signal
     // to show or hide the clear filters button
-    const state = getState(this.queryParamsStore);
-    return Array.isArray(state.filters) && state.filters.length > 0;
+    const { filters } = getState(this.queryParamsStore);
+    return Array.isArray(filters) && filters.length > 0;
   });
 
   protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
@@ -84,7 +88,7 @@ export class SearchInputComponent {
     }
   });
 
-  protected readonly debounceInputValue = debouncedSignal(this.value, 300);
+  protected readonly debounceInputValue = debouncedSignal(this.searchInputText, 300);
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
@@ -95,36 +99,7 @@ export class SearchInputComponent {
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
-  protected savedSearch = computed(() => {
-    const savedSearches = this.userSettingsStore.savedSearches();
-    const url = window.location.hash.substring(1);
-    const filtersSplit = url.split('f=');
-    const filters = filtersSplit.length > 1 ? JSON.parse(decodeURIComponent(filtersSplit[1].split('&')[0]))[0] : undefined;
-    const text = this.value();
-
-    // returns true if a save search matches the display and filters
-    return savedSearches.find(search => {
-      const searchFiltersSplit = search.url.split('f=');
-      const searchFilters = searchFiltersSplit.length > 1 ? JSON.parse(decodeURIComponent(searchFiltersSplit[1].split('&')[0]))[0] : undefined;
-
-      // if one of them has filters and not the other one
-      if ((filters && !searchFilters) || (!filters && searchFilters)) return false;
-
-      if (filters && searchFilters) {
-        const filtersKeys = Object.keys(filters).sort();
-        const searchFiltersKeys = Object.keys(searchFilters).sort();
-        const similarKeys = JSON.stringify(filtersKeys) === JSON.stringify(searchFiltersKeys);
-
-        if (!similarKeys) return false; // if one of them has different keys
-
-        for (const key of filtersKeys) {
-          if (filters[key] !== searchFilters[key]) return false; // if any value is different
-        }
-      }
-
-      return (search as any).label === text; // lastly, if the text is similar
-    });
-  });
+  protected savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.searchInputText()));
 
   // el is the ElementRef of the component, it is injected by Angular and used by the AutoComplete component
   constructor(public readonly el: ElementRef) {
@@ -151,29 +126,33 @@ export class SearchInputComponent {
   public setInput(text: string | undefined, silent: boolean = true): void {
     if (text === undefined) return;
 
-    this.value.set(text);
+    this.searchInputText.set(text);
     if (!silent) this.emitText(new Event('input'));
   }
 
   protected emitText(e: Event): void {
     e.stopImmediatePropagation();
-    if (this.allowAdvancedFilters() && this.value() === '') {
+    if (this.allowAdvancedFilters() && this.searchInputText() === '') {
       this.overlayOpen.set(false);
       this.drawerStack.open(DrawerAdvancedFiltersComponent);
       return;
     }
-    if (this.allowEmptySearch() === false && this.value() === '') {
+    if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
+      console.warn(message);
       toast.info(message);
       return;
     }
 
-    this.closeAutocompletePopover();
-    this.validated.emit(this.value());
+    const text = this.searchInputText();
+    if (text) {
+      this.closeAutocompletePopover();
+      this.validated.emit(text);
+    }
   }
 
   protected clearInput(e: Event): void {
-    this.value.set('');
+    this.searchInputText.set('');
     this.popoverElement().hidePopover();
   }
 
@@ -181,11 +160,10 @@ export class SearchInputComponent {
     event.stopPropagation();
 
     if (this.savedSearch()) {
-      this.saveAnimation.set(true);
-      setTimeout(() => this.saveAnimation.set(false), 1000);
+      // no animation when unsaving
       this.saved.emit(this.savedSearch());
     } else {
-      this.dialogService.open(SavedSearchDialog, this.value()).then((event: any) => {
+      this.dialogService.open(SavedSearchDialog, this.searchInputText()).then((event: any) => {
         if (event === 'dialog-confirm') {
           this.saveAnimation.set(true);
           setTimeout(() => this.saveAnimation.set(false), 1000);
@@ -200,5 +178,11 @@ export class SearchInputComponent {
 
   blur(): void {
     this.popoverElement().hidePopover();
+  }
+
+  onSelected($event: HTMLElement | null): void {
+    this.closeAutocompletePopover();
+    this.searchInputText.set($event?.getAttribute('data-text') || '');
+    this.selected.emit($event);
   }
 }

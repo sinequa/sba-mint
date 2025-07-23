@@ -2,8 +2,6 @@
 title: SelectArticleOnClick
 ---
 
-## Overview
-
 Directive that selects an article on click to be displayed into the stack panel using a open's specific strategy: __'stack'__ or __'replace'__.  
 
 :::info

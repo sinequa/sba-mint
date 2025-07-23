@@ -2,8 +2,6 @@
 title: NoResult
 ---
 
-## Overview
-
 The `NoResult` component is an Angular component that displays a stylized message indicating that no results were found.
 
 ## Examples

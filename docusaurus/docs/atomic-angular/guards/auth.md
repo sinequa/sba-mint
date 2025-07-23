@@ -2,11 +2,9 @@
 title: AuthGuard
 ---
 
-## Overview
-
 The `AuthGuard` is a functional route guard that checks if the user is authenticated before allowing access to protected routes.
 
-Key features:
+### Key features
 
 - Returns a `CanActivateFn` function (Angular's modern functional guard approach)
 - Checks authentication status using `isAuthenticated()` from `@sinequa/atomic`

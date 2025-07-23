@@ -2,8 +2,6 @@
 title: Operator
 ---
 
-## Overview
-
 The `OperatorPipe` transforms filter operators into their HTML entity representations for display in the UI. It handles various comparison operators and special cases like 'between' and 'and'.
 
 ### API

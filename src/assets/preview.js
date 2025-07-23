@@ -26,29 +26,33 @@ document.addEventListener('DOMContentLoaded', function () {
     isWorkerSupported = false;
 
     if (window.Worker) {
-      console.log('Web Worker is supported');
-
       // Use an absolute URL for the worker.js file
       const path = window.origin.includes('localhost:4200') ? `${window.origin}/assets/worker.js` : `${window.origin}/app/${appname}/assets/worker.js`;
 
-      worker = new Worker(path);
+      try {
+        worker = new Worker(path);
 
-      worker.onmessage = function (event) {
-        window.parent.postMessage(
-          {
-            type: 'get-html-results-webworker',
-            data: event.data,
-            url: window.location.href
-          },
-          parentOrigin
-        );
-      };
+        worker.onmessage = function (event) {
+          window.parent.postMessage(
+            {
+              type: 'get-html-results-webworker',
+              data: event.data,
+              url: window.location.href
+            },
+            parentOrigin
+          );
+        };
 
-      worker.onerror = function (error) {
-        console.error('Error from worker:', error);
-      };
+        worker.onerror = function (error) {
+          console.error('Error from worker:', error);
+        };
 
-      isWorkerSupported = true;
+        console.log('Web Worker is supported');
+        isWorkerSupported = true;
+      } catch (error) {
+        console.error('Error creating worker:', error);
+        isWorkerSupported = false;
+      }
     }
   }
 
@@ -207,11 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
     passageHighlighter.style.display = 'none';
     var box = getBoundingBox(elements);
     if (box) {
-      var margin = 4;
-      var left = Math.max(0, box.left - margin);
-      var top_1 = Math.max(0, box.top - margin);
-      var right = box.right + margin;
-      var bottom = box.bottom + margin;
+      var marginTopLeft = 12;
+      var marginBottomRight = -8;
+      var left = Math.max(0, box.left - marginTopLeft);
+      var top_1 = Math.max(0, box.top - marginTopLeft);
+      var right = box.right + marginBottomRight;
+      var bottom = box.bottom + marginBottomRight;
       passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
       passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
       passageHighlighter.style.width = right - left + 'px';

@@ -1,12 +1,13 @@
 ---
-title: Query Service
+title: Query
+sidebar_class_name: update
 ---
-
-## Overview
 
 The `QueryService` is responsible for handling search queries, including fetching and displaying search results.
 
-### search
+## Functions
+
+### search()
 
 ```typescript
 search(q?: Partial<Query>, includeQueryParams?: boolean, audit?: AuditEvents): Observable<Result>
@@ -25,12 +26,16 @@ search(q?: Partial<Query>, includeQueryParams?: boolean, audit?: AuditEvents): O
 #### Usage
 
 ```typescript
-this.queryService.search({ text: 'example' }).subscribe(results => {
+import { inject } from "@angular/core";
+import { QueryService } from "@sinequa/atomic-angular";
+
+const queryService = inject(QueryService);
+queryService.search({ text: 'example' }).subscribe(results => {
   console.log(results);
 });
 ```
 
-### bulkSearch
+### bulkSearch()
 
 ```typescript
 bulkSearch(q: Query[], audit?: AuditEvents): Observable<Result[]>
@@ -48,7 +53,35 @@ bulkSearch(q: Query[], audit?: AuditEvents): Observable<Result[]>
 #### Usage
 
 ```typescript
-this.queryService.bulkSearch([{ text: 'example1' }, { text: 'example2' }]).subscribe(results => {
+import { inject } from "@angular/core";
+import { QueryService } from "@sinequa/atomic-angular";
+
+const queryService = inject(QueryService);
+queryService.bulkSearch([{ text: 'example1' }, { text: 'example2' }]).subscribe(results => {
   console.log(results);
 });
 ```
+
+### gotoPage()
+
+Navigates to the specified page and returns the search result.
+
+```typescript
+gotoPage(page: number): void
+```
+
+| Parameter | Type     | Description                  |
+|-----------|----------|------------------------------|
+| `page`    | `number` | The page number to navigate to. |
+
+**Usage Example:**
+
+```typescript
+import { inject } from "@angular/core";
+import { QueryService } from "@sinequa/atomic-angular";
+
+const queryService = inject(QueryService);
+queryService.gotoPage(2);
+```
+
+This method updates the page number in the query parameters store and audit information about the page navigation.

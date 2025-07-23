@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 
 import { getQueryParamsFromUrl } from '@sinequa/atomic';
-import { DrawerStackService, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
+import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'SavedSearches',

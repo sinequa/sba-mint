@@ -8,7 +8,7 @@
     variant="basic"
     [showSave]="true"
     (saved)="saveSearch($event)"
-    (validated)="validated($event)"
+    (validated)="search($event)"
     (debounced)="debounced($event)"
     (selected)="selected($event)">
     <app-autocomplete #autocomplete [text]="searchText()" />

@@ -1,5 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import localeDe from '@angular/common/locales/de';
 import localeFr from '@angular/common/locales/fr';
 import { ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -10,6 +11,7 @@ import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-exper
 
 import { appInitializerFn } from '@sinequa/atomic';
 import {
+  APP_FEATURES,
   ApplicationService,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
@@ -39,7 +41,6 @@ import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
-import { APP_FEATURES } from './tokens';
 import { TranslocoHttpLoader } from './transloco-loader';
 
 // @ts-ignore
@@ -47,6 +48,7 @@ import Flow from '@flowjs/flow.js';
 import { FlowInjectionToken } from '@flowjs/ngx-flow';
 
 registerLocaleData(localeFr);
+registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -135,7 +137,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideTransloco({
       config: {
-        availableLangs: ['en', 'fr'],
+        availableLangs: ['en', 'fr', 'de'],
         defaultLang: 'en',
         // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,

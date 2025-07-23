@@ -1,10 +1,10 @@
 ---
-title: Principal Service
+title: Principal
 ---
 
-## Overview
-
 The `PrincipalService` is responsible for handling principal-related operations in the application. It provides methods to get the principal.
+
+## Functions
 
 ### getPrincipal()
 
@@ -16,6 +16,7 @@ getPrincipal(): Observable<Principal>
 ```
 
 #### Usage
+
 ```typescript
 import { PrincipalService } from '@sinequa/atomic-angular';
 

@@ -1,13 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { NgxSonnerToaster } from 'ngx-sonner';
+import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 
-import { ApplicationStore, BackdropComponent, DrawerStackComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationStore, BackdropComponent, DrawerStackComponent, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent],
+  imports: [RouterOutlet, NgxSonnerToaster, BackdropComponent, DrawerStackComponent, MultiSelectionToolbarComponent],
   templateUrl: './app.component.html',
   styles: [
     `
@@ -21,10 +21,31 @@ export class AppComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly applicationStore = inject(ApplicationStore);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.setupApplicationLanguage();
     this.applicationStore.updateReadyState(true);
+
+    const controller = new AbortController();
+
+    // Listen for custom notifications and display them using ngx-sonner
+    addEventListener(
+      'notification',
+      (event: Event) => {
+        const customEvent = event as CustomEvent<{
+          type: 'success' | 'warning' | 'info' | 'error';
+          title?: string;
+          message: string;
+          options?: ExternalToast;
+        }>;
+        const { type, message, options } = customEvent.detail;
+        toast[type](message, options);
+      },
+      { signal: controller.signal }
+    );
+
+    this.destroyRef.onDestroy(() => controller.abort());
   }
 
   private setupApplicationLanguage() {
