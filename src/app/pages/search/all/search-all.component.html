@@ -22,7 +22,7 @@
     </ul>
   } @else if (hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="sticky top-16 z-10 -mx-1 bg-white pt-1">
+    <div class="sticky top-16 z-10 -mx-1 bg-white py-1">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
@@ -35,8 +35,25 @@
       <sponsored-results />
 
       <!-- sort selector and export button -->
-      <div class="mt-1 flex justify-end gap-1 has-[_+ul>li.no-records]:hidden">
-        <sort-selector [result]="result()!" [position]="position()" (onSort)="onSort($event)" />
+      <div class="flex gap-1 has-[_+ul>li.no-records]:hidden">
+        <button variant="ghost" (click)="selectAll()">
+          @switch (selectedAll()) {
+            @case ('all') {
+              <i class="fa-fw fa-regular fa-square-check"></i>
+              Unselect All
+            }
+            @case ('some') {
+              <i class="fa-fw fa-regular fa-square-minus"></i>
+              Select All
+            }
+            @default {
+              <i class="fa-fw fa-regular fa-square"></i>
+              Select All
+            }
+          }
+        </button>
+
+        <sort-selector class="ms-auto" [result]="result()!" [position]="position()" (onSort)="onSort($event)" />
       </div>
     </div>
 

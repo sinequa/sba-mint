@@ -4,7 +4,7 @@ import { EventManager } from '@angular/platform-browser';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
-import { Suggestion as S } from '@sinequa/atomic';
+import { error, Suggestion as S } from '@sinequa/atomic';
 import {
   AppStore,
   AuditService,
@@ -96,8 +96,8 @@ export class AutocompleteComponent {
         return combineLatest([
           fromUserSettings,
           this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
-            catchError(error => {
-              console.log('Error getting suggestions from suggest queries', error);
+            catchError(err => {
+              error('Error getting suggestions from suggest queries', err);
               return of([]);
             })
           )
@@ -151,19 +151,6 @@ export class AutocompleteComponent {
     });
   }
 
-  public itemClicked(item: Suggestion | undefined): void {
-    if (!item || item.$isDivider || item.$isTitle) return;
-
-    this.auditService.notify({
-      type: 'Search_Autocomplete',
-      detail: {
-        display: item.display,
-        category: item.category
-      }
-    });
-    this.onClick.emit(item as S);
-  }
-
   openAdvancedSearch(): void {
     this.overlayOpen.set(false);
     this.drawerStack.open(DrawerAdvancedFiltersComponent);
@@ -171,7 +158,6 @@ export class AutocompleteComponent {
 
   // #region Keyboard navigation
 
-  selectSuggestion = () => this.itemClicked(this.suggestions()?.[this.currentSuggestIndex()]);
   nextSuggestion = () => this.findSuggestion(1);
   previousSuggestion = () => this.findSuggestion(-1);
 

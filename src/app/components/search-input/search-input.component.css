@@ -22,7 +22,8 @@
 [popover] {
   /* Select Firefox */
   @supports (-moz-appearance: none) {
-    margin: calc(33.3333333333vh + 30px) 25vw;
+    top: 48px;
+    left: 25vw;
     width: 50vw;
   }
 
