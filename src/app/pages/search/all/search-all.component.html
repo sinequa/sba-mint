@@ -22,7 +22,7 @@
     </ul>
   } @else if (hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="bg-background sticky top-16 z-10 -mx-1 pt-1">
+    <div [class]="stickyClass">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
@@ -30,7 +30,7 @@
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" (onClearFilters)="onClearFilters()" />
 
-      <app-did-you-mean class="text-alert py-1" [result]="result()" />
+      <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
       <sponsored-results />
 
@@ -111,14 +111,14 @@
     }
   } @else {
     <!-- tabs and filters -->
-    <div class="sticky top-16 z-10 -mx-1 pt-1">
+    <div [class]="stickyClass">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" />
 
-      <app-did-you-mean class="text-alert py-1" [result]="result()" />
+      <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
     </div>
 
     <!-- display a panel to inform the user that no results were found -->

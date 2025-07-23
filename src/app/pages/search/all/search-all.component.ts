@@ -86,6 +86,8 @@ type QueryParamsProps = {
 export class SearchAllComponent {
   cn = cn;
 
+  readonly stickyClass = cn('sticky top-16 z-10 -mx-1 pt-1 pb-2 bg-background');
+
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
   protected readonly drawerStack = inject(DrawerStackService);
@@ -96,7 +98,7 @@ export class SearchAllComponent {
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
-  protected readonly usersettingsStore = inject(UserSettingsStore);
+  protected readonly userSettingsStore = inject(UserSettingsStore);
   readonly selectionStore = inject(SelectionStore);
 
   protected readonly router = inject(Router);
@@ -147,7 +149,7 @@ export class SearchAllComponent {
 
       // Add the current search to the user settings when the text is not empty
       if (query.text && query.text !== '') {
-        this.usersettingsStore.addCurrentSearch(query as QueryParams);
+        this.userSettingsStore.addCurrentSearch(query as QueryParams);
       }
 
       return lastValueFrom(
@@ -327,7 +329,7 @@ export class SearchAllComponent {
     });
 
     effect(() => {
-      const { collapseAssistant } = getState(this.usersettingsStore);
+      const { collapseAssistant } = getState(this.userSettingsStore);
 
       if (collapseAssistant !== undefined) {
         this.assistantCollapsed.set(collapseAssistant);
@@ -420,7 +422,7 @@ export class SearchAllComponent {
    */
   onAssistantCollapse() {
     const collapsed = !this.assistantCollapsed();
-    this.usersettingsStore.updateAssistantCollapsed(collapsed);
+    this.userSettingsStore.updateAssistantCollapsed(collapsed);
     this.assistantCollapsed.set(collapsed);
   }
 

@@ -14,11 +14,11 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   template: `
     <app-sidebar class="fixed top-0 h-full" />
 
-    <PageHeader class="h-20" position="fixed">
+    <PageHeader position="fixed">
       <app-navbar class="layout-search py-4" />
     </PageHeader>
 
-    <div class="mt-20">
+    <div class="mt-16">
       <router-outlet />
     </div>
   `,
