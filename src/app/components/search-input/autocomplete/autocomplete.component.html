@@ -45,9 +45,7 @@
           class="data-list-item flex cursor-pointer items-baseline gap-2 p-2 aria-selected:bg-blue-300"
           [id]="'search-suggestion-' + $index"
           [attr.data-text]="suggest.display"
-          [attr.aria-label]="suggest.display"
-          (keyup.enter)="itemClicked(suggest)"
-          (click)="itemClicked(suggest)">
+          [attr.aria-label]="suggest.display">
           @switch (suggest.category) {
             @case ('recent-search') {
               <i class="fa-fw far fa-clock-rotate-left"></i>

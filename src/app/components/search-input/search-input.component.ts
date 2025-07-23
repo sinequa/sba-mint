@@ -1,6 +1,20 @@
-import { NgClass } from '@angular/common';
-import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  afterNextRender,
+  booleanAttribute,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  Signal,
+  signal,
+  viewChild
+} from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -11,22 +25,23 @@ import {
   APP_FEATURES,
   AppStore,
   AutocompleteService,
-  debouncedSignal,
   DrawerAdvancedFiltersComponent,
-  DrawerStackService,
   SearchInputComponent as InputComponent,
+  DrawerStackService,
   QueryParamsStore,
-  SearchItem,
   SavedSearchDialog,
+  SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
+import { debounceTime } from 'rxjs';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-search-input',
-  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
+  imports: [RouterLink, ReactiveFormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.css',
   host: {
@@ -88,8 +103,6 @@ export class SearchInputComponent {
     }
   });
 
-  protected readonly debounceInputValue = debouncedSignal(this.searchInputText, 300);
-
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
@@ -101,17 +114,24 @@ export class SearchInputComponent {
   /** Returns true if the current search (current input() + filters) is in the saved searches */
   protected savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.searchInputText()));
 
+  protected form = new FormGroup({
+    searchInputText: new FormControl(this.searchInputText(), { nonNullable: true })
+  });
+
   // el is the ElementRef of the component, it is injected by Angular and used by the AutoComplete component
-  constructor(public readonly el: ElementRef) {
-    effect(() => {
-      const value = this.debounceInputValue();
+  public readonly el = inject(ElementRef);
+  protected readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
+      this.searchInputText.set(value);
       this.debounced.emit(value);
     });
 
     // first time the component is created, we set the input value from the query params
     effect(() => {
       const { text } = getState(this.queryParamsStore);
-      this.setInput(text);
+      this.form.controls.searchInputText.setValue(text || '');
     });
   }
 
@@ -151,9 +171,18 @@ export class SearchInputComponent {
     }
   }
 
-  protected clearInput(e: Event): void {
-    this.searchInputText.set('');
-    this.popoverElement().hidePopover();
+  onSearch(e: Event) {
+    e.stopImmediatePropagation();
+    if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
+      const message = this.translocoService.translate('searchInput.allowEmptySearch');
+      console.warn(message);
+      toast.info(message);
+      return;
+    }
+
+    const text = this.searchInputText();
+    this.closeAutocompletePopover();
+    this.validated.emit(text);
   }
 
   protected saveQuery(event: Event): void {
@@ -182,6 +211,7 @@ export class SearchInputComponent {
 
   onSelected($event: HTMLElement | null): void {
     this.closeAutocompletePopover();
+    this.form.controls.searchInputText.setValue($event?.getAttribute('data-text') || '');
     this.searchInputText.set($event?.getAttribute('data-text') || '');
     this.selected.emit($event);
   }

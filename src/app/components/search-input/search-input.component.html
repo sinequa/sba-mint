@@ -1,62 +1,65 @@
-<SearchInput
-  id="autocomplete-anchor"
-  controls="search-suggestions"
-  [variant]="variant()"
-  [class]="
-    cn(
-      'relative w-full transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
-      variant() === 'basic' && 'focus-within:rounded-lg focus-within:rounded-br-none focus-within:rounded-bl-none'
-    )
-  "
-  [placeholder]="'searchInput.placeholder' | transloco"
-  [attr.aria-label]="'searchInput.placeholder' | transloco"
-  [(ngModel)]="searchInputText"
-  (onFocus)="focus()"
-  (onBlur)="blur()"
-  (onSelected)="onSelected($event)"
-  (click)="inputClicked()">
-  @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+<form [formGroup]="form">
+  <input type="hidden" formControlName="searchInputText" />
+  <SearchInput
+    id="autocomplete-anchor"
+    controls="search-suggestions"
+    [variant]="variant()"
+    [class]="
+      cn(
+        'relative w-full transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
+        variant() === 'basic' && 'focus-within:rounded-lg focus-within:rounded-br-none focus-within:rounded-bl-none'
+      )
+    "
+    [placeholder]="'searchInput.placeholder' | transloco"
+    [attr.aria-label]="'searchInput.placeholder' | transloco"
+    [control]="form.controls.searchInputText"
+    (onSelected)="onSelected($event)"
+    (onFocus)="focus()"
+    (onBlur)="blur()"
+    (click)="inputClicked()">
+    @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+      <button
+        variant="icon"
+        size="xs"
+        class="peer-disabled:opacity-50"
+        [attr.title]="'searchInput.saveSearch' | transloco"
+        [attr.aria-label]="'searchInput.saveSearch' | transloco"
+        (click)="saveQuery($event)"
+        (keydown.enter)="saveQuery($event)">
+        @if (savedSearch()) {
+          <i class="fa-fw fas fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
+        } @else {
+          <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
+        }
+      </button>
+    }
+
+    @if (allowAI()) {
+      <button
+        variant="ai"
+        class="m-1 h-6 rounded-sm text-xs transition ease-in"
+        title="Ask AI"
+        aria-label="Ask AI"
+        [disabled]="searchInputText() === ''"
+        [routerLink]="['/assistant']"
+        [queryParams]="{ q: searchInputText(), f: filters() }">
+        <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+        Ask AI
+      </button>
+    }
     <button
       variant="icon"
       size="xs"
-      class="peer-disabled:opacity-50"
-      [attr.title]="'searchInput.saveSearch' | transloco"
-      [attr.aria-label]="'searchInput.saveSearch' | transloco"
-      (click)="saveQuery($event)"
-      (keydown.enter)="saveQuery($event)">
-      @if (savedSearch()) {
-        <i class="fa-fw fas fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
-      } @else {
-        <i class="fa-fw far fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
-      }
+      [attr.title]="'search' | transloco"
+      [attr.aria-label]="'search' | transloco"
+      [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+      [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+      (click)="onSearch($event)">
+      <SendHorizontalIcon />
     </button>
-  }
 
-  @if (allowAI()) {
-    <button
-      variant="ai"
-      class="m-1 h-6 rounded-sm text-xs transition ease-in"
-      title="Ask AI"
-      aria-label="Ask AI"
-      [disabled]="searchInputText() === ''"
-      [routerLink]="['/assistant']"
-      [queryParams]="{ q: searchInputText(), f: filters() }">
-      <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
-      Ask AI
-    </button>
-  }
-  <button
-    variant="icon"
-    size="xs"
-    [attr.title]="'search' | transloco"
-    [attr.aria-label]="'search' | transloco"
-    [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
-    [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
-    (click)="emitText($event)">
-    <SendHorizontalIcon />
-  </button>
-
-  <div popover #autocompletePopover>
-    <ng-content></ng-content>
-  </div>
-</SearchInput>
+    <div popover #autocompletePopover>
+      <ng-content></ng-content>
+    </div>
+  </SearchInput>
+</form>
