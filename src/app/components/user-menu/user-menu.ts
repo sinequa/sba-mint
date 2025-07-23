@@ -17,7 +17,6 @@ import {
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  SwitchComponent,
   UserRoundIconComponent
 } from '@sinequa/ui';
 
@@ -38,8 +37,7 @@ import {
     ChevronRightIconComponent,
     AvatarComponent,
     AvatarImageComponent,
-    AvatarFallbackComponent,
-    SwitchComponent
+    AvatarFallbackComponent
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
