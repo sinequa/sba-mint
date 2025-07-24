@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { booleanAttribute, Component, computed, effect, ElementRef, inject, input, model, output, Signal, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -20,13 +19,13 @@ import {
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent, StarIconComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({
   selector: 'app-search-input',
-  imports: [NgClass, RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
+  imports: [RouterLink, FormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent, StarIconComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.css',
   host: {

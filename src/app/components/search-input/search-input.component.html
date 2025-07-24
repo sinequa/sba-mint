@@ -4,7 +4,7 @@
   [variant]="'default'"
   [class]="
     cn(
-      'relative w-full transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
+      'relative w-full gap-2 px-3 transition-[border-radius] duration-150 focus-within:z-[1001] focus-within:rounded-2xl focus-within:rounded-br-none focus-within:rounded-bl-none',
       variant() === 'basic' && 'focus-within:rounded-lg focus-within:rounded-br-none focus-within:rounded-bl-none'
     )
   "
@@ -17,18 +17,14 @@
   (click)="inputClicked()">
   @if (showSave() && (searchInputText() !== '' || hasFilters())) {
     <button
-      variant="ghost"
+      variant="icon"
       size="xs"
       class="peer-disabled:opacity-50"
       [attr.title]="'searchInput.saveSearch' | transloco"
       [attr.aria-label]="'searchInput.saveSearch' | transloco"
       (click)="saveQuery($event)"
       (keydown.enter)="saveQuery($event)">
-      @if (savedSearch()) {
-        <i class="fa-fw fas fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
-      } @else {
-        <i class="fa-fw far fa-star" [ngClass]="{ 'animate-save': saveAnimation() }" aria-hidden="true"></i>
-      }
+      <StarIcon class="!block" aria-hidden="true" [fill]="!!savedSearch()" [class.animate-save]="!!saveAnimation()" />
     </button>
   }
 
@@ -41,12 +37,12 @@
       [disabled]="searchInputText() === ''"
       [routerLink]="['/assistant']"
       [queryParams]="{ q: searchInputText(), f: filters() }">
-      <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+      <i class="fa-fw fa-regular fa-sparkles" aria-hidden="true"></i>
       Ask AI
     </button>
   }
   <button
-    variant="ghost"
+    variant="icon"
     size="xs"
     [attr.title]="'search' | transloco"
     [attr.aria-label]="'search' | transloco"
@@ -56,7 +52,7 @@
     <SendHorizontalIcon />
   </button>
 
-  <div popover #autocompletePopover>
+  <div class="bg-transparent" popover #autocompletePopover>
     <ng-content></ng-content>
   </div>
 </SearchInput>
