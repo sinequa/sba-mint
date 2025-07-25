@@ -136,6 +136,7 @@ import {
                 <button variant="outline" (click)="toggled.set(!toggled())">Outline</button>
                 <button variant="ghost" (click)="toggled.set(!toggled())">Ghost</button>
                 <button variant="link" (click)="toggled.set(!toggled())">Link</button>
+                <button variant="icon" (click)="toggled.set(!toggled())">Icon</button>
                 <button variant="ai" (click)="toggled.set(!toggled())">AI</button>
                 <div class="flex gap-1">
                   <button size="icon" (click)="toggled.set(!toggled())">
@@ -159,6 +160,7 @@ import {
                 <button disabled variant="outline" (click)="toggled.set(!toggled())">Outline</button>
                 <button disabled variant="ghost" (click)="toggled.set(!toggled())">Ghost</button>
                 <button disabled variant="link" (click)="toggled.set(!toggled())">Link</button>
+                <button disabled variant="icon" (click)="toggled.set(!toggled())">Icon</button>
                 <button disabled variant="ai" (click)="toggled.set(!toggled())">AI</button>
                 <div class="flex gap-1">
                   <button disabled size="icon" (click)="toggled.set(!toggled())">
