@@ -120,16 +120,15 @@ body {
 }
 
 /* drawer stack and drawer preview */
-app-drawer-preview {
+DrawerPreview {
   /* removes the "important!" when the position: obsolute will be removed from the component */
   position: fixed !important;
   top: 0;
 }
-app-drawer:has(+ app-drawer) {
+Drawer:has(+ Drawer) {
   transform: translateX(-5px);
 }
-
-app-drawer:has(+ app-drawer + app-drawer) {
+Drawer:has(+ Drawer + Drawer) {
   transform: translateX(-8px);
 }
 
@@ -163,11 +162,41 @@ summary::-webkit-details-marker {
 }
 
 sq-chat-v3 {
+  sq-chat-message {
+    summary.text-muted,
+    summary.text-muted + ul {
+      color: var(--color-muted-foreground);
+
+      .text-success {
+        color: var(--color-success);
+      }
+    }
+  }
+
+  div.ast-input-container textarea {
+    color: var(--color-foreground) !important;
+  }
+
+  div.message-content {
+    color: var(--color-foreground);
+  }
+
   .references li {
     list-style: none;
   }
 
   .sq-chat-message-actions {
     z-index: 1 !important;
+  }
+}
+
+.sq-floating-scroll .btn {
+  background-color: var(--color-muted) !important;
+  color: var(--color-muted-foreground) !important;
+}
+
+sq-saved-chats-v3 {
+  div.saved-chat-date {
+    background-color: var(--color-muted) !important;
   }
 }

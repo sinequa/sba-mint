@@ -59,9 +59,9 @@
 
     <!-- if assistant is allowed -->
     @if (allowAI()) {
-      <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-14 overflow-hidden bg-orange-50')">
-        <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
-          <div class="flex size-8 items-center justify-center rounded-full border border-orange-100">
+      <Card variant="ai-no-hover">
+        <CardHeader class="flex items-baseline gap-1 px-0 text-base font-semibold">
+          <div class="flex size-8 items-center justify-center">
             @if (isStreaming()) {
               <i class="fas fa-spinner animate-spin"></i>
             } @else {
@@ -69,7 +69,7 @@
             }
           </div>
 
-          AI Overview
+          <h2>AI Overview</h2>
 
           <button
             variant="none"
@@ -78,17 +78,18 @@
             aria-label="toggle assistant">
             <i class="far fa-chevron-down"></i>
           </button>
-        </h2>
+        </CardHeader>
+
         @if (showAssistant()) {
-          <div class="h-96">
+          <CardContent [class]="cn('h-96 px-0', assistantCollapsed() && 'hidden')">
             <assistant
               [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
               [showAssistant]="showAssistant()"
               [instanceId]="instanceId()"
               (isStreaming)="isStreaming.set($event)" />
-          </div>
+          </CardContent>
         }
-      </div>
+      </Card>
     }
 
     <!-- display all records -->

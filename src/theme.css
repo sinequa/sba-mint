@@ -23,12 +23,14 @@
   --primary: #0084ff;
   --secondary: #e00b73;
   --destructive: #e80707;
+  --success: #2ed73f;
 
   --muted: var(--color-gray-100);
   --muted-foreground: var(--color-gray-600);
 
   --sidebar: oklch(from var(--background) calc(l - var(--shift)) c h);
   --header: var(--background);
+  --backdrop: oklch(from var(--foreground) l c h / 50%);
 
   /* Color variables for light theme */
   --primary-hover: oklch(from var(--primary) calc(l - var(--shift)) c h);
@@ -51,6 +53,13 @@
   --destructive-selected: oklch(from var(--destructive) l c h / 16%);
   --destructive-foreground: var(--background);
   --destructive-dialog: oklch(from var(--destructive) calc(l + var(--shift-10)) calc(c - var(--shift-3)) h);
+
+  /* Assistant  */
+  --ast-action-buttons-color: var(--color-foreground);
+  --ast-primary-color: var(--color-primary);
+  --ast-input-bg: var(--background);
+  --ast-muted-color: var(--muted-foreground);
+  --ast-secondary-bg: #fff8f1;
 
   /*
   --card: var(--color-gray-100);
@@ -88,11 +97,12 @@
 
   /* --muted-foreground: var(--color-gray-200); */
   /* --muted: var(--color-gray-800); */
-  --muted-foreground: oklch(from var(var(--color-gray-200)) l c h);
+  --muted-foreground: oklch(from var(--foreground) calc(l - var(--shift-6)) c h);
   --muted: oklch(from var(--background) calc(l - var(--shift-\.5)) c h);
 
   --sidebar: oklch(from var(--background) calc(l + var(--shift-\.5)) c h);
   --header: oklch(from var(--background) calc(l + var(--shift)) c h);
+  --backdrop: oklch(from var(--background) l c h / 70%);
 
   --primary-foreground: var(--color-gray-200);
   --secondary-foreground: var(--color-gray-200);
@@ -101,6 +111,24 @@
   --primary-dialog: oklch(from var(--primary) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
   --secondary-dialog: oklch(from var(--secondary) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
   --destructive-dialog: oklch(from var(--destructive) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
+
+  /* Assistant  */
+  --ast-primary-bg: #232e3d;
+  --ast-secondary-bg: #54473a;
+  --ast-reference-expanded-hover-bg: oklch(from var(--ast-secondary-bg) calc(l + var(--shift-2)) c h);
+  --ast-reference-passages-color: var(--color-foreground);
+  --ast-reference-icon-color: var(--color-foreground);
+  --ast-saved-chat-hover-background: oklch(from var(--ast-secondary-bg) l c h);
+  --ast-message-table-border-color: var(--color-muted-foreground);
+  --ast-message-table-tr-bg: var(--background);
+  --ast-message-table-tr-border-color: var(--color-muted-foreground);
+}
+
+@layer utilities {
+  .dark .prose {
+    --tw-prose-hr: var(--color-muted-foreground);
+    --tw-prose-bullets: var(--color-muted-foreground);
+  }
 }
 
 @theme {
@@ -151,11 +179,14 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive-dialog: var(--destructive-dialog);
 
+  --color-success: var(--success);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
   --color-sidebar: var(--sidebar);
   --color-header: var(--header);
+  --color-backdrop: var(--backdrop);
 
   /* --color-agent: var(--agent);
   --color-agent-100: var(--agent-100);
@@ -185,5 +216,31 @@
     100% {
       transform: translateX(100%);
     }
+  }
+}
+
+@keyframes show-backdrop {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hide-backdrop {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    display: none;
   }
 }

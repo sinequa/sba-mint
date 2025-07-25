@@ -29,7 +29,7 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';
@@ -61,7 +61,10 @@ type QueryParamsProps = {
     NavbarTabsComponent,
     ButtonComponent,
     AssistantComponent,
-    CardSkeleton
+    CardSkeleton,
+    CardComponent,
+    CardHeaderComponent,
+    CardContentComponent
   ],
   templateUrl: './search-all.component.html',
   styles: [

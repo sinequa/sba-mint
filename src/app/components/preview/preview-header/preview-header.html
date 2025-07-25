@@ -1,12 +1,12 @@
-<header class="flex items-center justify-between gap-4 text-base">
+<header class="flex items-center justify-between gap-4 py-1 text-base">
   <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
     <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap">{{ article().title }}</p>
   </a>
 
   <button
-    variant="ghost"
+    variant="none"
     title="Collapse preview header"
-    [class]="cn('[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
+    [class]="cn('hover:cursor-pointer', '[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
     (click)="headerCollapsed.set(!headerCollapsed())">
     <i class="fa-fw fa-regular fa-chevron-up"></i>
   </button>
@@ -14,7 +14,7 @@
 
 <!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
 <div [class]="cn('w-full', headerCollapsed() && 'hidden')">
-  <table class="flex flex-col gap-1">
+  <table class="flex w-full flex-col gap-1">
     <tr>
       <th>{{ 'location' | transloco }}</th>
 
