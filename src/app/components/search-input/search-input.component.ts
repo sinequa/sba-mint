@@ -1,24 +1,12 @@
-import {
-  afterNextRender,
-  booleanAttribute,
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  model,
-  output,
-  Signal,
-  signal,
-  viewChild
-} from '@angular/core';
+import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
+import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
+import { debounceTime } from 'rxjs';
 
 import { CCApp } from '@sinequa/atomic';
 import {
@@ -26,32 +14,62 @@ import {
   AppStore,
   AutocompleteService,
   DrawerAdvancedFiltersComponent,
-  SearchInputComponent as InputComponent,
   DrawerStackService,
+  SearchInputComponent as InputComponent,
   QueryParamsStore,
   SavedSearchDialog,
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, DropdownComponent, DropdownContentComponent, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
-import { debounceTime } from 'rxjs';
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-search-input',
-  imports: [RouterLink, ReactiveFormsModule, TranslocoPipe, ButtonComponent, SendHorizontalIconComponent, InputComponent],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    ButtonComponent,
+    SendHorizontalIconComponent,
+    InputComponent,
+    DropdownComponent,
+    DropdownContentComponent
+  ],
   templateUrl: './search-input.component.html',
-  styleUrl: './search-input.component.css',
   host: {
     '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
     '(keydown.enter)': 'emitText($event)'
   },
+  styles: [
+    `
+      :host {
+        /* Hides cancel button from input that as type='search' */
+        input[type='search']::-webkit-search-cancel-button {
+          -webkit-appearance: none;
+        }
+      }
+    `
+  ],
   providers: [provideTranslocoScope('search-input')]
 })
 export class SearchInputComponent {
   cn = cn;
+
+  dropdownComponent = viewChild.required(DropdownComponent);
+  InputComponent = viewChild.required<InputComponent>(InputComponent);
+
+  protected readonly route = inject(ActivatedRoute);
+  protected readonly autocompleteService = inject(AutocompleteService);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
+  protected readonly userSettingsStore = inject(UserSettingsStore);
+  protected readonly drawerStack = inject(DrawerStackService);
+  protected readonly appStore = inject(AppStore);
+  protected readonly translocoService = inject(TranslocoService);
+  protected readonly dialogService = inject(DialogService);
+  protected readonly appFeatures = inject(APP_FEATURES);
+
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<InputSearchVariants['variant']>('default');
   public readonly activeDescendant = input<ActiveSuggestion>();
@@ -61,18 +79,9 @@ export class SearchInputComponent {
   readonly saved = output<SearchItem | undefined>();
   readonly selected = output<HTMLElement | null>();
 
-  private readonly autocompletePopover = viewChild<ElementRef>('autocompletePopover');
-  private readonly popoverElement: Signal<HTMLDivElement> = computed(() => this.autocompletePopover()?.nativeElement);
-
-  protected readonly autocompleteService = inject(AutocompleteService);
-  private readonly drawerStack = inject(DrawerStackService);
-  protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly userSettingsStore = inject(UserSettingsStore);
-  private readonly appStore = inject(AppStore);
-  private readonly route = inject(ActivatedRoute);
-  private readonly translocoService = inject(TranslocoService);
-  private readonly dialogService = inject(DialogService);
-  private readonly appFeatures = inject(APP_FEATURES);
+  // focus monitor
+  protected readonly lastFocusOrigin = signal<FocusOrigin>(null);
+  private readonly focusMonitor = inject(FocusMonitor);
 
   public readonly searchInputText = model<string>('');
 
@@ -133,14 +142,19 @@ export class SearchInputComponent {
       const { text } = getState(this.queryParamsStore);
       this.form.controls.searchInputText.setValue(text || '');
     });
-  }
 
-  public closeAutocompletePopover(): void {
-    this.popoverElement().hidePopover();
-  }
-
-  public inputClicked(): void {
-    this.popoverElement().showPopover();
+    // focus monitor to track focus origin
+    effect(() => {
+      this.focusMonitor
+        .monitor(this.InputComponent().searchInput(), true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(origin => {
+          this.lastFocusOrigin.set(origin);
+          if (origin === 'keyboard') {
+            this.dropdownComponent().toggle();
+          }
+        });
+    });
   }
 
   public setInput(text: string | undefined, silent: boolean = true): void {
@@ -166,13 +180,13 @@ export class SearchInputComponent {
 
     const text = this.searchInputText();
     if (text) {
-      this.closeAutocompletePopover();
       this.validated.emit(text);
     }
   }
 
   onSearch(e: Event) {
     e.stopImmediatePropagation();
+    this.dropdownComponent().close();
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
       console.warn(message);
@@ -181,7 +195,6 @@ export class SearchInputComponent {
     }
 
     const text = this.searchInputText();
-    this.closeAutocompletePopover();
     this.validated.emit(text);
   }
 
@@ -201,16 +214,7 @@ export class SearchInputComponent {
     }
   }
 
-  focus(): void {
-    this.popoverElement().showPopover();
-  }
-
-  blur(): void {
-    this.popoverElement().hidePopover();
-  }
-
   onSelected($event: HTMLElement | null): void {
-    this.closeAutocompletePopover();
     this.form.controls.searchInputText.setValue($event?.getAttribute('data-text') || '');
     this.searchInputText.set($event?.getAttribute('data-text') || '');
     this.selected.emit($event);

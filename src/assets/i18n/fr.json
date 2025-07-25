@@ -87,6 +87,9 @@
   "People": "Personnes",
   "Places": "Lieux",
   "Sizes": "Tailles",
+  "concept": "Concept",
+  "full-text": "Texte intégral",
+  "company": "Société",
   "bookmark": "Marque-page",
   "recent-search": "Recherche récente",
   "saved-search": "Recherche enregistrée",
@@ -100,5 +103,24 @@
     "refresh": "Refraîchir"
   },
   "toggleDocumentSelection": "Basculer la sélection du document",
-  "homeWidgetTabs": "Liste d'onglets des widgets de la page d'accueil"
+  "homeWidgetTabs": "Liste d'onglets des widgets de la page d'accueil",
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Nom de fichier",
+    "relevance": "Pertinence",
+    "title": "Titre"
+  },
+  "msg#results": {
+    "results_all_tab": "Tout",
+    "resultsAllTab": "Tout",
+    "results_text_tab": "Texte",
+    "tabBusiness": "Business",
+    "tabLocation": "Lieux",
+    "tabPeople": "Personnes",
+    "web": "Internet",
+    "pdf": "PDF",
+    "word": "Word",
+    "excel": "Excel",
+    "powerpoint": "Powerpoint"
+  }
 }

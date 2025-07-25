@@ -95,6 +95,25 @@ body {
       transform: translateX(100%);
     }
   }
+
+  --animate-save: saved 1s;
+  @keyframes saved {
+    0% {
+      transform: translateY(0px) rotateZ(0);
+    }
+    10% {
+      transform: translateY(2px) rotateZ(-10deg);
+    }
+    50% {
+      transform: translateY(-10px) rotateZ(370deg);
+    }
+    90% {
+      transform: translateY(2px) rotateZ(360deg);
+    }
+    100% {
+      transform: translateY(0px) rotateZ(360deg);
+    }
+  }
 }
 
 :root {
