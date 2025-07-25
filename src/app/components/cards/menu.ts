@@ -13,12 +13,12 @@ type Article = A & {
 };
 
 @Component({
-  selector: 'card-menu, CarddMenu, cardmenu',
+  selector: 'card-menu, CardMenu, cardmenu',
   standalone: true,
   imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe], // Add necessary imports
   template: `
     <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
-      <button variant="ghost" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
+      <button variant="ghost" size="icon" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
         <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
         <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
       </button>
@@ -29,9 +29,7 @@ type Article = A & {
         }
         <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
         @if (allowAI()) {
-          <menuitem (click)="attachToAssistant()" class="text-orange-400 hover:bg-orange-100 hover:text-orange-500">
-            <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
-          </menuitem>
+          <menuitem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </menuitem>
         }
       </MenuContent>
     </menu>
