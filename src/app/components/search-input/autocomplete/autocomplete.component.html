@@ -1,7 +1,7 @@
 @if (suggestions()) {
   <ul
     id="search-suggestions"
-    class="z-10 mb-2 max-h-80 overflow-auto rounded-b-lg bg-white px-2 pt-2 pb-1 text-black"
+    class="z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-white px-2 pt-2 pb-1 text-black"
     role="listbox"
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {
@@ -9,35 +9,7 @@
         <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
       } @else if (suggest.$isTitle) {
         <li role="presentation" class="cursor-pointer p-2 text-xs font-semibold text-neutral-500">
-          @switch (suggest.category) {
-            @case ('company') {
-              {{ 'company' | transloco }}
-            }
-            @case ('location') {
-              {{ 'location' | transloco }}
-            }
-            @case ('full-text') {
-              {{ 'full-text' | transloco }}
-            }
-            @case ('recent-search') {
-              {{ 'searches.recent.label' | transloco }}
-            }
-            @case ('saved-search') {
-              {{ 'searches.saved.label' | transloco }}
-            }
-            @case ('bookmark') {
-              {{ 'bookmarks.label' | transloco }}
-            }
-            @case ('title') {
-              {{ 'documents' | transloco }}
-            }
-            @case ('concepts') {
-              {{ 'matters' | transloco }}
-            }
-            @case ('people') {
-              {{ 'collaborators' | transloco }}
-            }
-          }
+          {{ suggest.category | transloco }}
         </li>
       } @else {
         <li
@@ -46,32 +18,7 @@
           [id]="'search-suggestion-' + $index"
           [attr.data-text]="suggest.display"
           [attr.aria-label]="suggest.display">
-          @switch (suggest.category) {
-            @case ('recent-search') {
-              <i class="fa-fw far fa-clock-rotate-left"></i>
-            }
-            @case ('saved-search') {
-              <i class="fa-fw far fa-star"></i>
-            }
-            @case ('bookmark') {
-              <i class="fa-fw far fa-bookmark"></i>
-            }
-            @case ('full-text') {
-              <i class="fa-fw far fa-magnifying-glass"></i>
-            }
-            @case ('title') {
-              <i class="fa-fw far fa-file"></i>
-            }
-            @case ('concepts') {
-              <i class="fa-fw far fa-lightbulb"></i>
-            }
-            @case ('people') {
-              <i class="fa-fw far fa-user-circle"></i>
-            }
-            @default {
-              <i class="fa-fw far fa-magnifying-glass"></i>
-            }
-          }
+          <ng-container *ngComponentOutlet="getIconForCategory(suggest.category); inputs: { class: 'size-4' }"></ng-container>
 
           <p class="line-clamp-1 text-ellipsis">
             @for (chunk of suggest.display! | highlightWord: text() : 10; track $index) {
