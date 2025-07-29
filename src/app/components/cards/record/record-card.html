@@ -6,7 +6,8 @@
   (keydown.control.enter)="onCtrlEnter()"
   role="option">
   <CardHeader class="shrink-0 grow">
-    <header class="flex grow items-center gap-3">
+    <!-- Cascading overflow-auto to the title so it gets truncated -->
+    <header class="flex grow items-center gap-3 overflow-auto">
       <div
         class="text-primary group/icon bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full"
         (click)="onMultiSelectToggle($event)">
@@ -16,10 +17,9 @@
         <source class="text-lg group-hover/icon:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
       </div>
 
-      <!-- the overflow-hidden here constraints the flex to be inside it's parent -->
-      <div class="flex grow flex-col overflow-hidden">
-        <section class="flex items-baseline justify-between gap-2">
-          <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+      <div class="flex grow flex-col overflow-auto">
+        <section class="flex items-baseline justify-between gap-2 overflow-auto">
+          <span class="inline-flex grow items-baseline gap-2 overflow-auto">
             <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
 
             @if (showBookmark()) {
@@ -33,10 +33,7 @@
 
         <section class="flex items-center gap-2 text-xs">
           @if (docformatMetadata()) {
-            <Badge
-              variant="outline"
-              class="hover:bg-foreground hover:text-accent transition-colors duration-75 ease-in"
-              (click)="setFilter('docformat', docformatMetadata()!, $event)">
+            <Badge size="xs" (click)="setFilter('docformat', docformatMetadata()!, $event)">
               {{ docformatMetadata() }}
             </Badge>
           }
@@ -68,7 +65,7 @@
         @if (metadata.fields) {
           <div class="flex items-center gap-1 text-xs">
             @for (field of metadata.fields; track $index) {
-              <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
+              <Metadata size="xs" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
             }
           </div>
         }
