@@ -1,5 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
@@ -31,7 +32,6 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
