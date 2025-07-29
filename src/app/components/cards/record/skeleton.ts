@@ -5,15 +5,13 @@ import { cn } from '@sinequa/ui';
   selector: 'card-skeleton, cardskeleton, CardSkeleton',
   standalone: true,
   template: `
-    <!-- Icon -->
-    <span class="size-10"></span>
+    <div class="flex items-center gap-2">
+      <!-- Icon -->
+      <span class="size-10"></span>
 
-    <!-- Content -->
-    <div class="flex grow flex-col gap-3">
-      <div class="flex flex-col gap-2">
+      <div class="flex grow flex-col gap-2">
         <!-- Title -->
         <span class="h-3 w-[60%]"></span>
-
         <!-- Metadata -->
         <div class="flex gap-2">
           <span class="h-2 w-[10%]"></span>
@@ -21,7 +19,10 @@ import { cn } from '@sinequa/ui';
           <span class="h-2 w-[10%]"></span>
         </div>
       </div>
+    </div>
 
+    <!-- Content -->
+    <div class="flex grow flex-col gap-3">
       <div class="flex flex-col gap-2">
         <span class="h-2 w-[90%]"></span>
         <span class="h-2 w-[40%]"></span>
@@ -35,7 +36,7 @@ import { cn } from '@sinequa/ui';
     </div>
   `,
   host: {
-    '[class]': 'cn("flex p-2 gap-4 pointer-events-none", "[&_span]:bg-muted-foreground/50 [&_span]:animate-pulse [&_span]:rounded-full")'
+    '[class]': 'cn("flex flex-col p-2 gap-3 pointer-events-none", "[&_span]:bg-muted-foreground/50 [&_span]:animate-pulse [&_span]:rounded-full")'
   }
 })
 export class CardSkeleton {
