@@ -1,0 +1,162 @@
+/* Force dark mode to be used with .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Utility shift factors */
+  --shift-\.25: 0.01;
+  --shift-\.5: 0.02;
+  --shift: 0.04;
+  --shift-2: calc(var(--shift) * 2);
+  --shift-3: calc(var(--shift) * 3);
+  --shift-4: calc(var(--shift) * 4);
+  --shift-5: calc(var(--shift) * 5);
+  --shift-6: calc(var(--shift) * 6);
+  --shift-7: calc(var(--shift) * 7);
+  --shift-8: calc(var(--shift) * 8);
+  --shift-9: calc(var(--shift) * 9);
+  --shift-10: calc(var(--shift) * 10);
+
+  /* Color variables for light theme */
+  --primary-hover: oklch(from var(--primary) calc(l - var(--shift)) c h);
+  --primary-active: oklch(from var(--primary) calc(l - var(--shift-2)) c h);
+  --primary-disabled: oklch(from var(--primary) l c h / 16%);
+  --primary-selected: oklch(from var(--primary) l c h / 16%);
+  --primary-foreground: var(--background);
+  --primary-dialog: oklch(from var(--primary) calc(l + var(--shift-10)) calc(c - var(--shift-3)) h);
+
+  --secondary-hover: oklch(from var(--secondary) calc(l - var(--shift)) c h);
+  --secondary-active: oklch(from var(--secondary) calc(l - var(--shift-2)) c h);
+  --secondary-disabled: oklch(from var(--secondary) l c h / 16%);
+  --secondary-selected: oklch(from var(--secondary) l c h / 16%);
+  --secondary-foreground: var(--background);
+  --secondary-dialog: oklch(from var(--secondary) calc(l + var(--shift-10)) calc(c - var(--shift-3)) h);
+
+  --destructive-hover: oklch(from var(--destructive) calc(l - var(--shift)) c h);
+  --destructive-active: oklch(from var(--destructive) calc(l - var(--shift-2)) c h);
+  --destructive-disabled: oklch(from var(--destructive) l c h / 16%);
+  --destructive-selected: oklch(from var(--destructive) l c h / 16%);
+  --destructive-foreground: var(--background);
+  --destructive-dialog: oklch(from var(--destructive) calc(l + var(--shift-10)) calc(c - var(--shift-3)) h);
+
+  /* Assistant  */
+  --ast-primary-bg: var(--assistant-primary-bg);
+  --ast-secondary-bg: var(--assistant-secondary-bg);
+  --ast-action-buttons-color: var(--color-foreground);
+  --ast-primary-color: var(--color-primary);
+  --ast-input-bg: var(--background);
+  --ast-muted-color: var(--muted-foreground);
+}
+
+.dark {
+  --primary-foreground: var(--color-gray-200);
+  --secondary-foreground: var(--color-gray-200);
+  --destructive-foreground: var(--color-gray-200);
+
+  --primary-dialog: oklch(from var(--primary) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
+  --secondary-dialog: oklch(from var(--secondary) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
+  --destructive-dialog: oklch(from var(--destructive) calc(l - var(--shift-8)) calc(c - var(--shift-3)) h);
+
+  /* Assistant  */
+  --ast-primary-bg: var(--assistant-primary-bg);
+  --ast-secondary-bg: var(--assistant-secondary-bg);
+  --ast-reference-expanded-hover-bg: var(--background);
+  --ast-reference-passages-color: var(--color-foreground);
+  --ast-reference-icon-color: var(--color-foreground);
+  --ast-saved-chat-hover-background: oklch(from var(--ast-secondary-bg) l c h);
+  --ast-message-table-border-color: var(--color-muted-foreground);
+  --ast-message-table-tr-bg: var(--background);
+  --ast-message-table-tr-border-color: var(--color-muted-foreground);
+}
+
+@layer utilities {
+  .dark .prose {
+    --tw-prose-hr: var(--color-muted-foreground);
+    --tw-prose-bullets: var(--color-muted-foreground);
+  }
+}
+
+@theme {
+  --font-display: 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif';
+
+  --text-xxs: 0.625rem;
+
+  --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
+
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-alt-text: 'Sinequa logo';
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-border: var(--primary);
+  --color-primary-disabled: var(--primary-disabled);
+  --color-primary-selected: var(--primary-selected);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-dialog: var(--primary-dialog);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-active: var(--secondary-active);
+  --color-secondary-disabled: var(--secondary-disabled);
+  --color-secondary-selected: var(--secondary-selected);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-dialog: var(--secondary-dialog);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-destructive-active: var(--destructive-active);
+  --color-destructive-disabled: var(--destructive-disabled);
+  --color-destructive-selected: var(--destructive-selected);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-dialog: var(--destructive-dialog);
+
+  --color-success: var(--success);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-sidebar: var(--sidebar);
+  --color-header: var(--header);
+  --color-backdrop: var(--backdrop);
+
+  --animate-progress: progress 5s linear infinite;
+
+  @keyframes progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@keyframes show-backdrop {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hide-backdrop {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    display: none;
+  }
+}
