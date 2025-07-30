@@ -5,7 +5,6 @@
 @if (showInput()) {
   <app-search-input
     class="col-span-2 mr-8 h-full w-full"
-    variant="basic"
     [showSave]="true"
     (saved)="saveSearch($event)"
     (validated)="search($event)"

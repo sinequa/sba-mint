@@ -3,6 +3,7 @@
 @plugin "@tailwindcss/typography";
 
 @import './theme';
+@import './styles.dark';
 
 /* css overrides */
 @import './css-overrides/angular-cdk';
@@ -159,10 +160,6 @@ ul:has(card.selected) card:not(.selected) {
 /* safari fix */
 summary::-webkit-details-marker {
   display: none;
-}
-
-.dark sq-chat-v3 ul {
-  color-scheme: dark;
 }
 
 sq-chat-v3 {

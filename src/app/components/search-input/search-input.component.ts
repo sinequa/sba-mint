@@ -21,7 +21,7 @@ import {
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, DropdownComponent, DropdownContentComponent, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import { ButtonComponent, cn, DialogService, DropdownComponent, DropdownContentComponent, SearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
@@ -39,9 +39,9 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
   ],
   templateUrl: './search-input.component.html',
   host: {
-    '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
     '(keydown.enter)': 'emitText($event)'
   },
+  // '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
   styles: [
     `
       :host {
@@ -71,7 +71,7 @@ export class SearchInputComponent {
   protected readonly appFeatures = inject(APP_FEATURES);
 
   public readonly showSave = input(false, { transform: booleanAttribute });
-  public readonly variant = input<InputSearchVariants['variant']>('default');
+  public readonly variant = input<SearchVariants['variant']>('default');
   public readonly activeDescendant = input<ActiveSuggestion>();
 
   readonly debounced = output<string>();

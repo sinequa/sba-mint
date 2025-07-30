@@ -38,7 +38,7 @@ import {
   SwitchComponent,
   TabComponent,
   TabsComponent,
-  UserRoundIconComponent,
+  UserIcon,
   VerticalDividerComponent
 } from '@sinequa/ui';
 
@@ -61,7 +61,6 @@ import {
     SidebarItemComponent,
     AvatarComponent,
     AvatarFallbackComponent,
-    UserRoundIconComponent,
     SearchComponent,
     MenuComponent,
     MenuContentComponent,
@@ -80,7 +79,8 @@ import {
     PageHeaderComponent,
     PopoverComponent,
     PopoverContentComponent,
-    InputComponent
+    InputComponent,
+    UserIcon
   ],
   template: `
     <div class="mx-auto flex flex-col gap-2 p-8">
@@ -620,7 +620,7 @@ import {
             <Menu>
               <Avatar class="cursor-pointer">
                 <AvatarFallback>
-                  <UserRound class="size-7 p-1" />
+                  <UserIcon class="size-7 p-1" />
                 </AvatarFallback>
               </Avatar>
               <!-- min-w-max used to display all the content -->
@@ -746,7 +746,7 @@ import {
             <p>Avatar:</p>
             <Avatar>
               <AvatarFallback class="text-muted-foreground bg-muted text-sm font-semibold">
-                <UserRound class="size-7 p-1" />
+                <UserIcon class="size-7 p-1" />
               </AvatarFallback>
             </Avatar>
           </div>
