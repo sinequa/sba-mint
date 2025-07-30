@@ -32,6 +32,7 @@
         </td>
       </tr>
     }
+
     @if (article().modified) {
       <tr>
         <th>{{ 'lastUpdatedOn' | transloco }}</th>
@@ -41,20 +42,16 @@
         </td>
       </tr>
     }
+
     @if (hasLabels()) {
       <tr>
         <th>{{ 'labels' | transloco }}</th>
 
         <td class="flex flex-col gap-1">
           <!-- public labels-->
-          <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
+          <Metadata class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
           <!-- private labels -->
-          <Metadata
-            variant="outline"
-            class="bg-secondary/20 cursor-pointer"
-            [article]="article()!"
-            [metadata]="labels.private"
-            (click)="onMetadataClick($event)" />
+          <Metadata class="bg-secondary/20 cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
         </td>
       </tr>
     }
@@ -63,7 +60,7 @@
       <th>{{ 'type' | transloco }}</th>
 
       <td>
-        <Metadata variant="outline" class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
+        <Metadata class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
       </td>
     </tr>
   </table>
