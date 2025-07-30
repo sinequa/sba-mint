@@ -99,9 +99,6 @@ export class NavbarComponent {
 
   protected search(text: string): void {
     this.queryParamsStore.patch({ text });
-
-    // ! we need to remove the page parameter from the query params when new search is performed
-    this.router.navigate(['search'], { queryParams: { q: text, p: undefined }, queryParamsHandling: 'replace' });
   }
 
   /**
@@ -130,8 +127,7 @@ export class NavbarComponent {
    * @param element - The selected suggestion element.
    */
   protected selected(element: HTMLElement | null): void {
-    this.searchInput()?.closeAutocompletePopover();
     // We should pass the focus somewhere else after selecting a suggestion
-    this.search(element?.getAttribute('data-text') || this.searchText());
+    this.search(element?.dataset['text'] || this.searchText());
   }
 }

@@ -17,7 +17,7 @@ import {
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  UserRoundIconComponent
+  UserIcon
 } from '@sinequa/ui';
 
 @Component({
@@ -33,7 +33,7 @@ import {
     ResetUserSettingsDialogComponent,
     FlagEnglishIconComponent,
     FlagFrenchIconComponent,
-    UserRoundIconComponent,
+    UserIcon,
     ChevronRightIconComponent,
     AvatarComponent,
     AvatarImageComponent,
