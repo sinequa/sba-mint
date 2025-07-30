@@ -209,20 +209,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
-    var box = getBoundingBox(elements);
-    if (box) {
-      var marginTopLeft = 12;
-      var marginBottomRight = -8;
-      var left = Math.max(0, box.left - marginTopLeft);
-      var top_1 = Math.max(0, box.top - marginTopLeft);
-      var right = box.right + marginBottomRight;
-      var bottom = box.bottom + marginBottomRight;
-      passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
-      passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
-      passageHighlighter.style.width = right - left + 'px';
-      passageHighlighter.style.height = bottom - top_1 + 'px';
-      passageHighlighter.style.display = 'block';
-    }
+    setTimeout(() => {
+      var box = getBoundingBox(elements);
+      if (box) {
+        var marginTopLeft = 12;
+        var marginBottomRight = -8;
+        var left = Math.max(0, box.left - marginTopLeft);
+        var top_1 = Math.max(0, box.top - marginTopLeft);
+        var right = box.right + marginBottomRight;
+        var bottom = box.bottom + marginBottomRight;
+        passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
+        passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
+        passageHighlighter.style.width = right - left + 'px';
+        passageHighlighter.style.height = bottom - top_1 + 'px';
+        passageHighlighter.style.display = 'block';
+      }
+    }, 400);
   }
   function selectPassage2(elements) {
     passageHighlighter.style.display = 'none';
