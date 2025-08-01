@@ -197,11 +197,13 @@ document.addEventListener('DOMContentLoaded', function () {
         behavior: 'auto'
       });
 
-      if (usePassageHighlighter && visibleElements.length > 0) {
-        selectPassage(visibleElements);
-      } else if (elements.length > 0) {
-        selectHighlight(elements);
-      }
+      setTimeout(() => {
+        if (usePassageHighlighter && visibleElements.length > 0) {
+          selectPassage(visibleElements);
+        } else if (elements.length > 0) {
+          selectHighlight(elements);
+        }
+      }, 400);
     }
     if (visibleElements.length > 0) {
       returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
