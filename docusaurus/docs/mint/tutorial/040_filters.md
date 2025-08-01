@@ -70,7 +70,7 @@ Because this provider is commented out, AGGREGATIONS_NAMES and AGGREGATIONS_NAME
 
 You must add AGGREGATIONS_NAMES to the appropriate import statement, and you can choose to add AGGREGATIONS_NAMES_PRESET_DEFAULT to the appropriate import statement, if you are using it for your filter configuration.
 
-You can also hover over AGGREGATIONS_NAMES, click **Quick Fix**, and choose **Update import from "@sineuqa/atomic-angular"**.
+You can also hover over AGGREGATIONS_NAMES, click **Quick Fix**, and choose **Update import from "@sinequa/atomic-angular"**.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/040_filters/quick_fix.png')} width="70%" alt="Mint Aggregations"/>
