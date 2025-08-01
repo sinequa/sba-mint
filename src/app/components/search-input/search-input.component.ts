@@ -6,7 +6,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 
 import { CCApp } from '@sinequa/atomic';
 import {
@@ -84,6 +84,7 @@ export class SearchInputComponent {
   private readonly focusMonitor = inject(FocusMonitor);
 
   public readonly searchInputText = model<string>('');
+  private debounceInputText = new Subject<string>();
 
   protected readonly saveAnimation = signal<boolean>(false);
 
@@ -132,8 +133,13 @@ export class SearchInputComponent {
   protected readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
+    // on input value change, update directly searchInputText but have debounced to emit with debounceTime
+    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
       this.searchInputText.set(value);
+      this.debounceInputText.next(value);
+    });
+
+    this.debounceInputText.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
       this.debounced.emit(value);
     });
 
@@ -179,7 +185,7 @@ export class SearchInputComponent {
     }
 
     const text = this.searchInputText();
-    if (text) {
+    if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
     }
   }
@@ -215,8 +221,11 @@ export class SearchInputComponent {
   }
 
   onSelected($event: HTMLElement | null): void {
-    this.form.controls.searchInputText.setValue($event?.getAttribute('data-text') || '');
-    this.searchInputText.set($event?.getAttribute('data-text') || '');
+    const dataText = $event?.getAttribute('data-text');
+    if (!dataText) return;
+
+    this.form.controls.searchInputText.setValue(dataText);
+    this.searchInputText.set(dataText);
     this.selected.emit($event);
   }
 }
