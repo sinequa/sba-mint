@@ -1,7 +1,7 @@
 @if (suggestions()) {
   <ul
     id="search-suggestions"
-    class="z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-white px-2 pt-2 pb-1 text-black"
+    class="z-10 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-white p-2 px-2 text-black"
     role="listbox"
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {
@@ -27,6 +27,10 @@
           </p>
         </li>
       }
+    } @empty {
+      <span class="text-muted-foreground px-2">
+        {{ 'searchInput.noSuggestions' | transloco }}
+      </span>
     }
   </ul>
 }
