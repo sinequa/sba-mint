@@ -104,6 +104,9 @@ export class SearchInputComponent {
 
   readonly saveNameInput = viewChild<ElementRef>('saveNameInput');
   public readonly saveName = signal<string>('');
+  public readonly trimmedSaveName = computed(() => {
+    return this.saveName()?.trim();
+  });
   // used to prevent opening the suggestions dropdown if the saved search is opened
   protected readonly openedSavedSearch = signal<boolean>(false);
 
@@ -225,7 +228,7 @@ export class SearchInputComponent {
       // no animation when unsaving
       this.saved.emit(this.savedSearch());
     } else {
-      this.savedSearchesService.saveSearch(this.saveName());
+      this.savedSearchesService.saveSearch(this.trimmedSaveName());
       this.saveAnimation.set(true);
       setTimeout(() => this.saveAnimation.set(false), 1000);
       this.popoverComponent().close();

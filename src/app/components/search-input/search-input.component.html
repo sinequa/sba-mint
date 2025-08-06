@@ -23,9 +23,9 @@
             </button>
 
             <PopoverContent #popoverContent class="min-w-xs p-2" position="bottom-end">
-              <label class="text-xl font-bold">{{ 'searches.saved.save' | transloco }}</label>
+              <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
               <!-- <MenuSeparator /> -->
-              <div class="py-2">
+              <div class="py-4">
                 <input
                   #saveNameInput
                   type="text"
@@ -41,7 +41,7 @@
                 <button variant="outline" (click)="popover.close()">
                   {{ 'cancel' | transloco }}
                 </button>
-                <button (click)="saveQuery($event)" [disabled]="!saveName()">
+                <button (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
                   {{ 'confirm' | transloco }}
                 </button>
               </div>
