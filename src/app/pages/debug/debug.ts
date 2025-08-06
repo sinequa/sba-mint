@@ -5,11 +5,14 @@ import {
   AvatarComponent,
   AvatarFallbackComponent,
   BadgeComponent,
+  BadgeVariants,
   ButtonComponent,
+  ButtonVariants,
   CardComponent,
   CardContentComponent,
   CardFooterComponent,
   CardHeaderComponent,
+  CardVariants,
   ChevronRightIconComponent,
   cn,
   DialogComponent,
@@ -24,7 +27,9 @@ import {
   FlagFrenchIconComponent,
   HorizontalDividerComponent,
   InputComponent,
+  InputVariants,
   ListItemComponent,
+  ListItemVariants,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
@@ -33,11 +38,13 @@ import {
   PopoverComponent,
   PopoverContentComponent,
   SearchComponent,
+  SearchVariants,
   SidebarComponent,
   SidebarItemComponent,
   SwitchComponent,
   TabComponent,
   TabsComponent,
+  TabVariants,
   UserIcon,
   VerticalDividerComponent
 } from '@sinequa/ui';
@@ -100,7 +107,8 @@ import {
         <Tab class="w-fit" value="miscs" [active]="currentTab() === 'miscs'" (click)="currentTab.set('miscs')">Miscs</Tab>
         <Tab class="w-fit" value="sidebars" [active]="currentTab() === 'sidebars'" (click)="currentTab.set('sidebars')">Sidebars</Tab>
         <Tab class="w-fit" value="menus" [active]="currentTab() === 'menus'" (click)="currentTab.set('menus')">Menus & List Items</Tab>
-        <Tab class="me-auto w-fit" value="dialogs" [active]="currentTab() === 'dialogs'" (click)="currentTab.set('dialogs')">Dialogs</Tab>
+        <Tab class="w-fit" value="dialogs" [active]="currentTab() === 'dialogs'" (click)="currentTab.set('dialogs')">Dialogs</Tab>
+        <Tab class="me-auto w-fit" value="tests" [active]="currentTab() === 'tests'" (click)="currentTab.set('tests')">Tests</Tab>
       </Tabs>
     </div>
 
@@ -127,25 +135,32 @@ import {
             <h1>Buttons</h1>
 
             <div class="grid grid-cols-2 gap-4">
+              <div class="col-span-2">
+                <span>Decoration</span>
+                <select [(ngModel)]="buttonDecoration" name="buttonDecoration">
+                  <option value="none">None</option>
+                  <option value="outline">Outline</option>
+                  <option value="underline">Underline</option>
+                </select>
+              </div>
+
               <div class="flex flex-col gap-2">
                 <span>Enabled</span>
-                <button variant="default" (click)="toggled.set(!toggled())">Default</button>
-                <button variant="primary" (click)="toggled.set(!toggled())">Primary</button>
-                <button variant="secondary" (click)="toggled.set(!toggled())">Secondary</button>
-                <button variant="destructive" (click)="toggled.set(!toggled())">Destructive</button>
-                <button variant="outline" (click)="toggled.set(!toggled())">Outline</button>
-                <button variant="ghost" (click)="toggled.set(!toggled())">Ghost</button>
-                <button variant="link" (click)="toggled.set(!toggled())">Link</button>
-                <button variant="icon" (click)="toggled.set(!toggled())">Icon</button>
-                <button variant="ai" (click)="toggled.set(!toggled())">AI</button>
+
+                <button variant="default" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Default</button>
+                <button variant="primary" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Primary</button>
+                <button variant="secondary" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Secondary</button>
+                <button variant="destructive" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Destructive</button>
+                <button variant="ghost" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Ghost</button>
+                <button variant="icon" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">Icon</button>
+                <button variant="ai" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">
+                  <span>Intelligence</span>
+                </button>
                 <div class="flex gap-1">
-                  <button size="icon" (click)="toggled.set(!toggled())">
+                  <button size="icon" [decoration]="buttonDecoration()" (click)="toggled.set(!toggled())">
                     <i class="fa-fw far fa-robot"></i>
                   </button>
-                  <button size="icon" variant="primary" (click)="toggled.set(!toggled())">
-                    <i class="fa-fw far fa-robot"></i>
-                  </button>
-                  <button size="icon" variant="outline" (click)="toggled.set(!toggled())">
+                  <button size="icon" [decoration]="buttonDecoration()" variant="primary" (click)="toggled.set(!toggled())">
                     <i class="fa-fw far fa-robot"></i>
                   </button>
                 </div>
@@ -153,23 +168,20 @@ import {
               </div>
               <div class="flex flex-col gap-2">
                 <span>Disabled</span>
-                <button disabled variant="default" (click)="toggled.set(!toggled())">Default</button>
-                <button disabled variant="primary" (click)="toggled.set(!toggled())">Primary</button>
-                <button disabled variant="secondary" (click)="toggled.set(!toggled())">Secondary</button>
-                <button disabled variant="destructive" (click)="toggled.set(!toggled())">Destructive</button>
-                <button disabled variant="outline" (click)="toggled.set(!toggled())">Outline</button>
-                <button disabled variant="ghost" (click)="toggled.set(!toggled())">Ghost</button>
-                <button disabled variant="link" (click)="toggled.set(!toggled())">Link</button>
-                <button disabled variant="icon" (click)="toggled.set(!toggled())">Icon</button>
-                <button disabled variant="ai" (click)="toggled.set(!toggled())">AI</button>
+                <button disabled [decoration]="buttonDecoration()" variant="default" (click)="toggled.set(!toggled())">Default</button>
+                <button disabled [decoration]="buttonDecoration()" variant="primary" (click)="toggled.set(!toggled())">Primary</button>
+                <button disabled [decoration]="buttonDecoration()" variant="secondary" (click)="toggled.set(!toggled())">Secondary</button>
+                <button disabled [decoration]="buttonDecoration()" variant="destructive" (click)="toggled.set(!toggled())">Destructive</button>
+                <button disabled [decoration]="buttonDecoration()" variant="ghost" (click)="toggled.set(!toggled())">Ghost</button>
+                <button disabled [decoration]="buttonDecoration()" variant="icon" (click)="toggled.set(!toggled())">Icon</button>
+                <button disabled [decoration]="buttonDecoration()" variant="ai" (click)="toggled.set(!toggled())">
+                  <span>Intelligence</span>
+                </button>
                 <div class="flex gap-1">
-                  <button disabled size="icon" (click)="toggled.set(!toggled())">
+                  <button [decoration]="buttonDecoration()" disabled size="icon" (click)="toggled.set(!toggled())">
                     <i class="fa-fw far fa-robot"></i>
                   </button>
-                  <button disabled size="icon" variant="primary" (click)="toggled.set(!toggled())">
-                    <i class="fa-fw far fa-robot"></i>
-                  </button>
-                  <button disabled size="icon" variant="outline" (click)="toggled.set(!toggled())">
+                  <button [decoration]="buttonDecoration()" disabled size="icon" variant="primary" (click)="toggled.set(!toggled())">
                     <i class="fa-fw far fa-robot"></i>
                   </button>
                 </div>
@@ -179,14 +191,21 @@ import {
 
             <h1 class="mt-4">Switches</h1>
 
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-3 gap-2">
               <div class="flex flex-col gap-2">
                 <div class="flex gap-2"><Switch variant="default" /> Default</div>
                 <div class="flex gap-2"><Switch variant="primary" /> Primary</div>
                 <div class="flex gap-2"><Switch variant="secondary" /> Secondary</div>
                 <div class="flex gap-2"><Switch variant="destructive" /> Destructive</div>
-                <div class="flex gap-2"><Switch variant="link" /> Link</div>
                 <div class="flex gap-2"><Switch variant="ai" /> AI</div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex gap-2"><Switch disabled variant="default" /> Default</div>
+                <div class="flex gap-2"><Switch disabled variant="primary" /> Primary</div>
+                <div class="flex gap-2"><Switch disabled variant="secondary" /> Secondary</div>
+                <div class="flex gap-2"><Switch disabled variant="destructive" /> Destructive</div>
+                <div class="flex gap-2"><Switch disabled variant="ai" /> AI</div>
               </div>
 
               <div class="flex flex-col gap-2">
@@ -194,7 +213,6 @@ import {
                 <div class="flex gap-2"><Switch size="xs" variant="primary" /> Primary</div>
                 <div class="flex gap-2"><Switch size="xs" variant="secondary" /> Secondary</div>
                 <div class="flex gap-2"><Switch size="xs" variant="destructive" /> Destructive</div>
-                <div class="flex gap-2"><Switch size="xs" variant="link" /> Link</div>
                 <div class="flex gap-2"><Switch size="xs" variant="ai" /> AI</div>
               </div>
             </div>
@@ -204,57 +222,68 @@ import {
           <section>
             <h1 class="col-span-2">Badges</h1>
 
+            <div class="col-span-2 flex justify-between">
+              <span>Decoration</span>
+              <select [(ngModel)]="badgeDecoration" name="badgeDecoration">
+                <option value="none">None</option>
+                <option value="outline">Outline</option>
+              </select>
+            </div>
+            <div class="col-span-2 flex justify-between">
+              <span>Hover</span>
+              <select [(ngModel)]="badgeHover" name="badgeHover">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+
             <div class="flex flex-col gap-8">
               <section class="flex max-w-40 flex-wrap gap-2">
                 <h2>XXS:</h2>
 
-                <badge size="xxs" variant="default">Default</badge>
-                <badge size="xxs" variant="primary">Primary</badge>
-                <badge size="xxs" variant="accent">Accent</badge>
-                <badge size="xxs" variant="destructive">Destructive</badge>
-                <badge size="xxs" variant="outline">Outline</badge>
-                <badge size="xxs" variant="ghost">Ghost</badge>
-                <badge size="xxs" variant="ai">AI</badge>
-                <badge size="xxs" variant="none">None</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="default">Default</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="primary">Primary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="secondary">Secondary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="destructive">Destructive</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="ghost">Ghost</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="ai">AI</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xxs" variant="none">None</badge>
               </section>
 
               <section class="flex max-w-40 flex-wrap gap-2">
                 <h2>XS:</h2>
 
-                <badge size="xs" variant="default">Default</badge>
-                <badge size="xs" variant="primary">Primary</badge>
-                <badge size="xs" variant="accent">Accent</badge>
-                <badge size="xs" variant="destructive">Destructive</badge>
-                <badge size="xs" variant="outline">Outline</badge>
-                <badge size="xs" variant="ghost">Ghost</badge>
-                <badge size="xs" variant="ai">AI</badge>
-                <badge size="xs" variant="none">None</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="default">Default</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="primary">Primary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="secondary">Secondary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="destructive">Destructive</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="ghost">Ghost</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="ai">AI</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="xs" variant="none">None</badge>
               </section>
 
               <section class="flex max-w-40 flex-wrap gap-2">
                 <h2>SM:</h2>
 
-                <badge size="sm" variant="default">Default</badge>
-                <badge size="sm" variant="primary">Primary</badge>
-                <badge size="sm" variant="accent">Accent</badge>
-                <badge size="sm" variant="destructive">Destructive</badge>
-                <badge size="sm" variant="outline">Outline</badge>
-                <badge size="sm" variant="ghost">Ghost</badge>
-                <badge size="sm" variant="ai">AI</badge>
-                <badge size="sm" variant="none">None</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="default">Default</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="primary">Primary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="secondary">Secondary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="destructive">Destructive</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="ghost">Ghost</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="ai">AI</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" size="sm" variant="none">None</badge>
               </section>
 
               <section class="flex max-w-40 flex-wrap gap-2">
                 <h2>Default:</h2>
 
-                <badge variant="default">Default</badge>
-                <badge variant="primary">Primary</badge>
-                <badge variant="accent">Accent</badge>
-                <badge variant="destructive">Destructive</badge>
-                <badge variant="outline">Outline</badge>
-                <badge variant="ghost">Ghost</badge>
-                <badge variant="ai">AI</badge>
-                <badge variant="none">None</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="default">Default</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="primary">Primary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="secondary">Secondary</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="destructive">Destructive</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="ghost">Ghost</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="ai">AI</badge>
+                <badge [decoration]="badgeDecoration()" [hover]="badgeHover()" variant="none">None</badge>
               </section>
             </div>
           </section>
@@ -262,8 +291,16 @@ import {
       }
 
       @case ('cards') {
+        <div>
+          <span>Hover</span>
+          <select [(ngModel)]="cardHover" name="cardHover">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
         <section class="flex flex-wrap gap-3 px-16">
-          <Card variant="default" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="default" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Default card</h1>
             </CardHeader>
@@ -281,7 +318,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card variant="primary" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="primary" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Primary card</h1>
             </CardHeader>
@@ -299,7 +336,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card variant="secondary" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="secondary" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Secondary card</h1>
             </CardHeader>
@@ -317,7 +354,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card variant="destructive" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="destructive" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Destructive card</h1>
             </CardHeader>
@@ -335,7 +372,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card variant="ai" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="ai" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>AI card</h1>
             </CardHeader>
@@ -353,7 +390,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card variant="ghost" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card variant="ghost" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Ghost card</h1>
             </CardHeader>
@@ -373,7 +410,7 @@ import {
         </section>
 
         <section class="flex flex-wrap gap-3 px-16">
-          <Card disabled variant="default" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="default" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Default card</h1>
             </CardHeader>
@@ -391,7 +428,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card disabled variant="primary" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="primary" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Primary card</h1>
             </CardHeader>
@@ -409,7 +446,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card disabled variant="secondary" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="secondary" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Secondary card</h1>
             </CardHeader>
@@ -427,7 +464,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card disabled variant="destructive" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="destructive" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Destructive card</h1>
             </CardHeader>
@@ -445,7 +482,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card disabled variant="ai" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="ai" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>AI card</h1>
             </CardHeader>
@@ -463,7 +500,7 @@ import {
             </CardFooter>
           </Card>
 
-          <Card disabled variant="ghost" [class]="cn('max-w-70', selected() ? 'selected' : '')">
+          <Card disabled variant="ghost" [hover]="cardHover()" [class]="cn('max-w-70', selected() ? 'selected' : '')">
             <CardHeader>
               <h1>Ghost card</h1>
             </CardHeader>
@@ -484,6 +521,14 @@ import {
       }
 
       @case ('searchbars') {
+        <div>
+          <span>Decoration</span>
+          <select [(ngModel)]="searchbarDecoration" name="searchbarDecoration">
+            <option value="outline">Outline</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+
         <table class="mx-auto flex flex-col gap-6 [&_tr]:grid [&_tr]:grid-cols-[100px_1fr_1fr] [&_tr]:items-center [&_tr]:gap-6">
           <thead>
             <tr>
@@ -492,86 +537,51 @@ import {
               <th>Disabled</th>
             </tr>
           </thead>
+
           <tbody class="flex flex-col gap-4 [&_th]:text-right">
             <tr>
               <th>Default</th>
               <td>
-                <Search [(ngModel)]="searchValue" variant="default"></Search>
+                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="default"></Search>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" variant="default"></Search>
+                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="default"></Search>
               </td>
             </tr>
             <tr>
               <th>Primary</th>
               <td>
-                <Search [(ngModel)]="searchValue" variant="primary"></Search>
+                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="primary"></Search>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" variant="primary"></Search>
+                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="primary"></Search>
               </td>
             </tr>
             <tr>
               <th>Secondary</th>
               <td>
-                <Search [(ngModel)]="searchValue" variant="secondary"></Search>
+                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="secondary"></Search>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" variant="secondary"></Search>
+                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="secondary"></Search>
               </td>
             </tr>
             <tr>
               <th>Destructive</th>
               <td>
-                <Search [(ngModel)]="searchValue" variant="destructive"></Search>
+                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="destructive"></Search>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" variant="destructive"></Search>
+                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="destructive"></Search>
               </td>
             </tr>
             <tr>
               <th>AI</th>
               <td>
-                <Search [(ngModel)]="searchValue" variant="ai"></Search>
+                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></Search>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" variant="ai"></Search>
-              </td>
-            </tr>
-            <tr>
-              <th>Outline</th>
-              <td>
-                <Search [(ngModel)]="searchValue" variant="outline"></Search>
-              </td>
-              <td>
-                <Search disabled [(ngModel)]="searchValue" variant="outline"></Search>
-              </td>
-            </tr>
-            <tr>
-              <th>Ghost</th>
-              <td>
-                <Search [(ngModel)]="searchValue" variant="ghost"></Search>
-              </td>
-              <td>
-                <Search disabled [(ngModel)]="searchValue" variant="ghost"></Search>
-              </td>
-            </tr>
-            <tr>
-              <th>Link</th>
-              <td>
-                <Search [(ngModel)]="searchValue" variant="link"></Search>
-              </td>
-              <td>
-                <Search disabled [(ngModel)]="searchValue" variant="link"></Search>
-              </td>
-            </tr>
-            <tr>
-              <th>None</th>
-              <td>
-                <Search [(ngModel)]="searchValue" variant="none"></Search>
-              </td>
-              <td>
-                <Search disabled [(ngModel)]="searchValue" variant="none"></Search>
+                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></Search>
               </td>
             </tr>
           </tbody>
@@ -579,21 +589,26 @@ import {
       }
 
       @case ('menus') {
+        <div>
+          <span>Decoration</span>
+          <select [(ngModel)]="menuDecoration" name="menuDecoration">
+            <option value="outline">Outline</option>
+            <option value="underline">Underline</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+
         <div class="mx-auto flex gap-6">
           <div>
             <Menu>
               <button variant="ghost">Menu</button>
               <!-- min-w-max used to display all the content -->
               <MenuContent position="bottom-start" class="min-w-max">
-                <MenuItem variant="default"><span>Default</span></MenuItem>
-                <MenuItem variant="primary"><span>Primary</span></MenuItem>
-                <MenuItem variant="secondary"><span>Secondary</span></MenuItem>
-                <MenuItem variant="destructive"><span>Destructive</span></MenuItem>
-                <MenuItem variant="ai"><span>AI</span></MenuItem>
-                <MenuItem variant="outline"><span>Outline</span></MenuItem>
-                <MenuItem variant="ghost"><span>Ghost</span></MenuItem>
-                <MenuItem variant="link"><span>Link</span></MenuItem>
-                <MenuItem variant="none"><span>None</span></MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="default"><span>Default</span></MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="primary"><span>Primary</span></MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="secondary"><span>Secondary</span></MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="destructive"><span>Destructive</span></MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="ai"><span>AI</span></MenuItem>
               </MenuContent>
             </Menu>
           </div>
@@ -603,15 +618,11 @@ import {
               <button variant="ghost">Menu disabled</button>
               <!-- min-w-max used to display all the content -->
               <MenuContent position="bottom-start" class="min-w-max">
-                <MenuItem disabled variant="default"><span>Default</span></MenuItem>
-                <MenuItem disabled variant="primary"><span>Primary</span></MenuItem>
-                <MenuItem disabled variant="secondary"><span>Secondary</span></MenuItem>
-                <MenuItem disabled variant="destructive"><span>Destructive</span></MenuItem>
-                <MenuItem disabled variant="ai"><span>AI</span></MenuItem>
-                <MenuItem disabled variant="outline"><span>Outline</span></MenuItem>
-                <MenuItem disabled variant="ghost"><span>Ghost</span></MenuItem>
-                <MenuItem disabled variant="link"><span>Link</span></MenuItem>
-                <MenuItem disabled variant="none"><span>None</span></MenuItem>
+                <MenuItem disabled [decoration]="menuDecoration()" variant="default"><span>Default</span></MenuItem>
+                <MenuItem disabled [decoration]="menuDecoration()" variant="primary"><span>Primary</span></MenuItem>
+                <MenuItem disabled [decoration]="menuDecoration()" variant="secondary"><span>Secondary</span></MenuItem>
+                <MenuItem disabled [decoration]="menuDecoration()" variant="destructive"><span>Destructive</span></MenuItem>
+                <MenuItem disabled [decoration]="menuDecoration()" variant="ai"><span>AI</span></MenuItem>
               </MenuContent>
             </Menu>
           </div>
@@ -626,38 +637,38 @@ import {
               <!-- min-w-max used to display all the content -->
               <MenuContent position="bottom-start" class="min-w-max">
                 <menu position="left-start">
-                  <MenuItem variant="none">
+                  <MenuItem [decoration]="menuDecoration()" variant="default">
                     <span class="grow">Select language</span>
                     <ChevronRight class="size-4" />
                   </MenuItem>
                   <!-- max with to fit content but min width is 10rem (160px) -->
                   <MenuContent position="left-start" class="max-w-fit min-w-40">
-                    <MenuItem variant="none" class="justify-between">
+                    <MenuItem [decoration]="menuDecoration()" variant="default" class="justify-between">
                       <span>English</span>
                       <FlagEnglish class="size-4" />
                     </MenuItem>
-                    <MenuItem variant="none" class="justify-between">
+                    <MenuItem [decoration]="menuDecoration()" variant="default" class="justify-between">
                       <span>French</span>
                       <FlagFrench class="size-4" />
                     </MenuItem>
                   </MenuContent>
                 </menu>
-                <MenuItem variant="destructive">
+                <MenuItem [decoration]="menuDecoration()" variant="destructive">
                   <i class="fa-fw fal fa-trash text-[16px]"></i>
                   <span>Reset user settings</span>
                 </MenuItem>
                 <HorizontalDivider />
-                <MenuItem variant="none">
+                <MenuItem [decoration]="menuDecoration()" variant="default">
                   <i class="fa-fw fal fa-user-secret text-[16px]"></i>
                   <span>Override user</span>
                 </MenuItem>
                 <HorizontalDivider />
-                <MenuItem variant="link">
+                <MenuItem [decoration]="menuDecoration()">
                   <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />
                   <span class="grow">A propos de Sinequa</span>
                   <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
                 </MenuItem>
-                <MenuItem variant="none">
+                <MenuItem [decoration]="menuDecoration()">
                   <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
                   <span class="grow">Log out</span>
                 </MenuItem>
@@ -667,40 +678,76 @@ import {
 
           <div class="mx-auto flex gap-4">
             <ul>
-              <li variant="default" role="listitem">Default</li>
-              <li variant="primary" role="listitem">Primary</li>
-              <li variant="secondary" role="listitem">Secondary</li>
-              <li variant="destructive" role="listitem">Destructive</li>
-              <li variant="ai" role="listitem">AI</li>
-              <li variant="outline" role="listitem">Outline</li>
-              <li variant="ghost" role="listitem">Ghost</li>
-              <li variant="link" role="listitem">Link</li>
-              <li variant="none" role="listitem">None</li>
+              <li [decoration]="menuDecoration()" variant="default" role="listitem"><span>Default</span></li>
+              <li [decoration]="menuDecoration()" variant="primary" role="listitem"><span>Primary</span></li>
+              <li [decoration]="menuDecoration()" variant="secondary" role="listitem"><span>Secondary</span></li>
+              <li [decoration]="menuDecoration()" variant="destructive" role="listitem"><span>Destructive</span></li>
+              <li [decoration]="menuDecoration()" variant="ai" role="listitem">
+                <span>Intelligence</span>
+              </li>
             </ul>
 
             <ul>
-              <li disabled variant="default" role="listitem">Default</li>
-              <li disabled variant="primary" role="listitem">Primary</li>
-              <li disabled variant="secondary" role="listitem">Secondary</li>
-              <li disabled variant="destructive" role="listitem">Destructive</li>
-              <li disabled variant="ai" role="listitem">AI</li>
-              <li disabled variant="outline" role="listitem">Outline</li>
-              <li disabled variant="ghost" role="listitem">Ghost</li>
-              <li disabled variant="link" role="listitem">Link</li>
-              <li disabled variant="none" role="listitem">None</li>
+              <li disabled [decoration]="menuDecoration()" variant="default" role="listitem">Default</li>
+              <li disabled [decoration]="menuDecoration()" variant="primary" role="listitem">Primary</li>
+              <li disabled [decoration]="menuDecoration()" variant="secondary" role="listitem">Secondary</li>
+              <li disabled [decoration]="menuDecoration()" variant="destructive" role="listitem">Destructive</li>
+              <li disabled [decoration]="menuDecoration()" variant="ai" role="listitem"><span>Intelligence</span></li>
             </ul>
           </div>
         </div>
       }
 
       @case ('miscs') {
+        <div>
+          <span>Decoration</span>
+          <select [(ngModel)]="tabDecoration" name="tabDecoration">
+            <option value="outline">Outline</option>
+            <option value="underline">Underline</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+
         <Tabs class="w-full">
-          <Tab class="ms-auto w-fit" value="default" variant="default" [active]="currentTab() === 'default'">Default Variant</Tab>
-          <Tab class="w-fit" value="accent" variant="accent" [active]="currentTab() === 'accent'">Accent Variant</Tab>
-          <Tab class="w-fit" value="destructive" variant="destructive" [active]="currentTab() === 'destructive'"> Destructive Variant </Tab>
-          <Tab class="w-fit" value="ai" variant="ai" [active]="currentTab() === 'ai'">AI Variant</Tab>
-          <Tab class="w-fit" value="outline" variant="outline" [active]="currentTab() === 'outline'">Outline Variant</Tab>
-          <Tab class="me-auto w-fit" value="link" variant="link" [active]="currentTab() === 'link'">Link Variant</Tab>
+          <Tab
+            class="ms-auto w-fit"
+            value="default"
+            variant="default"
+            [decoration]="tabDecoration()"
+            [active]="miscTab() === 'default'"
+            (click)="miscTab.set('default')">
+            <span>Default Variant</span>
+          </Tab>
+          <Tab
+            class="w-fit"
+            value="primary"
+            variant="primary"
+            [decoration]="tabDecoration()"
+            [active]="miscTab() === 'primary'"
+            (click)="miscTab.set('primary')">
+            <span>Primary Variant</span>
+          </Tab>
+          <Tab
+            class="w-fit"
+            value="secondary"
+            variant="secondary"
+            [decoration]="tabDecoration()"
+            [active]="miscTab() === 'secondary'"
+            (click)="miscTab.set('secondary')">
+            <span>Secondary Variant</span>
+          </Tab>
+          <Tab
+            class="w-fit"
+            value="destructive"
+            variant="destructive"
+            [decoration]="tabDecoration()"
+            [active]="miscTab() === 'destructive'"
+            (click)="miscTab.set('destructive')">
+            <span>Destructive Variant</span>
+          </Tab>
+          <Tab class="me-auto w-fit" value="ai" variant="ai" [decoration]="tabDecoration()" [active]="miscTab() === 'ai'" (click)="miscTab.set('ai')">
+            <span>AI Variant</span>
+          </Tab>
         </Tabs>
 
         <div class="mx-auto flex gap-4">
@@ -900,7 +947,7 @@ import {
           </div>
 
           <div>
-            <button variant="outline" (click)="dialogVariant.set('outline'); dialog.showModal()">Open outline dialog</button>
+            <button decoration="outline" (click)="dialogVariant.set('outline'); dialog.showModal()">Open outline dialog</button>
           </div>
 
           <div>
@@ -918,7 +965,7 @@ import {
           </DialogContent>
 
           <DialogFooter>
-            <button variant="outline" (click)="dialog.close($event)">Close</button>
+            <button decoration="outline" (click)="dialog.close($event)">Close</button>
           </DialogFooter>
         </dialog>
       }
@@ -985,32 +1032,129 @@ import {
           </div>
 
           <div class="grid grid-cols-[100px_1fr] items-center gap-x-4 gap-y-2 [&>span]:text-right">
+            <div class="col-span-2">
+              <span>Decoration</span>
+              <select [(ngModel)]="inputDecoration" name="inputDecoration">
+                <option value="none">None</option>
+                <option value="outline">Outline</option>
+              </select>
+            </div>
+
             <span>Default</span>
-            <input [(ngModel)]="inputText" variant="default" placeholder="placeholder" type="text" />
+            <input [(ngModel)]="inputText" [decoration]="inputDecoration()" variant="default" placeholder="placeholder" type="text" />
 
             <span>Primary</span>
-            <input [(ngModel)]="inputText" variant="primary" placeholder="placeholder" type="text" />
+            <input [(ngModel)]="inputText" [decoration]="inputDecoration()" variant="primary" placeholder="placeholder" type="text" />
 
             <span>Secondary</span>
-            <input [(ngModel)]="inputText" variant="secondary" placeholder="placeholder" type="text" />
+            <input [(ngModel)]="inputText" [decoration]="inputDecoration()" variant="secondary" placeholder="placeholder" type="text" />
 
             <span>Destructive</span>
-            <input [(ngModel)]="inputText" variant="destructive" placeholder="placeholder" type="text" />
+            <input [(ngModel)]="inputText" [decoration]="inputDecoration()" variant="destructive" placeholder="placeholder" type="text" />
 
             <span>AI</span>
-            <input [(ngModel)]="inputText" variant="ai" placeholder="placeholder" type="text" />
+            <input [(ngModel)]="inputText" [decoration]="inputDecoration()" variant="ai" placeholder="placeholder" type="text" />
+          </div>
+        </div>
+      }
 
-            <span>Outline</span>
-            <input [(ngModel)]="inputText" variant="outline" placeholder="placeholder" type="text" />
+      @case ('tests') {
+        <Menu class="mx-auto pr-40">
+          <Avatar class="cursor-pointer">
+            <AvatarFallback>
+              <UserIcon class="size-7 p-1" />
+            </AvatarFallback>
+          </Avatar>
+          <!-- min-w-max used to display all the content -->
+          <MenuContent position="bottom-start" class="min-w-max">
+            <menu position="left-start">
+              <MenuItem [decoration]="menuDecoration()" variant="default">
+                <span class="grow">Select language</span>
+                <ChevronRight class="size-4" />
+              </MenuItem>
+              <!-- max with to fit content but min width is 10rem (160px) -->
+              <MenuContent position="left-start" class="max-w-fit min-w-40">
+                <MenuItem [decoration]="menuDecoration()" variant="default" class="justify-between">
+                  <span>English</span>
+                  <FlagEnglish class="size-4" />
+                </MenuItem>
+                <MenuItem [decoration]="menuDecoration()" variant="default" class="justify-between">
+                  <span>French</span>
+                  <FlagFrench class="size-4" />
+                </MenuItem>
+              </MenuContent>
+            </menu>
+            <MenuItem [decoration]="menuDecoration()" variant="destructive">
+              <i class="fa-fw fal fa-trash text-[16px]"></i>
+              <span>Reset user settings</span>
+            </MenuItem>
+            <HorizontalDivider />
+            <MenuItem [decoration]="menuDecoration()" variant="default">
+              <i class="fa-fw fal fa-user-secret text-[16px]"></i>
+              <span>Override user</span>
+            </MenuItem>
+            <HorizontalDivider />
+            <MenuItem [decoration]="menuDecoration()">
+              <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />
+              <span class="grow">A propos de Sinequa</span>
+              <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
+            </MenuItem>
+            <MenuItem [decoration]="menuDecoration()">
+              <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
+              <span class="grow">Log out</span>
+            </MenuItem>
+          </MenuContent>
+        </Menu>
 
-            <span>Ghost</span>
-            <input [(ngModel)]="inputText" variant="ghost" placeholder="placeholder" type="text" />
+        <div class="mx-auto grid grid-cols-2 gap-8">
+          <Card hover="no">
+            <CardHeader>
+              <h1>Sign Up</h1>
+            </CardHeader>
+            <CardContent>
+              <form class="flex flex-col gap-4">
+                <div>
+                  <label for="signup-username" class="mb-1 block">Username</label>
+                  <input id="signup-username" name="username" placeholder="Enter your username" type="text" variant="primary" />
+                </div>
+                <div>
+                  <label for="signup-email" class="mb-1 block">Email</label>
+                  <input id="signup-email" name="email" placeholder="Enter your email" type="email" variant="primary" />
+                </div>
+                <div>
+                  <label for="signup-password" class="mb-1 block">Password</label>
+                  <input id="signup-password" name="password" placeholder="Enter your password" type="password" variant="primary" />
+                </div>
+                <div>
+                  <label for="signup-confirm" class="mb-1 block">Confirm Password</label>
+                  <input id="signup-confirm" name="confirm" placeholder="Confirm your password" type="password" variant="primary" />
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter class="flex justify-end">
+              <button variant="primary" type="submit" (click)="logDebugInfo()">Sign Up</button>
+            </CardFooter>
+          </Card>
 
-            <span>Link</span>
-            <input [(ngModel)]="inputText" variant="link" placeholder="placeholder" type="text" />
-
-            <span>None</span>
-            <input [(ngModel)]="inputText" variant="none" placeholder="placeholder" type="text" />
+          <div>
+            <form class="flex flex-col gap-4">
+              <div>
+                <label for="signup-username" class="mb-1 block">Username</label>
+                <input id="signup-username" name="username" placeholder="Enter your username" type="text" variant="primary" />
+              </div>
+              <div>
+                <label for="signup-email" class="mb-1 block">Email</label>
+                <input id="signup-email" name="email" placeholder="Enter your email" type="email" variant="primary" />
+              </div>
+              <div>
+                <label for="signup-password" class="mb-1 block">Password</label>
+                <input id="signup-password" name="password" placeholder="Enter your password" type="password" variant="primary" />
+              </div>
+              <div>
+                <label for="signup-confirm" class="mb-1 block">Confirm Password</label>
+                <input id="signup-confirm" name="confirm" placeholder="Confirm your password" type="password" variant="primary" />
+              </div>
+            </form>
           </div>
         </div>
       }
@@ -1023,15 +1167,25 @@ import {
 export class DebugComponent {
   cn = cn;
 
-  readonly currentTab = signal<string>('inputs');
+  readonly currentTab = signal<string>('tests');
+
+  readonly miscTab = signal<string>('default');
+  readonly tabDecoration = signal<TabVariants['decoration']>('underline');
   readonly sidebarSelected = signal<boolean>(false);
   readonly toggled = signal<boolean>(false);
+  readonly buttonDecoration = signal<ButtonVariants['decoration']>('outline');
+  readonly searchbarDecoration = signal<SearchVariants['decoration']>('outline');
+  readonly menuDecoration = signal<ListItemVariants['decoration']>('outline');
+  readonly badgeDecoration = signal<BadgeVariants['decoration']>('none');
+  readonly badgeHover = signal<BadgeVariants['hover']>('no');
   readonly selected = signal<boolean>(false);
+  readonly cardHover = signal<CardVariants['hover']>('no');
   readonly searchValue = signal<string>('');
   readonly dialogVariant = signal<DialogVariants['variant']>('default');
   readonly pageHeaderToggle = signal<boolean>(false);
   readonly pageHeaderStyle = signal<PageHeaderVariants['variant']>('default');
   readonly inputText = signal<string>('');
+  readonly inputDecoration = signal<InputVariants['decoration']>('none');
 
   constructor() {
     // Handle dark mode toggle

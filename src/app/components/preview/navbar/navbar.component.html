@@ -35,12 +35,12 @@
   @if (navConfig.showSearchButton && article()) {
     <li class="ml-auto *:flex *:items-center *:gap-2 *:text-nowrap">
       @if (isExtended()) {
-        <button variant="outline" (click)="drawerStack.extend()">
+        <button decoration="outline" (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye-slash"></i>
           {{ 'preview.hideSearch' | transloco }}
         </button>
       } @else {
-        <button (click)="drawerStack.extend()">
+        <button variant="primary" (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye"></i>
           {{ 'preview.searchInDocument' | transloco }}
         </button>

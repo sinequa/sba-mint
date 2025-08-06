@@ -1,7 +1,7 @@
 @if (suggestions()) {
   <ul
     id="search-suggestions"
-    class="bg-background text-foreground z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg px-2 pt-2 pb-1"
+    class="text-foreground z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-inherit px-2 pt-2 pb-1"
     role="listbox"
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {

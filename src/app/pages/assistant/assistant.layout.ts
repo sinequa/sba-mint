@@ -42,7 +42,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           )
         ">
         @if (showSavedChats()) {
-          <section class="border-foreground/18 bg-background h-56 max-h-56 rounded-2xl border p-4 shadow">
+          <section class="border-foreground/18 bg-menu h-56 max-h-56 rounded-2xl border p-4 shadow">
             <div class="flex items-center justify-between">
               <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
                 <i class="far fa-comments me-1"></i>
@@ -61,7 +61,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           </section>
         }
         <section class="pt-6">
-          <Aggregation name="Sources" column="treepath" [showCount]="true" class="border-foreground/18 bg-background h-[540px] rounded-2xl border p-4 shadow" />
+          <Aggregation name="Sources" column="treepath" [showCount]="true" class="border-foreground/18 bg-menu h-[540px] rounded-2xl border p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
