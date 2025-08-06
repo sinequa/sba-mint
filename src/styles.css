@@ -41,8 +41,6 @@ body {
 @layer base {
   :root {
     --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
-    --backdrop: rgba(0, 0, 0, 0.4);
-    --backdrop-filter: blur(2px);
     --cdk-z-index-overlay: 5000;
 
     /* z-indexes */
@@ -110,9 +108,6 @@ body {
   }
   .scrollbar-thin {
     scrollbar-width: thin;
-  }
-  .bg-backdrop {
-    background-color: var(--color-backdrop);
   }
   /* neural search passages */
   .matchlocations {

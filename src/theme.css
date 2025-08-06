@@ -12,12 +12,15 @@
   --destructive: #e80707;
   --success: #2ed73f;
 
-  --muted: var(--color-gray-100);
+  --ai-from: #193cb8;
+  --ai-via: #f6339a;
+  --ai-to: #ff8904;
+
+  /* --muted: var(--color-gray-100); */
   --muted-foreground: var(--color-gray-600);
 
-  --sidebar: oklch(from var(--background) calc(l - var(--shift)) c h);
-  --header: var(--background);
   --backdrop: oklch(from var(--foreground) l c h / 50%);
+  --backdrop-filter: blur(2px);
 
   --assistant: #ff732e;
   --assistant-primary-bg: #f2f8fe;
@@ -25,7 +28,18 @@
 }
 
 .dark {
-  --background: oklch(from var(--color-zinc-800) l c calc(h + 0));
+  --background: #0a0a0a;
+  --foreground: #e5e5e5;
+
+  --muted-foreground: var(--color-neutral-300);
+  /* --muted: var(--color-neutral-800); */
+
+  --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
+
+  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
+  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+
+  /* --background: oklch(from var(--color-zinc-900) l c calc(h + 0));
   --foreground: var(--color-gray-200);
 
   --muted-foreground: oklch(from var(--foreground) calc(l - var(--shift-6)) c h);
@@ -36,5 +50,5 @@
   --backdrop: oklch(from var(--background) l c h / 70%);
 
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
-  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%); */
 }
