@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -18,6 +18,9 @@ export class AppSidebarComponent {
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
   private readonly appFeatures = inject(APP_FEATURES);
+
+  readonly searchRoute = input<string>('/home');
+  readonly searchParams = input<any>(undefined);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 

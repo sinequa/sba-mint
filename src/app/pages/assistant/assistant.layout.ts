@@ -70,7 +70,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         <Assistant [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
-    <app-sidebar class="fixed top-0 h-full" />
+    <app-sidebar class="fixed top-0 h-full" [searchRoute]="'/search'" [searchParams]="{ q: q(), f: f() }" />
   `,
   styles: [
     `
@@ -128,6 +128,7 @@ export class AssistantLayoutComponent {
   readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
   q = input<string>();
+  f = input<string>();
 
   constructor() {
     effect(() => {

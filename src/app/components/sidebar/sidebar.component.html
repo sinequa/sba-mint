@@ -1,6 +1,6 @@
 <sidebar class="peer absolute top-0 h-full">
   <div class="grow">
-    <sidebar-item title="Search" [attr.aria-label]="'Search'" routerLink="/home">
+    <sidebar-item title="Search" [attr.aria-label]="'Search'" [routerLink]="searchRoute()" [queryParams]="searchParams()">
       <i class="far fa-magnifying-glass"></i>
     </sidebar-item>
     <sidebar-item [class]="cn('invisible', allowAI() && 'visible')" title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
