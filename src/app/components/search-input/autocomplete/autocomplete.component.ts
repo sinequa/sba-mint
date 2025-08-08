@@ -64,6 +64,11 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
   imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [
     `
+      :host {
+        width: inherit;
+        display: block;
+      }
+
       ul {
         scrollbar-width: thin;
       }
