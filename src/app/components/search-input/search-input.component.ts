@@ -17,11 +17,21 @@ import {
   DrawerStackService,
   SearchInputComponent as InputComponent,
   QueryParamsStore,
-  SavedSearchDialog,
+  SavedSearchesService,
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, DropdownComponent, DropdownContentComponent, InputSearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import {
+  ButtonComponent,
+  cn,
+  DialogService,
+  DropdownComponent,
+  DropdownContentComponent,
+  InputSearchVariants,
+  PopoverComponent,
+  PopoverContentComponent,
+  SendHorizontalIconComponent
+} from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
@@ -35,7 +45,10 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
     SendHorizontalIconComponent,
     InputComponent,
     DropdownComponent,
-    DropdownContentComponent
+    DropdownContentComponent,
+    PopoverComponent,
+    PopoverContentComponent,
+    InputComponent
   ],
   templateUrl: './search-input.component.html',
   host: {
@@ -57,6 +70,7 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 export class SearchInputComponent {
   cn = cn;
 
+  popoverComponent = viewChild.required(PopoverComponent);
   dropdownComponent = viewChild.required(DropdownComponent);
   InputComponent = viewChild.required<InputComponent>(InputComponent);
 
@@ -69,6 +83,7 @@ export class SearchInputComponent {
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
   protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly savedSearchesService = inject(SavedSearchesService);
 
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<InputSearchVariants['variant']>('default');
@@ -87,6 +102,14 @@ export class SearchInputComponent {
   private debounceInputText = new Subject<string>();
 
   protected readonly saveAnimation = signal<boolean>(false);
+
+  readonly saveNameInput = viewChild<ElementRef>('saveNameInput');
+  public readonly saveName = signal<string>('');
+  public readonly trimmedSaveName = computed(() => {
+    return this.saveName()?.trim();
+  });
+  // used to prevent opening the suggestions dropdown if the saved search is opened
+  protected readonly openedSavedSearch = signal<boolean>(false);
 
   filters = computed(() => {
     const { filters } = getState(this.queryParamsStore);
@@ -187,6 +210,7 @@ export class SearchInputComponent {
     const text = this.searchInputText();
     if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
+      this.dropdownComponent().close();
     }
   }
 
@@ -211,12 +235,10 @@ export class SearchInputComponent {
       // no animation when unsaving
       this.saved.emit(this.savedSearch());
     } else {
-      this.dialogService.open(SavedSearchDialog, this.searchInputText()).then((event: any) => {
-        if (event === 'dialog-confirm') {
-          this.saveAnimation.set(true);
-          setTimeout(() => this.saveAnimation.set(false), 1000);
-        }
-      });
+      this.savedSearchesService.saveSearch(this.trimmedSaveName());
+      this.saveAnimation.set(true);
+      setTimeout(() => this.saveAnimation.set(false), 1000);
+      this.popoverComponent().close();
     }
   }
 
@@ -227,5 +249,14 @@ export class SearchInputComponent {
     this.form.controls.searchInputText.setValue(dataText);
     this.searchInputText.set(dataText);
     this.selected.emit($event);
+  }
+
+  openSavedSearch(): void {
+    this.saveNameInput()!.nativeElement.value = '';
+    this.saveName.set('');
+    this.openedSavedSearch.set(true);
+    setTimeout(() => {
+      this.saveNameInput()?.nativeElement.focus();
+    }, 1);
   }
 }
