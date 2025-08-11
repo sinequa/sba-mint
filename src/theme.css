@@ -16,7 +16,6 @@
   --ai-via: #f6339a;
   --ai-to: #ff8904;
 
-  /* --muted: var(--color-gray-100); */
   --muted-foreground: var(--color-gray-600);
 
   --backdrop: oklch(from var(--foreground) l c h / 50%);
