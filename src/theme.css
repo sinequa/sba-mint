@@ -37,16 +37,4 @@
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
   --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
 
-  /* --background: oklch(from var(--color-zinc-900) l c calc(h + 0));
-  --foreground: var(--color-gray-200);
-
-  --muted-foreground: oklch(from var(--foreground) calc(l - var(--shift-6)) c h);
-  --muted: oklch(from var(--background) calc(l - var(--shift-\.5)) c h);
-
-  --sidebar: oklch(from var(--background) calc(l + var(--shift-\.5)) c h);
-  --header: oklch(from var(--background) calc(l + var(--shift)) c h);
-  --backdrop: oklch(from var(--background) l c h / 70%);
-
-  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
-  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%); */
 }
