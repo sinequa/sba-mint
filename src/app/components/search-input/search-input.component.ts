@@ -6,7 +6,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 
 import { CCApp } from '@sinequa/atomic';
 import {
@@ -17,11 +17,21 @@ import {
   DrawerStackService,
   SearchInputComponent as InputComponent,
   QueryParamsStore,
-  SavedSearchDialog,
+  SavedSearchesService,
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, DialogService, DropdownComponent, DropdownContentComponent, SearchVariants, SendHorizontalIconComponent } from '@sinequa/ui';
+import {
+  ButtonComponent,
+  cn,
+  DialogService,
+  DropdownComponent,
+  DropdownContentComponent,
+  PopoverComponent,
+  PopoverContentComponent,
+  SearchVariants,
+  SendHorizontalIconComponent
+} from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
@@ -35,7 +45,10 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
     SendHorizontalIconComponent,
     InputComponent,
     DropdownComponent,
-    DropdownContentComponent
+    DropdownContentComponent,
+    PopoverComponent,
+    PopoverContentComponent,
+    InputComponent
   ],
   templateUrl: './search-input.component.html',
   host: {
@@ -56,6 +69,7 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 export class SearchInputComponent {
   cn = cn;
 
+  popoverComponent = viewChild.required(PopoverComponent);
   dropdownComponent = viewChild.required(DropdownComponent);
   InputComponent = viewChild.required<InputComponent>(InputComponent);
 
@@ -68,6 +82,7 @@ export class SearchInputComponent {
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
   protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly savedSearchesService = inject(SavedSearchesService);
 
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<SearchVariants['variant']>('default');
@@ -83,8 +98,17 @@ export class SearchInputComponent {
   private readonly focusMonitor = inject(FocusMonitor);
 
   public readonly searchInputText = model<string>('');
+  private debounceInputText = new Subject<string>();
 
   protected readonly saveAnimation = signal<boolean>(false);
+
+  readonly saveNameInput = viewChild<ElementRef>('saveNameInput');
+  public readonly saveName = signal<string>('');
+  public readonly trimmedSaveName = computed(() => {
+    return this.saveName()?.trim();
+  });
+  // used to prevent opening the suggestions dropdown if the saved search is opened
+  protected readonly openedSavedSearch = signal<boolean>(false);
 
   filters = computed(() => {
     const { filters } = getState(this.queryParamsStore);
@@ -131,8 +155,13 @@ export class SearchInputComponent {
   protected readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
+    // on input value change, update directly searchInputText but have debounced to emit with debounceTime
+    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
       this.searchInputText.set(value);
+      this.debounceInputText.next(value);
+    });
+
+    this.debounceInputText.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
       this.debounced.emit(value);
     });
 
@@ -178,8 +207,9 @@ export class SearchInputComponent {
     }
 
     const text = this.searchInputText();
-    if (text) {
+    if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
+      this.dropdownComponent().close();
     }
   }
 
@@ -204,18 +234,28 @@ export class SearchInputComponent {
       // no animation when unsaving
       this.saved.emit(this.savedSearch());
     } else {
-      this.dialogService.open(SavedSearchDialog, this.searchInputText()).then((event: any) => {
-        if (event === 'dialog-confirm') {
-          this.saveAnimation.set(true);
-          setTimeout(() => this.saveAnimation.set(false), 1000);
-        }
-      });
+      this.savedSearchesService.saveSearch(this.trimmedSaveName());
+      this.saveAnimation.set(true);
+      setTimeout(() => this.saveAnimation.set(false), 1000);
+      this.popoverComponent().close();
     }
   }
 
   onSelected($event: HTMLElement | null): void {
-    this.form.controls.searchInputText.setValue($event?.getAttribute('data-text') || '');
-    this.searchInputText.set($event?.getAttribute('data-text') || '');
+    const dataText = $event?.getAttribute('data-text');
+    if (!dataText) return;
+
+    this.form.controls.searchInputText.setValue(dataText);
+    this.searchInputText.set(dataText);
     this.selected.emit($event);
+  }
+
+  openSavedSearch(): void {
+    this.saveNameInput()!.nativeElement.value = '';
+    this.saveName.set('');
+    this.openedSavedSearch.set(true);
+    setTimeout(() => {
+      this.saveNameInput()?.nativeElement.focus();
+    }, 1);
   }
 }

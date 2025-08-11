@@ -132,8 +132,6 @@ export class AssistantLayoutComponent {
   q = input<string>();
 
   constructor() {
-    this.queryParamsStore.patch({ text: undefined, tab: undefined, filters: [], basket: undefined });
-
     effect(() => {
       // force the change detection when the AggregationStore is updated.
       // This is needed because we use the ChatComponent which is not a signal component (i.e Angular v14)

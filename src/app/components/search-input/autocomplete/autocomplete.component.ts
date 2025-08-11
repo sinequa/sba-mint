@@ -64,6 +64,11 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
   imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [
     `
+      :host {
+        width: inherit;
+        display: block;
+      }
+
       ul {
         scrollbar-width: thin;
       }
@@ -95,8 +100,8 @@ export class AutocompleteComponent {
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
-    const features = this.appStore.customizationJson()?.features;
-    return features ? features['advancedSearch'] : false;
+    const advancedSearch = this.appStore.customizationJson()?.general?.features?.advancedSearch;
+    return advancedSearch || false;
   });
 
   readonly suggestions = toSignal(

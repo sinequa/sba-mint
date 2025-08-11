@@ -9,20 +9,56 @@
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
       @if (showSave() && (searchInputText() !== '' || hasFilters())) {
-        <button
-          variant="icon"
-          size="xs"
-          class="peer-disabled:opacity-50"
-          [attr.title]="'searchInput.saveSearch' | transloco"
-          [attr.aria-label]="'searchInput.saveSearch' | transloco"
-          (click)="saveQuery($event)"
-          (keydown.enter)="saveQuery($event)">
-          @if (savedSearch()) {
+        @if (!savedSearch()) {
+          <Popover #popover class="rounded-lg border-neutral-300" (closed)="openedSavedSearch.set(false)">
+            <button
+              variant="icon"
+              size="xs"
+              class="peer-disabled:opacity-50"
+              [attr.title]="'searchInput.saveSearch' | transloco"
+              [attr.aria-label]="'searchInput.saveSearch' | transloco"
+              (click)="openSavedSearch()"
+              (keydown.enter)="openSavedSearch()">
+              <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
+            </button>
+
+            <PopoverContent #popoverContent class="min-w-xs p-2" position="bottom-end">
+              <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
+              <!-- <MenuSeparator /> -->
+              <div class="py-4">
+                <input
+                  #saveNameInput
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  class="w-full p-2"
+                  [attr.aria-label]="'searches.saved.saveName' | transloco"
+                  [attr.placeholder]="'searches.saved.saveName' | transloco"
+                  (keyup)="saveName.set(saveNameInput.value)" />
+              </div>
+
+              <div class="ml-auto flex justify-end gap-2">
+                <button variant="outline" (click)="popover.close()">
+                  {{ 'cancel' | transloco }}
+                </button>
+                <button (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
+                  {{ 'confirm' | transloco }}
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        } @else {
+          <button
+            variant="icon"
+            size="xs"
+            class="peer-disabled:opacity-50"
+            [attr.title]="'searchInput.saveSearch' | transloco"
+            [attr.aria-label]="'searchInput.saveSearch' | transloco"
+            (click)="saveQuery($event)"
+            (keydown.enter)="saveQuery($event)">
             <i class="fa-fw fas fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
-          } @else {
-            <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
-          }
-        </button>
+          </button>
+        }
       }
 
       @if (allowAI()) {
@@ -51,7 +87,9 @@
       </button>
     </SearchInput>
   </form>
-  <DropdownContent>
-    <ng-content></ng-content>
-  </DropdownContent>
+  @if (!openedSavedSearch()) {
+    <DropdownContent class="!absolute">
+      <ng-content></ng-content>
+    </DropdownContent>
+  }
 </Dropdown>

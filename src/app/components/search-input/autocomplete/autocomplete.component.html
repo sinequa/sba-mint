@@ -27,6 +27,10 @@
           </p>
         </li>
       }
+    } @empty {
+      <span class="text-muted-foreground px-2">
+        {{ 'searchInput.noSuggestions' | transloco }}
+      </span>
     }
   </ul>
 }
