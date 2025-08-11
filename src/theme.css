@@ -36,5 +36,10 @@
 
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
   --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+}
 
+@theme {
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-alt-text: 'Sinequa logo';
 }

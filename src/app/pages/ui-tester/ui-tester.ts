@@ -1164,10 +1164,10 @@ import {
     class: 'flex flex-col gap-8 py-5'
   }
 })
-export class DebugComponent {
+export class UITesterComponent {
   cn = cn;
 
-  readonly currentTab = signal<string>('tests');
+  readonly currentTab = signal<string>('buttons');
 
   readonly miscTab = signal<string>('default');
   readonly tabDecoration = signal<TabVariants['decoration']>('underline');

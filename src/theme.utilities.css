@@ -1,6 +1,3 @@
-/* Force dark mode to be used with .dark class */
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
   /* Shift factor for luminance parameter of oklch */
   --luminance-factor: 0.06;
@@ -108,10 +105,6 @@
   --text-xxs: 0.625rem;
 
   --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
-
-  --logo-small: url('assets/logo/small.svg');
-  --logo-large: url('assets/logo/large.svg');
-  --logo-alt-text: 'Sinequa logo';
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
