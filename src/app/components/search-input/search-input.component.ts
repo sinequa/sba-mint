@@ -41,7 +41,6 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
   host: {
     '(keydown.enter)': 'emitText($event)'
   },
-  // '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
   styles: [
     `
       :host {
