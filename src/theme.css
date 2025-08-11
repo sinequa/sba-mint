@@ -31,7 +31,6 @@
   --foreground: #e5e5e5;
 
   --muted-foreground: var(--color-neutral-300);
-  /* --muted: var(--color-neutral-800); */
 
   --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
 
