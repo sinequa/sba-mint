@@ -1,14 +1,16 @@
 import { Component, computed, DestroyRef, inject, input, model } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
+
 import { PreviewService } from '@sinequa/atomic-angular';
+import { TabComponent, TabsComponent } from '@sinequa/ui';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
 @Component({
   selector: 'app-preview-tabs',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, TabsComponent, TabComponent],
   templateUrl: './preview-tabs.html'
 })
 export class PreviewTabsComponent {

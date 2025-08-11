@@ -24,7 +24,7 @@ type Article = A & {
 
         th {
           text-align: start;
-          color: var(--color-neutral-500);
+          color: var(--color-muted-foreground);
           font-weight: var(--font-medium);
           font-size: var(--text-xs);
           line-height: var(--text-xs--line-height);

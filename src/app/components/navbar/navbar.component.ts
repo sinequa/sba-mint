@@ -14,9 +14,9 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
-  SearchItem,
   SavedSearchesComponent,
-  SavedSearchesService
+  SavedSearchesService,
+  SearchItem
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 

@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 import { Subscription } from 'rxjs';
 
-import { Router } from '@angular/router';
 import { getQueryParamsFromUrl } from '@sinequa/atomic';
 import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 
