@@ -27,9 +27,9 @@ import {
   DialogService,
   DropdownComponent,
   DropdownContentComponent,
-  InputSearchVariants,
   PopoverComponent,
   PopoverContentComponent,
+  SearchVariants,
   SendHorizontalIconComponent
 } from '@sinequa/ui';
 
@@ -52,7 +52,6 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
   ],
   templateUrl: './search-input.component.html',
   host: {
-    '[class]': 'cn("rounded-2xl", this.variant() === "basic" && "rounded-lg", "rounded-bl-none rounded-br-none")',
     '(keydown.enter)': 'emitText($event)'
   },
   styles: [
@@ -86,7 +85,7 @@ export class SearchInputComponent {
   protected readonly savedSearchesService = inject(SavedSearchesService);
 
   public readonly showSave = input(false, { transform: booleanAttribute });
-  public readonly variant = input<InputSearchVariants['variant']>('default');
+  public readonly variant = input<SearchVariants['variant']>('default');
   public readonly activeDescendant = input<ActiveSuggestion>();
 
   readonly debounced = output<string>();

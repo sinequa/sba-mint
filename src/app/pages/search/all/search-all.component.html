@@ -1,18 +1,18 @@
 <main class="col-span-2 col-start-2 mb-8 px-2.5">
+  <!-- skeleton part -->
   @if (query.isPending()) {
-    <!-- skeleton part -->
     <div class="mt-4 flex justify-between" aria-hidden="true">
       <div class="flex gap-2">
         @for (n of [1, 2, 3, 4, 5]; track $index) {
-          <button variant="inverse" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+          <button variant="primary" class="h-9 w-24 opacity-15" aria-hidden="true"></button>
         }
       </div>
 
-      <button variant="inverse" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
+      <button variant="primary" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
     </div>
 
     <div class="mt-10 flex justify-end">
-      <button variant="inverse" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
+      <button variant="primary" class="h-9 w-28 opacity-15" aria-hidden="true"></button>
     </div>
 
     <ul class="mt-4 flex flex-col gap-2" aria-hidden="true">
@@ -22,7 +22,7 @@
     </ul>
   } @else if (hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="sticky top-16 z-10 -mx-1 bg-white py-1">
+    <div [class]="stickyClass">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
@@ -30,7 +30,7 @@
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" (onClearFilters)="onClearFilters()" />
 
-      <app-did-you-mean class="text-alert py-1" [result]="result()" />
+      <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
       <sponsored-results />
 
@@ -59,36 +59,37 @@
 
     <!-- if assistant is allowed -->
     @if (allowAI()) {
-      <div [class]="cn('relative rounded-md border border-orange-100 p-2', assistantCollapsed() && 'collapsed max-h-14 overflow-hidden bg-orange-50')">
-        <h2 class="flex items-baseline gap-2 text-base font-bold text-orange-400">
-          <div class="flex size-8 items-center justify-center rounded-full border border-orange-100 bg-white">
+      <Card variant="ai" hover="no">
+        <CardHeader class="flex items-baseline gap-1 px-0 text-base font-semibold">
+          <div class="flex size-8 items-center justify-center">
             @if (isStreaming()) {
-              <i class="fa-solid fa-spinner animate-spin"></i>
+              <i class="fas fa-spinner animate-spin"></i>
             } @else {
-              <i class="fa-solid fa-sparkles"></i>
+              <i class="fas fa-sparkles"></i>
             }
           </div>
 
-          AI Overview
+          <h2>AI Overview</h2>
 
           <button
             variant="none"
             [class]="cn('transition-rotate ms-auto size-8 cursor-pointer duration-150 ease-in-out', !assistantCollapsed() && 'rotate-180')"
             (click)="onAssistantCollapse()"
             aria-label="toggle assistant">
-            <i class="fa-regular fa-chevron-down"></i>
+            <i class="far fa-chevron-down"></i>
           </button>
-        </h2>
+        </CardHeader>
+
         @if (showAssistant()) {
-          <div class="h-96">
+          <CardContent [class]="cn('h-96 px-0', assistantCollapsed() && 'hidden')">
             <assistant
               [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
               [showAssistant]="showAssistant()"
               [instanceId]="instanceId()"
               (isStreaming)="isStreaming.set($event)" />
-          </div>
+          </CardContent>
         }
-      </div>
+      </Card>
     }
 
     <!-- display all records -->
@@ -111,15 +112,16 @@
     }
   } @else {
     <!-- tabs and filters -->
-    <div class="sticky top-16 z-10 -mx-1 bg-white pt-1">
+    <div [class]="stickyClass">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
       <!-- if results have been found -->
       <filters-bar class="pt-4 pb-4" />
 
-      <app-did-you-mean class="text-alert py-1" [result]="result()" />
+      <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
     </div>
+
     <!-- display a panel to inform the user that no results were found -->
     <NoResult class="mt-4" />
   }

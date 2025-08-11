@@ -19,7 +19,7 @@ import { PreviewActionsComponent } from './actions';
         <iframe
           #preview
           frameborder="0"
-          class="h-full flex-grow"
+          class="h-full flex-grow rounded-sm bg-white shadow-xs"
           [src]="previewUrl()"
           (load)="onLoaded()"
           title="{{ 'preview.documentPreview' | transloco }}"

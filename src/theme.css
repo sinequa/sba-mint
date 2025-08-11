@@ -1,0 +1,45 @@
+/* Force dark mode to be used with .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import './theme.utilities';
+
+:root {
+  --background: var(--color-gray-50);
+  --foreground: var(--color-gray-950);
+
+  --primary: #0084ff;
+  --secondary: #e00b73;
+  --destructive: #e80707;
+  --success: #2ed73f;
+
+  --ai-from: #193cb8;
+  --ai-via: #f6339a;
+  --ai-to: #ff8904;
+
+  --muted-foreground: var(--color-gray-600);
+
+  --backdrop: oklch(from var(--foreground) l c h / 50%);
+  --backdrop-filter: blur(2px);
+
+  --assistant: #ff732e;
+  --assistant-primary-bg: #f2f8fe;
+  --assistant-secondary-bg: #fff8f1;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #e5e5e5;
+
+  --muted-foreground: var(--color-neutral-300);
+
+  --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
+
+  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
+  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+}
+
+@theme {
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-alt-text: 'Sinequa logo';
+}

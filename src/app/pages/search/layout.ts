@@ -14,7 +14,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
   template: `
     <app-sidebar class="fixed top-0 h-full" />
 
-    <PageHeader class="fixed top-0 z-100 ml-8 w-full bg-white">
+    <PageHeader>
       <app-navbar class="layout-search py-4" />
     </PageHeader>
 
