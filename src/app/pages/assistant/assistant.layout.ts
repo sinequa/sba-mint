@@ -29,7 +29,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <PageHeader position="fixed">
+    <PageHeader>
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
 
