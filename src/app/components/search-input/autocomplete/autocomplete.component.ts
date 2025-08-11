@@ -1,10 +1,10 @@
-import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal, Type } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
-import { Suggestion as S } from '@sinequa/atomic';
+import { error, Suggestion as S } from '@sinequa/atomic';
 import {
   AppStore,
   AuditService,
@@ -15,24 +15,39 @@ import {
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 
-import { ButtonComponent, HorizontalDividerComponent, ListItemComponent } from '@sinequa/ui';
+import {
+  BookmarkIcon,
+  BuildingIcon,
+  ButtonComponent,
+  ClockIcon,
+  FileIcon,
+  HorizontalDividerComponent,
+  LightbulbIcon,
+  ListItemComponent,
+  MapPinIcon,
+  SearchIcon,
+  StarIcon,
+  UserIcon
+} from '@sinequa/ui';
 
+import { NgComponentOutlet } from '@angular/common';
 import { SearchInputComponent } from '../search-input.component';
 
 const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by preference for suggestion's categories", {
   factory: () => ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people']
 });
-// Icons mapping for each category
-const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, string>>('Icons for each suggestion categories', {
+// Icons mapping for each category - returns SVG strings
+const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, Type<unknown>>>('Icons for each suggestion categories', {
   factory: () => ({
-    'recent-search': 'fa-fw far fa-history',
-    'saved-search': 'fa-fw far fa-bookmark',
-    bookmark: 'fa-fw far fa-bookmark',
-    title: 'fa-fw far fa-file-alt',
-    concepts: 'fa-fw far fa-lightbulb',
-    people: 'fa-fw far fa-user',
-    company: 'fa-fw far fa-building',
-    location: 'fa-fw far fa-location-dot'
+    'recent-search': ClockIcon, // Clock icon
+    'saved-search': StarIcon, // Star icon
+    bookmark: BookmarkIcon, // Bookmark icon
+    'full-text': SearchIcon, // Search icon
+    title: FileIcon, // File icon
+    concepts: LightbulbIcon, // Lightbulb icon
+    people: UserIcon, // User icon
+    company: BuildingIcon, // Building icon
+    location: MapPinIcon // Map pin icon
   })
 });
 
@@ -46,10 +61,14 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')],
+  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [
     `
+      :host {
+        width: inherit;
+        display: block;
+      }
+
       ul {
         scrollbar-width: thin;
       }
@@ -81,8 +100,8 @@ export class AutocompleteComponent {
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
-    const features = this.appStore.customizationJson()?.features;
-    return features ? features['advancedSearch'] : false;
+    const advancedSearch = this.appStore.customizationJson()?.general?.features?.advancedSearch;
+    return advancedSearch || false;
   });
 
   readonly suggestions = toSignal(
@@ -96,8 +115,8 @@ export class AutocompleteComponent {
         return combineLatest([
           fromUserSettings,
           this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
-            catchError(error => {
-              console.log('Error getting suggestions from suggest queries', error);
+            catchError(err => {
+              error('Error getting suggestions from suggest queries', err);
               return of([]);
             })
           )
@@ -151,27 +170,17 @@ export class AutocompleteComponent {
     });
   }
 
-  public itemClicked(item: Suggestion | undefined): void {
-    if (!item || item.$isDivider || item.$isTitle) return;
-
-    this.auditService.notify({
-      type: 'Search_Autocomplete',
-      detail: {
-        display: item.display,
-        category: item.category
-      }
-    });
-    this.onClick.emit(item as S);
-  }
-
   openAdvancedSearch(): void {
     this.overlayOpen.set(false);
     this.drawerStack.open(DrawerAdvancedFiltersComponent);
   }
 
+  getIconForCategory(category: string | undefined): Type<unknown> {
+    return this.autocompleteIcons[category || ''] || SearchIcon; // Default search icon
+  }
+
   // #region Keyboard navigation
 
-  selectSuggestion = () => this.itemClicked(this.suggestions()?.[this.currentSuggestIndex()]);
   nextSuggestion = () => this.findSuggestion(1);
   previousSuggestion = () => this.findSuggestion(-1);
 

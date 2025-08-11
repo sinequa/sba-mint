@@ -87,6 +87,9 @@
   "People": "People",
   "Places": "Places",
   "Sizes": "Sizes",
+  "concept": "Concept",
+  "full-text": "Full text",
+  "company": "Company",
   "bookmark": "Bookmark",
   "recent-search": "Recent searches",
   "saved-search": "Saved searches",
@@ -100,5 +103,24 @@
     "refresh": "Refresh"
   },
   "toggleDocumentSelection": "Toggle document selection",
-  "homeWidgetTabs": "Home page widget list"
+  "homeWidgetTabs": "Home page widget list",
+  "msg#sort": {
+    "date": "Date",
+    "filename": "Filename",
+    "relevance": "Relevance",
+    "title": "Title"
+  },
+  "msg#results": {
+    "results_all_tab": "All",
+    "resultsAllTab": "All",
+    "results_text_tab": "Text",
+    "tabBusiness": "Business",
+    "tabLocation": "Location",
+    "tabPeople": "Persons",
+    "web": "Internet",
+    "pdf": "PDF",
+    "word": "Word",
+    "excel": "Excel",
+    "powerpoint": "Powerpoint"
+  }
 }
