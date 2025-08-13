@@ -130,7 +130,6 @@ export class AssistantLayoutComponent {
   readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
   q = input<string>();
-  f = input<string>();
 
   constructor() {
     effect(() => {
