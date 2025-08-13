@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -18,9 +19,9 @@ export class AppSidebarComponent {
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
   private readonly appFeatures = inject(APP_FEATURES);
+  private readonly location = inject(Location);
 
-  readonly searchRoute = input<string>('/home');
-  readonly searchParams = input<any>(undefined);
+  readonly searchRoute = input<'home' | 'back'>('home');
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
 
@@ -54,5 +55,11 @@ export class AppSidebarComponent {
 
   openAdmin() {
     window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
+  }
+
+  onSearchClick(): void {
+    if (this.searchRoute() === 'back') {
+      this.location.back();
+    }
   }
 }
