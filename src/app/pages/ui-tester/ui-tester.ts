@@ -998,7 +998,7 @@ import {
           <button class="mx-auto" (click)="pageHeaderStyle.set('none')">Set none</button>
         </div>
 
-        <PageHeader [variant]="pageHeaderStyle()" [position]="pageHeaderToggle() ? 'default' : 'fixed'">
+        <PageHeader [variant]="pageHeaderStyle()" [position]="pageHeaderToggle() ? 'static' : 'default'">
           Page header position: {{ pageHeaderToggle() ? 'fixed' : 'default' }}
         </PageHeader>
 
