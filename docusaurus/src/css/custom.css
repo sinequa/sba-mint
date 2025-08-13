@@ -341,7 +341,7 @@ table td {
   position: absolute;
   font-size: 10px;
   color: white;
-  top: 0;
+  top: -2px;
   right: 0;
   transform: translateY(50%);
   padding-right: 0.25rem;
@@ -350,15 +350,19 @@ table td {
 }
 .new::after {
   content: 'new';
-  background-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  border: 1px solid var(--ifm-color-primary);
+  background-color: rgb(from var(--ifm-color-primary) r g b / 0.1);
 }
 .draft::after {
   content: 'draft';
-  color: var(--ifm-color-warning-contrast-foreground);
-  background-color: var(--ifm-color-warning);
+  color: var(--ifm-color-warning);
+  border: 1px solid var(--ifm-color-warning);
+  background-color: rgb(from var(--ifm-color-warning) r g b / 0.1);
 }
 .update::after {
   content: 'update';
-  /* color: var(--ifm-color-success-contrast-foreground); */
-  background-color: var(--ifm-color-success);
+  color: var(--ifm-color-success);
+  border: 1px solid var(--ifm-color-success);
+  background-color: rgb(from var(--ifm-color-success) r g b / 0.1);
 }

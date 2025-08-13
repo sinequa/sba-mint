@@ -4,7 +4,7 @@
 @import './theme.utilities';
 
 :root {
-  --background: var(--color-gray-50);
+  --background: var(--color-white);
   --foreground: var(--color-gray-950);
 
   --primary: #0084ff;
@@ -27,8 +27,10 @@
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #282828;
   --foreground: #e5e5e5;
+
+  --primary: #ff0055;
 
   --muted-foreground: var(--color-neutral-300);
 
@@ -36,6 +38,10 @@
 
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
   --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+
+  & ul {
+    color-scheme: dark;
+  }
 }
 
 @theme {

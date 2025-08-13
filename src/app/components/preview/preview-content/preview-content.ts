@@ -13,8 +13,8 @@ import { PreviewActionsComponent } from './actions';
   template: `
     <!-- Use hidden and absolute positioning -->
     @if (canLoadIframe()) {
-      <section class="flex h-full flex-col gap-4">
-        <preview-actions class="flex justify-end" />
+      <section class="relative flex h-full flex-col gap-4">
+        <preview-actions class="absolute top-4 right-8 flex justify-end rounded-md bg-white/85" />
 
         <iframe
           #preview

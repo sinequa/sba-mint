@@ -1,14 +1,14 @@
 @if (suggestions()) {
   <ul
     id="search-suggestions"
-    class="text-foreground z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-inherit px-2 pt-2 pb-1"
+    class="text-foreground bg-menu z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg px-2 pb-1"
     role="listbox"
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {
       @if (suggest.$isDivider) {
         <HorizontalDivider />
       } @else if (suggest.$isTitle) {
-        <li role="presentation" class="text-muted-foreground cursor-pointer p-2 text-xs font-semibold">
+        <li role="presentation" class="text-muted-foreground sticky top-0 cursor-pointer bg-inherit p-2 text-xs font-semibold">
           {{ suggest.category | transloco }}
         </li>
       } @else {
@@ -36,7 +36,6 @@
 }
 @if (advancedSearch()) {
   <HorizontalDivider />
-
   <button variant="primary" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
     <i class="fa-fw far fa-sliders"></i>
     {{ 'searchInput.advancedSearch' | transloco }}

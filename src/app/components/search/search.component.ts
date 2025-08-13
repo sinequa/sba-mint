@@ -15,9 +15,9 @@ import {
   AutocompleteService,
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
-  SearchInputComponent as InputComponent,
   QueryParamsStore,
   SavedSearchesService,
+  SearchInputComponent,
   SearchItem,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
@@ -27,30 +27,31 @@ import {
   DialogService,
   DropdownComponent,
   DropdownContentComponent,
+  InputComponent,
   PopoverComponent,
   PopoverContentComponent,
-  SearchVariants,
-  SendHorizontalIconComponent
+  SendHorizontalIconComponent,
+  type SearchVariants
 } from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 
 @Component({
-  selector: 'app-search-input',
+  selector: 'app-search',
   imports: [
     RouterLink,
     ReactiveFormsModule,
     TranslocoPipe,
     ButtonComponent,
     SendHorizontalIconComponent,
-    InputComponent,
     DropdownComponent,
     DropdownContentComponent,
     PopoverComponent,
     PopoverContentComponent,
+    SearchInputComponent,
     InputComponent
   ],
-  templateUrl: './search-input.component.html',
+  templateUrl: './search.component.html',
   host: {
     '(keydown.enter)': 'emitText($event)'
   },
@@ -66,12 +67,12 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
   ],
   providers: [provideTranslocoScope('search-input')]
 })
-export class SearchInputComponent {
+export class SearchComponent {
   cn = cn;
 
   popoverComponent = viewChild.required(PopoverComponent);
   dropdownComponent = viewChild.required(DropdownComponent);
-  InputComponent = viewChild.required<InputComponent>(InputComponent);
+  InputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
 
   protected readonly route = inject(ActivatedRoute);
   protected readonly autocompleteService = inject(AutocompleteService);

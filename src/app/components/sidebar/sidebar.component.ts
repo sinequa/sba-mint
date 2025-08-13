@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -19,6 +20,9 @@ export class AppSidebarComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly userSettings = inject(UserSettingsStore);
+  protected readonly location = inject(Location);
+
+  readonly showBack = input<boolean>(false);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly isDarkMode = computed(() => this.userSettings.useDarkMode());

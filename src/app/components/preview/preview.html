@@ -1,9 +1,9 @@
-<app-preview-navbar class="border-muted-foreground/18 block border-b" [article]="article()" />
+<preview-navbar class="border-muted-foreground/18 block border-b" [article]="article()" />
 
 <div class="flex h-full flex-col gap-0.5 overflow-auto">
   @if (previewData() && article()) {
-    <section class="border-muted-foreground/18 flex flex-col gap-4 border-b p-6">
-      <app-preview-header [article]="article()" />
+    <section class="border-muted-foreground/18 border-b px-6 py-4">
+      <preview-header [article]="article()!" />
     </section>
 
     @if (loading()) {
@@ -13,7 +13,7 @@
     }
 
     <!-- Tab Navigation only if the "display summary is available " -->
-    <app-preview-tabs [(activeTab)]="activeTab" [(showAssistants)]="showAssistants" [isStreaming]="isStreaming()" />
+    <preview-tabs [(activeTab)]="activeTab" [(showAssistants)]="showAssistants" [isStreaming]="isStreaming()" />
 
     <!-- tab contents -->
     <div class="relative flex-grow overflow-auto">
@@ -38,7 +38,7 @@
 
       <!-- Preview Tab Content -->
       <div class="absolute inset-0 h-full" [hidden]="activeTab() !== 'preview'">
-        <preview-content class="px-6 py-4" [previewData]="previewData()" [(loading)]="loading" />
+        <preview-content class="px-6 py-2" [previewData]="previewData()!" [(loading)]="loading" />
       </div>
     </div>
   }
