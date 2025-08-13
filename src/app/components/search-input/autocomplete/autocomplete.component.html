@@ -1,20 +1,20 @@
 @if (suggestions()) {
   <ul
     id="search-suggestions"
-    class="z-10 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-white p-2 px-2 text-black"
+    class="text-foreground z-10 mb-2 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-inherit px-2 pt-2 pb-1"
     role="listbox"
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {
       @if (suggest.$isDivider) {
-        <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
+        <HorizontalDivider />
       } @else if (suggest.$isTitle) {
-        <li role="presentation" class="cursor-pointer p-2 text-xs font-semibold text-neutral-500">
+        <li role="presentation" class="text-muted-foreground cursor-pointer p-2 text-xs font-semibold">
           {{ suggest.category | transloco }}
         </li>
       } @else {
         <li
           role="option"
-          class="data-list-item flex cursor-pointer items-baseline gap-2 p-2 aria-selected:bg-blue-300"
+          class="data-list-item aria-selected:bg-primary-selected flex cursor-pointer items-center gap-2 p-2"
           [id]="'search-suggestion-' + $index"
           [attr.data-text]="suggest.display"
           [attr.aria-label]="suggest.display">
@@ -35,8 +35,9 @@
   </ul>
 }
 @if (advancedSearch()) {
-  <MenuSeparator />
-  <button variant="inverse" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
+  <HorizontalDivider />
+
+  <button variant="primary" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
     <i class="fa-fw far fa-sliders"></i>
     {{ 'searchInput.advancedSearch' | transloco }}
   </button>

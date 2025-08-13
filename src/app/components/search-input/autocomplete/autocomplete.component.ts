@@ -26,7 +26,7 @@ import {
   ListItemComponent,
   MapPinIcon,
   SearchIcon,
-  StarIcon,
+  StarIconComponent,
   UserIcon
 } from '@sinequa/ui';
 
@@ -40,7 +40,7 @@ const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by pr
 const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, Type<unknown>>>('Icons for each suggestion categories', {
   factory: () => ({
     'recent-search': ClockIcon, // Clock icon
-    'saved-search': StarIcon, // Star icon
+    'saved-search': StarIconComponent, // Star icon
     bookmark: BookmarkIcon, // Bookmark icon
     'full-text': SearchIcon, // Search icon
     title: FileIcon, // File icon
@@ -64,6 +64,11 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
   imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [
     `
+      :host {
+        width: inherit;
+        display: block;
+      }
+
       ul {
         scrollbar-width: thin;
       }

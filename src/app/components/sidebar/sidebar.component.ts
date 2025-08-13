@@ -5,7 +5,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
-import { APP_FEATURES, AppStore, PrincipalStore } from '@sinequa/atomic-angular';
+import { APP_FEATURES, AppStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
 @Component({
@@ -20,11 +20,12 @@ export class AppSidebarComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly location = inject(Location);
+  private readonly userSettings = inject(UserSettingsStore);
 
   readonly searchRoute = input<'home' | 'back'>('home');
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
-
+  readonly isDarkMode = computed(() => this.userSettings.useDarkMode());
   readonly instanceId = computed(() => {
     const {
       assistant: { usePrefixName = true }
@@ -51,6 +52,11 @@ export class AppSidebarComponent {
       useLocaleAsPrefix: true
     });
     window.open(url, '_blank', 'noopener');
+  }
+
+  switchDarkMode() {
+    document.documentElement.classList.toggle('dark', !this.isDarkMode());
+    this.userSettings.toggleDarkMode();
   }
 
   openAdmin() {

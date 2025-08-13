@@ -35,7 +35,7 @@
 
             <section class="flex items-center gap-1 text-xs">
               @if (docformatMetadata()) {
-                <Badge variant="secondary" class="text-xxs font-bold text-white uppercase" (click)="setFilter('docformat', docformatMetadata()!, $event)">
+                <Badge variant="secondary" hover="yes" class="font-bold uppercase" (click)="setFilter('docformat', docformatMetadata()!, $event)">
                   {{ docformatMetadata() }}
                 </Badge>
               }
@@ -68,7 +68,7 @@
                   <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
                 }
                 @for (field of metadata.fields; track $index) {
-                  <Metadata variant="outline" [article]="article()" [metadata]="field" class="peer" />
+                  <Metadata decoration="outline" hover="yes" [article]="article()" [metadata]="field" class="peer" />
                 }
               </div>
             }

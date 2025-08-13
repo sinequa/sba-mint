@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { DocumentUploadComponent, DocumentOverviewComponent, DocumentListComponent } from '@sinequa/assistant/chat';
+import { DocumentListComponent, DocumentOverviewComponent, DocumentUploadComponent } from '@sinequa/assistant/chat';
 import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
 
 @Component({
@@ -65,7 +65,7 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
       </DialogContent>
 
       <DialogFooter>
-        <button variant="outline" (click)="uploadDialog.close($event)">
+        <button decoration="outline" (click)="uploadDialog.close($event)">
           {{ 'close' | transloco }}
         </button>
       </DialogFooter>

@@ -29,9 +29,10 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
   ],
   providers: [provideTranslocoScope('filters')],
   template: `
-    <PageHeader class="fixed top-0 z-1 ml-8 w-full bg-white">
+    <PageHeader>
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
+
     <div class="mt-[65px] ml-18 flex h-full">
       <div
         [class]="
@@ -41,9 +42,9 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           )
         ">
         @if (showSavedChats()) {
-          <section class="h-56 max-h-56 rounded-2xl border border-gray-200 bg-white p-4 shadow">
+          <section class="border-foreground/18 bg-menu h-56 max-h-56 rounded-2xl border p-4 shadow">
             <div class="flex items-center justify-between">
-              <h3 class="pointer-events-none text-sm font-semibold text-gray-600">
+              <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
                 <i class="far fa-comments me-1"></i>
                 {{ 'assistant.saved-chats' | transloco }}
               </h3>
@@ -60,7 +61,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
           </section>
         }
         <section class="pt-6">
-          <Aggregation name="Sources" column="treepath" [showCount]="true" class="h-[540px] rounded-2xl border border-gray-200 bg-white p-4 shadow" />
+          <Aggregation name="Sources" column="treepath" [showCount]="true" class="border-foreground/18 bg-menu h-[540px] rounded-2xl border p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
@@ -77,6 +78,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
       :host {
         display: flex;
         flex-direction: column;
+        color: var(--color-foreground);
       }
     `
   ]

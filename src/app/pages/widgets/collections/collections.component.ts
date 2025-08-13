@@ -32,7 +32,7 @@ import { ButtonComponent } from '@sinequa/ui';
               (keydown.enter)="postCreate()"
               (keydown.escape)="$event.preventDefault(); onCreate()" />
 
-            <button variant="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
+            <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
               {{ 'collections.cancelCreation' | transloco }}
             </button>
             <button tabindex="1" [attr.title]="'collections.save' | transloco" (click)="postCreate()">

@@ -15,7 +15,7 @@ import {
   RecentSearchesComponent,
   SavedSearchesComponent
 } from '@sinequa/atomic-angular';
-import { TabComponent, TabsComponent } from '@sinequa/ui';
+import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search-input/autocomplete/autocomplete.component';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
@@ -63,7 +63,17 @@ const homeFeatures: HomeTab[] = [
 
 @Component({
   selector: 'app-home',
-  imports: [NgComponentOutlet, TranslocoPipe, SearchInputComponent, AutocompleteComponent, UserMenuComponent, TabsComponent, TabComponent, AppSidebarComponent],
+  imports: [
+    NgComponentOutlet,
+    TranslocoPipe,
+    SearchInputComponent,
+    AutocompleteComponent,
+    UserMenuComponent,
+    TabsComponent,
+    TabComponent,
+    AppSidebarComponent,
+    HorizontalDividerComponent
+  ],
   templateUrl: './home.component.html',
   host: {
     class: 'layout-search h-screen',
