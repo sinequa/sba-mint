@@ -1,5 +1,7 @@
 import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -18,7 +20,6 @@ import {
 } from '@sinequa/atomic-angular';
 import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
-import { TranslocoPipe } from '@jsverse/transloco';
 import { CardMenuComponent } from '../menu';
 
 type Tab = 'attachments' | 'similars';
@@ -37,6 +38,7 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'record-card, recordcard, RecordCard',
   imports: [
+    RouterLink,
     BadgeComponent,
     BookmarkButtonComponent,
     SourceComponent,

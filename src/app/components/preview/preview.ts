@@ -1,12 +1,14 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+import { of } from 'rxjs';
 
-import { Article as A, CCApp, PreviewData, Query } from '@sinequa/atomic';
-import { APP_FEATURES, AppStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import { Article as A, CCApp, debug, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
+import { APP_FEATURES, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
 
 import { AssistantComponent } from '../assistant/assistant';
-import { PreviewNavbarComponent } from './navbar/navbar.component';
+import { PreviewNavbarComponent } from './navbar/navbar';
 import { PreviewContentComponent } from './preview-content/preview-content';
 import { PreviewHeaderComponent } from './preview-header/preview-header';
 import { PreviewTab, PreviewTabsComponent } from './preview-tabs/preview-tabs';
@@ -16,31 +18,61 @@ type Article = A & {
 };
 
 @Component({
-  selector: 'app-preview-default',
+  selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
   imports: [AssistantComponent, PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, PreviewContentComponent],
   templateUrl: './preview.html',
   host: {
-    class: 'grow flex flex-col overflow-hidden'
+    class: 'grow flex flex-col overflow-hidden h-full'
   }
 })
 export class PreviewComponent {
-  public readonly previewData = input.required<PreviewData>();
-  public readonly article = computed(() => this.previewData()?.record as Article);
-
-  protected readonly locationSegments = computed(() => this.article().treepath[0]?.split('/')?.slice(1, -1));
+  /* injectables */
+  protected readonly appStore = inject(AppStore);
   protected readonly queryParamStore = inject(QueryParamsStore);
   protected readonly selectionStore = inject(SelectionStore);
-  protected readonly cdr = inject(ChangeDetectorRef);
+  protected readonly previewservice = inject(PreviewService);
 
-  readonly loading = signal<boolean>(false);
-  readonly activeTab = signal<PreviewTab>('preview');
+  protected readonly destroyRef = inject(DestroyRef);
+  protected readonly appFeatures = inject(APP_FEATURES);
 
-  appStore = inject(AppStore);
-  appFeatures = inject(APP_FEATURES);
+  /* signals */
+  protected readonly loading = signal<boolean>(false);
+  protected readonly activeTab = signal<PreviewTab>('preview');
 
   // this signal is used by the summarize assistant to know if the assistant is streaming
-  isStreaming = signal<boolean>(false);
+  protected readonly isStreaming = signal<boolean>(false);
+  protected readonly article = signal<Article | undefined>(undefined);
+
+  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
+  protected locationSegments: string[] = [];
+
+  // article ID is used to create an audit log entry when the preview is closed
+  protected id: string | undefined;
+  protected previewHighlights: PreviewHighlights;
+
+  /* resources */
+  public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
+    params: () => {
+      const { id, queryText, previewHighlights } = getState(this.selectionStore);
+      return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
+    },
+    stream: ({ params: { id, text, previewHighlights } }) => {
+      debug('Fetching preview data for:', { id, text, previewHighlights });
+      if (id) {
+        return this.previewservice.preview(id, { name: this.queryName, text }, previewHighlights);
+      }
+      return of({} as PreviewData);
+    }
+  });
+
+  /* computed signals */
+  previewData = computed(() => {
+    if (this.previewDataResource.hasValue()) {
+      return this.previewDataResource.value();
+    }
+    return undefined;
+  });
 
   readonly summarizeInstanceId = computed(() => {
     const {
@@ -82,11 +114,29 @@ export class PreviewComponent {
 
   constructor() {
     effect(() => {
+      const { article, previewHighlights, id } = getState(this.selectionStore);
+      this.article.set(article as Article | undefined);
+      this.locationSegments = article?.url1 ? article.url1.split('/') : [];
+      this.previewHighlights = previewHighlights;
+
+      // only set the ID if the article is defined
+      // this is to avoid setting the ID to undefined when the article is not defined usally when the preview is closed
+      if (id) {
+        this.id = id;
+      }
+    });
+
+    effect(() => {
+      const article = this.previewData()?.record;
+      this.article.set(article as Article | undefined);
+    });
+
+    effect(() => {
       if (!this.previewData()) return;
-      this.cdr.detectChanges();
+      if (!this.previewData()?.record) return;
 
       // create a new query for the mini preview assistant
-      const { record } = this.previewData();
+      const { record } = this.previewData()!;
 
       this.miniPreviewQuery = {
         name: this.appStore.getDefaultQuery()?.name || '_query',
@@ -103,6 +153,12 @@ export class PreviewComponent {
 
     effect(() => {
       document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
+    });
+
+    this.destroyRef.onDestroy(() => {
+      if (this.id) {
+        this.previewservice.close(this.id, { name: this.queryName });
+      }
     });
   }
 

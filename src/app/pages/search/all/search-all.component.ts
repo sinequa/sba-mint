@@ -89,8 +89,6 @@ type QueryParamsProps = {
 export class SearchAllComponent {
   cn = cn;
 
-  readonly stickyClass = cn('sticky top-16 z-10 -mx-1 pt-1 pb-2 bg-background');
-
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
   protected readonly drawerStack = inject(DrawerStackService);
@@ -427,9 +425,5 @@ export class SearchAllComponent {
     const collapsed = !this.assistantCollapsed();
     this.userSettingsStore.updateAssistantCollapsed(collapsed);
     this.assistantCollapsed.set(collapsed);
-  }
-
-  onClearFilters(): void {
-    this.router.navigate(['/search'], { queryParams: {} });
   }
 }

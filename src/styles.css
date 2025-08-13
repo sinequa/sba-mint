@@ -3,7 +3,6 @@
 @plugin "@tailwindcss/typography";
 
 @import './theme';
-@import './styles.dark';
 
 /* css overrides */
 @import './css-overrides/angular-cdk';
@@ -113,6 +112,9 @@ body {
   .matchlocations {
     font-weight: 700;
   }
+  .w-inherit {
+    width: inherit;
+  }
 }
 
 /* drawer stack and drawer preview */
@@ -173,6 +175,9 @@ sq-chat-v3 {
     }
   }
 
+  div.ast-input-container {
+    border: 1px solid lightgray;
+  }
   div.ast-input-container textarea {
     color: var(--color-foreground) !important;
   }

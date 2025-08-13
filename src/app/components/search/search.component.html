@@ -1,4 +1,4 @@
-<Dropdown class="relative w-full">
+<Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
       id="autocomplete-anchor"
@@ -41,7 +41,7 @@
                 <button decoration="outline" (click)="popover.close()">
                   {{ 'cancel' | transloco }}
                 </button>
-                <button (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
+                <button variant="primary" (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
                   {{ 'confirm' | transloco }}
                 </button>
               </div>
@@ -88,7 +88,7 @@
     </SearchInput>
   </form>
   @if (!openedSavedSearch()) {
-    <DropdownContent class="!absolute">
+    <DropdownContent>
       <ng-content></ng-content>
     </DropdownContent>
   }

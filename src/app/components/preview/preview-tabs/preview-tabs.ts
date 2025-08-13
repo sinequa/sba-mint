@@ -8,7 +8,7 @@ import { TabComponent, TabsComponent } from '@sinequa/ui';
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
 @Component({
-  selector: 'app-preview-tabs',
+  selector: 'preview-tabs, PreviewTabs, previewtabs',
   standalone: true,
   imports: [TranslocoPipe, TabsComponent, TabComponent],
   templateUrl: './preview-tabs.html'

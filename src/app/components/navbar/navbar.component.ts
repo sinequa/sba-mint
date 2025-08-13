@@ -14,14 +14,14 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
+  SearchItem,
   SavedSearchesComponent,
-  SavedSearchesService,
-  SearchItem
+  SavedSearchesService
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 
-import { AutocompleteComponent } from '../search-input/autocomplete/autocomplete.component';
-import { SearchInputComponent } from '../search-input/search-input.component';
+import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
+import { SearchComponent } from '../search/search.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
 
 export type NavbarMenu = {
@@ -41,7 +41,7 @@ export type NavbarMenu = {
     RouterLink,
     TranslocoPipe,
     ButtonComponent,
-    SearchInputComponent,
+    SearchComponent,
     AutocompleteComponent,
     UserMenuComponent,
     PopoverComponent,
@@ -67,7 +67,7 @@ export class NavbarComponent {
   readonly showInput = input<boolean>(true);
   readonly showMenu = input<boolean>(true);
 
-  readonly searchInput = viewChild(SearchInputComponent);
+  readonly searchInput = viewChild(SearchComponent);
   readonly overflowManager = viewChild(OverflowManagerDirective);
   readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 

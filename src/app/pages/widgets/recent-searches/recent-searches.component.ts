@@ -12,15 +12,15 @@ import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
   imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent],
   template: `
     <div class="layout-search overflow-auto">
-      <div class="col-span-2 col-start-2">
+      <div class="col-span-2 col-start-2 overflow-hidden">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
           <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
           {{ 'history' | transloco }}
         </h1>
 
-        <ul class="flex flex-col">
+        <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
           @for (scope of history(); track $index) {
-            <li role="presentation" class="my-3 text-lg font-semibold capitalize">
+            <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
               {{ getDate(scope.date) }}
             </li>
 

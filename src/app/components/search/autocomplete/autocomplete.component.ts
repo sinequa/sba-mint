@@ -26,12 +26,12 @@ import {
   ListItemComponent,
   MapPinIcon,
   SearchIcon,
-  StarIconComponent,
+  StarIcon,
   UserIcon
 } from '@sinequa/ui';
 
 import { NgComponentOutlet } from '@angular/common';
-import { SearchInputComponent } from '../search-input.component';
+import { SearchComponent } from '../search.component';
 
 const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by preference for suggestion's categories", {
   factory: () => ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people']
@@ -40,7 +40,7 @@ const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by pr
 const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, Type<unknown>>>('Icons for each suggestion categories', {
   factory: () => ({
     'recent-search': ClockIcon, // Clock icon
-    'saved-search': StarIconComponent, // Star icon
+    'saved-search': StarIcon, // Star icon
     bookmark: BookmarkIcon, // Bookmark icon
     'full-text': SearchIcon, // Search icon
     title: FileIcon, // File icon
@@ -61,11 +61,10 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
+  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent, HorizontalDividerComponent],
   styles: [
     `
       :host {
-        width: inherit;
         display: block;
       }
 
@@ -151,7 +150,7 @@ export class AutocompleteComponent {
   );
 
   constructor(
-    { el: { nativeElement } }: SearchInputComponent,
+    { el: { nativeElement } }: SearchComponent,
     private eventManager: EventManager
   ) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));

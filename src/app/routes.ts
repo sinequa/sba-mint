@@ -5,6 +5,7 @@ import { AuthGuard, ErrorComponent, LoadingComponent, queryNameResolver, SignInC
 import { HomeComponent } from './pages/home/home.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/layout';
+import { PreviewPage } from './pages/preview/preview.page';
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -29,6 +30,7 @@ export const routes: ExtendedRoutes = [
     canActivate: [AuthGuard()],
     resolve: { queryName: queryNameResolver }
   },
+  { path: 'preview/:id', component: PreviewPage },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'widgets',

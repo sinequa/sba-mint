@@ -1,5 +1,6 @@
 import { Component, effect, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule } from '@angular/forms';
+import { SearchInputComponent } from '@sinequa/atomic-angular';
 
 import {
   AvatarComponent,
@@ -37,7 +38,6 @@ import {
   PageHeaderVariants,
   PopoverComponent,
   PopoverContentComponent,
-  SearchComponent,
   SearchVariants,
   SidebarComponent,
   SidebarItemComponent,
@@ -68,7 +68,7 @@ import {
     SidebarItemComponent,
     AvatarComponent,
     AvatarFallbackComponent,
-    SearchComponent,
+    SearchInputComponent,
     MenuComponent,
     MenuContentComponent,
     MenuItemComponent,
@@ -542,46 +542,61 @@ import {
             <tr>
               <th>Default</th>
               <td>
-                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="default"></Search>
+                <SearchInput controls="search-suggestions" [control]="searchValue" [decoration]="searchbarDecoration()" variant="default" />
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="default"></Search>
+                <SearchInput controls="search-suggestions" disabled [control]="searchValue" [decoration]="searchbarDecoration()" variant="default" />
               </td>
             </tr>
             <tr>
               <th>Primary</th>
               <td>
-                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="primary"></Search>
+                <SearchInput controls="search-suggestions" [control]="searchValue" [decoration]="searchbarDecoration()" variant="primary"></SearchInput>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="primary"></Search>
+                <SearchInput
+                  controls="search-suggestions"
+                  disabled
+                  [control]="searchValue"
+                  [decoration]="searchbarDecoration()"
+                  variant="primary"></SearchInput>
               </td>
             </tr>
             <tr>
               <th>Secondary</th>
               <td>
-                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="secondary"></Search>
+                <SearchInput controls="search-suggestions" [control]="searchValue" [decoration]="searchbarDecoration()" variant="secondary"></SearchInput>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="secondary"></Search>
+                <SearchInput
+                  controls="search-suggestions"
+                  disabled
+                  [control]="searchValue"
+                  [decoration]="searchbarDecoration()"
+                  variant="secondary"></SearchInput>
               </td>
             </tr>
             <tr>
               <th>Destructive</th>
               <td>
-                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="destructive"></Search>
+                <SearchInput controls="search-suggestions" [control]="searchValue" [decoration]="searchbarDecoration()" variant="destructive"></SearchInput>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="destructive"></Search>
+                <SearchInput
+                  controls="search-suggestions"
+                  disabled
+                  [control]="searchValue"
+                  [decoration]="searchbarDecoration()"
+                  variant="destructive"></SearchInput>
               </td>
             </tr>
             <tr>
               <th>AI</th>
               <td>
-                <Search [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></Search>
+                <SearchInput controls="search-suggestions" [control]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></SearchInput>
               </td>
               <td>
-                <Search disabled [(ngModel)]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></Search>
+                <SearchInput controls="search-suggestions" disabled [control]="searchValue" [decoration]="searchbarDecoration()" variant="ai"></SearchInput>
               </td>
             </tr>
           </tbody>
@@ -983,7 +998,7 @@ import {
           <button class="mx-auto" (click)="pageHeaderStyle.set('none')">Set none</button>
         </div>
 
-        <PageHeader [variant]="pageHeaderStyle()" [position]="pageHeaderToggle() ? 'default' : 'static'">
+        <PageHeader [variant]="pageHeaderStyle()" [position]="pageHeaderToggle() ? 'default' : 'fixed'">
           Page header position: {{ pageHeaderToggle() ? 'fixed' : 'default' }}
         </PageHeader>
 
@@ -1180,7 +1195,7 @@ export class UITesterComponent {
   readonly badgeHover = signal<BadgeVariants['hover']>('no');
   readonly selected = signal<boolean>(false);
   readonly cardHover = signal<CardVariants['hover']>('no');
-  readonly searchValue = signal<string>('');
+  readonly searchValue = new FormControl('', { nonNullable: true });
   readonly dialogVariant = signal<DialogVariants['variant']>('default');
   readonly pageHeaderToggle = signal<boolean>(false);
   readonly pageHeaderStyle = signal<PageHeaderVariants['variant']>('default');

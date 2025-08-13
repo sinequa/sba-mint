@@ -1,6 +1,6 @@
-<header class="flex items-center justify-between gap-4 py-1 text-base">
-  <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
-    <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap">{{ article().title }}</p>
+<header class="flex items-center justify-between gap-2 text-base">
+  <a [routerLink]="['/preview', article().id]" class="overflow-auto">
+    <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap hover:underline">{{ article().title }}</p>
   </a>
 
   <button
