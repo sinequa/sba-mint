@@ -71,7 +71,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         <Assistant [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
       </div>
     </div>
-    <app-sidebar class="fixed top-0 h-full" searchRoute="back" />
+    <app-sidebar class="fixed top-0 h-full" [showBack]="true" />
   `,
   styles: [
     `

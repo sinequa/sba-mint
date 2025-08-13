@@ -1,8 +1,10 @@
 <sidebar class="w-fit">
   <div class="mt-30 grow">
-    <sidebar-item title="Search" [attr.aria-label]="'Search'" [routerLink]="searchRoute() === 'home' ? '/home' : undefined" (click)="onSearchClick()">
-      <i class="fa-fw far fa-magnifying-glass"></i>
-    </sidebar-item>
+    @if (showBack()) {
+      <sidebar-item title="Search" [attr.aria-label]="'Search'" (click)="location.back()">
+        <i class="fa-fw far fa-magnifying-glass"></i>
+      </sidebar-item>
+    }
 
     <sidebar-item [class]="cn('invisible', allowAI() && 'visible')" title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
       <i class="fa-fw far fa-comment"></i>

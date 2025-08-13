@@ -19,10 +19,10 @@ export class AppSidebarComponent {
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
   private readonly appFeatures = inject(APP_FEATURES);
-  private readonly location = inject(Location);
   private readonly userSettings = inject(UserSettingsStore);
+  protected readonly location = inject(Location);
 
-  readonly searchRoute = input<'home' | 'back'>('home');
+  readonly showBack = input<boolean>(false);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly isDarkMode = computed(() => this.userSettings.useDarkMode());
@@ -61,11 +61,5 @@ export class AppSidebarComponent {
 
   openAdmin() {
     window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
-  }
-
-  onSearchClick(): void {
-    if (this.searchRoute() === 'back') {
-      this.location.back();
-    }
   }
 }
