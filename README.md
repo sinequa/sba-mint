@@ -6,6 +6,7 @@ A modern Angular 20+ application boilerplate for building scalable, maintainable
 
 ## 📺 Introduction
 
+- [Changelog](#changelog)
 - [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy)
 - [Documentation website](https://sinequa.github.io/sba-mint/)
 
@@ -115,6 +116,29 @@ Build artifacts are stored in the `dist/` directory.
 
 - [Angular CLI Overview and Command Reference](https://angular.io/cli)
 - [Sinequa Documentation](https://doc.sinequa.com/)
+
+---
+
+## Changelog
+
+### 2025-08-11
+
+- query params store: now manage the URL's queryparams synchronization. No need for manual handling with `router.navigate()`
+- autocomplete component:
+  - we reworked the component to be fully compatible with Firefox. Standard HTML Anchor popovertarget not fully supported with Firefox. Now we use our own popover implementation.
+  - we removed the use of the Fontawesome's icons in favor of SVGs. Low performance with Fontawesome icons.
+  - all suggestion's category (kind) are now displayed correctly.
+  - category (kind) are now sticky to top while scrolling.
+- search input component: we resolved the remaining issues in the previous update.
+- styles.css: we moved the `animate-save` animation into the global css file. you can now use it across your application using Tailwindcss.
+- tsconfig.ts: we removed the `paths` mapping for `@sinequa/atomic` and `@sinequa/atomic-angular`. Libraries have been updated to avoid the need for these mappings.
+
+| Package                 | Version    |
+|-------------------------|------------|
+| @sinequa/assistant      | 3.9.4      |
+| @sinequa/atomic         | ^0.0.109   |
+| @sinequa/atomic-angular | ^0.1.46    |
+| @sinequa/ui             | ^0.1.10    |
 
 ---
 

@@ -7,7 +7,7 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
+import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
   APP_FEATURES,
@@ -23,6 +23,7 @@ import {
   QueryService,
   SearchFeedbackComponent,
   SelectionService,
+  SelectionStore,
   SortingChoice,
   SortSelectorComponent,
   SponsoredResultsComponent,
@@ -96,6 +97,7 @@ export class SearchAllComponent {
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
   protected readonly usersettingsStore = inject(UserSettingsStore);
+  readonly selectionStore = inject(SelectionStore);
 
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
@@ -221,6 +223,11 @@ export class SearchAllComponent {
   position = computed<Placement>(() => (this.drawerOpened() ? 'bottom-end' : 'bottom-start'));
 
   /**
+   * Signal to track state of the selected all checkbox.
+   */
+  selectedAll = signal<'all' | 'some' | 'none'>('none');
+
+  /**
    * If query has rowCount greater than 0, we have results, otherwise no results found.
    */
   readonly hasRowCount = computed(() => {
@@ -308,6 +315,17 @@ export class SearchAllComponent {
       this.aggregationsStore.update(result.aggregations);
     });
 
+    // Update selectedAll signal based on the selection store and current pages
+    effect(() => {
+      const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
+      const selection = this.selectionStore.multiSelection().map(x => x.id);
+      const b = bisect(articles, x => selection.includes(x));
+
+      if (b.true.length === 0) this.selectedAll.set('none');
+      else if (b.false.length === 0) this.selectedAll.set('all');
+      else this.selectedAll.set('some');
+    });
+
     effect(() => {
       const { collapseAssistant } = getState(this.usersettingsStore);
 
@@ -328,6 +346,29 @@ export class SearchAllComponent {
     // When the component is destroyed, clear the aggregations store
     // to avoid memory leaks and ensure that the aggregations are reset
     destroyRef.onDestroy(() => this.aggregationsStore.clear());
+  }
+
+  selectAll() {
+    if (this.selectedAll() === 'all') {
+      this.unselectAll();
+      return;
+    }
+
+    this.query.data()?.pages?.forEach(page => {
+      page.records.forEach(record => {
+        record.$selected = true;
+        this.selectionStore.addArticleToMultiSelection(record as Article);
+      });
+    });
+  }
+
+  unselectAll() {
+    this.query.data()?.pages?.forEach(page => {
+      page.records.forEach(record => {
+        record.$selected = false;
+        this.selectionStore.removeArticleFromMultiSelection(record as Article);
+      });
+    });
   }
 
   nextPage() {
@@ -378,7 +419,9 @@ export class SearchAllComponent {
    * Switch the assistant collapsed status.
    */
   onAssistantCollapse() {
-    this.usersettingsStore.updateAssistantCollapsed(!this.assistantCollapsed());
+    const collapsed = !this.assistantCollapsed();
+    this.usersettingsStore.updateAssistantCollapsed(collapsed);
+    this.assistantCollapsed.set(collapsed);
   }
 
   onClearFilters(): void {
