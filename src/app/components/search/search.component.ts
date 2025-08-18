@@ -16,10 +16,8 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   QueryParamsStore,
-  SavedSearchesService,
   SearchInputComponent,
-  SearchItem,
-  UserSettingsStore
+  SearchItem
 } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
@@ -27,14 +25,13 @@ import {
   DialogService,
   DropdownComponent,
   DropdownContentComponent,
-  InputComponent,
   PopoverComponent,
-  PopoverContentComponent,
   SendHorizontalIconComponent,
   type SearchVariants
 } from '@sinequa/ui';
 
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
+import { SavedSearchPopover } from './saved-search-popover/saved-search-popover';
 
 @Component({
   selector: 'app-search',
@@ -46,10 +43,8 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
     SendHorizontalIconComponent,
     DropdownComponent,
     DropdownContentComponent,
-    PopoverComponent,
-    PopoverContentComponent,
     SearchInputComponent,
-    InputComponent
+    SavedSearchPopover
   ],
   templateUrl: './search.component.html',
   host: {
@@ -70,20 +65,21 @@ import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 export class SearchComponent {
   cn = cn;
 
+  // "saved search" popover reference
   popoverComponent = viewChild.required(PopoverComponent);
+  // autocomplete dropdown reference
   dropdownComponent = viewChild.required(DropdownComponent);
-  InputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
+  // search input reference
+  inputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
 
   protected readonly route = inject(ActivatedRoute);
   protected readonly autocompleteService = inject(AutocompleteService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly userSettingsStore = inject(UserSettingsStore);
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly appStore = inject(AppStore);
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
   protected readonly appFeatures = inject(APP_FEATURES);
-  protected readonly savedSearchesService = inject(SavedSearchesService);
 
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<SearchVariants['variant']>('default');
@@ -100,16 +96,6 @@ export class SearchComponent {
 
   public readonly searchInputText = model<string>('');
   private debounceInputText = new Subject<string>();
-
-  protected readonly saveAnimation = signal<boolean>(false);
-
-  readonly saveNameInput = viewChild<ElementRef>('saveNameInput');
-  public readonly saveName = signal<string>('');
-  public readonly trimmedSaveName = computed(() => {
-    return this.saveName()?.trim();
-  });
-  // used to prevent opening the suggestions dropdown if the saved search is opened
-  protected readonly openedSavedSearch = signal<boolean>(false);
 
   filters = computed(() => {
     const { filters } = getState(this.queryParamsStore);
@@ -144,9 +130,6 @@ export class SearchComponent {
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
-  /** Returns true if the current search (current input() + filters) is in the saved searches */
-  protected savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.searchInputText()));
-
   protected form = new FormGroup({
     searchInputText: new FormControl(this.searchInputText(), { nonNullable: true })
   });
@@ -175,7 +158,7 @@ export class SearchComponent {
     // focus monitor to track focus origin
     effect(() => {
       this.focusMonitor
-        .monitor(this.InputComponent().searchInput(), true)
+        .monitor(this.inputComponent().searchInput(), true)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(origin => {
           this.lastFocusOrigin.set(origin);
@@ -228,20 +211,6 @@ export class SearchComponent {
     this.validated.emit(text);
   }
 
-  protected saveQuery(event: Event): void {
-    event.stopPropagation();
-
-    if (this.savedSearch()) {
-      // no animation when unsaving
-      this.saved.emit(this.savedSearch());
-    } else {
-      this.savedSearchesService.saveSearch(this.trimmedSaveName());
-      this.saveAnimation.set(true);
-      setTimeout(() => this.saveAnimation.set(false), 1000);
-      this.popoverComponent().close();
-    }
-  }
-
   onSelected($event: HTMLElement | null): void {
     const dataText = $event?.getAttribute('data-text');
     if (!dataText) return;
@@ -249,14 +218,5 @@ export class SearchComponent {
     this.form.controls.searchInputText.setValue(dataText);
     this.searchInputText.set(dataText);
     this.selected.emit($event);
-  }
-
-  openSavedSearch(): void {
-    this.saveNameInput()!.nativeElement.value = '';
-    this.saveName.set('');
-    this.openedSavedSearch.set(true);
-    setTimeout(() => {
-      this.saveNameInput()?.nativeElement.focus();
-    }, 1);
   }
 }
