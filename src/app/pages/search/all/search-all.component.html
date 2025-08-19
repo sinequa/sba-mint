@@ -1,9 +1,3 @@
-<!-- <div [class]="cn('relative ml-18 hidden h-full translate-x-0 p-4 opacity-0 xl:block', drawerOpened() ? 'animate-slide-out' : 'animate-slide-in opacity-100')">
-  <div class="sticky top-20">
-    <Aggregation class="[--agg-header-height:6rem]" name="Sources" column="treepath" />
-  </div>
-</div> -->
-
 <main class="col-span-2 col-start-2 mb-8 px-2.5">
   <!-- skeleton part -->
   @if (query.isPending()) {
@@ -34,7 +28,7 @@
       }
 
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" [excludeFilters]="['Sources', 'Treepath']" />
+      <filters-bar class="pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
