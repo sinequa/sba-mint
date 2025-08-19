@@ -37,7 +37,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
       <div
         [class]="
           cn(
-            'sticky top-[66px] hidden h-full p-4 transition duration-300 ease-in-out lg:block',
+            'scrollbar-thin hidden h-full overflow-y-auto p-4 transition duration-300 ease-in-out lg:block',
             opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
           )
         ">
@@ -65,12 +65,11 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
             name="Sources"
             column="treepath"
             [showFiltersCount]="true"
-            class="border-foreground/10 dark:bg-menu h-[540px] rounded-2xl border p-4 shadow [--agg-header-height:40rem]" />
-
-          @if (showDocumentUploader()) {
-            <assistant-upload [instanceId]="instanceId()" />
-          }
+            class="border-foreground/10 dark:bg-menu h-[540px] rounded-2xl border p-4 shadow [--agg-header-height:25rem]" />
         </section>
+        @if (showDocumentUploader()) {
+          <assistant-upload [instanceId]="instanceId()" />
+        }
       </div>
       <div [class]="cn('overflow-hidden transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'translate-x-0')">
         <Assistant class="inline" [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
