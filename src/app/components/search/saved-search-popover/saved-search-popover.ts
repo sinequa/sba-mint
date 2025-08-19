@@ -92,7 +92,7 @@ export class SavedSearchPopover {
     this.savedName.set(this.queryText());
 
     // open the "saved search" popover
-    this.popoverComponent().toggle(e);
+    this.popoverComponent().toggle();
 
     requestAnimationFrame(() => {
       this.savedNameInputRef()?.nativeElement.focus();
