@@ -99,7 +99,7 @@ export class AutocompleteComponent {
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
-    const advancedSearch = this.appStore.customizationJson()?.general?.features?.advancedSearch;
+    const advancedSearch = this.appStore.general()?.features?.advancedSearch;
     return advancedSearch || false;
   });
 
