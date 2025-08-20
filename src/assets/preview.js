@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) {
       el.scrollIntoView({
         block: 'center',
-        behavior: 'auto'
+        behavior: 'instant'
       });
 
       setTimeout(() => {
@@ -211,7 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
-    var box = getBoundingBox(elements);
+
+    for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
+      var el = elements_1[_i];
+      el.classList.add('sq-highlighted');
+    }
+    /* var box = getBoundingBox(elements);
     if (box) {
       var marginTopLeft = 12;
       var marginBottomRight = -8;
@@ -224,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
       passageHighlighter.style.width = right - left + 'px';
       passageHighlighter.style.height = bottom - top_1 + 'px';
       passageHighlighter.style.display = 'block';
-    }
+    } */
   }
   function selectPassage2(elements) {
     passageHighlighter.style.display = 'none';
@@ -257,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   function unselect() {
+    removeAllClasses('sq-highlighted');
     removeAllClasses('sq-current');
     removeAllClasses('sq-first');
     removeAllClasses('sq-last');
