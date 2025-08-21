@@ -5,7 +5,7 @@ import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery } from '@sinequa/atomic';
+import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
@@ -72,7 +72,9 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         }
       </div>
       <div [class]="cn('overflow-hidden transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'translate-x-0')">
-        <Assistant class="inline" [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
+        @if (this.query()) {
+          <Assistant class="inline" [query]="query()" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
+        }
       </div>
     </div>
     <app-sidebar class="fixed top-0 h-full" [showBack]="true" />
@@ -102,8 +104,7 @@ export class AssistantLayoutComponent {
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
-  query = { name: this.defaultQueryName() };
+  query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
     const {
@@ -137,6 +138,11 @@ export class AssistantLayoutComponent {
   q = input<string>();
 
   constructor() {
+    effect(() => {
+      this.queryParamsStore.setFromUrl(window.location.hash);
+      this.query.set(this.queryParamsStore.getQuery());
+    });
+
     effect(() => {
       // force the change detection when the AggregationStore is updated.
       // This is needed because we use the ChatComponent which is not a signal component (i.e Angular v14)
