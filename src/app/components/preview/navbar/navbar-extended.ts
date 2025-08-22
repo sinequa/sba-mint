@@ -39,5 +39,5 @@ export class PreviewNavbarExtendedComponent {
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly drawerService = inject(DrawerService);
 
-  readonly isExtended = toSignal(this.drawerService.isExtended);
+  readonly isExtended = this.drawerService.isExtended;
 }
