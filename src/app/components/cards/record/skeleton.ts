@@ -11,12 +11,12 @@ import { cn } from '@sinequa/ui';
 
       <div class="flex grow flex-col gap-2">
         <!-- Title -->
-        <span class="h-3 w-[60%]"></span>
+        <span class="h-5 w-[60%]"></span>
         <!-- Metadata -->
         <div class="flex gap-2">
-          <span class="h-2 w-[10%]"></span>
-          <span class="h-2 w-[20%]"></span>
-          <span class="h-2 w-[10%]"></span>
+          <span class="h-4 w-[10%]"></span>
+          <span class="h-4 w-[20%]"></span>
+          <span class="h-4 w-[10%]"></span>
         </div>
       </div>
     </div>
@@ -24,14 +24,14 @@ import { cn } from '@sinequa/ui';
     <!-- Content -->
     <div class="flex grow flex-col gap-3">
       <div class="flex flex-col gap-2">
-        <span class="h-2 w-[90%]"></span>
-        <span class="h-2 w-[40%]"></span>
+        <span class="h-4 w-[90%]"></span>
+        <span class="h-4 w-[40%]"></span>
       </div>
 
       <div class="flex gap-2">
-        <span class="h-2 w-[100px]"></span>
-        <span class="h-2 w-[150px]"></span>
-        <span class="h-2 w-[80px]"></span>
+        <span class="h-4 w-[100px]"></span>
+        <span class="h-4 w-[150px]"></span>
+        <span class="h-4 w-[80px]"></span>
       </div>
     </div>
   `,
