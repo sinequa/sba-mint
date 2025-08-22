@@ -33,11 +33,11 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
 
-    <div class="mt-[65px] ml-18 grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[25%_1fr]">
+    <div class="mt-[65px] ml-18 grid h-full grid-cols-1 overflow-hidden md:grid-cols-[35%_1fr]">
       <div
         [class]="
           cn(
-            'scrollbar-thin hidden h-full overflow-y-auto p-4 transition duration-300 ease-in-out lg:block',
+            'scrollbar-thin hidden h-full overflow-y-auto p-4 transition duration-300 ease-in-out md:block',
             opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
           )
         ">
