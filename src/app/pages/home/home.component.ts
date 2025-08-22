@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
+  AggregationsStore,
   AppStore,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  FiltersBarComponent,
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
@@ -21,6 +23,8 @@ import { ActiveSuggestion, AutocompleteComponent } from '../../components/search
 import { SearchComponent } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
+import { fetchQuery } from '@sinequa/atomic';
+import { getState } from '@ngrx/signals';
 
 type HomeTab = {
   name: string;
@@ -72,7 +76,8 @@ const homeFeatures: HomeTab[] = [
     TabsComponent,
     TabComponent,
     AppSidebarComponent,
-    HorizontalDividerComponent
+    HorizontalDividerComponent,
+    FiltersBarComponent
   ],
   templateUrl: './home.component.html',
   host: {
@@ -103,6 +108,7 @@ export class HomeComponent {
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
   readonly drawerStack = inject(DrawerStackService);
+  readonly aggregationStore = inject(AggregationsStore);
 
   readonly queryParamsStore = inject(QueryParamsStore);
 
@@ -134,6 +140,15 @@ export class HomeComponent {
 
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
+
+    // this is needed to populate the aggregation with the sources as no query is sent to the server
+    this.getFirstPageQuery();
+  }
+
+  async getFirstPageQuery() {
+    const query = this.appStore.getDefaultQuery() || { name: '_default' };
+    const response = await fetchQuery({ isFirstPage: true, name: query.name });
+    this.aggregationStore.update(response.aggregations);
   }
 
   public selectTab(tab: HomeTab): void {
@@ -145,7 +160,8 @@ export class HomeComponent {
   }
 
   public search(text: string): void {
-    this.router.navigate(['/search'], { queryParams: { q: text } });
+    const { filters } = getState(this.queryParamsStore);
+    this.router.navigate(['/search'], { queryParams: { q: text, f: JSON.stringify(filters) } });
   }
 
   selected(element: HTMLElement | null): void {
