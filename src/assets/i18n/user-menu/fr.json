@@ -9,5 +9,6 @@
   "resetUserSettings": "Réinitialiser les paramètres de l'utilisateur",
   "revertOverride": "Annuler la surcharge",
   "selectLanguage": "Sélectionner la langue",
-  "help": "Aide"
+  "switchToDarkMode": "Passer en mode sombre",
+  "switchToLightMode": "Passer en mode clair"
 }

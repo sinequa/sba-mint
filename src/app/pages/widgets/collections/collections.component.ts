@@ -5,11 +5,11 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { ButtonComponent, InputComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'Collections',
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent],
+  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
@@ -32,16 +32,16 @@ import { ButtonComponent } from '@sinequa/ui';
               (keydown.enter)="postCreate()"
               (keydown.escape)="$event.preventDefault(); onCreate()" />
 
-            <button variant="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
+            <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
               {{ 'collections.cancelCreation' | transloco }}
             </button>
-            <button tabindex="1" [attr.title]="'collections.save' | transloco" (click)="postCreate()">
+            <button variant="primary" tabindex="1" [attr.title]="'collections.save' | transloco" (click)="postCreate()">
               {{ 'collections.save' | transloco }}
             </button>
           </span>
         } @else {
           <div class="row-reverse flex">
-            <button tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
+            <button variant="primary" tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
               {{ 'collections.createCollection' | transloco }}
             </button>
           </div>
@@ -51,7 +51,7 @@ import { ButtonComponent } from '@sinequa/ui';
           @for (collection of tmpCollections; track $index) {
             @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
               <li
-                class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
+                class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] items-center rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
                 role="listitem"
                 cdkDrag
                 (click)="onClick(collection)">

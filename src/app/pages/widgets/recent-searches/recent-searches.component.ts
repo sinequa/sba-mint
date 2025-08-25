@@ -5,28 +5,29 @@ import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-recent-searches',
-  imports: [RouterModule, TranslocoPipe],
+  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent],
   template: `
     <div class="layout-search overflow-auto">
-      <div class="col-span-2 col-start-2">
+      <div class="col-span-2 col-start-2 overflow-hidden">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
           <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
           {{ 'history' | transloco }}
         </h1>
 
-        <ul class="flex flex-col">
+        <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
           @for (scope of history(); track $index) {
-            <li role="presentation" class="my-3 text-lg font-semibold capitalize">
+            <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
               {{ getDate(scope.date) }}
             </li>
 
             @for (search of scope.searches; track $index) {
               <li
-                class="group grid grid-cols-[auto_20%_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
-                role="link"
+                class="group grid grid-cols-[auto_20%_min-content] items-center rounded-md p-1"
+                role="listitem"
                 attr.data-href="{{ search.path || search.queryParams?.path }}"
                 [routerLink]="[search.path || search.queryParams?.path]"
                 [queryParams]="getQueryParams(search)">
@@ -34,7 +35,7 @@ import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa
                   {{ search.display || search.label }}
                 </span>
 
-                <span class="text-gray-500">
+                <span class="text-muted-foreground">
                   {{ 'in' | transloco }}
 
                   <span class="font-semibold capitalize">
@@ -47,7 +48,7 @@ import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa
                   }
                 </span>
 
-                <button class="invisible text-red-500 group-hover:visible hover:scale-125 hover:cursor-pointer" (click)="remove($event, search)">
+                <button variant="icon" size="icon" class="text-destructive invisible group-hover:visible hover:scale-125" (click)="remove($event, search)">
                   <i class="fa-fw far fa-trash-can" aria-hidden></i>
                 </button>
               </li>

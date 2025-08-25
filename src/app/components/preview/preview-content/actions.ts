@@ -9,21 +9,36 @@ import { ButtonComponent } from '@sinequa/ui';
   selector: 'preview-actions',
   imports: [TranslocoPipe, ButtonComponent],
   template: `
-    <button variant="ghost" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
+    <button variant="ghost" class="dark:text-background dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
     </button>
 
-    <button variant="ghost" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
+    <button
+      variant="ghost"
+      class="dark:text-background dark:hover:bg-background/10"
+      size="icon"
+      [attr.title]="'preview.zoomOut' | transloco"
+      (click)="zoomOut()">
       <i class="fa-regular fa-magnifying-glass-minus shrink-0"></i>
     </button>
 
     @if (hasAIDescription()) {
       @if (showAIDescription()) {
-        <button variant="ghost" size="icon" [attr.title]="'preview.toggleAIDescription' | transloco" (click)="toggleAIDescription()">
+        <button
+          variant="ghost"
+          class="dark:text-background dark:hover:bg-background/10"
+          size="icon"
+          [attr.title]="'preview.toggleAIDescription' | transloco"
+          (click)="toggleAIDescription()">
           <i class="fa-regular fa-sparkles shrink-0"></i>
         </button>
       } @else {
-        <button variant="ghost" size="icon" [attr.title]="'preview.toggleAIDescription' | transloco" (click)="toggleAIDescription()">
+        <button
+          variant="ghost"
+          size="icon"
+          class="dark:text-background dark:hover:bg-background/10"
+          [attr.title]="'preview.toggleAIDescription' | transloco"
+          (click)="toggleAIDescription()">
           <span class="fa-stack shrink-0 items-center justify-center">
             <i class="fa-regular fa-sparkles fa-stack-1x"></i>
             <i class="fa-regular fa-slash fa-stack-1x"></i>
@@ -33,11 +48,21 @@ import { ButtonComponent } from '@sinequa/ui';
     }
 
     @if (extracts()) {
-      <button variant="ghost" size="icon" [attr.title]="'preview.toggleExtracts' | transloco" (click)="toggleExtracts()">
+      <button
+        variant="ghost"
+        class="dark:text-background dark:hover:bg-background/10"
+        size="icon"
+        [attr.title]="'preview.toggleExtracts' | transloco"
+        (click)="toggleExtracts()">
         <i class="fa-regular fa-flashlight shrink-0"></i>
       </button>
     } @else {
-      <button variant="ghost" size="icon" [attr.title]="'preview.toggleExtracts' | transloco" (click)="toggleExtracts()">
+      <button
+        variant="ghost"
+        class="dark:text-background dark:hover:bg-background/10"
+        size="icon"
+        [attr.title]="'preview.toggleExtracts' | transloco"
+        (click)="toggleExtracts()">
         <span class="fa-stack shrink-0 items-center justify-center">
           <i class="fa-regular fa-flashlight fa-stack-1x"></i>
           <i class="fa-regular fa-slash fa-stack-1x"></i>
@@ -46,11 +71,21 @@ import { ButtonComponent } from '@sinequa/ui';
     }
 
     @if (entities()) {
-      <button variant="ghost" size="icon" [attr.title]="'preview.toggleEntities' | transloco" (click)="toggleEntities()">
+      <button
+        variant="ghost"
+        class="dark:text-background dark:hover:bg-background/10"
+        size="icon"
+        [attr.title]="'preview.toggleEntities' | transloco"
+        (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb shrink-0"></i>
       </button>
     } @else {
-      <button variant="ghost" size="icon" [attr.title]="'preview.toggleEntities' | transloco" (click)="toggleEntities()">
+      <button
+        variant="ghost"
+        class="dark:text-background dark:hover:bg-background/10"
+        size="icon"
+        [attr.title]="'preview.toggleEntities' | transloco"
+        (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb-slash shrink-0"></i>
       </button>
     }

@@ -1,4 +1,5 @@
-<app-sidebar class="fixed top-0 h-full" />
+<app-sidebar />
+<!-- class="fixed top-0 h-full" -->
 
 <app-user-menu class="absolute right-0 mt-4 pr-10" />
 
@@ -8,15 +9,15 @@
   </header>
 
   <main class="flex h-[50vh] flex-col gap-16">
-    <app-search-input (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
+    <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
       <app-autocomplete [text]="searchText()" />
-    </app-search-input>
+    </app-search>
 
     <div class="flex max-h-full grow flex-col">
       <tabs class="flex font-semibold" role="tablist" aria-label="widgets tabs">
         @for (tab of tabs(); track tab.label) {
           <tab
-            variant="selected2"
+            variant="default"
             role="tab"
             [value]="tab.label"
             class="w-fit"
@@ -38,7 +39,7 @@
         }
       </div>
 
-      <hr class="border-neutral-300" />
+      <HorizontalDivider />
     </div>
   </main>
 </div>

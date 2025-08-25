@@ -1,8 +1,17 @@
 ---
 title: Navbar Tabs
+sidebar_class_name: update
 ---
 
 The `NavbarTabs` component provides a responsive navigation tab system that automatically handles overflow by moving extra tabs to a dropdown menu in your Angular applications.
+
+## API reference
+
+### Inputs
+
+| Property    | Type              | Description                                                                    |
+| ----------- | ----------------- | ------------------------------------------------------------------------------ |
+| `showCount` | `Input<boolean>`  | Determines whether the count should be displayed in the navbar tabs component. |
 
 ## Usage
 
@@ -13,28 +22,13 @@ import { NavbarTabsComponent } from "@angular/atomic-angular";
     selector: "sample-component",
     imports: [NavbarTabsComponent],
     template: `
-    <navbar-tabs />
+    <navbar-tabs [showCount]="true" />
     `,
 }) export class SampleComponent {
     // The component automatically reads routes from router configuration
     // and displays them as tabs
 }
 ```
-
-### Properties
-
-| Property | Type | Description |
-|---|---|---|
-| `visibleTabCount` | `signal<number \| undefined>` | Tracks the number of tabs visible before overflow occurs. |
-| `currentPath` | `signal<string \| undefined>` | The currently active tab path. |
-| `tabs` | `computed<NavbarTab[]>` | List of all available tabs derived from the router configuration. |
-| `moreTabs` | `computed<NavbarTab[]>` | List of tabs that don't fit in the visible area and are shown in the overflow menu. |
-
-### Methods
-
-| Method | Description |
-|---|---|
-| `changeTab(tab: NavbarTab)` | Handles tab change events, closes any open drawers, and updates the navigation. |
 
 ### Features
 

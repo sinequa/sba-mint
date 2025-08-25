@@ -13,13 +13,13 @@ import { PreviewActionsComponent } from './actions';
   template: `
     <!-- Use hidden and absolute positioning -->
     @if (canLoadIframe()) {
-      <section class="flex h-full flex-col gap-4">
-        <preview-actions class="flex justify-end" />
+      <section class="relative flex h-full flex-col gap-4">
+        <preview-actions class="bg-muted/90 absolute top-4 right-8 flex justify-end rounded-md" />
 
         <iframe
           #preview
           frameborder="0"
-          class="h-full flex-grow"
+          class="h-full flex-grow rounded-sm bg-white shadow-xs"
           [src]="previewUrl()"
           (load)="onLoaded()"
           title="{{ 'preview.documentPreview' | transloco }}"
@@ -53,7 +53,7 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  readonly canLoadIframe = signal<boolean>(false);
+  readonly canLoadIframe = signal<boolean>(true);
   readonly previewUrlError = signal<boolean>(false);
 
   readonly previewUrl = computed(() =>
@@ -61,8 +61,6 @@ export class PreviewContentComponent {
       ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl)
       : undefined
   );
-
-  readonly loading = model<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -80,16 +78,13 @@ export class PreviewContentComponent {
       if (!this.previewUrl()) return;
 
       try {
-        this.loading.set(true);
-        this.cdr.detectChanges();
-        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
+        // check if the document is accessible
+        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl, { method: 'HEAD' });
         this.canLoadIframe.set(response.status === 200);
         this.previewUrlError.set(response.status !== 200);
       } catch (e) {
         this.canLoadIframe.set(false);
         this.previewUrlError.set(true);
-      } finally {
-        this.loading.set(false);
       }
     });
   }
@@ -108,6 +103,5 @@ export class PreviewContentComponent {
       const message: any = { action: 'select', id: `snippet_${previewHighlights!.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
-    this.loading.set(false);
   }
 }

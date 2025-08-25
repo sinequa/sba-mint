@@ -6,9 +6,70 @@ A modern Angular 20+ application boilerplate for building scalable, maintainable
 
 ## 📺 Introduction
 
-- [Changelog](#changelog)
 - [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy)
 - [Documentation website](https://sinequa.github.io/sba-mint/)
+- [Project structure](#📁-project-structure)
+- [Librairies used](#🧩-libraries-used)
+- [Getting started](#🚀-getting-started)
+- [Features](#✨-features)
+
+---
+
+## Changelog
+
+### 2025-08-25
+
+- dark mode support: added a new theme for dark mode.
+  - most components now support dark mode.
+  - use the `theme.css` file to customize the dark mode styles.
+  - skeletons: updated loading skeletons.
+  - lot of components impacted by dark mode changes.
+- slide card support: updated the slide card component for displaying slide record content.
+- preview support: added a new preview page and component for documents.
+  - refactoring of the `Preview` component with Angular 20 new signal features (rxResource)
+- search input and autocomplete components refactoring
+- added new `saved search` popover
+- added new `preview` page
+- updated the `assistant` layout. The 2 columns are scrollable independently.
+- updated the `sidebar` component.
+  - the 🔎 icon act as a back button when inside the assistant page.
+  - added support for theme switching.
+- `zone.js` removed from the dependencies
+
+⚠️ **Changes**
+
+- `app-search-input` component renamed to `app-search`. This component will be moved in a future release into `@sinequa/atomic-angular` library.
+- `app-preview-default` component renamed to `preview`. This component will be moved in a future release into `@sinequa/atomic-angular` library.
+- `MenuSeparator` component renamed to `HorizontalDivider`
+- `app-did-you-mean` component renamed to `DidYouMean`
+- `app-backdrop` component renamed to `Backdrop`
+- `app-drawer-stack` component renamed to `DrawerStack`
+
+| Package                 | Version    |
+|-------------------------|------------|
+| @sinequa/assistant      | 3.9.5      |
+| @sinequa/atomic         | ^0.0.110   |
+| @sinequa/atomic-angular | ^0.1.50    |
+| @sinequa/ui             | ^0.1.18    |
+
+### 2025-08-11
+
+- query params store: now manage the URL's queryparams synchronization. No need for manual handling with `router.navigate()`
+- autocomplete component:
+  - we reworked the component to be fully compatible with Firefox. Standard HTML Anchor popovertarget not fully supported with Firefox. Now we use our own popover implementation.
+  - we removed the use of the Fontawesome's icons in favor of SVGs. Low performance with Fontawesome icons.
+  - all suggestion's category (kind) are now displayed correctly.
+  - category (kind) are now sticky to top while scrolling.
+- search input component: we resolved the remaining issues in the previous update.
+- styles.css: we moved the `animate-save` animation into the global css file. you can now use it across your application using Tailwindcss.
+- tsconfig.ts: we removed the `paths` mapping for `@sinequa/atomic` and `@sinequa/atomic-angular`. Libraries have been updated to avoid the need for these mappings.
+
+| Package                 | Version    |
+|-------------------------|------------|
+| @sinequa/assistant      | 3.9.4      |
+| @sinequa/atomic         | ^0.0.109   |
+| @sinequa/atomic-angular | ^0.1.46    |
+| @sinequa/ui             | ^0.1.10    |
 
 ---
 
@@ -74,7 +135,7 @@ Build artifacts are stored in the `dist/` directory.
 
 ---
 
-## 🧩 Features
+## ✨ Features
 
 - Angular 20+ with Signals and Standalone Components
 - Modular structure: `/app` for business logic
@@ -116,29 +177,6 @@ Build artifacts are stored in the `dist/` directory.
 
 - [Angular CLI Overview and Command Reference](https://angular.io/cli)
 - [Sinequa Documentation](https://doc.sinequa.com/)
-
----
-
-## Changelog
-
-### 2025-08-11
-
-- query params store: now manage the URL's queryparams synchronization. No need for manual handling with `router.navigate()`
-- autocomplete component:
-  - we reworked the component to be fully compatible with Firefox. Standard HTML Anchor popovertarget not fully supported with Firefox. Now we use our own popover implementation.
-  - we removed the use of the Fontawesome's icons in favor of SVGs. Low performance with Fontawesome icons.
-  - all suggestion's category (kind) are now displayed correctly.
-  - category (kind) are now sticky to top while scrolling.
-- search input component: we resolved the remaining issues in the previous update.
-- styles.css: we moved the `animate-save` animation into the global css file. you can now use it across your application using Tailwindcss.
-- tsconfig.ts: we removed the `paths` mapping for `@sinequa/atomic` and `@sinequa/atomic-angular`. Libraries have been updated to avoid the need for these mappings.
-
-| Package                 | Version    |
-|-------------------------|------------|
-| @sinequa/assistant      | 3.9.4      |
-| @sinequa/atomic         | ^0.0.109   |
-| @sinequa/atomic-angular | ^0.1.46    |
-| @sinequa/ui             | ^0.1.10    |
 
 ---
 

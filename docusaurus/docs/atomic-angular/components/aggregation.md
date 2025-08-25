@@ -17,7 +17,7 @@ import { AggregationComponent } from "@angular/atomic-angular";
       name="People" 
       column="person" 
       [searchable]="true" 
-      [showCount]="true"
+      [showFiltersCount]="true"
       (onSelect)="handleSelection($event)" 
     />
     `,
@@ -29,6 +29,8 @@ import { AggregationComponent } from "@angular/atomic-angular";
 }
 ```
 
+## API Reference
+
 ### Properties
 
 | Property | Type | Description |
@@ -37,7 +39,7 @@ import { AggregationComponent } from "@angular/atomic-angular";
 | `column` | `string` | The column name used for the aggregation in the data source. |
 | `headless` | `boolean` | When set to `true`, the component functions without rendering UI elements. Default is `false`. |
 | `searchable` | `boolean \| undefined` | Enables or disables search functionality in the aggregation. If undefined, uses the value from aggregation settings. |
-| `showCount` | `boolean` | Shows the count of applied filters when set to `true`. Default is `false`. |
+| `showFiltersCount` | `boolean` | Shows the count of applied filters when set to `true`. Default is `false`. |
 
 ### Events
 
