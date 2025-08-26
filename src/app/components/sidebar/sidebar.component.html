@@ -1,19 +1,37 @@
-<sidebar class="peer absolute top-0 h-full">
-  <div class="grow">
-    <sidebar-item title="Search" [attr.aria-label]="'Search'" routerLink="/home">
-      <i class="far fa-magnifying-glass"></i>
-    </sidebar-item>
+<sidebar class="w-fit">
+  <div class="mt-30 grow">
+    @if (showBack()) {
+      <sidebar-item title="Search" [attr.aria-label]="'Search'" (click)="location.back()">
+        <i class="fa-fw far fa-magnifying-glass"></i>
+      </sidebar-item>
+    } @else {
+      <sidebar-item title="Search" [attr.aria-label]="'Search'" routerLink="/home">
+        <i class="fa-fw far fa-magnifying-glass"></i>
+      </sidebar-item>
+    }
+
     <sidebar-item [class]="cn('invisible', allowAI() && 'visible')" title="Chats" [attr.aria-label]="'Chats'" routerLink="/assistant">
-      <i class="far fa-comment"></i>
+      <i class="fa-fw far fa-comment"></i>
     </sidebar-item>
+
     <ng-content></ng-content>
   </div>
+
+  <sidebar-item (click)="switchDarkMode()">
+    @if (isDarkMode()) {
+      <i class="fa-fw fal fa-sun-bright"></i>
+    } @else {
+      <i class="fa-fw fal fa-moon"></i>
+    }
+  </sidebar-item>
+
   @if (isAdmin()) {
     <sidebar-item title="Administration" [attr.aria-label]="'Administration'" (click)="openAdmin()">
-      <i class="fas fa-gear"></i>
+      <i class="fa-fw far fa-gear"></i>
     </sidebar-item>
   }
+
   <sidebar-item title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
-    <i class="far fa-question-circle"></i>
+    <i class="fa-fw far fa-question-circle"></i>
   </sidebar-item>
 </sidebar>

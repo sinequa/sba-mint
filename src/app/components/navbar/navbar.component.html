@@ -3,16 +3,15 @@
 </a>
 
 @if (showInput()) {
-  <app-search-input
+  <app-search
     class="col-span-2 mr-8 h-full w-full"
-    variant="basic"
     [showSave]="true"
     (saved)="saveSearch($event)"
     (validated)="search($event)"
     (debounced)="debounced($event)"
     (selected)="selected($event)">
     <app-autocomplete #autocomplete [text]="searchText()" />
-  </app-search-input>
+  </app-search>
 }
 
 <nav [class]="cn('flex list-none items-center justify-end gap-1 pe-10', !showMenu() && 'col-span-3')">
@@ -34,7 +33,7 @@
             </PopoverContent>
           </Popover>
         } @else {
-          <button variant="icon" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+          <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
             <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
           </button>
         }

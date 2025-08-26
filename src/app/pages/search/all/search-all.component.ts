@@ -1,5 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
@@ -29,9 +30,8 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
@@ -61,7 +61,10 @@ type QueryParamsProps = {
     NavbarTabsComponent,
     ButtonComponent,
     AssistantComponent,
-    CardSkeleton
+    CardSkeleton,
+    CardComponent,
+    CardHeaderComponent,
+    CardContentComponent
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -96,7 +99,7 @@ export class SearchAllComponent {
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
-  protected readonly usersettingsStore = inject(UserSettingsStore);
+  protected readonly userSettingsStore = inject(UserSettingsStore);
   readonly selectionStore = inject(SelectionStore);
 
   protected readonly router = inject(Router);
@@ -147,7 +150,7 @@ export class SearchAllComponent {
 
       // Add the current search to the user settings when the text is not empty
       if (query.text && query.text !== '') {
-        this.usersettingsStore.addCurrentSearch(query as QueryParams);
+        this.userSettingsStore.addCurrentSearch(query as QueryParams);
       }
 
       return lastValueFrom(
@@ -327,7 +330,7 @@ export class SearchAllComponent {
     });
 
     effect(() => {
-      const { collapseAssistant } = getState(this.usersettingsStore);
+      const { collapseAssistant } = getState(this.userSettingsStore);
 
       if (collapseAssistant !== undefined) {
         this.assistantCollapsed.set(collapseAssistant);
@@ -420,11 +423,7 @@ export class SearchAllComponent {
    */
   onAssistantCollapse() {
     const collapsed = !this.assistantCollapsed();
-    this.usersettingsStore.updateAssistantCollapsed(collapsed);
+    this.userSettingsStore.updateAssistantCollapsed(collapsed);
     this.assistantCollapsed.set(collapsed);
-  }
-
-  onClearFilters(): void {
-    this.router.navigate(['/search'], { queryParams: {} });
   }
 }

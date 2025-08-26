@@ -2,6 +2,8 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+@import './theme';
+
 /* css overrides */
 @import './css-overrides/angular-cdk';
 @import './css-overrides/bootstrap-to-tailwind';
@@ -11,205 +13,24 @@
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
 @source not "../docusaurus/";
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+
 html,
 body {
   height: 100%;
 }
+
 html {
   overflow-x: hidden;
 }
+
 body {
   position: relative;
-}
-
-@theme {
-  --font-display: 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif';
-
-  --text-xxs: 0.625rem;
-
-  --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
-
-  --logo-small: url('assets/logo/small.svg');
-  --logo-large: url('assets/logo/large.svg');
-  --logo-alt-text: 'Sinequa logo';
-
-  --color-backdrop: var(--backdrop);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-active: var(--primary-active);
-  --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: var(--secondary);
-  --color-secondary-hover: var(--secondary-hover);
-  --color-secondary-active: var(--secondary-active);
-  --color-secondary-foreground: var(--secondary-foreground);
-
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-
-  --color-destructive: var(--destructive);
-  --color-destructive-hover: var(--destructive-hover);
-  --color-destructive-active: var(--destructive-active);
-  --color-destructive-disable: var(--destructive-disable);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-agent: var(--agent);
-  --color-agent-100: var(--agent-100);
-  --color-agent-200: var(--agent-200);
-  --color-agent-300: var(--agent-300);
-  --color-agent-400: var(--agent-400);
-  --color-agent-500: var(--agent-500);
-
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --color-alert: var(--alert);
-  --color-success: var(--success);
-  --color-highlight: var(--highlight);
-
-  --shadow-dropdown: 6px 4px 20px 0px rgba(0, 0, 0, 0.2);
-  --shadow-article: 4px 4px 12px 0px rgba(0, 0, 0, 0.15);
-
-  --animate-progress: progress 5s linear infinite;
-  @keyframes progress {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  --animate-save: saved 1s;
-  @keyframes saved {
-    0% {
-      transform: translateY(0px) rotateZ(0);
-    }
-    10% {
-      transform: translateY(2px) rotateZ(-10deg);
-    }
-    50% {
-      transform: translateY(-10px) rotateZ(370deg);
-    }
-    90% {
-      transform: translateY(2px) rotateZ(360deg);
-    }
-    100% {
-      transform: translateY(0px) rotateZ(360deg);
-    }
-  }
-}
-
-:root {
-  --backdrop: rgba(0, 0, 0, 0.4);
-  --background: #ffffff;
-  --foreground: #23272e;
-  --card: #ffffff;
-  --card-foreground: #1c1c1c;
-  --popover: #ffffff;
-  --popover-foreground: #1c1c1c;
-
-  --primary: #0084ff;
-  --primary-hover: #0056ff;
-  --primary-active: #0040bf;
-  --primary-foreground: #ffffff;
-
-  --secondary: #526077;
-  --secondary-hover: #434e61;
-  --secondary-active: #3a4252;
-  --secondary-foreground: #ffffff;
-
-  --muted: #f6f7f9;
-  --muted-foreground: #8695aa;
-
-  --accent: #f2f2f2;
-  --accent-foreground: #1c1c1c;
-
-  --destructive: #ff2a1d;
-  --destructive-hover: #c8180d;
-  --destructive-active: #a5180f;
-  --destructive-disable: #ffc8c5;
-  --destructive-foreground: #ffffff;
-
-  --agent: var(--color-orange-400);
-  --agent-100: var(--color-orange-100);
-  --agent-200: var(--color-orange-200);
-  --agent-300: var(--color-orange-300);
-  --agent-400: var(--color-orange-400);
-  --agent-500: var(--color-orange-500);
-
-  --border: #f6f7f9;
-  --input: #d5d9e2;
-  --ring: #1a73e8;
-
-  --alert: #ff2a1d;
-  --success: #2ed73f;
-  --highlight: #fff7ab;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-
-  --backdrop: rgba(0, 0, 0, 0.8);
-
-  --primary: #0084ff;
-  --primary-hover: #0056ff;
-  --primary-active: #0040bf;
-  --primary-foreground: #ffffff;
-
-  --secondary: #526077;
-  --secondary-hover: #434e61;
-  --secondary-active: #3a4252;
-  --secondary-foreground: #ffffff;
-
-  --destructive: #ff2a1d;
-  --destructive-hover: #c8180d;
-  --destructive-active: #a5180f;
-  --destructive-disable: #ffc8c5;
-  --destructive-foreground: #ffffff;
-
-  --agent: var(--color-orange-400);
-  --agent-100: var(--color-orange-100);
-  --agent-200: var(--color-orange-200);
-  --agent-300: var(--color-orange-300);
-  --agent-400: var(--color-orange-400);
-  --agent-500: var(--color-orange-500);
-
-  --ring: #1a73e8;
-
-  --alert: #ff2a1d;
-  --success: #2ed73f;
-  --highlight: #fff7ab;
 }
 
 @utility z-* {
@@ -219,8 +40,6 @@ body {
 @layer base {
   :root {
     --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
-    --backdrop: rgba(0, 0, 0, 0.4);
-    --backdrop-filter: blur(2px);
     --cdk-z-index-overlay: 5000;
 
     /* z-indexes */
@@ -289,26 +108,25 @@ body {
   .scrollbar-thin {
     scrollbar-width: thin;
   }
-  .bg-backdrop {
-    background-color: var(--color-backdrop);
-  }
   /* neural search passages */
   .matchlocations {
     font-weight: 700;
   }
+  .w-inherit {
+    width: inherit;
+  }
 }
 
 /* drawer stack and drawer preview */
-app-drawer-preview {
+DrawerPreview {
   /* removes the "important!" when the position: obsolute will be removed from the component */
   position: fixed !important;
   top: 0;
 }
-app-drawer:has(+ app-drawer) {
+Drawer:has(+ Drawer) {
   transform: translateX(-5px);
 }
-
-app-drawer:has(+ app-drawer + app-drawer) {
+Drawer:has(+ Drawer + Drawer) {
   transform: translateX(-8px);
 }
 
@@ -326,11 +144,11 @@ app-drawer:has(+ app-drawer + app-drawer) {
   --panel-max-height: 100%;
 }
 
-.active:not([disabled]) {
+/* .active:not([disabled]) {
   color: var(--color-primary);
   border-color: var(--color-primary);
   background-color: var(--color-secondary);
-}
+} */
 
 ul:has(card.selected) card:not(.selected) {
   opacity: 0.5;
@@ -342,11 +160,48 @@ summary::-webkit-details-marker {
 }
 
 sq-chat-v3 {
+  ul {
+    scrollbar-width: thin;
+  }
+
+  sq-chat-message {
+    summary.text-muted,
+    summary.text-muted + ul {
+      color: var(--color-muted-foreground);
+
+      .text-success {
+        color: var(--color-success);
+      }
+    }
+  }
+
+  div.ast-input-container {
+    border: 1px solid lightgray;
+  }
+  div.ast-input-container textarea {
+    color: var(--color-foreground) !important;
+  }
+
+  div.message-content {
+    color: var(--color-foreground);
+  }
+
   .references li {
     list-style: none;
   }
 
   .sq-chat-message-actions {
     z-index: 1 !important;
+  }
+}
+
+.sq-floating-scroll .btn {
+  background-color: var(--color-muted) !important;
+  color: var(--color-muted-foreground) !important;
+}
+
+sq-saved-chats-v3 {
+  div.saved-chat-date {
+    background-color: var(--color-muted) !important;
   }
 }

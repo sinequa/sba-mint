@@ -1,16 +1,8 @@
 import { Component, computed, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import {
-  BookmarkButtonComponent,
-  MetadataComponent,
-  MissingTermsComponent,
-  SelectArticleOnClickDirective,
-  ShowBookmarkDirective,
-  SourceComponent,
-  TranslocoDateImpurePipe
-} from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn } from '@sinequa/ui';
+import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, TranslocoDateImpurePipe, SourceComponent } from '@sinequa/atomic-angular';
+import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 import { RecordCard } from '../record/record-card';
@@ -19,7 +11,6 @@ import { RecordCard } from '../record/record-card';
   selector: 'slide-card, slidecard, SlideCard',
   imports: [
     BookmarkButtonComponent,
-    SourceComponent,
     TranslocoDateImpurePipe,
     TranslocoPipe,
     MissingTermsComponent,
@@ -29,22 +20,13 @@ import { RecordCard } from '../record/record-card';
     CardContentComponent,
     CardFooterComponent,
     BadgeComponent,
-    CardMenuComponent
+    CardMenuComponent,
+    SourceComponent
   ],
   templateUrl: './slide-card.html',
   host: {
     '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
-  },
-  hostDirectives: [
-    {
-      directive: SelectArticleOnClickDirective,
-      inputs: ['article', 'strategy']
-    },
-    {
-      directive: ShowBookmarkDirective,
-      inputs: ['article']
-    }
-  ]
+  }
 })
 export class SlideCard extends RecordCard {
   thumbnailFailed = signal(false);

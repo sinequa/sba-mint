@@ -38,7 +38,7 @@
             "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend", "@flowjs/flow.js"],
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js", "src/polyfills.js"],
+            "polyfills": ["src/polyfills.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
             "assets": [

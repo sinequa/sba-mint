@@ -1,12 +1,12 @@
-<header class="flex items-center justify-between gap-4 text-base">
-  <a class="overflow-auto" target="_blank" rel="noopener noreferrer" [href]="article()!.url1">
-    <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap">{{ article().title }}</p>
+<header class="flex items-center justify-between gap-2 text-base">
+  <a [routerLink]="['/preview', article().id]" class="overflow-auto">
+    <p class="text-primary me-auto overflow-hidden font-bold text-ellipsis whitespace-nowrap hover:underline">{{ article().title }}</p>
   </a>
 
   <button
-    variant="ghost"
+    variant="none"
     title="Collapse preview header"
-    [class]="cn('[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
+    [class]="cn('hover:cursor-pointer', '[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
     (click)="headerCollapsed.set(!headerCollapsed())">
     <i class="fa-fw fa-regular fa-chevron-up"></i>
   </button>
@@ -14,7 +14,7 @@
 
 <!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
 <div [class]="cn('w-full', headerCollapsed() && 'hidden')">
-  <table class="flex flex-col gap-1">
+  <table class="flex w-full flex-col gap-1">
     <tr>
       <th>{{ 'location' | transloco }}</th>
 
@@ -28,10 +28,11 @@
         <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
         <td class="flex flex-wrap gap-2">
-          <Metadata variant="outline" [article]="article()!" metadata="authors" />
+          <Metadata decoration="outline" hover="yes" [article]="article()!" metadata="authors" />
         </td>
       </tr>
     }
+
     @if (article().modified) {
       <tr>
         <th>{{ 'lastUpdatedOn' | transloco }}</th>
@@ -41,20 +42,16 @@
         </td>
       </tr>
     }
+
     @if (hasLabels()) {
       <tr>
         <th>{{ 'labels' | transloco }}</th>
 
         <td class="flex flex-col gap-1">
           <!-- public labels-->
-          <Metadata variant="outline" class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
+          <Metadata class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
           <!-- private labels -->
-          <Metadata
-            variant="outline"
-            class="bg-secondary/20 cursor-pointer"
-            [article]="article()!"
-            [metadata]="labels.private"
-            (click)="onMetadataClick($event)" />
+          <Metadata class="bg-secondary/20 cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
         </td>
       </tr>
     }
@@ -63,7 +60,7 @@
       <th>{{ 'type' | transloco }}</th>
 
       <td>
-        <Metadata variant="outline" class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
+        <Metadata class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
       </td>
     </tr>
   </table>

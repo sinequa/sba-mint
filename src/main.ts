@@ -1,7 +1,10 @@
+import { inject, runInInjectionContext } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { getState } from '@ngrx/signals';
 import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 
 import { error, info, setGlobalConfig } from '@sinequa/atomic';
+import { UserSettingsStore } from '@sinequa/atomic-angular';
 
 import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
 import atomic from '../node_modules/@sinequa/atomic/package.json';
@@ -20,6 +23,13 @@ setGlobalConfig(environment);
 startKeyUX(window, [hotkeyKeyUX(), focusGroupKeyUX(), pressKeyUX('is-pressed'), jumpKeyUX(), hiddenKeyUX()]);
 
 bootstrapApplication(AppComponent, appConfig)
+  .then(appRef => {
+    // Set the dark mode class based on user settings
+    runInInjectionContext(appRef.injector, () => {
+      const { useDarkMode } = getState(inject(UserSettingsStore)) as any;
+      document.documentElement.classList.toggle('dark', useDarkMode);
+    });
+  })
   .then(() => {
     info('atomic', atomic.version);
     info('atomic-angular', atomicAngular.version);

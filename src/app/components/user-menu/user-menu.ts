@@ -6,7 +6,6 @@ import { getState } from '@ngrx/signals';
 
 import { logout, setGlobalConfig } from '@sinequa/atomic';
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-
 import {
   AvatarComponent,
   AvatarFallbackComponent,
@@ -68,7 +67,6 @@ export class UserMenuComponent {
       .join('')
       .slice(0, 3);
   });
-
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
