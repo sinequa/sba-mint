@@ -190,7 +190,7 @@ export class SearchComponent {
       return;
     }
 
-    const text = this.searchInputText();
+    const text = this.searchInputText().trim();
     if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
       this.dropdownComponent().close();
