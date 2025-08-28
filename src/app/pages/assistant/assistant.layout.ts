@@ -72,7 +72,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         }
       </div>
       <div [class]="cn('overflow-hidden transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'translate-x-0')">
-        @if (this.query()) {
+        @if (query()) {
           <Assistant class="inline" [query]="query()" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
         }
       </div>
