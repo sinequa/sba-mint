@@ -2,7 +2,7 @@ import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
 import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
@@ -36,7 +36,6 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
 @Component({
   selector: 'app-search',
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     TranslocoPipe,
     ButtonComponent,
@@ -73,6 +72,7 @@ export class SearchComponent {
   inputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
 
   protected readonly route = inject(ActivatedRoute);
+  protected readonly router = inject(Router);
   protected readonly autocompleteService = inject(AutocompleteService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly drawerStack = inject(DrawerStackService);
@@ -218,5 +218,12 @@ export class SearchComponent {
     this.form.controls.searchInputText.setValue(dataText);
     this.searchInputText.set(dataText);
     this.selected.emit($event);
+  }
+
+  handleRouting(e: Event): void {
+    // to prevent the routerLink to be triggered when selecting an autocomplete item with the keyboard
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
   }
 }
