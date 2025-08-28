@@ -141,8 +141,14 @@ export class SearchComponent {
   constructor() {
     // on input value change, update directly searchInputText but have debounced to emit with debounceTime
     this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
+      const changedText = value !== this.searchInputText() && value.length > 0 && this.searchInputText().length > 0;
       this.searchInputText.set(value);
       this.debounceInputText.next(value);
+
+      // open the dropdown if the text has properly changed
+      if (changedText && this.lastFocusOrigin() && !this.dropdownComponent().isOpen) {
+        this.dropdownComponent().toggle();
+      }
     });
 
     this.debounceInputText.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
@@ -190,7 +196,7 @@ export class SearchComponent {
       return;
     }
 
-    const text = this.searchInputText();
+    const text = this.searchInputText()?.trim();
     if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
       this.dropdownComponent().close();

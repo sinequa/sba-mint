@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, model, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 
 import { Article as A, CCApp, debug, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
 import { APP_FEATURES, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
+import { TabContent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../assistant/assistant';
 import { PreviewNavbarComponent } from './navbar/navbar';
@@ -20,7 +21,7 @@ type Article = A & {
 @Component({
   selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
-  imports: [AssistantComponent, PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, PreviewContentComponent],
+  imports: [AssistantComponent, PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, PreviewContentComponent, TabContent],
   templateUrl: './preview.html',
   host: {
     class: 'grow flex flex-col overflow-hidden h-full'
@@ -36,9 +37,9 @@ export class PreviewComponent {
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly appFeatures = inject(APP_FEATURES);
 
-  /* signals */
-  protected readonly loading = signal<boolean>(false);
-  protected readonly activeTab = signal<PreviewTab>('preview');
+  /* models used by inner components */
+  protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
+  protected readonly activeTab = model<PreviewTab>('preview');
 
   // this signal is used by the summarize assistant to know if the assistant is streaming
   protected readonly isStreaming = signal<boolean>(false);
@@ -114,8 +115,8 @@ export class PreviewComponent {
 
   constructor() {
     effect(() => {
-      const { article, previewHighlights, id } = getState(this.selectionStore);
-      this.article.set(article as Article | undefined);
+      const { previewHighlights, id } = getState(this.selectionStore);
+      const article = this.article();
       this.locationSegments = article?.url1 ? article.url1.split('/') : [];
       this.previewHighlights = previewHighlights;
 
@@ -127,16 +128,12 @@ export class PreviewComponent {
     });
 
     effect(() => {
-      const article = this.previewData()?.record;
-      this.article.set(article as Article | undefined);
-    });
-
-    effect(() => {
       if (!this.previewData()) return;
       if (!this.previewData()?.record) return;
 
       // create a new query for the mini preview assistant
       const { record } = this.previewData()!;
+      this.article.set(record as Article | undefined);
 
       this.miniPreviewQuery = {
         name: this.appStore.getDefaultQuery()?.name || '_query',
@@ -153,6 +150,21 @@ export class PreviewComponent {
 
     effect(() => {
       document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
+    });
+
+    // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview
+    effect(() => {
+      const event = this.previewservice.events();
+
+      // If the event is scrollTo, set the active tab to preview if it's not already
+      if (event === 'scrollTo' && this.activeTab() !== 'preview') {
+        this.activeTab.set('preview');
+      }
+
+      // If the event is scrollTo, set the events to idle to avoid multiple triggers
+      if (event === 'scrollTo') {
+        this.previewservice.events.set('idle');
+      }
     });
 
     this.destroyRef.onDestroy(() => {
