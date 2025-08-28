@@ -62,4 +62,11 @@ export class AppSidebarComponent {
   openAdmin() {
     window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
   }
+
+  back() {
+    this.location.back();
+    setTimeout(() => {
+      this.location.back();
+    }, 100);
+  }
 }

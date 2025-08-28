@@ -1,7 +1,7 @@
 <sidebar class="w-fit">
   <div class="mt-30 grow">
     @if (showBack()) {
-      <sidebar-item title="Search" [attr.aria-label]="'Search'" (click)="location.back()">
+      <sidebar-item title="Search" [attr.aria-label]="'Search'" (click)="back()">
         <i class="fa-fw far fa-magnifying-glass"></i>
       </sidebar-item>
     } @else {
