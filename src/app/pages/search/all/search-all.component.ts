@@ -35,6 +35,7 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -64,7 +65,8 @@ type QueryParamsProps = {
     CardSkeleton,
     CardComponent,
     CardHeaderComponent,
-    CardContentComponent
+    CardContentComponent,
+    TranslocoPipe
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -84,7 +86,8 @@ type QueryParamsProps = {
     class: 'layout-search',
     '(keydown.enter)': 'handleKeydownEnter($event)',
     '[attr.drawer-opened]': 'drawerOpened() || false'
-  }
+  },
+  providers: [provideTranslocoScope('searches')]
 })
 export class SearchAllComponent {
   cn = cn;

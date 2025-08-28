@@ -40,15 +40,15 @@
           @switch (selectedAll()) {
             @case ('all') {
               <i class="fa-fw fa-regular fa-square-check"></i>
-              Unselect All
+              {{ 'searches.selection.unselectAll' | transloco }}
             }
             @case ('some') {
               <i class="fa-fw fa-regular fa-square-minus"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
             @default {
               <i class="fa-fw fa-regular fa-square"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
           }
         </button>
