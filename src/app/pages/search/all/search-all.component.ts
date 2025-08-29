@@ -35,7 +35,8 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
+
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
