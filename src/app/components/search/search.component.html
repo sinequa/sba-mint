@@ -36,6 +36,10 @@
         (click)="onSearch($event)">
         <SendHorizontalIcon />
       </button>
+
+      <SearchInputFooter>
+        <ng-content select="SearchFooter" />
+      </SearchInputFooter>
     </SearchInput>
   </form>
   <DropdownContent>

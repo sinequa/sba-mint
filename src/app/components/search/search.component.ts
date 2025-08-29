@@ -1,5 +1,19 @@
 import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
-import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  model,
+  NO_ERRORS_SCHEMA,
+  output,
+  signal,
+  viewChild
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -60,7 +74,8 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
       }
     `
   ],
-  providers: [provideTranslocoScope('search-input')]
+  providers: [provideTranslocoScope('search-input')],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class SearchComponent {
   cn = cn;

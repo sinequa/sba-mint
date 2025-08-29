@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, NO_ERRORS_SCHEMA, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
@@ -91,7 +91,8 @@ const homeFeatures: HomeTab[] = [
       }
     `
   ],
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class HomeComponent {
   public drawerOpened: boolean = false;
