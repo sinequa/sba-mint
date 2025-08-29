@@ -63,6 +63,7 @@ docusaurus/node_modules/*
 /src/assets/i18n/dialogs
 
 /src/assets/i18n/login
+/src/assets/i18n/multi-selection-toolbar
 /src/assets/i18n/no-result
 /src/assets/i18n/filters
 /src/assets/i18n/sources
