@@ -1,9 +1,10 @@
 import { Component, computed, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, TranslocoDateImpurePipe, SourceComponent } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@sinequa/ui';
+import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, SourceComponent, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
+import { BadgeComponent, CardComponent, CardContentComponent } from '@sinequa/ui';
 
+import { RouterLink } from '@angular/router';
 import { CardMenuComponent } from '../menu';
 import { RecordCard } from '../record/record-card';
 
@@ -16,12 +17,11 @@ import { RecordCard } from '../record/record-card';
     MissingTermsComponent,
     MetadataComponent,
     CardComponent,
-    CardHeaderComponent,
     CardContentComponent,
-    CardFooterComponent,
     BadgeComponent,
     CardMenuComponent,
-    SourceComponent
+    SourceComponent,
+    RouterLink
   ],
   templateUrl: './slide-card.html',
   host: {
