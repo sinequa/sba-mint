@@ -86,8 +86,7 @@ type QueryParamsProps = {
     class: 'layout-search',
     '(keydown.enter)': 'handleKeydownEnter($event)',
     '[attr.drawer-opened]': 'drawerOpened() || false'
-  },
-  providers: [provideTranslocoScope('searches')]
+  }
 })
 export class SearchAllComponent {
   cn = cn;
