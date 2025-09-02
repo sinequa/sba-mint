@@ -60,7 +60,8 @@ export class SavedSearchesComponent {
     this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }
 
-  public async onDelete(index: number) {
+  public async onDelete(event: Event, index: number) {
+    event.stopPropagation();
     await this.savedSearchesService.deleteSavedSearch(index);
     toast.success('Saved search removed', { duration: 2000 });
   }
