@@ -103,7 +103,7 @@
     </ul>
 
     <feedback
-      [class]="cn('fixed right-8', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
+      [class]="cn('fixed right-8 z-9', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
 
