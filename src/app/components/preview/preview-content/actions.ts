@@ -84,7 +84,7 @@ import { ButtonComponent } from '@sinequa/ui';
         variant="ghost"
         class="dark:text-background dark:hover:bg-background/10"
         size="icon"
-        [attr.title]="'preview.toggleEntities' | transloco"
+        [title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb shrink-0"></i>
       </button>

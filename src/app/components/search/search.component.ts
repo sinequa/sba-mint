@@ -2,7 +2,7 @@ import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
 import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';

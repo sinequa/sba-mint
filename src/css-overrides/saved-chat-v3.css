@@ -11,6 +11,10 @@ sq-saved-chats-v3 {
     }
   }
 
+  div.saved-chat-date {
+    background-color: var(--color-muted) !important;
+  }
+
   /* chat v3 modal overrides */
   /* center the modal in the screen */
   dialog {

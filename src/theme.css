@@ -1,8 +1,6 @@
 /* Force dark mode to be used with .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@import './theme.utilities';
-
 :root {
   --background: var(--color-white);
   --foreground: var(--color-gray-950);
