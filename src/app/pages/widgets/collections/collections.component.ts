@@ -35,7 +35,12 @@ import { ButtonComponent, InputComponent } from '@sinequa/ui';
             <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
               {{ 'collections.cancelCreation' | transloco }}
             </button>
-            <button variant="primary" tabindex="1" [attr.title]="'collections.save' | transloco" (click)="postCreate()">
+            <button
+              variant="primary"
+              tabindex="1"
+              [attr.title]="'collections.save' | transloco"
+              [disabled]="!newCollectionName().trim()"
+              (click)="postCreate()">
               {{ 'collections.save' | transloco }}
             </button>
           </span>
@@ -166,12 +171,10 @@ export class CollectionsComponent {
   }
 
   postCreate(): void {
-    if (this.newCollectionName()) {
-      const collection: Basket = { name: this.newCollectionName() };
-      this.userSettingsStore.createBasket(collection);
-      this.newCollectionName.set('');
-      this.creating.set(false);
-    }
+    const collection: Basket = { name: this.newCollectionName().trim() };
+    this.userSettingsStore.createBasket(collection);
+    this.newCollectionName.set('');
+    this.creating.set(false);
   }
 
   deleteCollection(collection: Basket, index: number) {
