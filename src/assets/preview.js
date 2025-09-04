@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var fitFactor = null;
 
   // frameset cause an issue here
-  var r = document.querySelector('body');
-  if (r === null) {
-    r = document.querySelector('frameset');
+  var bodyElement = document.querySelector('body');
+  if (bodyElement === null) {
+    bodyElement = document.querySelector('frameset');
   }
-  var rs = getComputedStyle(r);
+  var computedStyle = getComputedStyle(bodyElement);
 
   var passageHighlighter;
   setSvgBackgroundPositionAndSize();
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const body = document.querySelector('body');
+    const body = bodyElement;
     const width = body.getBoundingClientRect().width;
 
     const elements = body.querySelectorAll('div,img,table');
@@ -122,12 +122,20 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'paging':
         break;
       case 'zoom-in':
-        var factor = parseFloat(rs.getPropertyValue('--factor'));
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
+        }
+        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
       case 'zoom-out':
-        var factor = parseFloat(rs.getPropertyValue('--factor'));
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
+        }
+        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
@@ -143,12 +151,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function zoom(value) {
-    const elts = r.querySelectorAll('p');
+    const elts = bodyElement.querySelectorAll('p');
     const firstVisibleElt = Array.from(elts).find(elt => {
       const { top, bottom } = elt.getBoundingClientRect();
       return bottom > 0 && top < window.innerHeight;
     });
-    r.style.setProperty('--factor', value);
+    bodyElement.style.setProperty('--factor', value);
     if (firstVisibleElt) {
       firstVisibleElt.scrollIntoView();
     }
@@ -427,7 +435,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function getElementsById(id) {
-    return document.querySelectorAll('#'.concat(id));
+    // Prefer current document, fallback to first frame if not found
+    let elements = document.querySelectorAll('#' + id);
+    if (elements.length === 0 && frames.length > 0) {
+      try {
+        elements = frames[0].document.querySelectorAll('#' + id);
+      } catch (e) {
+        // Ignore cross-origin frame access errors
+      }
+    }
+    return elements;
   }
 
   function getHighlightTextById(id) {
@@ -526,14 +543,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function removeAllClasses(classname) {
-    var selected = document.querySelectorAll('.'.concat(classname));
+    var selected = bodyElement.querySelectorAll('.'.concat(classname));
     selected.forEach(function (el) {
       return el.classList.remove(classname);
     });
   }
 
   function removeAllElements(selector) {
-    document.querySelectorAll(selector).forEach(function (e) {
+    bodyElement.querySelectorAll(selector).forEach(function (e) {
       return e.remove();
     });
   }

@@ -53,6 +53,10 @@ import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
                 </button>
               </li>
             }
+          } @empty {
+            <li class="no-records">
+              {{ 'searches.recent.noRecentSearches' | transloco }}
+            </li>
           }
         </ul>
       </div>
