@@ -18,9 +18,8 @@
           class="m-1 h-6 rounded-sm text-xs transition ease-in"
           title="Ask AI"
           aria-label="Ask AI"
-          [disabled]="searchInputText() === ''"
-          [routerLink]="['/assistant']"
-          [queryParams]="{ q: searchInputText(), f: filters() }">
+          (click)="handleRouting($event)"
+          [disabled]="searchInputText() === ''">
           <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
           Ask AI
         </button>

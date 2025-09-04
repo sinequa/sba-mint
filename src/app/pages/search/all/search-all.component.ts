@@ -35,6 +35,8 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { TranslocoPipe } from '@jsverse/transloco';
+
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -64,7 +66,8 @@ type QueryParamsProps = {
     CardSkeleton,
     CardComponent,
     CardHeaderComponent,
-    CardContentComponent
+    CardContentComponent,
+    TranslocoPipe
   ],
   templateUrl: './search-all.component.html',
   styles: [

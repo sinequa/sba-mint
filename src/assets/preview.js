@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var TRUSTED_ORIGINS = ['http://localhost:4200', 'https://localhost:4200', window.origin];
   var parentOrigin = '*';
   var styleElement;
+  var fitFactor = null;
 
   // frameset cause an issue here
   var r = document.querySelector('body');
@@ -15,10 +16,31 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('message', receiveMessage);
   returnMessage('ready');
 
+  setTimeout(() => zoomFit(), 100);
+
   // will contain the worker instance if it is supported
   var worker;
   // will be set to true if the worker is supported
   var isWorkerSupported = false;
+
+  function zoomFit() {
+    if (fitFactor) {
+      zoom(fitFactor);
+      return;
+    }
+
+    const body = document.querySelector('body');
+    const width = body.getBoundingClientRect().width;
+
+    const elements = body.querySelectorAll('div,img,table');
+    const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
+
+    const margin = 24;
+    // compute best factor using margin (default: 24) * 2 for left and right
+    fitFactor = width / (higherWidth + margin * 2);
+
+    zoom(fitFactor);
+  }
 
   function createWorker(appname) {
     if (!appname) console.error('appname is required');
@@ -109,6 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
+      case 'zoom-fit':
+        zoomFit();
+        break;
       case 'toggle-description':
         // if data.show is true, show the description
         // just set a new value to the css variable --desc-display
@@ -116,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
         break;
     }
   }
+
   function zoom(value) {
     const elts = r.querySelectorAll('p');
     const firstVisibleElt = Array.from(elts).find(elt => {
@@ -127,9 +153,11 @@ document.addEventListener('DOMContentLoaded', function () {
       firstVisibleElt.scrollIntoView();
     }
   }
+
   function returnMessage(type, data) {
     parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
   }
+
   function init(origin, highlights) {
     parentOrigin = origin;
     styleElement = document.createElement('style');
@@ -154,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
       highlight(highlights);
     }
   }
+
   /**
    * Highlights the specified elements with custom styles.
    * @param {Array<Object>} highlights - An array of highlight objects.
@@ -179,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .join('');
   }
+
   function select(id, usePassageHighlighter) {
     if (usePassageHighlighter === void 0) {
       usePassageHighlighter = false;
@@ -209,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
     }
   }
+
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
 
@@ -231,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
       passageHighlighter.style.display = 'block';
     } */
   }
+
   function selectPassage2(elements) {
     passageHighlighter.style.display = 'none';
 
@@ -261,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
   function unselect() {
     removeAllClasses('sq-highlighted');
     removeAllClasses('sq-current');
@@ -271,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
       passageHighlighter.style.display = 'none';
     }
   }
+
   function getHtml(ids) {
     if (!ids) return [];
     var data = ids.map(function (id) {
@@ -278,17 +312,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return data;
   }
+
   function getText(ids) {
     var data = ids.map(function (id) {
       return getHighlightTextById(id);
     });
     returnMessage('get-text-results', data);
   }
+
   function getPositions(highlight) {
     var allHighlights = Array.from(document.querySelectorAll('span.'.concat(highlight, ',tspan.').concat(highlight)));
     var data = getVerticalPositions(allHighlights);
     returnMessage('get-positions-results', data);
   }
+
   function onMouseUp() {
     var selection = document.getSelection();
     var selectedText = selection ? selection.toString().trim() : '';
@@ -303,7 +340,9 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('text-selection');
     }
   }
+
   var currentId;
+
   function onMouseMove(event) {
     var el = event.target;
     if (el.attributes['data-entity-display'] && el.id !== currentId) {
@@ -317,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('highlight-hover');
     }
   }
+
   function setSvgBackgroundPositionAndSize() {
     document.querySelectorAll('svg').forEach(function (svg) {
       svg.querySelectorAll('tspan').forEach(function (tspan) {
@@ -330,24 +370,31 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+
   function resizeSvgBackground(rect, tspan) {
     var text = tspan;
     var textBoxPixel = text.getBoundingClientRect();
     var textBoxSVG = text.getBBox();
+
     if (textBoxPixel.height === 0 || textBoxPixel.width === 0) return;
+
     var scaleX = textBoxSVG.width / textBoxPixel.width;
     var scaleY = textBoxSVG.height / textBoxPixel.height;
     var deltaX = 2 * scaleX;
     var deltaY = 2 * scaleY;
     var firstCharRect = tspan.getExtentOfChar(0);
     var tspanWidth = tspan.getComputedTextLength();
+
     rect.setAttribute('x', String(firstCharRect.x - deltaX));
     rect.setAttribute('y', String(firstCharRect.y - deltaY));
     rect.setAttribute('width', String(tspanWidth + 2 * deltaX));
     rect.setAttribute('height', String(textBoxSVG.height + 2 * deltaY));
+
     var valueTransform = text.getAttribute('transform');
+
     if (valueTransform) rect.setAttribute('transform', valueTransform);
   }
+
   function selectHighlightSVG(elt, isFirst, isLast) {
     var bgId = elt.getAttribute('data-entity-background');
     if (!bgId) return;
@@ -367,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isLast) addSvgLine(group, right, top_2, right, bottom, valueTransform);
     }
   }
+
   function addSvgLine(group, x1, y1, x2, y2, transform) {
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('class', 'sq-svg');
@@ -377,9 +425,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (transform) line.setAttribute('transform', transform);
     group.appendChild(line);
   }
+
   function getElementsById(id) {
     return document.querySelectorAll('#'.concat(id));
   }
+
   function getHighlightTextById(id) {
     var text = '';
     getElementsById(id).forEach(function (n) {
@@ -387,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return text;
   }
+
   function getHighlightHtmlById(id) {
     var html = '';
     getElementsById(id).forEach(function (n) {
@@ -394,6 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return html;
   }
+
   function getVerticalPositions(elements) {
     var offset = -document.documentElement.getBoundingClientRect().top;
     var docHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
@@ -434,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     return positions;
   }
+
   function getBoundingBox(elements) {
     var boxes = elements
       .map(function (el) {
@@ -471,12 +524,14 @@ document.addEventListener('DOMContentLoaded', function () {
     );
     return new DOMRect(left, top, right - left, bottom - top);
   }
+
   function removeAllClasses(classname) {
     var selected = document.querySelectorAll('.'.concat(classname));
     selected.forEach(function (el) {
       return el.classList.remove(classname);
     });
   }
+
   function removeAllElements(selector) {
     document.querySelectorAll(selector).forEach(function (e) {
       return e.remove();

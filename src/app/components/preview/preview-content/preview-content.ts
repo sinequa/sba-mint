@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, model, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
