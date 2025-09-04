@@ -1,6 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, Type, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
@@ -89,7 +88,7 @@ const homeFeatures: HomeTab[] = [
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
-  public drawerOpened: boolean = false;
+  public drawerOpened = computed(() => this.drawerStack.isOpened());
 
   readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 
@@ -129,8 +128,6 @@ export class HomeComponent {
     effect(() => {
       this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
     });
-
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(state => (this.drawerOpened = state));
 
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());

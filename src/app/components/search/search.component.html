@@ -1,6 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
+      class="p-0 [&>div]:h-auto"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -27,7 +28,7 @@
       <button
         variant="icon"
         size="xs"
-        [attr.title]="'search' | transloco"
+        [title]="'search' | transloco"
         [attr.aria-label]="'search' | transloco"
         [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
         [disabled]="!allowEmptySearch() && this.searchInputText() === ''"

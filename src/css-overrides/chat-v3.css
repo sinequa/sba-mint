@@ -1,0 +1,50 @@
+sq-chat-v3 {
+  ul {
+    scrollbar-width: thin;
+  }
+
+  sq-chat-message {
+    summary.text-muted,
+    summary.text-muted + ul {
+      color: var(--color-muted-foreground);
+
+      .text-success {
+        color: var(--color-success);
+      }
+    }
+  }
+
+  div.ast-input-container {
+    border: 1px solid lightgray;
+  }
+  div.ast-input-container textarea {
+    color: var(--color-foreground) !important;
+  }
+
+  div.message-content {
+    color: var(--color-foreground);
+  }
+
+  .references li {
+    list-style: none;
+  }
+
+  .sq-chat-message-actions {
+    z-index: 1 !important;
+  }
+}
+
+.sq-floating-scroll {
+  position: relative !important;
+  bottom: initial !important;
+  right: initial !important;
+
+  .btn {
+    position: absolute;
+    right: 50%;
+    text-align: center;
+    bottom: 75px;
+    background-color: var(--color-muted) !important;
+    color: var(--color-muted-foreground) !important;
+  }
+}

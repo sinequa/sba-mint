@@ -31,7 +31,7 @@ import {
   auditInterceptorFn,
   authInterceptorFn,
   bodyInterceptorFn,
-  bootstrapApp,
+  withBootstrapApp,
   errorInterceptorFn,
   toastInterceptorFn
 } from '@sinequa/atomic-angular';
@@ -61,7 +61,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(appInitializerFn),
 
     // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => bootstrapApp(inject(ApplicationService), { createRoutes: true })),
+    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },
 

@@ -1,8 +1,7 @@
-import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
-import { Subscription } from 'rxjs';
 
 import { getQueryParamsFromUrl } from '@sinequa/atomic';
 import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
@@ -21,14 +20,10 @@ export class SavedSearchesComponent {
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
-  readonly drawerOpened = signal(false);
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
   protected readonly savedSearches = signal<SearchItem[]>([]);
 
-  private readonly sub = new Subscription();
-
   constructor() {
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
-
     effect(() => {
       const savedSearches = this.savedSearchesService.getSavedSearches();
 
