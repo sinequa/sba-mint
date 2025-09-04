@@ -28,7 +28,7 @@ import {
   SuggestedAction
 } from '@sinequa/assistant/chat';
 
-import { Article, Query } from '@sinequa/atomic';
+import { Article, error, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
@@ -47,6 +47,7 @@ import { cn } from '@sinequa/ui';
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"
         (connection)="onConnection.emit($event)"
+        (suggestAction)="handleSuggestAction($event)"
         [messageHandlers]="messageHandlers()" />
 
       <ng-template #sqChatSettings>
@@ -174,7 +175,6 @@ export class AssistantComponent {
   }
 
   handleCancel(event: ChatConfig) {
-    console.log('Cancel event: ', event);
     this.open.set(false);
   }
 
@@ -209,10 +209,10 @@ export class AssistantComponent {
     this.sqChat()?.newChat();
   }
 
-  handleSuggestAction($event: SuggestedAction, argument: boolean) {
+  handleSuggestAction(action: SuggestedAction) {
     const chat = this.sqChat();
     if (chat) {
-      chat.question = $event.content;
+      chat.question = action.content;
       chat.submitQuestion();
     }
   }
@@ -244,7 +244,7 @@ export class AssistantComponent {
     if (sqChatInstance) {
       sqChatInstance.attachToChat(ids);
     } else {
-      console.error('sqChat instance is not defined');
+      error('sqChat instance is not defined');
     }
   }
 }
