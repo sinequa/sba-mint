@@ -4,19 +4,19 @@ import {
   Component,
   computed,
   DestroyRef,
+  Directive,
   effect,
   ElementRef,
   inject,
   input,
   model,
-  NO_ERRORS_SCHEMA,
   output,
   signal,
   viewChild
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
@@ -73,8 +73,7 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
       }
     `
   ],
-  providers: [provideTranslocoScope('search-input')],
-  schemas: [NO_ERRORS_SCHEMA]
+  providers: [provideTranslocoScope('search-input')]
 })
 export class SearchComponent {
   cn = cn;
@@ -248,3 +247,9 @@ export class SearchComponent {
     this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
   }
 }
+
+@Directive({
+  selector: '.search-footer, search-footer, SearchFooter, searchfooter',
+  standalone: true
+})
+export class SearchFooter {}

@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, NO_ERRORS_SCHEMA, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
@@ -15,12 +15,13 @@ import {
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearchesComponent
+  SavedSearchesComponent,
+  SearchInputFooter
 } from '@sinequa/atomic-angular';
 import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
-import { SearchComponent } from '../../components/search/search.component';
+import { SearchComponent, SearchFooter } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
 import { fetchQuery } from '@sinequa/atomic';
@@ -71,6 +72,8 @@ const homeFeatures: HomeTab[] = [
     NgComponentOutlet,
     TranslocoPipe,
     SearchComponent,
+    SearchFooter,
+    SearchInputFooter,
     AutocompleteComponent,
     UserMenuComponent,
     TabsComponent,
@@ -91,8 +94,7 @@ const homeFeatures: HomeTab[] = [
       }
     `
   ],
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')],
-  schemas: [NO_ERRORS_SCHEMA]
+  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
   public drawerOpened: boolean = false;
