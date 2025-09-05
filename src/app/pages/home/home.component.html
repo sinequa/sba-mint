@@ -12,7 +12,7 @@
     <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
       <SearchFooter>
         <SearchInputFooter>
-          <filters-bar class="pt-2" />
+          <filters-bar />
         </SearchInputFooter>
       </SearchFooter>
       <app-autocomplete [text]="searchText()" />
