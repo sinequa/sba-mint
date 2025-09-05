@@ -37,7 +37,9 @@
         <SendHorizontalIcon />
       </button>
 
-      <ng-content select="SearchFooter" />
+      <SearchInputFooter #searchInputFooter [class]="footerClass()">
+        <ng-content select="SearchFooter" />
+      </SearchInputFooter>
     </SearchInput>
   </form>
   <DropdownContent>

@@ -14,8 +14,7 @@ import {
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearchesComponent,
-  SearchInputFooter
+  SavedSearchesComponent
 } from '@sinequa/atomic-angular';
 import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
@@ -72,7 +71,6 @@ const homeFeatures: HomeTab[] = [
     TranslocoPipe,
     SearchComponent,
     SearchFooter,
-    SearchInputFooter,
     AutocompleteComponent,
     UserMenuComponent,
     TabsComponent,
