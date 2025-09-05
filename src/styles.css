@@ -2,17 +2,22 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
-@import './theme';
-
-/* css overrides */
-@import './css-overrides/angular-cdk';
-@import './css-overrides/bootstrap-to-tailwind';
-@import './css-overrides/saved-chat-v3';
-@import './css-overrides/collapse';
-
+/* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
 @source not "../docusaurus/";
+
+/* css third-components overrides */
+@import './css-overrides/styles';
+
+/* Sinequa Tailwind utilities */
+@import './theme.utilities';
+
+/* update this file content with your colors schema */
+@import './theme';
+
+/* Sinequa datepicker css */
+/* @import '../node_modules/@sinequa/ui/datepicker/css/styles'; */
 
 *,
 *::before,
@@ -23,6 +28,7 @@
 html,
 body {
   height: 100%;
+  overflow: hidden;
 }
 
 html {
@@ -88,14 +94,14 @@ body {
     grid-template-columns: 25% 25% 25% 25%;
     transition: 250ms ease-out;
     &[drawer-opened='true'] {
-      grid-template-columns: 4% 24% 25% 48%;
+      grid-template-columns: 0% 25% 25% 50%;
     }
   }
   @media (max-width: 1200px) {
     .layout-search {
       grid-template-columns: 10% 40% 40% 10%;
       &[drawer-opened='true'] {
-        grid-template-columns: 6% 23% 23% 48%;
+        grid-template-columns: 0% 23% 23% 54%;
       }
     }
   }
@@ -108,12 +114,29 @@ body {
   .scrollbar-thin {
     scrollbar-width: thin;
   }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
   /* neural search passages */
   .matchlocations {
     font-weight: 700;
   }
   .w-inherit {
     width: inherit;
+  }
+}
+
+@layer components {
+  .tooltip {
+    position: fixed;
+    background-color: #333;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: Arial;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1000;
   }
 }
 
@@ -157,61 +180,4 @@ ul:has(card.selected) card:not(.selected) {
 /* safari fix */
 summary::-webkit-details-marker {
   display: none;
-}
-
-sq-chat-v3 {
-  ul {
-    scrollbar-width: thin;
-  }
-
-  sq-chat-message {
-    summary.text-muted,
-    summary.text-muted + ul {
-      color: var(--color-muted-foreground);
-
-      .text-success {
-        color: var(--color-success);
-      }
-    }
-  }
-
-  div.ast-input-container {
-    border: 1px solid lightgray;
-  }
-  div.ast-input-container textarea {
-    color: var(--color-foreground) !important;
-  }
-
-  div.message-content {
-    color: var(--color-foreground);
-  }
-
-  .references li {
-    list-style: none;
-  }
-
-  .sq-chat-message-actions {
-    z-index: 1 !important;
-  }
-}
-
-.sq-floating-scroll {
-  position: relative !important;
-  bottom: initial !important;
-  right: initial !important;
-
-  .btn {
-    position: absolute;
-    right: 50%;
-    text-align: center;
-    bottom: 75px;
-    background-color: var(--color-muted) !important;
-    color: var(--color-muted-foreground) !important;
-  }
-}
-
-sq-saved-chats-v3 {
-  div.saved-chat-date {
-    background-color: var(--color-muted) !important;
-  }
 }

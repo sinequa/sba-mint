@@ -4,7 +4,7 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { of } from 'rxjs';
 
-import { Article as A, CCApp, debug, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
+import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
 import { APP_FEATURES, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
 import { TabContent } from '@sinequa/ui';
 
@@ -49,8 +49,9 @@ export class PreviewComponent {
   protected locationSegments: string[] = [];
 
   // article ID is used to create an audit log entry when the preview is closed
-  protected id: string | undefined;
-  protected previewHighlights: PreviewHighlights;
+  protected id = signal<string | undefined>(undefined);
+  protected previewHighlights = signal<PreviewHighlights | undefined>(undefined);
+  protected queryText = signal<string | undefined>(undefined);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -58,8 +59,8 @@ export class PreviewComponent {
       const { id, queryText, previewHighlights } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
+    defaultValue: {} as PreviewData,
     stream: ({ params: { id, text, previewHighlights } }) => {
-      debug('Fetching preview data for:', { id, text, previewHighlights });
       if (id) {
         return this.previewservice.preview(id, { name: this.queryName, text }, previewHighlights);
       }
@@ -114,19 +115,23 @@ export class PreviewComponent {
   chatWithDocQuery: Query = {} as Query;
 
   constructor() {
+    // when the selection store changes or the article changes,
+    // update the preview highlights and query text
     effect(() => {
-      const { previewHighlights, id } = getState(this.selectionStore);
+      const { previewHighlights, id, queryText } = getState(this.selectionStore);
       const article = this.article();
       this.locationSegments = article?.url1 ? article.url1.split('/') : [];
-      this.previewHighlights = previewHighlights;
+      this.previewHighlights.set(previewHighlights);
+      this.queryText.set(queryText);
 
       // only set the ID if the article is defined
       // this is to avoid setting the ID to undefined when the article is not defined usally when the preview is closed
       if (id) {
-        this.id = id;
+        this.id.set(id);
       }
     });
 
+    // when the preview data changes, update the mini preview and chat with doc queries
     effect(() => {
       if (!this.previewData()) return;
       if (!this.previewData()?.record) return;
@@ -148,6 +153,7 @@ export class PreviewComponent {
       };
     });
 
+    // when the loading state changes, update the document title
     effect(() => {
       document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
     });
@@ -168,8 +174,10 @@ export class PreviewComponent {
     });
 
     this.destroyRef.onDestroy(() => {
-      if (this.id) {
-        this.previewservice.close(this.id, { name: this.queryName });
+      const id = this.id();
+      if (id) {
+        this.previewDataResource.destroy();
+        this.previewservice.close(id, { name: this.queryName });
       }
     });
   }

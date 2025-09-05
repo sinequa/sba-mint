@@ -16,14 +16,7 @@ import { PreviewActionsComponent } from './actions';
       <section class="relative flex h-full flex-col gap-4">
         <preview-actions class="bg-muted/90 absolute top-4 right-8 flex justify-end rounded-md" />
 
-        <iframe
-          #preview
-          frameborder="0"
-          class="h-full flex-grow rounded-sm bg-white shadow-xs"
-          [src]="previewUrl()"
-          (load)="onLoaded()"
-          title="{{ 'preview.documentPreview' | transloco }}"
-          [attr.aria-label]="'preview.documentPreview' | transloco"></iframe>
+        <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-white shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </section>
     } @else if (previewUrlError()) {
       <section class="flex h-full w-full items-center justify-center">
@@ -75,7 +68,10 @@ export class PreviewContentComponent {
     });
 
     effect(async () => {
-      if (!this.previewUrl()) return;
+      if (!this.previewUrl()) {
+        this.canLoadIframe.set(false);
+        return;
+      }
 
       try {
         // check if the document is accessible

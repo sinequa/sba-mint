@@ -95,7 +95,7 @@ export class AssistantLayoutComponent {
   chat = viewChild(AssistantComponent);
 
   drawerStackService = inject(DrawerStackService);
-  opened = toSignal(this.drawerStackService.isOpened);
+  opened = computed(() => this.drawerStackService.isOpened());
 
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
@@ -135,6 +135,7 @@ export class AssistantLayoutComponent {
   // this is used to display the saved chats component
   readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
+  // queryparams input binding
   q = input<string>();
 
   constructor() {
@@ -166,7 +167,6 @@ export class AssistantLayoutComponent {
   async getFirstPageQuery() {
     const query = this.appStore.getDefaultQuery() || { name: '_default' };
     const response = await fetchQuery({ isFirstPage: true, name: query.name });
-    console.log('first page query', response);
     this.aggregationStore.update(response.aggregations);
   }
 

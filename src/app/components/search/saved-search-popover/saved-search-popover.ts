@@ -14,14 +14,14 @@ import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sineq
           variant="icon"
           size="xs"
           class="peer-disabled:opacity-50"
-          [attr.title]="'searchInput.saveSearch' | transloco"
+          [title]="'searchInput.saveSearch' | transloco"
           [attr.aria-label]="'searchInput.saveSearch' | transloco"
           (click)="openSavedSearch($event)">
           <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
         </button>
 
         <PopoverContent class="min-w-xs p-2" position="bottom-end">
-          <form class="cursor-default">
+          <div class="cursor-default">
             <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
             <div class="py-4">
               <input
@@ -37,14 +37,14 @@ import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sineq
                 (keydown.enter)="savedName().trim().length !== 0 && saveQuery($event, savedNameInput.value)" />
             </div>
             <div class="ml-auto flex justify-end gap-2">
-              <button decoration="outline" (click)="popover.close()">
+              <button decoration="outline" [title]="'cancel' | transloco" (click)="popover.close()">
                 {{ 'cancel' | transloco }}
               </button>
-              <button type="submit" variant="primary" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
+              <button variant="primary" [title]="'confirm' | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
                 {{ 'confirm' | transloco }}
               </button>
             </div>
-          </form>
+          </div>
         </PopoverContent>
       </Popover>
     } @else {
