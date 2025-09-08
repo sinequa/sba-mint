@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const body = bodyElement;
     const width = body.getBoundingClientRect().width;
 
-    const elements = body.querySelectorAll('div,img,table');
+    const elements = body.querySelectorAll('span,div,img,table');
     const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
 
     const margin = 24;
