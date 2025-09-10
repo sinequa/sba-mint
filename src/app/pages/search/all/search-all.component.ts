@@ -82,7 +82,7 @@ type QueryParamsProps = {
     `
   ],
   host: {
-    class: 'layout-search ml-18 grid h-full overflow-hidden',
+    class: 'layout-search',
     'attr.drawer-opened': 'drawerStack.isOpened()',
     '(keydown.enter)': 'handleKeydownEnter($event)',
     '[attr.drawer-opened]': 'drawerOpened() || false'

@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { ApplicationStore, BackdropComponent, DrawerStackComponent, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { QueryClient } from '@tanstack/angular-query-experimental';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly applicationStore = inject(ApplicationStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly queryClient = inject(QueryClient);
 
   constructor() {
     this.setupApplicationLanguage();
@@ -52,5 +54,9 @@ export class AppComponent {
     if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
 
     this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+  }
+
+  onUpdatedCollections(): void {
+    this.queryClient.invalidateQueries();
   }
 }

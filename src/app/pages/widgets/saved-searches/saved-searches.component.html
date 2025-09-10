@@ -12,11 +12,13 @@
           role="link"
           (click)="onClick(savedSearch)"
           (keydown.enter)="onClick(savedSearch)">
+          <i class="fas fa-star ps-2"></i>
+
           <span class="ms-2">
             {{ savedSearch.display || savedSearch.label }}
           </span>
 
-          <span class="text-gray-500">
+          <span class="text-muted-foreground">
             {{ 'in' | transloco }}
 
             <span class="font-semibold capitalize">

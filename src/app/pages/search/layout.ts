@@ -18,7 +18,7 @@ import { AppSidebarComponent } from '../../components/sidebar/sidebar.component'
       <app-navbar class="layout-search py-4" />
     </PageHeader>
 
-    <div class="mt-16 overflow-hidden">
+    <div class="mt-16">
       <router-outlet />
     </div>
   `,

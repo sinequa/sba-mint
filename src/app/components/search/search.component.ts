@@ -1,5 +1,19 @@
 import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
-import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  DestroyRef,
+  Directive,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+  viewChild
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,6 +31,7 @@ import {
   DrawerStackService,
   QueryParamsStore,
   SearchInputComponent,
+  SearchInputFooter,
   SearchItem
 } from '@sinequa/atomic-angular';
 import {
@@ -43,7 +58,8 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
     DropdownComponent,
     DropdownContentComponent,
     SearchInputComponent,
-    SavedSearchPopover
+    SavedSearchPopover,
+    SearchInputFooter
   ],
   templateUrl: './search.component.html',
   host: {
@@ -70,6 +86,8 @@ export class SearchComponent {
   dropdownComponent = viewChild.required(DropdownComponent);
   // search input reference
   inputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
+  // search input footer reference
+  searchFooterComponent = viewChild.required<ElementRef>('searchInputFooter');
 
   protected readonly route = inject(ActivatedRoute);
   protected readonly router = inject(Router);
@@ -121,6 +139,10 @@ export class SearchComponent {
       return 'standalone-assistant';
     }
   });
+
+  // Since SearchInputFooter is always defined, it has its p-2 class making a blank space,
+  // this computed allows to remove the padding
+  protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
@@ -233,3 +255,9 @@ export class SearchComponent {
     this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
   }
 }
+
+@Directive({
+  selector: '.search-footer, search-footer, SearchFooter, searchfooter',
+  standalone: true
+})
+export class SearchFooter {}

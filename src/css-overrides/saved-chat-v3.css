@@ -33,4 +33,10 @@ sq-saved-chats-v3 {
       }
     }
   }
+
+  .dark sq-dialog-delete-saved-chat > dialog,
+  .dark sq-dialog-rename-saved-chat > dialog {
+    background: var(--background);
+    color: var(--color-foreground);
+  }
 }

@@ -13,6 +13,14 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 
+// datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
+import Datepicker from 'vanillajs-datepicker/Datepicker';
+// @ts-ignore: missing types
+import fr from 'vanillajs-datepicker/locales/fr';
+// @ts-ignore: missing types
+import de from 'vanillajs-datepicker/locales/de';
+Object.assign(Datepicker.locales, fr, de);
+
 setGlobalConfig(environment);
 
 // applyConsoleLogLevels();

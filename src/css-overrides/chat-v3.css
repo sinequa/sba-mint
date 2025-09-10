@@ -38,6 +38,7 @@ sq-chat-v3 {
   position: relative !important;
   bottom: initial !important;
   right: initial !important;
+  padding: 0;
 
   .btn {
     position: absolute;

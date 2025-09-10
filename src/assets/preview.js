@@ -32,12 +32,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const body = bodyElement;
     const width = body.getBoundingClientRect().width;
 
-    const elements = body.querySelectorAll('span,div,img,table');
+    // select only span if div, img or table are not present
+    let elements = body.querySelectorAll('div, img, table');
+    if (!elements.length) {
+      elements = body.querySelectorAll('span');
+    }
+
+    if (!elements.length) {
+      fitFactor = 1;
+      zoom(fitFactor);
+      return;
+    }
+
     const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
 
     const margin = 24;
     // compute best factor using margin (default: 24) * 2 for left and right
     fitFactor = width / (higherWidth + margin * 2);
+
+    // prevent too low or too high values
+    fitFactor = Math.min(1, Math.max(0.6, fitFactor));
 
     zoom(fitFactor);
   }

@@ -10,6 +10,9 @@
 
   <main class="flex h-[50vh] flex-col gap-16">
     <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
+      <SearchFooter>
+        <filters-bar />
+      </SearchFooter>
       <app-autocomplete [text]="searchText()" />
     </app-search>
 
