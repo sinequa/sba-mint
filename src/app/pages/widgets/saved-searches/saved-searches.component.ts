@@ -5,11 +5,11 @@ import { toast } from 'ngx-sonner';
 
 import { getQueryParamsFromUrl } from '@sinequa/atomic';
 import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
-import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
+import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'SavedSearches',
-  imports: [TranslocoPipe, ListItemComponent, ButtonComponent],
+  imports: [TranslocoPipe, ButtonComponent],
   templateUrl: './saved-searches.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

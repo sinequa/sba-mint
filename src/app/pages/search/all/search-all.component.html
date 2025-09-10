@@ -1,4 +1,4 @@
-<main class="scrollbar-thin col-span-2 col-start-2 mt-4 overflow-x-hidden overflow-y-auto px-2.5 pb-4">
+<main class="col-span-2 col-start-2 mb-8 px-2.5">
   <!-- skeleton part -->
   @if (query.isPending()) {
     <div class="mt-4 flex justify-between" aria-hidden="true">
@@ -22,7 +22,7 @@
     </ul>
   } @else if (hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="bg-background sticky top-0 z-10 -mx-1 pt-1 pb-2">
+    <div class="bg-background sticky top-16 z-10 -mx-1 pt-1 pb-2">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
@@ -112,7 +112,7 @@
     }
   } @else {
     <!-- tabs and filters -->
-    <div class="bg-background sticky top-0 z-10 -mx-1 pt-1 pb-2">
+    <div class="bg-background sticky top-16 z-10 -mx-1 pt-1 pb-2">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
