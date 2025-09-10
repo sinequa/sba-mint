@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, Injector, Type, afterNextRender, computed, effect, inject, runInInjectionContext, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
@@ -14,7 +14,8 @@ import {
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearchesComponent
+  SavedSearchesComponent,
+  signIn
 } from '@sinequa/atomic-angular';
 import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
@@ -22,7 +23,7 @@ import { ActiveSuggestion, AutocompleteComponent } from '../../components/search
 import { SearchComponent, SearchFooter } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
-import { fetchQuery } from '@sinequa/atomic';
+import { error, fetchQuery } from '@sinequa/atomic';
 import { getState } from '@ngrx/signals';
 
 type HomeTab = {
@@ -109,7 +110,7 @@ export class HomeComponent {
   readonly appStore = inject(AppStore);
   readonly drawerStack = inject(DrawerStackService);
   readonly aggregationStore = inject(AggregationsStore);
-
+  readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
@@ -144,9 +145,20 @@ export class HomeComponent {
   }
 
   async getFirstPageQuery() {
-    const query = this.appStore.getDefaultQuery() || { name: '_default' };
-    const response = await fetchQuery({ isFirstPage: true, name: query.name });
-    this.aggregationStore.update(response.aggregations);
+    try {
+      const query = this.appStore.getDefaultQuery() || { name: '_default' };
+      const response = await fetchQuery({ isFirstPage: true, name: query.name });
+      this.aggregationStore.update(response.aggregations);
+    } catch (err: any) {
+      if (err.status === 401) {
+        error('Unauthorized access - please check your credentials:', err);
+        runInInjectionContext(this.injector, () => signIn());
+      } else if (err.status === 404) {
+        console.log('404 Not Found!');
+      } else {
+        console.log(`HTTP error: ${err.status}`);
+      }
+    }
   }
 
   public selectTab(tab: HomeTab): void {

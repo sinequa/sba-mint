@@ -141,10 +141,8 @@ export class SearchComponent {
   });
 
   // Since SearchInputFooter is always defined, it has its p-2 class making a blank space,
-  // this class removes it if no SearchFooter is provided
-  protected footerClass = computed(() => {
-    return this.searchFooterComponent().nativeElement.childNodes.length ? '' : 'p-0';
-  });
+  // this computed allows to remove the padding
+  protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
