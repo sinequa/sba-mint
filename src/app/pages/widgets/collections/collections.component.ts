@@ -5,11 +5,11 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, InputComponent } from '@sinequa/ui';
+import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'Collections',
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent],
+  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
@@ -55,23 +55,33 @@ import { ButtonComponent, InputComponent } from '@sinequa/ui';
         <ul class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListData]="tmpCollections" (cdkDropListDropped)="dropped($event)">
           @for (collection of tmpCollections; track $index) {
             @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
+              <!-- class=" rounded-md p-1 hover:cursor-pointer hover:bg-blue-50" -->
               <li
-                class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] items-center rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
+                class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] items-center"
                 role="listitem"
                 cdkDrag
                 (click)="onClick(collection)">
-                <i class="fas fa-inbox"></i>
+                <i class="fas fa-inbox ps-2"></i>
+
                 <span class="mx-2">{{ collection.name }}</span>
-                <button variant="ghost" class="text-primary invisible group-hover:visible" (click)="$event.stopPropagation(); onEdit(collection, $index)">
+
+                <button
+                  size="icon"
+                  variant="ghost"
+                  class="text-primary invisible group-hover:visible"
+                  (click)="$event.stopPropagation(); onEdit(collection, $index)">
                   <i class="fa-fw far fa-pen-to-square" aria-hidden></i>
                 </button>
+
                 <button
+                  size="icon"
                   variant="ghost"
-                  class="invisible text-red-500 group-hover:visible"
+                  class="text-destructive invisible group-hover:visible"
                   (click)="$event.stopPropagation(); deleteCollection(collection, $index)">
                   <i class="fa-fw far fa-trash" aria-hidden></i>
                 </button>
-                <button variant="ghost">
+
+                <button size="icon" variant="ghost">
                   <i class="fa-fw far fa-bars" aria-hidden></i>
                 </button>
               </li>
