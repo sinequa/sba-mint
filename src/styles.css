@@ -54,6 +54,7 @@ body {
     --z-dropdown: 100;
     --z-drawer: 2000;
     --z-backdrop: 1000;
+    --z-multiselection: 2050;
   }
 
   /* manage the backdrop with dialogs */
