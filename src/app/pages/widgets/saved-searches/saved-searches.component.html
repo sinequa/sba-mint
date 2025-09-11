@@ -8,7 +8,7 @@
     <ul class="mt-4 flex flex-col gap-2" role="list">
       @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
         <a
-          class="group grid grid-cols-[auto_20%_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
+          class="group grid grid-cols-[min-content_auto_20%_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
           role="link"
           (click)="onClick(savedSearch)"
           (keydown.enter)="onClick(savedSearch)">
