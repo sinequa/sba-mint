@@ -2,7 +2,7 @@ import { Component, computed, effect, ElementRef, inject, InjectionToken, input,
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, from, map, of, switchMap, tap } from 'rxjs';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
 import {
@@ -113,7 +113,7 @@ export class AutocompleteComponent {
 
         return combineLatest([
           fromUserSettings,
-          this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
+          from(this.autocompleteService.getFromSuggestQueriesForText(testText)).pipe(
             catchError(err => {
               error('Error getting suggestions from suggest queries', err);
               return of([]);
