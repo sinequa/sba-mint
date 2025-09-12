@@ -30,7 +30,6 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   QueryParamsStore,
-  SearchInputComponent,
   SearchInputFooter,
   SearchItem
 } from '@sinequa/atomic-angular';
@@ -41,6 +40,7 @@ import {
   DropdownComponent,
   DropdownContentComponent,
   PopoverComponent,
+  SearchInputComponent,
   SendHorizontalIconComponent,
   type SearchVariants
 } from '@sinequa/ui';
@@ -253,6 +253,19 @@ export class SearchComponent {
     e.preventDefault();
     e.stopImmediatePropagation();
     this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
+  }
+
+  /**
+   * Handles click events by stopping the event's immediate propagation
+   * and closing the associated dropdown component.
+   *
+   * @param e - The event object triggered by the click.
+   */
+  handleClick(e: Event): void {
+    // click comes from the filter button in the footer, we don't want the input to be focused again
+    // so we stop the event propagation and close the dropdown
+    e.stopImmediatePropagation();
+    this.dropdownComponent().close();
   }
 }
 

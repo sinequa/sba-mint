@@ -10,7 +10,6 @@ import {
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
-  FiltersBarComponent,
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
@@ -19,12 +18,12 @@ import {
 } from '@sinequa/atomic-angular';
 import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
+import { getState } from '@ngrx/signals';
+import { error, fetchQuery } from '@sinequa/atomic';
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
-import { SearchComponent, SearchFooter } from '../../components/search/search.component';
+import { SearchComponent } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
-import { error, fetchQuery } from '@sinequa/atomic';
-import { getState } from '@ngrx/signals';
 
 type HomeTab = {
   name: string;
@@ -71,14 +70,12 @@ const homeFeatures: HomeTab[] = [
     NgComponentOutlet,
     TranslocoPipe,
     SearchComponent,
-    SearchFooter,
     AutocompleteComponent,
     UserMenuComponent,
     TabsComponent,
     TabComponent,
     AppSidebarComponent,
-    HorizontalDividerComponent,
-    FiltersBarComponent
+    HorizontalDividerComponent
   ],
   templateUrl: './home.component.html',
   host: {

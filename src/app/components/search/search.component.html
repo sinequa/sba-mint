@@ -1,7 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
-      class="p-2 [&>div]:h-auto"
+      class="p-2"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -37,7 +37,7 @@
         <SendHorizontalIcon />
       </button>
 
-      <SearchInputFooter #searchInputFooter [class.p-0]="!hasFooter()">
+      <SearchInputFooter #searchInputFooter [class]="!hasFooter() ? 'p-0' : ''" (click)="handleClick($event)">
         <ng-content select="SearchFooter" />
       </SearchInputFooter>
     </SearchInput>
