@@ -126,7 +126,7 @@ export class HomeComponent {
 
   constructor(private destroyRef: DestroyRef) {
     afterNextRender(() => {
-      this.queryParamsStore.patch({ filters: [], text: '' });
+      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
     });
 
     // react to tab changes
