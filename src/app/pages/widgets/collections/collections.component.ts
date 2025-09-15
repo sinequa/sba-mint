@@ -171,10 +171,10 @@ export class CollectionsComponent {
     e.preventDefault();
     e.stopImmediatePropagation();
     let modifiedName = false;
-    if (this.collectionName()) {
+    if (this.collectionName().trim()) {
       const collection = this.tmpCollections[this.modifiedIndex()!];
       modifiedName = collection.name !== this.collectionName();
-      collection.name = this.collectionName();
+      collection.name = this.collectionName().trim();
     }
     this.modifiedIndex.set(undefined);
     if (modifiedName) this.save();
