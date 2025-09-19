@@ -41,6 +41,17 @@
   & ul {
     color-scheme: dark;
   }
+
+  select > option {
+    background-color: var(--background);
+  }
+
+  sq-saved-chats-v3 {
+    dialog {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+  }
 }
 
 @theme {

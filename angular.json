@@ -50,7 +50,7 @@
                 "output": "preview/"
               }
             ],
-            "styles": ["src/styles.css", { "input": "src/assets/preview.css", "inject": false }],
+            "styles": ["src/styles.css", "src/highlights.css", { "input": "src/assets/preview.css", "inject": false }],
             "scripts": []
           },
           "configurations": {
