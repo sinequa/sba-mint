@@ -42,7 +42,7 @@
     color-scheme: dark;
   }
 
-  select option {
+  select > option {
     background-color: var(--background);
   }
 
