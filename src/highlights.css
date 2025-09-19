@@ -1,0 +1,27 @@
+extractspanel .company {
+  color: #ff7675;
+}
+
+extractspanel .geo {
+  color: #74b9ff;
+}
+
+extractspanel .person {
+  color: #00abb5;
+}
+
+extractspanel .money {
+  color: #85bb65;
+}
+
+extractspanel .entity12 {
+  color: #eec900;
+}
+
+extractspanel .extractslocations {
+  color: #a29f82;
+}
+
+extractspanel .matchlocations {
+  color: #c8c802;
+}
