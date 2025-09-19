@@ -1,34 +1,27 @@
 extractspanel .company {
-  color: white;
-  background-color: #ff7675;
+  color: #ff7675;
 }
 
 extractspanel .geo {
-  color: white;
-  background-color: #74b9ff;
+  color: #74b9ff;
 }
 
 extractspanel .person {
-  color: white;
-  background-color: #00abb5;
+  color: #00abb5;
 }
 
 extractspanel .money {
-  color: white;
-  background-color: #85bb65;
+  color: #85bb65;
 }
 
 extractspanel .entity12 {
-  color: white;
-  background-color: #ffd700;
+  color: #eec900;
 }
 
 extractspanel .extractslocations {
-  color: black;
-  background-color: #fffacd;
+  color: #a29f82;
 }
 
 extractspanel .matchlocations {
-  color: black;
-  background-color: #ff0;
+  color: #c8c802;
 }
