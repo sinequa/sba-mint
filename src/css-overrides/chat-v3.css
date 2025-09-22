@@ -49,3 +49,24 @@ sq-chat-v3 {
     color: var(--color-muted-foreground) !important;
   }
 }
+
+/* code-block overrides */
+code-block-reference {
+  position: relative;
+
+  .card.mb-2 {
+    display: contents;
+  }
+
+  .card-header {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+
+    span.me-auto {
+      font-size: 0.7em;
+      color: wheat;
+      margin-inline-end: 0.75rem;
+    }
+  }
+}
