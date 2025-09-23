@@ -56,7 +56,7 @@ export class PreviewComponent {
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const { id, queryText, previewHighlights } = getState(this.selectionStore);
+      const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: {} as PreviewData,

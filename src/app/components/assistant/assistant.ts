@@ -42,7 +42,7 @@ import { cn } from '@sinequa/ui';
         #sqChat
         [query]="_query"
         [chat]="initChat"
-        [instanceId]="instanceId()!"
+        [instanceId]="instanceId()"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"
@@ -71,6 +71,7 @@ export class AssistantComponent {
   sqChat = viewChild(ChatComponent);
 
   // Inject services
+  private destroyRef: DestroyRef = inject(DestroyRef);
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
@@ -78,7 +79,7 @@ export class AssistantComponent {
   class = input<string>('');
   // Used to initialize the chat unconditionally
   showAssistant = input<boolean | undefined>(false);
-  instanceId = input<string>();
+  instanceId = input.required<string>();
 
   showProgress = input<boolean>(false);
   messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());
@@ -89,7 +90,7 @@ export class AssistantComponent {
   onReady = output<boolean>();
 
   // used to initialize the chat when the user clicks on the Ask AI button or when the component is created without "question"
-  isChatInitialized = signal<boolean | undefined>(undefined);
+  isChatInitialized = signal<boolean>(false);
 
   open = signal(false);
 
@@ -108,15 +109,12 @@ export class AssistantComponent {
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 
-  // mandatory to refresh the sqChat component when the query changes manually
-  cdr = inject(ChangeDetectorRef);
-
   getChatConfig(config: ChatConfig): void {
     this.config.set(config);
     this.configOutput.emit(config);
   }
 
-  constructor(private destroyRef: DestroyRef) {
+  constructor() {
     effect(() => {
       // each time the query params store changes, we need to update the query object
       if (this.instanceId() === undefined) return;
@@ -171,6 +169,13 @@ export class AssistantComponent {
       // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
       const { assistantIdsToAttach } = getState(this.selectionStore);
       this.attachToChat(assistantIdsToAttach);
+    });
+
+    this.destroyRef.onDestroy(async () => {
+      // when the component is destroyed, we need to reset the assistantIdsToAttach
+      console.log(`AssistantComponent ${this.instanceId()} destroyed`);
+      this.selectionStore.update({ assistantIdsToAttach: [] });
+      this.sqChat()?.chatService.stopConnection();
     });
   }
 

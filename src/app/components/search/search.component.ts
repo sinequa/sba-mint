@@ -161,6 +161,12 @@ export class SearchComponent {
   protected readonly destroyRef = inject(DestroyRef);
 
   constructor() {
+    this.destroyRef.onDestroy(async () => {
+      this.focusMonitor.stopMonitoring(this.inputComponent().searchInput());
+      this.debounceInputText.complete();
+      this.drawerStack.closeAll();
+    });
+
     // on input value change, update directly searchInputText but have debounced to emit with debounceTime
     this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
       const changedText = value !== this.searchInputText() && value.length > 0 && this.searchInputText().length > 0;

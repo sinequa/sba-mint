@@ -136,19 +136,21 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'paging':
         break;
       case 'zoom-in':
-        if (frames.length > 0) {
-          bodyElement = frames[0].document.body;
-          computedStyle = window.getComputedStyle(bodyElement);
+        bodyElement = document.querySelector('body');
+        if (bodyElement === null) {
+          bodyElement = document.querySelector('frameset');
         }
+        computedStyle = window.getComputedStyle(bodyElement);
         var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
       case 'zoom-out':
-        if (frames.length > 0) {
-          bodyElement = frames[0].document.body;
-          computedStyle = window.getComputedStyle(bodyElement);
+        bodyElement = document.querySelector('body');
+        if (bodyElement === null) {
+          bodyElement = document.querySelector('frameset');
         }
+        computedStyle = window.getComputedStyle(bodyElement);
         var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
