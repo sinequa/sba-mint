@@ -54,6 +54,24 @@ body {
     --z-drawer: 2000;
     --z-backdrop: 1000;
     --z-multiselection: 2050;
+
+    /* Dark scrollbar for Firefox */
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  /* Dark scrollbar for WebKit browsers */
+  & ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    background-color: var(--muted-foreground);
+    border-radius: 6px;
+    border: 2px solid var(--background);
+  }
+
+  & ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--foreground);
   }
 
   /* manage the backdrop with dialogs */

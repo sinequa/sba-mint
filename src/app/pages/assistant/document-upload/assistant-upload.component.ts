@@ -19,9 +19,9 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
     DialogFooterComponent
   ],
   template: `
-    <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow">
-      <div class="flex items-center justify-between">
-        <h3 class="pointer-events-none text-sm font-semibold text-gray-600">
+    <section class="dark:bg-menu mt-6 rounded-2xl border border-gray-200 p-4 shadow">
+      <div class="text-muted-foreground flex items-center justify-between">
+        <h3 class="pointer-events-none text-sm font-semibold">
           <i class="far fa-folder-open me-1"></i>
           {{ 'assistant.my-documents' | transloco }}
         </h3>
@@ -36,11 +36,11 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
       </DialogHeader>
 
       <DialogContent class="flex flex-col gap-4">
-        <sq-document-upload />
+        <sq-document-upload #sqDocumentUpload />
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow">
-          <div class="flex items-center">
-            <h3 class="pointer-events-none grow text-sm font-semibold text-gray-600">
+        <div class="dark:bg-menu rounded-2xl border border-gray-200 p-4 shadow">
+          <div class="text-muted-foreground flex items-center">
+            <h3 class="pointer-events-none grow text-sm font-semibold">
               <i class="far fa-folder-open me-1"></i>
               {{ 'assistant.uploaded' | transloco }}
             </h3>
