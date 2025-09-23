@@ -41,14 +41,14 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
       ">
       <div [class]="cn('scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
         @if (showSavedChats()) {
-          <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border">
+          <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
             <div class="flex items-center justify-between">
               <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
                 <i class="far fa-comments me-1"></i>
                 {{ 'assistant.saved-chats' | transloco }}
               </h3>
               <button
-                variant="ghost"
+                decoration="outline"
                 [title]="'assistant.new-discussion' | transloco"
                 [attr.aria-label]="'assistant.new-discussion' | transloco"
                 (click)="chat()?.newChat()">

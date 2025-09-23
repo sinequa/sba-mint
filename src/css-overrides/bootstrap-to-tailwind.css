@@ -107,6 +107,10 @@
     /* Primary button variant - colors are approximate */
     @apply border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus:ring focus:ring-blue-300/50 active:bg-blue-800;
   }
+  .btn-secondary {
+    /* Secondary button variant - colors are approximate */
+    @apply border-red-600 bg-red-600 text-white hover:border-red-700 hover:bg-red-700 focus:ring focus:ring-red-300/50 active:bg-red-800;
+  }
   .btn-light {
     /* Light button variant - colors are approximate */
     @apply border-gray-200 bg-gray-200 text-black hover:border-gray-300 hover:bg-gray-300 focus:ring focus:ring-gray-300/50 active:bg-gray-400;

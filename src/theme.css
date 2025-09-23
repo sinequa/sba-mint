@@ -1,7 +1,11 @@
 /* Force dark mode to be used with .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
+@theme {
+  --logo-small: url('assets/logo/small.svg');
+  --logo-large: url('assets/logo/large.svg');
+  --logo-alt-text: 'Sinequa logo';
+
   --background: var(--color-white);
   --foreground: var(--color-gray-950);
 
@@ -37,6 +41,7 @@
 
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
   --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+  --ast-uploaded-doc-hover-background: var(--color-neutral-700);
 
   & ul {
     color-scheme: dark;
@@ -52,10 +57,4 @@
       color: var(--foreground);
     }
   }
-}
-
-@theme {
-  --logo-small: url('assets/logo/small.svg');
-  --logo-large: url('assets/logo/large.svg');
-  --logo-alt-text: 'Sinequa logo';
 }
