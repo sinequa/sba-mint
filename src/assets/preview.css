@@ -3,9 +3,8 @@
 } */
 
 .sq-highlighted {
-  border: 3px solid rgba(11, 117, 255, 0.5);
-  box-shadow: 0 0 1rem #0b75ff33;
-  border-radius: 5px;
+  --color-highlighted: rgba(11, 117, 255, 0.5);
+  background-color: var(--color-highlighted) !important;
 }
 .sq-current {
   border: 2px dashed rgb(5, 5, 5) !important;
