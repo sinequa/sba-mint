@@ -1,4 +1,8 @@
-<preview-navbar class="border-muted-foreground/18 block border-b" [article]="article()" />
+<preview-navbar
+  class="border-muted-foreground/18 block border-b"
+  [article]="article()"
+  [showExtended]="showExtended()"
+  (onSearchInDocument)="onSearchInDocument.emit($event === true ? article() : undefined)" />
 
 <div class="relative flex h-full flex-col gap-0.5">
   @if (previewData() && article()) {

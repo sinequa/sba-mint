@@ -1,10 +1,10 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input } from '@angular/core';
+import { Component, Input, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
-import { BookmarkButtonComponent, DrawerNavbarComponent, DrawerPreviewComponent, PreviewService } from '@sinequa/atomic-angular';
+import { BookmarkButtonComponent, DrawerNavbarComponent, DrawerPreviewComponent, DrawerService, PreviewService } from '@sinequa/atomic-angular';
 import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
 
 import { PreviewNavbarExtendedComponent } from './navbar-extended';
@@ -32,7 +32,8 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     VerticalDividerComponent,
     PreviewNavbarExtendedComponent
   ],
-  templateUrl: './navbar.html'
+  templateUrl: './navbar.html',
+  providers: [DrawerService]
 })
 export class PreviewNavbarComponent {
   cn = cn;
@@ -49,6 +50,9 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
+  public readonly showExtended = input<boolean>(false);
+  public readonly onSearchInDocument = output<boolean>();
+  public extended: boolean = false;
 
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
 

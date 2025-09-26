@@ -56,4 +56,20 @@
       }
     </button>
   }
+
+  @if (showExtended()) {
+    <button
+      variant="ghost"
+      class="ml-auto"
+      [attr.title]="'preview.searchInDocument' | transloco"
+      (click)="extended = !extended; onSearchInDocument.emit(extended)">
+      @if (!extended) {
+        <i class="fa-fw far fa-eye"></i>
+        {{ 'preview.searchInDocument' | transloco }}
+      } @else {
+        <i class="fa-fw far fa-eye-slash"></i>
+        {{ 'preview.hideSearch' | transloco }}
+      }
+    </button>
+  }
 </ng-template>

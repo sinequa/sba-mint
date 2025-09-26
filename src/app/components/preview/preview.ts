@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, model, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, model, output, signal, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -28,6 +28,9 @@ type Article = A & {
   }
 })
 export class PreviewComponent {
+  public readonly showExtended = input<boolean>(false);
+  protected readonly onSearchInDocument = output<Article | undefined>();
+
   /* injectables */
   protected readonly appStore = inject(AppStore);
   protected readonly queryParamStore = inject(QueryParamsStore);
