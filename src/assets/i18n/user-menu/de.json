@@ -9,5 +9,9 @@
   "resetUserSettings": "Benutzereinstellungen zurücksetzen",
   "revertOverride": "Benutzerüberschreibung zurücknehmen",
   "selectLanguage": "Sprache auswählen",
+  "selectTheme": "Thema auswählen",
+  "lightMode": "Licht",
+  "darkMode": "Dunkel",
+  "systemMode": "System",
   "help": "Hilfe"
 }

@@ -34,8 +34,9 @@ bootstrapApplication(AppComponent, appConfig)
   .then(appRef => {
     // Set the dark mode class based on user settings
     runInInjectionContext(appRef.injector, () => {
-      const { useDarkMode } = getState(inject(UserSettingsStore)) as any;
-      document.documentElement.classList.toggle('dark', useDarkMode);
+      const { userTheme } = getState(inject(UserSettingsStore)) as any;
+      const isDarkMode = userTheme === 'dark' || (userTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', isDarkMode);
     });
   })
   .then(() => {
