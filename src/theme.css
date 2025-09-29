@@ -30,6 +30,11 @@
 }
 
 .dark {
+  #logo {
+    --logo-small: var(--logo-dark-small);
+    --logo-large: var(--logo-dark-large);
+  }
+
   --background: #282828;
   --foreground: #e5e5e5;
 

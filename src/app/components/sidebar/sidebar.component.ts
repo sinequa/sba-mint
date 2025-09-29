@@ -26,7 +26,7 @@ export class AppSidebarComponent {
   readonly showBack = input<boolean>(false);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
-  readonly isDarkMode = computed(() => this.userSettings.useDarkMode());
+  readonly isDarkMode = computed(() => this.userSettings.isDarkMode());
   readonly instanceId = computed(() => {
     const {
       assistant: { usePrefixName = true }
