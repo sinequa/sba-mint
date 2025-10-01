@@ -4,25 +4,47 @@ document.addEventListener('DOMContentLoaded', function () {
   var styleElement;
   var fitFactor = null;
 
+  window.addEventListener('message', receiveMessage);
+
   // frameset cause an issue here
   var bodyElement = document.querySelector('body');
   if (bodyElement === null) {
     bodyElement = document.querySelector('frameset');
   }
   var computedStyle = getComputedStyle(bodyElement);
-
   var passageHighlighter;
-  setSvgBackgroundPositionAndSize();
-  window.addEventListener('message', receiveMessage);
-  returnMessage('ready');
 
-  setTimeout(() => zoomFit(), 100);
+  zoomFit();
+
+  // Wait for paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // DOM is painted now
+      setTimeout(() => {
+        setSvgBackgroundPositionAndSize();
+        returnMessage('ready');
+
+        // retrieve the current page from the hash or use the default page
+        const total = window.lastPage;
+        if (window.location.hash) {
+          const hash = window.location.hash.substring(1);
+          const current = parseInt(hash, 10);
+          returnMessage('page-info', { total, current });
+        } else {
+          const current = window.defPage;
+          returnMessage('page-info', { total, current });
+        }
+      }, 500);
+    });
+  });
 
   // will contain the worker instance if it is supported
   var worker;
-  // will be set to true if the worker is supported
   var isWorkerSupported = false;
 
+  // ----------------------
+  // Zoom helpers
+  // ----------------------
   function zoomFit() {
     if (fitFactor) {
       zoom(fitFactor);
@@ -37,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!elements.length) {
       elements = body.querySelectorAll('span');
     }
-
     if (!elements.length) {
       fitFactor = 1;
       zoom(fitFactor);
@@ -45,13 +66,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
-
     const margin = 24;
-    // compute best factor using margin (default: 24) * 2 for left and right
     fitFactor = width / (higherWidth + margin * 2);
 
     // prevent too low or too high values
-    fitFactor = Math.min(1, Math.max(0.6, fitFactor));
+    fitFactor = Math.min(1, Math.max(0.2, fitFactor));
 
     zoom(fitFactor);
   }
@@ -112,11 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // if worker cannot be created, use the "get-html" method instead
         if (!isWorkerSupported) {
           returnMessage('get-html-results', html);
-          break;
         } else {
           worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
-          break;
         }
+        break;
       }
       case 'get-text':
         getText(data.ids);
@@ -133,35 +151,69 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'unselect':
         unselect();
         break;
-      case 'paging':
-        break;
-      case 'zoom-in':
-        bodyElement = document.querySelector('body');
-        if (bodyElement === null) {
-          bodyElement = document.querySelector('frameset');
+
+      // ---- zoom ----
+      case 'zoom-in': {
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
         }
         computedStyle = window.getComputedStyle(bodyElement);
         var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
-      case 'zoom-out':
-        bodyElement = document.querySelector('body');
-        if (bodyElement === null) {
-          bodyElement = document.querySelector('frameset');
+      }
+
+      case 'zoom-out': {
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
         }
         computedStyle = window.getComputedStyle(bodyElement);
         var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
+      }
+
       case 'zoom-fit':
         zoomFit();
         break;
+
       case 'toggle-description':
         // if data.show is true, show the description
         // just set a new value to the css variable --desc-display
         document.documentElement.style.setProperty('--desc-display', data.show ? 'inline-block' : 'none');
+        break;
+
+      // ---- pagination ----
+      case 'goto-page':
+        {
+          if (!data || !data.page) return;
+          pg = data.page;
+          SetPage(pg);
+          Go();
+        }
+        break;
+
+      case 'next-page':
+        GoN();
+        break;
+
+      case 'prev-page':
+        GoP();
+        break;
+
+      case 'first-page':
+        GoF();
+        break;
+
+      case 'last-page':
+        GoL();
+        break;
+
+      default:
         break;
     }
   }
@@ -266,36 +318,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
-
     for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
       var el = elements_1[_i];
       el.classList.add('sq-highlighted');
     }
-    /* var box = getBoundingBox(elements);
-    if (box) {
-      var marginTopLeft = 12;
-      var marginBottomRight = -8;
-      var left = Math.max(0, box.left - marginTopLeft);
-      var top_1 = Math.max(0, box.top - marginTopLeft);
-      var right = box.right + marginBottomRight;
-      var bottom = box.bottom + marginBottomRight;
-      passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
-      passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
-      passageHighlighter.style.width = right - left + 'px';
-      passageHighlighter.style.height = bottom - top_1 + 'px';
-      passageHighlighter.style.display = 'block';
-    } */
   }
 
   function selectPassage2(elements) {
     passageHighlighter.style.display = 'none';
-
     elements[0].style.position = 'relative';
     elements[0].style.display = 'inline-block';
     elements[0].append(passageHighlighter);
-
-    // const rect = getBoundingBox(elements)
-    // console.log("rect", rect);
     passageHighlighter.style.top = 0;
     passageHighlighter.style.left = 0;
     passageHighlighter.style.width = '100%';
@@ -415,7 +448,6 @@ document.addEventListener('DOMContentLoaded', function () {
     rect.setAttribute('height', String(textBoxSVG.height + 2 * deltaY));
 
     var valueTransform = text.getAttribute('transform');
-
     if (valueTransform) rect.setAttribute('transform', valueTransform);
   }
 
