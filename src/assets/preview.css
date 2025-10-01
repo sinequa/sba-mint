@@ -50,6 +50,10 @@ line.sq-svg {
 body.bd {
   background-color: #eee;
 }
+/* hide the document navigator */
+body .ph {
+  display: none;
+}
 body.bd > div.ph {
   box-shadow:
     0 4px 8px #0003,

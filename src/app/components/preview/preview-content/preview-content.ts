@@ -2,20 +2,20 @@ import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, inp
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+
+import { PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { PreviewData } from '@sinequa/atomic';
-import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+
 import { PreviewActionsComponent } from './actions';
 
 @Component({
   selector: 'preview-content',
-  standalone: true,
-  imports: [TranslocoPipe, PreviewActionsComponent],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
-    <!-- Use hidden and absolute positioning -->
     @if (canLoadIframe()) {
       <section class="relative flex h-full flex-col gap-4">
-        <preview-actions class="bg-muted/90 absolute top-4 right-8 flex justify-end rounded-md" />
-
+        <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
+        <preview-actions class="bg-muted/90 absolute top-4 right-8 inline-flex justify-end rounded-md" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-white shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </section>
     } @else if (previewUrlError()) {
@@ -45,7 +45,6 @@ export class PreviewContentComponent {
   private readonly selectionStore = inject(SelectionStore);
   private readonly previewService = inject(PreviewService);
   private readonly cdr = inject(ChangeDetectorRef);
-
   readonly canLoadIframe = signal<boolean>(true);
   readonly previewUrlError = signal<boolean>(false);
 
@@ -99,5 +98,7 @@ export class PreviewContentComponent {
       const message: any = { action: 'select', id: `snippet_${previewHighlights!.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
+
+    // this.previewService.getPageInfo();
   }
 }
