@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -21,7 +21,7 @@ export class AppSidebarComponent {
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly userSettings = inject(UserSettingsStore);
   protected readonly location = inject(Location);
-  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly showBack = input<boolean>(false);
 
@@ -41,7 +41,7 @@ export class AppSidebarComponent {
 
   // Updated allowAI computed signal
   protected readonly allowAI = computed(() => {
-    return this.activatedRoute.component?.name !== '_AssistantLayoutComponent' && !!this.appStore.isAssistantAllowed(this.instanceId());
+    return !this.router.url.startsWith('/assistant') && !!this.appStore.isAssistantAllowed(this.instanceId());
   });
 
   openHelp() {
