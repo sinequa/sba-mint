@@ -1,12 +1,20 @@
-import { Component, computed, DestroyRef, effect, inject, model, output, signal, input } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, model, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { of } from 'rxjs';
 
 import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
-import { APP_FEATURES, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
-import { TabContent } from '@sinequa/ui';
+import {
+  AdvancedSearchComponent,
+  APP_FEATURES,
+  AppStore,
+  PreviewService,
+  QueryParamsStore,
+  SelectionStore,
+  type PreviewHighlights
+} from '@sinequa/atomic-angular';
+import { cn, TabContent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../assistant/assistant';
 import { PreviewNavbarComponent } from './navbar/navbar';
@@ -21,15 +29,22 @@ type Article = A & {
 @Component({
   selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
-  imports: [AssistantComponent, PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, PreviewContentComponent, TabContent],
+  imports: [
+    AssistantComponent,
+    PreviewNavbarComponent,
+    PreviewTabsComponent,
+    PreviewHeaderComponent,
+    PreviewContentComponent,
+    AdvancedSearchComponent,
+    TabContent
+  ],
   templateUrl: './preview.html',
   host: {
-    class: 'grow flex flex-col overflow-hidden h-full'
+    '[class]': 'cn("grow h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
   }
 })
 export class PreviewComponent {
-  public readonly showExtended = input<boolean>(false);
-  protected readonly onSearchInDocument = output<Article | undefined>();
+  cn = cn;
 
   /* injectables */
   protected readonly appStore = inject(AppStore);
@@ -43,6 +58,9 @@ export class PreviewComponent {
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
   protected readonly activeTab = model<PreviewTab>('preview');
+
+  /* used to toggle the extended view when not displayed inside the drawer */
+  protected readonly extended = signal(false);
 
   // this signal is used by the summarize assistant to know if the assistant is streaming
   protected readonly isStreaming = signal<boolean>(false);

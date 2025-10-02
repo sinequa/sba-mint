@@ -1,13 +1,18 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input, output } from '@angular/core';
+import { Component, Input, computed, inject, input, model } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
-import { BookmarkButtonComponent, DrawerNavbarComponent, DrawerPreviewComponent, DrawerService, PreviewService } from '@sinequa/atomic-angular';
+import {
+  BookmarkButtonComponent,
+  DrawerNavbarComponent,
+  DrawerPreviewComponent,
+  DrawerService,
+  DrawerStackService,
+  PreviewService
+} from '@sinequa/atomic-angular';
 import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
-
-import { PreviewNavbarExtendedComponent } from './navbar-extended';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -29,15 +34,17 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     LinkIconComponent,
     CircleCheckIconComponent,
     DrawerNavbarComponent,
-    VerticalDividerComponent,
-    PreviewNavbarExtendedComponent
+    VerticalDividerComponent
   ],
   templateUrl: './navbar.html',
   providers: [DrawerService]
 })
 export class PreviewNavbarComponent {
   cn = cn;
-  protected drawer = inject(DrawerPreviewComponent, { skipSelf: true, optional: true });
+
+  /* drawer related services and references */
+  protected drawerPreviewRef = inject(DrawerPreviewComponent, { skipSelf: true, optional: true });
+  protected readonly drawerStack = inject(DrawerStackService, { optional: true });
 
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
@@ -48,13 +55,21 @@ export class PreviewNavbarComponent {
     this.navConfig = { ...DEFAULT_CONFIG, ...config };
   }
 
+  /* used to toggle the extended view when not displayed inside the drawer */
+  public readonly extended = model(false);
+
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
-  public readonly showExtended = input<boolean>(false);
-  public readonly onSearchInDocument = output<boolean>();
-  public extended: boolean = false;
-
   readonly hasExternalLink = computed(() => !!this.article()?.url1);
+
+  /**
+   * Computed property that determines whether the navigation bar is in an extended state.
+   * It returns `true` if either the drawer referenced by `drawerPreviewRef` is extended,
+   * or if the local `extended` state is true.
+   *
+   * @returns {boolean} `true` if the navigation bar should be extended; otherwise, `false`.
+   */
+  public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
 
   public copied: boolean = false;
 
@@ -63,7 +78,7 @@ export class PreviewNavbarComponent {
     this.previewService.openExternal(this.article() as Article);
   }
 
-  public copyLink(): void {
+  copyLink(): void {
     const url = this.article()?.url1 || this.article()?.url2;
 
     if (url) {
@@ -76,6 +91,20 @@ export class PreviewNavbarComponent {
       }, 3000);
 
       toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
+    }
+  }
+
+  /**
+   * Toggles the state of the navigation bar.
+   *
+   * If a drawer preview reference exists, it attempts to extend the drawer stack.
+   * Otherwise, it toggles the `extended` state between true and false.
+   */
+  toggle(): void {
+    if (this.drawerPreviewRef) {
+      this.drawerStack?.extend();
+    } else {
+      this.extended.set(!this.extended());
     }
   }
 }
