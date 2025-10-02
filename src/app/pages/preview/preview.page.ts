@@ -5,7 +5,7 @@ import { SelectionStore } from '@sinequa/atomic-angular';
 @Component({
   selector: 'page-preview',
   imports: [PreviewComponent],
-  template: ` <preview />`
+  template: `<preview />`
 })
 export class PreviewPage {
   selectionStore = inject(SelectionStore);
