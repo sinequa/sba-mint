@@ -40,7 +40,7 @@ type Article = A & {
   ],
   templateUrl: './preview.html',
   host: {
-    '[class]': 'cn("grow h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
+    '[class]': 'cn("grow w-full h-full overflow-auto grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
   }
 })
 export class PreviewComponent {
