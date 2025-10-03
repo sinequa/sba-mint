@@ -1,9 +1,8 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { getQueryParamsFromUrl } from '@sinequa/atomic';
+import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
 import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
@@ -18,6 +17,7 @@ import { ButtonComponent } from '@sinequa/ui';
 export class SavedSearchesComponent {
   cdr = inject(ChangeDetectorRef);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
@@ -59,6 +59,6 @@ export class SavedSearchesComponent {
   public async onDelete(event: Event, index: number) {
     event.stopPropagation();
     await this.savedSearchesService.deleteSavedSearch(index);
-    toast.success('Saved search removed', { duration: 2000 });
+    notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
   }
 }

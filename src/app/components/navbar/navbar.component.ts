@@ -23,6 +23,7 @@ import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '
 import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../search/search.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
+import { notify } from '@sinequa/atomic';
 
 export type NavbarMenu = {
   display: string;
@@ -119,6 +120,7 @@ export class NavbarComponent {
       const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
       if (index !== -1) {
         this.savedSearchesService.deleteSavedSearch(index);
+        notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
       }
     }
   }
