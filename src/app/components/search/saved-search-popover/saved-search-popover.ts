@@ -1,8 +1,9 @@
 import { Component, signal, viewChild, ElementRef, input, output, computed, inject } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { DropdownComponent, ButtonComponent, InputComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
 import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
+import { notify } from '@sinequa/atomic';
 
 @Component({
   selector: 'saved-search-popover, SavedSearchPopover, savedsearchpopover',
@@ -70,6 +71,7 @@ export class SavedSearchPopover {
 
   protected readonly userSettingsStore = inject(UserSettingsStore);
   protected readonly savedSearchesService = inject(SavedSearchesService);
+  protected readonly transloco = inject(TranslocoService);
 
   queryText = input<string>('');
 
@@ -107,6 +109,7 @@ export class SavedSearchPopover {
       this.onSavedSearch.emit(this.savedSearch());
     } else {
       this.savedSearchesService.saveSearch(this.savedName().trim());
+      notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
       this.saveAnimation.set(true);
 
       setTimeout(() => this.saveAnimation.set(false), 1000);
