@@ -5,7 +5,7 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import { AggregationComponent, AggregationsStore, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
@@ -96,8 +96,8 @@ export class AssistantLayoutComponent {
   drawerStackService = inject(DrawerStackService);
   opened = computed(() => this.drawerStackService.isOpened());
 
-  private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
+  private readonly generalSettings = this.appStore.general();
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
@@ -106,16 +106,14 @@ export class AssistantLayoutComponent {
   query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
+
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
     }
-    return `standalone-assistant`;
+    return 'standalone-assistant';
   });
-
   // this is the assistant component who triggers the connection is established
   connectionEstablished = signal(false);
 

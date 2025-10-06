@@ -1,6 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, DestroyRef, Injector, Type, afterNextRender, computed, effect, inject, runInInjectionContext, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
@@ -10,6 +10,7 @@ import {
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  FiltersBarComponent,
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
@@ -21,7 +22,7 @@ import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequ
 import { getState } from '@ngrx/signals';
 import { error, fetchQuery } from '@sinequa/atomic';
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
-import { SearchComponent } from '../../components/search/search.component';
+import { SearchComponent, SearchFooter } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
@@ -75,7 +76,9 @@ const homeFeatures: HomeTab[] = [
     TabsComponent,
     TabComponent,
     AppSidebarComponent,
-    HorizontalDividerComponent
+    HorizontalDividerComponent,
+    SearchFooter,
+    FiltersBarComponent
   ],
   templateUrl: './home.component.html',
   host: {
@@ -105,10 +108,21 @@ export class HomeComponent {
   readonly autocompleteService = inject(AutocompleteService);
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
+  readonly generalSettings = this.appStore.general();
   readonly drawerStack = inject(DrawerStackService);
   readonly aggregationStore = inject(AggregationsStore);
   readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
+  readonly aggregations = computed(() => {
+    const filters = this.appStore.filters().filter(f => f.homepage === true);
+    return this.appStore.getAuthorized(filters);
+  });
+
+  readonly allowFilters = computed(() => {
+    // by default, filters are not allowed on the homepage
+    const { filters: { homepage = false } = {} } = this.generalSettings?.features || {};
+    return homepage;
+  });
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: 'tabsNavigator',

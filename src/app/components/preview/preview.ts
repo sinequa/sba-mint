@@ -5,15 +5,7 @@ import { getState } from '@ngrx/signals';
 import { of } from 'rxjs';
 
 import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
-import {
-  AdvancedSearchComponent,
-  APP_FEATURES,
-  AppStore,
-  PreviewService,
-  QueryParamsStore,
-  SelectionStore,
-  type PreviewHighlights
-} from '@sinequa/atomic-angular';
+import { AdvancedSearchComponent, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
 import { cn, TabContent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../assistant/assistant';
@@ -53,7 +45,7 @@ export class PreviewComponent {
   protected readonly previewservice = inject(PreviewService);
 
   protected readonly destroyRef = inject(DestroyRef);
-  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly generalSettings = this?.appStore.general();
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
@@ -98,31 +90,27 @@ export class PreviewComponent {
   });
 
   readonly summarizeInstanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
+
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-summarize-assistant`;
-    } else {
-      return 'preview-summarize-assistant';
     }
+    return 'preview-summarize-assistant';
   });
 
-  readonly chatWithDocIntanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+  readonly chatWithDocInstanceId = computed(() => {
+    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
+
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-chatwithdoc-assistant`;
-    } else {
-      return 'preview-chatwithdoc-assistant';
     }
+    return 'preview-chatwithdoc-assistant';
   });
 
   displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
-  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocIntanceId()));
+  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocInstanceId()));
 
   // this is set by the tabs component
   showAssistants = signal<{ name: 'summary' | 'discussion'; enabled: boolean; visible: boolean }[]>([

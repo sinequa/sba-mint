@@ -17,7 +17,7 @@ When you execute a search in Mint, the out-of-the-box results list includes an e
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/080_result-metadata/results_original.png')} width="70%" alt="Original results in Mint"/>
-</p> 
+</p>
 
 For each result, you will add the **Executive Titles** and **Events** metadata, if any, below the result extract.
 
@@ -30,7 +30,7 @@ If you are using your own Sinequa instance, you should modify these values for y
 :::note
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/080_result-metadata/searchallcomponent.png')} width="70%" alt="HTML Code for SearchAllComponent"/>
-</p> 
+</p>
 
 You should see code similar to this, detailing the elements that can appear on the *search* page, which displays the results of a search.
 :::
@@ -46,7 +46,7 @@ The **ngComponentOutlet** allows you to control the component creation process.
 
 Here, the *getArticleType()* function retrieves the docformat (i.e., document type) for each article.
 
-Based on the *docformat type*, different components can be displayed for different document types. 
+Based on the *docformat type*, different components can be displayed for different document types.
 
 Each *documentType* and its components can be found in **src** > **app** > **registry** > **document-type-registry.ts**, which is where you can also add new document types and specify the components that should be displayed for those document types.
 
@@ -65,7 +65,7 @@ It is also possible to add other inputs like customMetadata here as well, which 
 ```
 
 :::note
-Each *title* will display a label for the metadata. 
+Each *title* will display a label for the metadata.
 
 The *field* uses a column alias, which is defined in the *Advanced tab* of the **Mint Query Web Service** on the Sinequa demo server.
 
@@ -74,7 +74,8 @@ If you are using your own Sinequa instance, you should modify these values for y
 
 5. Go back to **src** > **app** > **pages** > **search** > **all** > **search-all.component.html**.
 
-6. Modify 
+6. Modify
+
 ```
 <ng-container *ngComponentOutlet="getArticleType(article.docformat)!; inputs: { article, strategy: 'replace' }" />
 ```
@@ -88,10 +89,10 @@ to include customMetadata as follows:
 7. Save your changes.
 
 :::note
-If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md), Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
+If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md), Mint should recompile automatically. If not, execute the npm run start command in the terminal.
 :::
 
-8. Go to your Mint application and search for *Walmart*. 
+8. Go to your Mint application and search for *Walmart*.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/080_result-metadata/resultsmetadataadded.png')} width="70%" alt="Metadata added to Results"/>
@@ -123,19 +124,20 @@ You can include additional metadata here above the extract such as the filename 
 
 ```
 @if (article()['filename']) {
-	<p class="flex items-baseline gap-1">
-	<i class="fa fa-file"></i>
-	<span class="w-max">{{ article()['filename'] }}</span>
+ <p class="flex items-baseline gap-1">
+ <i class="fa fa-file"></i>
+ <span class="w-max">{{ article()['filename'] }}</span>
   </p>
 }
 ```
+
 3. Save your changes.
 
 :::note
-If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md, Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
+If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md, Mint should recompile automatically. If not, execute the npm run start command in the terminal.
 :::
 
-4. Go to your Mint application and search for *connector*. 
+4. Go to your Mint application and search for *connector*.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/080_result-metadata/resultsmetadataddedabove.png')} width="70%" alt="Metadata added above Results"/>

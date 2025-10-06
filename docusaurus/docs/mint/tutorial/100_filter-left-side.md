@@ -9,9 +9,9 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Including a Filter on the Left Side
 
-In this chapter, you will add a Sources filter on the left side. 
+In this chapter, you will add a Sources filter on the left side.
 
-There may be times when you want the content of a filter to be visible at all times. For example, you may want the Sources to always be displayed and filterable without having to click on a filter button. 
+There may be times when you want the content of a filter to be visible at all times. For example, you may want the Sources to always be displayed and filterable without having to click on a filter button.
 
 One option is to add the filter on the left side so that it is visible and usable as you search.
 
@@ -36,8 +36,7 @@ import { AggregationsStore, AppStore, DidYouMeanComponent... SponsoredResultsCom
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/100_filter-left-side/componentdecorator.png')} width="30%" alt="Component Decorator"/>
-</p> 
-
+</p>
 
 5. After the last item in this array (it was **CardSkeleton** in this image but it could change over time), add a **comma** followed by **AggregationComponent**.
 
@@ -49,7 +48,7 @@ At the top, you should see a **`<main>`** element:
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/100_filter-left-side/mainsearchall.png')} width="80%" alt="Code showing main element"/>
-</p> 
+</p>
 
 7. Add a line space before the `<main>` element and paste the following above the `<main>` element:
 
@@ -65,28 +64,26 @@ At the top, you should see a **`<main>`** element:
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/100_filter-left-side/leftfiltercodeadded.png')} width="70%" alt="Shows addition of source filter code before main element"/>
-</p> 
-
+</p>
 
 :::note
 This code block uses spacing (`ml-14`, `mt-4`), makes the filter sticky as you scroll (`sticky top-20`), and conditionally shows or hides it based on whether the preview panel is opened or closed.
 :::
 
-
 8. Save your changes.
 
 :::note
-If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md), Mint should recompile automatically. If not, execute the npm run start command in the terminal. 
+If you followed the [Connection to the Sinequa demo server tutorial](020_connection.md), Mint should recompile automatically. If not, execute the npm run start command in the terminal.
 :::
 
-9. Go to your Mint application and search for **assisstant**. 
+9. Go to your Mint application and search for **assisstant**.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/100_filter-left-side/leftfilteradded.png')} width="90%" alt="Source filter added on left"/>
-</p> 
+</p>
 
-You should now see a **Sources filter** on the left side of Mint. 
+You should now see a **Sources filter** on the left side of Mint.
 
 :::note
-In the provided screenshot, the branches have been expanded manually. Your Sources filter will initially display collapsed branches. 
+In the provided screenshot, the branches have been expanded manually. Your Sources filter will initially display collapsed branches.
 :::

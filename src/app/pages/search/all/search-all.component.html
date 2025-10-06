@@ -1,3 +1,6 @@
+@if (query.isSuccess()) {
+  <AsideFilters class="scrollbar-thin scrollbar-none sticky top-20 mx-4 h-[calc(100vh-80px)] pb-4" />
+}
 <main class="col-span-2 col-start-2 mb-8 px-2.5">
   <!-- skeleton part -->
   @if (query.isPending()) {

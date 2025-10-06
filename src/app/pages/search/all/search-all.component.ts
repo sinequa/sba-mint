@@ -11,7 +11,6 @@ import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
-  APP_FEATURES,
   AppStore,
   DidYouMeanComponent,
   DrawerStackService,
@@ -28,7 +27,8 @@ import {
   SortingChoice,
   SortSelectorComponent,
   SponsoredResultsComponent,
-  UserSettingsStore
+  UserSettingsStore,
+  AsideFiltersComponent
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
 
@@ -65,7 +65,8 @@ type QueryParamsProps = {
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    TranslocoPipe
+    TranslocoPipe,
+    AsideFiltersComponent
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -96,8 +97,8 @@ export class SearchAllComponent {
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
-  protected readonly appFeatures = inject(APP_FEATURES);
   protected readonly appStore = inject(AppStore);
+  protected readonly generalSettings = this.appStore.general();
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
@@ -249,9 +250,8 @@ export class SearchAllComponent {
    * Assistant related properties
    */
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
+
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-search-results-assistant`;

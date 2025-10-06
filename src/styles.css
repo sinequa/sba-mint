@@ -109,13 +109,13 @@ body {
   /* layout */
   .layout-search {
     display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: 23% 26% 26% 25%;
     transition: 250ms ease-out;
     &[drawer-opened='true'] {
-      grid-template-columns: 4% 24% 25% 48%;
+      grid-template-columns: 1% 25% 25% 49%;
     }
   }
-  @media (max-width: 1350px) {
+  @media (max-width: 1250px) {
     .layout-search {
       grid-template-columns: 10% 40% 40% 10%;
       &[drawer-opened='true'] {

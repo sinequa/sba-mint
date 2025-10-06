@@ -28,7 +28,7 @@
         <!-- Chat with Doc Tab Content -->
         @if (displayChatWithDocContent()) {
           <TabContent [hidden]="activeTab() !== 'discussion'">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+            <assistant [instanceId]="chatWithDocInstanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
           </TabContent>
         }
 

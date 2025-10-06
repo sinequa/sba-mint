@@ -3,6 +3,7 @@ import {
   booleanAttribute,
   Component,
   computed,
+  contentChild,
   DestroyRef,
   Directive,
   effect,
@@ -24,7 +25,6 @@ import { debounceTime, Subject } from 'rxjs';
 
 import { CCApp } from '@sinequa/atomic';
 import {
-  APP_FEATURES,
   AppStore,
   AutocompleteService,
   DrawerAdvancedFiltersComponent,
@@ -80,6 +80,8 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
 export class SearchComponent {
   cn = cn;
 
+  searchFooterRef = contentChild(SearchFooter, { read: ElementRef });
+
   // "saved search" popover reference
   popoverComponent = viewChild.required(PopoverComponent);
   // autocomplete dropdown reference
@@ -97,7 +99,7 @@ export class SearchComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
-  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly generalSettings = this.appStore.general();
 
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<SearchVariants['variant']>('default');
@@ -129,20 +131,21 @@ export class SearchComponent {
 
   protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
+
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
-    } else {
-      return 'standalone-assistant';
     }
+    return 'standalone-assistant';
   });
 
   // Since SearchInputFooter is always defined, it has its p-2 class making a blank space,
   // this computed allows to remove the padding
-  protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
+  protected hasFooter = computed(() => {
+    // check if the footer has any content
+    return this.searchFooterRef() ? true : false;
+  });
 
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
