@@ -2,8 +2,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --logo-small: url('assets/logo/small.svg');
-  --logo-large: url('assets/logo/large.svg');
+  --logo-small-url: url('assets/logo/small.svg');
+  --logo-large-url: url('assets/logo/large.svg');
+  --logo-small: var(--logo-small-url);
+  --logo-large: var(--logo-large-url);
   --logo-alt-text: 'Sinequa logo';
 
   --background: var(--color-white);
@@ -31,8 +33,8 @@
 
 .dark {
   #logo {
-    --logo-small: var(--logo-dark-small);
-    --logo-large: var(--logo-dark-large);
+    --logo-small: var(--logo-dark-small, var(--logo-small-url));
+    --logo-large: var(--logo-dark-large, var(--logo-large-url));
   }
 
   --background: #282828;
