@@ -233,8 +233,18 @@ export class AssistantComponent {
   askAI(question?: string) {
     // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
     // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
-    if (question) {
-      const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
+    const config = this.appStore.assistants()[this.instanceId()!];
+
+    if (question && config) {
+      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const messages: RawMessage[] = [
+        systemMsg,
+        {
+          role: 'user',
+          content: question || '',
+          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+        }
+      ];
       this.initChat = { messages } as InitChat;
     } else {
       this.initChat = undefined;
