@@ -64,4 +64,11 @@
       color: var(--foreground);
     }
   }
+
+  sq-document-upload {
+    .file-upload-container,
+    .dropzone {
+      background-color: transparent !important;
+    }
+  }
 }
