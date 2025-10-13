@@ -94,3 +94,12 @@ code-block-reference {
     }
   }
 }
+
+.dark {
+  sq-document-upload {
+    .file-upload-container,
+    .dropzone {
+      background-color: transparent !important;
+    }
+  }
+}
