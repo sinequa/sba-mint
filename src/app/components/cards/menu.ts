@@ -59,7 +59,7 @@ export class CardMenuComponent {
 
   addToCollection(): void {
     this.dialogService.open(CollectionsDialog, this.article()).then((event: any) => {
-      if (event === 'dialog-confirm') {
+      if (event === 'dialog-no') {
         this.queryClient.invalidateQueries();
       }
     });
