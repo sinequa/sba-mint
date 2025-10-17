@@ -133,21 +133,21 @@ export class AssistantComponent {
       this.sqChat()
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(error => {
-            console.error('Unhandled error in streaming', error);
+          catchError(err => {
+            error('Unhandled error in streaming', err);
             return [];
           })
         )
         .subscribe({
           next: streaming => this.isStreaming.emit(streaming),
-          error: error => console.error('Error in streaming', error)
+          error: err => error('Error in streaming', err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(error => {
-            console.error('Unhandled error in init process', error);
+          catchError(err => {
+            error('Unhandled error in init process', err);
             return of(false);
           })
         )
@@ -169,13 +169,6 @@ export class AssistantComponent {
       // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
       const { assistantIdsToAttach } = getState(this.selectionStore);
       this.attachToChat(assistantIdsToAttach);
-    });
-
-    this.destroyRef.onDestroy(async () => {
-      // when the component is destroyed, we need to reset the assistantIdsToAttach
-      console.log(`AssistantComponent ${this.instanceId()} destroyed`);
-      this.selectionStore.update({ assistantIdsToAttach: [] });
-      this.sqChat()?.chatService.stopConnection();
     });
   }
 

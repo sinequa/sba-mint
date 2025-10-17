@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, input } from '@angular/core';
+import { afterNextRender, Component, effect, inject, input } from '@angular/core';
 import { PreviewComponent } from '../../components/preview/preview';
 import { SelectionStore } from '@sinequa/atomic-angular';
 
@@ -13,8 +13,7 @@ export class PreviewPage {
   id = input<string>();
 
   constructor() {
-    // Initialization logic can go here if needed
-    afterNextRender(() => {
+    effect(() => {
       this.selectionStore.update({ id: this.id() });
     });
   }
