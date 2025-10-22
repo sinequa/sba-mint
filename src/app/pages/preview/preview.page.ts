@@ -17,7 +17,6 @@ export class PreviewPage {
   id = input<string>();
 
   constructor() {
-    // Initialization logic can go here if needed
     afterNextRender(() => {
       const { text = '' } = getState(this.queryParamStore);
       this.selectionStore.update({ id: this.id(), queryText: text });
