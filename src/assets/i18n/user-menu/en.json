@@ -12,5 +12,6 @@
   "selectTheme": "Select theme",
   "lightMode": "Light",
   "darkMode": "Dark",
-  "systemMode": "System"
+  "systemMode": "System",
+  "changePassword": "Change password"
 }

@@ -13,5 +13,6 @@
   "lightMode": "Licht",
   "darkMode": "Dunkel",
   "systemMode": "System",
-  "help": "Hilfe"
+  "help": "Hilfe",
+  "changePassword": "Passwort ändern"
 }

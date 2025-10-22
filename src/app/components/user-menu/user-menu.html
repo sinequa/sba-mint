@@ -87,6 +87,12 @@
       <span class="grow">{{ 'userMenu.aboutSinequa' | transloco }}</span>
       <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
     </menuitem>
+    @if (allowChangePassword()) {
+      <menuitem (click)="onChangePassword()" class="justify-between">
+        <i class="fa-fw fal fa-key text-[16px]"></i>
+        <span class="grow">{{ 'userMenu.changePassword' | transloco }}</span>
+      </menuitem>
+    }
 
     <menuitem (click)="handleLogout()">
       <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>

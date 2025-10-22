@@ -12,5 +12,6 @@
   "selectTheme": "Sélectionner le thème",
   "lightMode": "Clair",
   "darkMode": "Sombre",
-  "systemMode": "Système"
+  "systemMode": "Système",
+  "changePassword": "Changer le mot de passe"
 }
