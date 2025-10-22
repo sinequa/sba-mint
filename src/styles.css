@@ -131,7 +131,7 @@ body {
 }
 
 @layer utilities {
-  .scroll-stable {
+  .scrollbar-stable {
     scrollbar-gutter: stable;
   }
   .scrollbar-thin {

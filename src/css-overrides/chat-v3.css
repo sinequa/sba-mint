@@ -79,12 +79,14 @@ code-block-reference {
   position: relative;
 
   .card.mb-2 {
-    display: contents;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
   }
 
   .card-header {
     position: absolute;
-    top: 4px;
+    top: 10px;
     right: 4px;
 
     span.me-auto {
@@ -102,4 +104,8 @@ code-block-reference {
       background-color: transparent !important;
     }
   }
+}
+
+pre[class*='language-'] {
+  width: 100%;
 }

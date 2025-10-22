@@ -1,5 +1,4 @@
 @import './angular-cdk';
-@import './collapse';
 
 /* chat v3 css overrides */
 @import './bootstrap-to-tailwind';
