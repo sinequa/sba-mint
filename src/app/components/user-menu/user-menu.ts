@@ -76,6 +76,12 @@ export class UserMenuComponent {
     if (this.transloco.getActiveLang() !== lang) this.transloco.setActiveLang(lang);
   }
 
+  switchTheme(mode: 'light' | 'dark' | 'system') {
+    const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', userTheme);
+    this.userSettingsStore.setUserTheme(mode);
+  }
+
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
     logout().then(() => this.router.navigate(['/logout']));

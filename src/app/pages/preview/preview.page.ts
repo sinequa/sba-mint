@@ -8,7 +8,7 @@ import { PreviewComponent } from '../../components/preview/preview';
 @Component({
   selector: 'page-preview',
   imports: [PreviewComponent],
-  template: ` <preview />`
+  template: `<preview />`
 })
 export class PreviewPage {
   selectionStore = inject(SelectionStore);

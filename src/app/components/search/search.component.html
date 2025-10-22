@@ -1,6 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
+      class="p-2"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -9,67 +10,17 @@
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
       @if (showSave() && (searchInputText() !== '' || hasFilters())) {
-        @if (!savedSearch()) {
-          <Popover #popover class="rounded-lg border-neutral-300" (closed)="openedSavedSearch.set(false)">
-            <button
-              variant="icon"
-              size="xs"
-              class="peer-disabled:opacity-50"
-              [attr.title]="'searchInput.saveSearch' | transloco"
-              [attr.aria-label]="'searchInput.saveSearch' | transloco"
-              (click)="openSavedSearch()"
-              (keydown.enter)="openSavedSearch()">
-              <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
-            </button>
-
-            <PopoverContent #popoverContent class="min-w-xs p-2" position="bottom-end">
-              <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
-              <!-- <MenuSeparator /> -->
-              <div class="py-4">
-                <input
-                  #saveNameInput
-                  type="text"
-                  autocomplete="off"
-                  spellcheck="false"
-                  class="w-full p-2"
-                  [attr.aria-label]="'searches.saved.saveName' | transloco"
-                  [attr.placeholder]="'searches.saved.saveName' | transloco"
-                  (keyup)="saveName.set(saveNameInput.value)" />
-              </div>
-
-              <div class="ml-auto flex justify-end gap-2">
-                <button decoration="outline" (click)="popover.close()">
-                  {{ 'cancel' | transloco }}
-                </button>
-                <button variant="primary" (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
-                  {{ 'confirm' | transloco }}
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        } @else {
-          <button
-            variant="icon"
-            size="xs"
-            class="peer-disabled:opacity-50"
-            [attr.title]="'searchInput.saveSearch' | transloco"
-            [attr.aria-label]="'searchInput.saveSearch' | transloco"
-            (click)="saveQuery($event)"
-            (keydown.enter)="saveQuery($event)">
-            <i class="fa-fw fas fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
-          </button>
-        }
+        <SavedSearchPopover [queryText]="searchInputText()" (onSavedSearch)="saved.emit($event)" />
       }
 
       @if (allowAI()) {
         <button
           variant="ai"
-          class="m-1 h-6 rounded-sm text-xs transition ease-in"
+          class="h-6 rounded-sm text-xs transition ease-in"
           title="Ask AI"
           aria-label="Ask AI"
-          [disabled]="searchInputText() === ''"
-          [routerLink]="['/assistant']"
-          [queryParams]="{ q: searchInputText(), f: filters() }">
+          (click)="handleRouting($event)"
+          [disabled]="searchInputText() === ''">
           <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
           Ask AI
         </button>
@@ -77,7 +28,7 @@
       <button
         variant="icon"
         size="xs"
-        [attr.title]="'search' | transloco"
+        [title]="'search' | transloco"
         [attr.aria-label]="'search' | transloco"
         [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
         [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
@@ -85,11 +36,13 @@
         (click)="onSearch($event)">
         <SendHorizontalIcon />
       </button>
+
+      <SearchInputFooter #searchInputFooter [class]="!hasFooter() ? 'p-0' : ''" (click)="handleClick($event)">
+        <ng-content select="SearchFooter" />
+      </SearchInputFooter>
     </SearchInput>
   </form>
-  @if (!openedSavedSearch()) {
-    <DropdownContent>
-      <ng-content></ng-content>
-    </DropdownContent>
-  }
+  <DropdownContent>
+    <ng-content></ng-content>
+  </DropdownContent>
 </Dropdown>

@@ -1,11 +1,10 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery } from '@sinequa/atomic';
+import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
 import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
@@ -33,23 +32,23 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
     </PageHeader>
 
-    <div class="mt-[65px] ml-18 grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[25%_1fr]">
-      <div
-        [class]="
-          cn(
-            'sticky top-[66px] hidden h-full p-4 transition duration-300 ease-in-out lg:block',
-            opened() ? 'z-[-1] -translate-x-[120%] opacity-0' : 'translate-x-0 opacity-100'
-          )
-        ">
+    <div
+      [class]="
+        cn(
+          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
+          opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
+        )
+      ">
+      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
         @if (showSavedChats()) {
-          <section class="border-foreground/10 dark:bg-menu h-56 max-h-56 rounded-2xl border p-4 shadow">
+          <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
             <div class="flex items-center justify-between">
               <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
                 <i class="far fa-comments me-1"></i>
                 {{ 'assistant.saved-chats' | transloco }}
               </h3>
               <button
-                variant="ghost"
+                decoration="outline"
                 [title]="'assistant.new-discussion' | transloco"
                 [attr.aria-label]="'assistant.new-discussion' | transloco"
                 (click)="chat()?.newChat()">
@@ -62,19 +61,22 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         }
         <section class="pt-6">
           <Aggregation
+            #treepath
             name="Sources"
             column="treepath"
-            [showFiltersCount]="true"
-            class="border-foreground/10 dark:bg-menu h-[540px] rounded-2xl border p-4 shadow [--agg-header-height:40rem]" />
-
-          @if (showDocumentUploader()) {
-            <assistant-upload [instanceId]="instanceId()" />
-          }
+            showFiltersCount
+            collapsible
+            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
         </section>
+        @if (showDocumentUploader()) {
+          <assistant-upload [instanceId]="instanceId()" />
+        }
       </div>
-      <div [class]="cn('overflow-hidden transition duration-300 ease-in-out', opened() ? 'w-1/2 -translate-x-1/2' : 'translate-x-0')">
-        <Assistant class="inline" [query]="query" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
-      </div>
+      @if (query()) {
+        <div class="overflow-hidden">
+          <Assistant class="inline" [query]="query()" [instanceId]="instanceId()" (onReady)="handleReady($event)" (onConnection)="handleConnection($event)" />
+        </div>
+      }
     </div>
     <app-sidebar class="fixed top-0 h-full" [showBack]="true" />
   `,
@@ -94,7 +96,7 @@ export class AssistantLayoutComponent {
   chat = viewChild(AssistantComponent);
 
   drawerStackService = inject(DrawerStackService);
-  opened = toSignal(this.drawerStackService.isOpened);
+  opened = computed(() => this.drawerStackService.isOpened());
 
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
@@ -103,8 +105,7 @@ export class AssistantLayoutComponent {
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
-  query = { name: this.defaultQueryName() };
+  query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
     const {
@@ -135,9 +136,15 @@ export class AssistantLayoutComponent {
   // this is used to display the saved chats component
   readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
+  // queryparams input binding
   q = input<string>();
 
   constructor() {
+    effect(() => {
+      this.queryParamsStore.setFromUrl(window.location.hash);
+      this.query.set(this.queryParamsStore.getQuery());
+    });
+
     effect(() => {
       // force the change detection when the AggregationStore is updated.
       // This is needed because we use the ChatComponent which is not a signal component (i.e Angular v14)
@@ -161,7 +168,6 @@ export class AssistantLayoutComponent {
   async getFirstPageQuery() {
     const query = this.appStore.getDefaultQuery() || { name: '_default' };
     const response = await fetchQuery({ isFirstPage: true, name: query.name });
-    console.log('first page query', response);
     this.aggregationStore.update(response.aggregations);
   }
 

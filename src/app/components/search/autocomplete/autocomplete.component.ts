@@ -1,8 +1,6 @@
-import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal, Type } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, ElementRef, inject, InjectionToken, Injector, input, output, runInInjectionContext, signal, Type } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
 import {
@@ -12,6 +10,7 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   HighlightWordPipe,
+  signIn,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 
@@ -94,66 +93,35 @@ export class AutocompleteComponent {
   readonly autocompleteIcons = inject(AUTOCOMPLETE_CATEGORIES_ICONS);
   // used to scroll the selected suggest in view
   private readonly elRef = inject(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly overlayOpen = this.autocompleteService.opened;
 
   autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
-    const advancedSearch = this.appStore.customizationJson()?.general?.features?.advancedSearch;
+    const advancedSearch = this.appStore.general()?.features?.advancedSearch;
     return advancedSearch || false;
   });
 
-  readonly suggestions = toSignal(
-    combineLatest([toObservable(this.text), toObservable(this.wasSearchClicked)]).pipe(
-      tap(() => this.currentSuggestIndex.set(-1)),
-      switchMap(([testText]) => {
-        const fromUserSettings = of(this.autocompleteService.getFromUserSettingsForText(testText, this.autocomplete() ?? 3));
-
-        if (!testText) return fromUserSettings;
-
-        return combineLatest([
-          fromUserSettings,
-          this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
-            catchError(err => {
-              error('Error getting suggestions from suggest queries', err);
-              return of([]);
-            })
-          )
-        ]);
-      }),
-      map(items => items.flat(2)),
-      // order the items to have full-text, recent search and saved search at the beginning
-      map(items =>
-        items.sort((a, b) => {
-          return this.autocompleteCategories.indexOf(a.category) - this.autocompleteCategories.indexOf(b.category);
-        })
-      ),
-      map(items =>
-        items.reduce<Suggestion[]>((acc, curr) => {
-          if (acc.length > 0) {
-            const last = acc.at(-1);
-
-            // add a divider before specific categories
-            if (!last?.$isDivider && last?.category !== curr.category) {
-              acc.push({ $isDivider: true });
-              acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
-            }
-          } else {
-            acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
-          }
-
-          acc.push({ ...curr, $isDivider: false });
-          return acc;
-        }, [])
-      )
-    )
-  );
+  readonly suggestions = signal<Suggestion[]>([]);
 
   constructor(
     { el: { nativeElement } }: SearchComponent,
     private eventManager: EventManager
   ) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
+
+    // Effect to update suggestion when dependencies change
+    effect(() => {
+      // dependencies
+      this.text();
+      this.wasSearchClicked();
+      this.autocomplete();
+
+      this.fetchSuggestions().then(suggestions => {
+        this.suggestions.set(suggestions);
+      });
+    });
 
     effect(() => {
       if (!this.suggestions() || this.suggestions()!.length === 0) return;
@@ -201,4 +169,64 @@ export class AutocompleteComponent {
   }
 
   // #endregion Keyboard navigation
+
+  /**
+   * Fetches autocomplete suggestions based on the current input text.
+   *
+   * This method retrieves suggestions from user settings and external suggest queries,
+   * merges and sorts them by category, and formats the result by adding dividers and
+   * category titles where appropriate.
+   *
+   * - If the input text is empty, only user settings suggestions are returned.
+   * - If an error occurs during external suggestion fetching (e.g., 401 Unauthorized),
+   *   it triggers a sign-in flow and returns only user settings suggestions.
+   *
+   * @returns {Promise<Suggestion[]>} A promise that resolves to a formatted list of suggestions,
+   * including dividers and category titles.
+   */
+  private fetchSuggestions = async () => {
+    this.currentSuggestIndex.set(-1);
+    const testText = this.text();
+    const autocompleteValue = this.autocomplete() ?? 3;
+
+    const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocompleteValue);
+
+    if (!testText) {
+      return fromUserSettings;
+    }
+
+    let fromSuggestQueries: any[] = [];
+    try {
+      fromSuggestQueries = await this.autocompleteService.getFromSuggestQueriesForText(testText);
+    } catch (err: any) {
+      error('Error getting suggestions from suggest queries', err);
+      if (err.status === 401) {
+        runInInjectionContext(this.injector, () => signIn());
+      }
+      fromSuggestQueries = [];
+    }
+
+    // Merge and flatten
+    const items = [fromUserSettings, ...fromSuggestQueries].flat(2);
+
+    // Sort
+    items.sort((a, b) => {
+      return this.autocompleteCategories.indexOf(a.category) - this.autocompleteCategories.indexOf(b.category);
+    });
+
+    // Reduce to add dividers/titles
+    return items.reduce<Suggestion[]>((acc, curr) => {
+      if (acc.length > 0) {
+        const last = acc.at(-1);
+        if (!last?.$isDivider && last?.category !== curr.category) {
+          acc.push({ $isDivider: true });
+          acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
+        }
+      } else {
+        acc.push({ category: curr.category, $isDivider: false, $isTitle: true });
+      }
+      acc.push({ ...curr, $isDivider: false });
+      return acc;
+    }, []);
+  };
 }

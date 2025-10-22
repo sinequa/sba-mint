@@ -9,6 +9,15 @@ import { ButtonComponent } from '@sinequa/ui';
   selector: 'preview-actions',
   imports: [TranslocoPipe, ButtonComponent],
   template: `
+    <button
+      variant="ghost"
+      class="dark:text-background dark:hover:bg-background/10"
+      size="icon"
+      [attr.title]="'preview.zoomFit' | transloco"
+      (click)="zoomFit()">
+      <i class="fa-regular fa-arrows-maximize shrink-0"></i>
+    </button>
+
     <button variant="ghost" class="dark:text-background dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
     </button>
@@ -75,7 +84,7 @@ import { ButtonComponent } from '@sinequa/ui';
         variant="ghost"
         class="dark:text-background dark:hover:bg-background/10"
         size="icon"
-        [attr.title]="'preview.toggleEntities' | transloco"
+        [title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb shrink-0"></i>
       </button>
@@ -138,6 +147,10 @@ export class PreviewActionsComponent {
 
   zoomIn(): void {
     this.previewService.zoomIn();
+  }
+
+  zoomFit(): void {
+    this.previewService.zoomFit();
   }
 
   zoomOut(): void {

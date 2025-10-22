@@ -1,24 +1,18 @@
-<!-- <div [class]="cn('relative ml-18 hidden h-full translate-x-0 p-4 opacity-0 xl:block', drawerOpened() ? 'animate-slide-out' : 'animate-slide-in opacity-100')">
-  <div class="sticky top-20">
-    <Aggregation class="[--agg-header-height:6rem]" name="Sources" column="treepath" />
-  </div>
-</div> -->
-
 <main class="col-span-2 col-start-2 mb-8 px-2.5">
   <!-- skeleton part -->
   @if (query.isPending()) {
     <div class="mt-4 flex justify-between" aria-hidden="true">
       <div class="flex gap-2">
         @for (n of [1, 2, 3, 4, 5]; track $index) {
-          <button class="h-9 w-24 opacity-15" aria-hidden="true"></button>
+          <button class="bg-muted-foreground/30 h-9 w-24" aria-hidden="true"></button>
         }
       </div>
 
-      <button class="h-9 w-28 opacity-15" aria-hidden="true"></button>
+      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
     </div>
 
     <div class="mt-10 flex justify-end">
-      <button class="h-9 w-28 opacity-15" aria-hidden="true"></button>
+      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
     </div>
 
     <ul class="mt-4 flex flex-col gap-2" aria-hidden="true">
@@ -34,7 +28,7 @@
       }
 
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" [excludeFilters]="['Sources', 'Treepath']" />
+      <filters-bar class="pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
@@ -46,15 +40,15 @@
           @switch (selectedAll()) {
             @case ('all') {
               <i class="fa-fw fa-regular fa-square-check"></i>
-              Unselect All
+              {{ 'searches.selection.unselectAll' | transloco }}
             }
             @case ('some') {
               <i class="fa-fw fa-regular fa-square-minus"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
             @default {
               <i class="fa-fw fa-regular fa-square"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
           }
         </button>
@@ -109,7 +103,7 @@
     </ul>
 
     <feedback
-      [class]="cn('fixed right-8', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
+      [class]="cn('fixed right-8 z-9', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
 
@@ -123,9 +117,11 @@
         <navbar-tabs class="mt-2 block" />
       }
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" [excludeFilters]="['Treepath', 'Sources']" />
+      <filters-bar class="pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
+
+      <sponsored-results />
     </div>
 
     <!-- display a panel to inform the user that no results were found -->

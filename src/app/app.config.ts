@@ -2,13 +2,14 @@ import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeDe from '@angular/common/locales/de';
 import localeFr from '@angular/common/locales/fr';
-import { ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
+import { CustomElementsService, initializeCustomElements } from '@sinequa/assistant/chat';
 import { appInitializerFn } from '@sinequa/atomic';
 import {
   APP_FEATURES,
@@ -31,9 +32,9 @@ import {
   auditInterceptorFn,
   authInterceptorFn,
   bodyInterceptorFn,
-  bootstrapApp,
   errorInterceptorFn,
-  toastInterceptorFn
+  toastInterceptorFn,
+  withBootstrapApp
 } from '@sinequa/atomic-angular';
 
 import { PREVIEW_HIGHLIGHTS } from './highlight.config';
@@ -61,7 +62,16 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(appInitializerFn),
 
     // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => bootstrapApp(inject(ApplicationService), { createRoutes: true })),
+    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
+
+    // Provides an APP_INITIALIZER which will initialize the custom elements defined in the @sinequa/assistant/chat
+    // library. This is required to be able to use the custom elements in Angular components templates.
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeCustomElements,
+      multi: true,
+      deps: [CustomElementsService]
+    },
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },
 

@@ -1,29 +1,22 @@
-import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, model, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
+
+import { PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { PreviewData } from '@sinequa/atomic';
-import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+
 import { PreviewActionsComponent } from './actions';
 
 @Component({
   selector: 'preview-content',
-  standalone: true,
-  imports: [TranslocoPipe, PreviewActionsComponent],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
-    <!-- Use hidden and absolute positioning -->
     @if (canLoadIframe()) {
       <section class="relative flex h-full flex-col gap-4">
-        <preview-actions class="absolute top-4 right-8 flex justify-end rounded-md bg-white/85" />
-
-        <iframe
-          #preview
-          frameborder="0"
-          class="h-full flex-grow rounded-sm bg-white shadow-xs"
-          [src]="previewUrl()"
-          (load)="onLoaded()"
-          title="{{ 'preview.documentPreview' | transloco }}"
-          [attr.aria-label]="'preview.documentPreview' | transloco"></iframe>
+        <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
+        <preview-actions class="bg-muted/90 absolute top-4 right-8 inline-flex justify-end rounded-md" />
+        <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-white shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </section>
     } @else if (previewUrlError()) {
       <section class="flex h-full w-full items-center justify-center">
@@ -52,8 +45,7 @@ export class PreviewContentComponent {
   private readonly selectionStore = inject(SelectionStore);
   private readonly previewService = inject(PreviewService);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  readonly canLoadIframe = signal<boolean>(false);
+  readonly canLoadIframe = signal<boolean>(true);
   readonly previewUrlError = signal<boolean>(false);
 
   readonly previewUrl = computed(() =>
@@ -61,8 +53,6 @@ export class PreviewContentComponent {
       ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + this.previewData().documentCachedContentUrl)
       : undefined
   );
-
-  readonly loading = model<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -77,19 +67,19 @@ export class PreviewContentComponent {
     });
 
     effect(async () => {
-      if (!this.previewUrl()) return;
+      if (!this.previewUrl()) {
+        this.canLoadIframe.set(false);
+        return;
+      }
 
       try {
-        this.loading.set(true);
-        this.cdr.detectChanges();
-        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl);
+        // check if the document is accessible
+        const response = await fetch(window.location.origin + this.previewData().documentCachedContentUrl, { method: 'HEAD' });
         this.canLoadIframe.set(response.status === 200);
         this.previewUrlError.set(response.status !== 200);
       } catch (e) {
         this.canLoadIframe.set(false);
         this.previewUrlError.set(true);
-      } finally {
-        this.loading.set(false);
       }
     });
   }
@@ -108,6 +98,7 @@ export class PreviewContentComponent {
       const message: any = { action: 'select', id: `snippet_${previewHighlights!.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
-    this.loading.set(false);
+
+    // this.previewService.getPageInfo();
   }
 }

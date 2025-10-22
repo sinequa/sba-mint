@@ -13,6 +13,14 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 
+// datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
+import Datepicker from 'vanillajs-datepicker/Datepicker';
+// @ts-ignore: missing types
+import fr from 'vanillajs-datepicker/locales/fr';
+// @ts-ignore: missing types
+import de from 'vanillajs-datepicker/locales/de';
+Object.assign(Datepicker.locales, fr, de);
+
 setGlobalConfig(environment);
 
 // applyConsoleLogLevels();
@@ -26,8 +34,9 @@ bootstrapApplication(AppComponent, appConfig)
   .then(appRef => {
     // Set the dark mode class based on user settings
     runInInjectionContext(appRef.injector, () => {
-      const { useDarkMode } = getState(inject(UserSettingsStore)) as any;
-      document.documentElement.classList.toggle('dark', useDarkMode);
+      const { userTheme } = getState(inject(UserSettingsStore)) as any;
+      const isDarkMode = userTheme === 'dark' || (userTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', isDarkMode);
     });
   })
   .then(() => {

@@ -1,84 +1,95 @@
 <Card
-  class="group/article group cursor-pointer"
+  variant="primary"
+  class="group/article group dark:bg-muted cursor-pointer flex-row gap-0 p-0"
   [class.selected]="selected()"
   [attr.aria-selected]="selected()"
   tabindex="0"
   (keydown.control.enter)="onCtrlEnter()"
   role="option">
-  <div class="flex gap-2">
+  <div class="relative shrink-0">
     @if (article().thumbnailUrl && !thumbnailFailed()) {
       <img
-        class="ratio-video h-full w-[120px] rounded-s-lg object-cover"
+        class="ratio-video h-full rounded-s-lg object-cover"
         [src]="article().thumbnailUrl"
         (error)="thumbnailFailed.set(true)"
         alt="{{ article().title || 'Thumbnail image for the article' }}" />
+      <div
+        class="text-primary group-hover/article:bg-muted/50 absolute top-0 flex size-[40px] min-w-[40px] items-center justify-center rounded-full"
+        (click)="onMultiSelectToggle($event)">
+        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
+        <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
+        <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
+      </div>
     } @else {
-      <div class="text-primary flex size-[40px] shrink-0 items-center justify-center rounded-full bg-neutral-50">
-        <source [collection]="article().collection" [connector]="article().connector" class="max-w-7 text-lg" />
+      <div class="text-primary bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
+        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
+        <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
+        <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
+        <source class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
-    <div class="flex flex-col gap-2">
-      <CardHeader class="shrink-0">
-        <header class="flex items-center gap-3">
-          <div class="flex grow flex-col">
-            <section class="flex items-baseline gap-2">
-              <p class="text-primary truncate text-base font-bold empty:hidden" [innerHTML]="title() || '...'"></p>
-
-              <div class="flex-grow">
-                @if (showBookmark()) {
-                  <bookmark-button [article]="article()" />
-                }
-              </div>
-              <!-- card context-menu -->
-              <card-menu [(article)]="article" [allowAI]="allowAI()" />
-            </section>
-
-            <section class="flex items-center gap-1 text-xs">
-              @if (docformatMetadata()) {
-                <Badge variant="secondary" hover="yes" class="font-bold uppercase" (click)="setFilter('docformat', docformatMetadata()!, $event)">
-                  {{ docformatMetadata() }}
-                </Badge>
-              }
-
-              <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
-                @if ((article().authors || { authors: [''] }).length > 0) {
-                  <span>{{ article().authors[0] }}</span>
-                }
-                @if (article().modified) {
-                  <p class="flex items-baseline gap-1">
-                    <i class="fa-fw far fa-calendar-day"></i>
-                    <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
-                  </p>
-                }
-              </div>
-            </section>
-          </div>
-        </header>
-      </CardHeader>
-
-      <CardContent class="flex grow flex-col gap-2 overflow-auto wrap-anywhere">
-        <p [class]="cn(isLineClamped() && 'line-clamp-2')" [innerHTML]="extract()"></p>
-
-        @if (customMetadata()?.length && article()) {
-          @for (metadata of customMetadata(); track $index) {
-            @if (metadata.fields) {
-              <div class="flex items-center gap-1 text-xs">
-                @if (metadata.title) {
-                  <!-- hide it if the medata component is hidden -->
-                  <label class="me-2 border-neutral-600 font-bold uppercase has-[+.peer.hidden]:hidden">{{ metadata.title | transloco }}</label>
-                }
-                @for (field of metadata.fields; track $index) {
-                  <Metadata decoration="outline" hover="yes" [article]="article()" [metadata]="field" class="peer" />
-                }
-              </div>
-            }
-          }
-        }
-      </CardContent>
-
-      <CardFooter>
-        <missing-terms [article]="article()" />
-      </CardFooter>
-    </div>
   </div>
+
+  <CardContent class="grow overflow-x-auto p-3 pt-2">
+    <!-- Cascading overflow-auto to the title so it gets truncated -->
+    <header class="flex grow items-center gap-3 overflow-auto">
+      <!-- the overflow-hidden here constraints the flex to be inside it's parent -->
+      <div class="flex grow flex-col overflow-hidden">
+        <section class="flex items-baseline justify-between gap-2">
+          <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+            <a
+              class="text-primary truncate text-base font-bold empty:hidden hover:underline"
+              [routerLink]="['/preview', article().id]"
+              [innerHTML]="title() || '...'"></a>
+
+            @if (showBookmark()) {
+              <bookmark-button [article]="article()" />
+            }
+          </span>
+
+          <!-- card context-menu -->
+          <card-menu [(article)]="article" [allowAI]="allowAI()" />
+        </section>
+
+        <section class="flex items-center gap-2 text-xs">
+          @if (docformatMetadata()) {
+            <Badge size="xs" (click)="setFilter('docformat', docformatMetadata()!, $event)">
+              {{ docformatMetadata() }}
+            </Badge>
+          }
+
+          <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
+            @if ((article().authors || { authors: [''] }).length > 0) {
+              <span>
+                <i class="far fa-user mr-1"></i>
+                {{ article().authors[0] }}
+              </span>
+            }
+            @if (article().modified) {
+              <p class="flex items-baseline gap-1">
+                <i class="fa-fw far fa-calendar-day"></i>
+                <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
+              </p>
+            }
+          </div>
+        </section>
+      </div>
+    </header>
+
+    <p [class]="cn(isLineClamped() && 'line-clamp-2')" [innerHTML]="extract()"></p>
+
+    @if (customMetadata()?.length && article()) {
+      @for (metadata of customMetadata(); track $index) {
+        @if (metadata.fields) {
+          <div class="flex items-center gap-1 text-xs">
+            @for (field of metadata.fields; track $index) {
+              <Metadata size="xs" [article]="article()" [metadata]="field" class="peer" (click)="onMetadataClick($event)" />
+            }
+          </div>
+        }
+      }
+    }
+
+    <missing-terms [article]="article()" />
+  </CardContent>
 </Card>
