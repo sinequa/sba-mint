@@ -176,12 +176,15 @@ export class PreviewActionsComponent {
    * @param type - The type to toggle ('extracts' or 'entities').
    */
   private toggle(type: 'extracts' | 'entities') {
+    // Determine the current signal based on the type, and toggle its value
     const currentSignal = type === 'extracts' ? this.extracts : this.entities;
     const value = !currentSignal();
     currentSignal.set(value);
 
+    // Notify the preview service of the updated states
     this.previewService.toggle(this.extracts(), this.entities());
 
+    // If extracts are being turned off, send an 'unselect' action to the preview service
     if (type === 'extracts' && value === false) {
       this.previewService.sendMessage({ action: 'unselect' });
     }
