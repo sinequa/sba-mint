@@ -173,18 +173,20 @@ export class PreviewActionsComponent {
   /**
    * Toggles the visibility of extracts or entities.
    * If the specified type is already active, it will be deactivated.
-   * If the other type is active, it will be deactivated.
    * @param type - The type to toggle ('extracts' or 'entities').
    */
   private toggle(type: 'extracts' | 'entities') {
+    // Determine the current signal based on the type, and toggle its value
     const currentSignal = type === 'extracts' ? this.extracts : this.entities;
-    const otherSignal = type === 'extracts' ? this.entities : this.extracts;
     const value = !currentSignal();
     currentSignal.set(value);
-    if (value === true) {
-      otherSignal.set(false);
-    }
+
+    // Notify the preview service of the updated states
     this.previewService.toggle(this.extracts(), this.entities());
-    this.previewService.sendMessage({ action: 'unselect' });
+
+    // If extracts are being turned off, send an 'unselect' action to the preview service
+    if (type === 'extracts' && value === false) {
+      this.previewService.sendMessage({ action: 'unselect' });
+    }
   }
 }
