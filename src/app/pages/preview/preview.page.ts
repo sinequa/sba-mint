@@ -1,6 +1,9 @@
-import { afterNextRender, Component, effect, inject, input } from '@angular/core';
+import { afterNextRender, Component, inject, input } from '@angular/core';
+import { getState } from '@ngrx/signals';
+
+import { QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+
 import { PreviewComponent } from '../../components/preview/preview';
-import { SelectionStore } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'page-preview',
@@ -9,12 +12,14 @@ import { SelectionStore } from '@sinequa/atomic-angular';
 })
 export class PreviewPage {
   selectionStore = inject(SelectionStore);
+  protected readonly queryParamStore = inject(QueryParamsStore);
 
   id = input<string>();
 
   constructor() {
-    effect(() => {
-      this.selectionStore.update({ id: this.id() });
+    afterNextRender(() => {
+      const { text = '' } = getState(this.queryParamStore);
+      this.selectionStore.update({ id: this.id(), queryText: text });
     });
   }
 }
