@@ -35,11 +35,11 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
     <div
       [class]="
         cn(
-          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[25%_1fr]',
+          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
           opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
         )
       ">
-      <div [class]="cn('scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
+      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
         @if (showSavedChats()) {
           <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
             <div class="flex items-center justify-between">
@@ -61,10 +61,12 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         }
         <section class="pt-6">
           <Aggregation
+            #treepath
             name="Sources"
             column="treepath"
-            [showFiltersCount]="true"
-            class="border-foreground/10 dark:bg-menu h-[540px] rounded-2xl border p-4 shadow [--agg-header-height:25rem]" />
+            showFiltersCount
+            collapsible
+            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
         </section>
         @if (showDocumentUploader()) {
           <assistant-upload [instanceId]="instanceId()" />
