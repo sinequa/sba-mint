@@ -151,9 +151,9 @@ export class HomeComponent {
         error('Unauthorized access - please check your credentials:', err);
         runInInjectionContext(this.injector, () => signIn());
       } else if (err.status === 404) {
-        console.log('404 Not Found!');
+        error('404 Not Found!', err);
       } else {
-        console.log(`HTTP error: ${err.status}`);
+        error(`HTTP error: ${err.status}`, err);
       }
     }
   }
