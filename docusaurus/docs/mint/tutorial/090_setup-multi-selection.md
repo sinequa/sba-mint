@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Setup Multi-Selection Toolbar
+title: Set Up Multi-Selection Toolbar
 parent: Tutorial
 sidebar_position: 9
 ---
 
-# Setup Multi-Selection Toolbar
+# Set Up Multi-Selection Toolbar
 
 In this chapter, you will learn how to add and configure the multi-selection toolbar.
 
