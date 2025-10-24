@@ -15,6 +15,6 @@ handling of lists that exceed the visible area in a vertical layout.
 
 ### ✨ Updates
 
-* [preview](services/preview.md): Enhanced the preview service to support custom highlights and improved interaction with the preview iframe.
-* [Aggregations service](services/aggregations.md): Updated to include methods for loading more aggregation items and opening aggregation nodes.  
-* [App store](stores/app): Updated documentation to clarify the use of [`getAuthorizedFilters`](stores/app#getauthorizedfilters) for retrieving sorted aggregations based on a query name and added missing methods.
+* [preview](atomic-angular/services/preview.md): Enhanced the preview service to support custom highlights and improved interaction with the preview iframe.
+* [Aggregations service](atomic-angular/services/aggregations.md): Updated to include methods for loading more aggregation items and opening aggregation nodes.
+* [App store](atomic-angular/stores/app.mdx): Updated documentation to clarify the use of [`getAuthorizedFilters`](atomic-angular/stores/app.mdx#getauthorizedfilters) for retrieving sorted aggregations based on a query name and added missing methods.
