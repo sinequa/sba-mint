@@ -58,6 +58,8 @@ The tutorial is divided into chapters that each deal with a Sinequa feature.
 - [Highlighting Entities in the Preview](060_highlighting.md)
 - [Modifying Preview Metadata](070_preview-metadata.md)
 - [Adding Result Metadata](080_result-metadata.md)
+- [Set Up Multi-Selector Toolbar](090_setup-multi-selection.md)
+- [Including a Filter on the Left Side](100_filter-left-side.md)
 
 :::note
 You must complete the Connecting to Sinequa exercise before attempting any other exercises in this tutorial. The other exercises are independent from one another.

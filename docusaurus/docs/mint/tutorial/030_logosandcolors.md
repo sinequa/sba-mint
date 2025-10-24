@@ -56,12 +56,12 @@ If you have access to your own Sinequa server, you can test this Customization J
 <img src={useBaseUrl('/img/tutorial/030_logosandcolors/trainingblue.png')} width="90%" alt="Training Blue Logo"/>
 </p>
 
-4. Finally, you can add new image file(s) to the **assets** > **logo** directory. You would then modify the **styles.css** file to use your newly added images.
+4. Finally, you can add new image file(s) to the **assets** > **logo** directory. You would then modify the **theme.css** file to use your newly added images.
 
 :::note
 Since you do not have access to the Sinequa server backend, you will use this final option in the exercise that follows.
 
-Additionally, if a value is set in the App Customization JSON tab for the logo.light.small and logo.light.large, these will take precendence over changes to the styles.css file.
+Additionally, if a value is set in the App Customization JSON tab for the logo.light.small and logo.light.large, these will take precendence over changes to the theme.css file.
 :::
 
 ## Modifying the Logo Exercise
@@ -80,15 +80,14 @@ Alternatively, you can use your own images (e.g., svg, png, jpg). One should be 
 
 1. Go to **src** > **assets** > **logo** and add your two image files (e.g., *trainingsmall.png* and *traininglarge.png*). 
 
-2. Then go to **src** > **styles.css**.
+2. Then go to **src** > **theme.css**.
 
 3. Locate the following:
 
 ```
   --logo-small: url('assets/logo/small.svg');
   --logo-large: url('assets/logo/large.svg');
-  --logo-small-alt-text: 'Sinequa logo';
-  --logo-large-alt-text: 'Sinequa logo';
+  --logo-alt-text: 'Sinequa logo';
 ```
 
 4. Modify this styling as follows (using your image names, as necessary):
@@ -96,8 +95,7 @@ Alternatively, you can use your own images (e.g., svg, png, jpg). One should be 
 ```
   --logo-small: url('assets/logo/trainingsmall.png');
   --logo-large: url('assets/logo/traininglarge.png');
-  --logo-small-alt-text: 'Small training logo';
-  --logo-large-alt-text: 'Large training logo';
+  --logo-alt-text: 'Training logo';
 ```
 
 5. Save your changes.
@@ -122,56 +120,60 @@ If you followed the [Connecting to Sinequa tutorial](020_connection.md), Mint sh
 
 ## Modifying Colors Exercise
 
-The Mint application allows you to change the colors of the Mint UI in the **styles.css** file:
+The Mint application allows you to change the colors of the Mint UI in the **theme.css** file:
 
 ```css
 ...
-  --color-backdrop: rgba(0, 0, 0, 0.4);
-  --color-background: #ffffff;
-  --color-foreground: #23272e;
-  --color-card: #ffffff;
-  --color-card-foreground: #1c1c1c;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #1c1c1c;
+:root {
+  --background: var(--color-white);
+  --foreground: var(--color-gray-950);
 
-  --color-primary: #0084ff;
-  --color-primary-hover: #0056ff;
-  --color-primary-active: #0040bf;
-  --color-primary-foreground: #ffffff;
+  --primary: #0084ff;
+  --secondary: #e00b73;
+  --destructive: #e80707;
+  --success: #2ed73f;
 
-  --color-secondary: #526077;
-  --color-secondary-hover: #434e61;
-  --color-secondary-active: #3a4252;
-  --color-secondary-foreground: #ffffff;
+  --ai-from: #193cb8;
+  --ai-via: #f6339a;
+  --ai-to: #ff8904;
 
-  --color-muted: #f6f7f9;
-  --color-muted-foreground: #8695aa;
+  --color-datepicker-today: var(--color-orange-300);
+  --muted-foreground: var(--color-gray-600);
 
-  --color-accent: #f2f2f2;
-  --color-accent-foreground: #1c1c1c;
+  --backdrop: oklch(from var(--foreground) l c h / 50%);
+  --backdrop-filter: blur(2px);
 
-  --color-destructive: #ff2a1d;
-  --color-destructive-hover: #c8180d;
-  --color-destructive-active: #a5180f;
-  --color-destructive-disable: #ffc8c5;
-  --color-destructive-foreground: #ffffff;
+  --assistant: #ff732e;
+  --assistant-primary-bg: #f2f8fe;
+  --assistant-secondary-bg: #fff8f1;
+}
 
-  --color-border: #f6f7f9;
-  --color-input: #d5d9e2;
-  --color-ring: #1a73e8;
+.dark {
+  --background: #282828;
+  --foreground: #e5e5e5;
 
-  --color-alert: #ff2a1d;
-  --color-success: #2ed73f;
-  --color-highlight: #fff7ab;
+  --primary: #ff0055;
+
+  --muted-foreground: var(--color-neutral-300);
+
+  --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
+
+  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
+  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+
+  & ul {
+    color-scheme: dark;
+  }
+}
 ...
 ```
 
-1. Go to **src** > **styles.css**.
+1. Go to **src** > **theme.css**.
 
 2. Modify the following:
 
 ```
-  --color-primary: #b37ede;
+  --primary: #b37ede;
 ```
 :::note
 This color has been chosen solely to show a clear change in the colors for this exercise.  
