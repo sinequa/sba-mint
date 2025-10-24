@@ -94,13 +94,18 @@
   "recent-search": "Recherche récente",
   "saved-search": "Recherche enregistrée",
   "assistant": {
+    "userPrompt": "Bonjour, je m'appelle [[principal.fullName]].",
+    "connectionErrorMessage": "Erreur de connexion ! Veuillez vérifier votre connexion réseau et réessayer.",
+    "genericChatErrorMessage": "Désolé, une erreur s'est produite lors du traitement de votre demande… 🥺",
+    "searchWarningMessage": "Vous devez effectuer une recherche en texte intégral pour récupérer des résultats.",
+    "disclaimer": "Ce contenu est généré par l'IA et peut contenir des erreurs. Veuillez vérifier les citations pour leur exactitude.",
     "saved-chats": "Discussions",
     "new-discussion": "Nouvelle discussion",
     "my-documents": "Mes Documents",
-    "upload": "Upload",
+    "upload": "Téléverser",
     "uploaded": "Importé",
     "delete-all": "Tout supprimer",
-    "refresh": "Refraîchir"
+    "refresh": "Rafraîchir"
   },
   "toggleDocumentSelection": "Basculer la sélection du document",
   "homeWidgetTabs": "Liste d'onglets des widgets de la page d'accueil",

@@ -31,13 +31,9 @@ export class BookmarksComponent {
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
-  readonly drawerOpened = signal(false);
-
-  private readonly sub = new Subscription();
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   constructor() {
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
-
     effect(() => {
       if (this.bookmarks().length) {
         this.loadBookmarks();

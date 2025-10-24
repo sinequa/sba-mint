@@ -1,9 +1,13 @@
 /* Force dark mode to be used with .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@import './theme.utilities';
+@theme {
+  --logo-small-url: url('assets/logo/small.svg');
+  --logo-large-url: url('assets/logo/large.svg');
+  --logo-small: var(--logo-small-url);
+  --logo-large: var(--logo-large-url);
+  --logo-alt-text: 'Sinequa logo';
 
-:root {
   --background: var(--color-white);
   --foreground: var(--color-gray-950);
 
@@ -16,6 +20,7 @@
   --ai-via: #f6339a;
   --ai-to: #ff8904;
 
+  --color-datepicker-today: var(--color-orange-300);
   --muted-foreground: var(--color-gray-600);
 
   --backdrop: oklch(from var(--foreground) l c h / 50%);
@@ -27,6 +32,11 @@
 }
 
 .dark {
+  #logo {
+    --logo-small: var(--logo-dark-small, var(--logo-small-url));
+    --logo-large: var(--logo-dark-large, var(--logo-large-url));
+  }
+
   --background: #282828;
   --foreground: #e5e5e5;
 
@@ -38,14 +48,13 @@
 
   --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
   --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+  --ast-uploaded-doc-hover-background: var(--color-neutral-700);
 
   & ul {
     color-scheme: dark;
   }
-}
 
-@theme {
-  --logo-small: url('assets/logo/small.svg');
-  --logo-large: url('assets/logo/large.svg');
-  --logo-alt-text: 'Sinequa logo';
+  select > option {
+    background-color: var(--background);
+  }
 }

@@ -2,6 +2,10 @@
   font-family: 'Arial Narrow'!important;
 } */
 
+.sq-highlighted {
+  --color-highlighted: rgba(11, 117, 255, 0.5);
+  background-color: var(--color-highlighted) !important;
+}
 .sq-current {
   border: 2px dashed rgb(5, 5, 5) !important;
   animation: 0.3s linear shadowfocus;
@@ -45,6 +49,10 @@ line.sq-svg {
 }
 body.bd {
   background-color: #eee;
+}
+/* hide the document navigator */
+body .ph {
+  display: none;
 }
 body.bd > div.ph {
   box-shadow:

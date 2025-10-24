@@ -4,9 +4,17 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { of } from 'rxjs';
 
-import { Article as A, CCApp, debug, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
-import { APP_FEATURES, AppStore, PreviewService, QueryParamsStore, SelectionStore, type PreviewHighlights } from '@sinequa/atomic-angular';
-import { TabContent } from '@sinequa/ui';
+import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
+import {
+  AdvancedSearchComponent,
+  APP_FEATURES,
+  AppStore,
+  PreviewService,
+  QueryParamsStore,
+  SelectionStore,
+  type PreviewHighlights
+} from '@sinequa/atomic-angular';
+import { cn, TabContent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../assistant/assistant';
 import { PreviewNavbarComponent } from './navbar/navbar';
@@ -21,13 +29,23 @@ type Article = A & {
 @Component({
   selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
-  imports: [AssistantComponent, PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, PreviewContentComponent, TabContent],
+  imports: [
+    AssistantComponent,
+    PreviewNavbarComponent,
+    PreviewTabsComponent,
+    PreviewHeaderComponent,
+    PreviewContentComponent,
+    AdvancedSearchComponent,
+    TabContent
+  ],
   templateUrl: './preview.html',
   host: {
-    class: 'grow flex flex-col overflow-hidden h-full'
+    '[class]': 'cn("grow w-full h-full overflow-auto grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
   }
 })
 export class PreviewComponent {
+  cn = cn;
+
   /* injectables */
   protected readonly appStore = inject(AppStore);
   protected readonly queryParamStore = inject(QueryParamsStore);
@@ -41,6 +59,9 @@ export class PreviewComponent {
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
   protected readonly activeTab = model<PreviewTab>('preview');
 
+  /* used to toggle the extended view when not displayed inside the drawer */
+  protected readonly extended = signal(false);
+
   // this signal is used by the summarize assistant to know if the assistant is streaming
   protected readonly isStreaming = signal<boolean>(false);
   protected readonly article = signal<Article | undefined>(undefined);
@@ -49,17 +70,18 @@ export class PreviewComponent {
   protected locationSegments: string[] = [];
 
   // article ID is used to create an audit log entry when the preview is closed
-  protected id: string | undefined;
-  protected previewHighlights: PreviewHighlights;
+  protected id = signal<string | undefined>(undefined);
+  protected previewHighlights = signal<PreviewHighlights | undefined>(undefined);
+  protected queryText = signal<string | undefined>(undefined);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const { id, queryText, previewHighlights } = getState(this.selectionStore);
+      const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
+    defaultValue: {} as PreviewData,
     stream: ({ params: { id, text, previewHighlights } }) => {
-      debug('Fetching preview data for:', { id, text, previewHighlights });
       if (id) {
         return this.previewservice.preview(id, { name: this.queryName, text }, previewHighlights);
       }
@@ -114,19 +136,23 @@ export class PreviewComponent {
   chatWithDocQuery: Query = {} as Query;
 
   constructor() {
+    // when the selection store changes or the article changes,
+    // update the preview highlights and query text
     effect(() => {
-      const { previewHighlights, id } = getState(this.selectionStore);
+      const { previewHighlights, id, queryText } = getState(this.selectionStore);
       const article = this.article();
       this.locationSegments = article?.url1 ? article.url1.split('/') : [];
-      this.previewHighlights = previewHighlights;
+      this.previewHighlights.set(previewHighlights);
+      this.queryText.set(queryText);
 
       // only set the ID if the article is defined
       // this is to avoid setting the ID to undefined when the article is not defined usally when the preview is closed
       if (id) {
-        this.id = id;
+        this.id.set(id);
       }
     });
 
+    // when the preview data changes, update the mini preview and chat with doc queries
     effect(() => {
       if (!this.previewData()) return;
       if (!this.previewData()?.record) return;
@@ -148,6 +174,7 @@ export class PreviewComponent {
       };
     });
 
+    // when the loading state changes, update the document title
     effect(() => {
       document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
     });
@@ -168,8 +195,10 @@ export class PreviewComponent {
     });
 
     this.destroyRef.onDestroy(() => {
-      if (this.id) {
-        this.previewservice.close(this.id, { name: this.queryName });
+      const id = this.id();
+      if (id) {
+        this.previewDataResource.destroy();
+        this.previewservice.close(id, { name: this.queryName });
       }
     });
   }

@@ -67,6 +67,7 @@ export const routes: ExtendedRoutes = [
       }
     ]
   },
+  { path: 'ui-tester', loadComponent: () => import('./pages/ui-tester/ui-tester').then(m => m.UITesterComponent) },
   { path: 'loading', component: LoadingComponent },
   { path: 'error', component: ErrorComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }

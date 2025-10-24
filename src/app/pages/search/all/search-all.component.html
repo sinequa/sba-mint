@@ -40,15 +40,15 @@
           @switch (selectedAll()) {
             @case ('all') {
               <i class="fa-fw fa-regular fa-square-check"></i>
-              Unselect All
+              {{ 'searches.selection.unselectAll' | transloco }}
             }
             @case ('some') {
               <i class="fa-fw fa-regular fa-square-minus"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
             @default {
               <i class="fa-fw fa-regular fa-square"></i>
-              Select All
+              {{ 'searches.selection.selectAll' | transloco }}
             }
           }
         </button>
@@ -103,7 +103,7 @@
     </ul>
 
     <feedback
-      [class]="cn('fixed right-8', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
+      [class]="cn('fixed right-8 z-9', !hideFeedback() && !drawerOpened() && 'bottom-3', (hideFeedback() || drawerOpened()) && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
 
@@ -117,9 +117,11 @@
         <navbar-tabs class="mt-2 block" />
       }
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" [excludeFilters]="['Treepath', 'Sources']" />
+      <filters-bar class="pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
+
+      <sponsored-results />
     </div>
 
     <!-- display a panel to inform the user that no results were found -->

@@ -1,6 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
+      class="p-2"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -15,12 +16,11 @@
       @if (allowAI()) {
         <button
           variant="ai"
-          class="m-1 h-6 rounded-sm text-xs transition ease-in"
+          class="h-6 rounded-sm text-xs transition ease-in"
           title="Ask AI"
           aria-label="Ask AI"
-          [disabled]="searchInputText() === ''"
-          [routerLink]="['/assistant']"
-          [queryParams]="{ q: searchInputText(), f: filters() }">
+          (click)="handleRouting($event)"
+          [disabled]="searchInputText() === ''">
           <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
           Ask AI
         </button>
@@ -28,7 +28,7 @@
       <button
         variant="icon"
         size="xs"
-        [attr.title]="'search' | transloco"
+        [title]="'search' | transloco"
         [attr.aria-label]="'search' | transloco"
         [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
         [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
@@ -36,6 +36,10 @@
         (click)="onSearch($event)">
         <SendHorizontalIcon />
       </button>
+
+      <SearchInputFooter #searchInputFooter [class]="!hasFooter() ? 'p-0' : ''" (click)="handleClick($event)">
+        <ng-content select="SearchFooter" />
+      </SearchInputFooter>
     </SearchInput>
   </form>
   <DropdownContent>

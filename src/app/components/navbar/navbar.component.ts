@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, signal, Type, viewChild } from '@angular/core';
+import { Component, computed, inject, input, signal, Type, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -23,6 +23,7 @@ import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '
 import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../search/search.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
+import { notify } from '@sinequa/atomic';
 
 export type NavbarMenu = {
   display: string;
@@ -71,7 +72,7 @@ export class NavbarComponent {
   readonly overflowManager = viewChild(OverflowManagerDirective);
   readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 
-  readonly drawerOpened = signal(false);
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
   readonly searchText = signal<string>('');
 
   protected readonly menus = signal<NavbarMenu[]>([
@@ -90,8 +91,6 @@ export class NavbarComponent {
   readonly queryParamsStore = inject(QueryParamsStore);
 
   constructor() {
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed()).subscribe(state => this.drawerOpened.set(state));
-
     // register to transloco events to update the overflow manager when translations are loaded
     // otherwise the overflow manager will count size of items without text
     this.transloco.events$.pipe(takeUntilDestroyed(), debounceTime(100)).subscribe(() => this.overflowManager()?.countItems());
@@ -99,6 +98,9 @@ export class NavbarComponent {
 
   protected search(text: string): void {
     this.queryParamsStore.patch({ text });
+
+    const queryParams = this.queryParamsStore.getQueryParams();
+    this.router.navigate(['/search'], { queryParams });
   }
 
   /**
@@ -118,6 +120,7 @@ export class NavbarComponent {
       const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
       if (index !== -1) {
         this.savedSearchesService.deleteSavedSearch(index);
+        notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
       }
     }
   }
