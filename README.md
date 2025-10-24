@@ -8,68 +8,6 @@ A modern Angular 20+ application boilerplate for building scalable, maintainable
 
 - [Introduction video](https://vimeo.com/1025523759/82481a5803?share=copy)
 - [Documentation website](https://sinequa.github.io/sba-mint/)
-- [Project structure](#📁-project-structure)
-- [Librairies used](#🧩-libraries-used)
-- [Getting started](#🚀-getting-started)
-- [Features](#✨-features)
-
----
-
-## Changelog
-
-### 2025-08-25
-
-- dark mode support: added a new theme for dark mode.
-  - most components now support dark mode.
-  - use the `theme.css` file to customize the dark mode styles.
-  - skeletons: updated loading skeletons.
-  - lot of components impacted by dark mode changes.
-- slide card support: updated the slide card component for displaying slide record content.
-- preview support: added a new preview page and component for documents.
-  - refactoring of the `Preview` component with Angular 20 new signal features (rxResource)
-- search input and autocomplete components refactoring
-- added new `saved search` popover
-- added new `preview` page
-- updated the `assistant` layout. The 2 columns are scrollable independently.
-- updated the `sidebar` component.
-  - the 🔎 icon act as a back button when inside the assistant page.
-  - added support for theme switching.
-- `zone.js` removed from the dependencies
-
-⚠️ **Changes**
-
-- `app-search-input` component renamed to `app-search`. This component will be moved in a future release into `@sinequa/atomic-angular` library.
-- `app-preview-default` component renamed to `preview`. This component will be moved in a future release into `@sinequa/atomic-angular` library.
-- `MenuSeparator` component renamed to `HorizontalDivider`
-- `app-did-you-mean` component renamed to `DidYouMean`
-- `app-backdrop` component renamed to `Backdrop`
-- `app-drawer-stack` component renamed to `DrawerStack`
-
-| Package                 | Version    |
-|-------------------------|------------|
-| @sinequa/assistant      | 3.9.5      |
-| @sinequa/atomic         | ^0.0.110   |
-| @sinequa/atomic-angular | ^0.1.50    |
-| @sinequa/ui             | ^0.1.18    |
-
-### 2025-08-11
-
-- query params store: now manage the URL's queryparams synchronization. No need for manual handling with `router.navigate()`
-- autocomplete component:
-  - we reworked the component to be fully compatible with Firefox. Standard HTML Anchor popovertarget not fully supported with Firefox. Now we use our own popover implementation.
-  - we removed the use of the Fontawesome's icons in favor of SVGs. Low performance with Fontawesome icons.
-  - all suggestion's category (kind) are now displayed correctly.
-  - category (kind) are now sticky to top while scrolling.
-- search input component: we resolved the remaining issues in the previous update.
-- styles.css: we moved the `animate-save` animation into the global css file. you can now use it across your application using Tailwindcss.
-- tsconfig.ts: we removed the `paths` mapping for `@sinequa/atomic` and `@sinequa/atomic-angular`. Libraries have been updated to avoid the need for these mappings.
-
-| Package                 | Version    |
-|-------------------------|------------|
-| @sinequa/assistant      | 3.9.4      |
-| @sinequa/atomic         | ^0.0.109   |
-| @sinequa/atomic-angular | ^0.1.46    |
-| @sinequa/ui             | ^0.1.10    |
 
 ---
 
@@ -135,7 +73,7 @@ Build artifacts are stored in the `dist/` directory.
 
 ---
 
-## ✨ Features
+## 🧩 Features
 
 - Angular 20+ with Signals and Standalone Components
 - Modular structure: `/app` for business logic
@@ -160,7 +98,141 @@ Build artifacts are stored in the `dist/` directory.
 
 ---
 
-## 🛠️ Technical Stack
+## � Changelog
+
+### Latest Changes (October 2025)
+
+#### 🚀 New Features
+
+##### UI Testing Framework (Experimental)
+
+- **NEW**: Added comprehensive UI component testing page (`ui-tester.ts`)
+  - Interactive testing for all UI components (buttons, cards, inputs, menus, etc.)
+  - Real-time variant and state testing
+  - Dark mode toggle testing
+
+##### Dark Mode & Theme System
+
+- **NEW**: Complete dark mode implementation
+  - Added theme selection in user menu (Light/Dark/System)
+  - Enhanced theme utilities with proper CSS variables
+  - Dark mode support for all components and chat interfaces
+  - Automatic system preference detection
+
+##### Enhanced User Experience (Experimental)
+
+- **NEW**: Added advanced search component to preview layout
+- **NEW**: Extended preview layout with collapsible sidebar
+- **NEW**: Enhanced preview component with better state management
+- **NEW**: Improved autocomplete with async data fetching and error handling
+- **NEW**: Added save confirmation notifications for searches
+
+#### 🎨 UI/UX Improvements
+
+##### Component Enhancements
+
+- **IMPROVED**: Search component with better routing and event handling
+- **IMPROVED**: Sidebar component with conditional AI chat visibility
+- **IMPROVED**: User menu with comprehensive theme selection
+- **IMPROVED**: Preview component with grid layout and better responsiveness
+- **IMPROVED**: Collections component with improved validation and UX
+- **IMPROVED**: Saved searches with better accessibility and styling
+
+##### Accessibility & Localization
+
+- **IMPROVED**: Enhanced ARIA labels and accessibility attributes
+- **IMPROVED**: Comprehensive internationalization updates (EN/FR/DE)
+- **IMPROVED**: Better keyboard navigation support
+- **IMPROVED**: Improved screen reader compatibility
+
+##### Visual Polish
+
+- **IMPROVED**: Enhanced card hover states and selection feedback
+- **IMPROVED**: Better scrollbar styling for dark mode
+- **IMPROVED**: Improved spacing and typography consistency
+- **IMPROVED**: Enhanced drawer and modal styling
+
+#### 🛠️ Technical Improvements
+
+##### Architecture & Performance
+
+- **REFACTORED**: Autocomplete component to use async/await pattern
+- **REFACTORED**: Signal-based state management across components
+- **REFACTORED**: Improved error handling and user feedback
+- **REFACTORED**: Better resource management in preview component
+
+##### Build & Dependencies
+
+- **UPDATED**: Package dependencies and build configuration
+- **IMPROVED**: CSS organization with modular structure
+- **IMPROVED**: Environment configuration management
+
+##### Code Quality
+
+- **IMPROVED**: Type safety and error handling
+- **IMPROVED**: Component lifecycle management
+- **IMPROVED**: Consistent coding patterns and practices
+
+#### 🐛 Bug Fixes
+
+##### Navigation & Routing
+
+- **FIXED**: Assistant routing with proper query parameters
+- **FIXED**: Search input focus and dropdown behavior
+- **FIXED**: Preview navigation and state persistence
+
+##### Component Issues
+
+- **FIXED**: Dark mode toggle synchronization
+- **FIXED**: Drawer state management across components
+- **FIXED**: Form validation in collections component
+- **FIXED**: Memory leaks in subscription management
+
+##### Preview & Media
+
+- **FIXED**: Preview zoom functionality and pagination
+- **FIXED**: Document navigation and highlighting
+
+#### 📱 Responsive Design
+
+##### Layout Improvements
+
+- **IMPROVED**: Search layout grid system for better responsiveness
+- **IMPROVED**: Assistant layout with adaptive sidebar
+- **IMPROVED**: Better mobile navigation and drawer behavior
+- **IMPROVED**: Enhanced tablet and desktop layouts
+
+#### 🌍 Internationalization
+
+##### Language Support
+
+- **ENHANCED**: German translations for new features
+- **ENHANCED**: French translations with improved accuracy
+- **ENHANCED**: English base translations
+- **ADDED**: User menu theme selection translations
+- **ADDED**: Assistant and preview feature translations
+
+#### 📋 Configuration & Setup
+
+##### Environment & Build
+
+- **UPDATED**: Environment configuration for development
+- **IMPROVED**: Build scripts and tooling
+- **ENHANCED**: CSS preprocessing and organization
+
+##### Styling System
+
+- **REORGANIZED**: CSS override structure
+- **IMPROVED**: Theme utilities and variables
+- **ENHANCED**: Component-specific styling
+
+---
+
+**Summary**: This release represents a major enhancement to the SBA Mint application with significant improvements in user experience, accessibility, internationalization, and technical architecture. Over 50 files were modified with thousands of lines of improvements across the application.
+
+---
+
+## ️ Technical Stack
 
 - **Framework:** Angular 20+
 - **State Management:** NgRx Signals, TanStack Query

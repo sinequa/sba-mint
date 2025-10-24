@@ -2,23 +2,78 @@ document.addEventListener('DOMContentLoaded', function () {
   var TRUSTED_ORIGINS = ['http://localhost:4200', 'https://localhost:4200', window.origin];
   var parentOrigin = '*';
   var styleElement;
+  var fitFactor = null;
+
+  window.addEventListener('message', receiveMessage);
 
   // frameset cause an issue here
-  var r = document.querySelector('body');
-  if (r === null) {
-    r = document.querySelector('frameset');
+  var bodyElement = document.querySelector('body');
+  if (bodyElement === null) {
+    bodyElement = document.querySelector('frameset');
   }
-  var rs = getComputedStyle(r);
-
+  var computedStyle = getComputedStyle(bodyElement);
   var passageHighlighter;
-  setSvgBackgroundPositionAndSize();
-  window.addEventListener('message', receiveMessage);
-  returnMessage('ready');
+
+  zoomFit();
+
+  // Wait for paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // DOM is painted now
+      setTimeout(() => {
+        setSvgBackgroundPositionAndSize();
+        returnMessage('ready');
+
+        // retrieve the current page from the hash or use the default page
+        const total = window.lastPage;
+        if (window.location.hash) {
+          const hash = window.location.hash.substring(1);
+          const current = parseInt(hash, 10);
+          returnMessage('page-info', { total, current });
+        } else {
+          const current = window.defPage;
+          returnMessage('page-info', { total, current });
+        }
+      }, 500);
+    });
+  });
 
   // will contain the worker instance if it is supported
   var worker;
-  // will be set to true if the worker is supported
   var isWorkerSupported = false;
+
+  // ----------------------
+  // Zoom helpers
+  // ----------------------
+  function zoomFit() {
+    if (fitFactor) {
+      zoom(fitFactor);
+      return;
+    }
+
+    const body = bodyElement;
+    const width = body.getBoundingClientRect().width;
+
+    // select only span if div, img or table are not present
+    let elements = body.querySelectorAll('div, img, table');
+    if (!elements.length) {
+      elements = body.querySelectorAll('span');
+    }
+    if (!elements.length) {
+      fitFactor = 1;
+      zoom(fitFactor);
+      return;
+    }
+
+    const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
+    const margin = 24;
+    fitFactor = width / (higherWidth + margin * 2);
+
+    // prevent too low or too high values
+    fitFactor = Math.min(1, Math.max(0.2, fitFactor));
+
+    zoom(fitFactor);
+  }
 
   function createWorker(appname) {
     if (!appname) console.error('appname is required');
@@ -76,11 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // if worker cannot be created, use the "get-html" method instead
         if (!isWorkerSupported) {
           returnMessage('get-html-results', html);
-          break;
         } else {
           worker.postMessage({ id: data.id, extracts: html, previewData: data.previewData });
-          break;
         }
+        break;
       }
       case 'get-text':
         getText(data.ids);
@@ -97,39 +151,89 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'unselect':
         unselect();
         break;
-      case 'paging':
-        break;
-      case 'zoom-in':
-        var factor = parseFloat(rs.getPropertyValue('--factor'));
+
+      // ---- zoom ----
+      case 'zoom-in': {
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
+        }
+        computedStyle = window.getComputedStyle(bodyElement);
+        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
-      case 'zoom-out':
-        var factor = parseFloat(rs.getPropertyValue('--factor'));
+      }
+
+      case 'zoom-out': {
+        if (frames.length > 0) {
+          bodyElement = frames[0].document.body;
+          computedStyle = window.getComputedStyle(bodyElement);
+        }
+        computedStyle = window.getComputedStyle(bodyElement);
+        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
+      }
+
+      case 'zoom-fit':
+        zoomFit();
+        break;
+
       case 'toggle-description':
         // if data.show is true, show the description
         // just set a new value to the css variable --desc-display
         document.documentElement.style.setProperty('--desc-display', data.show ? 'inline-block' : 'none');
         break;
+
+      // ---- pagination ----
+      case 'goto-page':
+        {
+          if (!data || !data.page) return;
+          pg = data.page;
+          SetPage(pg);
+          Go();
+        }
+        break;
+
+      case 'next-page':
+        GoN();
+        break;
+
+      case 'prev-page':
+        GoP();
+        break;
+
+      case 'first-page':
+        GoF();
+        break;
+
+      case 'last-page':
+        GoL();
+        break;
+
+      default:
+        break;
     }
   }
+
   function zoom(value) {
-    const elts = r.querySelectorAll('p');
+    const elts = bodyElement.querySelectorAll('p');
     const firstVisibleElt = Array.from(elts).find(elt => {
       const { top, bottom } = elt.getBoundingClientRect();
       return bottom > 0 && top < window.innerHeight;
     });
-    r.style.setProperty('--factor', value);
+    bodyElement.style.setProperty('--factor', value);
     if (firstVisibleElt) {
       firstVisibleElt.scrollIntoView();
     }
   }
+
   function returnMessage(type, data) {
     parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
   }
+
   function init(origin, highlights) {
     parentOrigin = origin;
     styleElement = document.createElement('style');
@@ -154,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
       highlight(highlights);
     }
   }
+
   /**
    * Highlights the specified elements with custom styles.
    * @param {Array<Object>} highlights - An array of highlight objects.
@@ -179,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .join('');
   }
+
   function select(id, usePassageHighlighter) {
     if (usePassageHighlighter === void 0) {
       usePassageHighlighter = false;
@@ -194,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) {
       el.scrollIntoView({
         block: 'center',
-        behavior: 'auto'
+        behavior: 'instant'
       });
 
       setTimeout(() => {
@@ -209,32 +315,20 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('selected-position', getVerticalPositions(visibleElements)[0]);
     }
   }
+
   function selectPassage(elements) {
     passageHighlighter.style.display = 'none';
-    var box = getBoundingBox(elements);
-    if (box) {
-      var marginTopLeft = 12;
-      var marginBottomRight = -8;
-      var left = Math.max(0, box.left - marginTopLeft);
-      var top_1 = Math.max(0, box.top - marginTopLeft);
-      var right = box.right + marginBottomRight;
-      var bottom = box.bottom + marginBottomRight;
-      passageHighlighter.style.left = ''.concat(window.scrollX + left, 'px');
-      passageHighlighter.style.top = ''.concat(window.scrollY + top_1, 'px');
-      passageHighlighter.style.width = right - left + 'px';
-      passageHighlighter.style.height = bottom - top_1 + 'px';
-      passageHighlighter.style.display = 'block';
+    for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
+      var el = elements_1[_i];
+      el.classList.add('sq-highlighted');
     }
   }
+
   function selectPassage2(elements) {
     passageHighlighter.style.display = 'none';
-
     elements[0].style.position = 'relative';
     elements[0].style.display = 'inline-block';
     elements[0].append(passageHighlighter);
-
-    // const rect = getBoundingBox(elements)
-    // console.log("rect", rect);
     passageHighlighter.style.top = 0;
     passageHighlighter.style.left = 0;
     passageHighlighter.style.width = '100%';
@@ -256,7 +350,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
   function unselect() {
+    removeAllClasses('sq-highlighted');
     removeAllClasses('sq-current');
     removeAllClasses('sq-first');
     removeAllClasses('sq-last');
@@ -265,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
       passageHighlighter.style.display = 'none';
     }
   }
+
   function getHtml(ids) {
     if (!ids) return [];
     var data = ids.map(function (id) {
@@ -272,17 +369,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return data;
   }
+
   function getText(ids) {
     var data = ids.map(function (id) {
       return getHighlightTextById(id);
     });
     returnMessage('get-text-results', data);
   }
+
   function getPositions(highlight) {
     var allHighlights = Array.from(document.querySelectorAll('span.'.concat(highlight, ',tspan.').concat(highlight)));
     var data = getVerticalPositions(allHighlights);
     returnMessage('get-positions-results', data);
   }
+
   function onMouseUp() {
     var selection = document.getSelection();
     var selectedText = selection ? selection.toString().trim() : '';
@@ -297,7 +397,9 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('text-selection');
     }
   }
+
   var currentId;
+
   function onMouseMove(event) {
     var el = event.target;
     if (el.attributes['data-entity-display'] && el.id !== currentId) {
@@ -311,6 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
       returnMessage('highlight-hover');
     }
   }
+
   function setSvgBackgroundPositionAndSize() {
     document.querySelectorAll('svg').forEach(function (svg) {
       svg.querySelectorAll('tspan').forEach(function (tspan) {
@@ -324,24 +427,30 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+
   function resizeSvgBackground(rect, tspan) {
     var text = tspan;
     var textBoxPixel = text.getBoundingClientRect();
     var textBoxSVG = text.getBBox();
+
     if (textBoxPixel.height === 0 || textBoxPixel.width === 0) return;
+
     var scaleX = textBoxSVG.width / textBoxPixel.width;
     var scaleY = textBoxSVG.height / textBoxPixel.height;
     var deltaX = 2 * scaleX;
     var deltaY = 2 * scaleY;
     var firstCharRect = tspan.getExtentOfChar(0);
     var tspanWidth = tspan.getComputedTextLength();
+
     rect.setAttribute('x', String(firstCharRect.x - deltaX));
     rect.setAttribute('y', String(firstCharRect.y - deltaY));
     rect.setAttribute('width', String(tspanWidth + 2 * deltaX));
     rect.setAttribute('height', String(textBoxSVG.height + 2 * deltaY));
+
     var valueTransform = text.getAttribute('transform');
     if (valueTransform) rect.setAttribute('transform', valueTransform);
   }
+
   function selectHighlightSVG(elt, isFirst, isLast) {
     var bgId = elt.getAttribute('data-entity-background');
     if (!bgId) return;
@@ -361,6 +470,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isLast) addSvgLine(group, right, top_2, right, bottom, valueTransform);
     }
   }
+
   function addSvgLine(group, x1, y1, x2, y2, transform) {
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('class', 'sq-svg');
@@ -371,9 +481,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (transform) line.setAttribute('transform', transform);
     group.appendChild(line);
   }
+
   function getElementsById(id) {
-    return document.querySelectorAll('#'.concat(id));
+    // Prefer current document, fallback to first frame if not found
+    let elements = document.querySelectorAll('#' + id);
+    if (elements.length === 0 && frames.length > 0) {
+      try {
+        elements = frames[0].document.querySelectorAll('#' + id);
+      } catch (e) {
+        // Ignore cross-origin frame access errors
+      }
+    }
+    return elements;
   }
+
   function getHighlightTextById(id) {
     var text = '';
     getElementsById(id).forEach(function (n) {
@@ -381,6 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return text;
   }
+
   function getHighlightHtmlById(id) {
     var html = '';
     getElementsById(id).forEach(function (n) {
@@ -388,6 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return html;
   }
+
   function getVerticalPositions(elements) {
     var offset = -document.documentElement.getBoundingClientRect().top;
     var docHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
@@ -428,6 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     return positions;
   }
+
   function getBoundingBox(elements) {
     var boxes = elements
       .map(function (el) {
@@ -465,14 +589,16 @@ document.addEventListener('DOMContentLoaded', function () {
     );
     return new DOMRect(left, top, right - left, bottom - top);
   }
+
   function removeAllClasses(classname) {
-    var selected = document.querySelectorAll('.'.concat(classname));
+    var selected = bodyElement.querySelectorAll('.'.concat(classname));
     selected.forEach(function (el) {
       return el.classList.remove(classname);
     });
   }
+
   function removeAllElements(selector) {
-    document.querySelectorAll(selector).forEach(function (e) {
+    bodyElement.querySelectorAll(selector).forEach(function (e) {
       return e.remove();
     });
   }

@@ -1,9 +1,8 @@
-import { Component, inject, input, model, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, input, model } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { Article as A } from '@sinequa/atomic';
+import { Article as A, error } from '@sinequa/atomic';
 import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
 import { QueryClient } from '@tanstack/angular-query-experimental';
@@ -46,11 +45,7 @@ export class CardMenuComponent {
 
   // by default add to assistant is disabled
   readonly allowAI = input(false);
-  readonly drawerOpened = signal(false);
-
-  constructor() {
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed()).subscribe(state => this.drawerOpened.set(state));
-  }
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   editLabels(): void {
     this.dialogService
@@ -59,7 +54,7 @@ export class CardMenuComponent {
         // update the article with the new labels
         this.article.set({ ...v.article });
       })
-      .catch(e => console.error('LabelsEditDialog error', e));
+      .catch(e => error('LabelsEditDialog error', e));
   }
 
   addToCollection(): void {

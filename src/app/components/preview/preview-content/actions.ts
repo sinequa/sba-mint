@@ -9,6 +9,15 @@ import { ButtonComponent } from '@sinequa/ui';
   selector: 'preview-actions',
   imports: [TranslocoPipe, ButtonComponent],
   template: `
+    <button
+      variant="ghost"
+      class="dark:text-background dark:hover:bg-background/10"
+      size="icon"
+      [attr.title]="'preview.zoomFit' | transloco"
+      (click)="zoomFit()">
+      <i class="fa-regular fa-arrows-maximize shrink-0"></i>
+    </button>
+
     <button variant="ghost" class="dark:text-background dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
     </button>
@@ -75,7 +84,7 @@ import { ButtonComponent } from '@sinequa/ui';
         variant="ghost"
         class="dark:text-background dark:hover:bg-background/10"
         size="icon"
-        [attr.title]="'preview.toggleEntities' | transloco"
+        [title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb shrink-0"></i>
       </button>
@@ -140,6 +149,10 @@ export class PreviewActionsComponent {
     this.previewService.zoomIn();
   }
 
+  zoomFit(): void {
+    this.previewService.zoomFit();
+  }
+
   zoomOut(): void {
     this.previewService.zoomOut();
   }
@@ -160,18 +173,20 @@ export class PreviewActionsComponent {
   /**
    * Toggles the visibility of extracts or entities.
    * If the specified type is already active, it will be deactivated.
-   * If the other type is active, it will be deactivated.
    * @param type - The type to toggle ('extracts' or 'entities').
    */
   private toggle(type: 'extracts' | 'entities') {
+    // Determine the current signal based on the type, and toggle its value
     const currentSignal = type === 'extracts' ? this.extracts : this.entities;
-    const otherSignal = type === 'extracts' ? this.entities : this.extracts;
     const value = !currentSignal();
     currentSignal.set(value);
-    if (value === true) {
-      otherSignal.set(false);
-    }
+
+    // Notify the preview service of the updated states
     this.previewService.toggle(this.extracts(), this.entities());
-    this.previewService.sendMessage({ action: 'unselect' });
+
+    // If extracts are being turned off, send an 'unselect' action to the preview service
+    if (type === 'extracts' && value === false) {
+      this.previewService.sendMessage({ action: 'unselect' });
+    }
   }
 }

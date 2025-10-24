@@ -50,7 +50,12 @@
                 "output": "preview/"
               }
             ],
-            "styles": ["src/styles.css", { "input": "src/assets/preview.css", "inject": false }],
+            "styles": [
+              "src/styles.css",
+              "src/highlights.css",
+              { "input": "src/assets/preview.css", "inject": false },
+              { "input": "node_modules/prismjs/themes/prism-okaidia.css", "bundleName": "highlight" }
+            ],
             "scripts": []
           },
           "configurations": {

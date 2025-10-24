@@ -2,7 +2,7 @@ import { Environment } from './env.model';
 
 export const environment: Environment = {
   production: false,
-  app: 'training-mint',
+  app: 'mint_rnd',
   // autoSAMLProvider: 'identity-dev',
   autoOAuthProvider: 'identity-dev'
 };
