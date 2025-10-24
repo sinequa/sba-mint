@@ -1,10 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Type, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, Injector, Type, afterNextRender, computed, effect, inject, runInInjectionContext, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
+  AggregationsStore,
   AppStore,
   AutocompleteService,
   BookmarksComponent,
@@ -13,10 +13,13 @@ import {
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
-  SavedSearchesComponent
+  SavedSearchesComponent,
+  signIn
 } from '@sinequa/atomic-angular';
 import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
 
+import { getState } from '@ngrx/signals';
+import { error, fetchQuery } from '@sinequa/atomic';
 import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -89,7 +92,7 @@ const homeFeatures: HomeTab[] = [
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
-  public drawerOpened: boolean = false;
+  public drawerOpened = computed(() => this.drawerStack.isOpened());
 
   readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
 
@@ -103,7 +106,8 @@ export class HomeComponent {
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
   readonly drawerStack = inject(DrawerStackService);
-
+  readonly aggregationStore = inject(AggregationsStore);
+  readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
@@ -122,7 +126,7 @@ export class HomeComponent {
 
   constructor(private destroyRef: DestroyRef) {
     afterNextRender(() => {
-      this.queryParamsStore.patch({ filters: [], text: '' });
+      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
     });
 
     // react to tab changes
@@ -130,10 +134,28 @@ export class HomeComponent {
       this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
     });
 
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(state => (this.drawerOpened = state));
-
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
+
+    // this is needed to populate the aggregation with the sources as no query is sent to the server
+    this.getFirstPageQuery();
+  }
+
+  async getFirstPageQuery() {
+    try {
+      const query = this.appStore.getDefaultQuery() || { name: '_default' };
+      const response = await fetchQuery({ isFirstPage: true, name: query.name });
+      this.aggregationStore.update(response.aggregations);
+    } catch (err: any) {
+      if (err.status === 401) {
+        error('Unauthorized access - please check your credentials:', err);
+        runInInjectionContext(this.injector, () => signIn());
+      } else if (err.status === 404) {
+        error('404 Not Found!', err);
+      } else {
+        error(`HTTP error: ${err.status}`, err);
+      }
+    }
   }
 
   public selectTab(tab: HomeTab): void {
@@ -145,7 +167,8 @@ export class HomeComponent {
   }
 
   public search(text: string): void {
-    this.router.navigate(['/search'], { queryParams: { q: text } });
+    const { filters } = getState(this.queryParamsStore);
+    this.router.navigate(['/search'], { queryParams: { q: text, f: JSON.stringify(filters) } });
   }
 
   selected(element: HTMLElement | null): void {

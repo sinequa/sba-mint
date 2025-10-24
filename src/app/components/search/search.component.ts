@@ -1,8 +1,22 @@
 import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
-import { booleanAttribute, Component, computed, DestroyRef, effect, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  DestroyRef,
+  Directive,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+  viewChild
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
@@ -16,7 +30,7 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   QueryParamsStore,
-  SearchInputComponent,
+  SearchInputFooter,
   SearchItem
 } from '@sinequa/atomic-angular';
 import {
@@ -26,6 +40,7 @@ import {
   DropdownComponent,
   DropdownContentComponent,
   PopoverComponent,
+  SearchInputComponent,
   SendHorizontalIconComponent,
   type SearchVariants
 } from '@sinequa/ui';
@@ -36,7 +51,6 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
 @Component({
   selector: 'app-search',
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     TranslocoPipe,
     ButtonComponent,
@@ -44,7 +58,8 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
     DropdownComponent,
     DropdownContentComponent,
     SearchInputComponent,
-    SavedSearchPopover
+    SavedSearchPopover,
+    SearchInputFooter
   ],
   templateUrl: './search.component.html',
   host: {
@@ -71,8 +86,11 @@ export class SearchComponent {
   dropdownComponent = viewChild.required(DropdownComponent);
   // search input reference
   inputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
+  // search input footer reference
+  searchFooterComponent = viewChild.required<ElementRef>('searchInputFooter');
 
   protected readonly route = inject(ActivatedRoute);
+  protected readonly router = inject(Router);
   protected readonly autocompleteService = inject(AutocompleteService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly drawerStack = inject(DrawerStackService);
@@ -122,6 +140,10 @@ export class SearchComponent {
     }
   });
 
+  // Since SearchInputFooter is always defined, it has its p-2 class making a blank space,
+  // this computed allows to remove the padding
+  protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
+
   protected allowEmptySearch = computed(() => {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
@@ -139,10 +161,22 @@ export class SearchComponent {
   protected readonly destroyRef = inject(DestroyRef);
 
   constructor() {
+    this.destroyRef.onDestroy(async () => {
+      this.focusMonitor.stopMonitoring(this.inputComponent().searchInput());
+      this.debounceInputText.complete();
+      this.drawerStack.closeAll();
+    });
+
     // on input value change, update directly searchInputText but have debounced to emit with debounceTime
     this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
+      const changedText = value !== this.searchInputText() && value.length > 0 && this.searchInputText().length > 0;
       this.searchInputText.set(value);
       this.debounceInputText.next(value);
+
+      // open the dropdown if the text has properly changed
+      if (changedText && this.lastFocusOrigin() && !this.dropdownComponent().isOpen) {
+        this.dropdownComponent().toggle();
+      }
     });
 
     this.debounceInputText.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
@@ -190,7 +224,7 @@ export class SearchComponent {
       return;
     }
 
-    const text = this.searchInputText();
+    const text = this.searchInputText()?.trim();
     if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
       this.dropdownComponent().close();
@@ -219,4 +253,30 @@ export class SearchComponent {
     this.searchInputText.set(dataText);
     this.selected.emit($event);
   }
+
+  handleRouting(e: Event): void {
+    // to prevent the routerLink to be triggered when selecting an autocomplete item with the keyboard
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
+  }
+
+  /**
+   * Handles click events by stopping the event's immediate propagation
+   * and closing the associated dropdown component.
+   *
+   * @param e - The event object triggered by the click.
+   */
+  handleClick(e: Event): void {
+    // click comes from the filter button in the footer, we don't want the input to be focused again
+    // so we stop the event propagation and close the dropdown
+    e.stopImmediatePropagation();
+    this.dropdownComponent().close();
+  }
 }
+
+@Directive({
+  selector: '.search-footer, search-footer, SearchFooter, searchfooter',
+  standalone: true
+})
+export class SearchFooter {}

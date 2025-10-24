@@ -1,7 +1,7 @@
 <!-- Main content goes here -->
 <router-outlet></router-outlet>
 
-<MultiSelectionToolbar />
+<MultiSelectionToolbar class="z-[var(--z-multiselection)]" (updatedCollections)="onUpdatedCollections()" />
 
 <Backdrop />
 

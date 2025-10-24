@@ -19,37 +19,32 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
     DialogFooterComponent
   ],
   template: `
-    <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow">
-      <div class="flex items-center justify-between">
-        <h3 class="pointer-events-none text-sm font-semibold text-gray-600">
+    <section class="dark:bg-menu mt-6 rounded-2xl border border-gray-200 p-4 shadow">
+      <div class="text-muted-foreground flex items-center justify-between">
+        <h3 class="pointer-events-none text-sm font-semibold">
           <i class="far fa-folder-open me-1"></i>
           {{ 'assistant.my-documents' | transloco }}
         </h3>
       </div>
 
-      <sq-document-overview #documentOverview [instanceId]="instanceId()" [disabledUpload]="false" (onUpload)="uploadDialog?.showModal()">
-      </sq-document-overview>
+      <sq-document-overview #documentOverview [disabledUpload]="false" (onUpload)="uploadDialog?.showModal()"> </sq-document-overview>
     </section>
 
-    <dialog #uploadDialog (closed)="documentOverview.updateUploadedDocumentsList()">
+    <dialog #uploadDialog>
       <DialogHeader>
         <DialogTitle>{{ 'assistant.upload' | transloco }}</DialogTitle>
       </DialogHeader>
 
       <DialogContent class="flex flex-col gap-4">
-        <sq-document-upload [instanceId]="instanceId()" />
+        <sq-document-upload #sqDocumentUpload />
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow">
-          <div class="flex items-center">
-            <h3 class="pointer-events-none grow text-sm font-semibold text-gray-600">
+        <div class="dark:bg-menu rounded-2xl border border-gray-200 p-4 shadow">
+          <div class="text-muted-foreground flex items-center">
+            <h3 class="pointer-events-none grow text-sm font-semibold">
               <i class="far fa-folder-open me-1"></i>
               {{ 'assistant.uploaded' | transloco }}
             </h3>
-            <button
-              variant="ghost"
-              [title]="'assistant.refresh' | transloco"
-              [attr.aria-label]="'assistant.refresh' | transloco"
-              (click)="documentList?.updateUploadedDocumentsList()">
+            <button variant="ghost" [title]="'assistant.refresh' | transloco" [attr.aria-label]="'assistant.refresh' | transloco">
               <i class="fas fa-sync"></i>
             </button>
             <button
@@ -60,7 +55,7 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
               <i class="fas fa-trash"></i>
             </button>
           </div>
-          <sq-document-list #documentList [instanceId]="instanceId()"> </sq-document-list>
+          <sq-document-list #documentList> </sq-document-list>
         </div>
       </DialogContent>
 

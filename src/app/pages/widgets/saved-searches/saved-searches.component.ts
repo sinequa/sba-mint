@@ -1,15 +1,14 @@
-import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-import { Subscription } from 'rxjs';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { getQueryParamsFromUrl } from '@sinequa/atomic';
+import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
 import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
+import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'SavedSearches',
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, ButtonComponent],
   templateUrl: './saved-searches.component.html',
   host: {
     class: 'flex flex-col h-full w-full'
@@ -18,17 +17,14 @@ import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/a
 export class SavedSearchesComponent {
   cdr = inject(ChangeDetectorRef);
   private readonly drawerStack = inject(DrawerStackService);
+  private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
-  readonly drawerOpened = signal(false);
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
   protected readonly savedSearches = signal<SearchItem[]>([]);
 
-  private readonly sub = new Subscription();
-
   constructor() {
-    this.sub.add(this.drawerStack.isOpened.subscribe(state => this.drawerOpened.set(state)));
-
     effect(() => {
       const savedSearches = this.savedSearchesService.getSavedSearches();
 
@@ -60,8 +56,9 @@ export class SavedSearchesComponent {
     this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }
 
-  public async onDelete(index: number) {
+  public async onDelete(event: Event, index: number) {
+    event.stopPropagation();
     await this.savedSearchesService.deleteSavedSearch(index);
-    toast.success('Saved search removed', { duration: 2000 });
+    notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
   }
 }

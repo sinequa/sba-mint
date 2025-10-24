@@ -1,11 +1,11 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
@@ -64,7 +64,8 @@ type QueryParamsProps = {
     CardSkeleton,
     CardComponent,
     CardHeaderComponent,
-    CardContentComponent
+    CardContentComponent,
+    TranslocoPipe
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -82,6 +83,7 @@ type QueryParamsProps = {
   ],
   host: {
     class: 'layout-search',
+    'attr.drawer-opened': 'drawerStack.isOpened()',
     '(keydown.enter)': 'handleKeydownEnter($event)',
     '[attr.drawer-opened]': 'drawerOpened() || false'
   }
@@ -115,7 +117,7 @@ export class SearchAllComponent {
   protected readonly id = input<string>(); // record.id
 
   // all signals used in the component
-  protected readonly drawerOpened = signal(false);
+  protected readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   protected readonly result = signal<Result | undefined>(undefined);
   protected readonly queryText = signal<string>('');
@@ -341,8 +343,6 @@ export class SearchAllComponent {
     });
 
     effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
-
-    this.drawerStack.isOpened.pipe(takeUntilDestroyed(destroyRef)).subscribe(state => this.drawerOpened.set(state));
 
     this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
 

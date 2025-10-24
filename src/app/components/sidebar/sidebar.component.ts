@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -21,11 +21,12 @@ export class AppSidebarComponent {
   private readonly appFeatures = inject(APP_FEATURES);
   private readonly userSettings = inject(UserSettingsStore);
   protected readonly location = inject(Location);
+  private readonly router = inject(Router);
 
   readonly showBack = input<boolean>(false);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
-  readonly isDarkMode = computed(() => this.userSettings.useDarkMode());
+  readonly isDarkMode = computed(() => this.userSettings.isDarkMode());
   readonly instanceId = computed(() => {
     const {
       assistant: { usePrefixName = true }
@@ -40,7 +41,7 @@ export class AppSidebarComponent {
 
   // Updated allowAI computed signal
   protected readonly allowAI = computed(() => {
-    return !!this.appStore.isAssistantAllowed(this.instanceId());
+    return !this.router.url.startsWith('/assistant') && !!this.appStore.isAssistantAllowed(this.instanceId());
   });
 
   openHelp() {

@@ -5,18 +5,20 @@
       {{ 'mySavedSearches' | transloco }}
     </h1>
 
-    <ul class="mt-4 flex flex-col gap-2">
+    <ul class="mt-4 flex flex-col gap-2" role="list">
       @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
-        <li
-          class="group grid grid-cols-[auto_20%_min-content] rounded-md p-1 hover:cursor-pointer hover:bg-blue-50"
+        <a
+          class="group hover:bg-foreground/5 grid grid-cols-[min-content_auto_20%_min-content] items-center rounded-md p-1 hover:cursor-pointer"
           role="link"
           (click)="onClick(savedSearch)"
           (keydown.enter)="onClick(savedSearch)">
+          <i class="fas fa-star ps-2"></i>
+
           <span class="ms-2">
             {{ savedSearch.display || savedSearch.label }}
           </span>
 
-          <span class="text-gray-500">
+          <span class="text-muted-foreground">
             {{ 'in' | transloco }}
 
             <span class="font-semibold capitalize">
@@ -29,13 +31,16 @@
             }
           </span>
 
-          <button class="invisible text-red-500 group-hover:visible hover:scale-125 hover:cursor-pointer" (click)="$event.stopPropagation(); onDelete($index)">
+          <button
+            title="Remove saved search"
+            class="text-destructive invisible group-hover:visible hover:scale-125 hover:cursor-pointer"
+            (click)="onDelete($event, $index)">
             <i class="fa-fw far fa-trash-can" aria-hidden></i>
           </button>
-        </li>
+        </a>
       } @empty {
         <li class="no-records">
-          {{ 'savedSearches.noSavedSearches' | transloco }}
+          {{ 'searches.saved.noSavedSearches' | transloco }}
         </li>
       }
     </ul>

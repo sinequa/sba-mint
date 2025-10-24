@@ -28,7 +28,7 @@ import {
   SuggestedAction
 } from '@sinequa/assistant/chat';
 
-import { Article, Query } from '@sinequa/atomic';
+import { Article, error, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
@@ -42,11 +42,12 @@ import { cn } from '@sinequa/ui';
         #sqChat
         [query]="_query"
         [chat]="initChat"
-        [instanceId]="instanceId()!"
+        [instanceId]="instanceId()"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"
         (connection)="onConnection.emit($event)"
+        (suggestAction)="handleSuggestAction($event)"
         [messageHandlers]="messageHandlers()" />
 
       <ng-template #sqChatSettings>
@@ -70,6 +71,7 @@ export class AssistantComponent {
   sqChat = viewChild(ChatComponent);
 
   // Inject services
+  private destroyRef: DestroyRef = inject(DestroyRef);
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
@@ -77,7 +79,7 @@ export class AssistantComponent {
   class = input<string>('');
   // Used to initialize the chat unconditionally
   showAssistant = input<boolean | undefined>(false);
-  instanceId = input<string>();
+  instanceId = input.required<string>();
 
   showProgress = input<boolean>(false);
   messageHandlers = input<Map<string, MessageHandler<any>>>(new Map());
@@ -88,7 +90,7 @@ export class AssistantComponent {
   onReady = output<boolean>();
 
   // used to initialize the chat when the user clicks on the Ask AI button or when the component is created without "question"
-  isChatInitialized = signal<boolean | undefined>(undefined);
+  isChatInitialized = signal<boolean>(false);
 
   open = signal(false);
 
@@ -107,15 +109,12 @@ export class AssistantComponent {
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 
-  // mandatory to refresh the sqChat component when the query changes manually
-  cdr = inject(ChangeDetectorRef);
-
   getChatConfig(config: ChatConfig): void {
     this.config.set(config);
     this.configOutput.emit(config);
   }
 
-  constructor(private destroyRef: DestroyRef) {
+  constructor() {
     effect(() => {
       // each time the query params store changes, we need to update the query object
       if (this.instanceId() === undefined) return;
@@ -134,21 +133,21 @@ export class AssistantComponent {
       this.sqChat()
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(error => {
-            console.error('Unhandled error in streaming', error);
+          catchError(err => {
+            error('Unhandled error in streaming', err);
             return [];
           })
         )
         .subscribe({
           next: streaming => this.isStreaming.emit(streaming),
-          error: error => console.error('Error in streaming', error)
+          error: err => error('Error in streaming', err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(error => {
-            console.error('Unhandled error in init process', error);
+          catchError(err => {
+            error('Unhandled error in init process', err);
             return of(false);
           })
         )
@@ -174,7 +173,6 @@ export class AssistantComponent {
   }
 
   handleCancel(event: ChatConfig) {
-    console.log('Cancel event: ', event);
     this.open.set(false);
   }
 
@@ -209,10 +207,10 @@ export class AssistantComponent {
     this.sqChat()?.newChat();
   }
 
-  handleSuggestAction($event: SuggestedAction, argument: boolean) {
+  handleSuggestAction(action: SuggestedAction) {
     const chat = this.sqChat();
     if (chat) {
-      chat.question = $event.content;
+      chat.question = action.content;
       chat.submitQuestion();
     }
   }
@@ -228,8 +226,18 @@ export class AssistantComponent {
   askAI(question?: string) {
     // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
     // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
-    if (question) {
-      const messages: RawMessage[] = [{ role: 'user', content: question || '', additionalProperties: { display: true, isUserInput: true } }];
+    const config = this.appStore.assistants()[this.instanceId()!];
+
+    if (question && config) {
+      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const messages: RawMessage[] = [
+        systemMsg,
+        {
+          role: 'user',
+          content: question || '',
+          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+        }
+      ];
       this.initChat = { messages } as InitChat;
     } else {
       this.initChat = undefined;
@@ -244,7 +252,7 @@ export class AssistantComponent {
     if (sqChatInstance) {
       sqChatInstance.attachToChat(ids);
     } else {
-      console.error('sqChat instance is not defined');
+      error('sqChat instance is not defined');
     }
   }
 }

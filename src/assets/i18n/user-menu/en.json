@@ -9,6 +9,8 @@
   "resetUserSettings": "Reset user settings",
   "revertOverride": "Revert override user",
   "selectLanguage": "Select language",
-  "switchToDarkMode": "Switch to dark mode",
-  "switchToLightMode": "Switch to light mode"
+  "selectTheme": "Select theme",
+  "lightMode": "Light",
+  "darkMode": "Dark",
+  "systemMode": "System"
 }

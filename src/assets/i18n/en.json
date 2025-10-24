@@ -94,6 +94,11 @@
   "recent-search": "Recent searches",
   "saved-search": "Saved searches",
   "assistant": {
+    "userPrompt": "Hi, my name is [[principal.fullName]].",
+    "connectionErrorMessage": "Connection lost! Please check your network connection and try again.",
+    "genericChatErrorMessage": "Sorry, an error happened while processing your request… 🥺",
+    "searchWarningMessage": "You must perform a full text search to retrieve some results.",
+    "disclaimer": "This content is AI-generated and may contain errors. Please verify the citations for accuracy.",
     "saved-chats": "Discussions",
     "new-discussion": "New discussion",
     "my-documents": "My Documents",
