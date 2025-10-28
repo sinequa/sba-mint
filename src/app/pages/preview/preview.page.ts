@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { getState } from '@ngrx/signals';
 
 import { QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
@@ -17,7 +17,7 @@ export class PreviewPage {
   id = input<string>();
 
   constructor() {
-    afterNextRender(() => {
+    effect(() => {
       const { text = '' } = getState(this.queryParamStore);
       this.selectionStore.update({ id: this.id(), queryText: text });
     });
