@@ -5,6 +5,7 @@ import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
   AggregationsStore,
+  ApplicationService,
   AppStore,
   AutocompleteService,
   BookmarksComponent,
@@ -109,6 +110,7 @@ export class HomeComponent {
   readonly aggregationStore = inject(AggregationsStore);
   readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
+  readonly applicationService = inject(ApplicationService);
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: 'tabsNavigator',
@@ -132,6 +134,13 @@ export class HomeComponent {
     // react to tab changes
     effect(() => {
       this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
+    });
+
+    // react to drawer state changes to update the application title when the drawer is closed
+    effect(() => {
+      if (!this.drawerOpened()) {
+        this.applicationService.setTitle('Home');
+      }
     });
 
     // when the component is destroyed, close all drawers

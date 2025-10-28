@@ -5,7 +5,16 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import {
+  AggregationComponent,
+  AggregationsStore,
+  APP_FEATURES,
+  ApplicationService,
+  AppStore,
+  DrawerStackService,
+  QueryParamsStore,
+  SelectionStore
+} from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
@@ -103,6 +112,7 @@ export class AssistantLayoutComponent {
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly applicationService = inject(ApplicationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   query = signal<Query | undefined>(undefined);
@@ -155,6 +165,13 @@ export class AssistantLayoutComponent {
     effect(() => {
       const question = this.q();
       this.chat()?.askAI(question);
+    });
+
+    // react to drawer state changes to update the application title when the drawer is closed
+    effect(() => {
+      if (!this.drawerStackService.isOpened()) {
+        this.applicationService.setTitle('Assistant');
+      }
     });
 
     // clear the selection store

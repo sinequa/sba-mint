@@ -8,6 +8,7 @@ import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '
 import {
   AdvancedSearchComponent,
   APP_FEATURES,
+  ApplicationService,
   AppStore,
   PreviewService,
   QueryParamsStore,
@@ -54,6 +55,7 @@ export class PreviewComponent {
 
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly applicationService = inject(ApplicationService);
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
@@ -153,6 +155,7 @@ export class PreviewComponent {
     });
 
     // when the preview data changes, update the mini preview and chat with doc queries
+    // this occurs when the preview API call returns
     effect(() => {
       if (!this.previewData()) return;
       if (!this.previewData()?.record) return;
@@ -160,6 +163,8 @@ export class PreviewComponent {
       // create a new query for the mini preview assistant
       const { record } = this.previewData()!;
       this.article.set(record as Article | undefined);
+
+      this.applicationService.setTitle(this.article()?.title || 'Preview');
 
       this.miniPreviewQuery = {
         name: this.appStore.getDefaultQuery()?.name || '_query',
@@ -172,11 +177,6 @@ export class PreviewComponent {
         text: record.title,
         filters: { field: 'id', value: record.id, operator: 'eq' }
       };
-    });
-
-    // when the loading state changes, update the document title
-    effect(() => {
-      document.title = this.loading() ? 'Loading...' : this.article()?.title || 'Preview';
     });
 
     // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview
