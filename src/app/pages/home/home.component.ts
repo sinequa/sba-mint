@@ -83,13 +83,6 @@ const homeFeatures: HomeTab[] = [
     class: 'layout-search h-screen',
     '[attr.drawer-opened]': 'drawerOpened'
   },
-  styles: [
-    `
-      #logo {
-        content: var(--logo-large) / var(--logo-alt-text);
-      }
-    `
-  ],
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
