@@ -57,9 +57,6 @@ export type NavbarMenu = {
         /* shift navbar to the left to account for the ml-8 gap of its parent */
         grid-template-columns: calc(25% - 32px) 25% 25% 25%;
       }
-      #logo {
-        content: var(--logo-small) / var(--logo-alt-text);
-      }
     `
   ]
 })
