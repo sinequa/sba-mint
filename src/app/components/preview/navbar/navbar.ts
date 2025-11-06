@@ -1,5 +1,5 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, DestroyRef, Input, computed, effect, inject, input, model } from '@angular/core';
+import { Component, DestroyRef, Input, computed, inject, input, model } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
