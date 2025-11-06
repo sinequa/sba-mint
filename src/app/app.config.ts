@@ -9,7 +9,23 @@ import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
 
-import { CustomElementsService, initializeCustomElements } from '@sinequa/assistant/chat';
+import {
+  ASSISTANT_CUSTOM_ELEMENTS,
+  ASSISTANT_MARKDOWN_IT_PLUGINS,
+  CodeBlockComponent,
+  CustomElementsService,
+  DocumentReferenceComponent,
+  ImageReferenceComponent,
+  initializeCustomElements,
+  markdownItCodeBlockPlugin,
+  markdownItDocumentReferencePlugin,
+  markdownItImageReferencePlugin,
+  markdownItLinkPlugin,
+  markdownItPageReferencePlugin,
+  markdownItTableToolsPlugin,
+  PageReferenceComponent,
+  TableToolsComponent
+} from '@sinequa/assistant/chat';
 import { appInitializerFn } from '@sinequa/atomic';
 import {
   ApplicationService,
@@ -70,6 +86,29 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeCustomElements,
       multi: true,
       deps: [CustomElementsService]
+    },
+
+    // Assistant custom elements and markdown-it plugins configuration
+    {
+      provide: ASSISTANT_CUSTOM_ELEMENTS,
+      useValue: {
+        'document-reference': DocumentReferenceComponent,
+        'page-reference': PageReferenceComponent,
+        'image-reference': ImageReferenceComponent,
+        'code-block': CodeBlockComponent,
+        'table-tools': TableToolsComponent
+      }
+    },
+    {
+      provide: ASSISTANT_MARKDOWN_IT_PLUGINS,
+      useValue: [
+        markdownItDocumentReferencePlugin,
+        markdownItPageReferencePlugin,
+        markdownItImageReferencePlugin,
+        markdownItLinkPlugin,
+        markdownItCodeBlockPlugin,
+        markdownItTableToolsPlugin
+      ]
     },
 
     { provide: LOCALE_ID, useValue: 'fr-FR' },

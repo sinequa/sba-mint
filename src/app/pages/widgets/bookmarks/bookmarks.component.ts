@@ -1,11 +1,12 @@
 import { NgComponentOutlet } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 
 interface BookmarkArticle {
@@ -23,8 +24,12 @@ interface BookmarkArticle {
 })
 export class BookmarksComponent {
   cdr = inject(ChangeDetectorRef);
+
+  private readonly transloco = inject(TranslocoService);
+
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
+  private readonly applicationService = inject(ApplicationService);
   private readonly queryService = inject(QueryService);
   private readonly drawerStack = inject(DrawerStackService);
 
@@ -34,11 +39,22 @@ export class BookmarksComponent {
   readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   constructor() {
+    afterNextRender(this.setTitle.bind(this));
+
     effect(() => {
       if (this.bookmarks().length) {
         this.loadBookmarks();
       }
     });
+
+    // Set the page title when the drawer is closed
+    effect(() => {
+      if (!this.drawerOpened()) {
+        this.applicationService.setTitle('Bookmarks');
+      }
+    });
+
+    this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
 
   public async loadBookmarks(): Promise<void> {
@@ -70,5 +86,16 @@ export class BookmarksComponent {
   public onDelete(bookmark: Bookmark) {
     this.userSettingsStore.unbookmark(bookmark.id);
     toast.success('Bookmark removed', { duration: 2000 });
+  }
+
+  /**
+   * Sets the page title to the translated "mySavedSearches" text.
+   * Uses the transloco service to get the localized title and updates
+   * the application title through the applicationService.
+   * @private
+   */
+  private setTitle() {
+    const title = this.transloco.translate('myBookmarks');
+    this.applicationService.setTitle(title);
   }
 }

@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
-import { DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
+import { ApplicationService, DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
 @Component({
@@ -21,10 +21,14 @@ export class SavedSearchesComponent {
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
+  readonly applicationService = inject(ApplicationService);
+
   readonly drawerOpened = computed(() => this.drawerStack.isOpened());
   protected readonly savedSearches = signal<SearchItem[]>([]);
 
   constructor() {
+    afterNextRender(this.setTitle.bind(this));
+
     effect(() => {
       const savedSearches = this.savedSearchesService.getSavedSearches();
 
@@ -44,6 +48,8 @@ export class SavedSearchesComponent {
         }, [] as SearchItem[])
       );
     });
+
+    this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
 
   public onClick(savedSearch: SearchItem): void {
@@ -60,5 +66,16 @@ export class SavedSearchesComponent {
     event.stopPropagation();
     await this.savedSearchesService.deleteSavedSearch(index);
     notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
+  }
+
+  /**
+   * Sets the page title to the translated "mySavedSearches" text.
+   * Uses the transloco service to get the localized title and updates
+   * the application title through the applicationService.
+   * @private
+   */
+  private setTitle() {
+    const title = this.transloco.translate('mySavedSearches');
+    this.applicationService.setTitle(title);
   }
 }
