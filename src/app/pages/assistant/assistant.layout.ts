@@ -87,7 +87,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         </div>
       }
     </div>
-    <app-sidebar class="fixed top-0 h-full" [showBack]="true" />
+    <app-sidebar class="fixed top-0 h-full" [backLevel]="backLevel" />
   `,
   styles: [
     `
@@ -134,6 +134,9 @@ export class AssistantLayoutComponent {
   // this is used to know if the assistant is ready to use (i.e. the assistant is ready to receive queries)
   isAssistantReady = signal(false);
 
+  // used to know how many times we have to go back to return to the search page (decreases at each query params change)
+  backLevel = 0;
+
   // this is used to know if the saved chats component should be displayed
   readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']));
 
@@ -153,6 +156,7 @@ export class AssistantLayoutComponent {
     effect(() => {
       this.queryParamsStore.setFromUrl(window.location.hash);
       this.query.set(this.queryParamsStore.getQuery());
+      this.backLevel--;
     });
 
     effect(() => {
