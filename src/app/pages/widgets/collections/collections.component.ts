@@ -187,6 +187,8 @@ export class CollectionsComponent {
   }
 
   postCreate(): void {
+    if (!this.newCollectionName().trim()) return;
+
     const collection: Basket = { name: this.newCollectionName().trim() };
     this.userSettingsStore.createBasket(collection);
     this.newCollectionName.set('');
