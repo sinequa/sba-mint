@@ -218,12 +218,6 @@ export class AssistantComponent {
       default:
         error(`Unknown suggested action type: ${action.type}`);
     }
-
-    const chat = this.sqChat();
-    if (chat) {
-      chat.question = action.content;
-      chat.submitQuestion();
-    }
   }
 
   handleRedirect($event: any) {
