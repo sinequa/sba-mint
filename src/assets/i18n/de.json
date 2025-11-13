@@ -107,5 +107,10 @@
     "delete-all": "Alle löschen",
     "refresh": "Aktualisieren"
   },
-  "toggleDocumentSelection": "Dokumentenauswahl umschalten"
+  "toggleDocumentSelection": "Dokumentenauswahl umschalten",
+  "previewDialog": {
+    "expand": "Expandieren",
+    "chat": "Chat",
+    "find": "Suchen"
+  }
 }

@@ -1,5 +1,5 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input, model } from '@angular/core';
+import { Component, Input, computed, inject, input, model, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
@@ -13,6 +13,7 @@ import {
   PreviewService
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
+import { PreviewDialogComponent } from '../dialog/preview-dialog';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -34,7 +35,8 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     LinkIconComponent,
     CircleCheckIconComponent,
     DrawerNavbarComponent,
-    VerticalDividerComponent
+    VerticalDividerComponent,
+    PreviewDialogComponent
   ],
   templateUrl: './navbar.html',
   providers: [DrawerService]
@@ -49,6 +51,8 @@ export class PreviewNavbarComponent {
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
+
+  readonly previewDialog = viewChild(PreviewDialogComponent);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
   @Input() public set config(config: PreviewNavbarConfig) {
@@ -106,5 +110,9 @@ export class PreviewNavbarComponent {
     } else {
       this.extended.set(!this.extended());
     }
+  }
+
+  onExpand(): void {
+    this.previewDialog()?.open();
   }
 }

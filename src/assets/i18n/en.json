@@ -127,5 +127,10 @@
     "word": "Word",
     "excel": "Excel",
     "powerpoint": "Powerpoint"
+  },
+  "previewDialog": {
+    "expand": "Expand",
+    "chat": "Chat",
+    "find": "Find"
   }
 }

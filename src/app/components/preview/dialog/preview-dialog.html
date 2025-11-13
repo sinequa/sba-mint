@@ -1,0 +1,29 @@
+<dialog #dialog class="mx-[1vw] my-[1vh] h-[98vh] max-h-[98vh] w-[98vw] max-w-[97vw]">
+  <DialogHeader>
+    <DialogTitle>{{ this.article()?.title }}</DialogTitle>
+  </DialogHeader>
+
+  <DialogContent class="flex grow gap-4 overflow-auto">
+    <preview-content class="h-full w-2/3" [previewData]="previewData()!" />
+    <div class="flex grow flex-col">
+      <Tabs class="px-6" variant="ghost">
+        <Tab class="w-fit" shadow="none" value="previewTab-preview" [active]="activeTab() === 'chat'" (click)="activeTab.set('chat')">
+          {{ 'previewDialog.chat' | transloco }}
+        </Tab>
+        <Tab class="w-fit" shadow="none" value="previewTab-preview" [active]="activeTab() === 'find'" (click)="activeTab.set('find')">
+          {{ 'previewDialog.find' | transloco }}
+        </Tab>
+      </Tabs>
+      <div class="grow">
+        <assistant [hidden]="activeTab() !== 'chat'" [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" class="h-full w-full" />
+        @if (!!article) {
+          <advanced-search
+            [hidden]="activeTab() !== 'find'"
+            class="bg-menu border-foreground/18 h-full w-full overflow-y-auto border-l"
+            [article]="article()!"
+            [previewStrategy]="'redirect'" />
+        }
+      </div>
+    </div>
+  </DialogContent>
+</dialog>
