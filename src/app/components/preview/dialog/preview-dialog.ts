@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { Article, CCApp, CustomHighlights, PreviewData, Query } from '@sinequa/atomic';
 import { DialogComponent, DialogContentComponent, DialogHeaderComponent, DialogTitleComponent, TabsComponent, TabComponent } from '@sinequa/ui';
 import { PreviewContentComponent } from '../preview-content/preview-content';
@@ -32,13 +32,14 @@ export class PreviewDialogComponent {
   protected readonly appFeatures = inject(APP_FEATURES);
 
   public readonly article = signal<Article | undefined>(undefined);
-  public readonly activeTab = signal<'chat' | 'find'>('chat');
+  public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
 
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
 
   chatWithDocQuery: Query = {} as Query;
+  miniPreviewQuery: Query = {} as Query;
 
   readonly chatWithDocIntanceId = computed(() => {
     const {
@@ -49,6 +50,18 @@ export class PreviewDialogComponent {
       return `${name}-preview-chatwithdoc-assistant`;
     } else {
       return 'preview-chatwithdoc-assistant';
+    }
+  });
+
+  readonly summarizeInstanceId = computed(() => {
+    const {
+      assistant: { usePrefixName = true }
+    } = this.appFeatures;
+    if (usePrefixName) {
+      const { name } = getState(this.appStore) as CCApp;
+      return `${name}-preview-summarize-assistant`;
+    } else {
+      return 'preview-summarize-assistant';
     }
   });
 
@@ -75,24 +88,18 @@ export class PreviewDialogComponent {
     return undefined;
   });
 
-  constructor() {
-    effect(() => {
-      if (!this.previewData()) return;
-      if (!this.previewData()?.record) return;
-
-      // create a new query for the mini preview assistant
-      const { record } = this.previewData()!;
-      this.article.set(record as Article | undefined);
-
-      this.chatWithDocQuery = {
-        name: this.appStore.getDefaultQuery()?.name || '_query',
-        text: record.title,
-        filters: { field: 'id', value: record.id, operator: 'eq' }
-      };
-    });
-  }
-
-  open() {
+  open(article: Article) {
+    this.article.set(article);
+    this.chatWithDocQuery = {
+      name: this.appStore.getDefaultQuery()?.name || '_query',
+      text: article.title,
+      filters: { field: 'id', value: article.id, operator: 'eq' }
+    };
+    this.miniPreviewQuery = {
+      name: this.appStore.getDefaultQuery()?.name || '_query',
+      text: article.title,
+      filters: { field: 'id', value: article.id, operator: 'eq' }
+    };
     this.dialog()!.showModal();
   }
 }

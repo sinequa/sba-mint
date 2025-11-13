@@ -5,6 +5,7 @@ import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
 import {
+  AppStore,
   BookmarkButtonComponent,
   DrawerNavbarComponent,
   DrawerPreviewComponent,
@@ -51,6 +52,7 @@ export class PreviewNavbarComponent {
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
+  private readonly appStore = inject(AppStore);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -74,6 +76,8 @@ export class PreviewNavbarComponent {
    * @returns {boolean} `true` if the navigation bar should be extended; otherwise, `false`.
    */
   public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
+
+  expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
 
   public copied: boolean = false;
 
@@ -113,6 +117,6 @@ export class PreviewNavbarComponent {
   }
 
   onExpand(): void {
-    this.previewDialog()?.open();
+    this.previewDialog()?.open(this.article() as Article);
   }
 }

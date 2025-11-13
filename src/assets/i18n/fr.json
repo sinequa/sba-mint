@@ -131,6 +131,7 @@
   "previewDialog": {
     "expand": "Étendre",
     "chat": "Chat",
+    "summary": "Résumé",
     "find": "Rechercher"
   }
 }
