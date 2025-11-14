@@ -171,4 +171,10 @@ export class RecordCard {
       else this.selectionStore.removeArticleFromMultiSelection(this.article());
     }
   }
+
+  openExternal(event: Event) {
+    if (!this.article().url1) return;
+    event.stopPropagation();
+    this.previewService.openExternal(this.article());
+  }
 }
