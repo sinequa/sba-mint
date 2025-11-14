@@ -132,6 +132,8 @@
     "expand": "Étendre",
     "chat": "Chat",
     "summary": "Résumé",
-    "find": "Rechercher"
+    "find": "Rechercher",
+    "collapseSidebar": "Réduire la barre latérale",
+    "expandSidebar": "Étendre la barre latérale"
   }
 }

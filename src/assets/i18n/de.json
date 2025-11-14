@@ -112,6 +112,8 @@
     "expand": "Expandieren",
     "chat": "Chat",
     "summary": "Zusammenfassung",
-    "find": "Suchen"
+    "find": "Suchen",
+    "collapseSidebar": "Seitenleiste minimieren",
+    "expandSidebar": "Erweitern Sie die Seitenleiste"
   }
 }

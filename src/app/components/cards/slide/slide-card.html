@@ -37,10 +37,7 @@
       <div class="flex grow flex-col overflow-hidden">
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
-            <a
-              class="text-primary truncate text-base font-bold empty:hidden hover:underline"
-              [routerLink]="['/preview', article().id]"
-              [innerHTML]="title() || '...'"></a>
+            <a class="text-primary truncate text-base font-bold empty:hidden hover:underline" [innerHTML]="title() || '...'"></a>
 
             @if (showBookmark()) {
               <bookmark-button [article]="article()" />

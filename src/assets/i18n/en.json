@@ -132,6 +132,8 @@
     "expand": "Expand",
     "chat": "Chat",
     "summary": "Summary",
-    "find": "Find"
+    "find": "Find",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   }
 }

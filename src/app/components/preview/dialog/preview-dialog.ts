@@ -1,6 +1,16 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { Article, CCApp, CustomHighlights, PreviewData, Query } from '@sinequa/atomic';
-import { DialogComponent, DialogContentComponent, DialogHeaderComponent, DialogTitleComponent, TabsComponent, TabComponent } from '@sinequa/ui';
+import {
+  DialogComponent,
+  DialogContentComponent,
+  DialogHeaderComponent,
+  DialogTitleComponent,
+  TabsComponent,
+  TabComponent,
+  ButtonComponent,
+  ChevronRightIconComponent,
+  ChevronLeftIconComponent
+} from '@sinequa/ui';
 import { PreviewContentComponent } from '../preview-content/preview-content';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
@@ -8,6 +18,7 @@ import { APP_FEATURES, AppStore, PreviewService, SelectionStore, AdvancedSearchC
 import { of } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AssistantComponent } from '../../assistant/assistant';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'preview-dialog, PreviewDialog, previewdialog',
@@ -21,7 +32,11 @@ import { AssistantComponent } from '../../assistant/assistant';
     TabComponent,
     TranslocoPipe,
     AssistantComponent,
-    AdvancedSearchComponent
+    AdvancedSearchComponent,
+    NgClass,
+    ButtonComponent,
+    ChevronRightIconComponent,
+    ChevronLeftIconComponent
   ],
   templateUrl: './preview-dialog.html'
 })
@@ -33,6 +48,7 @@ export class PreviewDialogComponent {
 
   public readonly article = signal<Article | undefined>(undefined);
   public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
+  public readonly sidebarExpanded = signal<boolean>(true);
 
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
