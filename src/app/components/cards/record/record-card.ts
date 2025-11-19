@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -38,7 +37,6 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'record-card, recordcard, RecordCard',
   imports: [
-    RouterLink,
     BadgeComponent,
     BookmarkButtonComponent,
     SourceComponent,
@@ -172,5 +170,11 @@ export class RecordCard {
       if (this.article().$selected) this.selectionStore.addArticleToMultiSelection(this.article());
       else this.selectionStore.removeArticleFromMultiSelection(this.article());
     }
+  }
+
+  openExternal(event: Event) {
+    if (!this.article().url1) return;
+    event.stopPropagation();
+    this.previewService.openExternal(this.article());
   }
 }

@@ -21,8 +21,8 @@
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <a
-              [routerLink]="['/preview', article().id]"
-              class="text-primary truncate text-base font-bold empty:hidden hover:underline"
+              (click)="openExternal($event)"
+              class="text-primary truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>
 
             @if (showBookmark()) {

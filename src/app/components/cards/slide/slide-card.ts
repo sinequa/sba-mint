@@ -4,7 +4,6 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, SourceComponent, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
 import { BadgeComponent, CardComponent, CardContentComponent } from '@sinequa/ui';
 
-import { RouterLink } from '@angular/router';
 import { CardMenuComponent } from '../menu';
 import { RecordCard } from '../record/record-card';
 
@@ -20,8 +19,7 @@ import { RecordCard } from '../record/record-card';
     CardContentComponent,
     BadgeComponent,
     CardMenuComponent,
-    SourceComponent,
-    RouterLink
+    SourceComponent
   ],
   templateUrl: './slide-card.html',
   host: {
