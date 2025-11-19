@@ -14,7 +14,7 @@ import {
 import { PreviewContentComponent } from '../preview-content/preview-content';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getState } from '@ngrx/signals';
-import { APP_FEATURES, AppStore, PreviewService, SelectionStore, AdvancedSearchComponent } from '@sinequa/atomic-angular';
+import { AppStore, PreviewService, SelectionStore, AdvancedSearchComponent } from '@sinequa/atomic-angular';
 import { of } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AssistantComponent } from '../../assistant/assistant';
@@ -44,7 +44,7 @@ export class PreviewDialogComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
-  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly generalSettings = this?.appStore.general();
 
   public readonly article = signal<Article | undefined>(undefined);
   public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
@@ -58,9 +58,7 @@ export class PreviewDialogComponent {
   miniPreviewQuery: Query = {} as Query;
 
   readonly chatWithDocIntanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = true } = {} } = this.generalSettings?.features || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-chatwithdoc-assistant`;
@@ -70,9 +68,7 @@ export class PreviewDialogComponent {
   });
 
   readonly summarizeInstanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { assistant: { usePrefixName = true } = {} } = this.generalSettings?.features || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-summarize-assistant`;
