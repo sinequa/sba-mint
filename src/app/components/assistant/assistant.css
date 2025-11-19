@@ -14,10 +14,6 @@
   animation: rotation 1s linear infinite;
 }
 
-.fw-bold {
-  font-weight: bold;
-}
-
 @keyframes rotation {
   0% {
     transform: rotate(0deg);

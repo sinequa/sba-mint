@@ -136,4 +136,7 @@
   .text-end {
     @apply text-right; /* Tailwind uses text-right */
   }
+  .fw-bold {
+    @apply font-bold;
+  }
 }
