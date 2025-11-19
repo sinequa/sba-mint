@@ -43,7 +43,7 @@ export class PreviewHeaderComponent {
 
   article = input.required<Article>();
 
-  headerCollapsed = signal<boolean>(false);
+  headerCollapsed = signal<boolean>(true);
 
   hasLabels = computed(() => {
     const publicLabels = this.article()[this.labels.public];

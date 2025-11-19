@@ -127,5 +127,13 @@
     "word": "Word",
     "excel": "Excel",
     "powerpoint": "Powerpoint"
+  },
+  "previewDialog": {
+    "expand": "Expand",
+    "chat": "Chat",
+    "summary": "Summary",
+    "find": "Find",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   }
 }
