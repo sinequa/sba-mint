@@ -1,5 +1,5 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input, model, viewChild } from '@angular/core';
+import { Component, DestroyRef, Input, computed, inject, input, model, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
@@ -15,6 +15,8 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
 import { PreviewDialogComponent } from '../dialog/preview-dialog';
+import { Event, NavigationEnd, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -53,6 +55,8 @@ export class PreviewNavbarComponent {
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
   private readonly appStore = inject(AppStore);
+  private readonly router = inject(Router);
+  protected readonly destroyRef = inject(DestroyRef);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -80,6 +84,15 @@ export class PreviewNavbarComponent {
   expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
 
   public copied: boolean = false;
+  public backLevel = 0;
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        this.backLevel--;
+      }
+    });
+  }
 
   openClicked(): void {
     // open the preview in a new tab and audit the action
