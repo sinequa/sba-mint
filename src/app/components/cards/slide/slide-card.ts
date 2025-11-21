@@ -30,6 +30,6 @@ export class SlideCard extends RecordCard {
   thumbnailFailed = signal(false);
 
   protected override docformatMetadata = computed(() => {
-    return this.article().docformat ?? this.article().doctype;
+    return this.article().docformat ? { field: 'docformat', value: this.article().docformat! } : { field: 'doctype', value: this.article().doctype! };
   });
 }

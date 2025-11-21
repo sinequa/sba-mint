@@ -108,9 +108,10 @@ export class RecordCard {
   protected currentTab: Tab = 'attachments';
 
   protected docformatMetadata = computed(() => {
-    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase())) return this.article().docformat;
+    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
+      return { field: 'docformat', value: this.article().docformat! };
 
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return this.article().doctype;
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return { field: 'doctype', value: this.article().doctype! };
 
     return undefined;
   });
