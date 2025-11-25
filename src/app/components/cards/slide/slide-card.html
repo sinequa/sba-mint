@@ -53,8 +53,8 @@
 
         <section class="flex items-center gap-2 text-xs">
           @if (docformatMetadata()) {
-            <Badge size="xs" (click)="setFilter('docformat', docformatMetadata()!, $event)">
-              {{ docformatMetadata() }}
+            <Badge size="xs" (click)="setFilter(docformatMetadata()!.field, docformatMetadata()!.value, $event)">
+              {{ docformatMetadata()!.value }}
             </Badge>
           }
 
