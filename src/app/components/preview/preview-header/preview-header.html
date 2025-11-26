@@ -1,7 +1,5 @@
 <header class="flex items-center justify-between gap-2 text-base">
-  <a [routerLink]="['/preview', article().id]" class="overflow-hidden">
-    <p class="text-primary me-auto truncate font-bold hover:underline">{{ article().title }}</p>
-  </a>
+  <p class="text-primary me-auto truncate font-bold">{{ article().title }}</p>
 
   <button
     variant="none"
