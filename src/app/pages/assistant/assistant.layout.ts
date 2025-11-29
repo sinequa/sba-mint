@@ -5,7 +5,16 @@ import { getState } from '@ngrx/signals';
 
 import { SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
-import { AggregationComponent, AggregationsStore, APP_FEATURES, AppStore, DrawerStackService, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
+import {
+  AggregationComponent,
+  AggregationsStore,
+  APP_FEATURES,
+  ApplicationService,
+  AppStore,
+  DrawerStackService,
+  QueryParamsStore,
+  SelectionStore
+} from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../components/assistant/assistant';
@@ -78,7 +87,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         </div>
       }
     </div>
-    <app-sidebar class="fixed top-0 h-full" [showBack]="true" />
+    <app-sidebar class="fixed top-0 h-full" [backLevel]="backLevel" />
   `,
   styles: [
     `
@@ -103,6 +112,7 @@ export class AssistantLayoutComponent {
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly applicationService = inject(ApplicationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   query = signal<Query | undefined>(undefined);
@@ -124,6 +134,9 @@ export class AssistantLayoutComponent {
   // this is used to know if the assistant is ready to use (i.e. the assistant is ready to receive queries)
   isAssistantReady = signal(false);
 
+  // used to know how many times we have to go back to return to the search page (decreases at each query params change)
+  backLevel = 0;
+
   // this is used to know if the saved chats component should be displayed
   readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']));
 
@@ -143,6 +156,7 @@ export class AssistantLayoutComponent {
     effect(() => {
       this.queryParamsStore.setFromUrl(window.location.hash);
       this.query.set(this.queryParamsStore.getQuery());
+      this.backLevel--;
     });
 
     effect(() => {
@@ -155,6 +169,13 @@ export class AssistantLayoutComponent {
     effect(() => {
       const question = this.q();
       this.chat()?.askAI(question);
+    });
+
+    // react to drawer state changes to update the application title when the drawer is closed
+    effect(() => {
+      if (!this.drawerStackService.isOpened()) {
+        this.applicationService.setTitle('Assistant');
+      }
     });
 
     // clear the selection store

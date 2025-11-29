@@ -21,7 +21,7 @@
   --ai-to: #ff8904;
 
   --color-datepicker-today: var(--color-orange-300);
-  --muted-foreground: var(--color-gray-600);
+  --muted-foreground: var(--color-gray-400);
 
   --backdrop: oklch(from var(--foreground) l c h / 50%);
   --backdrop-filter: blur(2px);
@@ -42,7 +42,7 @@
 
   --primary: #ff0055;
 
-  --muted-foreground: var(--color-neutral-300);
+  --muted-foreground: var(--color-neutral-400);
 
   --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
 
