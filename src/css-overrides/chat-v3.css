@@ -6,8 +6,6 @@ sq-chat-v3 {
   sq-chat-message {
     summary.text-muted,
     summary.text-muted + ul {
-      color: var(--color-muted-foreground);
-
       .text-success {
         color: var(--color-success);
       }

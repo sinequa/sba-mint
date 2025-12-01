@@ -208,10 +208,15 @@ export class AssistantComponent {
   }
 
   handleSuggestAction(action: SuggestedAction) {
-    const chat = this.sqChat();
-    if (chat) {
-      chat.question = action.content;
-      chat.submitQuestion();
+    switch (action.type) {
+      case 'Prefill':
+        this.insertText(action.content);
+        break;
+      case 'Submit':
+        this.submitQuestion(action.content);
+        break;
+      default:
+        error(`Unknown suggested action type: ${action.type}`);
     }
   }
 
@@ -223,6 +228,16 @@ export class AssistantComponent {
     }
   }
 
+  /**
+   * Initializes an AI chat session with an optional question.
+   *
+   * If a question is provided and a valid assistant configuration exists, creates an initial chat
+   * with a system message containing the assistant's default system prompt and a user message
+   * with the provided question. The system message is hidden from display while the user message
+   * is marked for display and as user input.
+   *
+   * @param question - Optional initial question to start the chat with
+   */
   askAI(question?: string) {
     // if the user comes from the search page, we need to set the query text to the one entered by the user (using Ask AI button)
     // when the sqChat component is created, we need to set the query text to the one entered by the user (using Ask AI button)
@@ -245,6 +260,25 @@ export class AssistantComponent {
     this.isChatInitialized.set(true);
   }
 
+  /**
+   * Attaches the specified items to the current chat session.
+   *
+   * @param ids - An array of string identifiers for the items to attach to the chat.
+   *              If the array is empty or null/undefined, the operation is skipped.
+   *
+   * @remarks
+   * This method requires an active sqChat instance. If the instance is not available,
+   * an error will be logged and the operation will fail silently.
+   *
+   * @example
+   * ```typescript
+   * // Attach multiple items to chat
+   * assistant.attachToChat(['item1', 'item2', 'item3']);
+   *
+   * // No operation performed for empty array
+   * assistant.attachToChat([]);
+   * ```
+   */
   attachToChat(ids: string[]): void {
     if (!ids || ids.length === 0) return;
 
@@ -253,6 +287,62 @@ export class AssistantComponent {
       sqChatInstance.attachToChat(ids);
     } else {
       error('sqChat instance is not defined');
+    }
+  }
+
+  // Manage suggestions actions
+
+  /**
+   * Submits a question to the chat assistant.
+   *
+   * @param question - The question string to be submitted to the chat
+   *
+   * @remarks
+   * This method retrieves the current chat instance and, if available,
+   * sets the question and triggers the submission process.
+   */
+  submitQuestion(question: string) {
+    const chat = this.sqChat();
+    if (chat) {
+      chat.question = question;
+      chat.submitQuestion();
+    }
+  }
+
+  /**
+   * Inserts text at the current cursor position in the chat question input field.
+   *
+   * @param text - The text to insert at the cursor position
+   *
+   * @remarks
+   * This method retrieves the current chat component and its question input element,
+   * then inserts the provided text at the current cursor selection. If no cursor
+   * position is available or the chat/input elements are not found, the operation
+   * is silently ignored.
+   *
+   * The method handles text insertion by:
+   * - Getting the current selection start and end positions
+   * - Splitting the existing question text at the selection
+   * - Inserting the new text between the split portions
+   * - Updating both the component's question property and the input element's value
+   */
+  insertText(text: string): void {
+    const chat = this.sqChat();
+    if (chat) {
+      // HTMLInputElement within the ChatComponent
+      const questionInput = chat.questionInput?.nativeElement;
+      if (!questionInput) {
+        return;
+      }
+      // insert text at cursor position
+      const start = questionInput.selectionStart;
+      const end = questionInput.selectionEnd;
+      if (start === undefined || end === undefined) {
+        return;
+      }
+      // insert text at cursor position
+      chat.question = chat.question.substring(0, start) + text + chat.question.substring(end, chat.question.length);
+      questionInput.value = chat.question;
     }
   }
 }
