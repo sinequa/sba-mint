@@ -1,10 +1,10 @@
-import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { afterNextRender, Component, effect, inject, signal, untracked } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
-import { SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
 
 @Component({
@@ -75,8 +75,11 @@ export class RecentSearchesComponent {
   readonly history = signal<{ date: string; searches: SearchItem[] }[]>([]);
   readonly transloco = inject(TranslocoService);
   readonly datePipe = inject(TranslocoDateImpurePipe);
+  readonly applicationService = inject(ApplicationService);
 
   constructor() {
+    afterNextRender(this.setTitle.bind(this));
+
     effect(() => {
       const recentSearches = this.userSettingsStore.recentSearches();
 
@@ -99,6 +102,8 @@ export class RecentSearchesComponent {
         this.history.set(sortedGroupedByDay);
       });
     });
+
+    this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
 
   async remove(event: Event, search: SearchItem) {
@@ -131,5 +136,16 @@ export class RecentSearchesComponent {
     }
 
     return formattedDate || date;
+  }
+
+  /**
+   * Sets the page title to the translated "mySavedSearches" text.
+   * Uses the transloco service to get the localized title and updates
+   * the application title through the applicationService.
+   * @private
+   */
+  private setTitle() {
+    const title = this.transloco.translate('history');
+    this.applicationService.setTitle(title);
   }
 }

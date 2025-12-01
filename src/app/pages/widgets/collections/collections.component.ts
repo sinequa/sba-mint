@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { afterNextRender, ChangeDetectorRef, Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { FormsModule } from '@angular/forms';
-import { Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
 import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui';
 
 @Component({
@@ -116,6 +116,8 @@ export class CollectionsComponent {
   readonly router = inject(Router);
   readonly userSettingsStore = inject(UserSettingsStore);
   readonly transloco = inject(TranslocoService);
+  readonly applicationService = inject(ApplicationService);
+
   readonly renameInput = viewChild<ElementRef>('renameInput');
   readonly createInput = viewChild<ElementRef>('createInput');
 
@@ -129,11 +131,15 @@ export class CollectionsComponent {
   tmpCollections: Basket[] = [];
 
   constructor(cdr: ChangeDetectorRef) {
+    afterNextRender(this.setTitle.bind(this));
+
     effect(() => {
       const baskets = this.userSettingsStore.baskets();
       this.tmpCollections = baskets.map(c => Object.assign({}, c));
       cdr.markForCheck();
     });
+
+    this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
 
   dropped(drop: CdkDragDrop<Basket[]>) {
@@ -181,6 +187,8 @@ export class CollectionsComponent {
   }
 
   postCreate(): void {
+    if (!this.newCollectionName().trim()) return;
+
     const collection: Basket = { name: this.newCollectionName().trim() };
     this.userSettingsStore.createBasket(collection);
     this.newCollectionName.set('');
@@ -198,5 +206,16 @@ export class CollectionsComponent {
 
   async save(): Promise<void> {
     await this.userSettingsStore.updateBaskets(this.tmpCollections);
+  }
+
+  /**
+   * Sets the page title to the translated "mySavedSearches" text.
+   * Uses the transloco service to get the localized title and updates
+   * the application title through the applicationService.
+   * @private
+   */
+  private setTitle() {
+    const title = this.transloco.translate('myCollections');
+    this.applicationService.setTitle(title);
   }
 }

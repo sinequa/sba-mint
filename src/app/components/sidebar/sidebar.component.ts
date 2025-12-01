@@ -23,7 +23,7 @@ export class AppSidebarComponent {
   protected readonly location = inject(Location);
   private readonly router = inject(Router);
 
-  readonly showBack = input<boolean>(false);
+  readonly backLevel = input<number | undefined>(undefined);
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly isDarkMode = computed(() => this.userSettings.isDarkMode());

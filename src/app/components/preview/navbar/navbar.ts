@@ -1,10 +1,11 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input, model } from '@angular/core';
+import { Component, DestroyRef, Input, computed, inject, input, model, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
 import { Article } from '@sinequa/atomic';
 import {
+  AppStore,
   BookmarkButtonComponent,
   DrawerNavbarComponent,
   DrawerPreviewComponent,
@@ -13,6 +14,9 @@ import {
   PreviewService
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
+import { PreviewDialogComponent } from '../dialog/preview-dialog';
+import { Event, NavigationEnd, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -34,7 +38,8 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     LinkIconComponent,
     CircleCheckIconComponent,
     DrawerNavbarComponent,
-    VerticalDividerComponent
+    VerticalDividerComponent,
+    PreviewDialogComponent
   ],
   templateUrl: './navbar.html',
   providers: [DrawerService]
@@ -49,6 +54,11 @@ export class PreviewNavbarComponent {
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
+  private readonly appStore = inject(AppStore);
+  private readonly router = inject(Router);
+  protected readonly destroyRef = inject(DestroyRef);
+
+  readonly previewDialog = viewChild(PreviewDialogComponent);
 
   protected navConfig: PreviewNavbarConfig = DEFAULT_CONFIG;
   @Input() public set config(config: PreviewNavbarConfig) {
@@ -71,7 +81,18 @@ export class PreviewNavbarComponent {
    */
   public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
 
+  expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
+
   public copied: boolean = false;
+  public backLevel = 0;
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        this.backLevel--;
+      }
+    });
+  }
 
   openClicked(): void {
     // open the preview in a new tab and audit the action
@@ -106,5 +127,9 @@ export class PreviewNavbarComponent {
     } else {
       this.extended.set(!this.extended());
     }
+  }
+
+  onExpand(): void {
+    this.previewDialog()?.open(this.article() as Article);
   }
 }

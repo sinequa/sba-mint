@@ -83,3 +83,4 @@ docusaurus/node_modules/*
 proxy.conf.insight.json
 /src/environments/environment.insight.ts
 /src/assets/i18n/multi-selection-toolbar
+/src/assets/i18n/custom-elements
