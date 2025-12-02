@@ -1,8 +1,8 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
-import { SelectionStore } from '@sinequa/atomic-angular';
+import { ApplicationService, DrawerStackService, SelectionStore } from '@sinequa/atomic-angular';
 import { PageHeaderComponent } from '@sinequa/ui';
 
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -31,7 +31,17 @@ export class SearchLayoutComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly selectionStore = inject(SelectionStore, { optional: true });
 
+  private readonly applicationService = inject(ApplicationService);
+  private readonly drawerStackService = inject(DrawerStackService);
+
   constructor() {
     this.destroyRef.onDestroy(() => this.selectionStore?.clearMultiSelection());
+
+    // react to drawer state changes to update the application title when the drawer is closed
+    effect(() => {
+      if (!this.drawerStackService.isOpened()) {
+        this.applicationService.setTitle('Search');
+      }
+    });
   }
 }

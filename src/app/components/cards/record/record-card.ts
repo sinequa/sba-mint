@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -38,7 +37,6 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
 @Component({
   selector: 'record-card, recordcard, RecordCard',
   imports: [
-    RouterLink,
     BadgeComponent,
     BookmarkButtonComponent,
     SourceComponent,
@@ -110,9 +108,10 @@ export class RecordCard {
   protected currentTab: Tab = 'attachments';
 
   protected docformatMetadata = computed(() => {
-    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase())) return this.article().docformat;
+    if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
+      return { field: 'docformat', value: this.article().docformat! };
 
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return this.article().doctype;
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return { field: 'doctype', value: this.article().doctype! };
 
     return undefined;
   });
@@ -172,5 +171,11 @@ export class RecordCard {
       if (this.article().$selected) this.selectionStore.addArticleToMultiSelection(this.article());
       else this.selectionStore.removeArticleFromMultiSelection(this.article());
     }
+  }
+
+  openExternal(event: Event) {
+    if (!this.article().url1) return;
+    event.stopPropagation();
+    this.previewService.openExternal(this.article());
   }
 }
