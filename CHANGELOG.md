@@ -2,6 +2,44 @@
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2025-12-05
+
+### Changed
+
+#### Dependencies
+
+- **Angular Core Packages**: Updated from v20.0.0 to v20.3.15
+  - `@angular/animations`: `^20.0.0` → `^20.3.15`
+  - `@angular/common`: `^20.0.0` → `^20.3.15`
+  - `@angular/compiler`: `^20.0.0` → `^20.3.15`
+  - `@angular/core`: `^20.0.0` → `^20.3.15`
+  - `@angular/elements`: `^20.3.1` → `^20.3.15`
+  - `@angular/forms`: `^20.0.0` → `^20.3.15`
+  - `@angular/platform-browser`: `^20.0.0` → `^20.3.15`
+  - `@angular/platform-browser-dynamic`: `^20.0.0` → `^20.3.15`
+  - `@angular/router`: `^20.0.0` → `^20.3.15`
+
+- **Angular CDK**: Updated from v20.0.1 to v20.2.14
+  - `@angular/cdk`: `^20.0.1` → `^20.2.14`
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/atomic`: `^0.0.123` → `^0.0.124`
+  - `@sinequa/atomic-angular`: `^0.2.5` → `^0.2.10`
+  - `@sinequa/ui`: `^0.1.49` → `^0.1.51`
+
+- **Angular Dev Dependencies**: Updated build tools
+  - `@angular/build`: `^20.0.0` → `^20.3.13`
+  - `@angular/cli`: `^20.0.0` → `^20.3.13`
+  - `@angular/compiler-cli`: `^20.0.0` → `^20.3.15`
+
+### Migration Notes for This Release
+
+- **Angular 20.3.15**: This update includes bug fixes and performance improvements. No code changes required for existing implementations.
+- **Sinequa Packages**: Updated packages may include new features or fixes - refer to their respective [changelogs](https://github.com/sinequa/sba-mint/blob/dev/11/CHANGELOG_SQ.md) for details.
+- **Breaking Changes**: None
+
+---
+
 ## [Release 11.13.0] - 2025-11-29
 
 ### Added
