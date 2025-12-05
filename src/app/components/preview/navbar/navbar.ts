@@ -70,7 +70,16 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
-  readonly hasExternalLink = computed(() => !!this.article()?.url1);
+  readonly isExternalLinkValid = computed(() => {
+    if (!this.article()?.url1) return false;
+
+    try {
+      const url = new URL(this.article()?.url1!);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  });
 
   /**
    * Computed property that determines whether the navigation bar is in an extended state.
