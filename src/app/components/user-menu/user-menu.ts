@@ -10,13 +10,13 @@ import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
-  ChevronRightIconComponent,
+  ChevronRightIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
-  HorizontalDividerComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  Separator,
   UserIcon
 } from '@sinequa/ui';
 
@@ -27,17 +27,17 @@ import {
     MenuComponent,
     MenuContentComponent,
     MenuItemComponent,
-    HorizontalDividerComponent,
     TranslocoPipe,
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     FlagEnglishIconComponent,
     FlagFrenchIconComponent,
     UserIcon,
-    ChevronRightIconComponent,
+    ChevronRightIcon,
     AvatarComponent,
     AvatarImageComponent,
-    AvatarFallbackComponent
+    AvatarFallbackComponent,
+    Separator
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]

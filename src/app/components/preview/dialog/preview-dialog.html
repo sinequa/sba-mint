@@ -1,56 +1,53 @@
-<dialog #dialog class="mx-[1vw] my-[1vh] h-[98vh] max-h-[98vh] w-[98vw] max-w-[97vw]" (closed)="article.set(undefined)">
-  <DialogHeader>
-    <DialogTitle>{{ this.article()?.title }}</DialogTitle>
-  </DialogHeader>
+<dialog #dialog (closed)="article.set(undefined)">
+  <DialogContent class="h-full max-h-[calc(100%-2rem)] grid-rows-[auto_1fr] sm:w-full sm:max-w-full">
+    <DialogHeader>
+      <DialogTitle>{{ this.article()?.title }}</DialogTitle>
+    </DialogHeader>
 
-  <DialogContent class="flex grow gap-4 overflow-auto">
-    @if (article()) {
-      <preview-content class="h-full" [ngClass]="{ 'w-2/3': sidebarExpanded(), grow: !sidebarExpanded() }" [previewData]="previewData()!" />
-      <div class="flex flex-col" [ngClass]="{ 'w-1/3': sidebarExpanded() }">
-        <div>
-          <button
-            variant="ghost"
-            [title]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
-            [attr.aria-label]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
-            (click)="sidebarExpanded.set(!sidebarExpanded())">
+    <div class="flex grow gap-4 overflow-auto">
+      @if (article()) {
+        <preview-content class="h-full" [class]="{ 'w-2/3': sidebarExpanded(), grow: !sidebarExpanded() }" [previewData]="previewData()!" />
+
+        <div class="grid grid-rows-[auto_1fr]" [class]="{ 'w-1/3': sidebarExpanded() }">
+          <div class="flex items-center gap-1">
+            <button
+              variant="ghost"
+              size="icon"
+              [title]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
+              [attr.aria-label]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
+              (click)="sidebarExpanded.set(!sidebarExpanded())">
+              @if (sidebarExpanded()) {
+                <ChevronRight aria-hidden="true" />
+              } @else {
+                <ChevronLeft aria-hidden="true" />
+              }
+            </button>
             @if (sidebarExpanded()) {
-              <ChevronRight aria-hidden="true" />
-            } @else {
-              <ChevronLeft aria-hidden="true" />
+              <Separator orientation="vertical" />
             }
-          </button>
-          <Tabs variant="ghost" [hidden]="!sidebarExpanded()">
-            <Tab class="w-fit" shadow="none" value="previewDialog-chat" [active]="activeTab() === 'chat'" (click)="activeTab.set('chat')">
-              {{ 'previewDialog.chat' | transloco }}
-            </Tab>
-            <Tab class="w-fit" shadow="none" value="previewDialog-summary" [active]="activeTab() === 'summary'" (click)="activeTab.set('summary')">
-              {{ 'previewDialog.summary' | transloco }}
-            </Tab>
-            <Tab class="w-fit" shadow="none" value="previewDialog-find" [active]="activeTab() === 'find'" (click)="activeTab.set('find')">
-              {{ 'previewDialog.find' | transloco }}
-            </Tab>
-          </Tabs>
+            <Tabs variant="ghost" [hidden]="!sidebarExpanded()">
+              <Tab class="w-fit" shadow="none" value="previewDialog-chat" [active]="activeTab() === 'chat'" (click)="activeTab.set('chat')">
+                {{ 'previewDialog.chat' | transloco }}
+              </Tab>
+              <Tab class="w-fit" shadow="none" value="previewDialog-summary" [active]="activeTab() === 'summary'" (click)="activeTab.set('summary')">
+                {{ 'previewDialog.summary' | transloco }}
+              </Tab>
+              <Tab class="w-fit" shadow="none" value="previewDialog-find" [active]="activeTab() === 'find'" (click)="activeTab.set('find')">
+                {{ 'previewDialog.find' | transloco }}
+              </Tab>
+            </Tabs>
+          </div>
+          <div class="relative overflow-hidden" [hidden]="!sidebarExpanded()">
+            <assistant [hidden]="activeTab() !== 'chat'" [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="true" />
+            <assistant [hidden]="activeTab() !== 'summary'" [instanceId]="summarizeInstanceId()" [query]="miniPreviewQuery" [showAssistant]="true" />
+            <advanced-search
+              [hidden]="activeTab() !== 'find'"
+              class="absolute h-full w-full overflow-y-auto"
+              [article]="article()!"
+              [previewStrategy]="'redirect'" />
+          </div>
         </div>
-        <div class="grow" [hidden]="!sidebarExpanded()">
-          <assistant
-            [hidden]="activeTab() !== 'chat'"
-            [instanceId]="chatWithDocIntanceId()"
-            [query]="chatWithDocQuery"
-            [showAssistant]="true"
-            class="h-full w-full" />
-          <assistant
-            [hidden]="activeTab() !== 'summary'"
-            [instanceId]="summarizeInstanceId()"
-            [query]="miniPreviewQuery"
-            [showAssistant]="true"
-            class="h-full w-full" />
-          <advanced-search
-            [hidden]="activeTab() !== 'find'"
-            class="bg-menu border-foreground/18 h-full w-full overflow-y-auto border-l [&>div>section]:mt-0"
-            [article]="article()!"
-            [previewStrategy]="'redirect'" />
-        </div>
-      </div>
-    }
+      }
+    </div>
   </DialogContent>
 </dialog>

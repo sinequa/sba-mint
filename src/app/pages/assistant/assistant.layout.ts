@@ -44,7 +44,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
     <div
       [class]="
         cn(
-          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
+          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
           opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
         )
       ">
@@ -58,6 +58,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
               </h3>
               <button
                 decoration="outline"
+                size="icon"
                 [title]="'assistant.new-discussion' | transloco"
                 [attr.aria-label]="'assistant.new-discussion' | transloco"
                 (click)="chat()?.newChat()">

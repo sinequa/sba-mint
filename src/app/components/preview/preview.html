@@ -1,42 +1,17 @@
 <div class="flex max-w-[inherit] flex-col overflow-hidden">
   <preview-navbar class="border-muted-foreground/18 block border-b" [(extended)]="extended" [article]="article()" />
 
-  <div class="relative flex h-full flex-col gap-0.5">
+  <div class="relative mb-2 flex h-full flex-col gap-0.5">
     @if (previewData() && article()) {
       <section class="border-muted-foreground/18 relative border-b px-6 py-4">
         <preview-header [article]="article()!" />
         <section class="absolute bottom-0 left-0 w-full overflow-hidden" [class.invisible]="!loading()">
-          <div class="animate-progress h-[2px]" style="background: linear-gradient(to right, blue, #333, orange, #333, blue)"></div>
+          <div class="animate-progress from-ai-from via-ai-via to-ai-to h-[2px] bg-linear-to-r"></div>
         </section>
       </section>
 
       <!-- Tab Navigation only if the "display summary is available " -->
-      <preview-tabs class="contents" [(activeTab)]="activeTab" [(showAssistants)]="showAssistants" [isStreaming]="isStreaming()">
-        <!-- tab contents -->
-        <!-- Summary Tab Content -->
-        @if (displaySummaryContent()) {
-          <TabContent [hidden]="activeTab() !== 'summary'">
-            <assistant
-              [instanceId]="summarizeInstanceId()"
-              [query]="miniPreviewQuery"
-              [showAssistant]="showSummarizeAssistant()"
-              (isStreaming)="handleStreaming($event)"
-              class="flex-grow" />
-          </TabContent>
-        }
-
-        <!-- Chat with Doc Tab Content -->
-        @if (displayChatWithDocContent()) {
-          <TabContent [hidden]="activeTab() !== 'discussion'">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
-          </TabContent>
-        }
-
-        <!-- Preview Tab Content -->
-        <TabContent [hidden]="activeTab() !== 'preview'">
-          <preview-content class="px-6 py-2" [previewData]="previewData()!" />
-        </TabContent>
-      </preview-tabs>
+      <preview-tabs class="contents" [previewData]="previewData()" />
     }
   </div>
 </div>

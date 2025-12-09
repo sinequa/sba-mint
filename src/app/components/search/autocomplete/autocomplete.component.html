@@ -6,7 +6,7 @@
     aria-label="suggestions list">
     @for (suggest of suggestions(); track $index) {
       @if (suggest.$isDivider) {
-        <HorizontalDivider />
+        <Separator />
       } @else if (suggest.$isTitle) {
         <li role="presentation" class="text-muted-foreground sticky top-0 cursor-pointer bg-inherit p-2 text-xs font-semibold">
           {{ suggest.category | transloco }}
@@ -35,8 +35,8 @@
   </ul>
 }
 @if (advancedSearch()) {
-  <HorizontalDivider />
-  <button variant="primary" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
+  <Separator />
+  <button class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
     <i class="fa-fw far fa-sliders"></i>
     {{ 'searchInput.advancedSearch' | transloco }}
   </button>

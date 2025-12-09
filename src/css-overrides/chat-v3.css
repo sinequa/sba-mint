@@ -6,6 +6,8 @@ sq-chat-v3 {
   sq-chat-message {
     summary.text-muted,
     summary.text-muted + ul {
+      color: light-dark(var(--color-gray-900), var(--color-white));
+
       .text-success {
         color: var(--color-success);
       }
@@ -29,6 +31,17 @@ sq-chat-v3 {
 
   .sq-chat-message-actions {
     z-index: 1 !important;
+  }
+}
+
+/* when the assistant is in a Card with variant="ai" */
+/* set the ai-foreground color appropriately */
+card[variant='ai'] {
+  sq-chat-message {
+    summary.text-muted,
+    summary.text-muted + ul {
+      color: var(--ai-card-foreground);
+    }
   }
 }
 
