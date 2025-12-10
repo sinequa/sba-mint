@@ -32,7 +32,7 @@
 
 <ng-template #actions>
   @if (navConfig.showOpenButton) {
-    <button variant="ghost" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
+    <button variant="ghost" [attr.title]="'open' | transloco" [disabled]="!isExternalLinkValid()" (click)="openClicked()">
       <i class="fa-fw far fa-arrow-up-right-from-square"></i>
       {{ 'open' | transloco }}
     </button>
@@ -58,7 +58,7 @@
     </button>
   }
 
-  @if (hasExternalLink()) {
+  @if (isExternalLinkValid()) {
     <button variant="ghost" size="icon" [attr.title]="'preview.copyPreviewLink' | transloco" (click)="copyLink()">
       @if (copied) {
         <circle-check class="size-4" />
