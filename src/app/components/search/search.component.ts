@@ -30,7 +30,6 @@ import {
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
   QueryParamsStore,
-  SearchInputFooter,
   SearchItem
 } from '@sinequa/atomic-angular';
 import {
@@ -41,6 +40,7 @@ import {
   DropdownContentComponent,
   PopoverComponent,
   SearchInputComponent,
+  SearchInputFooter,
   SendHorizontalIconComponent,
   type SearchVariants
 } from '@sinequa/ui';

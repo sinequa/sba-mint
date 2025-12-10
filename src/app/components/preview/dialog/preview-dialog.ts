@@ -1,28 +1,29 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 import { Article, CCApp, CustomHighlights, PreviewData, Query } from '@sinequa/atomic';
+import { AdvancedSearchComponent, APP_FEATURES, AppStore, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import {
   DialogComponent,
   DialogContentComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-  TabsComponent,
   TabComponent,
+  TabsComponent,
+  ChevronRightIcon,
+  ChevronLeftIconComponent,
   ButtonComponent,
-  ChevronRightIconComponent,
-  ChevronLeftIconComponent
+  Separator
 } from '@sinequa/ui';
-import { PreviewContentComponent } from '../preview-content/preview-content';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { getState } from '@ngrx/signals';
-import { APP_FEATURES, AppStore, PreviewService, SelectionStore, AdvancedSearchComponent } from '@sinequa/atomic-angular';
 import { of } from 'rxjs';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { AssistantComponent } from '../../assistant/assistant';
-import { NgClass } from '@angular/common';
+import { PreviewContentComponent } from '../preview-content/preview-content';
 
 @Component({
   selector: 'preview-dialog, PreviewDialog, previewdialog',
   imports: [
+    ButtonComponent,
     DialogComponent,
     DialogContentComponent,
     DialogTitleComponent,
@@ -33,11 +34,11 @@ import { NgClass } from '@angular/common';
     TranslocoPipe,
     AssistantComponent,
     AdvancedSearchComponent,
-    NgClass,
-    ButtonComponent,
-    ChevronRightIconComponent,
-    ChevronLeftIconComponent
+    ChevronRightIcon,
+    ChevronLeftIconComponent,
+    Separator
   ],
+  providers: [PreviewService],
   templateUrl: './preview-dialog.html'
 })
 export class PreviewDialogComponent {

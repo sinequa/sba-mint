@@ -3,7 +3,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { AppStore, DocumentLocatorComponent, MetadataComponent, QueryParamsStore, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, ChevronRightIcon } from '@sinequa/ui';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 type Article = A & {
@@ -13,7 +13,7 @@ type Article = A & {
 @Component({
   selector: 'preview-header, PreviewHeader, previewheader',
   standalone: true,
-  imports: [TranslocoPipe, TranslocoDateImpurePipe, ButtonComponent, DocumentLocatorComponent, MetadataComponent],
+  imports: [TranslocoPipe, TranslocoDateImpurePipe, ButtonComponent, DocumentLocatorComponent, MetadataComponent, ChevronRightIcon],
   templateUrl: './preview-header.html',
   styles: [
     `
@@ -35,8 +35,6 @@ type Article = A & {
   ]
 })
 export class PreviewHeaderComponent {
-  cn = cn;
-
   queryParamStore = inject(QueryParamsStore);
   labels = inject(AppStore).getLabels();
 

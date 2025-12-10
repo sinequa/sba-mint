@@ -1,24 +1,24 @@
 import { Component, signal, viewChild, ElementRef, input, output, computed, inject } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { DropdownComponent, ButtonComponent, InputComponent, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+import { DropdownComponent, ButtonComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
 import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
 import { notify } from '@sinequa/atomic';
 
 @Component({
   selector: 'saved-search-popover, SavedSearchPopover, savedsearchpopover',
-  imports: [TranslocoPipe, ButtonComponent, PopoverComponent, PopoverContentComponent, InputComponent],
+  imports: [TranslocoPipe, ButtonComponent, PopoverComponent, PopoverContentComponent, InputComponent, StarIcon],
   template: `
     @if (!savedSearch()) {
       <Popover #popover class="rounded-lg border-neutral-300">
         <button
           variant="icon"
-          size="xs"
-          class="peer-disabled:opacity-50"
+          size="icon"
+          class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
           [title]="'searchInput.saveSearch' | transloco"
           [attr.aria-label]="'searchInput.saveSearch' | transloco"
           (click)="openSavedSearch($event)">
-          <i class="fa-fw far fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
+          <StarIcon />
         </button>
 
         <PopoverContent class="min-w-xs p-2" position="bottom-end">
@@ -41,7 +41,7 @@ import { notify } from '@sinequa/atomic';
               <button decoration="outline" [title]="'cancel' | transloco" (click)="popover.close()">
                 {{ 'cancel' | transloco }}
               </button>
-              <button variant="primary" [title]="'confirm' | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
+              <button [title]="'confirm' | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
                 {{ 'confirm' | transloco }}
               </button>
             </div>
@@ -51,13 +51,13 @@ import { notify } from '@sinequa/atomic';
     } @else {
       <button
         variant="icon"
-        size="xs"
-        class="peer-disabled:opacity-50"
+        size="icon"
+        class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
         [attr.title]="'searchInput.saveSearch' | transloco"
         [attr.aria-label]="'searchInput.saveSearch' | transloco"
         (click)="saveQuery($event)"
         (keydown.enter)="saveQuery($event)">
-        <i class="fa-fw fas fa-star" [class.animate-save]="saveAnimation()" aria-hidden="true"></i>
+        <StarIcon solid class="animate-save" />
       </button>
     }
   `
@@ -79,7 +79,6 @@ export class SavedSearchPopover {
 
   // used by saved search
   protected readonly savedName = signal<string>('');
-  protected readonly saveAnimation = signal<boolean>(false);
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
   protected readonly savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.queryText()));
@@ -110,9 +109,6 @@ export class SavedSearchPopover {
     } else {
       this.savedSearchesService.saveSearch(this.savedName().trim());
       notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
-      this.saveAnimation.set(true);
-
-      setTimeout(() => this.saveAnimation.set(false), 1000);
       this.popoverComponent().close();
     }
   }

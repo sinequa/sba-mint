@@ -1,7 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
-      class="p-2"
+      class="h-9 p-2"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -16,7 +16,8 @@
       @if (allowAI()) {
         <button
           variant="ai"
-          class="h-6 rounded-sm text-xs transition ease-in"
+          size="xs"
+          class="rounded-sm transition ease-in"
           title="Ask AI"
           aria-label="Ask AI"
           (click)="handleRouting($event)"
@@ -27,7 +28,8 @@
       }
       <button
         variant="icon"
-        size="xs"
+        size="icon"
+        class="transition-transform duration-200 ease-in-out hover:scale-110"
         [title]="'search' | transloco"
         [attr.aria-label]="'search' | transloco"
         [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"

@@ -2,10 +2,10 @@ import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
-import { TranslocoPipe } from '@jsverse/transloco';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
@@ -30,7 +30,7 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
@@ -65,7 +65,8 @@ type QueryParamsProps = {
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    TranslocoPipe
+    TranslocoPipe,
+    ChevronRightIcon
   ],
   templateUrl: './search-all.component.html',
   styles: [
