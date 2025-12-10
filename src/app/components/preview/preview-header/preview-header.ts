@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
@@ -14,7 +13,7 @@ type Article = A & {
 @Component({
   selector: 'preview-header, PreviewHeader, previewheader',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, TranslocoDateImpurePipe, ButtonComponent, DocumentLocatorComponent, MetadataComponent, ChevronRightIcon],
+  imports: [TranslocoPipe, TranslocoDateImpurePipe, ButtonComponent, DocumentLocatorComponent, MetadataComponent, ChevronRightIcon],
   templateUrl: './preview-header.html',
   styles: [
     `
