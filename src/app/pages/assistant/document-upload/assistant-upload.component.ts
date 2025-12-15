@@ -21,7 +21,7 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
   template: `
     <section class="dark:bg-menu mt-6 rounded-2xl border border-gray-200 p-4 shadow">
       <div class="text-muted-foreground flex items-center justify-between">
-        <h3 class="pointer-events-none text-sm font-semibold">
+        <h3 class="pointer-events-none font-semibold">
           <i class="far fa-folder-open me-1"></i>
           {{ 'assistant.my-documents' | transloco }}
         </h3>

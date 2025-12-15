@@ -52,12 +52,12 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         @if (showSavedChats()) {
           <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
+              <h3 class="text-muted-foreground pointer-events-none font-semibold">
                 <i class="far fa-comments me-1"></i>
                 {{ 'assistant.saved-chats' | transloco }}
               </h3>
               <button
-                decoration="outline"
+                variant="ghost"
                 size="icon"
                 [title]="'assistant.new-discussion' | transloco"
                 [attr.aria-label]="'assistant.new-discussion' | transloco"
