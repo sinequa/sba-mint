@@ -48,7 +48,7 @@
     "@microsoft/signalr": "^7.0.14",
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
-    "@sinequa/assistant": "3.10.2",
+    "@sinequa/assistant": "^3.10.4",
     "@sinequa/atomic": "^0.0.128",
     "@sinequa/atomic-angular": "^0.3.4",
     "@sinequa/ui": "^0.2.3",
