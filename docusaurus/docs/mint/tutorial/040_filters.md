@@ -8,8 +8,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Default Filters
 
-In this section, you will modify the default filters.
-
 The Mint application includes buttons that allow the user to filter results.  
 
 <p align="center">
@@ -43,58 +41,111 @@ The *filter buttons* appears in the Mint UI in the **same order** as the aggrega
 
 # Modifying the Default Filters
 
-1. In your Mint workspace, go to **src** > **app** > **app.config.ts**.
+In the latest version of Mint, filters are no longer configured in the Mint workspace.
 
-2. Look for the *provider object* that has the **AGGREGATIONS_NAMES** token (and potentially other aggregation names). This object will be **commented out** by default.
-
-```
-//{ provide: AGGREGATIONS_NAMES, useValue: ['Money', 'Companies', ...AGGREGATIONS_NAMES_PRESET_DEFAULT]},
-```
+To add, delete, or modify filters, you must have access to the Sinequa administration interface.
 
 :::note
-
-- The *useValue* property provides a static value that can be used as a dependency.
-
-- In Mint, the *useValue* property includes the **AGGREGATIONS_NAMES_PRESET_DEFAULT** constant. This constant includes the previously mentioned aggregations found in the default _mint_query web service.
-
-You can remove the existing values and add different aggregation names to the *useValue* list.
+You do not have access to the Sinequa demo server administration interface. Therefore, you would need to connect your Mint application to your own Sinequa server if you wanted to modify the filters in Mint.
 :::
 
-3. Uncomment the provider object:
+Here are the basic steps to modify the filters in the latest version of Mint:
 
-```
-{ provide: AGGREGATIONS_NAMES, useValue: ['Money', 'Companies', ...AGGREGATIONS_NAMES_PRESET_DEFAULT]},
-```
+1. In the administration interface, go to **Search-Based Applications** > **Apps**.
 
-:::note
-Because this provider is commented out, AGGREGATIONS_NAMES and AGGREGATIONS_NAMES_PRESET_DEFAULT are no longer imported in the app.config.ts file.
+2. Click on your App.
 
-You must add AGGREGATIONS_NAMES to the appropriate import statement, and you can choose to add AGGREGATIONS_NAMES_PRESET_DEFAULT to the appropriate import statement, if you are using it for your filter configuration.
-
-You can also hover over AGGREGATIONS_NAMES, click **Quick Fix**, and choose **Update import from "@sinequa/atomic-angular"**.
+3. Go to the **Customization (JSON) tab**.
 
 <p align="center">
-<img src={useBaseUrl('/img/tutorial/040_filters/quick_fix.png')} width="70%" alt="Mint Aggregations"/>
+<img src={useBaseUrl('/img/tutorial/040_filters/customization_json.png')} width="70%" alt="Customization (JSON) tab in App"/>
 </p>
-:::
 
-4. Replace all values currently found in the *useValue* list and add the **Finance**, **Dates**, **Events**, and **Exectitle** aggregations.
+4. Click on the pencil icon to edit the **filters** file.
+
+<p align="center">
+<img src={useBaseUrl('/img/tutorial/040_filters/edit_filters.png')} width="70%" alt="Customization (JSON) tab in App"/>
+</p>
+
+You will see a JSON in which the filters are defined:
 
 ```
-{ provide: AGGREGATIONS_NAMES, useValue: ['Finance','Dates','Event','Executive'] },
+[
+     {
+        "column": "authors",
+        "icon": "far fa-user",
+        "display": "column.authors"
+    },
+    {
+        "column": "company",
+        "icon": "far fa-buildings",
+        "display": "column.companies"
+    },
+    {
+        "column": "modified",
+        "icon": "far fa-calendar-day",
+        "display": "Date"
+    },
+    {
+        "column": "size",
+        "icon": "fa-regular fa-arrow-up-right-and-arrow-down-left-from-center",
+        "display": "column.sizes"
+    },
+    {
+        "column": "doctype",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "geo",
+        "icon": "far fa-location-dot",
+        "display": "column.geos"
+    },
+    {
+        "column": "documentlanguages",
+        "icon": "far fa-language",
+        "display": "column.documentlanguages"
+    },
+    {
+        "column": "concepts",
+        "icon": "fa-solid fa-lightbulb-on"
+    },
+    {
+        "column": "person",
+        "icon": "far fa-user",
+        "display": "column.persons"
+    },
+    {
+        "column": "docformat",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "treepath",
+        "icon": "far fa-code-fork"
+    }
+]
 ```
 
-:::note
-These aggregations have been created for you in the **mint_query Web Service** on the Sinequa demo server.
-:::
+5. Replace this JSON with the following:
 
-5. Save your changes.
+```
+[
+    {
+        "column": "modified",
+        "icon": "far fa-calendar-day",
+        "display": "Date"
+    },
+    {
+        "column": "docformat",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "treepath",
+        "icon": "far fa-code-fork"
+    }
+]
+```
 
-:::note
-If you followed the **Connecting to Sinequa** tutorial, Mint should recompile automatically. If not, execute the `npm run start` command in the terminal.
-:::
-
-6. Go to your Mint application and search for **Bill Gates**.
+6. Save your changes, go to your Mint application, and search for **network**.
 
 <p align="center">
 <img src={useBaseUrl('/img/tutorial/040_filters/updated_filters.png')} width="70%" alt="Updated Filters"/>
@@ -106,4 +157,4 @@ There should now be different filters available.
 As a reminder, the *filter buttons* appears in the Mint UI in the **same order** as the aggregations found in the *mint_query web service*. If you wish to reorder the filters, you simply need to reorder the aggregations in your mint_query web service.
 :::
 
-For more information about filters in Mint, see the [**Filter**](../configurations/filters.mdx) documentation page.
+For more information about filters in Mint, see the [**Filters**](../configurations/filters.mdx) documentation page.
