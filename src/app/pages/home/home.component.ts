@@ -5,8 +5,8 @@ import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
   AggregationsStore,
-  ApplicationService,
   AppStore,
+  ApplicationService,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
@@ -18,7 +18,7 @@ import {
   SavedSearchesComponent,
   signIn
 } from '@sinequa/atomic-angular';
-import { HorizontalDividerComponent, TabComponent, TabsComponent } from '@sinequa/ui';
+import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
 
 import { getState } from '@ngrx/signals';
 import { error, fetchQuery } from '@sinequa/atomic';
@@ -76,10 +76,12 @@ const homeFeatures: HomeTab[] = [
     UserMenuComponent,
     TabsComponent,
     TabComponent,
+    TabContent,
     AppSidebarComponent,
-    HorizontalDividerComponent,
     SearchFooter,
-    FiltersBarComponent
+    FiltersBarComponent,
+    TabsListComponent,
+    Separator
   ],
   templateUrl: './home.component.html',
   host: {
@@ -96,8 +98,6 @@ export class HomeComponent {
   readonly searchText = signal<string>('');
 
   readonly tabs = signal(homeFeatures);
-  readonly activeDescendant = signal<ActiveSuggestion>(undefined);
-  readonly selectedTabId = signal(0);
 
   readonly autocompleteService = inject(AutocompleteService);
   readonly router = inject(Router);
@@ -139,11 +139,6 @@ export class HomeComponent {
       this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
     });
 
-    // react to tab changes
-    effect(() => {
-      this.selectedTabId.set(this.tabs().findIndex(tab => !tab.disabled));
-    });
-
     // react to drawer state changes to update the application title when the drawer is closed
     effect(() => {
       if (!this.drawerOpened()) {
@@ -173,14 +168,6 @@ export class HomeComponent {
         console.log(`HTTP error: ${err.status}`);
       }
     }
-  }
-
-  public selectTab(tab: HomeTab): void {
-    if (tab.disabled) return;
-
-    const index = this.tabs().indexOf(tab);
-
-    this.selectedTabId.set(index);
   }
 
   public search(text: string): void {

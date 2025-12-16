@@ -29,7 +29,7 @@ import {
 } from '@sinequa/assistant/chat';
 
 import { Article, error, Query } from '@sinequa/atomic';
-import { AppStore, DrawerStackService, PreviewHighlights, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
 @Component({
@@ -75,6 +75,7 @@ export class AssistantComponent {
   userSettingsStore = inject(UserSettingsStore);
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
+  protected readonly previewService = inject(PreviewService);
 
   class = input<string>('');
   // Used to initialize the chat unconditionally
@@ -201,6 +202,12 @@ export class AssistantComponent {
         : undefined;
 
     this.selectionStore.update({ previewHighlights });
+
+    const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
+    if (partId) {
+      this.previewService.events.set('scrollTo');
+      this.previewService.sendMessage({ action: 'select', id: `snippet_${partId}`, usePassageHighlighter: true });
+    }
   }
 
   public newChat(): void {

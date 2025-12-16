@@ -24,15 +24,7 @@ import { toast } from 'ngx-sonner';
 import { debounceTime, Subject } from 'rxjs';
 
 import { CCApp } from '@sinequa/atomic';
-import {
-  AppStore,
-  AutocompleteService,
-  DrawerAdvancedFiltersComponent,
-  DrawerStackService,
-  QueryParamsStore,
-  SearchInputFooter,
-  SearchItem
-} from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, DrawerAdvancedFiltersComponent, DrawerStackService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
   cn,
@@ -41,6 +33,7 @@ import {
   DropdownContentComponent,
   PopoverComponent,
   SearchInputComponent,
+  SearchInputFooter,
   SendHorizontalIconComponent,
   type SearchVariants
 } from '@sinequa/ui';
@@ -99,7 +92,7 @@ export class SearchComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
-  protected readonly generalSettings = this.appStore.general();
+  protected readonly appFeatures = this.appStore.general()?.features;
 
   public readonly showSave = input(false, { transform: booleanAttribute });
   public readonly variant = input<SearchVariants['variant']>('default');
@@ -131,8 +124,7 @@ export class SearchComponent {
 
   protected readonly allowAI = computed(() => this.appStore.isAssistantAllowed(this.instanceId()));
   readonly instanceId = computed(() => {
-    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
-
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;

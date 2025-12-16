@@ -16,9 +16,9 @@ import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 export class AppSidebarComponent {
   cn = cn;
   private readonly appStore = inject(AppStore);
+  private readonly appFeatures = this.appStore.general()?.features;
   private readonly principalStore = inject(PrincipalStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly generalSettings = this.appStore.general();
   private readonly userSettings = inject(UserSettingsStore);
   protected readonly location = inject(Location);
   private readonly router = inject(Router);
@@ -29,8 +29,7 @@ export class AppSidebarComponent {
   readonly isDarkMode = computed(() => this.userSettings.isDarkMode());
 
   readonly instanceId = computed(() => {
-    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
-
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;

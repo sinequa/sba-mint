@@ -16,15 +16,15 @@ import {
   CustomElementsService,
   DocumentReferenceComponent,
   ImageReferenceComponent,
+  PageReferenceComponent,
+  TableToolsComponent,
   initializeCustomElements,
   markdownItCodeBlockPlugin,
   markdownItDocumentReferencePlugin,
   markdownItImageReferencePlugin,
   markdownItLinkPlugin,
   markdownItPageReferencePlugin,
-  markdownItTableToolsPlugin,
-  PageReferenceComponent,
-  TableToolsComponent
+  markdownItTableToolsPlugin
 } from '@sinequa/assistant/chat';
 import { appInitializerFn } from '@sinequa/atomic';
 import {

@@ -4,7 +4,7 @@
     "prettier-plugin-package"
   ],
   "tailwindFunctions": [
-    "tv"
+    "tv", "cva"
   ],
   "tabWidth": 2,
   "useTabs": false,

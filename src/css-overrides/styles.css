@@ -1,6 +1,6 @@
-@import './angular-cdk';
+@import './angular-cdk.css';
 
 /* chat v3 css overrides */
-@import './bootstrap-to-tailwind';
-@import './chat-v3';
-@import './saved-chat-v3';
+@import './bootstrap-to-tailwind.css';
+@import './chat-v3.css';
+@import './saved-chat-v3.css';

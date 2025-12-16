@@ -1,0 +1,153 @@
+:root {
+  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa.svg');
+  --logo-large-dark-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small: var(--logo-small-url);
+  --logo-large: var(--logo-large-url);
+  --logo-large-dark: var(--logo-large-dark-url);
+  --logo-alt-text: 'Sinequa logo';
+
+  --radius: 0.65rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: var(--color-sage-600);
+  --primary-foreground: var(--color-sage-50);
+  --secondary: var(--color-almond-100);
+  --secondary-foreground: var(--color-almond-900);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: var(--color-pink-200);
+  --accent-foreground: var(--color-pink-900);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: var(--color-accent);
+  --chart-1: oklch(0.871 0.15 154.449);
+  --chart-2: oklch(0.723 0.219 149.579);
+  --chart-3: oklch(0.627 0.194 149.214);
+  --chart-4: oklch(0.527 0.154 150.069);
+  --chart-5: oklch(0.448 0.119 151.328);
+  --sidebar: var(--color-sage-950);
+  --sidebar-foreground: var(--color-sage-50);
+  --sidebar-primary: oklch(0.648 0.2 131.684);
+  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.841 0.238 128.85);
+
+  --success: var(--color-green-200);
+  --success-foreground: var(--color-green-800);
+  --warning: var(--color-orange-200);
+  --warning-foreground: var(--color-orange-800);
+  --info: var(--color-blue-200);
+  --info-foreground: var(--color-blue-800);
+  --error: var(--color-red-200);
+  --error-foreground: var(--color-red-800);
+
+  --header: var(--color-sage-900);
+  --header-foreground: var(--color-sage-50);
+  --menu: var(--color-background);
+  --menu-foreground: var(--color-foreground);
+
+  --datepicker-today: var(--color-accent);
+
+  --ai-from: var(--color-blue-500);
+  --ai-via: #6c5ce7;
+  --ai-to: #8a3bff;
+  --ai-foreground: var(--color-white);
+  --ai-card-foreground: var(--foreground); /* used in the ai card text */
+  --ai-border: var(--border);
+
+  /* Assistant  */
+  --assistant: #ff732e;
+  --assistant-primary-bg: #f2f8fe;
+  --assistant-secondary-bg: #fff8f1;
+
+  --ast-primary-bg: var(--assistant-primary-bg);
+  --ast-secondary-bg: var(--assistant-secondary-bg);
+  --ast-action-buttons-color: var(--color-foreground);
+  --ast-primary-color: var(--color-primary);
+  --ast-input-bg: var(--background);
+  --ast-muted-color: var(--muted-foreground);
+}
+
+.dark {
+  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small: var(--logo-dark-small, var(--logo-small-url));
+  --logo-large: var(--logo-dark-large, var(--logo-large-url));
+
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: var(--color-sage-800);
+  --primary-foreground: var(--color-sage-50);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.405 0.101 131.063);
+  --chart-1: oklch(0.871 0.15 154.449);
+  --chart-2: oklch(0.723 0.219 149.579);
+  --chart-3: oklch(0.627 0.194 149.214);
+  --chart-4: oklch(0.527 0.154 150.069);
+  --chart-5: oklch(0.448 0.119 151.328);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.768 0.233 130.85);
+  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.405 0.101 131.063);
+
+  --success: var(--color-green-200);
+  --success-foreground: var(--color-green-800);
+  --warning: var(--color-orange-200);
+  --warning-foreground: var(--color-orange-800);
+  --info: var(--color-blue-200);
+  --info-foreground: var(--color-blue-800);
+  --error: var(--color-red-200);
+  --error-foreground: var(--color-red-800);
+
+  --header: var(--color-sage-900);
+  --header-foreground: var(--color-sage-50);
+  --menu: var(--color-background);
+  --menu-foreground: var(--color-foreground);
+
+  --datepicker-today: var(--color-accent);
+
+  --ai-from: #9bd1f5;
+  --ai-via: #b7b4f3;
+  --ai-to: #d997f1;
+  --ai-foreground: var(--foreground);
+  --ai-border: transparent;
+
+  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
+  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
+  --ast-uploaded-doc-hover-background: var(--color-neutral-700);
+
+  /* Assistant  */
+  --ast-primary-bg: var(--assistant-primary-bg);
+  --ast-secondary-bg: var(--assistant-secondary-bg);
+  --ast-reference-expanded-hover-bg: var(--background);
+  --ast-reference-passages-color: var(--color-foreground);
+  --ast-reference-icon-color: var(--color-foreground);
+  --ast-saved-chat-hover-background: oklch(from var(--ast-secondary-bg) l c h);
+  --ast-message-table-border-color: var(--color-muted-foreground);
+  --ast-message-table-tr-bg: var(--background);
+  --ast-message-table-tr-border-color: var(--color-muted-foreground);
+}

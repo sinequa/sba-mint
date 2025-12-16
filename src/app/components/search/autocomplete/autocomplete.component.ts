@@ -1,6 +1,21 @@
-import { Component, computed, effect, ElementRef, inject, InjectionToken, Injector, input, output, runInInjectionContext, signal, Type } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  InjectionToken,
+  Injector,
+  input,
+  output,
+  resource,
+  runInInjectionContext,
+  signal,
+  Type
+} from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { NgComponentOutlet } from '@angular/common';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
 import {
@@ -20,16 +35,15 @@ import {
   ButtonComponent,
   ClockIcon,
   FileIcon,
-  HorizontalDividerComponent,
   LightbulbIcon,
   ListItemComponent,
   MapPinIcon,
   SearchIcon,
+  Separator,
   StarIcon,
   UserIcon
 } from '@sinequa/ui';
 
-import { NgComponentOutlet } from '@angular/common';
 import { SearchComponent } from '../search.component';
 
 const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by preference for suggestion's categories", {
@@ -60,7 +74,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent, HorizontalDividerComponent],
+  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent],
   styles: [
     `
       :host {
@@ -97,31 +111,47 @@ export class AutocompleteComponent {
 
   protected readonly overlayOpen = this.autocompleteService.opened;
 
-  autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
+  autocomplete = computed(() => {
+    this.appStore.customizationJson()?.autocomplete;
+  });
   advancedSearch = computed(() => {
     const advancedSearch = this.appStore.general()?.features?.advancedSearch;
     return advancedSearch || false;
   });
 
-  readonly suggestions = signal<Suggestion[]>([]);
+  // Suggestions resource
+  readonly suggestionsResource = resource({
+    params: () => ({
+      text: this.text(),
+      wasSearchClicked: this.wasSearchClicked(),
+      autocomplete: this.autocomplete() ?? 3
+    }),
+    loader: async ({ params }) => this.fetchSuggestions(params)
+  });
+
+  // Track previous suggestions
+  private previousSuggestions = [] as Suggestion[];
+
+  // Computed signal to access the suggestions
+  readonly suggestions = computed(() => {
+    const value = this.suggestionsResource.value();
+    const isLoading = this.suggestionsResource.isLoading();
+
+    if (value !== undefined) {
+      // Update previous when we have a new value
+      this.previousSuggestions = value as Suggestion[];
+      return value as Suggestion[];
+    }
+
+    // While loading, return previous suggestions
+    return isLoading ? this.previousSuggestions : [];
+  });
 
   constructor(
     { el: { nativeElement } }: SearchComponent,
     private eventManager: EventManager
   ) {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
-
-    // Effect to update suggestion when dependencies change
-    effect(() => {
-      // dependencies
-      this.text();
-      this.wasSearchClicked();
-      this.autocomplete();
-
-      this.fetchSuggestions().then(suggestions => {
-        this.suggestions.set(suggestions);
-      });
-    });
 
     effect(() => {
       if (!this.suggestions() || this.suggestions()!.length === 0) return;
@@ -171,23 +201,31 @@ export class AutocompleteComponent {
   // #endregion Keyboard navigation
 
   /**
-   * Fetches autocomplete suggestions based on the current input text.
+   * Fetches autocomplete suggestions based on the provided text input.
    *
-   * This method retrieves suggestions from user settings and external suggest queries,
-   * merges and sorts them by category, and formats the result by adding dividers and
-   * category titles where appropriate.
+   * Combines suggestions from user settings and suggest queries, then formats them
+   * with category dividers and titles for display in the autocomplete dropdown.
    *
-   * - If the input text is empty, only user settings suggestions are returned.
-   * - If an error occurs during external suggestion fetching (e.g., 401 Unauthorized),
-   *   it triggers a sign-in flow and returns only user settings suggestions.
+   * @param params - The parameters object
+   * @param params.text - The text input to search for suggestions
+   * @param params.autocomplete - Optional maximum number of suggestions to fetch from user settings (defaults to 3)
    *
-   * @returns {Promise<Suggestion[]>} A promise that resolves to a formatted list of suggestions,
-   * including dividers and category titles.
+   * @returns A promise that resolves to an array of formatted suggestions with dividers and category titles
+   *
+   * @remarks
+   * - Resets the current suggestion index to -1
+   * - Fetches suggestions from user settings synchronously
+   * - Fetches suggestions from suggest queries API asynchronously
+   * - Handles 401 authentication errors by triggering sign-in flow
+   * - Sorts suggestions by category order defined in `autocompleteCategories`
+   * - Adds dividers and category titles between different suggestion categories
+   *
+   * @throws Will log errors from suggest queries API but won't throw, returning empty array instead
    */
-  private fetchSuggestions = async () => {
+  private fetchSuggestions = async ({ text, autocomplete }: { text: string; autocomplete?: number }) => {
     this.currentSuggestIndex.set(-1);
-    const testText = this.text();
-    const autocompleteValue = this.autocomplete() ?? 3;
+    const testText = text;
+    const autocompleteValue = autocomplete ?? 3;
 
     const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocompleteValue);
 

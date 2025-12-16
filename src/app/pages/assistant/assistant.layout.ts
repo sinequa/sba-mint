@@ -43,7 +43,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
     <div
       [class]="
         cn(
-          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
+          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
           opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
         )
       ">
@@ -51,12 +51,13 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         @if (showSavedChats()) {
           <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
+              <h3 class="text-muted-foreground pointer-events-none font-semibold">
                 <i class="far fa-comments me-1"></i>
                 {{ 'assistant.saved-chats' | transloco }}
               </h3>
               <button
-                decoration="outline"
+                variant="ghost"
+                size="icon"
                 [title]="'assistant.new-discussion' | transloco"
                 [attr.aria-label]="'assistant.new-discussion' | transloco"
                 (click)="chat()?.newChat()">
@@ -107,7 +108,7 @@ export class AssistantLayoutComponent {
   opened = computed(() => this.drawerStackService.isOpened());
 
   private readonly appStore = inject(AppStore);
-  private readonly generalSettings = this.appStore.general();
+  private readonly appFeatures = this.appStore.general()?.features;
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
@@ -117,8 +118,7 @@ export class AssistantLayoutComponent {
   query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
-    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
-
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;

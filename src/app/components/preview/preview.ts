@@ -1,26 +1,13 @@
-import { Component, computed, DestroyRef, effect, inject, model, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { of } from 'rxjs';
 
-import { Article as A, CCApp, PreviewData, Query, type CustomHighlights } from '@sinequa/atomic';
-import {
-  AdvancedSearchComponent,
-  ApplicationService,
-  AppStore,
-  PreviewService,
-  QueryParamsStore,
-  SelectionStore,
-  type PreviewHighlights
-} from '@sinequa/atomic-angular';
-import { cn, TabContent } from '@sinequa/ui';
+import { Article as A } from '@sinequa/atomic';
+import { AdvancedSearchComponent, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { cn } from '@sinequa/ui';
 
-import { AssistantComponent } from '../assistant/assistant';
 import { PreviewNavbarComponent } from './navbar/navbar';
-import { PreviewContentComponent } from './preview-content/preview-content';
 import { PreviewHeaderComponent } from './preview-header/preview-header';
-import { PreviewTab, PreviewTabsComponent } from './preview-tabs/preview-tabs';
+import { PreviewTabsComponent } from './preview-tabs/preview-tabs';
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -29,158 +16,45 @@ type Article = A & {
 @Component({
   selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
-  imports: [
-    AssistantComponent,
-    PreviewNavbarComponent,
-    PreviewTabsComponent,
-    PreviewHeaderComponent,
-    PreviewContentComponent,
-    AdvancedSearchComponent,
-    TabContent
-  ],
+  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearchComponent],
   templateUrl: './preview.html',
   host: {
-    '[class]': 'cn("grow w-full h-full overflow-auto grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
+    '[class]':
+      'cn("grow w-full h-full overflow-hidden grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
   }
 })
 export class PreviewComponent {
   cn = cn;
 
+  protected readonly previewTabs = viewChild(PreviewTabsComponent);
+
   /* injectables */
-  protected readonly appStore = inject(AppStore);
-  protected readonly queryParamStore = inject(QueryParamsStore);
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
-
-  protected readonly destroyRef = inject(DestroyRef);
-  protected readonly generalSettings = this?.appStore.general();
   protected readonly applicationService = inject(ApplicationService);
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
-  protected readonly activeTab = model<PreviewTab>('preview');
 
   /* used to toggle the extended view when not displayed inside the drawer */
   protected readonly extended = signal(false);
 
-  // this signal is used by the summarize assistant to know if the assistant is streaming
-  protected readonly isStreaming = signal<boolean>(false);
-  protected readonly article = signal<Article | undefined>(undefined);
-
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
-  protected locationSegments: string[] = [];
-
-  // article ID is used to create an audit log entry when the preview is closed
-  protected id = signal<string | undefined>(undefined);
-  protected previewHighlights = signal<PreviewHighlights | undefined>(undefined);
-  protected queryText = signal<string | undefined>(undefined);
-
-  /* resources */
-  public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
-    params: () => {
-      const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
-      return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
-    },
-    defaultValue: {} as PreviewData,
-    stream: ({ params: { id, text, previewHighlights } }) => {
-      if (id) {
-        return this.previewservice.preview(id, { name: this.queryName, text }, previewHighlights);
-      }
-      return of({} as PreviewData);
+  protected readonly article = computed(() => {
+    const article = this.selectionStore.article?.();
+    if (article) {
+      this.applicationService.setTitle(article.title || 'Preview');
     }
+    return article as Article;
   });
-
-  /* computed signals */
-  previewData = computed(() => {
-    if (this.previewDataResource.hasValue()) {
-      return this.previewDataResource.value();
-    }
-    return undefined;
-  });
-
-  readonly summarizeInstanceId = computed(() => {
-    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
-
-    if (usePrefixName) {
-      const { name } = getState(this.appStore) as CCApp;
-      return `${name}-preview-summarize-assistant`;
-    }
-    return 'preview-summarize-assistant';
-  });
-
-  readonly chatWithDocInstanceId = computed(() => {
-    const { assistant: { usePrefixName = false } = {} } = this.generalSettings?.features || {};
-
-    if (usePrefixName) {
-      const { name } = getState(this.appStore) as CCApp;
-      return `${name}-preview-chatwithdoc-assistant`;
-    }
-    return 'preview-chatwithdoc-assistant';
-  });
-
-  displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
-  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocInstanceId()));
-
-  // this is set by the tabs component
-  showAssistants = signal<{ name: 'summary' | 'discussion'; enabled: boolean; visible: boolean }[]>([
-    { name: 'summary', enabled: false, visible: this.displaySummaryContent() },
-    { name: 'discussion', enabled: false, visible: this.displayChatWithDocContent() }
-  ]);
-  showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'summary')?.enabled);
-  showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'discussion')?.enabled);
-
-  miniPreviewQuery: Query = {} as Query;
-  chatWithDocQuery: Query = {} as Query;
 
   constructor() {
-    // when the selection store changes or the article changes,
-    // update the preview highlights and query text
-    effect(() => {
-      const { previewHighlights, id, queryText } = getState(this.selectionStore);
-      const article = this.article();
-      this.locationSegments = article?.url1 ? article.url1.split('/') : [];
-      this.previewHighlights.set(previewHighlights);
-      this.queryText.set(queryText);
-
-      // only set the ID if the article is defined
-      // this is to avoid setting the ID to undefined when the article is not defined usally when the preview is closed
-      if (id) {
-        this.id.set(id);
-      }
-    });
-
-    // when the preview data changes, update the mini preview and chat with doc queries
-    // this occurs when the preview API call returns
-    effect(() => {
-      if (!this.previewData()) return;
-      if (!this.previewData()?.record) return;
-
-      // create a new query for the mini preview assistant
-      const { record } = this.previewData()!;
-      this.article.set(record as Article | undefined);
-
-      this.applicationService.setTitle(this.article()?.title || 'Preview');
-
-      this.miniPreviewQuery = {
-        name: this.appStore.getDefaultQuery()?.name || '_query',
-        text: record.title,
-        filters: { field: 'id', value: record.id, operator: 'eq' }
-      };
-
-      this.chatWithDocQuery = {
-        name: this.appStore.getDefaultQuery()?.name || '_query',
-        text: record.title,
-        filters: { field: 'id', value: record.id, operator: 'eq' }
-      };
-    });
-
     // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview
     effect(() => {
       const event = this.previewservice.events();
 
       // If the event is scrollTo, set the active tab to preview if it's not already
-      if (event === 'scrollTo' && this.activeTab() !== 'preview') {
-        this.activeTab.set('preview');
+      if (event === 'scrollTo' && this.previewTabs()?.activeTabValue() !== 'preview') {
+        this.previewTabs()?.setActiveTab('preview');
       }
 
       // If the event is scrollTo, set the events to idle to avoid multiple triggers
@@ -188,17 +62,5 @@ export class PreviewComponent {
         this.previewservice.events.set('idle');
       }
     });
-
-    this.destroyRef.onDestroy(() => {
-      const id = this.id();
-      if (id) {
-        this.previewDataResource.destroy();
-        this.previewservice.close(id, { name: this.queryName });
-      }
-    });
-  }
-
-  handleStreaming(isStreaming: boolean) {
-    this.isStreaming.set(isStreaming);
   }
 }
