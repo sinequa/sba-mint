@@ -15,7 +15,7 @@
         <!-- tab contents -->
         <!-- Summary Tab Content -->
         @if (displaySummaryContent()) {
-          <TabContent [hidden]="activeTab() !== 'summary'">
+          <TabContent value="summary" [hidden]="activeTab() !== 'summary'">
             <assistant
               [instanceId]="summarizeInstanceId()"
               [query]="miniPreviewQuery"
@@ -27,13 +27,13 @@
 
         <!-- Chat with Doc Tab Content -->
         @if (displayChatWithDocContent()) {
-          <TabContent [hidden]="activeTab() !== 'discussion'">
+          <TabContent value="discussion" [hidden]="activeTab() !== 'discussion'">
             <assistant [instanceId]="chatWithDocInstanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
           </TabContent>
         }
 
         <!-- Preview Tab Content -->
-        <TabContent [hidden]="activeTab() !== 'preview'">
+        <TabContent value="preview" [hidden]="activeTab() !== 'preview'">
           <preview-content class="px-6 py-2" [previewData]="previewData()!" />
         </TabContent>
       </preview-tabs>
