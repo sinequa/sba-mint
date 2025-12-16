@@ -6,7 +6,7 @@
 
     <div class="flex grow gap-4 overflow-auto">
       @if (article()) {
-        <preview-content class="h-full" [class]="{ 'w-2/3': sidebarExpanded(), grow: !sidebarExpanded() }" [previewData]="previewData()!" />
+        <preview-content class="h-full" [class]="{ 'w-2/3': sidebarExpanded(), grow: !sidebarExpanded() }" />
 
         <div class="grid grid-rows-[auto_1fr]" [class]="{ 'w-1/3': sidebarExpanded() }">
           <div class="flex items-center gap-1">

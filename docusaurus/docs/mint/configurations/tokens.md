@@ -26,7 +26,6 @@ In the following table, you will find the main Angular injection tokens used to 
 | [ROUTE_COMPONENTS](#route_components)             | Maps routes to components for the application.                                                  |
 | [AGGREGATIONS_NAMES](#aggregations_names)           | Adds specific aggregations to the filters bar (e.g., 'Money', 'Companies').                     |
 | [FILTERS_BREAKPOINT](#filters_breakpoint)           | Sets how many filters are displayed before moving extras to the "More" button.                  |
-| [APP_FEATURES](#app_features)                 | Configures specific application features (e.g., assistant options).                             |
 | [FlowInjectionToken](#flowinjectiontoken)           | Used by the upload Assistant service to inject the Flow object.                                 |
 
 ## Angular Injection Tokens
@@ -176,18 +175,6 @@ Sets how many filters are displayed in the filter bar before extra filters are m
 
 ---
 
-### APP_FEATURES
-
-Configures specific application features, such as assistant options.
-
-**Value:**  
-
-```ts
-{ assistant: { usePrefixName: false } }
-```
-
----
-
 ### FlowInjectionToken
 
 Used by the upload Assistant service to inject the Flow object. If you do not use the Assistant, you can comment out this line.
@@ -283,9 +270,6 @@ export const appConfig: ApplicationConfig = {
     // filter bar and 5 will be moved to the "More" button
     // if the space is not enough, the filters will be moved to the "More" button
     { provide: FILTERS_BREAKPOINT, useValue: 10 },
-
-    // this token is used to configure specific configuration within the application
-    { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: false } } },
 
     // used by the upload Assistant service
     { provide: FlowInjectionToken, useValue: Flow },

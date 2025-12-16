@@ -8,7 +8,6 @@ import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
-  APP_FEATURES,
   ApplicationService,
   AppStore,
   DrawerStackService,
@@ -108,8 +107,8 @@ export class AssistantLayoutComponent {
   drawerStackService = inject(DrawerStackService);
   opened = computed(() => this.drawerStackService.isOpened());
 
-  private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
+  private readonly appFeatures = this.appStore.general()?.features;
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
@@ -119,9 +118,7 @@ export class AssistantLayoutComponent {
   query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;

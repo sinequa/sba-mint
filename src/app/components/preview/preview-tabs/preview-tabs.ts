@@ -1,11 +1,11 @@
-import { Component, computed, DestroyRef, effect, inject, input, model, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { APP_FEATURES, AppStore, PreviewService } from '@sinequa/atomic-angular';
-import { TabComponent, TabsComponent, TabsListComponent, TabContent } from '@sinequa/ui';
-import { AssistantComponent } from '../../assistant/assistant';
-import { CCApp, PreviewData, Query } from '@sinequa/atomic';
 import { getState } from '@ngrx/signals';
+import { Article, CCApp, Query } from '@sinequa/atomic';
+import { AppStore, SelectionStore } from '@sinequa/atomic-angular';
+import { TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
+import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
@@ -46,11 +46,11 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
       <div class="relative h-full flex-grow overflow-auto">
         <!-- tab contents -->
         <!-- Summary Tab Content -->
-        @if (displaySummaryContent()) {
+        @if (displaySummaryContent() && summarizeInstanceId()) {
           <TabContent value="summary" class="absolute inset-0">
             <assistant
               [instanceId]="summarizeInstanceId()"
-              [query]="miniPreviewQuery"
+              [query]="miniPreviewQuery()"
               [showAssistant]="showSummarizeAssistant()"
               (isStreaming)="handleStreaming($event)"
               class="flex-grow" />
@@ -58,15 +58,15 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
         }
 
         <!-- Chat with Doc Tab Content -->
-        @if (displayChatWithDocContent()) {
+        @if (displayChatWithDocContent() && chatWithDocIntanceId()) {
           <TabContent value="discussion" class="absolute inset-0">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
           </TabContent>
         }
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="px-6 pr-1" [previewData]="previewData()!" />
+          <preview-content class="px-6 pr-1" />
         </TabContent>
       </div>
     </Tabs>
@@ -76,9 +76,9 @@ export class PreviewTabsComponent {
   protected tabs = viewChild(TabsComponent);
 
   protected readonly destroyRef = inject(DestroyRef);
-  protected readonly previewService = inject(PreviewService);
   protected readonly appStore = inject(AppStore);
-  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly appFeatures = this.appStore.general()?.features;
+  protected readonly selectionStore = inject(SelectionStore);
 
   /**
    * A computed signal that returns the currently active preview tab value.
@@ -89,15 +89,29 @@ export class PreviewTabsComponent {
     return this.tabs()?.activeTabValue() as PreviewTab;
   });
 
-  previewData = input<PreviewData | undefined>(undefined);
+  readonly article = signal<Article | undefined>(undefined);
+  readonly miniPreviewQuery = computed(() => {
+    const article = this.article();
+    const query = {
+      name: this.appStore.getDefaultQuery()?.name || '_query',
+      text: article?.title,
+      filters: { field: 'id', value: article?.id, operator: 'eq' }
+    };
+    return query as Query;
+  });
 
-  miniPreviewQuery: Query = {} as Query;
-  chatWithDocQuery: Query = {} as Query;
+  readonly chatWithDocQuery = computed(() => {
+    const article = this.article();
+    const query = {
+      name: this.appStore.getDefaultQuery()?.name || '_query',
+      text: article?.title,
+      filters: { field: 'id', value: article?.id, operator: 'eq' }
+    };
+    return query as Query;
+  });
 
   readonly summarizeInstanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-summarize-assistant`;
@@ -107,9 +121,7 @@ export class PreviewTabsComponent {
   });
 
   readonly chatWithDocIntanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-chatwithdoc-assistant`;
@@ -134,23 +146,8 @@ export class PreviewTabsComponent {
 
   constructor() {
     effect(() => {
-      if (!this.previewData()) return;
-      if (!this.previewData()?.record) return;
-
-      // create a new query for the mini preview assistant
-      const { record } = this.previewData()!;
-
-      this.miniPreviewQuery = {
-        name: this.appStore.getDefaultQuery()?.name || '_query',
-        text: record.title,
-        filters: { field: 'id', value: record.id, operator: 'eq' }
-      };
-
-      this.chatWithDocQuery = {
-        name: this.appStore.getDefaultQuery()?.name || '_query',
-        text: record.title,
-        filters: { field: 'id', value: record.id, operator: 'eq' }
-      };
+      const { article } = getState(this.selectionStore);
+      this.article.set(article as Article);
     });
   }
 
