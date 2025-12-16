@@ -1,23 +1,14 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { DocumentListComponent, DocumentOverviewComponent, DocumentUploadComponent } from '@sinequa/assistant/chat';
-import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterComponent, DialogHeaderComponent, DialogTitleComponent } from '@sinequa/ui';
+import { DocumentOverviewComponent } from '@sinequa/assistant/chat';
+import { DialogService } from '@sinequa/ui';
+
+import { UploadDialog } from './upload.dialog';
 
 @Component({
   selector: 'assistant-upload, AssistantUpload',
-  imports: [
-    TranslocoPipe,
-    DocumentOverviewComponent,
-    DocumentUploadComponent,
-    DocumentListComponent,
-    ButtonComponent,
-    DialogComponent,
-    DialogContentComponent,
-    DialogTitleComponent,
-    DialogHeaderComponent,
-    DialogFooterComponent
-  ],
+  imports: [TranslocoPipe, DocumentOverviewComponent],
   template: `
     <section class="dark:bg-menu mt-6 rounded-2xl border border-gray-200 p-4 shadow">
       <div class="text-muted-foreground flex items-center justify-between">
@@ -27,46 +18,16 @@ import { ButtonComponent, DialogComponent, DialogContentComponent, DialogFooterC
         </h3>
       </div>
 
-      <sq-document-overview #documentOverview [disabledUpload]="false" (onUpload)="uploadDialog?.showModal()"> </sq-document-overview>
+      <sq-document-overview #documentOverview [disabledUpload]="false" (onUpload)="openUploadDialog()"> </sq-document-overview>
     </section>
-
-    <dialog #uploadDialog>
-      <DialogHeader>
-        <DialogTitle>{{ 'assistant.upload' | transloco }}</DialogTitle>
-      </DialogHeader>
-
-      <DialogContent class="flex flex-col gap-4">
-        <sq-document-upload #sqDocumentUpload />
-
-        <div class="dark:bg-menu rounded-2xl border border-gray-200 p-4 shadow">
-          <div class="text-muted-foreground flex items-center">
-            <h3 class="pointer-events-none grow text-sm font-semibold">
-              <i class="far fa-folder-open me-1"></i>
-              {{ 'assistant.uploaded' | transloco }}
-            </h3>
-            <button variant="ghost" [title]="'assistant.refresh' | transloco" [attr.aria-label]="'assistant.refresh' | transloco">
-              <i class="fas fa-sync"></i>
-            </button>
-            <button
-              variant="ghost"
-              [title]="'assistant.delete-all' | transloco"
-              [attr.aria-label]="'assistant.delete-all' | transloco"
-              (click)="documentList?.deleteAllDocuments()">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-          <sq-document-list #documentList> </sq-document-list>
-        </div>
-      </DialogContent>
-
-      <DialogFooter>
-        <button decoration="outline" (click)="uploadDialog.close()">
-          {{ 'close' | transloco }}
-        </button>
-      </DialogFooter>
-    </dialog>
   `
 })
 export class AssistantUploadComponent {
+  dialogService = inject(DialogService);
+
   instanceId = input.required<string>();
+
+  openUploadDialog() {
+    this.dialogService.open(UploadDialog);
+  }
 }
