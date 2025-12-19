@@ -16,19 +16,18 @@ import {
   CustomElementsService,
   DocumentReferenceComponent,
   ImageReferenceComponent,
+  PageReferenceComponent,
+  TableToolsComponent,
   initializeCustomElements,
   markdownItCodeBlockPlugin,
   markdownItDocumentReferencePlugin,
   markdownItImageReferencePlugin,
   markdownItLinkPlugin,
   markdownItPageReferencePlugin,
-  markdownItTableToolsPlugin,
-  PageReferenceComponent,
-  TableToolsComponent
+  markdownItTableToolsPlugin
 } from '@sinequa/assistant/chat';
 import { appInitializerFn } from '@sinequa/atomic';
 import {
-  APP_FEATURES,
   ApplicationService,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
@@ -164,9 +163,6 @@ export const appConfig: ApplicationConfig = {
     // in the case of the example, we set the number of filters to 10, so if we have 15 filters, 10 will be displayed in the filter bar and 5 will be moved to the "More" button
     // if the space is not enough, the filters will be moved to the "More" button
     { provide: FILTERS_BREAKPOINT, useValue: 10 },
-
-    // this token is used to configure specific configuration within the application
-    { provide: APP_FEATURES, useValue: { assistant: { usePrefixName: false } } },
 
     // used by the upload Assistant service
     { provide: FlowInjectionToken, useValue: Flow },

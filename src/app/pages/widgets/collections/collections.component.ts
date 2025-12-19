@@ -35,18 +35,13 @@ import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui'
             <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
               {{ 'collections.cancelCreation' | transloco }}
             </button>
-            <button
-              variant="primary"
-              tabindex="1"
-              [attr.title]="'collections.save' | transloco"
-              [disabled]="!newCollectionName().trim()"
-              (click)="postCreate()">
+            <button tabindex="1" [attr.title]="'collections.save' | transloco" [disabled]="!newCollectionName().trim()" (click)="postCreate()">
               {{ 'collections.save' | transloco }}
             </button>
           </span>
         } @else {
           <div class="row-reverse flex">
-            <button variant="primary" tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
+            <button tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
               {{ 'collections.createCollection' | transloco }}
             </button>
           </div>

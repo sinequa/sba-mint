@@ -1,19 +1,17 @@
-<header class="flex items-center justify-between gap-2 text-base">
-  <a [routerLink]="['/preview', article().id]" class="overflow-hidden">
-    <p class="text-primary me-auto truncate font-bold hover:underline">{{ article().title }}</p>
-  </a>
+<details [open]="!headerCollapsed()" class="group">
+  <summary class="flex cursor-pointer items-center justify-between gap-2 text-base">
+    <p class="text-primary me-auto truncate font-bold">{{ article().title }}</p>
 
-  <button
-    variant="none"
-    title="Collapse preview header"
-    [class]="cn('hover:cursor-pointer', '[&_svg]:transition-transform [&_svg]:duration-300', headerCollapsed() && '[&_svg]:rotate-180')"
-    (click)="headerCollapsed.set(!headerCollapsed())">
-    <i class="fa-fw fa-regular fa-chevron-up"></i>
-  </button>
-</header>
+    <button
+      variant="none"
+      class="ms-auto [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out group-open:[&_svg]:rotate-90"
+      (click)="headerCollapsed.set(!headerCollapsed())"
+      aria-label="collapse preview header">
+      <ChevronRightIcon />
+    </button>
+  </summary>
 
-<!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
-<div [class]="cn('w-full', headerCollapsed() && 'hidden')">
+  <!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
   <table class="flex w-full flex-col gap-1">
     <tr>
       <th>{{ 'location' | transloco }}</th>
@@ -28,7 +26,7 @@
         <th>{{ 'lastUpdatedBy' | transloco }}</th>
 
         <td class="flex flex-wrap gap-2">
-          <Metadata decoration="outline" hover="yes" [article]="article()!" metadata="authors" />
+          <Metadata variant="outline" hover="yes" [article]="article()!" metadata="authors" />
         </td>
       </tr>
     }
@@ -64,4 +62,4 @@
       </td>
     </tr>
   </table>
-</div>
+</details>

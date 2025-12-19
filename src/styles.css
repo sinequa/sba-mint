@@ -2,22 +2,14 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+/* Application specific styles */
+@import './theme.css';
+@import './themes/sinequa.css';
+
 /* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
 @source not "../docusaurus/";
-
-/* Sinequa Tailwind utilities */
-@import '@sinequa/ui/css/utilities.css';
-
-/* Sinequa datepicker css */
-@import '@sinequa/ui/css/datepicker/styles.css';
-
-/* update this file content with your colors schema */
-@import './theme.css';
-
-/* css third-components overrides */
-@import './css-overrides/styles';
 
 *,
 *::before,
@@ -25,178 +17,11 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  height: 100%;
-}
-
 html {
   overflow-x: hidden;
 }
 
 body {
+  font-family: 'Hanken Grotesk', sans-serif;
   position: relative;
-}
-
-@layer base {
-  :root {
-    --drawer-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.1);
-    --cdk-z-index-overlay: 5000;
-
-    /* z-indexes */
-    --z-menu: 100;
-    --z-popover: 100;
-    --z-dropdown: 100;
-    --z-drawer: 2000;
-    --z-backdrop: 1000;
-    --z-multiselection: 2050;
-
-    /* Dark scrollbar for Firefox */
-    scrollbar-color: var(--muted-foreground) transparent;
-  }
-
-  /* Dark scrollbar for WebKit browsers */
-  & ::-webkit-scrollbar-track {
-    background: var(--background);
-  }
-
-  & ::-webkit-scrollbar-thumb {
-    background-color: var(--muted-foreground);
-    border-radius: 6px;
-    border: 2px solid var(--background);
-  }
-
-  & ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--foreground);
-  }
-
-  /* manage the backdrop with dialogs */
-  dialog {
-    /* opacity: 0; */
-    transition: opacity 0.2s ease-out allow-discrete;
-
-    &:open {
-      opacity: 1;
-    }
-
-    &::backdrop {
-      background-color: rgb(0 0 0 / 0%);
-      transition: background-color 0.7s allow-discrete;
-    }
-    &:open::backdrop {
-      background-color: var(--backdrop);
-      backdrop-filter: var(--backdrop-filter);
-    }
-  }
-
-  @starting-style {
-    dialog:open {
-      opacity: 0;
-    }
-  }
-
-  @starting-style {
-    dialog:open::backdrop {
-      background-color: rgb(0 0 0 / 0%);
-      backdrop-filter: none;
-    }
-  }
-
-  /* layout */
-  .layout-search {
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
-    transition: 250ms ease-out;
-    &[drawer-opened='true'] {
-      grid-template-columns: 4% 24% 25% 48%;
-    }
-  }
-  @media (max-width: 1350px) {
-    .layout-search {
-      grid-template-columns: 10% 40% 40% 10%;
-      &[drawer-opened='true'] {
-        grid-template-columns: 6% 24% 23% 47%;
-      }
-    }
-  }
-  @media (max-width: 920px) {
-    .layout-search[drawer-opened='true'] {
-      grid-template-columns: 8% 22% 23% 47%;
-    }
-  }
-}
-
-@layer utilities {
-  .scrollbar-stable {
-    scrollbar-gutter: stable;
-  }
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-  .scrollbar-none {
-    scrollbar-width: none;
-  }
-  /* neural search passages */
-  .matchlocations {
-    font-weight: 700;
-  }
-  .w-inherit {
-    width: inherit;
-  }
-}
-
-@layer components {
-  .tooltip {
-    position: fixed;
-    background-color: #333;
-    color: white;
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-family: Arial;
-    font-size: 13px;
-    pointer-events: none;
-    z-index: 1000;
-  }
-}
-
-/* drawer stack and drawer preview */
-DrawerPreview {
-  /* removes the "important!" when the position: obsolute will be removed from the component */
-  position: fixed !important;
-  top: 0;
-}
-Drawer:has(+ Drawer) {
-  transform: translateX(-5px);
-}
-Drawer:has(+ Drawer + Drawer) {
-  transform: translateX(-8px);
-}
-
-/* Override to hide bootstrap spinner */
-.spinner-grow {
-  display: none !important;
-}
-
-/* allow multi-line text in the taost description */
-[data-description] {
-  white-space: pre-line;
-}
-
-.panel-h-full {
-  --panel-max-height: 100%;
-}
-
-/* .active:not([disabled]) {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-  background-color: var(--color-secondary);
-} */
-
-ul:has(card.selected) card:not(.selected) {
-  opacity: 0.5;
-}
-
-/* safari fix */
-summary::-webkit-details-marker {
-  display: none;
 }

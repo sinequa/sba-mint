@@ -59,8 +59,8 @@
 
     <!-- if assistant is allowed -->
     @if (allowAI()) {
-      <Card variant="ai" hover="no" class="shadow-none">
-        <CardHeader class="flex items-baseline gap-1 px-0 text-base font-semibold">
+      <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 border-none bg-gradient-to-r shadow-none">
+        <CardHeader class="text-ai-card-foreground flex items-center gap-1 px-0 text-base font-semibold">
           <div class="flex size-8 items-center justify-center">
             @if (isStreaming()) {
               <i class="fas fa-spinner animate-spin"></i>
@@ -73,10 +73,12 @@
 
           <button
             variant="none"
-            [class]="cn('transition-rotate ms-auto size-8 cursor-pointer duration-150 ease-in-out', !assistantCollapsed() && 'rotate-180')"
+            [class]="
+              cn('ms-auto cursor-pointer [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out', !assistantCollapsed() && '[&_svg]:rotate-90')
+            "
             (click)="onAssistantCollapse()"
             aria-label="toggle assistant">
-            <i class="far fa-chevron-down"></i>
+            <ChevronRightIcon />
           </button>
         </CardHeader>
 
