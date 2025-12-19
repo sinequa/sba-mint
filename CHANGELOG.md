@@ -2,6 +2,141 @@
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2025-12-19
+
+### Added
+
+#### Documentation
+
+- **Features Configuration**: Added comprehensive documentation for configurable application features
+  - `allowChangePassword`: Toggle password change functionality
+  - `advancedSearch`: Enable/disable advanced search features
+  - `filterLinkChildren`: Control filter link children functionality
+  - `quickFilter`: Toggle quick filter availability
+  - `expandPreview`: Enable/disable preview expansion feature
+  - Added example JSON configuration and usage instructions to `docusaurus/docs/mint/configurations/customization.mdx`
+
+#### Components
+
+- **Upload Dialog**: New upload dialog component for assistant document uploads
+  - `src/app/pages/assistant/document-upload/upload.dialog.ts`
+  - Provides a dedicated dialog interface for document upload workflows
+
+#### Assets
+
+- **Custom Fonts**: Added HankenGrotesk font family
+  - `HankenGrotesk-Regular.ttf`
+  - `HankenGrotesk-SemiBold.ttf`
+  - `HankenGrotesk-Bold.ttf`
+
+- **Logo Assets**: Added SVG logo files
+  - `logo.svg` for standard display
+  - `logo-blanc.svg` for inverted/dark backgrounds
+
+#### Styling
+
+- **Theme System Enhancement**: Significantly expanded CSS variable system
+  - AI/Assistant colors: `--color-ai`, `--color-ai-light`, `--color-ai-dark`, `--color-ai-foreground`
+  - Warning colors: `--color-warning`, `--color-warning-light`, `--color-warning-dark`, `--color-warning-foreground`
+  - Info colors: `--color-info`, `--color-info-light`, `--color-info-dark`, `--color-info-foreground`
+  - Error colors: `--color-error`, `--color-error-light`, `--color-error-dark`, `--color-error-foreground`
+  - Backdrop styling: `--backdrop-blur`, `--backdrop-opacity`
+  - Enhanced theme customization for all color themes (Chapsvision, Green, Orange, Sinequa, Teal, Violet, Yellow)
+
+- **Chat UI**: Added new chat-related styles in `chat-v3.css`
+  - Enhanced visual feedback for chat interactions
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `3.10.2` → `^3.10.4`
+  - `@sinequa/atomic`: `^0.0.123` → `^0.0.129`
+  - `@sinequa/atomic-angular`: `^0.2.5` → `^0.3.8`
+  - `@sinequa/ui`: `^0.1.49` → `^0.2.3`
+
+#### Configuration
+
+- **Prettier**: Updated configuration to include `cva` in `tailwindFunctions` array
+  - Ensures proper formatting for class-variance-authority utility classes
+
+#### Documentation
+
+- **Tokens Documentation**: Removed `APP_FEATURES` token documentation from `tokens.md`
+  - Information now comprehensively covered in the new features section of `customization.mdx`
+
+- **Changelog**: Updated changelog title for consistency
+
+#### Component Refactoring
+
+- **Preview System**: Major refactoring for improved modularity
+  - Simplified `preview.ts` by moving logic to specialized components
+  - Enhanced `preview-tabs.ts` with better state management
+  - Improved `preview-content.ts` for better content rendering
+  - Updated `preview-header.html` and `preview-header.ts` for better UX
+  - Refined `preview-dialog.html` and `preview-dialog.ts` for dialog interactions
+  - Updated `preview-navbar` components for consistency
+
+- **Search Components**: Enhanced search functionality
+  - Improved `autocomplete.component` with better type handling
+  - Enhanced `saved-search-popover` with refined interactions
+  - Updated `search.component` with better state management
+
+- **Layout Components**: Refined user interface components
+  - Updated `app.component` with better structure
+  - Enhanced `navbar.component` with improved styling
+  - Refined `sidebar.component` for better navigation
+  - Updated `user-menu` with improved menu interactions
+
+- **Assistant Components**: Improved assistant functionality
+  - Enhanced `assistant.ts` with better integration
+  - Refactored `assistant-upload.component` with new dialog pattern
+  - Improved `assistant.layout` for better page structure
+
+- **Home Page**: Updated home component structure
+  - Improved layout and styling
+
+- **Widget Components**: Enhanced collections widget
+  - Improved `collections.component` with better validation
+
+#### Styling
+
+- **Preview Styles**: Updated `preview.css` with enhanced styling
+  - Better visual feedback for preview interactions
+
+- **Global Styles**: Cleaned up `styles.css`
+  - Moved 185 lines of CSS to more appropriate locations
+  - Better organization and maintainability
+
+- **CSS Overrides**: Enhanced `styles.css` in css-overrides
+  - Better Bootstrap to Tailwind compatibility
+
+#### Scripts
+
+- **Preview Script**: Enhanced `preview.js` with additional functionality
+
+### Removed
+
+- **Documentation**: Removed redundant `APP_FEATURES` documentation from tokens.md
+  - Information consolidated into customization.mdx features section
+
+### Migration Notes for This Release
+
+- **Theming**: If you have custom themes, review the new CSS variables for AI, warning, info, and error colors. These provide better consistency across components.
+
+- **Fonts**: The application now includes HankenGrotesk as a custom font. Ensure your deployment includes the new font files from `src/assets/fonts/`.
+
+- **Features Configuration**: The features configuration documentation has moved to a dedicated section. Update any internal documentation references accordingly.
+
+- **Preview Components**: If you've extended preview components, review the refactored structure as logic has been reorganized into more specialized components.
+
+### Breaking Changes
+
+- None
+
+---
+
 ## [Release 11.13.0] - 2025-12-05
 
 ### Changed
