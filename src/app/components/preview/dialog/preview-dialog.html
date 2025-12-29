@@ -26,20 +26,28 @@
               <Separator orientation="vertical" />
             }
             <Tabs variant="ghost" [hidden]="!sidebarExpanded()">
-              <Tab class="w-fit" shadow="none" value="previewDialog-chat" [active]="activeTab() === 'chat'" (click)="activeTab.set('chat')">
-                {{ 'previewDialog.chat' | transloco }}
-              </Tab>
-              <Tab class="w-fit" shadow="none" value="previewDialog-summary" [active]="activeTab() === 'summary'" (click)="activeTab.set('summary')">
-                {{ 'previewDialog.summary' | transloco }}
-              </Tab>
+              @if (displayChatWithDocContent()) {
+                <Tab class="w-fit" shadow="none" value="previewDialog-chat" [active]="activeTab() === 'chat'" (click)="activeTab.set('chat')">
+                  {{ 'previewDialog.chat' | transloco }}
+                </Tab>
+              }
+              @if (displaySummaryContent()) {
+                <Tab class="w-fit" shadow="none" value="previewDialog-summary" [active]="activeTab() === 'summary'" (click)="activeTab.set('summary')">
+                  {{ 'previewDialog.summary' | transloco }}
+                </Tab>
+              }
               <Tab class="w-fit" shadow="none" value="previewDialog-find" [active]="activeTab() === 'find'" (click)="activeTab.set('find')">
                 {{ 'previewDialog.find' | transloco }}
               </Tab>
             </Tabs>
           </div>
           <div class="relative overflow-hidden" [hidden]="!sidebarExpanded()">
-            <assistant [hidden]="activeTab() !== 'chat'" [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="true" />
-            <assistant [hidden]="activeTab() !== 'summary'" [instanceId]="summarizeInstanceId()" [query]="miniPreviewQuery" [showAssistant]="true" />
+            @if (displayChatWithDocContent()) {
+              <assistant [hidden]="activeTab() !== 'chat'" [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery" [showAssistant]="true" />
+            }
+            @if (displaySummaryContent()) {
+              <assistant [hidden]="activeTab() !== 'summary'" [instanceId]="summarizeInstanceId()" [query]="miniPreviewQuery" [showAssistant]="true" />
+            }
             <advanced-search
               [hidden]="activeTab() !== 'find'"
               class="absolute h-full w-full overflow-y-auto"
