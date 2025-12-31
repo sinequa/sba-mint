@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Article, CCApp, Query } from '@sinequa/atomic';
@@ -75,6 +75,19 @@ export class PreviewDialogComponent {
       return 'preview-summarize-assistant';
     }
   });
+
+  displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
+  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocIntanceId()));
+
+  constructor() {
+    effect(() => {
+      if (this.activeTab() === 'chat' && !this.displayChatWithDocContent()) {
+        this.activeTab.set(this.displaySummaryContent() ? 'summary' : 'find');
+      } else if (this.activeTab() === 'summary' && !this.displaySummaryContent()) {
+        this.activeTab.set('find');
+      }
+    });
+  }
 
   open(article: Article) {
     this.article.set(article);
