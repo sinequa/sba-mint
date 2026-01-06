@@ -1,6 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, DestroyRef, Injector, Type, afterNextRender, computed, effect, inject, runInInjectionContext, signal, viewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
@@ -22,7 +22,7 @@ import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent }
 
 import { getState } from '@ngrx/signals';
 import { error, fetchQuery } from '@sinequa/atomic';
-import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
+import { AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
 import { SearchComponent, SearchFooter } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
