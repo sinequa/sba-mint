@@ -11,6 +11,7 @@ import {
   ApplicationService,
   AppStore,
   DrawerStackService,
+  PrincipalStore,
   QueryParamsStore,
   SelectionStore
 } from '@sinequa/atomic-angular';
@@ -48,37 +49,39 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         )
       ">
       <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
-        @if (showSavedChats()) {
-          <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-muted-foreground pointer-events-none font-semibold">
-                <i class="far fa-comments me-1"></i>
-                {{ 'assistant.saved-chats' | transloco }}
-              </h3>
-              <button
-                variant="ghost"
-                size="icon"
-                [title]="'assistant.new-discussion' | transloco"
-                [attr.aria-label]="'assistant.new-discussion' | transloco"
-                (click)="chat()?.newChat()">
-                <i class="far fa-plus"></i>
-              </button>
-            </div>
-            <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
-            <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
+        @for (key of [assistantKey()]; track key) {
+          @if (showSavedChats()) {
+            <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-muted-foreground pointer-events-none font-semibold">
+                  <i class="far fa-comments me-1"></i>
+                  {{ 'assistant.saved-chats' | transloco }}
+                </h3>
+                <button
+                  variant="ghost"
+                  size="icon"
+                  [title]="'assistant.new-discussion' | transloco"
+                  [attr.aria-label]="'assistant.new-discussion' | transloco"
+                  (click)="chat()?.newChat()">
+                  <i class="far fa-plus"></i>
+                </button>
+              </div>
+              <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
+              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
+            </section>
+          }
+          <section class="pt-6">
+            <Aggregation
+              #treepath
+              name="Sources"
+              column="treepath"
+              showFiltersCount
+              collapsible
+              class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
           </section>
-        }
-        <section class="pt-6">
-          <Aggregation
-            #treepath
-            name="Sources"
-            column="treepath"
-            showFiltersCount
-            collapsible
-            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
-        </section>
-        @if (showDocumentUploader()) {
-          <assistant-upload [instanceId]="instanceId()" />
+          @if (showDocumentUploader()) {
+            <assistant-upload [instanceId]="instanceId()" />
+          }
         }
       </div>
       @if (query()) {
@@ -149,7 +152,23 @@ export class AssistantLayoutComponent {
   // queryparams input binding
   q = input<string>();
 
+  /* To force the recreation of the assistant component when the principal changes,*/
+  readonly principalStore = inject(PrincipalStore);
+  // Add to your component class
+  assistantKey = signal(0);
+  // Call this method when you need to recreate
+  recreateAssistant() {
+    this.assistantKey.update(v => v + 1);
+  }
+  /* End of assistant recreation code */
+
   constructor() {
+    effect(() => {
+      // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
+      getState(this.principalStore);
+      this.recreateAssistant();
+    });
+
     effect(() => {
       this.queryParamsStore.setFromUrl(window.location.hash);
       this.query.set(this.queryParamsStore.getQuery());

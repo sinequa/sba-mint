@@ -1,4 +1,5 @@
-import { Component, computed, inject, viewChild, viewChildren } from '@angular/core';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -20,6 +21,12 @@ import {
   UserIcon
 } from '@sinequa/ui';
 
+const THEME = ['light', 'dark', 'system'] as const;
+type Theme = (typeof THEME)[number];
+
+const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+
 @Component({
   selector: 'app-user-menu',
   imports: [
@@ -30,19 +37,29 @@ import {
     TranslocoPipe,
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
-    FlagEnglishIconComponent,
-    FlagFrenchIconComponent,
     UserIcon,
     ChevronRightIcon,
     AvatarComponent,
     AvatarImageComponent,
     AvatarFallbackComponent,
-    Separator
+    Separator,
+    NgComponentOutlet
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
 })
 export class UserMenuComponent {
+  AllThemes: { name: Theme; icon: string }[] = [
+    { name: 'light', icon: 'fa-fw fal fa-sun-bright' },
+    { name: 'dark', icon: 'fa-fw fal fa-moon' },
+    { name: 'system', icon: 'fa-fw fal fa-desktop' }
+  ] as const;
+
+  AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
+    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
+    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
+  ] as const;
+
   readonly menus = viewChildren(MenuComponent);
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
@@ -85,13 +102,19 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
+  readonly currentActiveLang = signal(this.transloco.getActiveLang());
+  readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);
 
-    if (this.transloco.getActiveLang() !== lang) this.transloco.setActiveLang(lang);
+    if (this.transloco.getActiveLang() !== lang) {
+      this.transloco.setActiveLang(lang);
+      this.currentActiveLang.set(lang);
+    }
   }
 
-  switchTheme(mode: 'light' | 'dark' | 'system') {
+  switchTheme(mode: Theme) {
     const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.classList.toggle('dark', userTheme);
     this.userSettingsStore.setUserTheme(mode);

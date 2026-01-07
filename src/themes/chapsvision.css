@@ -1,10 +1,172 @@
+@theme inline {
+  --color-sage-50: #f5f8f7;
+  --color-sage-100: #e8f0ee;
+  --color-sage-200: #d1e1dd;
+  --color-sage-300: #a9c1b8;
+  --color-sage-400: #7a9b95;
+  --color-sage-500: #607c7f;
+  --color-sage-600: #5d7374;
+  --color-sage-700: #4f6162;
+  --color-sage-800: #445556; /* 👑 */
+  --color-sage-900: #374648; /* headers */
+  --color-sage-950: #2d393a; /* sidebar */
+  --color-sage-975: #222d30;
+
+  --color-almond-50: #f1f8f4;
+  --color-almond-100: #dcefe3; /* 👑 */
+  --color-almond-200: #bbdfca;
+  --color-almond-300: #8ec7a9;
+  --color-almond-400: #5fa884;
+  --color-almond-500: #3d8c69;
+  --color-almond-600: #2c6f52;
+  --color-almond-700: #235944;
+  --color-almond-800: #1e4737;
+  --color-almond-900: #193b2e;
+  --color-almond-950: #0d211a;
+
+  --color-pink-50: #fcf7fc;
+  --color-pink-100: #faecfb;
+  --color-pink-200: #efc9f3; /* 👑 */
+  --color-pink-300: #dbbade;
+  --color-pink-400: #c9aacb;
+  --color-pink-500: #b896bb;
+  --color-pink-600: #a582ab;
+  --color-pink-700: #926e9b;
+  --color-pink-800: #7f5a8b;
+  --color-pink-900: #6c467b;
+  --color-pink-950: #4a325b;
+
+  --color-green-50: #f6faf5;
+  --color-green-100: #e5eee3;
+  --color-green-200: #c4d6c0;
+  --color-green-300: #91b38b;
+  --color-green-400: #709b67;
+  --color-green-500: #4e8344;
+  --color-green-600: #3e6936; /* 👑 */
+  --color-green-700: #2f4f29;
+  --color-green-800: #1f341b;
+  --color-green-900: #172714;
+  --color-green-950: #101a0e;
+
+  --color-orange-50: #fff6f1;
+  --color-orange-100: #ffeee2;
+  --color-orange-200: #ffddc6;
+  --color-orange-300: #ffcba9;
+  --color-orange-400: #ffba8d;
+  --color-orange-500: #df884f;
+  --color-orange-600: #bd6f3c; /* 👑 */
+  --color-orange-700: #98552a;
+  --color-orange-800: #85461e;
+  --color-orange-900: #753a13;
+  --color-orange-950: #592a0b;
+
+  --color-red-50: #ffefef;
+  --color-red-100: #ffdedf;
+  --color-red-200: #ffbebf;
+  --color-red-300: #ff9d9f;
+  --color-red-400: #ff7d7f;
+  --color-red-500: #d64a4c;
+  --color-red-600: #ad3739; /* 👑 */
+  --color-red-700: #852527;
+  --color-red-800: #701c1d;
+  --color-red-900: #5c1214;
+  --color-red-950: #47090a;
+
+  --color-blue-50: #f1f6fa;
+  --color-blue-100: #e2edf4;
+  --color-blue-200: #c5dbea;
+  --color-blue-300: #a9cadf;
+  --color-blue-400: #8cb8d5;
+  --color-blue-500: #5a87a4;
+  --color-blue-600: #45677e; /* 👑 */
+  --color-blue-700: #2f4859;
+  --color-blue-800: #253846;
+  --color-blue-900: #1a2833;
+  --color-blue-950: #101920;
+
+  --color-grey-50: #fdfefe;
+  --color-gray-100: #f9fafb;
+  --color-gray-200: #eff2f6;
+  --color-gray-300: #b9c4d5;
+  --color-gray-400: #97a6be;
+  --color-gray-500: #7685a2;
+  --color-gray-600: #626c84; /* 👑 */
+  --color-gray-700: #4d5260;
+  --color-gray-800: #36383e;
+  --color-gray-900: #272b30;
+  --color-gray-950: #171c1f;
+
+  --color-yellow-50: #fef8ed;
+  --color-yellow-100: #dcefe3;
+  --color-yellow-200: #fbe5b9;
+  --color-yellow-300: #f8d795;
+  --color-yellow-400: #f6ca72;
+  --color-yellow-500: #c89b40;
+  --color-yellow-600: #9d7930; /* 👑 */
+  --color-yellow-700: #715621;
+  --color-yellow-800: #5b4519;
+  --color-yellow-900: #463411;
+  --color-yellow-950: #30230a;
+
+  --color-cherry-50: #f8f0f1;
+  --color-cherry-100: #f1e0e4;
+  --color-cherry-200: #e2c1c8;
+  --color-cherry-300: #d4a3ad;
+  --color-cherry-400: #c58491;
+  --color-cherry-500: #bb6779;
+  --color-cherry-600: #6e3d47; /* 👑 */
+  --color-cherry-700: #49282f;
+  --color-cherry-800: #371e23;
+  --color-cherry-900: #251418;
+  --color-cherry-950: #120a0c;
+
+  --color-indigo-50: #f2f4fc;
+  --color-indigo-100: #e5e9f9;
+  --color-indigo-200: #cbd4f2;
+  --color-indigo-300: #b2beec;
+  --color-indigo-400: #98a9e5;
+  --color-indigo-500: #6779bb;
+  --color-indigo-600: #505f97; /* 👑 */
+  --color-indigo-700: #394673;
+  --color-indigo-800: #2e3961;
+  --color-indigo-900: #222c4f;
+  --color-indigo-950: #171f3d;
+
+  --color-cyan-50: #e6eff0;
+  --color-cyan-100: #d4e3e4;
+  --color-cyan-200: #b1cccd;
+  --color-cyan-300: #8db4b5;
+  --color-cyan-400: #6a9d9e;
+  --color-cyan-500: #468586;
+  --color-cyan-600: #2a5050; /* 👑 */
+  --color-cyan-700: #1c3536;
+  --color-cyan-800: #152828;
+  --color-cyan-900: #0e1b1b;
+  --color-cyan-950: #070d0d;
+
+  --text-2xs: 8px;
+  --text-2xs-line-height: 10px;
+  --text-xs: 11px;
+  --text-xs-line-height: 14px;
+  --text-sm: 12px;
+  --text-sm-line-height: 16px;
+  --text-base: 14px;
+  --text-base-line-height: 18px;
+  --text-lg: 16px;
+  --text-lg-line-height: 22px;
+  --text-xl: 20px;
+  --text-xl-line-height: 26px;
+  --text-2xl: 24px;
+  --text-2xl-line-height: 31px;
+}
+
 :root {
   --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
   --logo-large-url: url('../assets/logo/logo-sinequa.svg');
-  --logo-large-dark-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
   --logo-small: var(--logo-small-url);
   --logo-large: var(--logo-large-url);
-  --logo-large-dark: var(--logo-large-dark-url);
+  --logo-large-alt: var(--logo-large-alt-url);
   --logo-alt-text: 'Sinequa logo';
 
   --radius: 0.65rem;

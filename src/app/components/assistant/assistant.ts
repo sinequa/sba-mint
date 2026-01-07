@@ -29,7 +29,16 @@ import {
 } from '@sinequa/assistant/chat';
 
 import { Article, error, Query } from '@sinequa/atomic';
-import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AppStore,
+  DrawerStackService,
+  PreviewHighlights,
+  PreviewService,
+  PrincipalStore,
+  QueryParamsStore,
+  SelectionStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
 @Component({
@@ -37,27 +46,29 @@ import { cn } from '@sinequa/ui';
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     @if (isChatInitialized() || showAssistant()) {
-      <sq-chat-v3
-        [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0', class())"
-        #sqChat
-        [query]="_query"
-        [chat]="initChat"
-        [instanceId]="instanceId()"
-        (openPreview)="handlePreview($event)"
-        (openDocument)="handleRedirect($event)"
-        (config)="getChatConfig($event)"
-        (connection)="onConnection.emit($event)"
-        (suggestAction)="handleSuggestAction($event)"
-        [messageHandlers]="messageHandlers()" />
+      @for (key of [assistantKey()]; track key) {
+        <sq-chat-v3
+          [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0', class())"
+          #sqChat
+          [query]="_query"
+          [chat]="initChat"
+          [instanceId]="instanceId()"
+          (openPreview)="handlePreview($event)"
+          (openDocument)="handleRedirect($event)"
+          (config)="getChatConfig($event)"
+          (connection)="onConnection.emit($event)"
+          (suggestAction)="handleSuggestAction($event)"
+          [messageHandlers]="messageHandlers()" />
 
-      <ng-template #sqChatSettings>
-        <sq-chat-settings-v3
-          [style.--ast-chat-settings-width]="'570px'"
-          [instanceId]="instanceId()!"
-          (update)="handleUpdate($event)"
-          (cancel)="handleCancel($event)">
-        </sq-chat-settings-v3>
-      </ng-template>
+        <ng-template #sqChatSettings>
+          <sq-chat-settings-v3
+            [style.--ast-chat-settings-width]="'570px'"
+            [instanceId]="instanceId()!"
+            (update)="handleUpdate($event)"
+            (cancel)="handleCancel($event)">
+          </sq-chat-settings-v3>
+        </ng-template>
+      }
     }
   `,
   styleUrl: './assistant.css',
@@ -115,7 +126,23 @@ export class AssistantComponent {
     this.configOutput.emit(config);
   }
 
+  /* To force the recreation of the assistant component when the principal changes,*/
+  readonly principalStore = inject(PrincipalStore);
+  // Add to your component class
+  assistantKey = signal(0);
+  // Call this method when you need to recreate
+  protected recreateAssistant() {
+    this.assistantKey.update(v => v + 1);
+  }
+  /* End of assistant recreation code */
+
   constructor() {
+    effect(() => {
+      // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
+      getState(this.principalStore);
+      this.recreateAssistant();
+    });
+
     effect(() => {
       // each time the query params store changes, we need to update the query object
       if (this.instanceId() === undefined) return;
