@@ -104,6 +104,10 @@
   --z-backdrop: 1000;
   --z-multiselection: 2050;
 
+  /* font sizes */
+  --text-2xs: 10px;
+  --text-2xs-line-height: 10px;
+
   /* animations */
   --animate-progress: progress 5s linear infinite;
   @keyframes progress {
