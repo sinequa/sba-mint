@@ -312,4 +312,5 @@
   --ast-message-table-border-color: var(--color-muted-foreground);
   --ast-message-table-tr-bg: var(--background);
   --ast-message-table-tr-border-color: var(--color-muted-foreground);
+  --ast-message-reference-color: var(--color-neutral-700);
 }
