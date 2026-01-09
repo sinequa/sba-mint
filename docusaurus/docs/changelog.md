@@ -7,6 +7,31 @@ slug: /changelog
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2026-01-09
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `^3.10.4` → `^3.10.5`
+  - `@sinequa/atomic-angular`: `^0.3.8` → `^0.3.15`
+  - `@sinequa/ui`: `^0.2.3` → `^0.2.4`
+
+### Documentation
+
+- **Changelog**: Consolidated and updated changelog documentation for better clarity
+
+### Migration Notes
+
+- **Sinequa Packages**: Updated packages include bug fixes and enhancements - refer to their respective changelogs for details.
+
+### Breaking Changes
+
+- None
+
+---
+
 ## [Release 11.13.0] - 2025-12-19
 
 ### Added
@@ -443,6 +468,6 @@ All notable changes to the SBA Mint project for release 11.13.0.
 
 ---
 
-**Latest Release Date**: December 19, 2025  
+**Latest Release Date**: January 9, 2026  
 **Branch**: release/11.13.0  
 **Base Branch**: dev/11
