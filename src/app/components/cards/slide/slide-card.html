@@ -14,14 +14,14 @@
         (error)="thumbnailFailed.set(true)"
         alt="{{ article().title || 'Thumbnail image for the article' }}" />
       <div
-        class="text-primary group-hover/article:bg-muted/50 absolute top-0 flex size-10 min-w-10 items-center justify-center rounded-full"
+        class="text-primary group-hover/article:bg-muted/50 absolute top-0 flex size-[40px] min-w-[40px] items-center justify-center rounded-full"
         (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
         <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
         <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
       </div>
     } @else {
-      <div class="text-primary bg-muted flex size-10 min-w-10 items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
+      <div class="text-primary bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
         <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
         <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
