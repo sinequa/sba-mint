@@ -267,6 +267,10 @@ document.addEventListener('DOMContentLoaded', function () {
    * @param {string} highlights[].bgColor - The background color of the highlight.
    */
   function highlight(highlights) {
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      document.head.appendChild(styleElement);
+    }
     styleElement.textContent = highlights
       .map(function (highlight) {
         return `
@@ -317,6 +321,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function selectPassage(elements) {
+    if (!passageHighlighter) {
+      passageHighlighter = document.getElementById('sq-passage-highlighter');
+      if (!passageHighlighter) {
+        passageHighlighter = document.createElement('div');
+        passageHighlighter.id = 'sq-passage-highlighter';
+        passageHighlighter.style.position = 'absolute';
+        passageHighlighter.style.display = 'none';
+        document.body.appendChild(passageHighlighter);
+      }
+    }
     passageHighlighter.style.display = 'none';
     for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
       var el = elements_1[_i];

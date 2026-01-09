@@ -3,7 +3,7 @@ title: Recents Changes
 slug: /changelog
 ---
 
-# Changelog
+## Changelog
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
