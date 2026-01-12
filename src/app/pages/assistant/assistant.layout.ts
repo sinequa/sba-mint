@@ -3,20 +3,21 @@ import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
-import { SavedChatsComponent } from '@sinequa/assistant/chat';
+import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
-  APP_FEATURES,
   ApplicationService,
   AppStore,
   DrawerStackService,
+  PrincipalStore,
   QueryParamsStore,
   SelectionStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
+import { firstValueFrom } from 'rxjs';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -44,41 +45,45 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
     <div
       [class]="
         cn(
-          'mt-[65px] ml-18 grid h-full translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
+          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
           opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
         )
       ">
       <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
-        @if (showSavedChats()) {
-          <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-muted-foreground pointer-events-none text-sm font-semibold">
-                <i class="far fa-comments me-1"></i>
-                {{ 'assistant.saved-chats' | transloco }}
-              </h3>
-              <button
-                decoration="outline"
-                [title]="'assistant.new-discussion' | transloco"
-                [attr.aria-label]="'assistant.new-discussion' | transloco"
-                (click)="chat()?.newChat()">
-                <i class="far fa-plus"></i>
-              </button>
-            </div>
-            <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
-            <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()"> </sq-saved-chats-v3>
+        @for (key of [assistantKey()]; track key) {
+          @if (showSavedChats()) {
+            <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-muted-foreground pointer-events-none font-semibold">
+                  <i class="far fa-comments me-1"></i>
+                  {{ 'assistant.saved-chats' | transloco }}
+                </h3>
+                <button
+                  variant="ghost"
+                  size="icon"
+                  [title]="'assistant.new-discussion' | transloco"
+                  [attr.aria-label]="'assistant.new-discussion' | transloco"
+                  (click)="chat()?.newChat()">
+                  <i class="far fa-plus"></i>
+                </button>
+              </div>
+              <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
+              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
+              </sq-saved-chats-v3>
+            </section>
+          }
+          <section class="pt-6">
+            <Aggregation
+              #treepath
+              name="Sources"
+              column="treepath"
+              showFiltersCount
+              collapsible
+              class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
           </section>
-        }
-        <section class="pt-6">
-          <Aggregation
-            #treepath
-            name="Sources"
-            column="treepath"
-            showFiltersCount
-            collapsible
-            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
-        </section>
-        @if (showDocumentUploader()) {
-          <assistant-upload [instanceId]="instanceId()" />
+          @if (showDocumentUploader()) {
+            <assistant-upload [instanceId]="instanceId()" />
+          }
         }
       </div>
       @if (query()) {
@@ -107,8 +112,8 @@ export class AssistantLayoutComponent {
   drawerStackService = inject(DrawerStackService);
   opened = computed(() => this.drawerStackService.isOpened());
 
-  private readonly appFeatures = inject(APP_FEATURES);
   private readonly appStore = inject(AppStore);
+  private readonly appFeatures = this.appStore.general()?.features;
   private readonly aggregationStore = inject(AggregationsStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
@@ -118,9 +123,7 @@ export class AssistantLayoutComponent {
   query = signal<Query | undefined>(undefined);
 
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
@@ -152,7 +155,23 @@ export class AssistantLayoutComponent {
   // queryparams input binding
   q = input<string>();
 
+  /* To force the recreation of the assistant component when the principal changes,*/
+  readonly principalStore = inject(PrincipalStore);
+  // Add to your component class
+  assistantKey = signal(0);
+  // Call this method when you need to recreate
+  recreateAssistant() {
+    this.assistantKey.update(v => v + 1);
+  }
+  /* End of assistant recreation code */
+
   constructor() {
+    effect(() => {
+      // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
+      getState(this.principalStore);
+      this.recreateAssistant();
+    });
+
     effect(() => {
       this.queryParamsStore.setFromUrl(window.location.hash);
       this.query.set(this.queryParamsStore.getQuery());
@@ -202,6 +221,44 @@ export class AssistantLayoutComponent {
   handleReady(ready: boolean) {
     if (ready) {
       this.isAssistantReady.set(true);
+    }
+  }
+
+  /**
+   * Loads a saved chat and updates the query signal with the first user message content.
+   *
+   * This method fetches the saved chat history, locates the first user message,
+   * and updates the query signal with its content.
+   *
+   * @param savedChat - The saved chat object containing the chat ID to load
+   * @returns A promise that resolves when the saved chat has been loaded and processed
+   *
+   * @remarks
+   * - Requires a valid chat service instance to be available
+   * - Only processes messages with role 'user' that have content
+   * - Updates the query signal's text property with the first user message content
+   * - If no chat service is available or no user message is found, the method returns early
+   */
+  async handleLoadSavedChat(savedChat: SavedChat) {
+    // 1. fetch the saved chat to get its history
+    // 2. find the first user message in the history
+    // 3. update the query signal with the first user message content
+    const chatService = this.chat()?.sqChat()?.chatService;
+    if (!chatService) {
+      return;
+    }
+    const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
+    const history = response?.history || [];
+    const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
+    if (firstUserMessage) {
+      this.query.update(q => {
+        if (q && firstUserMessage) {
+          const newQuery = { ...q };
+          newQuery.text = firstUserMessage.content as string;
+          return newQuery;
+        }
+        return q;
+      });
     }
   }
 }

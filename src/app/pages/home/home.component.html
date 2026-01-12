@@ -13,33 +13,25 @@
       <app-autocomplete [text]="searchText()" />
     </app-search>
 
-    <div class="flex max-h-full grow flex-col">
-      <tabs class="flex font-semibold" role="tablist" aria-label="widgets tabs">
+    <Tabs class="flex max-h-full grow flex-col">
+      <TabsList class="flex w-full font-semibold" role="tablist" aria-label="widgets tabs">
         @for (tab of tabs(); track tab.label) {
-          <tab
-            variant="default"
-            role="tab"
-            [value]="tab.label"
-            class="w-fit"
-            [attr.disabled]="tab.disabled ?? null"
-            [active]="selectedTabId() === $index"
-            (click)="selectTab(tab)"
-            (keydown.enter)="selectTab(tab)">
+          <tab variant="default" role="tab" [value]="tab.label" class="w-fit" [attr.disabled]="tab.disabled ?? null" [active]="$first">
             <i class="fa-fw {{ tab.iconClass }}" aria-hidden="true"></i>
-            {{ tab.label | transloco }}
+            <span class="truncate">{{ tab.label | transloco }}</span>
           </tab>
         }
-      </tabs>
+      </TabsList>
 
       <div class="scrollbar-thin my-2 overflow-y-auto">
         @for (tab of tabs(); track tab.label) {
-          <div [class.hidden]="selectedTabId() !== $index">
+          <TabContent [value]="tab.label">
             <ng-container *ngComponentOutlet="tab.component; inputs: tab.inputs" />
-          </div>
+          </TabContent>
         }
       </div>
 
-      <HorizontalDivider />
-    </div>
+      <Separator />
+    </Tabs>
   </main>
 </div>
