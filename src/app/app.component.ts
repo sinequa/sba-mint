@@ -47,6 +47,10 @@ export class AppComponent {
       { signal: controller.signal }
     );
 
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
+      document.documentElement.classList.toggle('dark', matches);
+    });
+
     this.destroyRef.onDestroy(() => controller.abort());
   }
 

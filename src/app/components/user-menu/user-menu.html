@@ -1,5 +1,5 @@
 <menu>
-  <Avatar class="cursor-pointer">
+  <Avatar class="bg-accent text-accent-foreground hover:bg-accent/80 hover:text-accent-foreground/80 cursor-pointer">
     <AvatarImage src="" width="44" height="44" alt="avatar" />
     <AvatarFallback>
       @if (initials()) {
@@ -11,87 +11,84 @@
   </Avatar>
 
   <!-- min-w-max used to display all the content -->
-  <!-- language selection -->
   <MenuContent position="bottom-start" class="min-w-max">
+    <!-- language selection -->
     <menu position="left-start" class="dropdown-content">
-      <menuitem>
+      <MenuItem>
         <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
         <ChevronRight class="size-4" />
-      </menuitem>
+      </MenuItem>
 
-      <!-- max with to fit content but min width is 10rem (160px) -->
       <MenuContent position="left-start" class="max-w-fit min-w-40">
-        <menuitem (click)="changeLanguage('en')" class="justify-between">
-          <span>{{ 'userMenu.english' | transloco }}</span>
-          <FlagEnglish class="size-4" />
-        </menuitem>
-
-        <menuitem (click)="changeLanguage('fr')" class="justify-between">
-          <span>{{ 'userMenu.french' | transloco }}</span>
-          <FlagFrench class="size-4" />
-        </menuitem>
+        @for (lang of AllLanguages; track lang.code) {
+          <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
+            <span>{{ lang.label }}</span>
+            <div class="flex items-center gap-2">
+              @if (currentActiveLang() === lang.code) {
+                <i class="fa-fw fas fa-check text-sm"></i>
+              }
+              <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+            </div>
+          </MenuItem>
+        }
       </MenuContent>
     </menu>
 
     <!-- theme selection -->
     <menu position="left-start" class="dropdown-content">
-      <menuitem>
+      <MenuItem>
         <span class="grow">{{ 'userMenu.selectTheme' | transloco }}</span>
         <ChevronRight class="size-4" />
-      </menuitem>
+      </MenuItem>
 
-      <!-- max with to fit content but min width is 10rem (160px) -->
       <MenuContent position="left-start" class="max-w-fit min-w-40">
-        <menuitem (click)="switchTheme('light')" class="justify-between">
-          <span>{{ 'userMenu.lightMode' | transloco }}</span>
-          <i class="fa-fw fal fa-sun-bright"></i>
-        </menuitem>
-
-        <menuitem (click)="switchTheme('dark')" class="justify-between">
-          <span>{{ 'userMenu.darkMode' | transloco }}</span>
-          <i class="fa-fw fal fa-moon"></i>
-        </menuitem>
-
-        <menuitem (click)="switchTheme('system')" class="justify-between">
-          <span>{{ 'userMenu.systemMode' | transloco }}</span>
-          <i class="fa-fw fal fa-desktop"></i>
-        </menuitem>
+        @for (theme of AllThemes; track theme.name) {
+          <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
+            <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
+            <div class="flex items-center gap-2">
+              @if (currentTheme() === theme.name) {
+                <i class="fa-fw fas fa-check text-sm"></i>
+              }
+              <i class="{{ theme.icon }}"></i>
+            </div>
+          </MenuItem>
+        }
       </MenuContent>
     </menu>
 
-    <menuitem variant="destructive" (click)="handleResetUserSettings()">
+    <MenuItem variant="destructive" (click)="handleResetUserSettings()">
       <i class="fa-fw fal fa-trash text-[16px]"></i>
       <span>{{ 'userMenu.resetUserSettings' | transloco }}</span>
-    </menuitem>
+    </MenuItem>
 
     @if (isOverridingUser()) {
-      <HorizontalDivider />
+      <Separator />
     }
 
     @if (allowUserOverride() && !isOverridingUser()) {
-      <menuitem (click)="handleOverride()">
+      <MenuItem (click)="handleOverride()">
         <i class="fa-fw fal fa-user-secret text-[16px]"></i>
         <span>{{ 'userMenu.overrideUser' | transloco }}</span>
-      </menuitem>
+      </MenuItem>
     } @else if (isOverridingUser()) {
-      <menuitem (click)="handleOverrideUser()">
+      <MenuItem (click)="handleOverrideUser()">
         <i class="fa-fw fal fa-user text-[16px]"></i>
         <span>{{ 'userMenu.revertOverride' | transloco }}</span>
-      </menuitem>
+      </MenuItem>
     }
 
-    <HorizontalDivider />
+    <Separator />
 
-    <menuitem (click)="openSinequa()" class="justify-between">
+    <MenuItem (click)="openSinequa()" class="justify-between">
       <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />
       <span class="grow">{{ 'userMenu.aboutSinequa' | transloco }}</span>
       <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
-    </menuitem>
+    </MenuItem>
 
-    <menuitem (click)="handleLogout()">
+    <MenuItem (click)="handleLogout()">
       <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
       <span class="grow">{{ 'logout' | transloco }} {{ user().fullName || user().name }}</span>
-    </menuitem>
+    </MenuItem>
   </MenuContent>
 </menu>
 

@@ -349,3 +349,38 @@ For further explanations see the [Assistants Configuration](https://doc.sinequa.
 ---
 
 For more details on each configuration, refer to the Mint and Sinequa documentation or contact your administrator.
+
+### 6. features
+
+- **Purpose:** Allows you to enable specific features that are disabled by default.
+
+## Feature flags list
+
+- `allowChangePassword`: enables the password modification on the SignIn component.
+- `advancedSearch`: enables the advanced search option in the search bar autocomplete which opens a drawer with many ways of filtering.
+- `filterLinkChildren`: makes the filter items to be linked between parent and children (i.e. selecting a parent also selects the children, or unselecting a child of a selected parent unselects it).
+- `quickFilter`: allows direct clicking on any filter item to automatically apply it.
+- `expandPreview`: adds an "Expand" button in the preview drawer to open a preview in a fullscreen dialog to have a bigger preview but also with an assistant or the search on the side.
+
+## How to Use
+
+1. In Sinequa Admin, navigate to the "customization (JSON)" section.
+2. Select the `general` configuration file.
+3. Enable the desired features inside the `features` parameter.
+4. Save your changes and refresh the Mint application to see the updates.
+
+## Example
+
+```json
+{
+    "features": {
+        "allowChangePassword":true,
+        "advancedSearch": true,
+        "filterLinkChildren": true,
+        "quickFilter": true,
+        "expandPreview": true
+    },
+    ...
+}
+```
+

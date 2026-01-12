@@ -1,28 +1,27 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import { Article, CCApp, CustomHighlights, PreviewData, Query } from '@sinequa/atomic';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
+import { Article, CCApp, Query } from '@sinequa/atomic';
+import { AdvancedSearchComponent, AppStore, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import {
+  ButtonComponent,
+  ChevronLeftIconComponent,
+  ChevronRightIcon,
   DialogComponent,
   DialogContentComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-  TabsComponent,
+  Separator,
   TabComponent,
-  ButtonComponent,
-  ChevronRightIconComponent,
-  ChevronLeftIconComponent
+  TabsComponent
 } from '@sinequa/ui';
-import { PreviewContentComponent } from '../preview-content/preview-content';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { getState } from '@ngrx/signals';
-import { APP_FEATURES, AppStore, PreviewService, SelectionStore, AdvancedSearchComponent } from '@sinequa/atomic-angular';
-import { of } from 'rxjs';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { AssistantComponent } from '../../assistant/assistant';
-import { NgClass } from '@angular/common';
+import { PreviewContentComponent } from '../preview-content/preview-content';
 
 @Component({
   selector: 'preview-dialog, PreviewDialog, previewdialog',
   imports: [
+    ButtonComponent,
     DialogComponent,
     DialogContentComponent,
     DialogTitleComponent,
@@ -33,18 +32,18 @@ import { NgClass } from '@angular/common';
     TranslocoPipe,
     AssistantComponent,
     AdvancedSearchComponent,
-    NgClass,
-    ButtonComponent,
-    ChevronRightIconComponent,
-    ChevronLeftIconComponent
+    ChevronRightIcon,
+    ChevronLeftIconComponent,
+    Separator
   ],
+  providers: [PreviewService],
   templateUrl: './preview-dialog.html'
 })
 export class PreviewDialogComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
-  protected readonly appFeatures = inject(APP_FEATURES);
+  protected readonly appFeatures = this.appStore.general()?.features;
 
   public readonly article = signal<Article | undefined>(undefined);
   public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
@@ -58,9 +57,7 @@ export class PreviewDialogComponent {
   miniPreviewQuery: Query = {} as Query;
 
   readonly chatWithDocIntanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-chatwithdoc-assistant`;
@@ -70,9 +67,7 @@ export class PreviewDialogComponent {
   });
 
   readonly summarizeInstanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-summarize-assistant`;
@@ -81,28 +76,18 @@ export class PreviewDialogComponent {
     }
   });
 
-  /* resources */
-  public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
-    params: () => {
-      const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
-      return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
-    },
-    defaultValue: {} as PreviewData,
-    stream: ({ params: { id, text, previewHighlights } }) => {
-      if (id) {
-        return this.previewservice.preview(id, { name: this.queryName, text }, previewHighlights);
-      }
-      return of({} as PreviewData);
-    }
-  });
+  displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
+  displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocIntanceId()));
 
-  /* computed signals */
-  previewData = computed(() => {
-    if (this.previewDataResource.hasValue()) {
-      return this.previewDataResource.value();
-    }
-    return undefined;
-  });
+  constructor() {
+    effect(() => {
+      if (this.activeTab() === 'chat' && !this.displayChatWithDocContent()) {
+        this.activeTab.set(this.displaySummaryContent() ? 'summary' : 'find');
+      } else if (this.activeTab() === 'summary' && !this.displaySummaryContent()) {
+        this.activeTab.set('find');
+      }
+    });
+  }
 
   open(article: Article) {
     this.article.set(article);

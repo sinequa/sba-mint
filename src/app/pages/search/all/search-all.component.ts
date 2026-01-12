@@ -2,16 +2,15 @@ import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
-import { TranslocoPipe } from '@jsverse/transloco';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
 import {
   AggregationsStore,
-  APP_FEATURES,
   AppStore,
   DidYouMeanComponent,
   DrawerStackService,
@@ -30,7 +29,7 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
@@ -65,7 +64,8 @@ type QueryParamsProps = {
     CardComponent,
     CardHeaderComponent,
     CardContentComponent,
-    TranslocoPipe
+    TranslocoPipe,
+    ChevronRightIcon
   ],
   templateUrl: './search-all.component.html',
   styles: [
@@ -96,8 +96,8 @@ export class SearchAllComponent {
   protected readonly drawerStack = inject(DrawerStackService);
   protected readonly selectionService = inject(SelectionService);
 
-  protected readonly appFeatures = inject(APP_FEATURES);
   protected readonly appStore = inject(AppStore);
+  protected readonly appFeatures = this.appStore.general()?.features;
   protected readonly aggregationsStore = inject(AggregationsStore);
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
@@ -249,9 +249,7 @@ export class SearchAllComponent {
    * Assistant related properties
    */
   readonly instanceId = computed(() => {
-    const {
-      assistant: { usePrefixName = true }
-    } = this.appFeatures;
+    const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-search-results-assistant`;

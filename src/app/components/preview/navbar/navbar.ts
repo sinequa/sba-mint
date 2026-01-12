@@ -3,6 +3,8 @@ import { Component, DestroyRef, Input, computed, inject, input, model, viewChild
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { Article } from '@sinequa/atomic';
 import {
   AppStore,
@@ -13,10 +15,8 @@ import {
   DrawerStackService,
   PreviewService
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIconComponent, VerticalDividerComponent, cn } from '@sinequa/ui';
+import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from '@sinequa/ui';
 import { PreviewDialogComponent } from '../dialog/preview-dialog';
-import { Event, NavigationEnd, Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -35,11 +35,11 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     BookmarkButtonComponent,
     TranslocoPipe,
     ButtonComponent,
-    LinkIconComponent,
+    LinkIcon,
     CircleCheckIconComponent,
     DrawerNavbarComponent,
-    VerticalDividerComponent,
-    PreviewDialogComponent
+    PreviewDialogComponent,
+    Separator
   ],
   templateUrl: './navbar.html',
   providers: [DrawerService]
@@ -70,7 +70,16 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
-  readonly hasExternalLink = computed(() => !!this.article()?.url1);
+  readonly isExternalLinkValid = computed(() => {
+    if (!this.article()?.url1) return false;
+
+    try {
+      const url = new URL(this.article()?.url1!);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  });
 
   /**
    * Computed property that determines whether the navigation bar is in an extended state.
@@ -81,7 +90,7 @@ export class PreviewNavbarComponent {
    */
   public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
 
-  expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
+  expandPreview = computed(() => true); //this.appStore.general()?.features?.expandPreview);
 
   public copied: boolean = false;
   public backLevel = 0;
