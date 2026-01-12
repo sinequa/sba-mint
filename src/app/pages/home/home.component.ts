@@ -7,7 +7,6 @@ import {
   AggregationsStore,
   ApplicationService,
   AppStore,
-  ApplicationService,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
