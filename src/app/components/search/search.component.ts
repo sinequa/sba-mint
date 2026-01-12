@@ -134,10 +134,7 @@ export class SearchComponent {
   // this computed allows to remove the padding
   protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
 
-  protected allowEmptySearch = computed(() => {
-    const { queryName } = this.route.snapshot.data;
-    return this.appStore.allowEmptySearch(queryName);
-  });
+  protected allowEmptySearch = signal(false);
 
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
@@ -177,6 +174,18 @@ export class SearchComponent {
     effect(() => {
       const { text } = getState(this.queryParamsStore);
       this.form.controls.searchInputText.setValue(text || '');
+    });
+
+    effect(() => {
+      getState(this.queryParamsStore);
+      const allowEmptySearchWithFilters = this.queryParamsStore.allowEmptySearchWithFilters();
+      const { queryName } = this.route.snapshot.data;
+      const allowEmptySearch = this.appStore.allowEmptySearch(queryName);
+      if (!allowEmptySearch && allowEmptySearchWithFilters) {
+        this.allowEmptySearch.set(allowEmptySearchWithFilters);
+      } else {
+        this.allowEmptySearch.set(allowEmptySearch);
+      }
     });
 
     // focus monitor to track focus origin
