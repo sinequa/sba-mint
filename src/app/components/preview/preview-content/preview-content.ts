@@ -17,7 +17,7 @@ import { PreviewActionsComponent } from './actions';
     @if (canLoadIframe()) {
       <section class="relative flex h-full flex-col gap-4">
         <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
-        <preview-actions class="absolute top-4 right-8 inline-flex justify-end rounded-md" />
+        <preview-actions class="bg-muted/90 absolute top-4 right-8 inline-flex justify-end rounded-md" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </section>
     } @else if (previewUrlError()) {

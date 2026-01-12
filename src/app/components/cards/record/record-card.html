@@ -9,7 +9,7 @@
   <CardHeader class="shrink-0 grow">
     <!-- Cascading overflow-auto to the title so it gets truncated -->
     <header class="flex grow items-center gap-3 overflow-auto">
-      <div class="text-primary bg-muted flex size-10 min-w-10 items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
+      <div class="text-primary bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
         <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
         <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>

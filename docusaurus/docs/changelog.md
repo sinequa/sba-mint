@@ -7,6 +7,268 @@ slug: /changelog
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2026-01-09
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `^3.10.4` → `^3.10.5`
+  - `@sinequa/atomic-angular`: `^0.3.8` → `^0.3.15`
+  - `@sinequa/ui`: `^0.2.3` → `^0.2.4`
+
+### Documentation
+
+- **Changelog**: Consolidated and updated changelog documentation for better clarity
+
+### Migration Notes
+
+- **Sinequa Packages**: Updated packages include bug fixes and enhancements - refer to their respective changelogs for details.
+
+### Breaking Changes
+
+- None
+
+---
+
+## [Release 11.13.0] - 2025-12-19
+
+### Added
+
+#### Documentation
+
+- **Features Configuration**: Added comprehensive documentation for configurable application features
+  - `allowChangePassword`: Toggle password change functionality
+  - `advancedSearch`: Enable/disable advanced search features
+  - `filterLinkChildren`: Control filter link children functionality
+  - `quickFilter`: Toggle quick filter availability
+  - `expandPreview`: Enable/disable preview expansion feature
+  - Added example JSON configuration and usage instructions to `docusaurus/docs/mint/configurations/customization.mdx`
+
+#### Components
+
+- **Upload Dialog**: New upload dialog component for assistant document uploads
+  - `src/app/pages/assistant/document-upload/upload.dialog.ts`
+  - Provides a dedicated dialog interface for document upload workflows
+  - Integrated document list and upload components with delete capabilities
+
+#### Assets
+
+- **Custom Fonts**: Added HankenGrotesk font family
+  - `HankenGrotesk-Regular.ttf`
+  - `HankenGrotesk-SemiBold.ttf`
+  - `HankenGrotesk-Bold.ttf`
+
+- **Logo Assets**: Added new SVG logo files for consistent branding
+  - `logo-sinequa.svg` and `logo-sinequa-blanc.svg` for Sinequa branded themes
+  - `logo-small.svg` and `logo-small-blanc.svg` for compact display
+  - `logo.svg` and `logo-blanc.svg` for standard display
+
+#### Styling
+
+- **Theme System Enhancement**: Significantly expanded CSS variable system
+  - AI/Assistant colors: `--color-ai`, `--color-ai-light`, `--color-ai-dark`, `--color-ai-foreground`
+  - Warning colors: `--color-warning`, `--color-warning-light`, `--color-warning-dark`, `--color-warning-foreground`
+  - Info colors: `--color-info`, `--color-info-light`, `--color-info-dark`, `--color-info-foreground`
+  - Error colors: `--color-error`, `--color-error-light`, `--color-error-dark`, `--color-error-foreground`
+  - Backdrop styling: `--backdrop-blur`, `--backdrop-opacity`
+  - Enhanced theme customization for all color themes (Chapsvision, Green, Orange, Sinequa, Teal, Violet, Yellow)
+
+- **Logo Customization**: Added logo CSS variables to themes
+  - `--logo-small-url`, `--logo-large-url`, `--logo-large-alt-url` for light mode
+  - `--logo-dark-small`, `--logo-dark-large` for dark mode overrides
+  - `--logo-alt-text` for accessibility
+
+- **Chat UI**: Enhanced chat-related styles in `chat-v3.css`
+  - Improved visual feedback for chat interactions
+  - Fixed destructive button hover state using `oklch` color function
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `3.10.2` → `^3.10.4`
+  - `@sinequa/atomic`: `^0.0.123` → `^0.0.129`
+  - `@sinequa/atomic-angular`: `^0.2.5` → `^0.3.8`
+  - `@sinequa/ui`: `^0.1.49` → `^0.2.3`
+
+#### Configuration
+
+- **Prettier**: Updated configuration to include `cva` in `tailwindFunctions` array
+  - Ensures proper formatting for class-variance-authority utility classes
+
+- **Environment**: Changed default app name in `environment.ts`
+  - `app: 'training-mint'` → `app: 'mint_rnd'`
+
+#### Documentation
+
+- **Tokens Documentation**: Removed `APP_FEATURES` token documentation from `tokens.md`
+  - Information now comprehensively covered in the new features section of `customization.mdx`
+
+- **Changelog**: Updated changelog title for consistency and improved formatting
+
+#### Component Refactoring
+
+- **Preview System**: Major refactoring for improved modularity and maintainability
+  - Simplified `preview.ts` by moving logic to specialized components
+  - Enhanced `preview-tabs.ts` with better state management and assistant integration
+  - Improved `preview-content.ts` for better content rendering and actions background styling
+  - Updated `preview-header.html` and `preview-header.ts` for better UX
+  - Refined `preview-dialog.html` and `preview-dialog.ts` for dialog interactions
+    - Added assistant permission checking with `displaySummaryContent()` and `displayChatWithDocContent()`
+    - Implemented automatic tab switching when assistants are disabled
+  - Updated `preview-navbar` components for consistency
+
+- **Search Components**: Enhanced search functionality
+  - Improved `autocomplete.component` with better type handling and search suggestions
+  - Enhanced `saved-search-popover` with refined interactions
+  - Updated `search.component` with better state management and foreground text color
+
+- **Layout Components**: Refined user interface components
+  - Updated `app.component` with better structure and app features store integration
+  - Enhanced `navbar.component` with improved styling
+  - Refined `sidebar.component` for better navigation
+  - Updated `user-menu` with dynamic language and theme menus
+    - Added checkmark indicators for current selection
+    - Refactored to use `AllLanguages` and `AllThemes` arrays
+    - Improved component structure with `NgComponentOutlet` for flag icons
+
+- **Assistant Components**: Improved assistant functionality
+  - Enhanced `assistant.ts` with better integration
+  - Refactored `assistant-upload.component` to use new upload dialog pattern
+  - Improved `assistant.layout` with saved chat loading functionality
+    - Added `handleLoadSavedChat()` method to populate query from saved chat history
+    - Implemented assistant recreation on principal store changes
+    - Enhanced integration with treepath aggregations
+
+- **Home Page**: Updated home component structure
+  - Improved layout and styling
+  - Updated logo display to use content utility classes
+
+- **Collections Widget**: Enhanced collections functionality
+  - Added validation for empty collection names
+  - Prevents creation of collections with whitespace-only names
+
+#### Styling
+
+- **Theme Organization**: Major refactoring of CSS variable structure
+  - Moved 185+ lines of theme variables from `theme.css` to individual theme files
+  - Each theme file now contains its complete color palette and configuration
+  - Improved maintainability and theme customization
+  - Logo variables now properly scoped per theme
+
+- **Preview Styles**: Updated `preview.css` with enhanced styling
+  - Better visual feedback for preview interactions
+  - Actions now have proper background (`bg-muted/90`) for visibility
+
+- **Global Styles**: Reorganized `styles.css`
+  - Removed 185 lines of CSS moved to theme files
+  - Better organization and maintainability
+
+- **CSS Overrides**: Enhanced compatibility
+  - Added missing `.fw-bold` utility class mapping to Tailwind's `font-bold`
+  - Updated `saved-chat-v3.css` for better dark mode support
+
+- **Search Input**: Added foreground text color class for better contrast
+
+- **Line Endings**: Normalized `highlights.css` line endings (CRLF)
+
+#### Scripts
+
+- **Preview Script**: Enhanced `preview.js` with improved frameset handling
+  - Better zoom functionality for nested iframes
+  - Fixed iframe body element detection
+  - Improved message passing for nested framesets
+  - Enhanced highlighting for documents with framesets
+
+### Removed
+
+- **Documentation**: Removed redundant `APP_FEATURES` documentation from tokens.md
+  - Information consolidated into customization.mdx features section
+
+### Fixed
+
+#### Preview Components
+
+- **Dark Mode Styling**: Fixed preview action buttons dark mode text color
+  - Changed from `dark:text-background` to `dark:text-white` for better visibility
+  - Applied consistently across all preview action buttons
+
+#### Scripts
+
+- **Preview.js**: Fixed frameset document handling
+  - Improved body element selection for documents with frameset structure
+  - Better zoom factor calculation and application
+
+### Migration Notes
+
+#### For Developers
+
+1. **Theming**: If you have custom themes, review the new CSS variables for AI, warning, info, and error colors. These provide better consistency across components. Theme variables are now organized per-theme rather than globally.
+
+2. **Logo Configuration**: Use the new logo CSS variables in your theme files:
+
+   ```css
+   --logo-small-url: url('../assets/logo/your-logo-small.svg');
+   --logo-large-url: url('../assets/logo/your-logo-large.svg');
+   --logo-alt-text: 'Your Company Name';
+   ```
+
+3. **Fonts**: The application now includes HankenGrotesk as a custom font. Ensure your deployment includes the new font files from `src/assets/fonts/`.
+
+4. **Features Configuration**: The features configuration documentation has moved to a dedicated section. Update any internal documentation references accordingly.
+
+5. **Preview Components**: If you've extended preview components, review the refactored structure as logic has been reorganized into more specialized components.
+
+6. **User Menu**: If you've customized the user menu, note the refactored structure using arrays for languages and themes with dynamic rendering.
+
+7. **Environment Configuration**: Update your environment files if you're using the default app name - it has changed from `training-mint` to `mint_rnd`.
+
+### Breaking Changes
+
+- None
+
+---
+
+## [Release 11.13.0] - 2025-12-05
+
+### Changed
+
+#### Dependencies
+
+- **Angular Core Packages**: Updated from v20.0.0 to v20.3.15
+  - `@angular/animations`: `^20.0.0` → `^20.3.15`
+  - `@angular/common`: `^20.0.0` → `^20.3.15`
+  - `@angular/compiler`: `^20.0.0` → `^20.3.15`
+  - `@angular/core`: `^20.0.0` → `^20.3.15`
+  - `@angular/elements`: `^20.3.1` → `^20.3.15`
+  - `@angular/forms`: `^20.0.0` → `^20.3.15`
+  - `@angular/platform-browser`: `^20.0.0` → `^20.3.15`
+  - `@angular/platform-browser-dynamic`: `^20.0.0` → `^20.3.15`
+  - `@angular/router`: `^20.0.0` → `^20.3.15`
+
+- **Angular CDK**: Updated from v20.0.1 to v20.2.14
+  - `@angular/cdk`: `^20.0.1` → `^20.2.14`
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/atomic`: `^0.0.123` → `^0.0.124`
+  - `@sinequa/atomic-angular`: `^0.2.5` → `^0.2.10`
+  - `@sinequa/ui`: `^0.1.49` → `^0.1.51`
+
+- **Angular Dev Dependencies**: Updated build tools
+  - `@angular/build`: `^20.0.0` → `^20.3.13`
+  - `@angular/cli`: `^20.0.0` → `^20.3.13`
+  - `@angular/compiler-cli`: `^20.0.0` → `^20.3.15`
+
+### Migration Notes
+
+- **Angular 20.3.15**: This update includes bug fixes and performance improvements. No code changes required for existing implementations.
+- **Sinequa Packages**: Updated packages may include new features or fixes - refer to their respective [changelogs](https://github.com/sinequa/sba-mint/blob/dev/11/CHANGELOG_SQ.md) for details.
+
+---
+
 ## [Release 11.13.0] - 2025-11-29
 
 ### Added
@@ -206,6 +468,6 @@ All notable changes to the SBA Mint project for release 11.13.0.
 
 ---
 
-**Release Date**: November 29, 2025  
+**Latest Release Date**: January 9, 2026  
 **Branch**: release/11.13.0  
 **Base Branch**: dev/11

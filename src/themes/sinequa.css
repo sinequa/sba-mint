@@ -1,11 +1,13 @@
 :root {
-  --radius: 0.375rem;
-  --radius-button: var(--radius-md);
   --logo-small-url: url('../assets/logo/small.svg');
   --logo-large-url: url('../assets/logo/large.svg');
   --logo-small: var(--logo-small-url);
   --logo-large: var(--logo-large-url);
+  --logo-large-alt: var(--logo-large);
   --logo-alt-text: 'Sinequa logo';
+
+  --radius: 0.375rem;
+  --radius-button: var(--radius-md);
 
   --background: white;
   --foreground: var(--color-gray-950);
@@ -70,11 +72,6 @@
 }
 
 .dark {
-  #logo {
-    --logo-small: var(--logo-dark-small, var(--logo-small-url));
-    --logo-large: var(--logo-dark-large, var(--logo-large-url));
-  }
-
   --background: #282828;
   --foreground: #e5e5e5;
 
