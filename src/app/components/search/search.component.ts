@@ -22,7 +22,7 @@ import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 import { debounceTime, Subject } from 'rxjs';
 
-import { CCApp } from '@sinequa/atomic';
+import { CCApp, warn } from '@sinequa/atomic';
 import { AppStore, AutocompleteService, DrawerAdvancedFiltersComponent, DrawerStackService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
@@ -134,8 +134,10 @@ export class SearchComponent {
   // this computed allows to remove the padding
   protected hasFooter = computed(() => !!this.searchFooterComponent().nativeElement.childNodes.length);
 
-  protected allowEmptySearch = signal(false);
-
+  protected allowEmptySearch = computed(() => {
+    const { queryName } = this.route.snapshot.data;
+    return this.appStore.allowEmptySearch(queryName);
+  });
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
@@ -174,14 +176,6 @@ export class SearchComponent {
     effect(() => {
       const { text } = getState(this.queryParamsStore);
       this.form.controls.searchInputText.setValue(text || '');
-    });
-
-    effect(() => {
-      getState(this.queryParamsStore);
-      const allowEmptySearchWithFilters = this.queryParamsStore.allowEmptySearchWithFilters();
-      const { queryName } = this.route.snapshot.data;
-      const allowEmptySearch = this.appStore.allowEmptySearch(queryName);
-      this.allowEmptySearch.set(Boolean(allowEmptySearch || allowEmptySearchWithFilters));
     });
 
     // focus monitor to track focus origin
@@ -231,7 +225,7 @@ export class SearchComponent {
     this.dropdownComponent().close();
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
-      console.warn(message);
+      warn(message);
       toast.info(message);
       return;
     }
