@@ -181,7 +181,7 @@ export class SearchComponent {
       const allowEmptySearchWithFilters = this.queryParamsStore.allowEmptySearchWithFilters();
       const { queryName } = this.route.snapshot.data;
       const allowEmptySearch = this.appStore.allowEmptySearch(queryName);
-      this.allowEmptySearch.set(allowEmptySearch || allowEmptySearchWithFilters);
+      this.allowEmptySearch.set(Boolean(allowEmptySearch || allowEmptySearchWithFilters));
     });
 
     // focus monitor to track focus origin
