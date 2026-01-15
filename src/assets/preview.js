@@ -3,16 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
   var parentOrigin = '*';
   var styleElement;
   var fitFactor = null;
+  var passageHighlighter;
 
   window.addEventListener('message', receiveMessage);
 
-  // frameset cause an issue here
-  var bodyElement = document.querySelector('body');
-  if (bodyElement === null) {
-    bodyElement = document.querySelector('frameset');
+  var bodyElement = document.body;
+  if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
+    bodyElement = document.querySelector('frameset>frame').contentDocument.body;
   }
-  var computedStyle = getComputedStyle(bodyElement);
-  var passageHighlighter;
 
   zoomFit();
 
@@ -51,7 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const body = bodyElement;
+    let body = document.body;
+    if (body === null || body.tagName == 'FRAMESET') {
+      body = document.querySelector('frameset>frame').contentDocument.body;
+    }
     const width = body.getBoundingClientRect().width;
 
     // select only span if div, img or table are not present
@@ -154,24 +155,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // ---- zoom ----
       case 'zoom-in': {
-        if (frames.length > 0) {
-          bodyElement = frames[0].document.body;
-          computedStyle = window.getComputedStyle(bodyElement);
+        bodyElement = document.body;
+        if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
+          bodyElement = document.querySelector('frameset>frame').contentDocument.body;
         }
-        computedStyle = window.getComputedStyle(bodyElement);
-        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
+        var factor = parseFloat(bodyElement.style.getPropertyValue('--factor') || 1);
         var max = Math.min(3, factor + 0.2);
         zoom(max);
         break;
       }
 
       case 'zoom-out': {
-        if (frames.length > 0) {
-          bodyElement = frames[0].document.body;
-          computedStyle = window.getComputedStyle(bodyElement);
+        bodyElement = document.body;
+        if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
+          bodyElement = document.querySelector('frameset>frame').contentDocument.body;
         }
-        computedStyle = window.getComputedStyle(bodyElement);
-        var factor = parseFloat(computedStyle.getPropertyValue('--factor'));
+        var factor = parseFloat(bodyElement.style.getPropertyValue('--factor') || 1);
         var min = Math.max(0.2, factor - 0.2);
         zoom(min);
         break;
@@ -219,6 +218,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function zoom(value) {
+    let bodyElement = document.body;
+    if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
+      bodyElement = document.querySelector('frameset>frame').contentDocument.body;
+    }
     const elts = bodyElement.querySelectorAll('p');
     const firstVisibleElt = Array.from(elts).find(elt => {
       const { top, bottom } = elt.getBoundingClientRect();
@@ -232,12 +235,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function returnMessage(type, data) {
     parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
+    // in case of nested iframes (frameset)
+    parent?.parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
   }
 
   function init(origin, highlights) {
     parentOrigin = origin;
-    styleElement = document.createElement('style');
-    document.head.appendChild(styleElement);
     passageHighlighter = document.createElement('div');
     passageHighlighter.id = 'sq-passage-highlighter';
     passageHighlighter.style.position = 'absolute';
@@ -267,24 +270,35 @@ document.addEventListener('DOMContentLoaded', function () {
    * @param {string} highlights[].bgColor - The background color of the highlight.
    */
   function highlight(highlights) {
-    if (!styleElement) {
+    // remove the style element
+    if (styleElement && styleElement.parentNode) {
+      styleElement.parentNode.removeChild(styleElement);
+    }
+
+    const bodyElement = document.body;
+    if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
+      const frameDocument = document.querySelector('frameset>frame').contentDocument;
+      styleElement = frameDocument.createElement('style');
+      frameDocument.head.appendChild(styleElement);
+    } else {
       styleElement = document.createElement('style');
       document.head.appendChild(styleElement);
     }
+
     styleElement.textContent = highlights
       .map(function (highlight) {
         return `
-                    span.${highlight.name} {
-                        color: ${highlight.color || 'black'};
-                        background-color: ${highlight.bgColor || 'yellow'};
-                    }
-                    tspan.${highlight.name} {
-                        fill: ${highlight.color || 'black'};
-                    }
-                    rect.${highlight.name} {
-                        fill: ${highlight.bgColor || 'yellow'};
-                    }
-                `;
+          span.${highlight.name} {
+              color: ${highlight.color || 'black'};
+              background-color: ${highlight.bgColor || 'yellow'};
+          }
+          tspan.${highlight.name} {
+              fill: ${highlight.color || 'black'};
+          }
+          rect.${highlight.name} {
+              fill: ${highlight.bgColor || 'yellow'};
+          }
+      `;
       })
       .join('');
   }
