@@ -2,7 +2,6 @@
   "name": "sinequa-mint",
   "version": "0.0.0",
   "scripts": {
-    "aa": "rmdir .angular /s /q && npm i C:\\workspace\\sba-atomic-angular\\dist\\atomic-angular && npm start",
     "build": "ng build",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal",
@@ -20,7 +19,6 @@
     "t:extract": "transloco-scoped-libs",
     "test": "ng test",
     "transloco:extract-scoped-libs": "npm run t:extract",
-    "ui": "npm i C:\\workspace\\sba-atomic-angular\\dist\\atomic-ui",
     "watch": "ng build --watch --configuration development"
   },
   "lint-staged": {
