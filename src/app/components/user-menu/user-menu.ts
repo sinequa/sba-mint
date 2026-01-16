@@ -1,19 +1,23 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, inject, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
-import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AppStore,
+  OverrideUserDialogComponent,
+  PrincipalStore,
+  ResetUserSettingsDialogComponent,
+  UserSettingsStore,
+  UserProfileDialog
+} from '@sinequa/atomic-angular';
 import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
   ChevronRightIcon,
-  FlagEnglishIconComponent,
-  FlagFrenchIconComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
@@ -23,9 +27,6 @@ import {
 
 const THEME = ['light', 'dark', 'system'] as const;
 type Theme = (typeof THEME)[number];
-
-const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
-type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 @Component({
   selector: 'app-user-menu',
@@ -43,7 +44,7 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    NgComponentOutlet
+    UserProfileDialog
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
@@ -55,14 +56,11 @@ export class UserMenuComponent {
     { name: 'system', icon: 'fa-fw fal fa-desktop' }
   ] as const;
 
-  AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
-    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
-    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
-  ] as const;
-
   readonly menus = viewChildren(MenuComponent);
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
+  readonly userProfileDialog = viewChild(UserProfileDialog);
+
   private readonly router = inject(Router);
   private readonly principalStore = inject(PrincipalStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
@@ -102,17 +100,7 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
-  readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
-
-  changeLanguage(lang: string) {
-    this.userSettingsStore.updateLanguage(lang);
-
-    if (this.transloco.getActiveLang() !== lang) {
-      this.transloco.setActiveLang(lang);
-      this.currentActiveLang.set(lang);
-    }
-  }
 
   switchTheme(mode: Theme) {
     const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -127,6 +115,10 @@ export class UserMenuComponent {
 
   handleOverride() {
     this.overrideUserDialog()?.open();
+  }
+
+  handleUserProfile() {
+    this.userProfileDialog()?.open();
   }
 
   handleOverrideUser() {
