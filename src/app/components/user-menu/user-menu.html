@@ -16,6 +16,7 @@
       <i class="fa-fw fal fa-user text-[16px]"></i>
       <span>{{ 'userMenu.manageProfile' | transloco }}</span>
     </MenuItem>
+    <Separator />
 
     <!-- theme selection -->
     <menu position="left-start" class="dropdown-content">
@@ -23,6 +24,7 @@
         <span class="grow">{{ 'userMenu.selectTheme' | transloco }}</span>
         <ChevronRight class="size-4" />
       </MenuItem>
+      <Separator />
 
       <MenuContent position="left-start" class="max-w-fit min-w-40">
         @for (theme of AllThemes; track theme.name) {

@@ -49,7 +49,7 @@
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
     "@sinequa/assistant": "^3.10.5",
-    "@sinequa/atomic": "^0.0.129",
+    "@sinequa/atomic": "^0.0.132",
     "@sinequa/atomic-angular": "^0.3.13",
     "@sinequa/ui": "^0.2.4",
     "@tailwindcss/postcss": "^4.1.3",
