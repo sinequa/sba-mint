@@ -50,6 +50,7 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
         )
       ">
       <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
+        <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
             <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
@@ -68,18 +69,22 @@ import { AssistantUploadComponent } from './document-upload/assistant-upload.com
                 </button>
               </div>
               <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
-              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)"> </sq-saved-chats-v3>
+              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
+              </sq-saved-chats-v3>
             </section>
           }
-          <section class="pt-6">
-            <Aggregation
-              #treepath
-              name="Sources"
-              column="treepath"
-              showFiltersCount
-              collapsible
-              class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
-          </section>
+        }
+        <section class="pt-6">
+          <Aggregation
+            #treepath
+            name="Sources"
+            column="treepath"
+            showFiltersCount
+            collapsible
+            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
+        </section>
+        <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
+        @for (key of [assistantKey()]; track key) {
           @if (showDocumentUploader()) {
             <assistant-upload [instanceId]="instanceId()" />
           }
@@ -169,6 +174,8 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
+      // also start a new chat
+      this.chat()?.newChat();
     });
 
     effect(() => {
