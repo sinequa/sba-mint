@@ -133,7 +133,7 @@ export class HomeComponent {
 
     effect(() => {
       const state = getState(this.queryParamsStore);
-      if (state.filters.length > 0) {
+      if (state.filters !== undefined && state.filters.length > 0) {
         this.search(this.searchText());
       }
     });
