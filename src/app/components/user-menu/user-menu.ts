@@ -1,4 +1,5 @@
-import { Component, computed, inject, viewChild, viewChildren } from '@angular/core';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -18,6 +19,8 @@ import {
   AvatarFallbackComponent,
   AvatarImageComponent,
   ChevronRightIcon,
+  FlagEnglishIconComponent,
+  FlagFrenchIconComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
@@ -27,6 +30,9 @@ import {
 
 const THEME = ['light', 'dark', 'system'] as const;
 type Theme = (typeof THEME)[number];
+
+const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 @Component({
   selector: 'app-user-menu',
@@ -44,7 +50,8 @@ type Theme = (typeof THEME)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    UserProfileDialog
+    UserProfileDialog,
+    NgComponentOutlet
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
@@ -54,6 +61,11 @@ export class UserMenuComponent {
     { name: 'light', icon: 'fa-fw fal fa-sun-bright' },
     { name: 'dark', icon: 'fa-fw fal fa-moon' },
     { name: 'system', icon: 'fa-fw fal fa-desktop' }
+  ] as const;
+
+  AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
+    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
+    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
   ] as const;
 
   readonly menus = viewChildren(MenuComponent);
@@ -100,7 +112,17 @@ export class UserMenuComponent {
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
+  readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+
+  changeLanguage(lang: string) {
+    this.userSettingsStore.updateLanguage(lang);
+
+    if (this.transloco.getActiveLang() !== lang) {
+      this.transloco.setActiveLang(lang);
+      this.currentActiveLang.set(lang);
+    }
+  }
 
   switchTheme(mode: Theme) {
     const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

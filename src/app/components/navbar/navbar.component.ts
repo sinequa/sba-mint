@@ -3,6 +3,7 @@ import { Component, computed, inject, input, signal, Type, viewChild } from '@an
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 import { debounceTime } from 'rxjs';
 
 import {
@@ -14,16 +15,16 @@ import {
   OverflowManagerDirective,
   QueryParamsStore,
   RecentSearchesComponent,
-  SearchItem,
   SavedSearchesComponent,
-  SavedSearchesService
+  SavedSearchesService,
+  SearchItem
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
+import { notify } from '@sinequa/atomic';
 
 import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../search/search.component';
 import { UserMenuComponent } from '../user-menu/user-menu';
-import { notify } from '@sinequa/atomic';
 
 export type NavbarMenu = {
   display: string;
@@ -97,7 +98,9 @@ export class NavbarComponent {
     this.queryParamsStore.patch({ text });
 
     const queryParams = this.queryParamsStore.getQueryParams();
-    this.router.navigate(['/search'], { queryParams });
+    // Navigate to the search page or to the last path stored in the query params store
+    const path = getState(this.queryParamsStore).path || '/search';
+    this.router.navigate([path], { queryParams });
   }
 
   /**

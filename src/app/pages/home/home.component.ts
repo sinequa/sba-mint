@@ -146,6 +146,13 @@ export class HomeComponent {
       }
     });
 
+    effect(() => {
+      const state = getState(this.queryParamsStore);
+      if (state.filters !== undefined && state.filters.length > 0) {
+        this.search(this.searchText());
+      }
+    });
+
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
 

@@ -1,17 +1,4 @@
-import {
-  afterNextRender,
-  ChangeDetectorRef,
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  viewChild,
-  ViewEncapsulation
-} from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
