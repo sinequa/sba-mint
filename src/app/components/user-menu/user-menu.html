@@ -17,6 +17,27 @@
       <span>{{ 'userMenu.manageProfile' | transloco }}</span>
     </MenuItem>
     <Separator />
+    <!-- language selection -->
+    <menu position="left-start" class="dropdown-content">
+      <MenuItem>
+        <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
+        <ChevronRight class="size-4" />
+      </MenuItem>
+
+      <MenuContent position="left-start" class="max-w-fit min-w-40">
+        @for (lang of AllLanguages; track lang.code) {
+          <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
+            <span>{{ lang.label }}</span>
+            <div class="flex items-center gap-2">
+              @if (currentActiveLang() === lang.code) {
+                <i class="fa-fw fas fa-check text-sm"></i>
+              }
+              <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+            </div>
+          </MenuItem>
+        }
+      </MenuContent>
+    </menu>
 
     <!-- theme selection -->
     <menu position="left-start" class="dropdown-content">

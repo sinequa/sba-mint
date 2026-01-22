@@ -23,7 +23,7 @@ import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 import { debounceTime, Subject } from 'rxjs';
 
-import { CCApp } from '@sinequa/atomic';
+import { CCApp, warn } from '@sinequa/atomic';
 import { AppStore, AutocompleteService, DrawerAdvancedFiltersComponent, DrawerStackService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
@@ -143,7 +143,6 @@ export class SearchComponent {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
   });
-
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
@@ -231,7 +230,7 @@ export class SearchComponent {
     this.dropdownComponent().close();
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
-      console.warn(message);
+      warn(message);
       toast.info(message);
       return;
     }
