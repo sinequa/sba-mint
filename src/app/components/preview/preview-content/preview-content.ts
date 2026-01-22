@@ -14,13 +14,17 @@ import { PreviewActionsComponent } from './actions';
   selector: 'preview-content',
   imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
-    @if (canLoadIframe()) {
+    @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
+      <section class="flex h-full w-full items-center justify-center">
+        <i class="fa-fw far fa-spinner fa-spin text-primary mb-6 text-6xl"></i>
+      </section>
+    } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <section class="relative flex h-full flex-col gap-4">
         <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
         <preview-actions class="bg-muted/90 absolute top-4 right-8 inline-flex justify-end rounded-md" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </section>
-    } @else if (previewUrlError()) {
+    } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <section class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
           <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
@@ -63,22 +67,22 @@ export class PreviewContentComponent {
   });
 
   /* resources */
-  public readonly previewDataResource = rxResource<PreviewData, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
+  public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
       const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
-    defaultValue: {} as PreviewData,
+    defaultValue: undefined,
     stream: ({ params: { id, text, previewHighlights } }) => {
       if (id) {
         return this.previewService.preview(id, { name: this.queryName, text }, previewHighlights).pipe(
           catchError(() => {
             this.previewService.DOMContentLoaded.set(true);
-            return of({} as PreviewData);
+            return of(undefined);
           })
         );
       }
-      return of({} as PreviewData);
+      return of(undefined);
     }
   });
 
@@ -101,35 +105,37 @@ export class PreviewContentComponent {
       : undefined;
   });
 
+  /**
+   * A resource that validates the preview content by checking if the cached document URL is accessible.
+   *
+   * @remarks
+   * This resource performs a HEAD request to verify that the cached content exists and is accessible.
+   * The validation depends on both the preview URL and the document cached content URL being available.
+   *
+   * @returns An object with an `isValid` boolean property indicating whether the preview content is accessible,
+   * or `undefined` if an error occurs during the fetch operation.
+   *
+   * When the fetch fails, it sets the `DOMContentLoaded` signal to `true` on the preview service before returning undefined.
+   */
   previewValidationResource = resource({
     params: () => ({ url: this.previewUrl(), previewData: this.previewData() }),
-    defaultValue: { isValid: false },
+    defaultValue: undefined,
     loader: async ({ params }) => {
-      if (!params.url || !params.previewData?.documentCachedContentUrl) {
-        return { isValid: false };
-      }
-
       try {
+        if (!params.url || !params.previewData?.documentCachedContentUrl) {
+          throw new Error('Invalid parameters for preview validation');
+        }
+
         const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: 'HEAD' });
         return { isValid: response.status === 200 };
       } catch {
+        // In case of an error during fetch, we consider the preview as invalid
+        // and stop the loading indicator.
         this.previewService.DOMContentLoaded.set(true);
-        return { isValid: false };
+        return undefined;
       }
     }
   });
-
-  canLoadIframe = computed(() => {
-    if (this.previewValidationResource.hasValue() === false) {
-      return false;
-    }
-
-    const validation = this.previewValidationResource.value();
-    const value = validation?.isValid ?? false;
-    return value;
-  });
-
-  previewUrlError = computed(() => !this.canLoadIframe());
 
   constructor() {
     // Set the iframe's contentWindow in the preview service when the iframe is available
