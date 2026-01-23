@@ -2,6 +2,158 @@
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2026-01-23
+
+### Added
+
+#### Search Features
+
+- **Spelling Correction Mode**: Added support for URL-based spelling correction mode in search component
+  - New `SpellingCorrectionMode` parameter synchronized with query params store
+  - Enables proper browser back/forward navigation for spelling correction states
+  - Improved search-all component to handle spelling correction mode selection
+
+- **Reactive Search Filtering**: Added automatic search retriggering on filter changes
+  - New effect monitors query params store for filter state changes
+  - Automatically updates search results when filters are applied or modified
+  - Implemented in home component for better search synchronization
+
+#### Assistant Features
+
+- **Principal Change Handling**: Enhanced assistant component recreation on principal changes
+  - Assistant now automatically recreates when user principal changes
+  - New chat is started automatically on principal change
+  - Improved state management for multi-user scenarios
+
+#### Documentation
+
+- **Tabs Component Support**: Enhanced markdown documentation with Docusaurus Tabs component
+  - Replaced custom tab syntax with standard Docusaurus Tabs
+  - Added `tabs` and `tabitem` to allowed HTML elements in markdown linting
+  - Improved multi-selection tutorial formatting
+  - Moved `onBrokenMarkdownLinks` config to markdown hooks section
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/atomic`: `^0.0.129` → `^0.0.132`
+  - `@sinequa/atomic-angular`: `^0.3.15` → `^0.3.22`
+
+- **Angular CLI**: Updated build tools
+  - `@angular/cli`: `20.3.14` → `20.3.15`
+
+- **npm Packages**: Updated dependencies for security and compatibility
+  - `pacote`: `21.0.0` → `21.0.4`
+
+- **Docusaurus Packages**: Updated documentation dependencies
+  - Various Docusaurus plugins and dependencies updated in `docusaurus/package.json`
+
+#### Component Refactoring
+
+- **Assistant Component**: Simplified template and cleanup
+  - Removed unnecessary `@for` loop wrapper and assistantKey tracking
+  - Eliminated unused ChangeDetectorRef and PrincipalStore imports
+  - Consolidated multi-line imports for better readability
+  - Cleaned up principal store recreation code
+
+- **Assistant Layout**: Improved component structure
+  - Moved Aggregation component outside `@for` loop for single rendering
+  - Added tracked `@for` loop to force recreation on principal changes
+  - Better component lifecycle management
+
+- **Preview Component**: Refactored loading states and validation logic
+  - Introduced explicit loading state handling
+  - Changed previewDataResource to use undefined as default value
+  - Updated template to check loading and validation states separately
+  - Removed canLoadIframe computed in favor of direct resource state checks
+  - Validation resource now returns undefined on errors
+
+- **Search Component**: Improved layout and warning handling
+  - Moved SearchInputFooter outside dropdown for better layout control
+  - Adjusted SearchInput padding from `p-2` to `p-0`
+  - Replaced `console.warn` with `warn` utility from `@sinequa/atomic`
+  - Removed unnecessary conditional class binding on footer
+  - Cleaned up whitespace
+
+- **Navbar Component**: Enhanced navigation with NgRx signals
+  - Now uses `getState` from `@ngrx/signals` to retrieve stored search path
+  - Improved navigation logic with fallback to '/search'
+  - Reorganized imports alphabetically for consistency
+
+#### Configuration
+
+- **Git Ignore**: Added user-profile i18n assets to `.gitignore`
+  - Excludes generated `/src/assets/i18n/user-profile` files from version control
+
+- **Markdown Configuration**: Updated Docusaurus markdown settings
+  - Moved markdown link configuration to hooks section
+  - Updated linting rules to support tabs component
+
+#### Documentation
+
+- **Filter Button**: Removed outdated CSS variable tip from documentation
+  - Cleaned up filter-button.md documentation
+
+#### Styling
+
+- **Theme Colors**: Added message reference color to Chapsvision theme
+  - New CSS variable for message reference styling
+  - Normalized line endings in highlights.css (CRLF to LF)
+
+### Removed
+
+- **Documentation**: Removed outdated CSS variable tip from filter-button component docs
+
+### Fixed
+
+#### Code Quality
+
+- **Import Organization**: Improved import statements organization across multiple components
+- **Template Optimization**: Reduced unnecessary template complexity in assistant component
+
+### Migration Notes for This Release
+
+- **Spelling Correction**: If you're using custom search implementations, review the new `SpellingCorrectionMode` parameter handling in search components.
+
+- **Assistant Component**: The assistant now automatically recreates when the principal changes. If you've extended the assistant component, ensure your custom logic handles principal changes appropriately.
+
+- **Preview Component**: Preview loading states are now handled more explicitly. If you've customized preview components, review the new loading and validation state management.
+
+- **Search Filtering**: Search results now automatically update when filters change. Ensure this behavior aligns with your application's requirements.
+
+### Breaking Changes
+
+- None
+
+---
+
+## [Release 11.13.0] - 2026-01-09
+
+### Changed
+
+#### Dependencies
+
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `^3.10.4` → `^3.10.5`
+  - `@sinequa/atomic-angular`: `^0.3.8` → `^0.3.15`
+  - `@sinequa/ui`: `^0.2.3` → `^0.2.4`
+
+### Documentation
+
+- **Changelog**: Consolidated and updated changelog documentation for better clarity
+
+### Migration Notes
+
+- **Sinequa Packages**: Updated packages include bug fixes and enhancements - refer to their respective changelogs for details.
+
+### Breaking Changes
+
+- None
+
+---
+
 ## [Release 11.13.0] - 2025-12-19
 
 ### Added
