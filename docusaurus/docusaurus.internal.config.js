@@ -20,7 +20,6 @@ const config = {
   deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
   trailingSlash: false,
 
@@ -163,7 +162,10 @@ const config = {
   // In order for Mermaid code blocks in Markdown to work,
   // you also need to enable the Remark plugin with this option
   markdown: {
-    mermaid: true
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'warn'
+    }
   }
 };
 
