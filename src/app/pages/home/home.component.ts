@@ -136,7 +136,7 @@ export class HomeComponent {
 
   constructor(private destroyRef: DestroyRef) {
     afterNextRender(() => {
-      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
+      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined, basket: undefined });
     });
 
     // react to drawer state changes to update the application title when the drawer is closed
