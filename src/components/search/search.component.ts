@@ -23,7 +23,7 @@ import { toast } from 'ngx-sonner';
 import { debounceTime, Subject } from 'rxjs';
 
 import { CCApp, warn } from '@sinequa/atomic';
-import { AppStore, AutocompleteService, DrawerAdvancedFiltersComponent, DrawerStackService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
+import { AppStore, AutocompleteService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
   cn,
@@ -85,7 +85,6 @@ export class SearchComponent {
   protected readonly router = inject(Router);
   protected readonly autocompleteService = inject(AutocompleteService);
   protected readonly queryParamsStore = inject(QueryParamsStore);
-  protected readonly drawerStack = inject(DrawerStackService);
   protected readonly appStore = inject(AppStore);
   protected readonly translocoService = inject(TranslocoService);
   protected readonly dialogService = inject(DialogService);
@@ -139,7 +138,6 @@ export class SearchComponent {
     return this.appStore.allowEmptySearch(queryName);
   });
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
-  protected readonly overlayOpen = this.autocompleteService.opened;
 
   protected form = new FormGroup({
     searchInputText: new FormControl(this.searchInputText(), { nonNullable: true })
@@ -153,7 +151,6 @@ export class SearchComponent {
     this.destroyRef.onDestroy(async () => {
       this.focusMonitor.stopMonitoring(this.inputComponent().searchInput());
       this.debounceInputText.complete();
-      this.drawerStack.closeAll();
     });
 
     // on input value change, update directly searchInputText but have debounced to emit with debounceTime
@@ -202,8 +199,6 @@ export class SearchComponent {
   protected emitText(e: Event): void {
     e.stopImmediatePropagation();
     if (this.allowAdvancedFilters() && this.searchInputText() === '') {
-      this.overlayOpen.set(false);
-      this.drawerStack.open(DrawerAdvancedFiltersComponent);
       return;
     }
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {

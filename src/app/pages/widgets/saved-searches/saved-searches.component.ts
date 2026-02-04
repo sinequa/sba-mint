@@ -3,9 +3,15 @@ import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
-import { ApplicationService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
+import { ApplicationService, DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
+/**
+ * Component for displaying user saved searches.
+ * It retrieves saved searches from the SavedSearchesService and displays them in a list.
+ * Users can click on a saved search to navigate to it or delete it from their list.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'SavedSearches',
   imports: [TranslocoPipe, ButtonComponent],
@@ -16,12 +22,14 @@ import { ButtonComponent } from '@sinequa/ui';
 })
 export class SavedSearchesComponent {
   cdr = inject(ChangeDetectorRef);
+  private readonly drawerStack = inject(DrawerStackService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly router = inject(Router);
   private readonly savedSearchesService = inject(SavedSearchesService);
   readonly applicationService = inject(ApplicationService);
 
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
   protected readonly savedSearches = signal<SearchItem[]>([]);
 
   constructor() {

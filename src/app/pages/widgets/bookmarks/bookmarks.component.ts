@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { firstValueFrom } from 'rxjs';
 
 import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { ApplicationService, AppStore, Bookmark, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ApplicationService, AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 
@@ -14,6 +14,12 @@ interface BookmarkArticle {
   article?: Article;
 }
 
+/**
+ * Component for displaying user bookmarks.
+ * It retrieves bookmarks from the UserSettingsStore and displays them using
+ * the appropriate article component based on the document type.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'Bookmarks',
   imports: [TranslocoPipe, NgComponentOutlet],
@@ -31,10 +37,12 @@ export class BookmarksComponent {
   private readonly appStore = inject(AppStore);
   private readonly applicationService = inject(ApplicationService);
   private readonly queryService = inject(QueryService);
+  private readonly drawerStack = inject(DrawerStackService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
+  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   constructor() {
     afterNextRender(this.setTitle.bind(this));
@@ -45,8 +53,12 @@ export class BookmarksComponent {
       }
     });
 
-    // TODO: Set the page title when the drawer is closed
-    this.applicationService.setTitle('Bookmarks');
+    // Set the page title when the drawer is closed
+    effect(() => {
+      if (!this.drawerOpened()) {
+        this.applicationService.setTitle('Bookmarks');
+      }
+    });
 
     this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }

@@ -24,11 +24,11 @@ type Article = A & {
 
       <MenuContent [position]="drawerOpened() ? 'bottom-end' : 'right-start'">
         @if (appStore.allowLabels()) {
-          <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
+          <MenuItem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
         }
-        <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
+        <MenuItem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </MenuItem>
         @if (allowAI()) {
-          <menuitem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </menuitem>
+          <MenuItem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </MenuItem>
         }
       </MenuContent>
     </menu>

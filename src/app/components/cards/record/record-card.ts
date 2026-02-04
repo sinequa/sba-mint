@@ -76,9 +76,6 @@ export class RecordCard {
   previewService = inject(PreviewService);
 
   showBookmark = signal(false);
-  // showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
-  //   this.showBookmark.set(value);
-  // });
   isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
@@ -116,11 +113,6 @@ export class RecordCard {
       this.checked.set(!!this.multiSelected());
       this.article().$selected = !!this.multiSelected();
     });
-
-    // Ensure that the component is destroyed properly
-    // this.destroyRef.onDestroy(() => {
-    //   this.showBookmarkOutputSubscription.unsubscribe();
-    // });
   }
 
   public toggleTab(tab: Tab): void {

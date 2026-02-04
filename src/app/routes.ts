@@ -37,19 +37,19 @@ export const routes: ExtendedRoutes = [
     children: [
       {
         path: 'recent-searches',
-        loadComponent: () => import('../components/widgets/recent-searches/recent-searches.component').then(m => m.RecentSearchesComponent)
+        loadComponent: () => import('./pages/widgets/recent-searches/recent-searches.component').then(m => m.RecentSearchesComponent)
       },
       {
         path: 'bookmarks',
-        loadComponent: () => import('../components/widgets/bookmarks/bookmarks.component').then(m => m.BookmarksComponent)
+        loadComponent: () => import('./pages/widgets/bookmarks/bookmarks.component').then(m => m.BookmarksComponent)
       },
       {
         path: 'saved-searches',
-        loadComponent: () => import('../components/widgets/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent)
+        loadComponent: () => import('./pages/widgets/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent)
       },
       {
         path: 'collections',
-        loadComponent: () => import('../components/widgets/collections/collections.component').then(m => m.CollectionsComponent)
+        loadComponent: () => import('./pages/widgets/collections/collections.component').then(m => m.CollectionsComponent)
       }
     ]
   },
