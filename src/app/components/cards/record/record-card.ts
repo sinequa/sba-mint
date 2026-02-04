@@ -13,7 +13,6 @@ import {
   SelectArticleOnClickDirective,
   SelectionStore,
   SelectionStrategy,
-  ShowBookmarkDirective,
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
@@ -58,10 +57,6 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     {
       directive: SelectArticleOnClickDirective,
       inputs: ['article', 'strategy']
-    },
-    {
-      directive: ShowBookmarkDirective,
-      inputs: ['article']
     }
   ]
 })
@@ -81,9 +76,9 @@ export class RecordCard {
   previewService = inject(PreviewService);
 
   showBookmark = signal(false);
-  showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
-    this.showBookmark.set(value);
-  });
+  // showBookmarkOutputSubscription = inject(ShowBookmarkDirective)?.showBookmark.subscribe(value => {
+  //   this.showBookmark.set(value);
+  // });
   isLineClamped = signal<boolean>(true);
 
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
@@ -123,9 +118,9 @@ export class RecordCard {
     });
 
     // Ensure that the component is destroyed properly
-    this.destroyRef.onDestroy(() => {
-      this.showBookmarkOutputSubscription.unsubscribe();
-    });
+    // this.destroyRef.onDestroy(() => {
+    //   this.showBookmarkOutputSubscription.unsubscribe();
+    // });
   }
 
   public toggleTab(tab: Tab): void {

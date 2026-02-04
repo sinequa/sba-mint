@@ -1,36 +1,50 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, resource, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
-import { CustomHighlights, PreviewData } from '@sinequa/atomic';
+import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
 import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { rxResource } from '@angular/core/rxjs-interop';
+import { BreakpointObserverService, cn } from '@sinequa/ui';
 import { catchError, of } from 'rxjs';
-import { PreviewActionsComponent } from './actions';
+import { PreviewActionsComponent } from './preview-actions';
 
+/**
+ * Preview content component
+ *
+ * Usage:
+ * ```html
+ * <preview-content
+ *    [article]="article">
+ * </preview-content>
+ * ```
+ * Where `article` is the article to preview.
+ * This component displays the preview content of the selected article inside an iframe.
+ * It also includes preview actions and navigation controls.
+ */
 @Component({
   selector: 'preview-content',
   imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
-      <section class="flex h-full w-full items-center justify-center">
+      <div class="flex h-full w-full items-center justify-center">
         <i class="fa-fw far fa-spinner fa-spin text-primary mb-6 text-6xl"></i>
-      </section>
+      </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
-      <section class="relative flex h-full flex-col gap-4">
+      <div class="relative flex h-[calc(100%_-_0.5rem)] flex-col gap-4">
         <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
-        <preview-actions class="bg-muted/90 absolute top-4 right-8 inline-flex justify-end rounded-md" />
+        <preview-actions [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
-      </section>
+      </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
-      <section class="flex h-full w-full items-center justify-center">
+      <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
           <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
           {{ 'previewUnavailable' | transloco }}
         </p>
-      </section>
+      </div>
     }
   `,
   styles: [
@@ -43,8 +57,10 @@ import { PreviewActionsComponent } from './actions';
   ]
 })
 export class PreviewContentComponent {
+  cn = cn;
   iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
 
+  breakpointService = inject(BreakpointObserverService);
   protected readonly appStore = inject(AppStore);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly selectionStore = inject(SelectionStore);
@@ -53,8 +69,15 @@ export class PreviewContentComponent {
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
 
+  /**
+   * The article to be previewed.
+   * @remarks
+   * This input property accepts an Article object or undefined.
+   * When undefined, it indicates that we use the selection store's current article.
+   */
+  article = input<Article | undefined>(undefined);
   protected id = computed<string | undefined>(() => {
-    const { id } = getState(this.selectionStore);
+    const { id } = this.article() || getState(this.selectionStore);
     return id;
   });
   protected previewHighlights = computed<PreviewHighlights | undefined>(() => {
@@ -69,7 +92,8 @@ export class PreviewContentComponent {
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const { id = '', queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
+      const id = this.id() || getState(this.selectionStore).id || '';
+      const { queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: undefined,

@@ -27,6 +27,12 @@ type Theme = (typeof THEME)[number];
 const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
+/**
+ * User menu component displayed in the top-right corner of the application.
+ * It provides options for changing language, theme, overriding user settings, and logging out.
+ * It also displays the user's initials or avatar.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ */
 @Component({
   selector: 'app-user-menu',
   imports: [

@@ -17,7 +17,7 @@
         <button
           variant="ai"
           size="xs"
-          class="rounded-sm transition ease-in"
+          class="hidden rounded-sm transition ease-in sm:block"
           title="Ask AI"
           aria-label="Ask AI"
           (click)="handleRouting($event)"
@@ -44,6 +44,6 @@
     <ng-content></ng-content>
   </DropdownContent>
 </Dropdown>
-<SearchInputFooter class="block pt-2" (click)="handleClick($event)">
+<SearchInputFooter class="block pt-2 empty:pt-0" (click)="handleClick($event)">
   <ng-content select="SearchFooter" />
 </SearchInputFooter>

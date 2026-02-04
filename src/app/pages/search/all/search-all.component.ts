@@ -33,7 +33,7 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
-import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { getComponentsForDocumentType } from '../../../../registry/document-type-registry';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -47,6 +47,10 @@ type QueryParamsProps = {
   c?: SpellingCorrectionMode; // correction mode
 };
 
+/**
+ * Component for displaying all search results with various features like sorting, filtering, infinite scrolling, and an assistant.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'app-search-all',
   imports: [

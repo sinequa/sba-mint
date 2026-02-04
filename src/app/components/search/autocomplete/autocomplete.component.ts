@@ -1,3 +1,4 @@
+import { NgComponentOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -15,31 +16,24 @@ import {
 } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { NgComponentOutlet } from '@angular/common';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
-import {
-  AppStore,
-  AuditService,
-  AutocompleteService,
-  DrawerAdvancedFiltersComponent,
-  DrawerStackService,
-  HighlightWordPipe,
-  signIn,
-  UserSettingsStore
-} from '@sinequa/atomic-angular';
+import { AdvancedFiltersComponent, AppStore, AuditService, AutocompleteService, HighlightWordPipe, signIn, UserSettingsStore } from '@sinequa/atomic-angular';
 
 import {
   BookmarkIcon,
+  BreakpointObserverService,
   BuildingIcon,
   ButtonComponent,
   ClockIcon,
+  cn,
   FileIcon,
   LightbulbIcon,
   ListItemComponent,
   MapPinIcon,
   SearchIcon,
   Separator,
+  SheetComponent,
   StarIcon,
   UserIcon
 } from '@sinequa/ui';
@@ -74,7 +68,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent],
+  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent, SheetComponent, AdvancedFiltersComponent],
   styles: [
     `
       :host {
@@ -99,7 +93,6 @@ export class AutocompleteComponent {
   readonly auditService = inject(AuditService);
   readonly appStore = inject(AppStore);
   readonly userSettingsStore = inject(UserSettingsStore);
-  private readonly drawerStack = inject(DrawerStackService);
 
   // Order by preference for suggestion's categories
   readonly autocompleteCategories = inject(AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES);
@@ -109,7 +102,9 @@ export class AutocompleteComponent {
   private readonly elRef = inject(ElementRef);
   private readonly injector = inject(Injector);
 
-  protected readonly overlayOpen = this.autocompleteService.opened;
+  cn = cn;
+  breakpointService = inject(BreakpointObserverService);
+  isAdvancedSearchOpen = signal(false);
 
   autocomplete = computed(() => {
     this.appStore.customizationJson()?.autocomplete;
@@ -168,8 +163,7 @@ export class AutocompleteComponent {
   }
 
   openAdvancedSearch(): void {
-    this.overlayOpen.set(false);
-    this.drawerStack.open(DrawerAdvancedFiltersComponent);
+    this.isAdvancedSearchOpen.set(true);
   }
 
   getIconForCategory(category: string | undefined): Type<unknown> {

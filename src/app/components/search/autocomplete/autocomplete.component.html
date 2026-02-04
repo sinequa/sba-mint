@@ -41,3 +41,11 @@
     {{ 'searchInput.advancedSearch' | transloco }}
   </button>
 }
+
+<!-- advanced filters -->
+<sheet
+  [class]="cn('max-w-full py-2 md:min-w-[75%] lg:min-w-[50%]', breakpointService.isMobile() && 'w-full')"
+  [open]="isAdvancedSearchOpen()"
+  (openChange)="isAdvancedSearchOpen.set($event)">
+  <advanced-filters />
+</sheet>

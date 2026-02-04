@@ -16,4 +16,7 @@
   </div>
 </div>
 
-<advanced-search class="bg-menu border-foreground/18 h-full w-full overflow-y-auto border-l" [article]="article()" [previewStrategy]="'redirect'" />
+<advanced-search
+  class="bg-menu border-foreground/18 max-w-(clamp(200px,350px,100%)) h-full overflow-y-auto border-l"
+  [article]="article()"
+  previewStrategy="replace" />

@@ -1,6 +1,6 @@
 <Card
   variant="primary"
-  class="group/article group dark:bg-muted cursor-pointer"
+  class="group/article group text-card-foreground cursor-pointer"
   [class.selected]="selected()"
   [attr.aria-selected]="selected()"
   tabindex="0"
@@ -9,7 +9,7 @@
   <CardHeader class="shrink-0 grow">
     <!-- Cascading overflow-auto to the title so it gets truncated -->
     <header class="flex grow items-center gap-3 overflow-auto">
-      <div class="text-primary bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
+      <div class="bg-muted flex size-[40px] min-w-[40px] items-center justify-center rounded-full" (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
         <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
         <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
@@ -22,12 +22,10 @@
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <a
               (click)="openExternal($event)"
-              class="text-primary truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
+              class="truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>
 
-            @if (showBookmark()) {
-              <bookmark-button [article]="article()" />
-            }
+            <bookmark-button class="invisible group-hover/article:visible [@media(hover:none)]:visible" [article]="article()" />
           </span>
 
           <!-- card context-menu -->

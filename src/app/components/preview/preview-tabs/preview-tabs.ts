@@ -10,6 +10,20 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
+/**
+ * Preview tabs component
+ *
+ * Usage:
+ * ```html
+ * <preview-tabs
+ *    [article]="article">
+ * </preview-tabs>
+ * ```
+ * Where `article` is the article to preview.
+ * This component displays the preview tabs including document preview, summary, and discussion.
+ * The summary and discussion tabs are conditionally displayed based on application features.
+ *
+ */
 @Component({
   selector: 'preview-tabs, PreviewTabs, previewtabs',
   standalone: true,

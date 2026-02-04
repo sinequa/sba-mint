@@ -3,17 +3,27 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import { AppStore, DocumentLocatorComponent, MetadataComponent, QueryParamsStore, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
-import { ButtonComponent, ChevronRightIcon } from '@sinequa/ui';
+import { ChevronRightIcon } from '@sinequa/ui';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 type Article = A & {
   [key: string]: string[] | undefined;
 };
-
+/**
+ * Header component for the preview feature.
+ * Usage:
+ * ```html
+ * <preview-header [article]="article"></preview-header>
+ * ```
+ * Where `article` is the article to display in the header.
+ * This component displays metadata information about the article,
+ * including title, author, date, and other relevant details.
+ *
+ */
 @Component({
   selector: 'preview-header, PreviewHeader, previewheader',
   standalone: true,
-  imports: [TranslocoPipe, TranslocoDateImpurePipe, ButtonComponent, DocumentLocatorComponent, MetadataComponent, ChevronRightIcon],
+  imports: [TranslocoPipe, TranslocoDateImpurePipe, DocumentLocatorComponent, MetadataComponent, ChevronRightIcon],
   templateUrl: './preview-header.html',
   styles: [
     `

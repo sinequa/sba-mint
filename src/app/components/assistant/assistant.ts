@@ -198,7 +198,11 @@ export class AssistantComponent {
   }
 
   public newChat(): void {
-    this.sqChat()?.newChat();
+    try {
+      this.sqChat()?.newChat();
+    } catch (err) {
+      error('Error while starting a new chat', err);
+    }
   }
 
   handleSuggestAction(action: SuggestedAction) {

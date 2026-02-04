@@ -1,20 +1,28 @@
-import { Component, computed, effect, inject, output, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { Article as A } from '@sinequa/atomic';
 import { AdvancedSearch, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
-import { PreviewNavbarComponent } from './preview-navbar/preview-navbar';
 import { PreviewHeaderComponent } from './preview-header/preview-header';
+import { PreviewNavbarComponent } from './preview-navbar2/preview-navbar';
 import { PreviewTabsComponent } from './preview-tabs/preview-tabs';
 
 type Article = A & {
   [key: string]: string[] | undefined;
 };
+
 /**
- * Preview component displaying the preview navbar, header, and tabs.
- * @deprecated This component will be removed in future releases.
+ * Preview component
+ *
+ * Usage:
+ * ```html
+ * <preview></preview>
+ * ```
+ * This component displays the preview of the selected article along with its navigation bar and tabs.
+ * It also manages the extended view state for the preview.
+ *
  */
 @Component({
   selector: 'preview, Preview',

@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal, viewChild } from '@angular
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Article, CCApp, Query } from '@sinequa/atomic';
-import { AdvancedSearchComponent, AppStore, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AdvancedSearch, AppStore, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
   ChevronLeftIconComponent,
@@ -18,6 +18,18 @@ import {
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
 
+/**
+ * Preview dialog component
+ *
+ * Usage:
+ * ```html
+ * <preview-dialog></preview-dialog>
+ * ```
+ * This component provides a dialog interface for previewing articles.
+ * It includes tabs for chat, summary, and find functionalities,
+ * and integrates with the assistant feature for enhanced user interaction.
+ *
+ */
 @Component({
   selector: 'preview-dialog, PreviewDialog, previewdialog',
   imports: [
@@ -31,7 +43,7 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
     TabComponent,
     TranslocoPipe,
     AssistantComponent,
-    AdvancedSearchComponent,
+    AdvancedSearch,
     ChevronRightIcon,
     ChevronLeftIconComponent,
     Separator
@@ -42,7 +54,7 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
 export class PreviewDialogComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly selectionStore = inject(SelectionStore);
-  protected readonly previewservice = inject(PreviewService);
+  protected readonly previewService = inject(PreviewService);
   protected readonly appFeatures = this.appStore.general()?.features;
 
   public readonly article = signal<Article | undefined>(undefined);

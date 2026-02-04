@@ -8,6 +8,10 @@ import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
 import { AppStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
+/**
+ * Sidebar component for the application.
+ * @deprecated used with previous layout using the Drawer component
+ */
 @Component({
   selector: 'app-sidebar',
   imports: [RouterLink, SidebarComponent, SidebarItemComponent],
