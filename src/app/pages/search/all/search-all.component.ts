@@ -33,7 +33,7 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
-import { getComponentsForDocumentType } from '../../../../registry/document-type-registry';
+import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
