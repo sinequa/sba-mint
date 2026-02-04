@@ -11,6 +11,10 @@ import atomic from '../node_modules/@sinequa/atomic/package.json';
 
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
+/* new layout */
+import { AppComponent as App2Component } from './app2/app.component';
+import { appConfig as app2Config } from './app2/app.config';
+
 import { environment } from './environments/environment';
 
 // datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
@@ -24,13 +28,14 @@ Object.assign(Datepicker.locales, fr, de);
 setGlobalConfig(environment);
 
 // applyConsoleLogLevels();
+const newLayout = false;
 
 /**
  * keyux configuration
  */
 startKeyUX(window, [hotkeyKeyUX(), focusGroupKeyUX(), pressKeyUX('is-pressed'), jumpKeyUX(), hiddenKeyUX()]);
 
-bootstrapApplication(AppComponent, appConfig)
+bootstrapApplication(newLayout ? App2Component : AppComponent, newLayout ? app2Config : appConfig)
   .then(appRef => {
     // Set the dark mode class based on user settings
     runInInjectionContext(appRef.injector, () => {
