@@ -1,0 +1,61 @@
+<details [open]="!headerCollapsed()" class="group">
+  <summary class="flex cursor-pointer items-center justify-between gap-2" (click)="headerCollapsed.set(!headerCollapsed())">
+    <p class="me-auto truncate font-bold">{{ article().title }}</p>
+
+    <span class="ms-auto [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out group-open:[&_svg]:rotate-90" aria-hidden="true">
+      <ChevronRightIcon />
+    </span>
+  </summary>
+
+  <!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
+  <table class="flex w-full flex-col gap-1">
+    <tr>
+      <th>{{ 'location' | transloco }}</th>
+
+      <td class="flex items-center gap-2 overflow-hidden">
+        <DocumentLocator [article]="article()" aggregation="Sources" />
+      </td>
+    </tr>
+
+    @if ((article().authors || []).length > 0) {
+      <tr>
+        <th>{{ 'lastUpdatedBy' | transloco }}</th>
+
+        <td class="flex flex-wrap gap-2">
+          <Metadata variant="outline" hover="yes" [article]="article()!" metadata="authors" />
+        </td>
+      </tr>
+    }
+
+    @if (article().modified) {
+      <tr>
+        <th>{{ 'lastUpdatedOn' | transloco }}</th>
+
+        <td class="flex gap-2">
+          <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
+        </td>
+      </tr>
+    }
+
+    @if (hasLabels()) {
+      <tr>
+        <th>{{ 'labels' | transloco }}</th>
+
+        <td class="flex flex-col gap-1">
+          <!-- public labels-->
+          <Metadata class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
+          <!-- private labels -->
+          <Metadata class="bg-secondary/20 cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
+        </td>
+      </tr>
+    }
+
+    <tr>
+      <th>{{ 'type' | transloco }}</th>
+
+      <td>
+        <Metadata class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />
+      </td>
+    </tr>
+  </table>
+</details>

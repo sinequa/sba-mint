@@ -1,0 +1,49 @@
+<Dropdown class="w-full">
+  <form [formGroup]="form">
+    <SearchInput
+      class="text-foreground h-9 p-0"
+      id="autocomplete-anchor"
+      controls="search-suggestions"
+      [variant]="variant()"
+      [placeholder]="'searchInput.placeholder' | transloco"
+      [attr.aria-label]="'searchInput.placeholder' | transloco"
+      [control]="form.controls.searchInputText"
+      (onSelected)="onSelected($event)">
+      @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+        <SavedSearchPopover [queryText]="searchInputText()" (onSavedSearch)="saved.emit($event)" />
+      }
+
+      @if (allowAI()) {
+        <button
+          variant="ai"
+          size="xs"
+          class="hidden rounded-sm transition ease-in sm:block"
+          title="Ask AI"
+          aria-label="Ask AI"
+          (click)="handleRouting($event)"
+          [disabled]="searchInputText() === ''">
+          <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+          Ask AI
+        </button>
+      }
+      <button
+        variant="icon"
+        size="icon"
+        class="transition-transform duration-200 ease-in-out hover:scale-110"
+        [title]="'search' | transloco"
+        [attr.aria-label]="'search' | transloco"
+        [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+        [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+        (keydown.enter)="onSearch($event)"
+        (click)="onSearch($event)">
+        <SendHorizontalIcon />
+      </button>
+    </SearchInput>
+  </form>
+  <DropdownContent>
+    <ng-content></ng-content>
+  </DropdownContent>
+</Dropdown>
+<SearchInputFooter class="block pt-2 empty:pt-0" (click)="handleClick($event)">
+  <ng-content select="SearchFooter" />
+</SearchInputFooter>
