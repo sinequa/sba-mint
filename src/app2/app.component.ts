@@ -18,7 +18,10 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
         content: var(--logo-small) / var(--logo-alt-text);
       }
     `
-  ]
+  ],
+  host: {
+    class: 'bg-sidebar'
+  }
 })
 export class AppComponent {
   private readonly transloco = inject(TranslocoService);

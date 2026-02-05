@@ -52,12 +52,12 @@ import {
   withBootstrapApp
 } from '@sinequa/atomic-angular';
 
-import { PREVIEW_HIGHLIGHTS } from '../config/highlight.config';
+import { TranslocoHttpLoader } from '@config/transloco-loader';
+import { PREVIEW_HIGHLIGHTS } from '@config/highlight.config';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/layout';
-import { getComponentsForDocumentType } from '../registry/document-type-registry';
+import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
-import { TranslocoHttpLoader } from '../config/transloco-loader';
 
 // @ts-ignore
 import Flow from '@flowjs/flow.js';
