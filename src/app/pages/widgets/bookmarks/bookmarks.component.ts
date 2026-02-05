@@ -14,6 +14,12 @@ interface BookmarkArticle {
   article?: Article;
 }
 
+/**
+ * Component for displaying user bookmarks.
+ * It retrieves bookmarks from the UserSettingsStore and displays them using
+ * the appropriate article component based on the document type.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'Bookmarks',
   imports: [TranslocoPipe, NgComponentOutlet],
