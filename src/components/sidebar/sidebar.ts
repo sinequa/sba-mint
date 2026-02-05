@@ -21,7 +21,7 @@ import {
   SidebarMenuItemComponent,
   TooltipDirective
 } from '@sinequa/ui';
-import { UserMenuComponent } from '../user-menu2/user-menu';
+import { UserMenuComponent } from '../user-menu/user-menu';
 
 /**
  * Sidebar component
