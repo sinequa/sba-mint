@@ -16,7 +16,8 @@ import {
   TooltipDirective,
   PopoverComponent,
   PopoverContentComponent,
-  SidebarService
+  SidebarService,
+  SidebarMenuActionComponent
 } from '@sinequa/ui';
 
 export type NavbarMenu = {
@@ -62,28 +63,30 @@ export type NavbarMenu = {
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                 }
+              } @else if (menu.name === 'alerts') {
+                <Popover class="w-full rounded-lg border-neutral-300">
+                  <sidebar-menu-button class="text-lg">
+                    <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
+                    <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
+                  </sidebar-menu-button>
+                  <PopoverContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
+                    <ng-container [ngComponentOutlet]="menu.component"></ng-container>
+                  </PopoverContent>
+                </Popover>
               } @else {
-                @if (menu.name === 'alerts') {
-                  <Popover class="w-full rounded-lg border-neutral-300">
-                    <sidebar-menu-button class="text-lg">
-                      <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
-                      <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
-                    </sidebar-menu-button>
-                    <PopoverContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
-                      <ng-container [ngComponentOutlet]="menu.component"></ng-container>
-                    </PopoverContent>
-                  </Popover>
-                } @else {
-                  <Dropdown class="w-full rounded-lg border-neutral-300">
-                    <sidebar-menu-button class="text-lg">
-                      <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
-                      <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
-                    </sidebar-menu-button>
-                    <DropdownContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
-                      <ng-container [ngComponentOutlet]="menu.component"></ng-container>
-                    </DropdownContent>
-                  </Dropdown>
-                }
+                <Dropdown class="w-full rounded-lg border-neutral-300">
+                  <sidebar-menu-button class="text-lg">
+                    <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
+                    <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
+                  </sidebar-menu-button>
+                  <DropdownContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
+                    <ng-container [ngComponentOutlet]="menu.component"></ng-container>
+                  </DropdownContent>
+                </Dropdown>
+                <sidebar-menu-action [routerLink]="menu.routerLink">
+                  <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                  <span class="sr-only">Move to {{ menu.display | transloco }}</span>
+                </sidebar-menu-action>
               }
             </sidebar-menu-item>
           }
@@ -106,7 +109,8 @@ export type NavbarMenu = {
     SidebarGroupLabelComponent,
     SidebarGroupContentComponent,
     PopoverComponent,
-    PopoverContentComponent
+    PopoverContentComponent,
+    SidebarMenuActionComponent
   ]
 })
 export class WidgetsSidebarGroupComponent {
