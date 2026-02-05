@@ -6,7 +6,7 @@ import { SelectionStore } from '@sinequa/atomic-angular';
 import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
 
 import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
-import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { WidgetsSidebarGroupComponent } from '@components/widgets/widgets-sidebar-group';
 
 @Component({

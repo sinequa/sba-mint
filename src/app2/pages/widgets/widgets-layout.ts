@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { provideTranslocoScope } from '@jsverse/transloco';
 import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
 
-import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { WidgetsSidebarGroupComponent } from '@components/widgets/widgets-sidebar-group';
 
 @Component({

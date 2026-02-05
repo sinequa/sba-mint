@@ -31,7 +31,7 @@ import {
 } from '@sinequa/ui';
 
 import { AssistantComponent } from '@components/assistant/assistant';
-import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
 
 @Component({
