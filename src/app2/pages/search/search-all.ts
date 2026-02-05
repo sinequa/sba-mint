@@ -28,9 +28,9 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
 
-import { AssistantComponent } from '../../../components/assistant/assistant';
-import { CardSkeleton } from '../../../components/cards/record/skeleton';
-import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { AssistantComponent } from '@components/assistant/assistant';
+import { CardSkeleton } from '@components/cards/record/skeleton';
+import { getComponentsForDocumentType } from '@registry/document-type-registry';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -84,7 +84,7 @@ type QueryParamsProps = {
     '(keydown.enter)': 'handleKeydownEnter($event)'
   }
 })
-export class SearchAll2Component {
+export class SearchAllComponent {
   cn = cn;
 
   // all injected services and stores

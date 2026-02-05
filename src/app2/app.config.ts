@@ -34,8 +34,6 @@ import {
   COLLECTIONS_CONFIG,
   COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
-  DRAWER_COMPONENT,
-  DrawerPreviewComponent,
   FILTERS_BREAKPOINT,
   HIGHLIGHTS,
   PREVIEW_CONFIG,
@@ -52,12 +50,13 @@ import {
   withBootstrapApp
 } from '@sinequa/atomic-angular';
 
+import { TranslocoHttpLoader } from '@config/transloco-loader';
+import { getComponentsForDocumentType } from '@registry/document-type-registry';
+
 import { PREVIEW_HIGHLIGHTS } from '../config/highlight.config';
-import { SearchAll2Component } from './pages/search2/search-all';
-import { SearchLayout2Component } from './pages/search2/search-layout';
-import { getComponentsForDocumentType } from '../registry/document-type-registry';
+import { SearchAllComponent } from './pages/search/search-all';
+import { SearchLayoutComponent } from './pages/search/search-layout';
 import { routes } from './routes';
-import { TranslocoHttpLoader } from '../config/transloco-loader';
 
 // @ts-ignore
 import Flow from '@flowjs/flow.js';
@@ -121,10 +120,6 @@ export const appConfig: ApplicationConfig = {
     // the function should return a DocumentTypeMap object
     { provide: COMPONENTS_FOR_DOCUMENT_TYPE, useValue: getComponentsForDocumentType },
 
-    // this token is used to configure the component to use with the drawer
-    // deprecated: this line will be removed in future releases
-    { provide: DRAWER_COMPONENT, useValue: DrawerPreviewComponent },
-
     // those tokens are used to configure the path of the widgets
     // by default, the routerLink is "/xxx", where xxx is the name of the widget
     // if you want to change the path of the widget, you can use the routerLink property
@@ -145,12 +140,12 @@ export const appConfig: ApplicationConfig = {
       useValue: [
         {
           path: 'search',
-          component: SearchLayout2Component,
+          component: SearchLayoutComponent,
           isRoot: true
         },
         {
           path: 'all',
-          component: SearchAll2Component
+          component: SearchAllComponent
         }
       ]
     },

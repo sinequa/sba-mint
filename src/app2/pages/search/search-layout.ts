@@ -5,10 +5,9 @@ import { provideTranslocoScope } from '@jsverse/transloco';
 import { SelectionStore } from '@sinequa/atomic-angular';
 import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
 
-// import { SearchWithAutocompleteComponent } from "../../components/search/search-with-autocomplete";
-import { SearchWithAutocompleteComponent } from '../../../components/search/search-with-autocomplete';
-import { SidebarMainComponent } from '../../../components/sidebar2/sidebar';
-import { WidgetsSidebarGroupComponent } from '../../../components/widgets/widgets-sidebar-group';
+import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
+import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { WidgetsSidebarGroupComponent } from '@components/widgets/widgets-sidebar-group';
 
 @Component({
   selector: 'app-search-layout',
@@ -41,7 +40,7 @@ import { WidgetsSidebarGroupComponent } from '../../../components/widgets/widget
   `,
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections', 'alerts', 'sort-selector', 'article')]
 })
-export class SearchLayout2Component {
+export class SearchLayoutComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly selectionStore = inject(SelectionStore, { optional: true });
 

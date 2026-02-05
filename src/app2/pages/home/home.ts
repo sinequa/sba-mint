@@ -5,9 +5,10 @@ import { AggregationsStore, AppStore, ApplicationService, DrawerStackService, Ke
 
 import { error, fetchQuery } from '@sinequa/atomic';
 import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
-import { SearchWithAutocompleteComponent } from '../../../components/search/search-with-autocomplete';
-import { SidebarMainComponent } from '../../../components/sidebar2/sidebar';
-import { WidgetsTabsComponent } from '../../../components/widgets/widgets-tabs';
+
+import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
+import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { WidgetsTabsComponent } from '@components/widgets/widgets-tabs';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ import { WidgetsTabsComponent } from '../../../components/widgets/widgets-tabs';
   },
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
-export class Home2Component {
+export class HomeComponent {
   public drawerOpened = computed(() => this.drawerStack.isOpened());
 
   readonly appStore = inject(AppStore);

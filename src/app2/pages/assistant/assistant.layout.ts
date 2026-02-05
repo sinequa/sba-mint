@@ -1,3 +1,4 @@
+import { firstValueFrom } from 'rxjs';
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
@@ -10,7 +11,6 @@ import {
   AggregationsStore,
   ApplicationService,
   AppStore,
-  DrawerStackService,
   PrincipalStore,
   QueryParamsStore,
   SelectionStore
@@ -30,10 +30,9 @@ import {
   SidebarTriggerComponent
 } from '@sinequa/ui';
 
-import { firstValueFrom } from 'rxjs';
-import { AssistantComponent } from '../../../components/assistant/assistant';
-import { SidebarMainComponent } from '../../../components/sidebar2/sidebar';
-import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
+import { AssistantComponent } from '@components/assistant/assistant';
+import { SidebarMainComponent } from '@components/sidebar2/sidebar';
+import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -141,9 +140,6 @@ export class AssistantLayoutComponent {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
-  drawerStackService = inject(DrawerStackService);
-  opened = computed(() => this.drawerStackService.isOpened());
-
   breakpointObserverService = inject(BreakpointObserverService);
   sidebarService = inject(SidebarService);
   sheetService = inject(SheetService);
@@ -229,11 +225,7 @@ export class AssistantLayoutComponent {
     });
 
     // react to drawer state changes to update the application title when the drawer is closed
-    effect(() => {
-      if (!this.drawerStackService.isOpened()) {
-        this.applicationService.setTitle('Assistant');
-      }
-    });
+    this.applicationService.setTitle('Assistant');
 
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
