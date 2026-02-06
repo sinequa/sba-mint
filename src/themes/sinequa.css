@@ -1,8 +1,58 @@
+@theme inline {
+  --color-green-50: #f6faf5;
+  --color-green-100: #e5eee3;
+  --color-green-200: #c4d6c0;
+  --color-green-300: #91b38b;
+  --color-green-400: #709b67;
+  --color-green-500: #4e8344;
+  --color-green-600: #3e6936; /* 👑 */
+  --color-green-700: #2f4f29;
+  --color-green-800: #1f341b;
+  --color-green-900: #172714;
+  --color-green-950: #101a0e;
+
+  --color-orange-50: #fff6f1;
+  --color-orange-100: #ffeee2;
+  --color-orange-200: #ffddc6;
+  --color-orange-300: #ffcba9;
+  --color-orange-400: #ffba8d;
+  --color-orange-500: #df884f;
+  --color-orange-600: #bd6f3c; /* 👑 */
+  --color-orange-700: #98552a;
+  --color-orange-800: #85461e;
+  --color-orange-900: #753a13;
+  --color-orange-950: #592a0b;
+
+  --color-red-50: #ffefef;
+  --color-red-100: #ffdedf;
+  --color-red-200: #ffbebf;
+  --color-red-300: #ff9d9f;
+  --color-red-400: #ff7d7f;
+  --color-red-500: #d64a4c;
+  --color-red-600: #ad3739; /* 👑 */
+  --color-red-700: #852527;
+  --color-red-800: #701c1d;
+  --color-red-900: #5c1214;
+  --color-red-950: #47090a;
+
+  --color-blue-50: #f1f6fa;
+  --color-blue-100: #e2edf4;
+  --color-blue-200: #c5dbea;
+  --color-blue-300: #a9cadf;
+  --color-blue-400: #8cb8d5;
+  --color-blue-500: #5a87a4;
+  --color-blue-600: #45677e; /* 👑 */
+  --color-blue-700: #2f4859;
+  --color-blue-800: #253846;
+  --color-blue-900: #1a2833;
+  --color-blue-950: #101920;
+}
+
 :root {
   --logo-small-url: url('../assets/logo/small.svg');
   --logo-large-url: url('../assets/logo/large.svg');
-  --logo-small: var(--logo-small-url);
-  --logo-large: var(--logo-large-url);
+  --logo-small: var(--logo-light-small, var(--logo-small-url));
+  --logo-large: var(--logo-light-large, var(--logo-large-url));
   --logo-large-alt: var(--logo-large);
   --logo-alt-text: 'Sinequa logo';
 
@@ -37,7 +87,7 @@
   --input: oklch(0.92 0.004 286.32);
   --ring: var(--color-primary);
 
-  --success: #2ed73f;
+  --success: var(--color-green-200);
   --success-foreground: var(--color-green-800);
   --warning: var(--color-orange-200);
   --warning-foreground: var(--color-orange-800);
@@ -74,6 +124,8 @@
 .dark {
   --background: #282828;
   --foreground: #e5e5e5;
+  --logo-small: var(--logo-dark-small, var(--logo-small-url));
+  --logo-large: var(--logo-dark-large, var(--logo-large-url));
 
   --primary: #ff0055;
   --primary-foreground: var(--foreground);

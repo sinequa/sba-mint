@@ -18,7 +18,15 @@
 }
 
 html {
+  /* Prevent horizontal overflow */
   overflow-x: hidden;
+  /* Keep space for scrollbar to prevent layout shift when toggling overflow */
+  /* scrollbar-gutter: stable; */
+}
+
+/* Prevent scrolling when a sheet is open */
+html:has(.sheet-portal[open]) {
+  overflow: hidden;
 }
 
 body {

@@ -2,7 +2,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { globalConfig, logout, setGlobalConfig } from '@sinequa/atomic';
@@ -28,12 +28,20 @@ import {
   UserIcon
 } from '@sinequa/ui';
 
+import { bootstrapNewApp } from '@config/bootstrap-new-app';
+
 const THEME = ['light', 'dark', 'system'] as const;
 type Theme = (typeof THEME)[number];
 
 const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
+/**
+ * User menu component displayed in the top-right corner of the application.
+ * It provides options for changing language, theme, overriding user settings, and logging out.
+ * It also displays the user's initials or avatar.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ */
 @Component({
   selector: 'app-user-menu',
   imports: [
@@ -77,6 +85,7 @@ export class UserMenuComponent {
   private readonly principalStore = inject(PrincipalStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
+  private readonly features = inject(AppStore).general()?.features;
   private readonly transloco = inject(TranslocoService);
 
   /**
@@ -113,6 +122,7 @@ export class UserMenuComponent {
   });
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
+  readonly allowNewUI = computed(() => this.features?.['newUI']);
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
@@ -151,6 +161,10 @@ export class UserMenuComponent {
 
   handleResetUserSettings() {
     this.resetUserSettingsDialog()?.open();
+  }
+
+  handleNewLayout() {
+    bootstrapNewApp();
   }
 
   openSinequa() {
