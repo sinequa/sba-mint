@@ -62,6 +62,8 @@
       </MenuContent>
     </menu>
 
+    <Separator />
+
     <MenuItem variant="destructive" (click)="handleResetUserSettings()">
       <i class="fa-fw fal fa-trash text-[16px]"></i>
       <span>{{ 'userMenu.resetUserSettings' | transloco }}</span>
@@ -84,6 +86,13 @@
     }
 
     <Separator />
+    @if (allowNewUI()) {
+      <MenuItem (click)="handleNewLayout()" class="justify-between">
+        <span class="grow">{{ 'userMenu.tryNewLayout' | transloco }}</span>
+        <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
+      </MenuItem>
+      <Separator />
+    }
 
     <MenuItem (click)="openSinequa()" class="justify-between">
       <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />

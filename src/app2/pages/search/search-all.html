@@ -1,0 +1,135 @@
+<main class="mb-8 px-2.5">
+  <div class="bg-background top-16 z-1 -mx-1 pt-1 pb-2 sm:sticky">
+    @if (isTabSearchActive()) {
+      <navbar-tabs class="mt-2 block" />
+    }
+
+    <filters-bar class="flex gap-1 pt-4 pb-4" />
+    <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
+
+    <sponsored-results />
+  </div>
+
+  <!-- skeleton part -->
+  @if (query.isPending()) {
+    <div class="mt-4 flex justify-between" aria-hidden="true">
+      <div class="flex gap-2">
+        @for (n of [1, 2, 3, 4, 5]; track $index) {
+          <button class="bg-muted-foreground/30 h-9 w-24" aria-hidden="true"></button>
+        }
+      </div>
+
+      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
+    </div>
+
+    <div class="mt-10 flex justify-end">
+      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
+    </div>
+
+    <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
+      @for (n of [1, 2, 3]; track $index) {
+        <li><CardSkeleton /></li>
+      }
+    </ul>
+  }
+  <!-- if results have been found -->
+  @else if (hasRowCount()) {
+    <!-- sort selector and export button -->
+    <div class="flex gap-1 has-[_+ul>li.no-records]:hidden">
+      <button variant="ghost" (click)="selectAll()">
+        @switch (selectedAll()) {
+          @case ('all') {
+            <i class="fa-fw fa-regular fa-square-check"></i>
+            {{ 'searches.selection.unselectAll' | transloco }}
+          }
+          @case ('some') {
+            <i class="fa-fw fa-regular fa-square-minus"></i>
+            {{ 'searches.selection.selectAll' | transloco }}
+          }
+          @default {
+            <i class="fa-fw fa-regular fa-square"></i>
+            {{ 'searches.selection.selectAll' | transloco }}
+          }
+        }
+      </button>
+
+      <sort-selector class="ms-auto" [result]="result()!" position="bottom-start" (onSort)="onSort($event)" />
+    </div>
+
+    <!-- if assistant is allowed -->
+    @if (allowAI()) {
+      <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 border-none bg-gradient-to-r shadow-none">
+        <CardHeader class="text-ai-card-foreground flex items-center gap-1 px-0 text-base font-semibold">
+          <div class="flex size-8 items-center justify-center">
+            @if (isStreaming()) {
+              <i class="fas fa-spinner animate-spin"></i>
+            } @else {
+              <i class="fas fa-sparkles"></i>
+            }
+          </div>
+
+          <h2>AI Overview</h2>
+
+          <button
+            variant="none"
+            [class]="
+              cn('ms-auto cursor-pointer [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out', !assistantCollapsed() && '[&_svg]:rotate-90')
+            "
+            (click)="onAssistantCollapse()"
+            aria-label="toggle assistant">
+            <ChevronRightIcon />
+          </button>
+        </CardHeader>
+
+        @if (showAssistant()) {
+          <CardContent [class]="cn('h-96 px-0', assistantCollapsed() && 'hidden')">
+            <assistant
+              [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
+              [showAssistant]="showAssistant()"
+              [instanceId]="instanceId()"
+              (isStreaming)="isStreaming.set($event)" />
+          </CardContent>
+        }
+      </Card>
+    }
+
+    <!-- display all records -->
+    <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
+      @for (page of query.data()?.pages; track page) {
+        @for (article of page.records; track article.id + $index) {
+          <ng-container
+            *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace', allowAI: allowAI() && enabledUserInput() }" />
+        }
+      }
+    </ul>
+
+    <feedback
+      [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
+      [pages]="query.data()?.pages"
+      (onClose)="onFeedbackClose()" />
+
+    <!-- infinite scroll trigger -->
+    @if (query.hasNextPage()) {
+      <div infinity-scroll (onScroll)="nextPage()"></div>
+    }
+
+    <!-- pagination buttons -->
+    <!-- <div class="flex justify-end mt-6 gap-2">
+      <button
+        (click)="query.fetchPreviousPage()"
+        [disabled]="!query.hasPreviousPage() || query.isFetchingPreviousPage()">
+        {{ query.isFetchingPreviousPage() ? 'Loading...' : 'previous page' }}
+      </button>
+      <button
+        (click)="query.fetchNextPage()"
+        [disabled]="!query.hasNextPage() || query.isFetchingNextPage()">
+        {{ query.isFetchingNextPage() ? 'Loading...' : 'next page' }}
+      </button>
+    </div> -->
+  }
+  <!-- if no results have been found -->
+  @else {
+    <!-- display a panel to inform the user that no results were found -->
+    <NoResult class="mt-4" />
+  }
+</main>

@@ -5,6 +5,16 @@ import { getState } from '@ngrx/signals';
 import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
+/**
+ * Preview actions component
+ * Usage:
+ * ```html
+ * <preview-actions></preview-actions>
+ * </html>
+ * This component provides action buttons for interacting with the preview content,
+ * including zoom controls and toggles for AI descriptions, extracts, and entities.
+ *
+ */
 @Component({
   selector: 'preview-actions',
   imports: [TranslocoPipe, ButtonComponent],

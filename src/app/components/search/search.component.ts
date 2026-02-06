@@ -41,6 +41,12 @@ import {
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 import { SavedSearchPopover } from './saved-search-popover/saved-search-popover';
 
+/**
+ * Search component that includes a search input, autocomplete dropdown, and optional saved search popover.
+ * It handles user input, debounced search text emission, and integrates with various services for
+ * routing, state management, and UI interactions.
+ * @deprecated will be removed in future versions.
+ */
 @Component({
   selector: 'app-search',
   imports: [

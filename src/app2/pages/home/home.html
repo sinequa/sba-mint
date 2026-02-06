@@ -1,0 +1,17 @@
+<sidebar-provider>
+  <main-sidebar triggerName="sidebar-home">
+    <!-- home specific -->
+    <header>
+      <nav class="mt-4 ml-4 flex items-center justify-between">
+        <sidebar-trigger />
+      </nav>
+      <img class="mx-auto mt-auto mb-8 w-64 content-[var(--logo-large)/var(--logo-alt-text)] md:mb-16" alt="logo" />
+    </header>
+    <div class="md:m-auto md:w-[80%]">
+      <div class="mx-2 flex flex-col gap-16">
+        <search-with-autocomplete />
+        <widgets-tabs />
+      </div>
+    </div>
+  </main-sidebar>
+</sidebar-provider>
