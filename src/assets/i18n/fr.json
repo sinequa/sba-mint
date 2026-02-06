@@ -135,5 +135,8 @@
     "find": "Rechercher",
     "collapseSidebar": "Réduire la barre latérale",
     "expandSidebar": "Étendre la barre latérale"
+  },
+  "userMenu": {
+    "tryNewLayout": "Essayer la nouvelle UI"
   }
 }

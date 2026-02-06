@@ -47,6 +47,10 @@ type QueryParamsProps = {
   c?: SpellingCorrectionMode; // correction mode
 };
 
+/**
+ * Component for displaying all search results with various features like sorting, filtering, infinite scrolling, and an assistant.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'app-search-all',
   imports: [

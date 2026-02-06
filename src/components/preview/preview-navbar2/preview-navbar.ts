@@ -1,21 +1,11 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, DestroyRef, Input, computed, inject, input, model, viewChild } from '@angular/core';
+import { Component, Input, computed, inject, input, model, signal, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Event, NavigationEnd, Router } from '@angular/router';
 import { Article } from '@sinequa/atomic';
-import {
-  AppStore,
-  BookmarkButtonComponent,
-  DrawerNavbarComponent,
-  DrawerPreviewComponent,
-  DrawerService,
-  DrawerStackService,
-  PreviewService
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from '@sinequa/ui';
+import { AppStore, BookmarkButtonComponent, PreviewService } from '@sinequa/atomic-angular';
+import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, SheetCloseDirective, SheetService, cn } from '@sinequa/ui';
 import { PreviewDialogComponent } from '../dialog/preview-dialog';
 
 export type PreviewNavbarConfig = {
@@ -28,6 +18,30 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
   showSearchButton: true
 };
 
+/**
+ * Preview navigation bar component
+ *
+ * Usage:
+ * ```html
+ * <preview-navbar
+ *    [article]="article"
+ *   [canBookmark]="canBookmark"
+ *  [config]="config">
+ * </preview-navbar>
+ * ```
+ *
+ * Where `article` is the article to preview, `canBookmark` indicates if bookmarking is allowed, and `config` allows customization of the navbar features.
+ *
+ * Example of `config`:
+ * ```ts
+ * {
+ * showOpenButton: true,
+ * showSearchButton: false
+ * }
+ * ```
+ * This configuration will display the open button but hide the search button in the preview navbar.
+ *
+ */
 @Component({
   selector: 'preview-navbar, PreviewNavbar, previewnavbar',
   imports: [
@@ -37,26 +51,20 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     ButtonComponent,
     LinkIcon,
     CircleCheckIconComponent,
-    DrawerNavbarComponent,
     PreviewDialogComponent,
-    Separator
+    Separator,
+    SheetCloseDirective
   ],
-  templateUrl: './navbar.html',
-  providers: [DrawerService]
+  templateUrl: './preview-navbar.html',
+  providers: []
 })
 export class PreviewNavbarComponent {
   cn = cn;
-
-  /* drawer related services and references */
-  protected drawerPreviewRef = inject(DrawerPreviewComponent, { skipSelf: true, optional: true });
-  protected readonly drawerStack = inject(DrawerStackService, { optional: true });
 
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
   private readonly appStore = inject(AppStore);
-  private readonly router = inject(Router);
-  protected readonly destroyRef = inject(DestroyRef);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -81,27 +89,9 @@ export class PreviewNavbarComponent {
     }
   });
 
-  /**
-   * Computed property that determines whether the navigation bar is in an extended state.
-   * It returns `true` if either the drawer referenced by `drawerPreviewRef` is extended,
-   * or if the local `extended` state is true.
-   *
-   * @returns {boolean} `true` if the navigation bar should be extended; otherwise, `false`.
-   */
-  public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
+  expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
 
-  expandPreview = computed(() => true); //this.appStore.general()?.features?.expandPreview);
-
-  public copied: boolean = false;
-  public backLevel = 0;
-
-  constructor() {
-    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event: Event) => {
-      if (event instanceof NavigationEnd) {
-        this.backLevel--;
-      }
-    });
-  }
+  public copied = signal(false);
 
   openClicked(): void {
     // open the preview in a new tab and audit the action
@@ -109,16 +99,20 @@ export class PreviewNavbarComponent {
   }
 
   copyLink(): void {
+    if (this.copied()) {
+      return;
+    }
+
     const url = this.article()?.url1 || this.article()?.url2;
 
     if (url) {
       navigator.clipboard.writeText(url);
 
-      this.copied = true;
+      this.copied.set(true);
 
       setTimeout(() => {
-        this.copied = false;
-      }, 3000);
+        this.copied.set(false);
+      }, 2000);
 
       toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
     }
@@ -131,11 +125,7 @@ export class PreviewNavbarComponent {
    * Otherwise, it toggles the `extended` state between true and false.
    */
   toggle(): void {
-    if (this.drawerPreviewRef) {
-      this.drawerStack?.extend();
-    } else {
-      this.extended.set(!this.extended());
-    }
+    this.extended.set(!this.extended());
   }
 
   onExpand(): void {

@@ -21,7 +21,12 @@
     "resolveJsonModule": true,
     "useDefineForClassFields": false,
     "lib": ["esnext", "dom"],
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@config/*": ["./src/config/*"],
+      "@registry/*": ["./src/registry/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
