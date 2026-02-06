@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { AssistantUploadComponent } from './document-upload/assistant-upload.component';
+import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',

@@ -1,0 +1,85 @@
+<sidebar [id]="triggerName()" side="left" collapsible="icon" [variant]="variant()">
+  <sidebar-header>
+    <sidebar-menu>
+      <sidebar-menu-item routerLink="/home">
+        <img id="logo" alt="logo" class="size-12 max-h-12 max-w-12 cursor-pointer content-[var(--logo-small)/var(--logo-alt-text)]" />
+      </sidebar-menu-item>
+    </sidebar-menu>
+  </sidebar-header>
+
+  <sidebar-content>
+    <sidebar-group>
+      <sidebar-group-label>Navigation</sidebar-group-label>
+      <sidebar-group-content>
+        <sidebar-menu>
+          @if (backLevel()) {
+            <sidebar-menu-item [attr.aria-label]="'Search'" (click)="location.historyGo(backLevel())">
+              <sidebar-menu-button>
+                <i tooltip="Back" tooltip-position="right" class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
+                <span class="text-sm" sr-only>Back</span>
+              </sidebar-menu-button>
+            </sidebar-menu-item>
+          } @else {
+            <sidebar-menu-item aria-label="Search">
+              <sidebar-menu-button
+                class="text-lg"
+                routerLink="/home"
+                routerLinkActive="active"
+                #rla="routerLinkActive"
+                [attr.data-active]="rla.isActive || null">
+                <i tooltip="Home" tooltip-position="right" class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
+                <span class="text-sm" sr-only>Home</span>
+              </sidebar-menu-button>
+            </sidebar-menu-item>
+          }
+
+          <sidebar-menu-item [class]="cn('invisible', allowAI() && 'visible')" aria-label="Chats">
+            <sidebar-menu-button
+              class="text-lg"
+              routerLink="/assistant"
+              routerLinkActive="active"
+              #rla="routerLinkActive"
+              [attr.data-active]="rla.isActive || null">
+              <i tooltip="Chats" tooltip-position="right" class="fa-fw far fa-comment [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true"></i>
+              <span class="text-sm" sr-only>Chats</span>
+            </sidebar-menu-button>
+          </sidebar-menu-item>
+        </sidebar-menu>
+      </sidebar-group-content>
+    </sidebar-group>
+
+    <!-- extra sidebar content -->
+    <ng-content select="[slot=sidebar-extras]"></ng-content>
+  </sidebar-content>
+
+  <sidebar-footer>
+    <sidebar-menu>
+      @if (isAdmin()) {
+        <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
+          <sidebar-menu-button class="text-lg">
+            <i tooltip="Administration" tooltip-position="right" class="fa-fw far fa-gear" aria-hidden="true"></i>
+            <span class="text-sm" sr-only>Administration</span>
+          </sidebar-menu-button>
+        </sidebar-menu-item>
+      }
+      <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
+        <sidebar-menu-button class="text-lg">
+          <i tooltip="Help" tooltip-position="right" class="fa-fw far fa-question-circle" aria-hidden="true"></i>
+          <span class="text-sm" sr-only>Help</span>
+        </sidebar-menu-button>
+      </sidebar-menu-item>
+
+      <sidebar-menu-item>
+        <sidebar-menu-button>
+          <user-menu />
+        </sidebar-menu-button>
+      </sidebar-menu-item>
+    </sidebar-menu>
+  </sidebar-footer>
+</sidebar>
+
+<sidebar-inset class="w-95 overflow-hidden">
+  <div class="scrollbar-thin h-[calc(100dvh-1rem)] w-full overflow-x-hidden overflow-y-auto pr-4">
+    <ng-content></ng-content>
+  </div>
+</sidebar-inset>
