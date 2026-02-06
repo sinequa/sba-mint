@@ -9,8 +9,8 @@ import { UserSettingsStore } from '@sinequa/atomic-angular';
 import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
 import atomic from '../node_modules/@sinequa/atomic/package.json';
 
-import { AppComponent } from './app/app.component';
-import { appConfig } from './app/app.config';
+import { AppComponent } from './app2/app.component';
+import { appConfig } from './app2/app.config';
 
 import { environment } from './environments/environment';
 

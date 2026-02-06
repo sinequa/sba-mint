@@ -24,7 +24,9 @@ import {
   SortingChoice,
   SortSelectorComponent,
   SponsoredResultsComponent,
-  UserSettingsStore
+  UserSettingsStore,
+  AsideFiltersComponent,
+  InfinityScrollDirective
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
 
@@ -50,10 +52,9 @@ type QueryParamsProps = {
     NgComponentOutlet,
     SortSelectorComponent,
     DidYouMeanComponent,
-    // InfinityScrollDirective,
+    InfinityScrollDirective,
     SponsoredResultsComponent,
     NoResultComponent,
-    // SearchFeedbackComponent,
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
@@ -64,7 +65,8 @@ type QueryParamsProps = {
     CardContentComponent,
     TranslocoPipe,
     ChevronRightIcon,
-    SearchFeedbackComponent
+    SearchFeedbackComponent,
+    AsideFiltersComponent
   ],
   templateUrl: './search-all.html',
   styles: [

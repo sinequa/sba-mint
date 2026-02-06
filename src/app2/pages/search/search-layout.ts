@@ -30,11 +30,7 @@ import { WidgetsSidebarGroupComponent } from '@components/widgets/widgets-sideba
           <sidebar-trigger />
           <search-with-autocomplete class="w-full" />
         </nav>
-        <div class="sm:m-auto sm:w-[90%] xl:w-[60%]">
-          <div class="mx-2 flex flex-col">
-            <router-outlet />
-          </div>
-        </div>
+        <router-outlet />
       </main-sidebar>
     </sidebar-provider>
   `,
