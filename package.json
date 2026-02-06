@@ -1,6 +1,6 @@
 {
   "name": "sinequa-mint",
-  "version": "0.0.0",
+  "version": "11.14.0",
   "scripts": {
     "build": "ng build",
     "docs:build": "cd docusaurus && npm run build",
