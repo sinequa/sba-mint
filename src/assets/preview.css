@@ -173,3 +173,36 @@ body {
   color: transparent;
   background-color: #ff0c !important;
 }
+
+/* Formatting of the video converted previews (MediaToHtml v2 converter) */
+.sq-mediav2-conversion {
+  --color-timestamp-border: rgba(11, 117, 255, 0.4);
+  --color-timestamp-background: rgba(11, 117, 255, 0.1);
+  display: grid;
+  grid-template-columns: 10% 60% 30%;
+
+  hr {
+    display: none;
+  }
+  .sq-mediav2-timestamp {
+    align-self: center;
+    text-align: center;
+    padding: 5px;
+    border: 2px var(--color-timestamp-border) solid;
+    background-color: var(--color-timestamp-background);
+    border-radius: 15px;
+  }
+  .sq-mediav2-sentences {
+    padding: 0.5rem 1rem;
+    align-self: center;
+  }
+  .sq-mediav2-screenshot img {
+    width: 100%;
+  }
+  .sq-mediav2-timestamp,
+  .sq-mediav2-sentences,
+  .sq-mediav2-screenshot {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
