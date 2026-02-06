@@ -1,0 +1,20 @@
+<!-- Main content goes here -->
+<router-outlet></router-outlet>
+
+<MultiSelectionToolbar class="z-[var(--z-multiselection)]" (updatedCollections)="onUpdatedCollections()" />
+
+<sheet-previewer />
+
+<ngx-sonner-toaster
+  expand
+  visibleToasts="10"
+  [toastOptions]="{
+    unstyled: true,
+    classes: {
+      toast: 'min-w-80 w-80 flex gap-1 items-center shadow-md rounded-md p-4',
+      success: 'bg-success text-success-foreground',
+      error: 'bg-error text-error-foreground',
+      info: 'bg-info text-info-foreground',
+      warning: 'bg-warning text-warning-foreground'
+    }
+  }" />

@@ -22,7 +22,7 @@
   --color-almond-700: #235944;
   --color-almond-800: #1e4737;
   --color-almond-900: #193b2e;
-  --color-almond-950: #0d211a;
+  --color-almond-950: rgb(13, 33, 26);
 
   --color-pink-50: #fcf7fc;
   --color-pink-100: #faecfb;
@@ -144,7 +144,7 @@
   --color-cyan-900: #0e1b1b;
   --color-cyan-950: #070d0d;
 
-  --text-2xs: 8px;
+  /* --text-2xs: 8px;
   --text-2xs-line-height: 10px;
   --text-xs: 11px;
   --text-xs-line-height: 14px;
@@ -157,50 +157,67 @@
   --text-xl: 20px;
   --text-xl-line-height: 26px;
   --text-2xl: 24px;
-  --text-2xl-line-height: 31px;
+  --text-2xl-line-height: 31px; */
 }
 
 :root {
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
+  color-scheme: light;
+
+  --logo-small-url: url('../assets/logo/logo-small.svg');
   --logo-large-url: url('../assets/logo/logo-sinequa.svg');
   --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
-  --logo-small: var(--logo-small-url);
-  --logo-large: var(--logo-large-url);
+  /*
+    --logo-light-small and
+    --logo-light-large
+    are defined in the custom json
+  */
+  --logo-small: var(--logo-light-small, var(--logo-small-url));
+  --logo-large: var(--logo-light-large, var(--logo-large-url));
   --logo-large-alt: var(--logo-large-alt-url);
   --logo-alt-text: 'Sinequa logo';
 
   --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: var(--color-sage-600);
-  --primary-foreground: var(--color-sage-50);
-  --secondary: var(--color-almond-100);
-  --secondary-foreground: var(--color-almond-900);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: var(--color-pink-200);
-  --accent-foreground: var(--color-pink-900);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: var(--color-accent);
-  --chart-1: oklch(0.871 0.15 154.449);
-  --chart-2: oklch(0.723 0.219 149.579);
-  --chart-3: oklch(0.627 0.194 149.214);
-  --chart-4: oklch(0.527 0.154 150.069);
-  --chart-5: oklch(0.448 0.119 151.328);
-  --sidebar: var(--color-sage-950);
-  --sidebar-foreground: var(--color-sage-50);
-  --sidebar-primary: oklch(0.648 0.2 131.684);
-  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.841 0.238 128.85);
+  --background: light-dark(oklch(1 0 0), var(--color-sage-975));
+  --foreground: light-dark(oklch(0.141 0.005 285.823), oklch(0.985 0 0));
+
+  --card: light-dark(var(--color-almond-50), var(--color-sage-950));
+  --card-foreground: light-dark(var(--color-almond-950), var(--color-green-50));
+
+  --popover: light-dark(oklch(1 0 0), oklch(0.21 0.006 285.885));
+  --popover-foreground: light-dark(oklch(0.141 0.005 285.823), oklch(0.985 0 0));
+
+  --primary: light-dark(var(--color-sage-600), var(--color-sage-950));
+  --primary-foreground: light-dark(var(--color-sage-50), var(--color-sage-300));
+  --secondary: light-dark(var(--color-almond-100), oklch(0.274 0.006 286.033));
+  --secondary-foreground: light-dark(var(--color-almond-900), oklch(0.985 0 0));
+
+  --muted: light-dark(oklch(0.967 0.001 286.375), var(--color-sage-950));
+  --muted-foreground: light-dark(oklch(0.552 0.016 285.938), oklch(0.705 0.015 286.067));
+  --accent: light-dark(var(--color-pink-200), var(--color-pink-200));
+  --accent-foreground: light-dark(var(--color-pink-900), var(--color-pink-900));
+  --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --border: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 10%));
+  --input: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 15%));
+  --ring: light-dark(var(--color-accent), var(--color-accent));
+  --chart-1: light-dark(oklch(0.871 0.15 154.449), oklch(0.871 0.15 154.449));
+  --chart-2: light-dark(oklch(0.723 0.219 149.579), oklch(0.723 0.219 149.579));
+  --chart-3: light-dark(oklch(0.627 0.194 149.214), oklch(0.627 0.194 149.214));
+  --chart-4: light-dark(oklch(0.527 0.154 150.069), oklch(0.527 0.154 150.069));
+  --chart-5: light-dark(oklch(0.448 0.119 151.328), oklch(0.448 0.119 151.328));
+
+  --sidebar: light-dark(var(--color-almond-50), var(--color-sage-950));
+  --sidebar-foreground: light-dark(var(--color-gray-900), var(--color-white));
+  --sidebar-primary: light-dark(oklch(0.648 0.2 131.684), oklch(0.768 0.233 130.85));
+  --sidebar-primary-foreground: light-dark(oklch(0.986 0.031 120.757), oklch(0.986 0.031 120.757));
+  --sidebar-accent: light-dark(oklch(from var(--color-sage-600) l c h / 30%), oklch(from var(--color-almond-500) l c h / 30%));
+  --sidebar-accent-foreground: light-dark(var(--color-gray-900), oklch(0.985 0 0));
+  --sidebar-active: light-dark(var(--color-sage-600), var(--color-almond-500));
+  --sidebar-active-foreground: light-dark(var(--color-white), oklch(0.986 0.031 120.757));
+  --sidebar-border: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 10%));
+  --sidebar-ring: light-dark(oklch(0.841 0.238 128.85), oklch(0.405 0.101 131.063));
+
+  --tooltip: light-dark(var(--color-gray-700), var(--color-gray-200));
+  --tooltip-foreground: light-dark(var(--color-gray-50), var(--color-gray-900));
 
   --success: var(--color-green-200);
   --success-foreground: var(--color-green-800);
@@ -213,104 +230,66 @@
 
   --header: var(--color-sage-900);
   --header-foreground: var(--color-sage-50);
-  --menu: var(--color-background);
-  --menu-foreground: var(--color-foreground);
+
+  --menu: light-dark(var(--color-background), var(--color-sage-900));
+  --menu-foreground: light-dark(var(--color-foreground), var(--color-almond-200));
 
   --datepicker-today: var(--color-accent);
 
-  --ai-from: var(--color-blue-500);
-  --ai-via: #6c5ce7;
-  --ai-to: #8a3bff;
-  --ai-foreground: var(--color-white);
+  /* used for dialog[open] backdrop */
+  --backdrop: light-dark(oklch(from var(--foreground) l c h / 50%), oklch(from var(--color-black) l c h / 73%));
+  --backdrop-filter: blur(2px);
+
+  --ai-from: light-dark(var(--color-blue-500), #9bd1f5);
+  --ai-via: light-dark(#6c5ce7, #b7b4f3);
+  --ai-to: light-dark(#8a3bff, #d997f1);
+  --ai-foreground: light-dark(var(--color-white), var(--foreground));
   --ai-card-foreground: var(--foreground); /* used in the ai card text */
-  --ai-border: var(--border);
+  --ai-border: light-dark(var(--border), transparent);
 
   /* Assistant  */
   --assistant: #ff732e;
-  --assistant-primary-bg: #f2f8fe;
-  --assistant-secondary-bg: #fff8f1;
+  /* --assistant-primary-bg: light-dark(#f2f8fe, color-mix(in srgb, var(--primary), var(--background) 80%)); */
+  /* --assistant-secondary-bg: light-dark(var(--color-almond-50), color-mix(in srgb, var(--assistant), var(--background) 90%)); */
 
-  --ast-primary-bg: var(--assistant-primary-bg);
-  --ast-secondary-bg: var(--assistant-secondary-bg);
-  --ast-action-buttons-color: var(--color-foreground);
   --ast-primary-color: var(--color-primary);
+  --ast-primary-bg: light-dark(var(--color-almond-100), var(--color-almond-100));
+  --ast-primary-foreground: light-dark(var(--color-almond-950), var(--color-almond-950));
+
+  --ast-secondary-color: light-dark(var(--color-pink-950), var(--color-pink-950));
+  --ast-secondary-bg: light-dark(var(--color-almond-50), var(--color-almond-50));
+  --ast-secondary-foreground: light-dark(var(--color-almond-950), var(--color-almond-950));
+  --ast-color-strong: light-dark(var(--color-gray-900), var(--color-almond-900));
+
+  --ast-action-buttons-color: var(--color-foreground);
+  --ast-action-buttons-hover-color: light-dark(var(--color-primary), var(--color-foreground));
+
   --ast-input-bg: var(--background);
   --ast-muted-color: var(--muted-foreground);
-}
 
-.dark {
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
-  --logo-small: var(--logo-dark-small, var(--logo-small-url));
-  --logo-large: var(--logo-dark-large, var(--logo-large-url));
-
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: var(--color-sage-800);
-  --primary-foreground: var(--color-sage-50);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.405 0.101 131.063);
-  --chart-1: oklch(0.871 0.15 154.449);
-  --chart-2: oklch(0.723 0.219 149.579);
-  --chart-3: oklch(0.627 0.194 149.214);
-  --chart-4: oklch(0.527 0.154 150.069);
-  --chart-5: oklch(0.448 0.119 151.328);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.768 0.233 130.85);
-  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.405 0.101 131.063);
-
-  --success: var(--color-green-200);
-  --success-foreground: var(--color-green-800);
-  --warning: var(--color-orange-200);
-  --warning-foreground: var(--color-orange-800);
-  --info: var(--color-blue-200);
-  --info-foreground: var(--color-blue-800);
-  --error: var(--color-red-200);
-  --error-foreground: var(--color-red-800);
-
-  --header: var(--color-sage-900);
-  --header-foreground: var(--color-sage-50);
-  --menu: var(--color-background);
-  --menu-foreground: var(--color-foreground);
-
-  --datepicker-today: var(--color-accent);
-
-  --ai-from: #9bd1f5;
-  --ai-via: #b7b4f3;
-  --ai-to: #d997f1;
-  --ai-foreground: var(--foreground);
-  --ai-border: transparent;
-
-  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
-  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
   --ast-uploaded-doc-hover-background: var(--color-neutral-700);
-
-  /* Assistant  */
-  --ast-primary-bg: var(--assistant-primary-bg);
-  --ast-secondary-bg: var(--assistant-secondary-bg);
   --ast-reference-expanded-hover-bg: var(--background);
   --ast-reference-passages-color: var(--color-foreground);
   --ast-reference-icon-color: var(--color-foreground);
-  --ast-saved-chat-hover-background: oklch(from var(--ast-secondary-bg) l c h);
+  --ast-saved-chat-hover-background: color-mix(in oklab, var(--color-foreground) 10%, transparent);
+
   --ast-message-table-border-color: var(--color-muted-foreground);
   --ast-message-table-tr-bg: var(--background);
   --ast-message-table-tr-border-color: var(--color-muted-foreground);
-  --ast-message-reference-color: var(--color-neutral-700);
+
+  --ast-message-reference-color: light-dark(var(--color-cyan-950), var(--color-cyan-950));
+  --ast-reference-background-color: light-dark(var(--color-pink-200), var(--color-pink-200));
+}
+
+.dark {
+  color-scheme: dark;
+  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  /*
+    --logo-dark-small and
+    --logo-dark-large
+    are defined in the custom json
+  */
+  --logo-small: var(--logo-dark-small, var(--logo-small-url));
+  --logo-large: var(--logo-dark-large, var(--logo-large-url));
 }

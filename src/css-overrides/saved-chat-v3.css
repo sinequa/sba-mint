@@ -1,20 +1,6 @@
 sq-saved-chats-v3 {
   scrollbar-width: thin;
 
-  /* stay on top the date of the saved chat while scrolling */
-  .saved-chats {
-    .saved-chat-date {
-      position: sticky;
-      top: 0;
-      /* fix the background color to hide the content behind */
-      background-color: white;
-    }
-  }
-
-  div.saved-chat-date {
-    background-color: var(--color-muted) !important;
-  }
-
   /* chat v3 modal overrides */
   /* center the modal in the screen */
   dialog {
@@ -41,9 +27,41 @@ sq-saved-chats-v3 {
   }
 }
 
+/* stay on top the date of the saved chat while scrolling */
+.saved-chats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .saved-chat-date {
+    position: sticky;
+    top: 0;
+    /* fix the background color to hide the content behind */
+    background-color: white;
+  }
+
+  .saved-chat.active {
+    color: var(--color-foreground) !important;
+    border-radius: 12px;
+    & button {
+      color: var(--color-foreground) !important;
+    }
+  }
+  .saved-chat:hover {
+    color: var(--color-foreground) !important;
+    background-color: var(--ast-saved-chat-hover-background) !important;
+    border-radius: 12px;
+    & button {
+      color: var(--color-foreground) !important;
+      background-color: transparent !important;
+    }
+  }
+}
+
 .dark {
   sq-saved-chats-v3 {
     dialog {
+      border: none;
       background-color: var(--background);
       color: var(--foreground);
     }

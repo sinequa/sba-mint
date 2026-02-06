@@ -115,5 +115,8 @@
     "find": "Suchen",
     "collapseSidebar": "Seitenleiste minimieren",
     "expandSidebar": "Erweitern Sie die Seitenleiste"
+  },
+  "userMenu": {
+    "tryNewLayout": "Die neue UI ausprobieren"
   }
 }

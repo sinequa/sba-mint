@@ -34,6 +34,13 @@ export type NavbarMenu = {
   component?: Type<unknown>;
 };
 
+/**
+ * Navbar component
+ * Displays the top navigation bar with search input, user menu, and other navbar items
+ * Uses the DrawerStackService to manage the state of the sidebar drawer
+ *
+ * @deprecated the new layout does not use this component anymore
+ */
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
