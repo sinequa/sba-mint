@@ -223,7 +223,9 @@
     }
   }
 
-  /* layout (obsolete) */
+  /* layout
+   * deprecated will be removed in v11.15.0
+   */
   .layout-search {
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
@@ -281,6 +283,7 @@
 }
 
 /* drawer stack and drawer preview */
+/* deprecated, will be removed in v11.15.0 */
 DrawerPreview {
   /* removes the "important!" when the position: obsolute will be removed from the component */
   position: fixed !important;
