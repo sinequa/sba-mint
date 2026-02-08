@@ -103,6 +103,8 @@ export class UserMenuComponent {
     return allowChangePassword && useCredentials;
   });
 
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
+
   readonly user = computed(() => {
     const principal = getState(this.principalStore).principal;
     return principal;
