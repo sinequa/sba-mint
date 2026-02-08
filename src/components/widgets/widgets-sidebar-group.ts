@@ -75,7 +75,7 @@ export type NavbarMenu = {
                 </Popover>
               } @else {
                 <Dropdown class="w-full rounded-lg border-neutral-300">
-                  <sidebar-menu-button class="text-lg">
+                  <sidebar-menu-button class="text-lg" [attr.data-active]="rla.isActive || null">
                     <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
@@ -83,7 +83,7 @@ export type NavbarMenu = {
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
                   </DropdownContent>
                 </Dropdown>
-                <sidebar-menu-action [routerLink]="menu.routerLink">
+                <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
                   <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                   <span class="sr-only">Move to {{ menu.display | transloco }}</span>
                 </sidebar-menu-action>

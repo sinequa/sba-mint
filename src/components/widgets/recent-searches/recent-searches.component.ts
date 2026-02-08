@@ -11,60 +11,53 @@ import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
   selector: 'app-recent-searches',
   imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent],
   template: `
-    <div class="layout-search overflow-auto">
-      <div class="col-span-2 col-start-2 overflow-hidden">
-        <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
-          {{ 'history' | transloco }}
-        </h1>
+    <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+      <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
+      {{ 'history' | transloco }}
+    </h1>
 
-        <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
-          @for (scope of history(); track $index) {
-            <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
-              {{ getDate(scope.date) }}
-            </li>
+    <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
+      @for (scope of history(); track $index) {
+        <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
+          {{ getDate(scope.date) }}
+        </li>
 
-            @for (search of scope.searches; track $index) {
-              <li
-                class="group grid grid-cols-[auto_20%_min-content] items-center rounded-md p-1"
-                role="listitem"
-                attr.data-href="{{ search.path || search.queryParams?.path }}"
-                [routerLink]="[search.path || search.queryParams?.path]"
-                [queryParams]="getQueryParams(search)">
-                <span class="ms-2">
-                  {{ search.display || search.label }}
-                </span>
+        @for (search of scope.searches; track $index) {
+          <li
+            class="group grid grid-cols-[auto_20%_min-content] items-center rounded-md p-1"
+            role="listitem"
+            attr.data-href="{{ search.path || search.queryParams?.path }}"
+            [routerLink]="[search.path || search.queryParams?.path]"
+            [queryParams]="getQueryParams(search)">
+            <span class="ms-2">
+              {{ search.display || search.label }}
+            </span>
 
-                <span class="text-muted-foreground">
-                  {{ 'in' | transloco }}
+            <span class="text-muted-foreground">
+              {{ 'in' | transloco }}
 
-                  <span class="font-semibold capitalize">
-                    {{ search.queryParams?.tab ?? 'all' }}
-                  </span>
+              <span class="font-semibold capitalize">
+                {{ search.queryParams?.tab ?? 'all' }}
+              </span>
 
-                  @if (search.filterCount) {
-                    ,
-                    <span class="font-semibold lowercase"> {{ search.filterCount }} {{ 'filters' | transloco }} </span>
-                  }
-                </span>
+              @if (search.filterCount) {
+                ,
+                <span class="font-semibold lowercase"> {{ search.filterCount }} {{ 'filters' | transloco }} </span>
+              }
+            </span>
 
-                <button variant="icon" size="icon" class="text-destructive invisible group-hover:visible hover:scale-125" (click)="remove($event, search)">
-                  <i class="fa-fw far fa-trash-can" aria-hidden></i>
-                </button>
-              </li>
-            }
-          } @empty {
-            <li class="no-records">
-              {{ 'searches.recent.noRecentSearches' | transloco }}
-            </li>
-          }
-        </ul>
-      </div>
-    </div>
+            <button variant="icon" size="icon" class="text-destructive invisible group-hover:visible hover:scale-125" (click)="remove($event, search)">
+              <i class="fa-fw far fa-trash-can" aria-hidden></i>
+            </button>
+          </li>
+        }
+      } @empty {
+        <li class="no-records">
+          {{ 'searches.recent.noRecentSearches' | transloco }}
+        </li>
+      }
+    </ul>
   `,
-  host: {
-    class: 'flex flex-col h-full w-full'
-  },
   providers: [TranslocoDateImpurePipe]
 })
 export class RecentSearchesComponent {
