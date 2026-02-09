@@ -16,11 +16,9 @@ import {
   QueryParamsStore,
   RecentSearchesComponent,
   SavedSearchesComponent,
-  SavedSearchesService,
   SearchItem
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
-import { notify } from '@sinequa/atomic';
 
 import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../search/search.component';
@@ -90,7 +88,6 @@ export class NavbarComponent {
 
   private readonly transloco = inject(TranslocoService);
   private readonly drawerStack = inject(DrawerStackService);
-  private readonly savedSearchesService = inject(SavedSearchesService);
   readonly router = inject(Router);
   readonly autocompleteService = inject(AutocompleteService);
   readonly queryParamsStore = inject(QueryParamsStore);
@@ -122,15 +119,7 @@ export class NavbarComponent {
   /**
    * Occurs when the user clicks on the save button
    */
-  protected saveSearch(savedSearch?: SearchItem): void {
-    if (savedSearch) {
-      const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
-      if (index !== -1) {
-        this.savedSearchesService.deleteSavedSearch(index);
-        notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
-      }
-    }
-  }
+  protected saveSearch(savedSearch?: SearchItem): void {}
 
   /**
    * Occurs when the user selects a suggestion from the autocomplete.

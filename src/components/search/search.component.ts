@@ -90,7 +90,7 @@ export class SearchComponent {
   protected readonly dialogService = inject(DialogService);
   protected readonly appFeatures = this.appStore.general()?.features;
 
-  public readonly showSave = input(false, { transform: booleanAttribute });
+  public readonly showSave = input(true, { transform: booleanAttribute });
   public readonly variant = input<SearchVariants['variant']>('default');
   public readonly activeDescendant = input<ActiveSuggestion>();
 
