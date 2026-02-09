@@ -3,7 +3,8 @@ import { Component, computed, DestroyRef, effect, inject, Injector, input, signa
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+
+import { injectInfiniteQuery, provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
@@ -85,7 +86,8 @@ type QueryParamsProps = {
   ],
   host: {
     '(keydown.enter)': 'handleKeydownEnter($event)'
-  }
+  },
+  providers: [provideQueryClient(new QueryClient())]
 })
 export class SearchAllComponent {
   cn = cn;
@@ -102,7 +104,7 @@ export class SearchAllComponent {
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
   protected readonly userSettingsStore = inject(UserSettingsStore);
-  readonly selectionStore = inject(SelectionStore);
+  protected readonly selectionStore = inject(SelectionStore);
 
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
@@ -140,6 +142,9 @@ export class SearchAllComponent {
 
   // Whether the feedback button is to hide
   hideFeedback = signal(false);
+
+  // all rows from all pages to display in the UI, computed from the query result
+  allRows = computed(() => this.query.data()?.pages.flatMap(page => page.records) ?? []);
 
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({

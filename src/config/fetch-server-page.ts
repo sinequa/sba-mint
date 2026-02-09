@@ -5,7 +5,7 @@ import { lastValueFrom, map } from 'rxjs';
 
 export function fetchServerPage(
   injector: Injector,
-  offset: unknown = 0,
+  offset: unknown = 1,
   {
     currentKeys,
     basket,
