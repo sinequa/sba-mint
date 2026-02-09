@@ -1,13 +1,12 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, Injector, input, signal, Type, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, tap } from 'rxjs';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
+import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
 import {
   AggregationsStore,
   AppStore,
@@ -33,6 +32,7 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 import { AssistantComponent } from '@components/assistant/assistant';
 import { CardSkeleton } from '@components/cards/record/skeleton';
 import { getComponentsForDocumentType } from '@registry/document-type-registry';
+import { fetchServerPage } from '@config/fetch-server-page';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -55,6 +55,7 @@ type QueryParamsProps = {
     InfinityScrollDirective,
     SponsoredResultsComponent,
     NoResultComponent,
+    SearchFeedbackComponent,
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
@@ -88,6 +89,8 @@ type QueryParamsProps = {
 })
 export class SearchAllComponent {
   cn = cn;
+
+  private injector = inject(Injector);
 
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
@@ -141,87 +144,32 @@ export class SearchAllComponent {
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({
     queryKey: [`search-${this.t()}`, this.currentKeys(), this.userOverrideActive()],
-    queryFn: ({ pageParam }) => {
-      if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
-      const q = this.queryParamsStore.getQuery();
-
-      console.log('current id', this.id());
-
-      const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
-      this.assistantQuery = { ...this.assistantQuery, ...query };
-
-      // Add the current search to the user settings when the text is not empty
-      if (query.text && query.text !== '') {
-        this.userSettingsStore.addCurrentSearch(query as QueryParams);
-      }
-
-      return lastValueFrom(
-        this.queryService.search(query).pipe(
-          tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
-          map(result => {
-            result.records?.map((article: Article) => {
-              return { ...article, value: article.title, type: 'default' };
-            });
-            return result;
-          }),
-          map(result => {
-            // If the id is set, open the drawer with the preview of the article
-            const id = this.id();
-            if (id) {
-              result.records?.forEach(article => {
-                if (article.id === id) {
-                  this.selectionService.setCurrentArticle(article);
-                }
-              });
-            }
-            return result;
-          })
-        )
-      );
-    },
+    queryFn: ({ pageParam }) =>
+      fetchServerPage(this.injector, pageParam, {
+        currentKeys: this.currentKeys(),
+        basket: this.b(),
+        id: this.id(),
+        q: this.queryParamsStore.getQuery(),
+        tab: this.t(),
+        spellingCorrectionMode: this.c()
+      }),
     initialPageParam: this.p(),
     getPreviousPageParam: firstPage => firstPage.previousPage ?? undefined,
     getNextPageParam: lastPage => lastPage.nextPage ?? undefined
   }));
 
+  // standard injectQuery without infinite loading
   // query = injectQuery(() => ({
   //   queryKey: [`search-${this.t()}`, this.currentKeys(), this.userOverrideActive()],
-  //   queryFn: () => {
-  //     if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
-  //     const q = this.queryParamsStore.getQuery();
-
-  //     const query = { ...q, page: this.p(), tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
-  //     this.assistantQuery = { ...this.assistantQuery, ...query };
-
-  //     // Add the current search to the user settings when the text is not empty
-  //     if (query.text && query.text !== '') {
-  //       this.userSettingsStore.addCurrentSearch(query as QueryParams);
-  //     }
-
-  //     return lastValueFrom(
-  //       this.queryService.search(query).pipe(
-  //         tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
-  //         map(result => {
-  //           result.records?.map((article: Article) => {
-  //             return { ...article, value: article.title, type: 'default' };
-  //           });
-  //           return result;
-  //         }),
-  //         map(result => {
-  //           // If the id is set, open the drawer with the preview of the article
-  //           const id = this.id();
-  //           if (id) {
-  //             result.records?.forEach(article => {
-  //               if (article.id === id) {
-  //                 this.selectionService.setCurrentArticle(article);
-  //               }
-  //             });
-  //           }
-  //           return result;
-  //         })
-  //       )
-  //     );
-  //   }
+  // queryFn: () =>
+  //   fetchServerPage(this.injector, pageParam, {
+  //     currentKeys: this.currentKeys(),
+  //     basket: this.b(),
+  //     id: this.id(),
+  //     q: this.queryParamsStore.getQuery(),
+  //     tab: this.t(),
+  //     spellingCorrectionMode: this.c()
+  //   }),
   // }));
 
   /**
@@ -295,6 +243,7 @@ export class SearchAllComponent {
     // Update the query params store with the filters from the URL query params
     // This allows Browser back/forward to work correctly
     effect(() => {
+      debug('effect - 1. update query params store from URL');
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
       this.queryParamsStore.patch({
         text: this.q(),
@@ -310,6 +259,7 @@ export class SearchAllComponent {
 
     // Update the URL with the query params from the query params store
     effect(() => {
+      debug('effect - 2. update URL from query params store');
       this.hideFeedback.set(false);
 
       const queryParams: QueryParamsProps = {};
@@ -329,6 +279,7 @@ export class SearchAllComponent {
 
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
+      debug('effect - 3. update keys to retrigger the query');
       this.hideFeedback.set(false);
 
       const state = getState(this.queryParamsStore);
@@ -342,19 +293,25 @@ export class SearchAllComponent {
         page: state.page,
         spellingCorrectionMode: state.spellingCorrectionMode
       };
-      if (this.currentKeys() === undefined) {
-        this.currentKeys.set(r);
-        return;
-      }
-      // checks if the current keys are different from the new ones
-      if (JSON.stringify(this.currentKeys()) !== JSON.stringify(r)) {
-        this.currentKeys.set(r);
-      }
+
+      untracked(() => {
+        if (this.currentKeys() === undefined) {
+          this.currentKeys.set(r);
+          return;
+        }
+        // checks if the current keys are different from the new ones
+        if (JSON.stringify(this.currentKeys()) !== JSON.stringify(r)) {
+          this.currentKeys.set(r);
+        }
+      });
     });
 
     // Make Result object available to children and update aggregations store
     effect(() => {
+      debug('effect - 4. make Result object available to children and update aggregations store');
       this.query.isSuccess();
+
+      console.log('query result', [this.query.hasNextPage(), this.query.data()]);
 
       const result = this.query.data()?.pages[0];
 
@@ -368,6 +325,7 @@ export class SearchAllComponent {
 
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
+      debug('effect - 5. update selectedAll signal based on the selection store and current pages');
       const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
       const selection = this.selectionStore.multiSelection().map(x => x.id);
       const b = bisect(articles, x => selection.includes(x));
@@ -377,15 +335,38 @@ export class SearchAllComponent {
       else this.selectedAll.set('some');
     });
 
+    // Update the assistant collapsed state from the user settings
     effect(() => {
+      debug('effect - 6. update assistant collapsed state from user settings');
       const { collapseAssistant } = getState(this.userSettingsStore);
 
-      if (collapseAssistant !== undefined) {
-        this.assistantCollapsed.set(collapseAssistant);
-        if (!this.showAssistant()) {
-          this.showAssistant.set(!collapseAssistant);
+      untracked(() => {
+        if (collapseAssistant !== undefined) {
+          this.assistantCollapsed.set(collapseAssistant);
+          if (!this.showAssistant()) {
+            this.showAssistant.set(!collapseAssistant);
+          }
         }
-      }
+      });
+    });
+
+    effect(() => {
+      debug('effect - 7. update assistant query from current keys');
+      const { page, tab, basket, spellingCorrectionMode, text } = this.currentKeys() || {};
+      const q = this.queryParamsStore.getQuery();
+      const query = { ...q, page, tab, basket, spellingCorrectionMode, text } as Query;
+
+      this.assistantQuery = { ...this.assistantQuery, ...query };
+
+      untracked(() => {
+        // Add the current search to the user settings when the text is not empty
+        if (text && text !== '') {
+          this.userSettingsStore.addCurrentSearch(query as QueryParams);
+        }
+
+        // Update the query text signal with the current query text
+        this.queryText.set(this.currentKeys()?.text ?? '');
+      });
     });
 
     this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
@@ -430,7 +411,7 @@ export class SearchAllComponent {
 
   onDrawerOpenedChange(opened: boolean): void {
     // Your function logic here
-    console.log(`Drawer opened state changed to: ${opened}`);
+    debug(`Drawer opened state changed to: ${opened}`);
   }
 
   onSort(sort: SortingChoice): void {
