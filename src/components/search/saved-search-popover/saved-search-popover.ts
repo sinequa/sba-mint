@@ -21,7 +21,7 @@ import { notify } from '@sinequa/atomic';
           <StarIcon />
         </button>
 
-        <PopoverContent class="min-w-xs p-2" position="bottom-end">
+        <PopoverContent class="min-w-xs p-2" position="bottom-end" strategy="fixed">
           <div class="cursor-default">
             <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
             <div class="py-4">
@@ -38,7 +38,7 @@ import { notify } from '@sinequa/atomic';
                 (keydown.enter)="savedName().trim().length !== 0 && saveQuery($event, savedNameInput.value)" />
             </div>
             <div class="ml-auto flex justify-end gap-2">
-              <button decoration="outline" [title]="'cancel' | transloco" (click)="popover.close()">
+              <button variant="outline" [title]="'cancel' | transloco" (click)="popover.close()">
                 {{ 'cancel' | transloco }}
               </button>
               <button [title]="'confirm' | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
@@ -103,11 +103,17 @@ export class SavedSearchPopover {
   protected saveQuery(event: Event, savedName?: string): void {
     event.stopPropagation();
 
-    if (this.savedSearch()) {
+    const savedSearch = this.savedSearch();
+    if (savedSearch) {
       // no animation when unsaving
-      this.onSavedSearch.emit(this.savedSearch());
+      const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
+      if (index !== -1) {
+        this.savedSearchesService.deleteSavedSearch(index);
+        notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
+      }
+      this.onSavedSearch.emit(savedSearch);
     } else {
-      this.savedSearchesService.saveSearch(this.savedName().trim());
+      this.savedSearchesService.saveSearch(savedName || this.savedName().trim());
       notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
       this.popoverComponent().close();
     }

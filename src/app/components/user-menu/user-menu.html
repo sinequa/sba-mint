@@ -12,11 +12,13 @@
 
   <!-- min-w-max used to display all the content -->
   <MenuContent position="bottom-start" class="min-w-max">
-    <MenuItem (click)="handleUserProfile()">
-      <i class="fa-fw fal fa-user text-[16px]"></i>
-      <span>{{ 'userMenu.manageProfile' | transloco }}</span>
-    </MenuItem>
-    <Separator />
+    @if (enabledUserProfile()) {
+      <MenuItem (click)="handleUserProfile()">
+        <i class="fa-fw fal fa-user text-[16px]"></i>
+        <span>{{ 'userMenu.manageProfile' | transloco }}</span>
+      </MenuItem>
+      <Separator />
+    }
     <!-- language selection -->
     <menu position="left-start" class="dropdown-content">
       <MenuItem>
@@ -115,4 +117,6 @@
 
 <override-user-dialog />
 <reset-user-settings-dialog />
-<user-profile-dialog />
+@if (enabledUserProfile()) {
+  <user-profile-dialog />
+}
