@@ -9,10 +9,7 @@ import { ButtonComponent } from '@sinequa/ui';
 @Component({
   selector: 'SavedSearches',
   imports: [TranslocoPipe, ButtonComponent],
-  templateUrl: './saved-searches.component.html',
-  host: {
-    class: 'flex flex-col h-full w-full'
-  }
+  templateUrl: './saved-searches.component.html'
 })
 export class SavedSearchesComponent {
   cdr = inject(ChangeDetectorRef);
