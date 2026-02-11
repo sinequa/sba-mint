@@ -17,10 +17,7 @@ interface BookmarkArticle {
 @Component({
   selector: 'Bookmarks',
   imports: [TranslocoPipe, NgComponentOutlet],
-  templateUrl: './bookmarks.component.html',
-  host: {
-    class: 'flex flex-col h-full w-full'
-  }
+  templateUrl: './bookmarks.component.html'
 })
 export class BookmarksComponent {
   cdr = inject(ChangeDetectorRef);

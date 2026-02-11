@@ -1,48 +1,44 @@
-<div class="grid grid-cols-4">
-  <div class="col-span-2 col-start-2">
-    <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw fas fa-star" aria-hidden></i>
-      {{ 'mySavedSearches' | transloco }}
-    </h1>
+<h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+  <i class="fa-fw fas fa-star" aria-hidden></i>
+  {{ 'mySavedSearches' | transloco }}
+</h1>
 
-    <ul class="mt-4 flex flex-col gap-2" role="list">
-      @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
-        <a
-          class="group hover:bg-foreground/5 grid grid-cols-[min-content_auto_20%_min-content] items-center rounded-md p-1 hover:cursor-pointer"
-          role="link"
-          (click)="onClick(savedSearch)"
-          (keydown.enter)="onClick(savedSearch)">
-          <i class="fas fa-star ps-2"></i>
+<ul class="mt-4 flex flex-col gap-2" role="list">
+  @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
+    <a
+      class="group hover:bg-foreground/5 grid grid-cols-[min-content_auto_20%_min-content] items-center rounded-md p-1 hover:cursor-pointer"
+      role="link"
+      (click)="onClick(savedSearch)"
+      (keydown.enter)="onClick(savedSearch)">
+      <i class="fas fa-star ps-2"></i>
 
-          <span class="ms-2">
-            {{ savedSearch.display || savedSearch.label }}
-          </span>
+      <span class="ms-2">
+        {{ savedSearch.display || savedSearch.label }}
+      </span>
 
-          <span class="text-muted-foreground">
-            {{ 'in' | transloco }}
+      <span class="text-muted-foreground">
+        {{ 'in' | transloco }}
 
-            <span class="font-semibold capitalize">
-              {{ savedSearch.queryParams?.tab ?? 'all' }}
-            </span>
+        <span class="font-semibold capitalize">
+          {{ savedSearch.queryParams?.tab ?? 'all' }}
+        </span>
 
-            @if (savedSearch.filterCount) {
-              ,
-              <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ 'filters' | transloco }} </span>
-            }
-          </span>
+        @if (savedSearch.filterCount) {
+          ,
+          <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ 'filters' | transloco }} </span>
+        }
+      </span>
 
-          <button
-            title="Remove saved search"
-            class="text-destructive invisible group-hover:visible hover:scale-125 hover:cursor-pointer"
-            (click)="onDelete($event, $index)">
-            <i class="fa-fw far fa-trash-can" aria-hidden></i>
-          </button>
-        </a>
-      } @empty {
-        <li class="no-records">
-          {{ 'searches.saved.noSavedSearches' | transloco }}
-        </li>
-      }
-    </ul>
-  </div>
-</div>
+      <button
+        title="Remove saved search"
+        class="text-destructive invisible group-hover:visible hover:scale-125 hover:cursor-pointer"
+        (click)="onDelete($event, $index)">
+        <i class="fa-fw far fa-trash-can" aria-hidden></i>
+      </button>
+    </a>
+  } @empty {
+    <li class="no-records">
+      {{ 'searches.saved.noSavedSearches' | transloco }}
+    </li>
+  }
+</ul>

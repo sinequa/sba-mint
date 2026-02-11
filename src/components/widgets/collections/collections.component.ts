@@ -11,100 +11,93 @@ import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui'
   selector: 'Collections',
   imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent],
   template: `
-    <div class="layout-search overflow-auto">
-      <div class="col-span-2 col-start-2">
-        <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <i class="fa-fw fas fa-inbox" aria-hidden></i>
-          {{ 'myCollections' | transloco }}
-        </h1>
+    <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+      <i class="fa-fw fas fa-inbox" aria-hidden></i>
+      {{ 'myCollections' | transloco }}
+    </h1>
 
-        @if (creating()) {
-          <span class="flex gap-2">
-            <input
-              #createInput
-              type="text"
-              autocomplete="off"
-              spellcheck="false"
-              [attr.aria-label]="'collections.collectionName' | transloco"
-              [attr.placeholder]="'collections.collectionName' | transloco"
-              [ngModel]="newCollectionName()"
-              (ngModelChange)="newCollectionName.set($event)"
-              (keydown.enter)="postCreate()"
-              (keydown.escape)="$event.preventDefault(); onCreate()" />
+    @if (creating()) {
+      <span class="flex gap-2">
+        <input
+          #createInput
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          [attr.aria-label]="'collections.collectionName' | transloco"
+          [attr.placeholder]="'collections.collectionName' | transloco"
+          [ngModel]="newCollectionName()"
+          (ngModelChange)="newCollectionName.set($event)"
+          (keydown.enter)="postCreate()"
+          (keydown.escape)="$event.preventDefault(); onCreate()" />
 
-            <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
-              {{ 'collections.cancelCreation' | transloco }}
-            </button>
-            <button tabindex="1" [attr.title]="'collections.save' | transloco" [disabled]="!newCollectionName().trim()" (click)="postCreate()">
-              {{ 'collections.save' | transloco }}
-            </button>
-          </span>
-        } @else {
-          <div class="row-reverse flex">
-            <button tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
-              {{ 'collections.createCollection' | transloco }}
-            </button>
-          </div>
-        }
-
-        <ul class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListData]="tmpCollections" (cdkDropListDropped)="dropped($event)">
-          @for (collection of tmpCollections; track $index) {
-            @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
-              <!-- class=" rounded-md p-1 hover:cursor-pointer hover:bg-blue-50" -->
-              <li
-                class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] items-center"
-                role="listitem"
-                cdkDrag
-                (click)="onClick(collection)">
-                <i class="fas fa-inbox ps-2"></i>
-
-                <span class="mx-2">{{ collection.name }}</span>
-
-                <button
-                  size="icon"
-                  variant="ghost"
-                  class="text-primary invisible group-hover:visible"
-                  (click)="$event.stopPropagation(); onEdit(collection, $index)">
-                  <i class="fa-fw far fa-pen-to-square" aria-hidden></i>
-                </button>
-
-                <button
-                  size="icon"
-                  variant="ghost"
-                  class="text-destructive invisible group-hover:visible"
-                  (click)="$event.stopPropagation(); deleteCollection(collection, $index)">
-                  <i class="fa-fw far fa-trash" aria-hidden></i>
-                </button>
-
-                <button size="icon" variant="ghost">
-                  <i class="fa-fw far fa-bars" aria-hidden></i>
-                </button>
-              </li>
-            } @else {
-              <input
-                class="grow"
-                #renameInput
-                type="text"
-                autocomplete="off"
-                spellcheck="false"
-                [attr.aria-label]="'collections.collectionName' | transloco"
-                [attr.placeholder]="'collections.collectionName' | transloco"
-                [ngModel]="collectionName()"
-                (ngModelChange)="collectionName.set($event)"
-                (keydown.enter)="onBlur($event)"
-                (keydown.escape)="onBlur($event)"
-                (blur)="onBlur($event)" />
-            }
-          }
-        </ul>
+        <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
+          {{ 'collections.cancelCreation' | transloco }}
+        </button>
+        <button tabindex="1" [attr.title]="'collections.save' | transloco" [disabled]="!newCollectionName().trim()" (click)="postCreate()">
+          {{ 'collections.save' | transloco }}
+        </button>
+      </span>
+    } @else {
+      <div class="row-reverse flex">
+        <button tabindex="0" [attr.title]="'collections.createCollection' | transloco" (click)="onCreate()">
+          {{ 'collections.createCollection' | transloco }}
+        </button>
       </div>
-    </div>
+    }
+
+    <ul class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListData]="tmpCollections" (cdkDropListDropped)="dropped($event)">
+      @for (collection of tmpCollections; track $index) {
+        @if (modifiedIndex() === undefined || modifiedIndex() !== $index) {
+          <!-- class=" rounded-md p-1 hover:cursor-pointer hover:bg-blue-50" -->
+          <li
+            class="group grid grid-cols-[min-content_auto_min-content_min-content_min-content] items-center"
+            role="listitem"
+            cdkDrag
+            (click)="onClick(collection)">
+            <i class="fas fa-inbox ps-2"></i>
+
+            <span class="mx-2">{{ collection.name }}</span>
+
+            <button
+              size="icon"
+              variant="ghost"
+              class="text-primary invisible group-hover:visible"
+              (click)="$event.stopPropagation(); onEdit(collection, $index)">
+              <i class="fa-fw far fa-pen-to-square" aria-hidden></i>
+            </button>
+
+            <button
+              size="icon"
+              variant="ghost"
+              class="text-destructive invisible group-hover:visible"
+              (click)="$event.stopPropagation(); deleteCollection(collection, $index)">
+              <i class="fa-fw far fa-trash" aria-hidden></i>
+            </button>
+
+            <button size="icon" variant="ghost">
+              <i class="fa-fw far fa-bars" aria-hidden></i>
+            </button>
+          </li>
+        } @else {
+          <input
+            class="grow"
+            #renameInput
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            [attr.aria-label]="'collections.collectionName' | transloco"
+            [attr.placeholder]="'collections.collectionName' | transloco"
+            [ngModel]="collectionName()"
+            (ngModelChange)="collectionName.set($event)"
+            (keydown.enter)="onBlur($event)"
+            (keydown.escape)="onBlur($event)"
+            (blur)="onBlur($event)" />
+        }
+      }
+    </ul>
 
     <delete-collection-dialog />
   `,
-  host: {
-    class: 'flex flex-col h-full w-full'
-  },
   providers: [TranslocoDateImpurePipe]
 })
 export class CollectionsComponent {

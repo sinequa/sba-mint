@@ -1,33 +1,29 @@
-<div class="grid grid-cols-4">
-  <div class="col-span-2 col-start-2">
-    <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw fas fa-bookmark" aria-hidden></i>
-      {{ 'myBookmarks' | transloco }}
-    </h1>
+<h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
+  <i class="fa-fw fas fa-bookmark" aria-hidden></i>
+  {{ 'myBookmarks' | transloco }}
+</h1>
 
-    <ul class="mt-4 flex flex-col gap-2">
-      @for (bookmark of bookmarksArticle(); track bookmark.bookmark.id + $index) {
-        <li>
-          @if (bookmark.article && bookmark.article.docformat) {
-            <ng-container *ngComponentOutlet="getArticleType(bookmark.article.docformat)!; inputs: { article: bookmark.article, strategy: 'replace' }" />
-          } @else {
-            <div class="flex">
-              <span class="line-clamp-1 grow text-neutral-500">{{ bookmark.bookmark.id }}</span>
-              <button
-                class="text-alert ms-1 hover:scale-125"
-                [attr.title]="'bookmark.removeBookmark' | transloco"
-                [attr.aria-label]="'bookmark.removeBookmark' | transloco"
-                (click)="onDelete(bookmark.bookmark)">
-                <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
-              </button>
-            </div>
-          }
-        </li>
-      } @empty {
-        <li class="no-records">
-          {{ 'bookmarks.noBookmarks' | transloco }}
-        </li>
+<ul class="mt-4 flex flex-col gap-2">
+  @for (bookmark of bookmarksArticle(); track bookmark.bookmark.id + $index) {
+    <li>
+      @if (bookmark.article && bookmark.article.docformat) {
+        <ng-container *ngComponentOutlet="getArticleType(bookmark.article.docformat)!; inputs: { article: bookmark.article, strategy: 'replace' }" />
+      } @else {
+        <div class="flex">
+          <span class="line-clamp-1 grow text-neutral-500">{{ bookmark.bookmark.id }}</span>
+          <button
+            class="text-alert ms-1 hover:scale-125"
+            [attr.title]="'bookmark.removeBookmark' | transloco"
+            [attr.aria-label]="'bookmark.removeBookmark' | transloco"
+            (click)="onDelete(bookmark.bookmark)">
+            <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+          </button>
+        </div>
       }
-    </ul>
-  </div>
-</div>
+    </li>
+  } @empty {
+    <li class="no-records">
+      {{ 'bookmarks.noBookmarks' | transloco }}
+    </li>
+  }
+</ul>
