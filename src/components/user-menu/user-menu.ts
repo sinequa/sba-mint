@@ -6,7 +6,14 @@ import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse
 import { getState } from '@ngrx/signals';
 
 import { logout, setGlobalConfig } from '@sinequa/atomic';
-import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AppStore,
+  OverrideUserDialogComponent,
+  PrincipalStore,
+  ResetUserSettingsDialogComponent,
+  UserProfileDialog,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 import {
   AvatarComponent,
   AvatarFallbackComponent,
@@ -52,7 +59,8 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    NgComponentOutlet
+    NgComponentOutlet,
+    UserProfileDialog
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
@@ -72,11 +80,15 @@ export class UserMenuComponent {
   readonly menus = viewChildren(MenuComponent);
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
+  readonly userProfileDialog = viewChild(UserProfileDialog);
 
   private readonly router = inject(Router);
   private readonly principalStore = inject(PrincipalStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
+
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
 
   readonly user = computed(() => {
     const principal = getState(this.principalStore).principal;
@@ -125,6 +137,10 @@ export class UserMenuComponent {
 
   handleOverrideUser() {
     this.overrideUserDialog()?.handleOverrideUser();
+  }
+
+  handleUserProfile() {
+    this.userProfileDialog()?.open();
   }
 
   handleResetUserSettings() {
