@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -69,6 +69,9 @@ export class PreviewContentComponent {
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
 
+  conversionUrl = input<string | undefined>(undefined);
+  onLoadedData = output<PreviewData | undefined>();
+
   /**
    * The article to be previewed.
    * @remarks
@@ -88,6 +91,7 @@ export class PreviewContentComponent {
     const { queryText } = getState(this.selectionStore);
     return queryText;
   });
+  protected previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -110,10 +114,15 @@ export class PreviewContentComponent {
     }
   });
 
+  documentCachedContentUrl?: string; // used to store the default preview url
   previewData = computed(() => {
     if (this.previewDataResource.hasValue()) {
-      return this.previewDataResource.value();
+      const previewData = this.previewDataResource.value();
+      if (!this.documentCachedContentUrl && previewData?.documentCachedContentUrl) this.documentCachedContentUrl = previewData.documentCachedContentUrl;
+      this.onLoadedData.emit(previewData);
+      return previewData;
     }
+    this.onLoadedData.emit(undefined);
     return undefined;
   });
 
@@ -124,9 +133,9 @@ export class PreviewContentComponent {
     // Update the preview service with the current preview data
     this.previewService.setPreviewData(previewData);
 
-    return previewData.documentCachedContentUrl
-      ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + previewData.documentCachedContentUrl)
-      : undefined;
+    let url =
+      this.previewMultiConversion() && !!this.conversionUrl() && this.conversionUrl() !== 'undefined' ? this.conversionUrl() : this.documentCachedContentUrl;
+    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
   });
 
   /**

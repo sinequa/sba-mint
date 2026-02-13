@@ -12,5 +12,6 @@
   "toggleExtracts": "Auszüge umschalten",
   "toggleEntities": "Entitäten umschalten",
   "summarize": "Zusammenfassen",
-  "discussion": "Mit dem Dokument chatten"
+  "discussion": "Mit dem Dokument chatten",
+  "default": "Standard"
 }
