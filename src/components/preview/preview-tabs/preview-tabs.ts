@@ -170,7 +170,7 @@ export class PreviewTabsComponent {
   ]);
   showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'summary')?.enabled);
   showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'discussion')?.enabled);
-  previewMultiConversion = computed(() => true);
+  previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   protected readonly isStreaming = signal<boolean>(false);
   displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === 'summary' && assistant.visible));
