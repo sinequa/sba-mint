@@ -4,7 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { rxResource } from '@angular/core/rxjs-interop';
 import { BreakpointObserverService, cn } from '@sinequa/ui';
@@ -35,7 +35,9 @@ import { PreviewActionsComponent } from './preview-actions';
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%_-_0.5rem)] flex-col gap-4">
         <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
-        <preview-actions [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <preview-actions
+          [isPrimary]="!conversion() || conversion()!.primary === true"
+          [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
@@ -69,7 +71,7 @@ export class PreviewContentComponent {
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
 
-  conversionUrl = input<string | undefined>(undefined);
+  conversion = input<CConverter | undefined>(undefined);
   onLoadedData = output<PreviewData | undefined>();
 
   /**
@@ -133,8 +135,7 @@ export class PreviewContentComponent {
     // Update the preview service with the current preview data
     this.previewService.setPreviewData(previewData);
 
-    let url =
-      this.previewMultiConversion() && !!this.conversionUrl() && this.conversionUrl() !== 'undefined' ? this.conversionUrl() : this.documentCachedContentUrl;
+    let url = this.previewMultiConversion() && !!this.conversion()?.conversion?.url ? this.conversion()!.conversion!.url : this.documentCachedContentUrl;
     return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
   });
 

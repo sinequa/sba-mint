@@ -1,9 +1,9 @@
-import { Component, computed, DestroyRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, output, signal, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { getState } from '@ngrx/signals';
-import { Article, CCApp, PreviewData, Query } from '@sinequa/atomic';
-import { AppStore, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CCApp, Conversion, PreviewData, Query } from '@sinequa/atomic';
+import { AppStore, SelectionStore, CConverter } from '@sinequa/atomic-angular';
 import { TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
@@ -60,11 +60,11 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
             <div class="grow"></div>
             <select
               class="hover:outline-primary focus:outline-primary border-foreground/10 bg-background hover:bg-muted focus:bg-muted h-8 rounded-md border px-2 hover:outline focus:outline"
-              [ngModel]="conversionUrl()"
-              (ngModelChange)="conversionUrl.set($event)">
-              <option [value]="undefined">{{ 'preview.default' | transloco }}</option>
+              [ngModel]="currentConversionIndex()"
+              (ngModelChange)="currentConversionIndex.set($event)">
+              <option [value]="-1">{{ 'preview.default' | transloco }}</option>
               @for (option of converterOptions(); track $index) {
-                <option [value]="option.conversion!.url">{{ option.name || option.displayFallback }}</option>
+                <option [value]="$index">{{ option.name }}</option>
               }
             </select>
           }
@@ -94,7 +94,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="px-6 pr-1" [conversionUrl]="conversionUrl()" (onLoadedData)="previewData.set($event)" />
+          <preview-content class="px-6 pr-1" [conversion]="currentConversion()" (onLoadedData)="previewData.set($event)" />
         </TabContent>
       </div>
     </Tabs>
@@ -107,6 +107,8 @@ export class PreviewTabsComponent {
   protected readonly appStore = inject(AppStore);
   protected readonly appFeatures = this.appStore.general()?.features;
   protected readonly selectionStore = inject(SelectionStore);
+
+  onConversionSelect = output<CConverter | undefined>();
 
   /**
    * A computed signal that returns the currently active preview tab value.
@@ -168,14 +170,17 @@ export class PreviewTabsComponent {
   ]);
   showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'summary')?.enabled);
   showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'discussion')?.enabled);
-  previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
+  previewMultiConversion = computed(() => true);
 
   protected readonly isStreaming = signal<boolean>(false);
   displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === 'summary' && assistant.visible));
   displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === 'discussion' && assistant.visible));
 
   /** List of all available converters matching with previewData.conversions and the config defined general.converters */
-  conversionUrl = signal<string | undefined>(undefined);
+  currentConversionIndex = signal<number>(-1);
+  currentConversion = computed<CConverter | undefined>(() =>
+    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()![this.currentConversionIndex()]
+  );
   converters = computed(() =>
     !this.previewData()?.conversions?.length
       ? undefined
@@ -194,9 +199,8 @@ export class PreviewTabsComponent {
 
     return this.converters()!
       .map(converter => {
-        const conversion = this.previewData()!.conversions!.find(c => c.converterName === converter.converter && c.format === converter.format);
-        const displayFallback = `${converter.primary ? 'Primary-' : ''}${converter.format}-${converter.converter}`;
-        return { ...converter, displayFallback, conversion };
+        converter.conversion = this.previewData()!.conversions!.find(c => c.converterName === converter.converter && c.format === converter.format);
+        return converter;
       })
       .sort((a, b) => (a.default && !b.default ? -1 : 1));
   });
@@ -210,7 +214,13 @@ export class PreviewTabsComponent {
     effect(() => {
       // set conversion url to the first default converter if any
       if (this.previewMultiConversion() || this.converterOptions()?.length) {
-        this.conversionUrl.set(this.converterOptions()!.find(c => c.default)?.conversion?.url);
+        this.currentConversionIndex.set(this.converterOptions()!.findIndex(c => c.default));
+      }
+    });
+
+    effect(() => {
+      if (this.previewMultiConversion()) {
+        this.onConversionSelect.emit(this.currentConversion());
       }
     });
   }

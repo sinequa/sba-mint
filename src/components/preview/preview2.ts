@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal, viewChild } from '@angular
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { Article as A } from '@sinequa/atomic';
-import { AdvancedSearch, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
 import { PreviewHeaderComponent } from './preview-header/preview-header';
@@ -57,6 +57,8 @@ export class PreviewComponent {
     }
     return article as Article;
   });
+
+  conversion = signal<CConverter | undefined>(undefined);
 
   constructor() {
     // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview
