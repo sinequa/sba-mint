@@ -1,16 +1,24 @@
+<div class="@container sticky top-17 z-5 mx-2 bg-background">
+  @if (isTabSearchActive()) {
+    <navbar-tabs class="**:[[role=tablist]]:justify-start lg:**:[[role=tablist]]:justify-center" />
+  }
+  <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
+</div>
 <div class="mb-8 flex gap-2">
+  <!-- column 1 -->
   <!-- [--height:350px] allows us to fix the aggregation's height to manage the overflow -->
-  <aside-filters
-    class="scrollbar-thin scrollbar-none bg-sidebar border-sidebar-border sticky top-20 mx-2 hidden h-[calc(100dvh-102px)] rounded-lg border p-4 [--height:350px] lg:block lg:w-[max(15%,300px)] lg:min-w-[min(30%,300px)]" />
-
-  <!-- main results -->
-  <div class="relative flex w-full flex-col px-2.5 lg:w-[68%]">
-    <div class="bg-background top-16 z-1 -mx-1 -mt-1 pt-1 sm:sticky">
-      @if (isTabSearchActive()) {
-        <navbar-tabs />
+  @if (false) {
+    <div class="sticky top-48 mx-2 hidden h-[calc(100dvh-230px)] lg:block lg:w-[max(15%,300px)] lg:min-w-[min(30%,300px)]">
+      @if (query.isSuccess() && hasRowCount()) {
+        <aside-filters class="scrollbar-thin scrollbar-none h-[calc(100dvh-230px)] rounded-sm border border-aside-border bg-aside p-4 [--height:350px]" />
       }
+    </div>
+  }
 
-      <filters-bar class="flex gap-1 pt-4 pb-4" />
+  <!-- column 2 -->
+  <!-- main results -->
+  <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
+    <div class="top-16 z-1 -mx-1 -mt-1 bg-background pt-1 sm:sticky">
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
       <sponsored-results />
@@ -18,19 +26,19 @@
 
     <!-- skeleton part -->
     @if (query.isPending()) {
-      <div class="mt-4 flex justify-between" aria-hidden="true">
+      <!-- <div class="mt-4 flex justify-between" aria-hidden="true">
         <div class="flex gap-2">
           @for (n of [1, 2, 3, 4, 5]; track $index) {
-            <button class="bg-muted-foreground/30 h-9 w-24" aria-hidden="true"></button>
+            <button class="h-9 w-24 bg-muted-foreground/30" aria-hidden="true"></button>
           }
         </div>
 
-        <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
+        <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
       </div>
 
       <div class="mt-10 flex justify-end">
-        <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
-      </div>
+        <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
+      </div> -->
 
       <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
         @for (n of [1, 2, 3]; track $index) {
@@ -41,63 +49,26 @@
     <!-- if results have been found -->
     @else if (hasRowCount()) {
       <!-- sort selector and export button -->
-      <div class="flex gap-1 has-[_+ul>li.no-records]:hidden">
+      <div class="@container z-0 flex gap-1 has-[+ul>li.no-records]:hidden">
         <button variant="ghost" (click)="selectAll()">
           @switch (selectedAll()) {
             @case ('all') {
-              <i class="fa-fw fa-regular fa-square-check"></i>
-              {{ 'searches.selection.unselectAll' | transloco }}
+              <SquareCheckBig />
+              <span class="truncate">{{ 'searches.selection.unselectAll' | transloco }}</span>
             }
             @case ('some') {
-              <i class="fa-fw fa-regular fa-square-minus"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              <SquareMinus />
+              <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
             @default {
-              <i class="fa-fw fa-regular fa-square"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              <Square />
+              <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
           }
         </button>
 
         <sort-selector class="ms-auto" [result]="result()!" position="bottom-start" (onSort)="onSort($event)" />
       </div>
-
-      <!-- if assistant is allowed -->
-      @if (allowAI()) {
-        <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 border-none bg-gradient-to-r shadow-none">
-          <CardHeader class="text-ai-card-foreground flex items-center gap-1 px-0 text-base font-semibold">
-            <div class="flex size-8 items-center justify-center">
-              @if (isStreaming()) {
-                <i class="fas fa-spinner animate-spin"></i>
-              } @else {
-                <i class="fas fa-sparkles"></i>
-              }
-            </div>
-
-            <h2>AI Overview</h2>
-
-            <button
-              variant="none"
-              [class]="
-                cn('ms-auto cursor-pointer [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out', !assistantCollapsed() && '[&_svg]:rotate-90')
-              "
-              (click)="onAssistantCollapse()"
-              aria-label="toggle assistant">
-              <ChevronRightIcon />
-            </button>
-          </CardHeader>
-
-          @if (showAssistant()) {
-            <CardContent [class]="cn('h-96 px-0', assistantCollapsed() && 'hidden')">
-              <assistant
-                [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
-                [showAssistant]="showAssistant()"
-                [instanceId]="instanceId()"
-                (isStreaming)="isStreaming.set($event)" />
-            </CardContent>
-          }
-        </Card>
-      }
 
       <!-- display all records -->
       <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
@@ -135,7 +106,30 @@
     <!-- if no results have been found -->
     @else {
       <!-- display a panel to inform the user that no results were found -->
-      <NoResult class="mt-4" />
+      <NoResult class="mt-4 bg-warning" />
     }
   </div>
+
+  <!-- column 3 -->
+  @if (!breakpointService.isMobile() && hasRowCount()) {
+    <div
+      [class]="
+        cn(
+          'sticky top-48 hidden h-[calc(100dvh-230px)] grow overflow-hidden [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2',
+          hasPreview() && 'rounded border border-aside-border lg:w-1/2'
+        )
+      ">
+      <preview
+        [class]="cn('absolute inset-0 h-full w-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right')" />
+
+      <!-- if assistant is allowed -->
+      <app-search-overview
+        [class]="cn('absolute inset-0 h-full w-full', !hasPreview() && 'animate-slide-in-right', hasPreview() && 'translate-x-full animate-slide-out-right')" />
+    </div>
+  }
 </div>
+
+<!-- on mobile devices use sheet previewer -->
+@if (breakpointService.isMobile()) {
+  <sheet-previewer />
+}

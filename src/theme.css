@@ -1,13 +1,15 @@
 /* Sinequa datepicker css */
 @import '@sinequa/ui/css/datepicker/styles.css';
+@import "./styles/animations.css";
+@import "./styles/utilities.css";
 
 /* css third-components overrides */
-@import './css-overrides/styles.css';
+@import "./css-overrides/styles.css";
 
 /* Hanken Grotesk Font Family */
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-Regular.ttf') format('truetype');
+  src: url("./assets/fonts/HankenGrotesk-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -15,7 +17,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-SemiBold.ttf') format('truetype');
+  src: url("./assets/fonts/HankenGrotesk-SemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -23,7 +25,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-Bold.ttf') format('truetype');
+  src: url("./assets/fonts/HankenGrotesk-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -37,6 +39,7 @@
   --color-black: #182021;
 
   --radius: 0.625rem;
+  --radius-sm: .5rem;
   --radius-button: 100vw;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -44,12 +47,33 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hovered: var(--primary-hovered);
+  --color-primary-hovered-foreground: var(--primary-hovered-foreground);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-pressed-foreground: var(--primary-pressed-foreground);
+  --color-primary-active: var(--primary-active);
+  --color-primary-active-foreground: var(--primary-active-foreground);
+  --color-primary-disabled: var(--primary-disabled);
+  --color-primary-disabled-foreground: var(--primary-disabled-foreground);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-hovered: var(--secondary-hovered);
+  --color-secondary-hovered-foreground: var(--secondary-hovered-foreground);
+  --color-secondary-pressed: var(--secondary-pressed);
+  --color-secondary-pressed-foreground: var(--secondary-pressed-foreground);
+  --color-secondary-active: var(--secondary-active);
+  --color-secondary-active-foreground: var(--secondary-active-foreground);
+  --color-secondary-disabled: var(--secondary-disabled);
+  --color-secondary-disabled-foreground: var(--secondary-disabled-foreground);
+
+  --color-disabled: var(--disabled);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
@@ -67,6 +91,9 @@
   --color-sidebar-active-foreground: var(--sidebar-active-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-aside: var(--aside);
+  --color-aside-border: var(--aside-border);
 
   --color-tooltip: var(--tooltip);
   --color-tooltip-foreground: var(--tooltip-foreground);
@@ -110,64 +137,6 @@
   /* font sizes */
   --text-2xs: 10px;
   --text-2xs-line-height: 10px;
-
-  /* animations */
-  --animate-progress: progress 5s linear infinite;
-  @keyframes progress {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  --animate-save: saved 1s;
-  @keyframes saved {
-    0% {
-      transform: translateY(0px) rotateZ(0);
-    }
-    10% {
-      transform: translateY(2px) rotateZ(-10deg);
-    }
-    50% {
-      transform: translateY(-10px) rotateZ(370deg);
-    }
-    90% {
-      transform: translateY(2px) rotateZ(360deg);
-    }
-    100% {
-      transform: translateY(0px) rotateZ(360deg);
-    }
-  }
-
-  --animate-show-backdrop: show-backdrop 0.7s forwards;
-  --animate-hide-backdrop: hide-backdrop 0.7s forwards;
-  @keyframes show-backdrop {
-    0% {
-      display: none;
-      opacity: 0;
-    }
-    1% {
-      display: block;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes hide-backdrop {
-    0% {
-      display: block;
-      opacity: 1;
-    }
-    99% {
-      opacity: 0;
-    }
-    100% {
-      display: none;
-    }
-  }
 }
 
 @layer base {
@@ -325,89 +294,3 @@ summary::-webkit-details-marker {
   display: none;
 }
 
-/* AI utilities */
-
-@utility text-ai {
-  /* Sets the text as gradient */
-  position: relative;
-  color: transparent;
-
-  background: linear-gradient(90deg, var(--ai-from) 0%, var(--ai-via) 50%, var(--ai-to) 100%);
-
-  background-clip: text;
-  -webkit-background-clip: text;
-  text-fill-color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-@utility underline-ai {
-  /* Adds an after element to simulate underline with gradient */
-  content: '';
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 3px;
-
-  height: 1px;
-
-  background: linear-gradient(90deg, var(--ai-from) 0%, var(--ai-via) 50%, var(--ai-to) 100%);
-}
-
-/* Gradient border [0-100]% */
-@utility border-ai-* {
-  --from: oklch(from var(--ai-from) l c h / calc(--value(integer) / 100));
-  --via: oklch(from var(--ai-via) l c h / calc(--value(integer) / 100));
-  --to: oklch(from var(--ai-to) l c h / calc(--value(integer) / 100));
-
-  background:
-    linear-gradient(var(--background) 0 0) padding-box,
-    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
-  border: 1px solid transparent;
-}
-
-/* Gradient border 100% (default) */
-@utility border-ai {
-  --from: var(--ai-from);
-  --via: var(--ai-via);
-  --to: var(--ai-to);
-
-  background:
-    linear-gradient(var(--background) 0 0) padding-box,
-    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
-  border: 1px solid transparent;
-}
-
-/* Gradient border with gradient background [0-100]% */
-@utility border-bg-ai-* {
-  --from: oklch(from var(--ai-from) l c h / calc(--value(integer) / 100));
-  --via: oklch(from var(--ai-via) l c h / calc(--value(integer) / 100));
-  --to: oklch(from var(--ai-to) l c h / calc(--value(integer) / 100));
-
-  --offset: --modifier(integer);
-  --offset-safe: var(--offset, 50);
-
-  --from-bg: color-mix(in srgb, var(--background), var(--from) calc(var(--offset-safe) * 1%));
-  --via-bg: color-mix(in srgb, var(--background), var(--via) calc(var(--offset-safe) * 1%));
-  --to-bg: color-mix(in srgb, var(--background), var(--to) calc(var(--offset-safe) * 1%));
-
-  background:
-    linear-gradient(90deg, var(--from-bg) 0%, var(--via-bg) 50%, var(--to-bg) 100%) padding-box,
-    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
-  border: 1px solid transparent;
-}
-
-/* Gradient border with gradient background 100% (default) */
-@utility border-bg-ai {
-  --from: oklch(from var(--ai-from) l c h);
-  --via: oklch(from var(--ai-via) l c h);
-  --to: oklch(from var(--ai-to) l c h);
-  --from-bg: color-mix(in srgb, var(--ai-from), var(--background) 80%);
-  --via-bg: color-mix(in srgb, var(--ai-via), var(--background) 80%);
-  --to-bg: color-mix(in srgb, var(--ai-to), var(--background) 80%);
-
-  background:
-    linear-gradient(90deg, var(--from-bg) 0%, var(--via-bg) 50%, var(--to-bg) 100%) padding-box,
-    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
-  border: 1px solid transparent;
-}

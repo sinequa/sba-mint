@@ -1,11 +1,10 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, computed, inject, input, model, signal, viewChild } from '@angular/core';
+import { Component, computed, Input, inject, input, model, signal, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-
 import { Article } from '@sinequa/atomic';
-import { AppStore, BookmarkButtonComponent, PreviewService } from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, SheetCloseDirective, SheetService, cn } from '@sinequa/ui';
+import { AppStore, BookmarkButtonComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator, SheetCloseDirective } from '@sinequa/ui';
+import { toast } from 'ngx-sonner';
 import { PreviewDialogComponent } from '../dialog/preview-dialog';
 
 export type PreviewNavbarConfig = {
@@ -65,6 +64,7 @@ export class PreviewNavbarComponent {
   protected readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
   private readonly appStore = inject(AppStore);
+  private readonly selectionStore = inject(SelectionStore);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -82,9 +82,9 @@ export class PreviewNavbarComponent {
     if (!this.article()?.url1) return false;
 
     try {
-      const url = new URL(this.article()?.url1!);
+      const url = new URL(this.article()?.url1 || '');
       return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch (e) {
+    } catch {
       return false;
     }
   });
@@ -98,7 +98,7 @@ export class PreviewNavbarComponent {
     this.previewService.openExternal(this.article() as Article);
   }
 
-  copyLink(): void {
+  async copyLink() {
     if (this.copied()) {
       return;
     }
@@ -106,7 +106,7 @@ export class PreviewNavbarComponent {
     const url = this.article()?.url1 || this.article()?.url2;
 
     if (url) {
-      navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(url);
 
       this.copied.set(true);
 
@@ -118,17 +118,15 @@ export class PreviewNavbarComponent {
     }
   }
 
-  /**
-   * Toggles the state of the navigation bar.
-   *
-   * If a drawer preview reference exists, it attempts to extend the drawer stack.
-   * Otherwise, it toggles the `extended` state between true and false.
-   */
-  toggle(): void {
+  toggleExtended(): void {
     this.extended.set(!this.extended());
   }
 
   onExpand(): void {
     this.previewDialog()?.open(this.article() as Article);
+  }
+
+  handleClose() {
+    this.selectionStore.clear();
   }
 }

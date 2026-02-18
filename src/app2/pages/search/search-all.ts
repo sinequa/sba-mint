@@ -1,18 +1,20 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, Injector, input, signal, Type, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CardSkeleton } from '@components/cards/record/skeleton';
+import { fetchServerPage } from '@config/fetch-server-page';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-
-import { injectInfiniteQuery, provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
-
+import { getComponentsForDocumentType } from '@registry/document-type-registry';
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
 import {
   AggregationsStore,
   AppStore,
+  AsideFiltersComponent,
   DidYouMeanComponent,
   FiltersBarComponent,
+  InfinityScrollDirective,
   NavbarTabsComponent,
   NoResultComponent,
   PrincipalStore,
@@ -24,16 +26,13 @@ import {
   SortingChoice,
   SortSelectorComponent,
   SponsoredResultsComponent,
-  UserSettingsStore,
-  AsideFiltersComponent,
-  InfinityScrollDirective
+  UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
-
-import { AssistantComponent } from '@components/assistant/assistant';
-import { CardSkeleton } from '@components/cards/record/skeleton';
-import { getComponentsForDocumentType } from '@registry/document-type-registry';
-import { fetchServerPage } from '@config/fetch-server-page';
+import { BreakpointObserverService, ButtonComponent, cn, SquareCheckBigIcon, Square, SquareMinusIcon } from '@sinequa/ui';
+import { injectInfiniteQuery, provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
+import { SearchOverviewComponent } from '../../../components/assistant-overview';
+import { PreviewComponent } from '@components/preview/preview';
+import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -60,19 +59,24 @@ type QueryParamsProps = {
     FiltersBarComponent,
     NavbarTabsComponent,
     ButtonComponent,
-    AssistantComponent,
     CardSkeleton,
-    CardComponent,
-    CardHeaderComponent,
-    CardContentComponent,
     TranslocoPipe,
-    ChevronRightIcon,
     SearchFeedbackComponent,
-    AsideFiltersComponent
+    AsideFiltersComponent,
+    SquareCheckBigIcon,
+    Square,
+    SquareMinusIcon,
+    SearchOverviewComponent,
+    PreviewComponent,
+    SheetPreviewerComponent
   ],
   templateUrl: './search-all.html',
   styles: [
     `
+      :host {
+        /* to avoid z-index collisions */
+        isolation: isolate;
+      }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
       }
@@ -97,6 +101,7 @@ export class SearchAllComponent {
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
   protected readonly selectionService = inject(SelectionService);
+  protected readonly breakpointService = inject(BreakpointObserverService);
 
   protected readonly appStore = inject(AppStore);
   protected readonly appFeatures = this.appStore.general()?.features;
@@ -127,7 +132,7 @@ export class SearchAllComponent {
   protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
 
   // the Assistant is expanded and visible by default
-  protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly assistantCollapsed = signal<boolean>(false);
   protected readonly showAssistant = signal<boolean>(false);
 
   // the aggregations are used to display the filters in the UI
@@ -240,7 +245,9 @@ export class SearchAllComponent {
   });
   readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
   readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true);
-  assistantQuery: Query = { name: 'assistant' };
+  // assistantQuery: Query = { name: 'assistant' };
+
+  readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
 
@@ -315,9 +322,6 @@ export class SearchAllComponent {
     effect(() => {
       debug('effect - 4. make Result object available to children and update aggregations store');
       this.query.isSuccess();
-
-      console.log('query result', [this.query.hasNextPage(), this.query.data()]);
-
       const result = this.query.data()?.pages[0];
 
       if (!result) return;
@@ -340,33 +344,18 @@ export class SearchAllComponent {
       else this.selectedAll.set('some');
     });
 
-    // Update the assistant collapsed state from the user settings
-    effect(() => {
-      debug('effect - 6. update assistant collapsed state from user settings');
-      const { collapseAssistant } = getState(this.userSettingsStore);
-
-      untracked(() => {
-        if (collapseAssistant !== undefined) {
-          this.assistantCollapsed.set(collapseAssistant);
-          if (!this.showAssistant()) {
-            this.showAssistant.set(!collapseAssistant);
-          }
-        }
-      });
-    });
-
     effect(() => {
       debug('effect - 7. update assistant query from current keys');
       const { page, tab, basket, spellingCorrectionMode, text } = this.currentKeys() || {};
       const q = this.queryParamsStore.getQuery();
       const query = { ...q, page, tab, basket, spellingCorrectionMode, text } as Query;
 
-      this.assistantQuery = { ...this.assistantQuery, ...query };
+      // this.assistantQuery = { ...this.assistantQuery, ...query };
 
       untracked(() => {
         // Add the current search to the user settings when the text is not empty
         if (text && text !== '') {
-          this.userSettingsStore.addCurrentSearch(query as QueryParams);
+          void this.userSettingsStore.addCurrentSearch(query as QueryParams);
         }
 
         // Update the query text signal with the current query text
@@ -374,7 +363,10 @@ export class SearchAllComponent {
       });
     });
 
-    this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
+    this.conditionalMessageHandler.set('SkillsTester', {
+      handler: message => this.handleConditionalDisplayMessage(message),
+      isGlobalHandler: false
+    });
 
     // When the component is destroyed, clear the aggregations store
     // to avoid memory leaks and ensure that the aggregations are reset
@@ -446,14 +438,5 @@ export class SearchAllComponent {
 
   onFeedbackClose(): void {
     this.hideFeedback.set(true);
-  }
-
-  /**
-   * Switch the assistant collapsed status.
-   */
-  onAssistantCollapse() {
-    const collapsed = !this.assistantCollapsed();
-    this.userSettingsStore.updateAssistantCollapsed(collapsed);
-    this.assistantCollapsed.set(collapsed);
   }
 }

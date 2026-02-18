@@ -1,16 +1,14 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 import { QueryClient } from '@tanstack/angular-query-experimental';
+import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
 
-import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
-
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgxSonnerToaster, MultiSelectionToolbarComponent, SheetPreviewerComponent],
+  imports: [RouterOutlet, NgxSonnerToaster, MultiSelectionToolbarComponent],
   templateUrl: './app.component.html',
   styles: [
     `
