@@ -196,6 +196,10 @@ body {
   .sq-mediav2-sentences {
     padding: 0.5rem 1rem;
     align-self: center;
+    grid-column: span 2;
+    &:has(+ .sq-mediav2-screenshot) {
+      grid-column: span 1;
+    }
   }
   .sq-mediav2-screenshot img {
     width: 100%;
