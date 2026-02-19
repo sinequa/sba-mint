@@ -18,7 +18,7 @@ import { environment } from './environments/environment';
 
 Object.assign(Datepicker.locales, fr, de);
 
-setGlobalConfig({ ...environment, app: 'agent' });
+setGlobalConfig(environment);
 
 /**
  * keyux configuration
