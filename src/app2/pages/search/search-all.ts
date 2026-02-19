@@ -2,8 +2,9 @@ import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, Injector, input, signal, Type, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardSkeleton } from '@components/cards/record/skeleton';
+import { PreviewComponent } from '@components/preview/preview';
+import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
 import { fetchServerPage } from '@config/fetch-server-page';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { getComponentsForDocumentType } from '@registry/document-type-registry';
 import { MessageHandler } from '@sinequa/assistant/chat';
@@ -12,7 +13,6 @@ import {
   AggregationsStore,
   AppStore,
   AsideFiltersComponent,
-  DidYouMeanComponent,
   FiltersBarComponent,
   InfinityScrollDirective,
   NavbarTabsComponent,
@@ -24,15 +24,12 @@ import {
   SelectionService,
   SelectionStore,
   SortingChoice,
-  SortSelectorComponent,
-  SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { BreakpointObserverService, ButtonComponent, cn, SquareCheckBigIcon, Square, SquareMinusIcon } from '@sinequa/ui';
+import { BreakpointObserverService, cn } from '@sinequa/ui';
 import { injectInfiniteQuery, provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
-import { SearchOverviewComponent } from '../../../components/assistant-overview';
-import { PreviewComponent } from '@components/preview/preview';
-import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
+import { SearchOverviewComponent } from '@components/assistant-overview';
+import { SearchActionsComponent } from './search-actions';
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -50,25 +47,18 @@ type QueryParamsProps = {
   selector: 'app-search-all',
   imports: [
     NgComponentOutlet,
-    SortSelectorComponent,
-    DidYouMeanComponent,
     InfinityScrollDirective,
-    SponsoredResultsComponent,
     NoResultComponent,
     SearchFeedbackComponent,
     FiltersBarComponent,
     NavbarTabsComponent,
-    ButtonComponent,
     CardSkeleton,
-    TranslocoPipe,
     SearchFeedbackComponent,
     AsideFiltersComponent,
-    SquareCheckBigIcon,
-    Square,
-    SquareMinusIcon,
     SearchOverviewComponent,
     PreviewComponent,
-    SheetPreviewerComponent
+    SheetPreviewerComponent,
+    SearchActionsComponent
   ],
   templateUrl: './search-all.html',
   styles: [
@@ -409,18 +399,6 @@ export class SearchAllComponent {
   onDrawerOpenedChange(opened: boolean): void {
     // Your function logic here
     debug(`Drawer opened state changed to: ${opened}`);
-  }
-
-  onSort(sort: SortingChoice): void {
-    const audit = {
-      type: 'Search_Sort',
-      detail: {
-        sort: sort.name,
-        orderByClause: sort.orderByClause
-      }
-    };
-    this.queryService.audit = audit;
-    this.queryParamsStore.patch({ sort: sort.name }, audit);
   }
 
   getArticleType(docType?: string): Type<unknown> {

@@ -29,9 +29,9 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
   standalone: true,
   imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
   template: `
-    <Tabs class="block h-full @container">
+    <Tabs class="@container block h-full px-4">
       <!-- tabs list -->
-      <TabsList class="w-full px-6 hidden @min-lg:flex" variant="ghost">
+      <TabsList class="w-fullhidden @min-lg:flex" variant="ghost">
         <Tab variant="secondary" shadow="none" value="preview" active>
           <span sr-only>{{ 'preview.documentPreview' | transloco }}</span>
         </Tab>
@@ -66,8 +66,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
               [instanceId]="summarizeInstanceId()"
               [query]="miniPreviewQuery()"
               [showAssistant]="showSummarizeAssistant()"
-              (isStreaming)="handleStreaming($event)"
-            />
+              (isStreaming)="handleStreaming($event)" />
           </TabContent>
         }
 
@@ -80,7 +79,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="px-6 pr-1" />
+          <preview-content class="h-[calc(100%-3rem)] pr-1" />
         </TabContent>
       </div>
     </Tabs>

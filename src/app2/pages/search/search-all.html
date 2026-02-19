@@ -4,6 +4,7 @@
   }
   <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
 </div>
+
 <div class="mb-8 flex gap-2">
   <!-- column 1 -->
   <!-- [--height:350px] allows us to fix the aggregation's height to manage the overflow -->
@@ -18,28 +19,15 @@
   <!-- column 2 -->
   <!-- main results -->
   <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
-    <div class="top-16 z-1 -mx-1 -mt-1 bg-background pt-1 sm:sticky">
-      <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
-
-      <sponsored-results />
+    <div
+      [class]="
+        cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')
+      ">
+      <app-search-actions [result]="result()" [selectedAll]="selectedAll()" (selectAll)="selectAll()" />
     </div>
 
     <!-- skeleton part -->
     @if (query.isPending()) {
-      <!-- <div class="mt-4 flex justify-between" aria-hidden="true">
-        <div class="flex gap-2">
-          @for (n of [1, 2, 3, 4, 5]; track $index) {
-            <button class="h-9 w-24 bg-muted-foreground/30" aria-hidden="true"></button>
-          }
-        </div>
-
-        <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
-      </div>
-
-      <div class="mt-10 flex justify-end">
-        <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
-      </div> -->
-
       <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
         @for (n of [1, 2, 3]; track $index) {
           <li><CardSkeleton /></li>
@@ -48,28 +36,6 @@
     }
     <!-- if results have been found -->
     @else if (hasRowCount()) {
-      <!-- sort selector and export button -->
-      <div class="@container z-0 flex gap-1 has-[+ul>li.no-records]:hidden">
-        <button variant="ghost" (click)="selectAll()">
-          @switch (selectedAll()) {
-            @case ('all') {
-              <SquareCheckBig />
-              <span class="truncate">{{ 'searches.selection.unselectAll' | transloco }}</span>
-            }
-            @case ('some') {
-              <SquareMinus />
-              <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
-            }
-            @default {
-              <Square />
-              <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
-            }
-          }
-        </button>
-
-        <sort-selector class="ms-auto" [result]="result()!" position="bottom-start" (onSort)="onSort($event)" />
-      </div>
-
       <!-- display all records -->
       <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
         @for (row of allRows(); track row.id) {
@@ -115,16 +81,27 @@
     <div
       [class]="
         cn(
-          'sticky top-48 hidden h-[calc(100dvh-230px)] grow overflow-hidden [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2',
+          'sticky top-48 hidden h-[calc(100dvh-230px)] grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2',
           hasPreview() && 'rounded border border-aside-border lg:w-1/2'
         )
       ">
-      <preview
-        [class]="cn('absolute inset-0 h-full w-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right')" />
+      <div class="relative h-full w-full">
+        <preview
+          [class]="
+            cn('absolute inset-0 h-full w-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right')
+          " />
 
-      <!-- if assistant is allowed -->
-      <app-search-overview
-        [class]="cn('absolute inset-0 h-full w-full', !hasPreview() && 'animate-slide-in-right', hasPreview() && 'translate-x-full animate-slide-out-right')" />
+        <!-- if assistant is allowed -->
+        <app-search-overview
+          [class]="
+            cn(
+              'absolute inset-0 hidden h-full w-full',
+              !hasPreview() && 'animate-slide-in-right',
+              hasPreview() && 'translate-x-full animate-slide-out-right',
+              (currentKeys()?.text?.length || 0) > 0 && 'block'
+            )
+          " />
+      </div>
     </div>
   }
 </div>

@@ -31,8 +31,7 @@ type Article = A & {
   imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch],
   templateUrl: './preview.html',
   host: {
-    '[class]':
-      'cn("grow w-full h-full overflow-hidden grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
+    '[class]': 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
     tabindex: '1'
   }
 })
