@@ -95,7 +95,6 @@ body {
 
 .pn_page_visual_description {
   display: var(--desc-display);
-  grid-column: span 3;
 }
 
 .customfulltext {
