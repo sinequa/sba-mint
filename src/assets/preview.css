@@ -185,7 +185,7 @@ body {
   hr {
     display: none;
   }
-  .sq-mediav2-disclaimer {
+  & > *:not(.sq-mediav2-timestamp):not(.sq-mediav2-sentences):not(.sq-mediav2-screenshot) {
     grid-column: span 3;
   }
   .sq-mediav2-timestamp {
