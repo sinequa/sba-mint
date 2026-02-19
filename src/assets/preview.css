@@ -185,6 +185,9 @@ body {
   hr {
     display: none;
   }
+  .sq-mediav2-disclaimer {
+    grid-column: span 3;
+  }
   .sq-mediav2-timestamp {
     align-self: center;
     text-align: center;
