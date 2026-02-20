@@ -3,9 +3,51 @@
     "*.scss": "tailwindcss",
     "*.css": "tailwindcss"
   },
+  "tailwindCSS.lint.suggestCanonicalClasses": "warning",
+  "tailwindCSS.classFunctions": ["cva", "tw", "clsx", "tw\\.[a-z-]+"],
+  "tailwindCSS.classAttributes": [
+      "class",
+      "className",
+      "[ngClass]",
+      "class:list",
+      "[class]",
+      "tv",
+      "cn",
+      "cva",
+      "variant",
+
+  ],
+  "tailwindCSS.experimental.classRegex": [
+      ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+      ["tv\\(([^)]*)\\)", "{?\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?}?"],
+      ["cn\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"],
+      ":\\s*?[\"'`]([^\"'`]*).*?,",
+      [
+          "host:\\s*{([\\s\\S]*?)}",
+          "\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?"
+      ]
+  ],
   "github-enterprise.uri": "https://github.sinequa.com",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "proxy.conf.json": "proxy.conf.json, proxy.conf.*.json"
-  }
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
+  "oxc.typeAware": true,
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": false,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true
+  },
+  "gitstash.explorer.display.fileSorting": "tree",
+  "oxc.enable.oxlint": true,
+  "oxc.enable.oxfmt": true
 }

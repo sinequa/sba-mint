@@ -1,25 +1,21 @@
 import { inject, runInInjectionContext } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { getState } from '@ngrx/signals';
-import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
-
 import { error, info, setGlobalConfig } from '@sinequa/atomic';
 import { UserSettingsStore } from '@sinequa/atomic-angular';
-
-import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
-import atomic from '../node_modules/@sinequa/atomic/package.json';
-
-import { AppComponent } from './app2/app.component';
-import { appConfig } from './app2/app.config';
-
-import { environment } from './environments/environment';
-
+import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from 'keyux';
 // datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
 import Datepicker from 'vanillajs-datepicker/Datepicker';
-// @ts-ignore: missing types
-import fr from 'vanillajs-datepicker/locales/fr';
-// @ts-ignore: missing types
+// @ts-expect-error: missing types
 import de from 'vanillajs-datepicker/locales/de';
+// @ts-expect-error: missing types
+import fr from 'vanillajs-datepicker/locales/fr';
+import atomic from '../node_modules/@sinequa/atomic/package.json';
+import atomicAngular from '../node_modules/@sinequa/atomic-angular/package.json';
+import { AppComponent } from './app2/app.component';
+import { appConfig } from './app2/app.config';
+import { environment } from './environments/environment';
+
 Object.assign(Datepicker.locales, fr, de);
 
 setGlobalConfig(environment);
@@ -33,7 +29,7 @@ bootstrapApplication(AppComponent, appConfig)
   .then(appRef => {
     // Set the dark mode class based on user settings
     runInInjectionContext(appRef.injector, () => {
-      const { userTheme } = getState(inject(UserSettingsStore)) as any;
+      const { userTheme } = getState(inject(UserSettingsStore));
       const isDarkMode = userTheme === 'dark' || (userTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
       document.documentElement.classList.toggle('dark', isDarkMode);
     });

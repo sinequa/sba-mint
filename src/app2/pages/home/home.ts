@@ -1,32 +1,33 @@
-import { Component, DestroyRef, Injector, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
-
-import { AggregationsStore, AppStore, ApplicationService, DrawerStackService, KeyboardNavigatorOptions, signIn } from '@sinequa/atomic-angular';
-
-import { error, fetchQuery } from '@sinequa/atomic';
-import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
-
+import { Component, effect, inject, Injector, runInInjectionContext, signal } from '@angular/core';
+import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
 import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
 import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { WidgetsTabsComponent } from '@components/widgets/widgets-tabs';
+import { provideTranslocoScope } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
+import { error, fetchQuery } from '@sinequa/atomic';
+import { AggregationsStore, ApplicationService, AppStore, KeyboardNavigatorOptions, SelectionStore, signIn } from '@sinequa/atomic-angular';
+import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
 
 @Component({
   selector: 'app-home',
-  imports: [SidebarMainComponent, WidgetsTabsComponent, SearchWithAutocompleteComponent, SidebarTriggerComponent, SidebarProviderComponent],
+  imports: [
+    SidebarMainComponent,
+    WidgetsTabsComponent,
+    SearchWithAutocompleteComponent,
+    SidebarTriggerComponent,
+    SidebarProviderComponent,
+    SheetPreviewerComponent
+  ],
   templateUrl: './home.html',
-  host: {
-    '[attr.drawer-opened]': 'drawerOpened()'
-  },
   providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
 })
 export class HomeComponent {
-  public drawerOpened = computed(() => this.drawerStack.isOpened());
-
-  readonly appStore = inject(AppStore);
-  readonly drawerStack = inject(DrawerStackService);
-  readonly aggregationStore = inject(AggregationsStore);
   readonly injector = inject(Injector);
+  readonly appStore = inject(AppStore);
   readonly applicationService = inject(ApplicationService);
+  readonly aggregationStore = inject(AggregationsStore);
+  readonly selectionStore = inject(SelectionStore);
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: 'tabsNavigator',
@@ -42,16 +43,14 @@ export class HomeComponent {
     savedSearches: true
   };
 
-  constructor(private destroyRef: DestroyRef) {
-    // react to drawer state changes to update the application title when the drawer is closed
+  constructor() {
+    // Set the page title to "Home" if no preview is open (i.e., no selection in the selection store)
     effect(() => {
-      if (!this.drawerOpened()) {
+      const { id } = getState(this.selectionStore);
+      if (!id) {
         this.applicationService.setTitle('Home');
       }
     });
-
-    // when the component is destroyed, close all drawers
-    this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
 
     // this is needed to populate the aggregation with the sources as no query is sent to the server
     this.getFirstPageQuery();

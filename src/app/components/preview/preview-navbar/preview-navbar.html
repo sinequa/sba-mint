@@ -6,7 +6,7 @@
   <nav class="flex gap-2 p-2">
     <button
       variant="ghost"
-      class="group disabled:text-muted-foreground hover:bg-foreground/10 text-foreground inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-transparent px-3 py-0 text-sm font-medium whitespace-nowrap focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+      class="group inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-transparent px-3 py-0 text-sm font-medium whitespace-nowrap text-foreground hover:bg-foreground/10 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
       title="Back"
       (click)="location.historyGo(backLevel)">
       <span class="opacity-60 group-hover:-translate-x-0.5">
@@ -71,12 +71,12 @@
   @if (navConfig.showSearchButton && article()) {
     <div class="ml-auto *:flex *:items-center *:gap-2 *:text-nowrap">
       @if (extended()) {
-        <button decoration="outline" (click)="toggle()">
+        <button variant="outline" (click)="toggle()">
           <i class="fa-fw far fa-eye-slash"></i>
           {{ 'preview.hideSearch' | transloco }}
         </button>
       } @else {
-        <button (click)="toggle()">
+        <button variant="outline" (click)="toggle()">
           <i class="fa-fw far fa-eye"></i>
           {{ 'preview.searchInDocument' | transloco }}
         </button>

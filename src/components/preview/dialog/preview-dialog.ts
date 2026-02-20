@@ -13,7 +13,8 @@ import {
   DialogTitleComponent,
   Separator,
   TabComponent,
-  TabsComponent
+  TabsComponent,
+  TabsListComponent
 } from '@sinequa/ui';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
@@ -46,10 +47,14 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
     AdvancedSearch,
     ChevronRightIcon,
     ChevronLeftIconComponent,
-    Separator
+    Separator,
+    TabsListComponent
   ],
   providers: [PreviewService],
-  templateUrl: './preview-dialog.html'
+  templateUrl: './preview-dialog.html',
+  host: {
+    '(keydown.escape)': '$event.stopImmediatePropagation(); dialog()?.close()'
+  }
 })
 export class PreviewDialogComponent {
   protected readonly appStore = inject(AppStore);
@@ -61,6 +66,7 @@ export class PreviewDialogComponent {
   public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
   public readonly sidebarExpanded = signal<boolean>(true);
 
+  // dialog reference for controlling the dialog's visibility and behavior
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
@@ -113,6 +119,10 @@ export class PreviewDialogComponent {
       text: article.title,
       filters: { field: 'id', value: article.id, operator: 'eq' }
     };
-    this.dialog()!.showModal();
+
+    const dialog = this.dialog();
+    if (dialog) {
+      dialog.showModal();
+    }
   }
 }
