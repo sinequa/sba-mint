@@ -1,10 +1,10 @@
 <div class="mb-8 flex gap-2">
   <!-- [--height:350px] allows us to fix the aggregation's height to manage the overflow -->
   <aside-filters
-    class="scrollbar-thin scrollbar-none bg-sidebar border-sidebar-border sticky top-20 mx-2 hidden h-[calc(100dvh-102px)] rounded-lg border p-4 [--height:350px] lg:block lg:w-[max(15%,300px)] lg:min-w-[min(30%,300px)]" />
+    class="scrollbar-thin scrollbar-none bg-sidebar border-sidebar-border sticky top-20 mx-2 hidden h-[calc(100dvh-115px)] rounded-lg border p-4 [--height:350px] lg:block lg:w-[max(15%,300px)] lg:min-w-[min(30%,300px)]" />
 
   <!-- main results -->
-  <div class="relative flex w-full flex-col px-2.5 lg:w-[68%]">
+  <div class="relative flex w-full grow flex-col px-2.5 lg:w-[50%]">
     <div class="bg-background top-16 z-1 -mx-1 -mt-1 pt-1 sm:sticky">
       @if (isTabSearchActive()) {
         <navbar-tabs />
@@ -62,43 +62,6 @@
         <sort-selector class="ms-auto" [result]="result()!" position="bottom-start" (onSort)="onSort($event)" />
       </div>
 
-      <!-- if assistant is allowed -->
-      @if (allowAI()) {
-        <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 border-none bg-gradient-to-r shadow-none">
-          <CardHeader class="text-ai-card-foreground flex items-center gap-1 px-0 text-base font-semibold">
-            <div class="flex size-8 items-center justify-center">
-              @if (isStreaming()) {
-                <i class="fas fa-spinner animate-spin"></i>
-              } @else {
-                <i class="fas fa-sparkles"></i>
-              }
-            </div>
-
-            <h2>AI Overview</h2>
-
-            <button
-              variant="none"
-              [class]="
-                cn('ms-auto cursor-pointer [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out', !assistantCollapsed() && '[&_svg]:rotate-90')
-              "
-              (click)="onAssistantCollapse()"
-              aria-label="toggle assistant">
-              <ChevronRightIcon />
-            </button>
-          </CardHeader>
-
-          @if (showAssistant()) {
-            <CardContent [class]="cn('h-96 px-0', assistantCollapsed() && 'hidden')">
-              <assistant
-                [class]="cn('h-fit max-h-96', assistantCollapsed() && 'hidden')"
-                [showAssistant]="showAssistant()"
-                [instanceId]="instanceId()"
-                (isStreaming)="isStreaming.set($event)" />
-            </CardContent>
-          }
-        </Card>
-      }
-
       <!-- display all records -->
       <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
         @for (row of allRows(); track row.id) {
@@ -138,4 +101,42 @@
       <NoResult class="mt-4" />
     }
   </div>
+
+  <!-- if assistant is allowed -->
+  @if (allowAI()) {
+    <div class="sticky top-20 hidden h-[calc(100dvh-115px)] grow [--height:350px] lg:block lg:max-w-[600px]">
+      <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 h-full border-none bg-gradient-to-r shadow-none">
+        <CardHeader class="text-ai-card-foreground flex cursor-pointer items-center gap-1 px-0 text-base font-semibold" (click)="onAssistantCollapse()">
+          <div class="flex size-8 items-center justify-center">
+            @if (isStreaming()) {
+              <i class="fas fa-spinner animate-spin"></i>
+            } @else {
+              <i class="fas fa-sparkles"></i>
+            }
+          </div>
+
+          <h2>AI Overview</h2>
+
+          <button
+            variant="none"
+            [class]="
+              cn('ms-auto cursor-pointer [&_svg]:transition-transform [&_svg]:duration-150 [&_svg]:ease-in-out', !assistantCollapsed() && '[&_svg]:rotate-90')
+            "
+            aria-label="toggle assistant">
+            <ChevronRightIcon />
+          </button>
+        </CardHeader>
+
+        @if (showAssistant()) {
+          <CardContent [class]="cn('h-full px-0', assistantCollapsed() && 'hidden')">
+            <assistant
+              [class]="cn('h-fit', assistantCollapsed() && 'hidden')"
+              [showAssistant]="showAssistant()"
+              [instanceId]="instanceId()"
+              (isStreaming)="isStreaming.set($event)" />
+          </CardContent>
+        }
+      </Card>
+    </div>
+  }
 </div>
