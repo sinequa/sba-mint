@@ -1,7 +1,7 @@
 <menu class="flex items-center gap-2">
   <Avatar
     class="bg-accent text-accent-foreground hover:bg-accent/80 hover:text-accent-foreground/80 size-6 cursor-pointer group-data-[state=collapsed]:-left-1">
-    <AvatarImage src="" width="44" height="44" alt="avatar" />
+    <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
     <AvatarFallback>
       @if (initials()) {
         <span>{{ initials() }}</span>
@@ -23,27 +23,6 @@
       </MenuItem>
       <Separator />
     }
-    <!-- language selection -->
-    <menu position="left-start" class="dropdown-content">
-      <MenuItem>
-        <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
-        <ChevronRight class="size-4" />
-      </MenuItem>
-
-      <MenuContent position="left-start" class="max-w-fit min-w-40">
-        @for (lang of AllLanguages; track lang.code) {
-          <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
-            <span>{{ lang.label }}</span>
-            <div class="flex items-center gap-2">
-              @if (currentActiveLang() === lang.code) {
-                <i class="fa-fw fas fa-check text-sm"></i>
-              }
-              <ng-container *ngComponentOutlet="lang.icon"></ng-container>
-            </div>
-          </MenuItem>
-        }
-      </MenuContent>
-    </menu>
 
     <!-- theme selection -->
     <menu position="left-start" class="dropdown-content">

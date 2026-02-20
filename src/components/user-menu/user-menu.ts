@@ -1,5 +1,4 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -12,6 +11,7 @@ import {
   PrincipalStore,
   ResetUserSettingsDialogComponent,
   UserProfileDialog,
+  UserProfileService,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
 import {
@@ -59,7 +59,6 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    NgComponentOutlet,
     UserProfileDialog
   ],
   templateUrl: './user-menu.html',
@@ -87,6 +86,7 @@ export class UserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly userProfileService = inject(UserProfileService);
 
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
 
@@ -110,6 +110,16 @@ export class UserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+
+  protected principal = computed(() => this.principalStore.principal?.());
+  protected userProfileResource = this.userProfileService.getUserProfile(this.principal);
+  readonly userProfile = linkedSignal(() => {
+    if (this.userProfileResource.hasValue()) {
+      return this.userProfileResource.value();
+    }
+    return undefined;
+  });
+  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || '');
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);
