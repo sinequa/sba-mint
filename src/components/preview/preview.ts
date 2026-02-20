@@ -2,7 +2,7 @@ import { afterNextRender, Component, computed, DOCUMENT, effect, ElementRef, inj
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { Article as A } from '@sinequa/atomic';
-import { AdvancedSearch, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { cn, SheetService } from '@sinequa/ui';
 
 import { PreviewHeaderComponent } from './preview-header/preview-header';
@@ -59,6 +59,7 @@ export class PreviewComponent {
     return article as Article;
   });
 
+  conversion = signal<CConverter | undefined>(undefined);
   eventManager = inject(EventManager);
   host = inject(ElementRef<HTMLElement>);
   document = inject(DOCUMENT);

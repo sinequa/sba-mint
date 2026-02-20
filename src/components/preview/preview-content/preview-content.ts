@@ -1,10 +1,10 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, signal, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 
 import { rxResource } from '@angular/core/rxjs-interop';
 import { BreakpointObserverService, cn } from '@sinequa/ui';
@@ -35,7 +35,9 @@ import { PreviewActionsComponent } from './preview-actions';
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
-        <preview-actions [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <preview-actions
+          [isPrimary]="!conversion() || conversion()!.primary === true"
+          [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
@@ -68,6 +70,9 @@ export class PreviewContentComponent {
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
 
+  conversion = input<CConverter | undefined>(undefined);
+  onLoadedData = output<PreviewData | undefined>();
+
   /**
    * The article to be previewed.
    * @remarks
@@ -87,6 +92,7 @@ export class PreviewContentComponent {
     const { queryText } = getState(this.selectionStore);
     return queryText;
   });
+  protected previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -109,10 +115,15 @@ export class PreviewContentComponent {
     }
   });
 
+  documentCachedContentUrl?: string; // used to store the default preview url
   previewData = computed(() => {
     if (this.previewDataResource.hasValue()) {
-      return this.previewDataResource.value();
+      const previewData = this.previewDataResource.value();
+      if (!this.documentCachedContentUrl && previewData?.documentCachedContentUrl) this.documentCachedContentUrl = previewData.documentCachedContentUrl;
+      this.onLoadedData.emit(previewData);
+      return previewData;
     }
+    this.onLoadedData.emit(undefined);
     return undefined;
   });
 
@@ -123,9 +134,8 @@ export class PreviewContentComponent {
     // Update the preview service with the current preview data
     this.previewService.setPreviewData(previewData);
 
-    return previewData.documentCachedContentUrl
-      ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + previewData.documentCachedContentUrl)
-      : undefined;
+    let url = this.previewMultiConversion() && !!this.conversion()?.conversion?.url ? this.conversion()!.conversion!.url : this.documentCachedContentUrl;
+    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
   });
 
   /**

@@ -78,6 +78,7 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
+  public readonly isPrimary = input<boolean>(false);
   readonly isExternalLinkValid = computed(() => {
     if (!this.article()?.url1) return false;
 

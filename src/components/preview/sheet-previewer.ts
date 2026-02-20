@@ -52,7 +52,7 @@ type Article = A & {
         @if (breakpointService.isMobile()) {
           <sheet-header>
             <sheet-title class="truncate overflow-hidden text-left">
-              <span class="text-primary font-bold">{{ article().title }}</span>
+              <span class="font-bold text-primary">{{ article().title }}</span>
             </sheet-title>
           </sheet-header>
 

@@ -6,9 +6,8 @@
 @import './theme.css';
 @import './themes/chapsvision-ios16.css';
 
-
-@supports (color: light-dark(red,blue)) {
-@import './themes/chapsvision.css';
+@supports (color: light-dark(red, blue)) {
+  @import './themes/chapsvision.css';
 }
 @plugin "@tailwindcss/typography";
 

@@ -1,5 +1,5 @@
 @theme {
-    /* animations */
+  /* animations */
   --animate-progress: progress 5s linear infinite;
   @keyframes progress {
     0% {

@@ -58,7 +58,7 @@
     </button>
   }
 
-  @if (navConfig.showSearchButton && article()) {
+  @if (navConfig.showSearchButton && article() && isPrimary()) {
     <div class="ml-auto *:flex *:items-center *:gap-2 *:text-nowrap">
       @if (extended()) {
         <button variant="outline" (click)="toggleExtended()">

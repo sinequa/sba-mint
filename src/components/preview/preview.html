@@ -1,5 +1,9 @@
 <div class="flex max-w-[inherit] flex-col">
-  <preview-navbar class="block border-b border-muted-foreground/18" [(extended)]="extended" [article]="article()" />
+  <preview-navbar
+    class="block border-b border-muted-foreground/18"
+    [isPrimary]="!conversion() || conversion()!.primary === true"
+    [(extended)]="extended"
+    [article]="article()" />
 
   <div class="@container relative mb-2 flex h-full flex-col gap-0.5">
     @if (article()) {
@@ -11,7 +15,7 @@
       </section>
 
       <!-- Tab Navigation only if the "display summary is available " -->
-      <preview-tabs class="h-full" />
+      <preview-tabs class="h-full" (onConversionSelect)="conversion.set($event)" />
     }
   </div>
 </div>

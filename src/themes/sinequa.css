@@ -87,7 +87,6 @@
   --primary-disabled: light-dark(#cce5ff, #992638);
   --primary-disabled-foreground: light-dark(#6699ff, #ff6688);
 
-
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --secondary-hovered: light-dark(var(--color-sage-100), var(--color-sage-900));
