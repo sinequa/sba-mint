@@ -30,36 +30,36 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
   standalone: true,
   imports: [FormsModule, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
   template: `
-    <Tabs class="contents">
+    <Tabs class="@container block h-full px-4">
       <!-- tabs list -->
-      <TabsList class="w-full px-6" variant="ghost">
-        <Tab class="w-fit" shadow="none" value="preview" active>
-          {{ 'preview.documentPreview' | transloco }}
+      <TabsList class="w-fullhidden @min-lg:flex" variant="ghost">
+        <Tab variant="secondary" shadow="none" value="preview" active>
+          <span sr-only>{{ 'preview.documentPreview' | transloco }}</span>
         </Tab>
 
         @if (displaySummary() || displayChatWithDoc()) {
           @if (displaySummary()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="summary" (click)="setSummaryAssistant()">
+            <Tab variant="secondary" shadow="none" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
                 <i class="fa-solid fa-spinner animate-spin"></i>
               } @else {
                 <i class="fa-solid fa-sparkles"></i>
               }
-              {{ 'preview.summarize' | transloco }}
+              <span sr-only class="hidden @min-md:inline">{{ 'preview.summarize' | transloco }}</span>
             </Tab>
           }
 
           @if (displayChatWithDoc()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
+            <Tab variant="secondary" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
               <i class="fa-solid fa-comments"></i>
-              {{ 'preview.discussion' | transloco }}
+              <span sr-only class="hidden @min-md:inline">{{ 'preview.discussion' | transloco }}</span>
             </Tab>
           }
 
           @if (converterOptions()?.length) {
             <div class="grow"></div>
             <select
-              class="hover:outline-primary focus:outline-primary border-foreground/10 bg-background hover:bg-muted focus:bg-muted h-8 rounded-md border px-2 hover:outline focus:outline"
+              class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
               [ngModel]="currentConversionIndex()"
               (ngModelChange)="currentConversionIndex.set($event)">
               <option [value]="-1">{{ 'preview.default' | transloco }}</option>
@@ -71,7 +71,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
         }
       </TabsList>
       <!-- tabs content -->
-      <div class="relative h-full flex-grow overflow-auto">
+      <div class="relative h-full grow overflow-auto">
         <!-- tab contents -->
         <!-- Summary Tab Content -->
         @if (displaySummaryContent() && summarizeInstanceId()) {
@@ -80,21 +80,20 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
               [instanceId]="summarizeInstanceId()"
               [query]="miniPreviewQuery()"
               [showAssistant]="showSummarizeAssistant()"
-              (isStreaming)="handleStreaming($event)"
-              class="flex-grow" />
+              (isStreaming)="handleStreaming($event)" />
           </TabContent>
         }
 
         <!-- Chat with Doc Tab Content -->
         @if (displayChatWithDocContent() && chatWithDocIntanceId()) {
           <TabContent value="discussion" class="absolute inset-0">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" />
           </TabContent>
         }
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="px-6 pr-1" [conversion]="currentConversion()" (onLoadedData)="previewData.set($event)" />
+          <preview-content class="h-[calc(100%-3rem)] pr-1" [conversion]="currentConversion()" (onLoadedData)="previewData.set($event)" />
         </TabContent>
       </div>
     </Tabs>

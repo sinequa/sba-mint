@@ -1,13 +1,14 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DOCUMENT, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { Article as A } from '@sinequa/atomic';
 import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
+import { cn, SheetService } from '@sinequa/ui';
 
 import { PreviewHeaderComponent } from './preview-header/preview-header';
-import { PreviewNavbarComponent } from './preview-navbar2/preview-navbar';
+import { PreviewNavbarComponent } from './preview-navbar/preview-navbar';
 import { PreviewTabsComponent } from './preview-tabs/preview-tabs';
+import { EventManager } from '@angular/platform-browser';
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -30,8 +31,8 @@ type Article = A & {
   imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch],
   templateUrl: './preview.html',
   host: {
-    '[class]':
-      'cn("grow w-full h-full overflow-hidden grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")'
+    '[class]': 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
+    tabindex: '1'
   }
 })
 export class PreviewComponent {
@@ -59,8 +60,20 @@ export class PreviewComponent {
   });
 
   conversion = signal<CConverter | undefined>(undefined);
+  eventManager = inject(EventManager);
+  host = inject(ElementRef<HTMLElement>);
+  document = inject(DOCUMENT);
+  sheetService = inject(SheetService);
 
   constructor() {
+    afterNextRender(() => {
+      this.eventManager.addEventListener(this.document.body, 'keyup', (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          this.sheetService.setOpen(false);
+        }
+      });
+    });
+
     // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview
     effect(() => {
       const event = this.previewservice.events();

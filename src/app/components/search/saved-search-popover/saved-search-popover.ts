@@ -1,9 +1,8 @@
-import { Component, signal, viewChild, ElementRef, input, output, computed, inject } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-
-import { DropdownComponent, ButtonComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
-import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
 import { notify } from '@sinequa/atomic';
+import { SavedSearchesService, type SearchItem, UserSettingsStore } from '@sinequa/atomic-angular';
+import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
 
 @Component({
   selector: 'saved-search-popover, SavedSearchPopover, savedsearchpopover',
@@ -38,10 +37,10 @@ import { notify } from '@sinequa/atomic';
                 (keydown.enter)="savedName().trim().length !== 0 && saveQuery($event, savedNameInput.value)" />
             </div>
             <div class="ml-auto flex justify-end gap-2">
-              <button decoration="outline" [title]="'cancel' | transloco" (click)="popover.close()">
+              <button variant="outline" [title]="'cancel' | transloco" (click)="popover.close()">
                 {{ 'cancel' | transloco }}
               </button>
-              <button [title]="'confirm' | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
+              <button title="confirm | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
                 {{ 'confirm' | transloco }}
               </button>
             </div>
@@ -107,7 +106,7 @@ export class SavedSearchPopover {
       // no animation when unsaving
       this.onSavedSearch.emit(this.savedSearch());
     } else {
-      this.savedSearchesService.saveSearch(this.savedName().trim());
+      this.savedSearchesService.saveSearch(savedName ?? this.savedName().trim());
       notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
       this.popoverComponent().close();
     }

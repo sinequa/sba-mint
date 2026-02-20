@@ -4,9 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, tap } from 'rxjs';
-
 import { MessageHandler } from '@sinequa/assistant/chat';
 import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
 import {
@@ -27,10 +24,11 @@ import {
   SortingChoice,
   SortSelectorComponent,
   SponsoredResultsComponent,
-  UserSettingsStore,
-  AsideFiltersComponent
+  UserSettingsStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom, map, tap } from 'rxjs';
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
@@ -71,7 +69,6 @@ type QueryParamsProps = {
     CardHeaderComponent,
     CardContentComponent,
     TranslocoPipe,
-    AsideFiltersComponent,
     ChevronRightIcon
   ],
   templateUrl: './search-all.component.html',
@@ -155,7 +152,13 @@ export class SearchAllComponent {
       if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
       const q = this.queryParamsStore.getQuery();
 
-      const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
+      const query = {
+        ...q,
+        page: pageParam,
+        tab: this.t(),
+        basket: this.currentKeys()?.basket,
+        correctionMode: this.c()
+      } as Query;
       this.assistantQuery = { ...this.assistantQuery, ...query };
 
       // Add the current search to the user settings when the text is not empty
@@ -368,7 +371,10 @@ export class SearchAllComponent {
 
     effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
 
-    this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
+    this.conditionalMessageHandler.set('SkillsTester', {
+      handler: message => this.handleConditionalDisplayMessage(message),
+      isGlobalHandler: false
+    });
 
     // When the component is destroyed, clear the aggregations store
     // to avoid memory leaks and ensure that the aggregations are reset

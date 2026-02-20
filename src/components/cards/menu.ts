@@ -24,11 +24,15 @@ type Article = A & {
 
       <MenuContent [position]="drawerOpened() ? 'bottom-end' : 'right-start'">
         @if (appStore.allowLabels()) {
-          <MenuItem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
         }
-        <MenuItem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </MenuItem>
+        <MenuItem class="whitespace-nowrap" (click)="addToCollection()">
+          <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }}
+        </MenuItem>
         @if (allowAI()) {
-          <MenuItem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" variant="ai" (click)="attachToAssistant()">
+            <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
+          </MenuItem>
         }
       </MenuContent>
     </menu>
@@ -70,7 +74,7 @@ export class CardMenuComponent {
     if (!id) return;
 
     const { assistantIdsToAttach } = getState(this.selectionStore);
-    let ids = assistantIdsToAttach || [];
+    const ids = assistantIdsToAttach || [];
 
     if ((assistantIdsToAttach || []).indexOf(id) === -1) {
       ids.push(id);

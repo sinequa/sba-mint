@@ -1,21 +1,18 @@
-@if (query.isSuccess()) {
-  <AsideFilters class="scrollbar-thin scrollbar-none sticky top-20 mx-4 h-[calc(100vh-80px)] pb-4" />
-}
 <main class="col-span-2 col-start-2 mb-8 px-2.5">
   <!-- skeleton part -->
   @if (query.isPending()) {
     <div class="mt-4 flex justify-between" aria-hidden="true">
       <div class="flex gap-2">
         @for (n of [1, 2, 3, 4, 5]; track $index) {
-          <button class="bg-muted-foreground/30 h-9 w-24" aria-hidden="true"></button>
+          <button class="h-9 w-24 bg-muted-foreground/30" aria-hidden="true"></button>
         }
       </div>
 
-      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
+      <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
     </div>
 
     <div class="mt-10 flex justify-end">
-      <button class="bg-muted-foreground/30 h-9 w-28" aria-hidden="true"></button>
+      <button class="h-9 w-28 bg-muted-foreground/30" aria-hidden="true"></button>
     </div>
 
     <ul class="mt-4 flex flex-col gap-2" aria-hidden="true">
@@ -25,7 +22,7 @@
     </ul>
   } @else if (hasRowCount()) {
     <!-- tabs and filters -->
-    <div class="bg-background sticky top-16 z-10 -mx-1 pt-1 pb-2">
+    <div class="sticky top-16 z-10 -mx-1 bg-background pt-1 pb-2">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }
@@ -38,7 +35,7 @@
       <sponsored-results />
 
       <!-- sort selector and export button -->
-      <div class="flex gap-1 has-[_+ul>li.no-records]:hidden">
+      <div class="flex gap-1 has-[+ul>li.no-records]:hidden">
         <button variant="ghost" (click)="selectAll()">
           @switch (selectedAll()) {
             @case ('all') {
@@ -62,8 +59,8 @@
 
     <!-- if assistant is allowed -->
     @if (allowAI()) {
-      <Card variant="ai" hover="no" class="from-ai-from/20 via-ai-via/20 to-ai-to/20 mb-4 border-none bg-gradient-to-r shadow-none">
-        <CardHeader class="text-ai-card-foreground flex items-center gap-1 px-0 text-base font-semibold">
+      <Card variant="ai" hover="no" class="mb-4 border-none bg-linear-to-r from-ai-from/20 via-ai-via/20 to-ai-to/20 shadow-none">
+        <CardHeader class="flex items-center gap-1 px-0 text-base font-semibold text-ai-card-foreground">
           <div class="flex size-8 items-center justify-center">
             @if (isStreaming()) {
               <i class="fas fa-spinner animate-spin"></i>
@@ -117,7 +114,7 @@
     }
   } @else {
     <!-- tabs and filters -->
-    <div class="bg-background sticky top-16 z-10 -mx-1 pt-1 pb-2">
+    <div class="sticky top-16 z-10 -mx-1 bg-background pt-1 pb-2">
       @if (isTabSearchActive()) {
         <navbar-tabs class="mt-2 block" />
       }

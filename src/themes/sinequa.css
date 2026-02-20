@@ -49,6 +49,8 @@
 }
 
 :root {
+  color-scheme: light;
+
   --logo-small-url: url('../assets/logo/small.svg');
   --logo-large-url: url('../assets/logo/large.svg');
   --logo-small: var(--logo-light-small, var(--logo-small-url));
@@ -59,32 +61,50 @@
   --radius: 0.375rem;
   --radius-button: var(--radius-md);
 
-  --background: white;
-  --foreground: var(--color-gray-950);
+  --background: light-dark(white, #282828);
+  --foreground: light-dark(var(--color-gray-950), #e5e5e5);
 
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar: light-dark(oklch(0.985 0 0), var(--color-gray-900));
+  --sidebar-foreground: light-dark(oklch(0.141 0.005 285.823), oklch(0.985 0 0));
+  --sidebar-primary: light-dark(oklch(0.546 0.245 262.881), oklch(0.623 0.214 259.815));
   --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(68.295% 0.00008 271.152);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: light-dark(oklch(68.295% 0.00008 271.152), oklch(0.274 0.006 286.033));
+  --sidebar-accent-foreground: light-dark(oklch(0.21 0.006 285.885), oklch(0.985 0 0));
+  --sidebar-border: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 10%));
+  --sidebar-ring: light-dark(oklch(0.708 0 0), oklch(0.439 0 0));
 
-  --header: var(--color-gray-50);
+  --header: light-dark(var(--color-gray-50), var(--color-gray-800));
   --menu: var(--background);
 
-  --primary: #0084ff;
-  --primary-foreground: var(--background);
+  --primary: light-dark(#0084ff, #ff0055);
+  --primary-foreground: light-dark(var(--background), var(--foreground));
+  --primary-hovered: light-dark(#0070dd, #ff1a66);
+  --primary-hovered-foreground: light-dark(var(--color-white), var(--color-white));
+  --primary-pressed: light-dark(#005acc, #ee0052);
+  --primary-pressed-foreground: light-dark(var(--color-white), var(--color-white));
+  --primary-active: light-dark(#0084ff, #ff0055);
+  --primary-active-foreground: light-dark(var(--color-white), var(--color-white));
+  --primary-disabled: light-dark(#cce5ff, #992638);
+  --primary-disabled-foreground: light-dark(#6699ff, #ff6688);
+
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: var(--color-pink-200);
-  --accent-foreground: var(--color-pink-900);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
+  --secondary-hovered: light-dark(var(--color-sage-100), var(--color-sage-900));
+  --secondary-hovered-foreground: light-dark(var(--color-sage-900), var(--color-sage-800));
+  --secondary-pressed: light-dark(var(--color-sage-200), var(--color-sage-800));
+  --secondary-pressed-foreground: light-dark(var(--color-sage-950), var(--color-sage-300));
+  --secondary-active: light-dark(#fff, var(--color-sage-600));
+  --secondary-active-foreground: light-dark(var(--color-primary), var(--color-sage-50));
+  --secondary-disabled: light-dark(var(--color-neutral-disabled), var(--color-sage-800));
+  --secondary-disabled-foreground: light-dark(var(--color-neutral-muted), var(--color-sage-500));
+
+  --muted: light-dark(oklch(0.967 0.001 286.375), oklch(0.274 0.006 286.033));
+  --muted-foreground: light-dark(oklch(0.552 0.016 285.938), oklch(0.705 0.015 286.067));
+  --accent: light-dark(var(--color-pink-200), oklch(51.654% 0.01253 285.892));
+  --accent-foreground: light-dark(var(--color-pink-900), oklch(0.985 0 0));
+  --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --border: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 10%));
+  --input: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 15%));
   --ring: var(--color-primary);
 
   --success: var(--color-green-200);
@@ -99,19 +119,19 @@
   --ai-from: #193cb8;
   --ai-via: #f6339a;
   --ai-to: #ff8904;
-  --ai-foreground: var(--background); /* used in the button "ask ai" */
+  --ai-foreground: light-dark(var(--background), var(--foreground)); /* used in the button "ask ai" */
   --ai-card-foreground: var(--foreground); /* used in the ai card text */
-  --ai-border: var(--border);
+  --ai-border: light-dark(var(--border), transparent);
 
   --color-datepicker-today: var(--color-orange-300);
 
-  --backdrop: oklch(from var(--foreground) l c h / 50%);
+  --backdrop: light-dark(oklch(from var(--foreground) l c h / 50%), oklch(from var(--color-slate-500) 0.2 c h / 50%));
   --backdrop-filter: blur(2px);
 
   /* Assistant  */
   --assistant: #ff732e;
-  --assistant-primary-bg: #f2f8fe;
-  --assistant-secondary-bg: #fff8f1;
+  --assistant-primary-bg: light-dark(#f2f8fe, color-mix(in srgb, var(--primary), var(--background) 80%));
+  --assistant-secondary-bg: light-dark(#fff8f1, color-mix(in srgb, var(--assistant), var(--background) 90%));
 
   --ast-primary-bg: var(--assistant-primary-bg);
   --ast-secondary-bg: var(--assistant-secondary-bg);
@@ -122,40 +142,11 @@
 }
 
 .dark {
-  --background: #282828;
-  --foreground: #e5e5e5;
+  color-scheme: dark;
+
   --logo-small: var(--logo-dark-small, var(--logo-small-url));
   --logo-large: var(--logo-dark-large, var(--logo-large-url));
 
-  --primary: #ff0055;
-  --primary-foreground: var(--foreground);
-
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(51.654% 0.01253 285.892);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-
-  --header: var(--color-gray-800);
-
-  --sidebar: var(--color-gray-900);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
-  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
-
-  --ai-foreground: var(--foreground);
-  --ai-border: transparent;
-
-  --backdrop: oklch(from var(--color-slate-500) 0.2 c h / 50%);
-
-  --assistant-primary-bg: color-mix(in srgb, var(--primary), var(--background) 80%);
-  --assistant-secondary-bg: color-mix(in srgb, var(--assistant), var(--background) 90%);
   --ast-uploaded-doc-hover-background: var(--color-neutral-700);
 
   /* Assistant  */

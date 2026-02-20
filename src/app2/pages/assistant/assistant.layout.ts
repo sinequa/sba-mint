@@ -1,9 +1,10 @@
-import { firstValueFrom } from 'rxjs';
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { AssistantComponent } from '@components/assistant/assistant';
+import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
+import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
-
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
 import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
 import {
@@ -29,10 +30,8 @@ import {
   SidebarService,
   SidebarTriggerComponent
 } from '@sinequa/ui';
-
-import { AssistantComponent } from '@components/assistant/assistant';
-import { SidebarMainComponent } from '@components/sidebar/sidebar';
-import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
+import { firstValueFrom } from 'rxjs';
+import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -50,7 +49,8 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
     SidebarGroupLabelComponent,
     SidebarGroupContentComponent,
     SidebarMenuComponent,
-    SidebarMenuButtonComponent
+    SidebarMenuButtonComponent,
+    SheetPreviewerComponent
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope('filters')],
   template: `
@@ -63,9 +63,9 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
-                <section class="border-foreground/10 h-56 max-h-56 rounded-2xl border p-4">
+                <section class="h-56 max-h-56 rounded-2xl border border-foreground/10 p-4">
                   <div class="flex items-center justify-between">
-                    <h3 class="text-muted-foreground pointer-events-none font-semibold">
+                    <h3 class="pointer-events-none font-semibold text-muted-foreground">
                       <i class="far fa-comments me-1"></i>
                       {{ 'assistant.saved-chats' | transloco }}
                     </h3>
@@ -85,7 +85,7 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
               }
             }
             <section>
-              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="border-foreground/10 rounded-2xl border p-4" />
+              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="rounded-2xl border border-foreground/10 p-4" />
             </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
@@ -124,6 +124,7 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
         }
       </main-sidebar>
     </sidebar-provider>
+    <sheet-previewer />
   `,
   styles: [
     `
@@ -232,13 +233,15 @@ export class AssistantLayoutComponent {
     this.selectionStore.clear();
 
     // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery();
+    this.getFirstPageQuery().then(
+      response => this.aggregationStore.update(response.aggregations),
+      error => error('Error fetching first page query:', error)
+    );
   }
 
-  async getFirstPageQuery() {
+  getFirstPageQuery() {
     const query = this.appStore.getDefaultQuery() || { name: '_default' };
-    const response = await fetchQuery({ isFirstPage: true, name: query.name });
-    this.aggregationStore.update(response.aggregations);
+    return fetchQuery({ isFirstPage: true, name: query.name });
   }
 
   handleConnection(connection: HubConnection) {

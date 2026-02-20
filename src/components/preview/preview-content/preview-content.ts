@@ -30,20 +30,20 @@ import { PreviewActionsComponent } from './preview-actions';
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
-        <i class="fa-fw far fa-spinner fa-spin text-primary mb-6 text-6xl"></i>
+        <i class="fa-fw far fa-spinner fa-spin mb-6 text-6xl text-primary"></i>
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
-      <div class="relative flex h-[calc(100%_-_0.5rem)] flex-col gap-4">
-        <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
+      <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
+        <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
           [isPrimary]="!conversion() || conversion()!.primary === true"
-          [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
-        <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
+          [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
-          <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
+          <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
           {{ 'previewUnavailable' | transloco }}
         </p>
       </div>
@@ -53,7 +53,6 @@ import { PreviewActionsComponent } from './preview-actions';
     `
       :host {
         display: block;
-        height: 100%;
       }
     `
   ]
