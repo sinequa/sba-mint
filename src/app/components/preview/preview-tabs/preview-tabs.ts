@@ -38,7 +38,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
         @if (displaySummary() || displayChatWithDoc()) {
           @if (displaySummary()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="summary" (click)="setSummaryAssistant()">
+            <Tab class="w-fit" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
                 <i class="fa-solid fa-spinner animate-spin"></i>
               } @else {
@@ -49,7 +49,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
           }
 
           @if (displayChatWithDoc()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
+            <Tab class="w-fit" value="discussion" (click)="setChatWithDocAssistant()">
               <i class="fa-solid fa-comments"></i>
               {{ 'preview.discussion' | transloco }}
             </Tab>
@@ -57,7 +57,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
         }
       </TabsList>
       <!-- tabs content -->
-      <div class="relative h-full flex-grow overflow-auto">
+      <div class="relative h-full grow overflow-auto">
         <!-- tab contents -->
         <!-- Summary Tab Content -->
         @if (displaySummaryContent() && summarizeInstanceId()) {
@@ -67,14 +67,14 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
               [query]="miniPreviewQuery()"
               [showAssistant]="showSummarizeAssistant()"
               (isStreaming)="handleStreaming($event)"
-              class="flex-grow" />
+              class="grow" />
           </TabContent>
         }
 
         <!-- Chat with Doc Tab Content -->
         @if (displayChatWithDocContent() && chatWithDocIntanceId()) {
           <TabContent value="discussion" class="absolute inset-0">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="grow" />
           </TabContent>
         }
 

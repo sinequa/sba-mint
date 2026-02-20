@@ -1,0 +1,82 @@
+@theme {
+    /* animations */
+  --animate-progress: progress 5s linear infinite;
+  @keyframes progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  --animate-save: saved 1s;
+  @keyframes saved {
+    0% {
+      transform: translateY(0px) rotateZ(0);
+    }
+    10% {
+      transform: translateY(2px) rotateZ(-10deg);
+    }
+    50% {
+      transform: translateY(-10px) rotateZ(370deg);
+    }
+    90% {
+      transform: translateY(2px) rotateZ(360deg);
+    }
+    100% {
+      transform: translateY(0px) rotateZ(360deg);
+    }
+  }
+
+  --animate-show-backdrop: show-backdrop 0.7s forwards;
+  --animate-hide-backdrop: hide-backdrop 0.7s forwards;
+  @keyframes show-backdrop {
+    0% {
+      display: none;
+      opacity: 0;
+    }
+    1% {
+      display: block;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hide-backdrop {
+    0% {
+      display: block;
+      opacity: 1;
+    }
+    99% {
+      opacity: 0;
+    }
+    100% {
+      display: none;
+    }
+  }
+
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  --animate-slide-out-right: slide-out-right 0.3s ease-in;
+  @keyframes slide-out-right {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+}

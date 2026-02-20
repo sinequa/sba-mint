@@ -2,11 +2,11 @@ import { NgComponentOutlet } from '@angular/common';
 import {
   Component,
   computed,
-  effect,
   ElementRef,
-  inject,
+  effect,
   InjectionToken,
   Injector,
+  inject,
   input,
   output,
   resource,
@@ -18,7 +18,16 @@ import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
-import { AdvancedFiltersComponent, AppStore, AuditService, AutocompleteService, HighlightWordPipe, signIn, UserSettingsStore } from '@sinequa/atomic-angular';
+import {
+  AdvancedFiltersComponent,
+  AppStore,
+  AuditService,
+  Autocomplete,
+  AutocompleteService,
+  HighlightWordPipe,
+  signIn,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 
 import {
   BookmarkIcon,
@@ -106,9 +115,7 @@ export class AutocompleteComponent {
   breakpointService = inject(BreakpointObserverService);
   isAdvancedSearchOpen = signal(false);
 
-  autocomplete = computed(() => {
-    this.appStore.customizationJson()?.autocomplete;
-  });
+  autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
     const advancedSearch = this.appStore.general()?.features?.advancedSearch;
     return advancedSearch || false;
@@ -119,9 +126,9 @@ export class AutocompleteComponent {
     params: () => ({
       text: this.text(),
       wasSearchClicked: this.wasSearchClicked(),
-      autocomplete: this.autocomplete() ?? 3
+      autocomplete: this.autocomplete()
     }),
-    loader: async ({ params }) => this.fetchSuggestions(params)
+    loader: async ({ params: { text, autocomplete } }) => this.fetchSuggestions({ text, autocomplete })
   });
 
   // Track previous suggestions
@@ -149,15 +156,15 @@ export class AutocompleteComponent {
     this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
 
     effect(() => {
-      if (!this.suggestions() || this.suggestions()!.length === 0) return;
+      if (!this.suggestions() || this.suggestions()?.length === 0) return;
 
       const index = this.currentSuggestIndex();
 
-      if (index < 0 || index >= this.suggestions()!.length) this.activeDescendant.emit(undefined);
+      if (index < 0 || index >= this.suggestions()?.length) this.activeDescendant.emit(undefined);
       else
         this.activeDescendant.emit({
           id: `search-suggestion-${index}`,
-          item: this.suggestions()![index] as S
+          item: this.suggestions()?.[index] as S
         });
     });
   }
@@ -176,15 +183,15 @@ export class AutocompleteComponent {
   previousSuggestion = () => this.findSuggestion(-1);
 
   private findSuggestion(direction: number): void {
-    if (!this.suggestions() || this.suggestions()!.length === 0) return;
+    if (!this.suggestions() || this.suggestions()?.length === 0) return;
 
     let index = this.currentSuggestIndex();
 
     do {
       index += direction;
-      if (index < 0) index = this.suggestions()!.length - 1;
-      else if (index >= this.suggestions()!.length) index = 0;
-    } while (this.suggestions()![index].$isDivider || this.suggestions()![index].$isTitle);
+      if (index < 0) index = this.suggestions()?.length - 1;
+      else if (index >= this.suggestions()?.length) index = 0;
+    } while (this.suggestions()?.[index].$isDivider || this.suggestions()?.[index].$isTitle);
 
     this.currentSuggestIndex.set(index);
     this.elRef.nativeElement.querySelector(`#search-suggestion-${index}`)?.scrollIntoView({
@@ -216,24 +223,22 @@ export class AutocompleteComponent {
    *
    * @throws Will log errors from suggest queries API but won't throw, returning empty array instead
    */
-  private fetchSuggestions = async ({ text, autocomplete }: { text: string; autocomplete?: number }) => {
+  private fetchSuggestions = async ({ text, autocomplete = 3 }: { text: string; autocomplete?: number | Autocomplete }) => {
     this.currentSuggestIndex.set(-1);
     const testText = text;
-    const autocompleteValue = autocomplete ?? 3;
-
-    const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocompleteValue);
+    const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocomplete);
 
     if (!testText) {
       return fromUserSettings;
     }
 
-    let fromSuggestQueries: any[] = [];
+    let fromSuggestQueries: S[][] = [];
     try {
       fromSuggestQueries = await this.autocompleteService.getFromSuggestQueriesForText(testText);
-    } catch (err: any) {
+    } catch (err: unknown) {
       error('Error getting suggestions from suggest queries', err);
-      if (err.status === 401) {
-        runInInjectionContext(this.injector, () => signIn());
+      if ((err as { status?: number }).status === 401) {
+        return runInInjectionContext(this.injector, () => signIn());
       }
       fromSuggestQueries = [];
     }

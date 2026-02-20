@@ -1,13 +1,10 @@
 import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, DestroyRef, Input, computed, inject, input, model, signal, viewChild } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-
+import { Component, computed, DestroyRef, Input, inject, input, model, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Event, NavigationEnd, Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Article } from '@sinequa/atomic';
 import {
-  AppStore,
   BookmarkButtonComponent,
   DrawerNavbarComponent,
   DrawerPreviewComponent,
@@ -15,7 +12,9 @@ import {
   DrawerStackService,
   PreviewService
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from '@sinequa/ui';
+import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator } from '@sinequa/ui';
+import { toast } from 'ngx-sonner';
+
 import { PreviewDialogComponent } from '../dialog/preview-dialog';
 
 export type PreviewNavbarConfig = {

@@ -1,9 +1,7 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, ViewEncapsulation, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
-import { catchError, of } from 'rxjs';
-
 import {
   ChatComponent,
   ChatConfig,
@@ -14,10 +12,10 @@ import {
   RawMessage,
   SuggestedAction
 } from '@sinequa/assistant/chat';
-
 import { Article, error, Query } from '@sinequa/atomic';
 import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'assistant, Assistant',
@@ -25,7 +23,7 @@ import { cn } from '@sinequa/ui';
   template: `
     @if (isChatInitialized() || showAssistant()) {
       <sq-chat-v3
-        [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0', class())"
+        [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0 h-[calc(100%-2rem)] [&>div]:w-full', class())"
         #sqChat
         [query]="_query"
         [chat]="initChat"
@@ -242,13 +240,21 @@ export class AssistantComponent {
     const config = this.appStore.assistants()[this.instanceId()!];
 
     if (question && config) {
-      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const systemMsg = {
+        role: 'system',
+        content: config.defaultValues.systemPrompt,
+        additionalProperties: { display: false }
+      } as RawMessage;
       const messages: RawMessage[] = [
         systemMsg,
         {
           role: 'user',
           content: question || '',
-          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+          additionalProperties: {
+            display: true,
+            isUserInput: true,
+            additionalWorkflowProperties: config.additionalWorkflowProperties
+          }
         }
       ];
       this.initChat = { messages } as InitChat;

@@ -1,5 +1,5 @@
 <menu>
-  <Avatar class="bg-accent text-accent-foreground hover:bg-accent/80 hover:text-accent-foreground/80 cursor-pointer">
+  <Avatar class="cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 hover:text-accent-foreground/80">
     <AvatarImage src="" width="44" height="44" alt="avatar" />
     <AvatarFallback>
       @if (initials()) {
@@ -47,7 +47,6 @@
         <span class="grow">{{ 'userMenu.selectTheme' | transloco }}</span>
         <ChevronRight class="size-4" />
       </MenuItem>
-      <Separator />
 
       <MenuContent position="left-start" class="max-w-fit min-w-40">
         @for (theme of AllThemes; track theme.name) {
