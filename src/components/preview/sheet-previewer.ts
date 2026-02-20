@@ -1,10 +1,10 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { getState } from '@ngrx/signals';
-import { Article as A } from '@sinequa/atomic';
-import { ApplicationService, SelectionService, SelectionStore } from '@sinequa/atomic-angular';
-import { BreakpointObserverService, cn, SheetComponent, SheetHeaderComponent, SheetService, SheetTitleComponent } from '@sinequa/ui';
-import { PreviewComponent } from './preview';
-import { PreviewContentComponent } from './preview-content/preview-content';
+import { Component, computed, effect, inject, input, signal } from "@angular/core";
+import { getState } from "@ngrx/signals";
+import { Article as A } from "@sinequa/atomic";
+import { ApplicationService, SelectionService, SelectionStore } from "@sinequa/atomic-angular";
+import { BreakpointObserverService, cn, SheetComponent, SheetHeaderComponent, SheetService, SheetTitleComponent } from "@sinequa/ui";
+import { PreviewComponent } from "./preview";
+import { PreviewContentComponent } from "./preview-content/preview-content";
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -39,7 +39,7 @@ type Article = A & {
  * Note: Ensure that the necessary modules and components are imported in the parent module to use this component effectively.
  */
 @Component({
-  selector: 'sheet-previewer',
+  selector: "sheet-previewer",
   imports: [SheetComponent, SheetHeaderComponent, SheetTitleComponent, PreviewContentComponent, PreviewComponent],
   template: `
     <sheet
@@ -52,11 +52,11 @@ type Article = A & {
         @if (breakpointService.isMobile()) {
           <sheet-header>
             <sheet-title class="truncate overflow-hidden text-left">
-              <span class="text-primary font-bold">{{ article().title }}</span>
+              <span class="font-bold text-primary">{{ article().title }}</span>
             </sheet-title>
           </sheet-header>
 
-          <preview-content />
+          <preview-content class="h-full" />
         } @else {
           <preview />
         }
@@ -72,14 +72,14 @@ export class SheetPreviewerComponent {
   selectionService = inject(SelectionService);
   sheetService = inject(SheetService);
 
-  position = input<'left' | 'right'>('right');
+  position = input<"left" | "right">("right");
 
   extended = signal(false);
 
   article = computed(() => {
     const { article } = getState(this.selectionStore);
     if (article) {
-      this.applicationService.setTitle(article.title || 'Preview');
+      this.applicationService.setTitle(article.title || "Preview");
     }
     return article as Article;
   });

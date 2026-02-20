@@ -1,20 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
-@plugin "@tailwindcss/typography";
-
+@import "tailwindcss";
 /* Application specific styles */
-@import './theme.css';
-@import './themes/chapsvision-ios16.css';
+@import "./theme.css";
+@import "./themes/chapsvision-ios16.css";
 
-
-@supports (color: light-dark(red,blue)) {
-@import './themes/chapsvision.css';
+@supports (color: light-dark(red, blue)) {
+  @import "./themes/chapsvision.css";
 }
 @plugin "@tailwindcss/typography";
 
 /* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
+@source "../node_modules/@sinequa/agent";
 @source not "../docusaurus/";
 
 *,
@@ -36,6 +34,6 @@ html:has(.sheet-portal[open]) {
 }
 
 body {
-  font-family: 'Hanken Grotesk', sans-serif;
+  font-family: "Hanken Grotesk", sans-serif;
   position: relative;
 }

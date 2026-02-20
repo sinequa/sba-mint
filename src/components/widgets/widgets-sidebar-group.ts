@@ -1,24 +1,24 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, inject, signal, Type } from '@angular/core';
-import { EventType, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { AlertsComponent, BookmarksComponent, CollectionsComponent, RecentSearchesComponent, SavedSearchesComponent } from '@sinequa/atomic-angular';
+import { NgComponentOutlet } from "@angular/common";
+import { Component, inject, signal, Type } from "@angular/core";
+import { EventType, Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { AlertsComponent, BookmarksComponent, CollectionsComponent, RecentSearchesComponent, SavedSearchesComponent } from "@sinequa/atomic-angular";
 import {
   BreakpointObserverService,
   DropdownComponent,
   DropdownContentComponent,
+  PopoverComponent,
+  PopoverContentComponent,
   SidebarGroupComponent,
   SidebarGroupContentComponent,
   SidebarGroupLabelComponent,
+  SidebarMenuActionComponent,
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
   SidebarMenuItemComponent,
-  TooltipDirective,
-  PopoverComponent,
-  PopoverContentComponent,
   SidebarService,
-  SidebarMenuActionComponent
-} from '@sinequa/ui';
+  TooltipDirective
+} from "@sinequa/ui";
 
 export type NavbarMenu = {
   name: string;
@@ -41,7 +41,7 @@ export type NavbarMenu = {
  *
  */
 @Component({
-  selector: 'widgets-sidebar-group',
+  selector: "widgets-sidebar-group",
   template: `
     <sidebar-group>
       <sidebar-group-label>Widgets</sidebar-group-label>
@@ -52,7 +52,7 @@ export type NavbarMenu = {
             <sidebar-menu-item [attr.aria-label]="menu.display | transloco">
               @if (isMobile) {
                 <!-- On mobile, navigate to a dedicated route -->
-                @if (menu.name !== 'alerts') {
+                @if (menu.name !== "alerts") {
                   <sidebar-menu-button
                     class="text-lg"
                     [routerLink]="menu.routerLink"
@@ -63,13 +63,13 @@ export type NavbarMenu = {
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                 }
-              } @else if (menu.name === 'alerts') {
+              } @else if (menu.name === "alerts") {
                 <Popover class="w-full rounded-lg border-neutral-300">
                   <sidebar-menu-button class="text-lg">
                     <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
-                  <PopoverContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
+                  <PopoverContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
                   </PopoverContent>
                 </Popover>
@@ -79,7 +79,7 @@ export type NavbarMenu = {
                     <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
-                  <DropdownContent class="w-[380px] max-w-md min-w-sm" strategy="fixed" position="right-start">
+                  <DropdownContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
                   </DropdownContent>
                 </Dropdown>
@@ -116,22 +116,34 @@ export type NavbarMenu = {
 export class WidgetsSidebarGroupComponent {
   protected readonly menus = signal<NavbarMenu[]>([
     {
-      name: 'recent-searches',
-      display: 'searches.recent.label',
-      iconClass: 'far fa-clock-rotate-left',
-      routerLink: '/widgets/recent-searches',
+      name: "recent-searches",
+      display: "searches.recent.label",
+      iconClass: "far fa-clock-rotate-left",
+      routerLink: "/widgets/recent-searches",
       component: RecentSearchesComponent
     },
-    { name: 'bookmarks', display: 'bookmarks.label', iconClass: 'far fa-bookmark', routerLink: '/widgets/bookmarks', component: BookmarksComponent },
-    { name: 'collections', display: 'collections.label', iconClass: 'far fa-inbox', routerLink: '/widgets/collections', component: CollectionsComponent },
     {
-      name: 'saved-searches',
-      display: 'searches.saved.label',
-      iconClass: 'far fa-star',
-      routerLink: '/widgets/saved-searches',
+      name: "bookmarks",
+      display: "bookmarks.label",
+      iconClass: "far fa-bookmark",
+      routerLink: "/widgets/bookmarks",
+      component: BookmarksComponent
+    },
+    {
+      name: "collections",
+      display: "collections.label",
+      iconClass: "far fa-inbox",
+      routerLink: "/widgets/collections",
+      component: CollectionsComponent
+    },
+    {
+      name: "saved-searches",
+      display: "searches.saved.label",
+      iconClass: "far fa-star",
+      routerLink: "/widgets/saved-searches",
       component: SavedSearchesComponent
     },
-    { name: 'alerts', display: 'alerts.label', iconClass: 'far fa-bell', component: AlertsComponent }
+    { name: "alerts", display: "alerts.label", iconClass: "far fa-bell", component: AlertsComponent }
   ]);
 
   router = inject(Router);

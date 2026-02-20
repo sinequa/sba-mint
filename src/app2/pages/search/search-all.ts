@@ -1,14 +1,15 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, DestroyRef, effect, inject, Injector, input, signal, Type, untracked } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CardSkeleton } from '@components/cards/record/skeleton';
-import { PreviewComponent } from '@components/preview/preview';
-import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
-import { fetchServerPage } from '@config/fetch-server-page';
-import { getState } from '@ngrx/signals';
-import { getComponentsForDocumentType } from '@registry/document-type-registry';
-import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
+import { NgComponentOutlet } from "@angular/common";
+import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { SearchOverviewComponent } from "@components/assistant-overview";
+import { CardSkeleton } from "@components/cards/record/skeleton";
+import { PreviewComponent } from "@components/preview/preview";
+import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { fetchServerPage } from "@config/fetch-server-page";
+import { getState } from "@ngrx/signals";
+import { getComponentsForDocumentType } from "@registry/document-type-registry";
+import { MessageHandler } from "@sinequa/assistant/chat";
+import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from "@sinequa/atomic";
 import {
   AggregationsStore,
   AppStore,
@@ -23,13 +24,13 @@ import {
   SearchFeedbackComponent,
   SelectionService,
   SelectionStore,
-  SortingChoice,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { BreakpointObserverService, cn } from '@sinequa/ui';
-import { injectInfiniteQuery, provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
-import { SearchOverviewComponent } from '@components/assistant-overview';
-import { SearchActionsComponent } from './search-actions';
+} from "@sinequa/atomic-angular";
+import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
+import { SearchActionsComponent } from "./search-actions";
+
+const MOBILE_BREAKPOINT = 1024; // px
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -44,7 +45,7 @@ type QueryParamsProps = {
 };
 
 @Component({
-  selector: 'app-search-all',
+  selector: "app-search-all",
   imports: [
     NgComponentOutlet,
     InfinityScrollDirective,
@@ -60,7 +61,7 @@ type QueryParamsProps = {
     SheetPreviewerComponent,
     SearchActionsComponent
   ],
-  templateUrl: './search-all.html',
+  templateUrl: "./search-all.html",
   styles: [
     `
       :host {
@@ -79,7 +80,8 @@ type QueryParamsProps = {
     `
   ],
   host: {
-    '(keydown.enter)': 'handleKeydownEnter($event)'
+    "(keydown.enter)": "handleKeydownEnter($event)",
+    "(window:resize)": "onResize($event)"
   },
   providers: [provideQueryClient(new QueryClient())]
 })
@@ -116,9 +118,12 @@ export class SearchAllComponent {
   protected readonly p = input<number>(); // page number
 
   // all signals used in the component
+  currentInnerWidth = signal(window.innerWidth);
+  // breakpoin mobile set in the service is 768, but we want to use the sheet previewer for tablets as well, so we set the breakpoint to 1024
+  isMobile = computed(() => this.breakpointService.isMobile() || this.currentInnerWidth() < MOBILE_BREAKPOINT);
 
   protected readonly result = signal<Result | undefined>(undefined);
-  protected readonly queryText = signal<string>('');
+  protected readonly queryText = signal<string>("");
   protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
 
   // the Assistant is expanded and visible by default
@@ -207,7 +212,7 @@ export class SearchAllComponent {
   /**
    * Signal to track state of the selected all checkbox.
    */
-  selectedAll = signal<'all' | 'some' | 'none'>('none');
+  selectedAll = signal<"all" | "some" | "none">("none");
 
   /**
    * If query has rowCount greater than 0, we have results, otherwise no results found.
@@ -234,7 +239,7 @@ export class SearchAllComponent {
     return `search-results-assistant`;
   });
   readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
-  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true);
+  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.["modeSettings"]?.["enabledUserInput"] === true);
   // assistantQuery: Query = { name: 'assistant' };
 
   readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
@@ -245,8 +250,8 @@ export class SearchAllComponent {
     // Update the query params store with the filters from the URL query params
     // This allows Browser back/forward to work correctly
     effect(() => {
-      debug('effect - 1. update query params store from URL');
-      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+      debug("effect - 1. update query params store from URL");
+      const filters = this.f() ? JSON.parse(this.f() ?? "") : []; // Parse the filters from the query params
       this.queryParamsStore.patch({
         text: this.q(),
         tab: this.t(),
@@ -261,7 +266,7 @@ export class SearchAllComponent {
 
     // Update the URL with the query params from the query params store
     effect(() => {
-      debug('effect - 2. update URL from query params store');
+      debug("effect - 2. update URL from query params store");
       this.hideFeedback.set(false);
 
       const queryParams: QueryParamsProps = {};
@@ -276,12 +281,12 @@ export class SearchAllComponent {
       queryParams.n = name;
       queryParams.c = spellingCorrectionMode;
 
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: "merge", queryParams, state: {} });
     });
 
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
-      debug('effect - 3. update keys to retrigger the query');
+      debug("effect - 3. update keys to retrigger the query");
       this.hideFeedback.set(false);
 
       const state = getState(this.queryParamsStore);
@@ -310,7 +315,7 @@ export class SearchAllComponent {
 
     // Make Result object available to children and update aggregations store
     effect(() => {
-      debug('effect - 4. make Result object available to children and update aggregations store');
+      debug("effect - 4. make Result object available to children and update aggregations store");
       this.query.isSuccess();
       const result = this.query.data()?.pages[0];
 
@@ -324,18 +329,18 @@ export class SearchAllComponent {
 
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
-      debug('effect - 5. update selectedAll signal based on the selection store and current pages');
+      debug("effect - 5. update selectedAll signal based on the selection store and current pages");
       const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
       const selection = this.selectionStore.multiSelection().map(x => x.id);
       const b = bisect(articles, x => selection.includes(x));
 
-      if (b.true.length === 0) this.selectedAll.set('none');
-      else if (b.false.length === 0) this.selectedAll.set('all');
-      else this.selectedAll.set('some');
+      if (b.true.length === 0) this.selectedAll.set("none");
+      else if (b.false.length === 0) this.selectedAll.set("all");
+      else this.selectedAll.set("some");
     });
 
     effect(() => {
-      debug('effect - 7. update assistant query from current keys');
+      debug("effect - 7. update assistant query from current keys");
       const { page, tab, basket, spellingCorrectionMode, text } = this.currentKeys() || {};
       const q = this.queryParamsStore.getQuery();
       const query = { ...q, page, tab, basket, spellingCorrectionMode, text } as Query;
@@ -344,16 +349,16 @@ export class SearchAllComponent {
 
       untracked(() => {
         // Add the current search to the user settings when the text is not empty
-        if (text && text !== '') {
+        if (text && text !== "") {
           void this.userSettingsStore.addCurrentSearch(query as QueryParams);
         }
 
         // Update the query text signal with the current query text
-        this.queryText.set(this.currentKeys()?.text ?? '');
+        this.queryText.set(this.currentKeys()?.text ?? "");
       });
     });
 
-    this.conditionalMessageHandler.set('SkillsTester', {
+    this.conditionalMessageHandler.set("SkillsTester", {
       handler: message => this.handleConditionalDisplayMessage(message),
       isGlobalHandler: false
     });
@@ -364,7 +369,7 @@ export class SearchAllComponent {
   }
 
   selectAll() {
-    if (this.selectedAll() === 'all') {
+    if (this.selectedAll() === "all") {
       this.unselectAll();
       return;
     }
@@ -405,16 +410,20 @@ export class SearchAllComponent {
     return getComponentsForDocumentType(docType).articleComponent;
   }
 
-  handleConditionalDisplayMessage(message: any) {
-    const { result } = message as { result: string };
-    if (result.toLocaleLowerCase().includes('show overview')) {
+  handleConditionalDisplayMessage(message: { result: string }) {
+    const { result } = message;
+    if (result.toLocaleLowerCase().includes("show overview")) {
       this.hideAssistant.set(false);
     } else {
       this.hideAssistant.set(true);
     }
   }
 
-  onFeedbackClose(): void {
+  onFeedbackClose() {
     this.hideFeedback.set(true);
+  }
+
+  onResize(event: Event) {
+    this.currentInnerWidth.set((event.target as Window).innerWidth);
   }
 }

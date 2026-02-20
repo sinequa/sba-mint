@@ -1,25 +1,14 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
-import { QueryClient } from '@tanstack/angular-query-experimental';
-import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
-
-import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { Component, DestroyRef, inject } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { TranslocoService } from "@jsverse/transloco";
+import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
+import { QueryClient } from "@tanstack/angular-query-experimental";
+import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   imports: [RouterOutlet, NgxSonnerToaster, MultiSelectionToolbarComponent],
-  templateUrl: './app.component.html',
-  styles: [
-    `
-      #navbar-logo {
-        content: var(--logo-small) / var(--logo-alt-text);
-      }
-    `
-  ],
-  host: {
-    class: 'bg-sidebar'
-  }
+  templateUrl: "./app.component.html"
 })
 export class AppComponent {
   private readonly transloco = inject(TranslocoService);
@@ -36,10 +25,10 @@ export class AppComponent {
 
     // Listen for custom notifications and display them using ngx-sonner
     addEventListener(
-      'notification',
+      "notification",
       (event: Event) => {
         const customEvent = event as CustomEvent<{
-          type: 'success' | 'warning' | 'info' | 'error';
+          type: "success" | "warning" | "info" | "error";
           title?: string;
           message: string;
           options?: ExternalToast;
@@ -50,17 +39,17 @@ export class AppComponent {
       { signal: controller.signal }
     );
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-      document.documentElement.classList.toggle('dark', matches);
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+      document.documentElement.classList.toggle("dark", matches);
     });
 
     this.destroyRef.onDestroy(() => controller.abort());
   }
 
   private setupApplicationLanguage() {
-    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
+    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage("en");
 
-    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? "en");
   }
 
   onUpdatedCollections(): void {

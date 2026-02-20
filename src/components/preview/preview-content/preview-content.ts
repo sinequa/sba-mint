@@ -1,15 +1,13 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-
-import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-
-import { rxResource } from '@angular/core/rxjs-interop';
-import { BreakpointObserverService, cn } from '@sinequa/ui';
-import { catchError, of } from 'rxjs';
-import { PreviewActionsComponent } from './preview-actions';
+import { Component, computed, DestroyRef, ElementRef, effect, inject, input, resource, viewChild } from "@angular/core";
+import { rxResource } from "@angular/core/rxjs-interop";
+import { DomSanitizer } from "@angular/platform-browser";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
+import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { catchError, of } from "rxjs";
+import { PreviewActionsComponent } from "./preview-actions";
 
 /**
  * Preview content component
@@ -25,7 +23,7 @@ import { PreviewActionsComponent } from './preview-actions';
  * It also includes preview actions and navigation controls.
  */
 @Component({
-  selector: 'preview-content',
+  selector: "preview-content",
   imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
@@ -42,22 +40,18 @@ import { PreviewActionsComponent } from './preview-actions';
       <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
           <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
-          {{ 'previewUnavailable' | transloco }}
+          {{ "previewUnavailable" | transloco }}
         </p>
       </div>
     }
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-    `
-  ]
+  host: {
+    class: "block"
+  }
 })
 export class PreviewContentComponent {
   cn = cn;
-  iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
+  iframe = viewChild<ElementRef<HTMLIFrameElement>>("preview");
 
   breakpointService = inject(BreakpointObserverService);
   protected readonly appStore = inject(AppStore);
@@ -66,7 +60,7 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
+  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
   /**
    * The article to be previewed.
@@ -91,8 +85,8 @@ export class PreviewContentComponent {
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const id = this.id() || getState(this.selectionStore).id || '';
-      const { queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
+      const id = this.id() || getState(this.selectionStore).id || "";
+      const { queryText = "", previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: undefined,
@@ -146,10 +140,12 @@ export class PreviewContentComponent {
     loader: async ({ params }) => {
       try {
         if (!params.url || !params.previewData?.documentCachedContentUrl) {
-          throw new Error('Invalid parameters for preview validation');
+          throw new Error("Invalid parameters for preview validation");
         }
 
-        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: 'HEAD' });
+        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, {
+          method: "HEAD"
+        });
         return { isValid: response.status === 200 };
       } catch {
         // In case of an error during fetch, we consider the preview as invalid
@@ -190,7 +186,7 @@ export class PreviewContentComponent {
   onLoaded() {
     const { previewHighlights } = getState(this.selectionStore);
     if (previewHighlights?.snippetId !== undefined) {
-      const message = { action: 'select', id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
+      const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
 
