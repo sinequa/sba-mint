@@ -17,7 +17,7 @@ import { toast } from 'ngx-sonner';
 
     <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
       @for (scope of history(); track $index) {
-        <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
+        <li role="presentation" class="sticky top-0 my-3 bg-background text-lg font-semibold capitalize">
           {{ getDate(scope.date) }}
         </li>
 
@@ -45,7 +45,7 @@ import { toast } from 'ngx-sonner';
               }
             </span>
 
-            <button variant="ghost" size="icon" class="text-destructive invisible group-hover:visible" (click)="remove($event, search)">
+            <button variant="ghost" size="icon" class="invisible text-destructive group-hover:visible" (click)="remove($event, search)">
               <TrashIcon />
             </button>
           </li>

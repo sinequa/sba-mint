@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
@@ -31,72 +31,74 @@ import { ButtonComponent } from '@sinequa/ui';
       <i class="fa-regular fa-magnifying-glass-minus shrink-0"></i>
     </button>
 
-    @if (hasAIDescription()) {
-      @if (showAIDescription()) {
+    @if (isPrimary()) {
+      @if (hasAIDescription()) {
+        @if (showAIDescription()) {
+          <button
+            variant="ghost"
+            class="dark:hover:bg-background/10 dark:text-white"
+            size="icon"
+            [attr.title]="'preview.toggleAIDescription' | transloco"
+            (click)="toggleAIDescription()">
+            <i class="fa-regular fa-sparkles shrink-0"></i>
+          </button>
+        } @else {
+          <button
+            variant="ghost"
+            size="icon"
+            class="dark:hover:bg-background/10 dark:text-white"
+            [attr.title]="'preview.toggleAIDescription' | transloco"
+            (click)="toggleAIDescription()">
+            <span class="fa-stack shrink-0 items-center justify-center">
+              <i class="fa-regular fa-sparkles fa-stack-1x"></i>
+              <i class="fa-regular fa-slash fa-stack-1x"></i>
+            </span>
+          </button>
+        }
+      }
+
+      @if (extracts()) {
         <button
           variant="ghost"
           class="dark:hover:bg-background/10 dark:text-white"
           size="icon"
-          [attr.title]="'preview.toggleAIDescription' | transloco"
-          (click)="toggleAIDescription()">
-          <i class="fa-regular fa-sparkles shrink-0"></i>
+          [attr.title]="'preview.toggleExtracts' | transloco"
+          (click)="toggleExtracts()">
+          <i class="fa-regular fa-flashlight shrink-0"></i>
         </button>
       } @else {
         <button
           variant="ghost"
-          size="icon"
           class="dark:hover:bg-background/10 dark:text-white"
-          [attr.title]="'preview.toggleAIDescription' | transloco"
-          (click)="toggleAIDescription()">
+          size="icon"
+          [attr.title]="'preview.toggleExtracts' | transloco"
+          (click)="toggleExtracts()">
           <span class="fa-stack shrink-0 items-center justify-center">
-            <i class="fa-regular fa-sparkles fa-stack-1x"></i>
+            <i class="fa-regular fa-flashlight fa-stack-1x"></i>
             <i class="fa-regular fa-slash fa-stack-1x"></i>
           </span>
         </button>
       }
-    }
 
-    @if (extracts()) {
-      <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
-        [attr.title]="'preview.toggleExtracts' | transloco"
-        (click)="toggleExtracts()">
-        <i class="fa-regular fa-flashlight shrink-0"></i>
-      </button>
-    } @else {
-      <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
-        [attr.title]="'preview.toggleExtracts' | transloco"
-        (click)="toggleExtracts()">
-        <span class="fa-stack shrink-0 items-center justify-center">
-          <i class="fa-regular fa-flashlight fa-stack-1x"></i>
-          <i class="fa-regular fa-slash fa-stack-1x"></i>
-        </span>
-      </button>
-    }
-
-    @if (entities()) {
-      <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
-        [title]="'preview.toggleEntities' | transloco"
-        (click)="toggleEntities()">
-        <i class="fa-regular fa-lightbulb shrink-0"></i>
-      </button>
-    } @else {
-      <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
-        [attr.title]="'preview.toggleEntities' | transloco"
-        (click)="toggleEntities()">
-        <i class="fa-regular fa-lightbulb-slash shrink-0"></i>
-      </button>
+      @if (entities()) {
+        <button
+          variant="ghost"
+          class="dark:hover:bg-background/10 dark:text-white"
+          size="icon"
+          [title]="'preview.toggleEntities' | transloco"
+          (click)="toggleEntities()">
+          <i class="fa-regular fa-lightbulb shrink-0"></i>
+        </button>
+      } @else {
+        <button
+          variant="ghost"
+          class="dark:hover:bg-background/10 dark:text-white"
+          size="icon"
+          [attr.title]="'preview.toggleEntities' | transloco"
+          (click)="toggleEntities()">
+          <i class="fa-regular fa-lightbulb-slash shrink-0"></i>
+        </button>
+      }
     }
   `
 })
@@ -104,6 +106,8 @@ export class PreviewActionsComponent {
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly selectionStore = inject(SelectionStore);
+
+  readonly isPrimary = input<boolean>(false);
 
   protected readonly extracts = signal(true);
   protected readonly entities = signal(false);

@@ -1,15 +1,15 @@
 /* Sinequa datepicker css */
 @import '@sinequa/ui/css/datepicker/styles.css';
-@import "./styles/animations.css";
-@import "./styles/utilities.css";
+@import './styles/animations.css';
+@import './styles/utilities.css';
 
 /* css third-components overrides */
-@import "./css-overrides/styles.css";
+@import './css-overrides/styles.css';
 
 /* Hanken Grotesk Font Family */
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url("./assets/fonts/HankenGrotesk-Regular.ttf") format("truetype");
+  src: url('./assets/fonts/HankenGrotesk-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -17,7 +17,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url("./assets/fonts/HankenGrotesk-SemiBold.ttf") format("truetype");
+  src: url('./assets/fonts/HankenGrotesk-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url("./assets/fonts/HankenGrotesk-Bold.ttf") format("truetype");
+  src: url('./assets/fonts/HankenGrotesk-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -39,7 +39,7 @@
   --color-black: #182021;
 
   --radius: 0.625rem;
-  --radius-sm: .5rem;
+  --radius-sm: 0.5rem;
   --radius-button: 100vw;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -293,4 +293,3 @@ ul:has(card.selected) card:not(.selected) {
 summary::-webkit-details-marker {
   display: none;
 }
-

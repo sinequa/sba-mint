@@ -13,5 +13,6 @@
   "toggleEntities": "Toggle entities",
   "toggleAIDescription": "Show AI description / Hide AI description",
   "summarize": "Summarize",
-  "discussion": "Chat with Document"
+  "discussion": "Chat with Document",
+  "default": "Default"
 }

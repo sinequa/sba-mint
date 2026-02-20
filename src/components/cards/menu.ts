@@ -26,9 +26,13 @@ type Article = A & {
         @if (appStore.allowLabels()) {
           <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
         }
-        <MenuItem class="whitespace-nowrap" (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </MenuItem>
+        <MenuItem class="whitespace-nowrap" (click)="addToCollection()">
+          <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }}
+        </MenuItem>
         @if (allowAI()) {
-          <MenuItem class="whitespace-nowrap" variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" variant="ai" (click)="attachToAssistant()">
+            <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }}
+          </MenuItem>
         }
       </MenuContent>
     </menu>

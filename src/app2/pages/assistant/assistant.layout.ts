@@ -63,9 +63,9 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
-                <section class="border-foreground/10 h-56 max-h-56 rounded-2xl border p-4">
+                <section class="h-56 max-h-56 rounded-2xl border border-foreground/10 p-4">
                   <div class="flex items-center justify-between">
-                    <h3 class="text-muted-foreground pointer-events-none font-semibold">
+                    <h3 class="pointer-events-none font-semibold text-muted-foreground">
                       <i class="far fa-comments me-1"></i>
                       {{ 'assistant.saved-chats' | transloco }}
                     </h3>
@@ -85,7 +85,7 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
               }
             }
             <section>
-              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="border-foreground/10 rounded-2xl border p-4" />
+              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="rounded-2xl border border-foreground/10 p-4" />
             </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {

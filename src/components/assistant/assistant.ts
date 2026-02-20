@@ -23,7 +23,12 @@ import { catchError, of } from 'rxjs';
   template: `
     @if (isChatInitialized() || showAssistant()) {
       <sq-chat-v3
-        [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0 h-[calc(100%-2rem)] [&>div]:w-full', class())"
+        [class]="
+          cn(
+            'prose prose-sm h-[calc(100%-2rem)] dark:prose-invert prose-p:m-0 prose-ol:gap-1! prose-ul:gap-1! prose-li:m-0 prose-li:p-0 [&>div]:w-full',
+            class()
+          )
+        "
         #sqChat
         [query]="_query"
         [chat]="initChat"

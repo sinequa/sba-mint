@@ -25,7 +25,7 @@ import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
         <widgets-sidebar-group slot="sidebar-extras" />
 
         <!-- sidebar-inset content -->
-        <nav class="bg-background sticky top-0 z-2 grid grid-cols-[.15fr_auto] rounded p-4 md:grid-cols-[.15fr_auto_.15fr] lg:grid-cols-[.25fr_auto_.25fr]">
+        <nav class="sticky top-0 z-2 grid grid-cols-[.15fr_auto] rounded bg-background p-4 md:grid-cols-[.15fr_auto_.15fr] lg:grid-cols-[.25fr_auto_.25fr]">
           <sidebar-trigger />
           <search-with-autocomplete class="w-full" />
         </nav>

@@ -1,12 +1,13 @@
-import { Component, computed, DestroyRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, output, signal, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { getState } from '@ngrx/signals';
-import { Article, CCApp, Query } from '@sinequa/atomic';
-import { AppStore, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CCApp, Conversion, PreviewData, Query } from '@sinequa/atomic';
+import { AppStore, SelectionStore, CConverter } from '@sinequa/atomic-angular';
 import { TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
+import { FormsModule } from '@angular/forms';
 
 export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
@@ -27,7 +28,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 @Component({
   selector: 'preview-tabs, PreviewTabs, previewtabs',
   standalone: true,
-  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
+  imports: [FormsModule, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
   template: `
     <Tabs class="@container block h-full px-4">
       <!-- tabs list -->
@@ -54,6 +55,19 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
               <span sr-only class="hidden @min-md:inline">{{ 'preview.discussion' | transloco }}</span>
             </Tab>
           }
+
+          @if (converterOptions()?.length) {
+            <div class="grow"></div>
+            <select
+              class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
+              [ngModel]="currentConversionIndex()"
+              (ngModelChange)="currentConversionIndex.set($event)">
+              <option [value]="-1">{{ 'preview.default' | transloco }}</option>
+              @for (option of converterOptions(); track $index) {
+                <option [value]="$index">{{ option.name }}</option>
+              }
+            </select>
+          }
         }
       </TabsList>
       <!-- tabs content -->
@@ -79,7 +93,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="h-[calc(100%-3rem)] pr-1" />
+          <preview-content class="h-[calc(100%-3rem)] pr-1" [conversion]="currentConversion()" (onLoadedData)="previewData.set($event)" />
         </TabContent>
       </div>
     </Tabs>
@@ -93,6 +107,8 @@ export class PreviewTabsComponent {
   protected readonly appFeatures = this.appStore.general()?.features;
   protected readonly selectionStore = inject(SelectionStore);
 
+  onConversionSelect = output<CConverter | undefined>();
+
   /**
    * A computed signal that returns the currently active preview tab value.
    *
@@ -103,6 +119,7 @@ export class PreviewTabsComponent {
   });
 
   readonly article = signal<Article | undefined>(undefined);
+  readonly previewData = signal<PreviewData | undefined>(undefined);
   readonly miniPreviewQuery = computed(() => {
     const article = this.article();
     const query = {
@@ -152,15 +169,58 @@ export class PreviewTabsComponent {
   ]);
   showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'summary')?.enabled);
   showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === 'discussion')?.enabled);
+  previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   protected readonly isStreaming = signal<boolean>(false);
   displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === 'summary' && assistant.visible));
   displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === 'discussion' && assistant.visible));
 
+  /** List of all available converters matching with previewData.conversions and the config defined general.converters */
+  currentConversionIndex = signal<number>(-1);
+  currentConversion = computed<CConverter | undefined>(() =>
+    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()![this.currentConversionIndex()]
+  );
+  converters = computed(() =>
+    !this.previewData()?.conversions?.length
+      ? undefined
+      : this.appStore
+          .general()
+          ?.converters?.filter(
+            converter =>
+              converter.display && this.previewData()!.conversions!.some(c => c.converterName === converter.converter && c.format === converter.format)
+          )
+  );
+
+  /** All options for the converters dropdown */
+  converterOptions = computed(() => {
+    // return undefined if the feature is disabled or that there are no available conversions
+    if (!this.previewMultiConversion() || !this.converters()?.length) return undefined;
+
+    return this.converters()!
+      .map(converter => {
+        converter.conversion = this.previewData()!.conversions!.find(c => c.converterName === converter.converter && c.format === converter.format);
+        return converter;
+      })
+      .sort((a, b) => (a.default && !b.default ? -1 : 1));
+  });
+
   constructor() {
     effect(() => {
       const { article } = getState(this.selectionStore);
       this.article.set(article as Article);
+    });
+
+    effect(() => {
+      // set conversion url to the first default converter if any
+      if (this.previewMultiConversion() || this.converterOptions()?.length) {
+        this.currentConversionIndex.set(this.converterOptions()!.findIndex(c => c.default));
+      }
+    });
+
+    effect(() => {
+      if (this.previewMultiConversion()) {
+        this.onConversionSelect.emit(this.currentConversion());
+      }
     });
   }
 
