@@ -88,7 +88,7 @@ export class PreviewContentComponent {
     const { queryText } = getState(this.selectionStore);
     return queryText;
   });
-  protected previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
+  protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -111,15 +111,17 @@ export class PreviewContentComponent {
     }
   });
 
-  documentCachedContentUrl?: string; // used to store the default preview url
+  // used to store the default preview url
+  documentCachedContentUrl = computed(() => this.previewData()?.documentCachedContentUrl);
+  // Effect to emit the loaded preview data when it changes
+  #previewDataEffect = effect(() => {
+    this.onLoadedData.emit(this.previewData());
+  });
+
   previewData = computed(() => {
     if (this.previewDataResource.hasValue()) {
-      const previewData = this.previewDataResource.value();
-      if (!this.documentCachedContentUrl && previewData?.documentCachedContentUrl) this.documentCachedContentUrl = previewData.documentCachedContentUrl;
-      this.onLoadedData.emit(previewData);
-      return previewData;
+      return this.previewDataResource.value();
     }
-    this.onLoadedData.emit(undefined);
     return undefined;
   });
 
@@ -130,8 +132,14 @@ export class PreviewContentComponent {
     // Update the preview service with the current preview data
     this.previewService.setPreviewData(previewData);
 
-    let url = this.previewMultiConversion() && !!this.conversion()?.conversion?.url ? this.conversion()!.conversion!.url : this.documentCachedContentUrl;
-    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
+    if (this.previewMultiConversionFlag()) {
+      const url = this.conversion()?.conversion?.url ?? this.documentCachedContentUrl();
+      return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
+    } else {
+      return previewData.documentCachedContentUrl
+        ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + previewData.documentCachedContentUrl)
+        : undefined;
+    }
   });
 
   /**
