@@ -1,14 +1,14 @@
-import { afterNextRender, Component, computed, DOCUMENT, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
+import { afterNextRender, Component, computed, DOCUMENT, effect, ElementRef, inject, signal, viewChild } from "@angular/core";
+import { provideTranslocoScope } from "@jsverse/transloco";
 
-import { Article as A } from '@sinequa/atomic';
-import { AdvancedSearch, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-import { cn, SheetService } from '@sinequa/ui';
+import { Article as A } from "@sinequa/atomic";
+import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { cn, SheetService } from "@sinequa/ui";
 
-import { PreviewHeaderComponent } from './preview-header/preview-header';
-import { PreviewNavbarComponent } from './preview-navbar/preview-navbar';
-import { PreviewTabsComponent } from './preview-tabs/preview-tabs';
-import { EventManager } from '@angular/platform-browser';
+import { PreviewHeaderComponent } from "./preview-header/preview-header";
+import { PreviewNavbarComponent } from "./preview-navbar/preview-navbar";
+import { PreviewTabsComponent } from "./preview-tabs/preview-tabs";
+import { EventManager } from "@angular/platform-browser";
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -26,13 +26,13 @@ type Article = A & {
  *
  */
 @Component({
-  selector: 'preview, Preview',
-  providers: [provideTranslocoScope({ scope: 'preview' })],
+  selector: "preview, Preview",
+  providers: [provideTranslocoScope({ scope: "preview" })],
   imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch],
-  templateUrl: './preview.html',
+  templateUrl: "./preview.html",
   host: {
-    '[class]': 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
-    tabindex: '1'
+    "[class]": 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
+    tabindex: "1"
   }
 })
 export class PreviewComponent {
@@ -54,11 +54,12 @@ export class PreviewComponent {
   protected readonly article = computed(() => {
     const article = this.selectionStore.article?.();
     if (article) {
-      this.applicationService.setTitle(article.title || 'Preview');
+      this.applicationService.setTitle(article.title || "Preview");
     }
     return article as Article;
   });
 
+  conversion = signal<CConverter | undefined>(undefined);
   eventManager = inject(EventManager);
   host = inject(ElementRef<HTMLElement>);
   document = inject(DOCUMENT);
@@ -66,8 +67,8 @@ export class PreviewComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.eventManager.addEventListener(this.document.body, 'keyup', (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+      this.eventManager.addEventListener(this.document.body, "keyup", (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
           this.sheetService.setOpen(false);
         }
       });
@@ -78,13 +79,13 @@ export class PreviewComponent {
       const event = this.previewservice.events();
 
       // If the event is scrollTo, set the active tab to preview if it's not already
-      if (event === 'scrollTo' && this.previewTabs()?.activeTabValue() !== 'preview') {
-        this.previewTabs()?.setActiveTab('preview');
+      if (event === "scrollTo" && this.previewTabs()?.activeTabValue() !== "preview") {
+        this.previewTabs()?.setActiveTab("preview");
       }
 
       // If the event is scrollTo, set the events to idle to avoid multiple triggers
-      if (event === 'scrollTo') {
-        this.previewservice.events.set('idle');
+      if (event === "scrollTo") {
+        this.previewservice.events.set("idle");
       }
     });
   }

@@ -51,12 +51,12 @@
 :root {
   color-scheme: light;
 
-  --logo-small-url: url('../assets/logo/small.svg');
-  --logo-large-url: url('../assets/logo/large.svg');
+  --logo-small-url: url("../assets/logo/small.svg");
+  --logo-large-url: url("../assets/logo/large.svg");
   --logo-small: var(--logo-light-small, var(--logo-small-url));
   --logo-large: var(--logo-light-large, var(--logo-large-url));
   --logo-large-alt: var(--logo-large);
-  --logo-alt-text: 'Sinequa logo';
+  --logo-alt-text: "Sinequa logo";
 
   --radius: 0.375rem;
   --radius-button: var(--radius-md);
@@ -86,7 +86,6 @@
   --primary-active-foreground: light-dark(var(--color-white), var(--color-white));
   --primary-disabled: light-dark(#cce5ff, #992638);
   --primary-disabled-foreground: light-dark(#6699ff, #ff6688);
-
 
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);

@@ -5,27 +5,13 @@
   },
   "tailwindCSS.lint.suggestCanonicalClasses": "warning",
   "tailwindCSS.classFunctions": ["cva", "tw", "clsx", "tw\\.[a-z-]+"],
-  "tailwindCSS.classAttributes": [
-      "class",
-      "className",
-      "[ngClass]",
-      "class:list",
-      "[class]",
-      "tv",
-      "cn",
-      "cva",
-      "variant",
-
-  ],
+  "tailwindCSS.classAttributes": ["class", "className", "[ngClass]", "class:list", "[class]", "tv", "cn", "cva", "variant"],
   "tailwindCSS.experimental.classRegex": [
-      ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-      ["tv\\(([^)]*)\\)", "{?\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?}?"],
-      ["cn\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"],
-      ":\\s*?[\"'`]([^\"'`]*).*?,",
-      [
-          "host:\\s*{([\\s\\S]*?)}",
-          "\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?"
-      ]
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["tv\\(([^)]*)\\)", "{?\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?}?"],
+    ["cn\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"],
+    ":\\s*?[\"'`]([^\"'`]*).*?,",
+    ["host:\\s*{([\\s\\S]*?)}", "\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?"]
   ],
   "github-enterprise.uri": "https://github.sinequa.com",
   "explorer.fileNesting.enabled": true,
