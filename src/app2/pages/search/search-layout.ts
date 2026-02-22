@@ -1,15 +1,15 @@
-import { Component, DestroyRef, effect, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
-import { SidebarMainComponent } from '@components/sidebar/sidebar';
-import { WidgetsSidebarGroupComponent } from '@components/widgets/widgets-sidebar-group';
-import { provideTranslocoScope } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { ApplicationService, SelectionStore } from '@sinequa/atomic-angular';
-import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
+import { Component, DestroyRef, effect, inject } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
+import { SidebarMainComponent } from "@components/sidebar/sidebar";
+import { WidgetsSidebarGroupComponent } from "@components/widgets/widgets-sidebar-group";
+import { provideTranslocoScope } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { ApplicationService, SelectionStore } from "@sinequa/atomic-angular";
+import { SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 
 @Component({
-  selector: 'app-search-layout',
+  selector: "app-search-layout",
   imports: [
     RouterOutlet,
     SidebarMainComponent,
@@ -33,7 +33,7 @@ import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
       </main-sidebar>
     </sidebar-provider>
   `,
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections', 'alerts', 'sort-selector', 'article', 'filters')]
+  providers: [provideTranslocoScope("bookmarks", "searches", "collections", "alerts", "sort-selector", "article", "filters")]
 })
 export class SearchLayoutComponent {
   private readonly destroyRef = inject(DestroyRef);
@@ -45,7 +45,7 @@ export class SearchLayoutComponent {
     effect(() => {
       const { id } = getState(this.selectionStore);
       if (!id) {
-        this.applicationService.setTitle('Search');
+        this.applicationService.setTitle("Search");
       }
     });
 

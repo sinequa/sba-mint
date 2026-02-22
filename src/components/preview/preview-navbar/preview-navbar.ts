@@ -1,11 +1,11 @@
-import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, Input, inject, input, model, signal, viewChild } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Article } from '@sinequa/atomic';
-import { AppStore, BookmarkButtonComponent, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator, SheetCloseDirective } from '@sinequa/ui';
-import { toast } from 'ngx-sonner';
-import { PreviewDialogComponent } from '../dialog/preview-dialog';
+import { Location, NgTemplateOutlet } from "@angular/common";
+import { Component, computed, Input, inject, input, model, signal, viewChild } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { Article } from "@sinequa/atomic";
+import { AppStore, BookmarkButtonComponent, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator, SheetCloseDirective } from "@sinequa/ui";
+import { toast } from "ngx-sonner";
+import { PreviewDialogComponent } from "../dialog/preview-dialog";
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -42,7 +42,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
  *
  */
 @Component({
-  selector: 'preview-navbar, PreviewNavbar, previewnavbar',
+  selector: "preview-navbar, PreviewNavbar, previewnavbar",
   imports: [
     NgTemplateOutlet,
     BookmarkButtonComponent,
@@ -54,7 +54,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     Separator,
     SheetCloseDirective
   ],
-  templateUrl: './preview-navbar.html',
+  templateUrl: "./preview-navbar.html",
   providers: []
 })
 export class PreviewNavbarComponent {
@@ -83,8 +83,8 @@ export class PreviewNavbarComponent {
     if (!this.article()?.url1) return false;
 
     try {
-      const url = new URL(this.article()?.url1 || '');
-      return url.protocol === 'http:' || url.protocol === 'https:';
+      const url = new URL(this.article()?.url1 || "");
+      return url.protocol === "http:" || url.protocol === "https:";
     } catch {
       return false;
     }
@@ -115,7 +115,7 @@ export class PreviewNavbarComponent {
         this.copied.set(false);
       }, 2000);
 
-      toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
+      toast.success(this.transloco.translate("preview.linkCopiedToClipboard"), { duration: 2000 });
     }
   }
 

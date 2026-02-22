@@ -1,31 +1,31 @@
 /* Sinequa datepicker css */
-@import '@sinequa/ui/css/datepicker/styles.css';
-@import './styles/animations.css';
-@import './styles/utilities.css';
+@import "@sinequa/ui/css/datepicker/styles.css";
+@import "./styles/animations.css";
+@import "./styles/utilities.css";
 
 /* css third-components overrides */
-@import './css-overrides/styles.css';
+@import "./css-overrides/styles.css";
 
 /* Hanken Grotesk Font Family */
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-Regular.ttf') format('truetype');
+  font-family: "Hanken Grotesk";
+  src: url("./assets/fonts/HankenGrotesk-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-SemiBold.ttf') format('truetype');
+  font-family: "Hanken Grotesk";
+  src: url("./assets/fonts/HankenGrotesk-SemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('./assets/fonts/HankenGrotesk-Bold.ttf') format('truetype');
+  font-family: "Hanken Grotesk";
+  src: url("./assets/fonts/HankenGrotesk-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -199,20 +199,20 @@
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
     transition: 250ms ease-out;
-    &[drawer-opened='true'] {
+    &[drawer-opened="true"] {
       grid-template-columns: 4% 24% 25% 48%;
     }
   }
   @media (max-width: 1350px) {
     .layout-search {
       grid-template-columns: 10% 40% 40% 10%;
-      &[drawer-opened='true'] {
+      &[drawer-opened="true"] {
         grid-template-columns: 6% 24% 23% 47%;
       }
     }
   }
   @media (max-width: 920px) {
-    .layout-search[drawer-opened='true'] {
+    .layout-search[drawer-opened="true"] {
       grid-template-columns: 8% 22% 23% 47%;
     }
   }

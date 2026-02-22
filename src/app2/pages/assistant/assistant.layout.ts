@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { AssistantComponent } from '@components/assistant/assistant';
-import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
-import { SidebarMainComponent } from '@components/sidebar/sidebar';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
+import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from "@angular/core";
+import { AssistantComponent } from "@components/assistant/assistant";
+import { AssistantUploadComponent } from "@components/assistant/document-upload/assistant-upload.component";
+import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { SidebarMainComponent } from "@components/sidebar/sidebar";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
+import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
+import { CCApp, error, fetchQuery, Query } from "@sinequa/atomic";
 import {
   AggregationComponent,
   AggregationsStore,
@@ -15,7 +16,7 @@ import {
   PrincipalStore,
   QueryParamsStore,
   SelectionStore
-} from '@sinequa/atomic-angular';
+} from "@sinequa/atomic-angular";
 import {
   BreakpointObserverService,
   ButtonComponent,
@@ -29,12 +30,11 @@ import {
   SidebarProviderComponent,
   SidebarService,
   SidebarTriggerComponent
-} from '@sinequa/ui';
-import { firstValueFrom } from 'rxjs';
-import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
+} from "@sinequa/ui";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'assistant-layout, AssistantLayout',
+  selector: "assistant-layout, AssistantLayout",
   imports: [
     TranslocoPipe,
     AssistantComponent,
@@ -52,7 +52,7 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
     SidebarMenuButtonComponent,
     SheetPreviewerComponent
   ],
-  providers: [SidebarService, SheetService, provideTranslocoScope('filters')],
+  providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
     <sidebar-provider [style.--sidebar-width]="'12rem'" [style.--sidebar-width-mobile]="'20rem'" [style.--sidebar-width-icon]="'3rem'">
       <main-sidebar triggerName="sidebar-assistant">
@@ -67,7 +67,7 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
                   <div class="flex items-center justify-between">
                     <h3 class="pointer-events-none font-semibold text-muted-foreground">
                       <i class="far fa-comments me-1"></i>
-                      {{ 'assistant.saved-chats' | transloco }}
+                      {{ "assistant.saved-chats" | transloco }}
                     </h3>
                     <button
                       variant="ghost"
@@ -116,7 +116,7 @@ import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
               <sidebar-menu>
                 <sidebar-menu-button (click)="chat()?.newChat(); sheetService.toggle()">
                   <i class="far fa-plus"></i>
-                  <span sr-only>{{ 'assistant.new-discussion' | transloco }}</span>
+                  <span sr-only>{{ "assistant.new-discussion" | transloco }}</span>
                 </sidebar-menu-button>
               </sidebar-menu>
             </sidebar-group-content>
@@ -174,10 +174,10 @@ export class AssistantLayoutComponent {
   backLevel = 0;
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']));
+  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display));
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']));
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]));
 
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
@@ -226,27 +226,30 @@ export class AssistantLayoutComponent {
     });
 
     // react to drawer state changes to update the application title when the drawer is closed
-    this.applicationService.setTitle('Assistant');
+    this.applicationService.setTitle("Assistant");
 
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();
 
     // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery().then(
-      response => this.aggregationStore.update(response.aggregations),
-      error => error('Error fetching first page query:', error)
-    );
+    this.getFirstPageQuery();
   }
 
-  getFirstPageQuery() {
-    const query = this.appStore.getDefaultQuery() || { name: '_default' };
-    return fetchQuery({ isFirstPage: true, name: query.name });
+  async getFirstPageQuery() {
+    try {
+      const query = this.appStore.getDefaultQuery() || { name: "_default" };
+      const response = await fetchQuery({ isFirstPage: true, name: query.name });
+      this.aggregationStore.update(response.aggregations);
+      this.queryParamsStore.patch({ name: query.name });
+    } catch (err) {
+      error("Error fetching first page query:", err);
+    }
   }
 
   handleConnection(connection: HubConnection) {
     // to properly instanciate the saved-chats component, we need to wait for the connection to be established
-    if (connection.state === 'Connected') {
+    if (connection.state === "Connected") {
       this.connectionEstablished.set(true);
     }
   }
@@ -282,7 +285,7 @@ export class AssistantLayoutComponent {
     }
     const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
     const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
+    const firstUserMessage = history.find(msg => msg.role === "user" && msg.content);
     if (firstUserMessage) {
       this.query.update(q => {
         if (q && firstUserMessage) {
