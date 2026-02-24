@@ -1,13 +1,12 @@
-import { Component, computed, DestroyRef, effect, inject, output, signal, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, effect, inject, model, output, signal, viewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
-
 import { getState } from "@ngrx/signals";
-import { Article, CCApp, Conversion, PreviewData, Query } from "@sinequa/atomic";
-import { AppStore, SelectionStore, CConverter } from "@sinequa/atomic-angular";
+import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
+import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
 import { TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
 import { PreviewContentComponent } from "../preview-content/preview-content";
-import { FormsModule } from "@angular/forms";
 
 export type PreviewTab = "summary" | "preview" | "discussion";
 
@@ -56,15 +55,14 @@ export type PreviewTab = "summary" | "preview" | "discussion";
             </Tab>
           }
 
-          @if (converterOptions()?.length) {
+          @if (converterOptions().length) {
             <div class="grow"></div>
             <select
               class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
-              [ngModel]="currentConversionIndex()"
-              (ngModelChange)="currentConversionIndex.set($event)">
+              [(ngModel)]="currentConversionIndex">
               <option [value]="-1">{{ "preview.default" | transloco }}</option>
               @for (option of converterOptions(); track $index) {
-                <option [value]="$index">{{ option.name }}</option>
+                <option [value]="$index">{{ option.name | transloco }}</option>
               }
             </select>
           }
@@ -176,9 +174,9 @@ export class PreviewTabsComponent {
   displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === "discussion" && assistant.visible));
 
   /** List of all available converters matching with previewData.conversions and the config defined general.converters */
-  currentConversionIndex = signal<number>(-1);
+  currentConversionIndex = model<number>(-1);
   currentConversion = computed<CConverter | undefined>(() =>
-    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()![this.currentConversionIndex()]
+    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()[this.currentConversionIndex()]
   );
   converters = computed(() =>
     !this.previewData()?.conversions?.length
@@ -187,21 +185,25 @@ export class PreviewTabsComponent {
           .general()
           ?.converters?.filter(
             converter =>
-              converter.display && this.previewData()!.conversions!.some(c => c.converterName === converter.converter && c.format === converter.format)
+              converter.display && this.previewData()?.conversions?.some(c => c.converterName === converter.converter && c.format === converter.format)
           )
   );
 
   /** All options for the converters dropdown */
   converterOptions = computed(() => {
     // return undefined if the feature is disabled or that there are no available conversions
-    if (!this.previewMultiConversion() || !this.converters()?.length) return undefined;
+    if (!this.previewMultiConversion() || !this.converters()?.length) return [];
 
-    return this.converters()!
-      .map(converter => {
-        converter.conversion = this.previewData()!.conversions!.find(c => c.converterName === converter.converter && c.format === converter.format);
-        return converter;
-      })
-      .sort((a, b) => (a.default && !b.default ? -1 : 1));
+    const converters = this.converters();
+    if (converters) {
+      return converters
+        .map(converter => {
+          converter.conversion = this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format);
+          return converter;
+        })
+        .sort((a, b) => (a.default && !b.default ? -1 : 1));
+    }
+    return [];
   });
 
   constructor() {
@@ -212,8 +214,10 @@ export class PreviewTabsComponent {
 
     effect(() => {
       // set conversion url to the first default converter if any
-      if (this.previewMultiConversion() || this.converterOptions()?.length) {
-        this.currentConversionIndex.set(this.converterOptions()!.findIndex(c => c.default));
+      if (this.previewMultiConversion() && this.converterOptions()) {
+        if (this.converterOptions()?.length) {
+          this.currentConversionIndex.set(this.converterOptions().findIndex(c => c.default));
+        }
       }
     });
 

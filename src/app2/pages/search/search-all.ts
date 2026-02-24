@@ -41,6 +41,7 @@ type QueryParamsProps = {
   q?: string; // query text
   b?: string; // basket,
   n?: string; // query name
+  id?: string; // record id
   c?: SpellingCorrectionMode; // correction mode
 };
 
@@ -260,6 +261,7 @@ export class SearchAllComponent {
         filters,
         name: this.n(),
         page: this.p(),
+        id: this.id(),
         spellingCorrectionMode: this.c()
       });
     });
@@ -270,7 +272,7 @@ export class SearchAllComponent {
       this.hideFeedback.set(false);
 
       const queryParams: QueryParamsProps = {};
-      const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
+      const { id, text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
 
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
@@ -280,7 +282,7 @@ export class SearchAllComponent {
       queryParams.b = basket;
       queryParams.n = name;
       queryParams.c = spellingCorrectionMode;
-
+      queryParams.id = id;
       this.router.navigate([], { relativeTo: this.route, queryParamsHandling: "merge", queryParams, state: {} });
     });
 

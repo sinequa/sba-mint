@@ -152,7 +152,7 @@
     </div>
 
     <!-- column 3 -->
-    @if (!isMobile() && hasRowCount()) {
+    @if (hasRowCount()) {
       <div
         [class]="
           cn(
@@ -160,14 +160,10 @@
             hasPreview() && 'rounded border border-aside-border lg:w-1/2'
           )
         ">
-        <div class="relative h-full w-full">
+        <div class="relative size-full">
           <preview
             [class]="
-              cn(
-                'absolute inset-0 h-full w-full',
-                hasPreview() && 'animate-slide-in-right',
-                !hasPreview() && 'translate-x-full animate-slide-out-right opacity-0'
-              )
+              cn('absolute inset-0 size-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right opacity-0')
             " />
 
           <!-- if assistant is allowed -->
