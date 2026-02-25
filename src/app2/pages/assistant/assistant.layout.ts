@@ -86,7 +86,7 @@ import { firstValueFrom } from "rxjs";
             }
             <section>
               <Aggregation #treepath name="Sources" column="treepath" showFiltersCount [collapsible]="true" class="p-4" />
-              </section>
+            </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showDocumentUploader()) {
@@ -177,7 +177,7 @@ export class AssistantLayoutComponent {
   readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display));
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]));
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled));
 
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());

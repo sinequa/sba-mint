@@ -201,7 +201,7 @@
   --accent-foreground: light-dark(var(--color-pink-900), var(--color-pink-900));
   --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
   --border: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 10%));
-  --input: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 15%));
+  --input: light-dark(var(--color-grey-50), var(--color-sage-950));
   --ring: light-dark(var(--color-accent), var(--color-accent));
   --chart-1: light-dark(oklch(0.871 0.15 154.449), oklch(0.871 0.15 154.449));
   --chart-2: light-dark(oklch(0.723 0.219 149.579), oklch(0.723 0.219 149.579));

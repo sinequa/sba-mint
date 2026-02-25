@@ -18,8 +18,10 @@ import { SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
             <sidebar-trigger />
           </nav>
         </header>
-        <div>
-          <AgentInjector instanceId="chatSearchInstance" />
+        <div class="grid relative" [style.--background]="'transparent'">
+          <div class="h-[calc(100dvh-12rem)] overflow-y-auto scrollbar-none">
+            <AgentInjector instanceId="chatSearchInstance" />
+          </div>
         </div>
       </main-sidebar>
     </sidebar-provider>

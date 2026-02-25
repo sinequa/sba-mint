@@ -1,12 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
-/* Application specific styles */
-@import "./theme.css";
-@import "./themes/chapsvision-ios16.css";
 
+/* Theme specific styles for iOS16 */
+/* @supports not (color: light-dark(red, blue)) {
+  @import "./themes/chapsvision-ios16.css";
+} */
 @supports (color: light-dark(red, blue)) {
   @import "./themes/chapsvision.css";
 }
+/* Application specific styles */
+@import "./theme.css";
+
 @plugin "@tailwindcss/typography";
 
 /* Sinequa UI tailwindcss configuration */
