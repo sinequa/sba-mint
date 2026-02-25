@@ -40,7 +40,6 @@ import { firstValueFrom } from "rxjs";
     AssistantComponent,
     SavedChatsComponent,
     AssistantUploadComponent,
-    AggregationComponent,
     ButtonComponent,
     SidebarProviderComponent,
     SidebarMainComponent,
@@ -50,7 +49,8 @@ import { firstValueFrom } from "rxjs";
     SidebarGroupContentComponent,
     SidebarMenuComponent,
     SidebarMenuButtonComponent,
-    SheetPreviewerComponent
+    SheetPreviewerComponent,
+    AggregationComponent
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
@@ -63,7 +63,7 @@ import { firstValueFrom } from "rxjs";
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
-                <section class="h-56 max-h-56 rounded-2xl border border-foreground/10 p-4">
+                <section class="h-56 max-h-56 p-4">
                   <div class="flex items-center justify-between">
                     <h3 class="pointer-events-none font-semibold text-muted-foreground">
                       <i class="far fa-comments me-1"></i>
@@ -85,7 +85,7 @@ import { firstValueFrom } from "rxjs";
               }
             }
             <section>
-              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="rounded-2xl border border-foreground/10 p-4" />
+              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount [collapsible]="true" class="p-4" />
             </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
@@ -177,7 +177,7 @@ export class AssistantLayoutComponent {
   readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display));
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]));
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled));
 
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
