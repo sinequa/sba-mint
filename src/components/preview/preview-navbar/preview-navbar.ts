@@ -2,7 +2,7 @@ import { Location, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, Input, inject, input, model, signal, viewChild } from "@angular/core";
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
-import { AppStore, BookmarkButtonComponent, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { AppStore, BookmarkButtonComponent, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator, SheetCloseDirective } from "@sinequa/ui";
 import { toast } from "ngx-sonner";
 import { PreviewDialogComponent } from "../dialog/preview-dialog";
@@ -65,6 +65,7 @@ export class PreviewNavbarComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly appStore = inject(AppStore);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -78,6 +79,10 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
+
+  /**
+   * Indicates if the converted of the article being previewed is the primary one. When true, the button "search in preview" will be displayed, allowing the user to search in the preview the same query that was used to get the article.
+   */
   public readonly isPrimary = input<boolean>(false);
   readonly isExternalLinkValid = computed(() => {
     if (!this.article()?.url1) return false;
@@ -90,6 +95,7 @@ export class PreviewNavbarComponent {
     }
   });
 
+  // used to open the preview inside a dialog
   expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
 
   public copied = signal(false);
@@ -128,6 +134,9 @@ export class PreviewNavbarComponent {
   }
 
   handleClose() {
+    // remove the id query param to prevent the preview from opening again when navigating back to the page after closing the preview
+    this.queryParamsStore.patch({ id: undefined });
+    // clear the selection
     this.selectionStore.clear();
   }
 }
