@@ -80,7 +80,7 @@ import { AssistantUploadComponent } from '../../../components/assistant/document
             name="Sources"
             column="treepath"
             showFiltersCount
-            collapsible
+            [collapsible]="true"
             class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
         </section>
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->

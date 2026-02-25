@@ -85,7 +85,13 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
               }
             }
             <section>
-              <Aggregation #treepath name="Sources" column="treepath" showFiltersCount collapsible class="border-foreground/10 rounded-2xl border p-4" />
+              <Aggregation
+                #treepath
+                name="Sources"
+                column="treepath"
+                showFiltersCount
+                [collapsible]="true"
+                class="border-foreground/10 rounded-2xl border p-4" />
             </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
