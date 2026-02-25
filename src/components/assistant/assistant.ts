@@ -1,4 +1,4 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, ViewEncapsulation, viewChild } from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -13,7 +13,7 @@ import {
   SuggestedAction
 } from "@sinequa/assistant/chat";
 import { Article, error, Query } from "@sinequa/atomic";
-import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from "@sinequa/atomic-angular";
+import { AppStore, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from "@sinequa/atomic-angular";
 import { cn } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 
@@ -25,7 +25,7 @@ import { catchError, of } from "rxjs";
       <sq-chat-v3
         [class]="
           cn(
-            'prose prose-sm h-[calc(100%-2rem)] dark:prose-invert prose-p:m-0 prose-ol:gap-1! prose-ul:gap-1! prose-li:m-0 prose-li:p-0 [&>div]:w-full',
+            'prose-sm block h-[calc(100%-2rem)] dark:prose-invert prose-p:m-0 prose-ol:gap-1! prose-ul:gap-1! prose-li:m-0 prose-li:p-0 [&>div]:w-full',
             class()
           )
         "
@@ -88,7 +88,6 @@ export class AssistantComponent {
   noProgress = false;
   _progress = effect(() => (this.noProgress = !this.showProgress()));
 
-  drawerStack = inject(DrawerStackService);
   initChat: InitChat | undefined = undefined;
   config = signal<ChatConfig | undefined>(undefined);
 
@@ -176,8 +175,6 @@ export class AssistantComponent {
   }
 
   handlePreview(event: ChatContextAttachment, withQueryText = true) {
-    this.drawerStack.replace(event.record as Article);
-
     const previewHighlights: PreviewHighlights | undefined =
       event.parts && event.parts.length
         ? {
@@ -191,7 +188,8 @@ export class AssistantComponent {
           }
         : undefined;
 
-    this.selectionStore.update({ previewHighlights });
+    // Update the selection store with the article and the preview highlights, this will trigger the preview to open with the correct highlights
+    this.selectionStore.update({ id: event.record.id, article: event.record as Article, previewHighlights });
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
     if (partId) {
