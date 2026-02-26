@@ -97,8 +97,10 @@ export class UserMenuComponent {
 
   readonly initials = computed(() => {
     const principal = this.user();
-    const separator = principal.fullName ? " " : ".";
-    return (principal.fullName || principal.name || "")
+    // use the user profile's fullName in priority, otherwise the principal one
+    const fullName = this.userProfile()?.data?.fullName || principal.fullName;
+    const separator = fullName ? " " : ".";
+    return (fullName || principal.name || "")
       .split(separator)
       .filter(word => word[0] && word[0] === word[0].toUpperCase())
       .map(word => word[0])

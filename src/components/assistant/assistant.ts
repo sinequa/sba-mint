@@ -1,4 +1,4 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, linkedSignal, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -13,7 +13,7 @@ import {
   SuggestedAction
 } from "@sinequa/assistant/chat";
 import { Article, error, Query } from "@sinequa/atomic";
-import { AppStore, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from "@sinequa/atomic-angular";
+import { AppStore, PreviewHighlights, PreviewService, PrincipalStore, QueryParamsStore, SelectionStore, UserProfileService, UserSettingsStore } from "@sinequa/atomic-angular";
 import { cn } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 
@@ -32,6 +32,7 @@ import { catchError, of } from "rxjs";
         #sqChat
         [query]="_query"
         [chat]="initChat"
+        [userMessageIcon]="profilePhoto() ? 'user-avatar' : ''"
         [instanceId]="instanceId()"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
@@ -66,6 +67,8 @@ export class AssistantComponent {
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
   protected readonly previewService = inject(PreviewService);
+  protected readonly principalStore = inject(PrincipalStore);
+  protected readonly userProfileService = inject(UserProfileService);
 
   class = input<string>("");
   // Used to initialize the chat unconditionally
@@ -98,6 +101,17 @@ export class AssistantComponent {
   defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
+
+  // used to handle the user avatar
+  protected principal = computed(() => this.principalStore.principal?.());
+  protected userProfileResource = this.userProfileService.getUserProfile(this.principal);
+  readonly userProfile = linkedSignal(() => {
+    if (this.userProfileResource.hasValue()) {
+      return this.userProfileResource.value();
+    }
+    return undefined;
+  });
+  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || undefined);
 
   getChatConfig(config: ChatConfig): void {
     this.config.set(config);
@@ -150,6 +164,12 @@ export class AssistantComponent {
       // each time the selection store changes, we need to update the attached IDs
       const { assistantIdsToAttach } = getState(this.selectionStore);
       this.attachToChat(assistantIdsToAttach);
+    });
+
+    effect(() => {
+      if (this.profilePhoto()) {
+        document.documentElement.style.setProperty(`--user-avatar`, `url(${this.profilePhoto()!})`);
+      }
     });
 
     afterNextRender(() => {
