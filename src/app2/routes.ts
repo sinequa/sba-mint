@@ -1,6 +1,6 @@
 import { Data, Route } from "@angular/router";
 
-import { AuthGuard, ErrorComponent, LoadingComponent, queryNameResolver, SignInComponent } from "@sinequa/atomic-angular";
+import { AuthGuard, AuthPageComponent, ErrorComponent, LoadingComponent, queryNameResolver } from "@sinequa/atomic-angular";
 
 import { HomeComponent } from "./pages/home/home";
 import { SearchAllComponent } from "./pages/search/search-all";
@@ -21,8 +21,9 @@ type ExtendedRoute = Route & {
 type ExtendedRoutes = ExtendedRoute[];
 
 export const routes: ExtendedRoutes = [
-  { path: "login", component: SignInComponent },
-  { path: "logout", component: SignInComponent },
+  { path: "login", component: AuthPageComponent },
+  { path: "logout", component: AuthPageComponent },
+  { path: 'auth/:mode', component: AuthPageComponent },
   { path: "home", component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: "assistant",
