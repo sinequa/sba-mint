@@ -182,6 +182,10 @@ body {
   hr {
     display: none;
   }
+  .sq-mediav2-disclaimer {
+    color: var(--color-assistant);
+    font-style: italic;
+  }
   .sq-mediav2-page {
     display: inline-flex;
     align-items: center;
