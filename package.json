@@ -29,7 +29,6 @@
   "private": true,
   "dependencies": {
     "@angular-architects/ngrx-toolkit": "^20.0.0",
-    "@angular-eslint/schematics": "^18.3.1",
     "@angular/animations": "^20.3.15",
     "@angular/cdk": "^20.2.14",
     "@angular/common": "^20.3.15",
@@ -95,6 +94,6 @@
     "zod": "^3.24.2"
   },
   "overrides": {
-    "@modelcontextprotocol/sdk": "1.26.0"
+    "ajv": "8.18.0"
   }
 }
