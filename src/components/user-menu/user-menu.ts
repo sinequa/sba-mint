@@ -1,10 +1,11 @@
+import { NgComponentOutlet } from "@angular/common";
 import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { TranslocoPipe, TranslocoService, provideTranslocoScope } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { logout, setGlobalConfig } from "@sinequa/atomic";
+import { logout, setGlobalConfig, globalConfig } from "@sinequa/atomic";
 import {
   AppStore,
   OverrideUserDialogComponent,
@@ -59,7 +60,8 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    UserProfileDialog
+    UserProfileDialog,
+    NgComponentOutlet
   ],
   templateUrl: "./user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
@@ -87,6 +89,22 @@ export class UserMenuComponent {
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
+
+  /**
+   * Determines whether password change functionality should be enabled for the current user.
+   *
+   * This computed property evaluates two conditions:
+   * - The application must be configured to use credentials authentication
+   * - The password change feature must be explicitly enabled in the application settings
+   *
+   * @returns True if both credential authentication is enabled and the password change feature is allowed, false otherwise
+   */
+  readonly allowChangePassword = computed(() => {
+    if (this.enabledUserProfile()) return false;
+    const { useCredentials } = globalConfig;
+    const { allowChangePassword = false } = this.appStore.general()?.features || {};
+    return allowChangePassword && useCredentials && this.principal().editablePartition;
+  });
 
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
 
@@ -136,6 +154,11 @@ export class UserMenuComponent {
     const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode);
+  }
+
+  onChangePassword() {
+    this.menus()?.forEach(m => { m?.close?.() });
+    this.router.navigate(['/auth', 'changepassword']);
   }
 
   handleLogout() {
