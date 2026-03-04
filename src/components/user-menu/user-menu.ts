@@ -91,7 +91,7 @@ export class UserMenuComponent {
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
 
   readonly user = computed(() => {
-    const principal = getState(this.principalStore).principal;
+    const principal = this.principalStore.principal();
     return principal;
   });
 
@@ -102,8 +102,8 @@ export class UserMenuComponent {
     const separator = fullName ? " " : ".";
     return (fullName || principal.name || "")
       .split(separator)
-      .filter(word => word[0] && word[0] === word[0].toUpperCase())
-      .map(word => word[0])
+      .filter((word: string) => word[0] && word[0] === word[0].toUpperCase())
+      .map((word: string) => word[0])
       .join("")
       .slice(0, 3);
   });
