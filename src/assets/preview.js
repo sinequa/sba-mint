@@ -255,6 +255,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return onMouseMove(e);
     });
     document.addEventListener('click', function (e) {
+      // add a click listener to toggle the class "screenshot-extended" for "sq-mediav2-screenshot"
+      // if we click on a screenshot for a converted video preview
       e.stopImmediatePropagation();
       var parentElement = e.target?.parentElement;
       if (!!parentElement && parentElement.classList?.contains("sq-mediav2-screenshot")) {
