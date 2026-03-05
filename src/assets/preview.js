@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return onMouseMove(e);
     });
     document.addEventListener('click', function (e) {
+      e.stopImmediatePropagation();
       var parentElement = e.target?.parentElement;
       if (!!parentElement && parentElement.classList?.contains("sq-mediav2-screenshot")) {
         parentElement.classList.toggle("screenshot-extended");
