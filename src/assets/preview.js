@@ -254,6 +254,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('mousemove', function (e) {
       return onMouseMove(e);
     });
+    document.addEventListener('click', function (e) {
+      var parentElement = e.target?.parentElement;
+      if (!!parentElement && parentElement.classList?.contains("sq-mediav2-screenshot")) {
+        parentElement.classList.toggle("screenshot-extended");
+      }
+    });
     window.addEventListener('scroll', function () {
       return returnMessage('scroll', { x: window.scrollX, y: window.scrollY });
     });
