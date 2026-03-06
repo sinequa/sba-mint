@@ -2,10 +2,10 @@ import { NgComponentOutlet } from "@angular/common";
 import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { logout, setGlobalConfig, globalConfig } from "@sinequa/atomic";
+import { globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import {
   AppStore,
   OverrideUserDialogComponent,
@@ -83,8 +83,8 @@ export class UserMenuComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   readonly userProfileDialog = viewChild(UserProfileDialog);
 
+  protected readonly principalStore = inject(PrincipalStore);
   private readonly router = inject(Router);
-  private readonly principalStore = inject(PrincipalStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
@@ -107,24 +107,6 @@ export class UserMenuComponent {
   });
 
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
-
-  readonly user = computed(() => {
-    const principal = this.principalStore.principal();
-    return principal;
-  });
-
-  readonly initials = computed(() => {
-    const principal = this.user();
-    // use the user profile's fullName in priority, otherwise the principal one
-    const fullName = this.userProfile()?.data?.fullName || principal.fullName;
-    const separator = fullName ? " " : ".";
-    return (fullName || principal.name || "")
-      .split(separator)
-      .filter((word: string) => word[0] && word[0] === word[0].toUpperCase())
-      .map((word: string) => word[0])
-      .join("")
-      .slice(0, 3);
-  });
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
@@ -157,8 +139,10 @@ export class UserMenuComponent {
   }
 
   onChangePassword() {
-    this.menus()?.forEach(m => { m?.close?.() });
-    this.router.navigate(['/auth', 'changepassword']);
+    this.menus()?.forEach(m => {
+      m?.close?.();
+    });
+    this.router.navigate(["/auth", "changepassword"]);
   }
 
   handleLogout() {
