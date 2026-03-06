@@ -1,18 +1,20 @@
+@let user = principalStore.principal();
+@let initials = principalStore.initials();
 <menu class="flex items-center gap-2">
   <Avatar
     class="size-6 cursor-pointer bg-accent text-accent-foreground group-data-[state=collapsed]:-left-1 hover:bg-accent/80 hover:text-accent-foreground/80">
     <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
     <AvatarFallback>
-      @if (initials()) {
-        <span>{{ initials() }}</span>
+      @if (initials) {
+        <span>{{ initials }}</span>
       } @else {
         <UserIcon class="size-6 p-1" />
       }
     </AvatarFallback>
   </Avatar>
   <div class="grid flex-1 text-left text-sm leading-tight">
-    <span class="truncate font-medium">{{ user().fullName || user().name || initials() }}</span>
-    <span class="truncate text-xs empty:hidden">{{ user().email }}</span>
+    <span class="truncate font-medium">{{ user.fullName || user.name || initials }}</span>
+    <span class="truncate text-xs empty:hidden">{{ user.email }}</span>
   </div>
   <!-- min-w-max used to display all the content -->
   <MenuContent position="bottom-start" class="min-w-max">
@@ -108,7 +110,7 @@
 
     <MenuItem (click)="handleLogout()">
       <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
-      <span class="grow">{{ "logout" | transloco }} {{ user().fullName || user().name }}</span>
+      <span class="grow">{{ "logout" | transloco }} {{ user.fullName || user.name }}</span>
     </MenuItem>
   </MenuContent>
 </menu>
