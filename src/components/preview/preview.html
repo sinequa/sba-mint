@@ -1,7 +1,7 @@
 <div class="flex max-w-[inherit] flex-col">
   <preview-navbar
     class="block border-b border-muted-foreground/18"
-    [isPrimary]="!conversion() || conversion()!.primary === true"
+    [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
     [(extended)]="extended"
     [article]="article()" />
 

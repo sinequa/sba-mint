@@ -207,6 +207,13 @@ export class AssistantComponent {
             snippetId: event.$partId !== undefined ? event.$partId! - 1 : undefined
           }
         : undefined;
+    
+    // Save the passage offset data which can be used for the preview
+    const part = event.parts.find(p => p.partId === event.$partId);
+    if (part) {
+      const { offset, length } = part;
+      this.previewService.passageOffset.set({ id: event.recordId, offset, length });
+    }
 
     // Update the selection store with the article and the preview highlights, this will trigger the preview to open with the correct highlights
     this.selectionStore.update({ id: event.record.id, article: event.record as Article, previewHighlights });
