@@ -4,9 +4,9 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore, QueryService } from "@sinequa/atomic-angular";
 
-import { rxResource } from "@angular/core/rxjs-interop";
+import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BreakpointObserverService, cn } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
@@ -62,6 +62,7 @@ export class PreviewContentComponent {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly selectionStore = inject(SelectionStore);
   private readonly previewService = inject(PreviewService);
+  private readonly queryService = inject(QueryService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
@@ -89,6 +90,7 @@ export class PreviewContentComponent {
     return queryText;
   });
   protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
+  protected passagePageNumber?: number;
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -186,6 +188,25 @@ export class PreviewContentComponent {
       this.previewService.setIframe(iframeElement.nativeElement.contentWindow);
     });
 
+    effect(() => {
+      if (this.id()) {
+        this.passagePageNumber = undefined; // resetting the page number if we change of selected document
+      }
+    });
+
+    effect(() => {
+      const isSecondary = this.conversion()?.primary === false || (this.conversion()?.conversion?.isPrimary === false);
+
+      // if we are on a secondary conversion with a selected passage, we should fetch the page of the passage and scroll to it
+      if (this.previewUrl() && isSecondary) {
+        if (this.passagePageNumber !== undefined) { // if page already fetched, trigger scrolling
+          this.scrollToPage();
+        } else { // if no page fetched yet, loading it
+          this.getPassagePage();
+        }
+      }
+    });
+
     this.destroyRef.onDestroy(() => {
       const id = this.id();
       if (id) {
@@ -211,5 +232,28 @@ export class PreviewContentComponent {
     }
 
     // this.previewService.getPageInfo();
+  }
+
+  /**
+   * Get the page of the stored passage offset in order to scroll to it
+   */
+  getPassagePage(): void {
+    const { id, offset, length } = this.previewService.passageOffset() || {};
+    if (id === undefined || offset === undefined || length === undefined) return;
+
+    this.queryService.getDocPage(id, offset, length).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((pageNumber: number) => {
+        this.passagePageNumber = pageNumber;
+        this.scrollToPage();
+      });
+  }
+
+  /**
+   * Scroll to the stored page number
+   */
+  scrollToPage(): void {
+    if (this.passagePageNumber === undefined) return;
+    this.previewService.events.set("scrollTo");
+    this.previewService.sendMessage({ action: "select", id: `sq-page-start-${this.passagePageNumber}`, usePassageHighlighter: false });
   }
 }
