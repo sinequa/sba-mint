@@ -173,7 +173,7 @@ export class AssistantComponent {
 
     effect(() => {
       // each time the selection store changes, we need to update the attached IDs
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
     });
 
@@ -182,7 +182,7 @@ export class AssistantComponent {
       // that's why we need to use a reference of the DestroyRef class here
 
       // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
     });
   }
