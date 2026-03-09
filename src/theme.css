@@ -92,6 +92,57 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --color-input-border: light-dark(var(--color-sage-200), var(--color-sage-700));
+
+  --color-tool-card-bg: var(--tool-card-bg);
+  --color-tool-card-bg-hovered: var(--tool-card-bg-hovered);
+  --color-tool-card-border: var(--tool-card-border);
+  --color-tool-card-widget: var(--tool-card-widget);
+
+  --color-menu-bg: var(--menu-bg);
+  --color-menu-border: var(--menu-border);
+
+  --color-accent-alt: var(--accent-alt);
+  --color-accent-hovered: var(--accent-hovered);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-accent-foreground-pressed: var(--accent-foreground-pressed);
+  --color-accent-foreground-light: var(--accent-foreground-light);
+  --color-accent-foreground-mute: var(--accent-foreground-mute);
+
+  --color-destructive-alt: var(--destructive-alt);
+  --color-destructive-hovered: var(--destructive-hovered);
+  --color-destructive-pressed: var(--destructive-pressed);
+  --color-destructive-lighter: var(--destructive-lighter);
+  --color-destructive-lightest: var(--destructive-lightest);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-foreground-muted: var(--destructive-foreground-muted);
+  --color-destructive-foreground-light: var(--destructive-foreground-light);
+
+  --color-primary-foreground-base: var(--primary-foreground-base);
+  --color-primary-foreground-muted: var(--primary-foreground-muted);
+  --color-primary-foreground-hovered: var(--primary-foreground-hovered);
+  --color-primary-foreground-pressed: var(--primary-foreground-pressed);
+  --color-primary-foreground-dark: var(--primary-foreground-dark);
+  --color-primary-light: var(--primary-light);
+  --color-primary-lighter: var(--primary-lighter);
+  --color-primary-lightest: var(--primary-lightest);
+
+  --color-secondary-base-alt: var(--secondary-base-alt);
+  --color-secondary-foreground-base-alt: var(--secondary-foreground-base-alt);
+  --color-secondary-foreground-hovered: var(--secondary-foreground-hovered);
+  --color-secondary-foreground-pressed: var(--secondary-foreground-pressed);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-lighter: var(--secondary-lighter);
+  --color-secondary-lightest: var(--secondary-lightest);
+
+  --color-neutral-foreground-muted: var(--neutral-foreground-muted);
+  --color-neutral-foreground-white: var(--neutral-foreground-white);
+  --color-neutral-foreground-black: var(--neutral-foreground-black);
+  --color-neutral-foreground-base: var(--neutral-foreground-base);
+  --color-neutral-foreground-light: var(--neutral-foreground-light);
+
+  --color-focus: var(--focus);
+
   --color-aside: var(--aside);
   --color-aside-border: var(--aside-border);
 
@@ -294,4 +345,25 @@ ul:has(card.selected) card:not(.selected) {
 /* safari fix */
 summary::-webkit-details-marker {
   display: none;
+}
+
+.heading-4 {
+  @apply text-primary-foreground-muted text-xs font-semibold tracking-wider uppercase;
+}
+
+#gradient-name {
+  background: var(--gradient-name);
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 5s ease-in-out infinite alternate;
+  will-change: background-position;
+}
+
+@keyframes animatedTextGradient {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
