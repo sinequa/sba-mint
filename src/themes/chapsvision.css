@@ -84,7 +84,7 @@
   --color-blue-900: #1a2833;
   --color-blue-950: #101920;
 
-  --color-grey-50: #fdfefe;
+  --color-gray-50: #fdfefe;
   --color-gray-100: #f9fafb;
   --color-gray-200: #eff2f6;
   --color-gray-300: #b9c4d5;
@@ -181,6 +181,14 @@
   --primary-active-foreground: light-dark(var(--color-white), var(--color-sage-50));
   --primary-disabled: light-dark(var(--color-disabled), var(--color-sage-800));
   --primary-disabled-foreground: light-dark(var(--color-muted), var(--color-sage-500));
+  --primary-foreground-base: light-dark(var(--color-sage-800), var(--color-sage-100));
+  --primary-foreground-muted: light-dark(var(--color-sage-500), var(--color-sage-300));
+  --primary-foreground-hovered: light-dark(var(--color-sage-900), var(--color-sage-50));
+  --primary-foreground-pressed: light-dark(var(--color-black), var(--color-sage-50));
+  --primary-light: light-dark(var(--color-sage-200), var(--color-sage-700));
+  --primary-lighter: light-dark(var(--color-sage-100), var(--color-sage-900));
+  --primary-lightest: light-dark(var(--color-sage-50), var(--color-sage-950));
+  --primary-foreground-dark: light-dark(var(--color-sage-975), var(--color-sage-50));
 
   --secondary: light-dark(var(--color-sage-100), oklch(0.274 0.006 286.033));
   --secondary-foreground: light-dark(var(--color-sage-900), oklch(0.985 0 0));
@@ -192,16 +200,61 @@
   --secondary-active-foreground: light-dark(var(--color-primary), var(--color-sage-50));
   --secondary-disabled: light-dark(var(--color-disabled), var(--color-sage-800));
   --secondary-disabled-foreground: light-dark(var(--color-muted), var(--color-sage-500));
+  --secondary-base-alt: light-dark(var(--color-almond-800), var(--color-almond-200));
+  --secondary-foreground-hovered: light-dark(var(--color-sage-900), var(--color-almond-100));
+  --secondary-foreground-pressed: light-dark(var(--color-almond-950), var(--color-almond-50));
+  --secondary-foreground-base-alt: light-dark(var(--color-almond-600), var(--color-almond-300));
+  --secondary-light: light-dark(var(--color-almond-200), var(--color-almond-800));
+  --secondary-lighter: light-dark(var(--color-almond-100), var(--color-almond-900));
+  --secondary-lightest: light-dark(var(--color-almond-50), var(--color-almond-950));
+
+  --accent: light-dark(var(--color-pink-200), var(--color-pink-200));
+  --accent-foreground: light-dark(var(--color-pink-900), var(--color-pink-900));
+  --accent-alt: light-dark(var(--color-pink-200), var(--color-pink-700));
+  --accent-hovered: light-dark(var(--color-pink-100), var(--color-pink-500));
+  --accent-pressed: light-dark(var(--color-pink-900), var(--color-pink-800));
+  --accent-foreground-pressed: light-dark(var(--color-pink-50), var(--color-pink-50));
+  --accent-foreground-light: light-dark(var(--color-pink-200), var(--color-pink-300));
+  --accent-foreground-mute: light-dark(var(--color-pink-800), var(--color-pink-50));
+
+  --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --destructive-hovered: light-dark(var(--color-red-700), var(--color-red-400));
+  --destructive-pressed: light-dark(var(--color-red-300), var(--color-red-700));
+  --destructive-alt: light-dark(var(--color-red-200), var(--color-red-800));
+  --destructive-lighter: light-dark(var(--color-red-100), var(--color-red-900));
+  --destructive-lightest: light-dark(var(--color-red-50), var(--color-red-950));
+  --destructive-foreground: light-dark(var(--color-red-800), var(--color-red-100));
+  --destructive-foreground-muted: light-dark(var(--color-red-600), var(--color-red-300));
+  --destructive-foreground-light: light-dark(var(--color-red-200), var(--color-red-800));
+
+  --focus: var(--color-pink-700);
+
+  --neutral-foreground-muted: #626C84;
+  --neutral-foreground-white: light-dark(#FFFFFF, #182021);
+  --neutral-foreground-black: light-dark(#182021, #EFF2F6);
+  --neutral-foreground-base: light-dark(#36383E, #EFF2F6);
+  --neutral-foreground-light: light-dark(#EFF2F6, #36383E);
+
+  --gradient-name: linear-gradient(93deg, #1B97BF 0%, #8A3BFF 100%);
+
+  --tool-card-bg: light-dark(var(--color-gray-100), var(--color-sage-975));
+  --tool-card-bg-hovered: light-dark(rgba(229, 231, 235, 0.3), rgba(45, 57, 58, 0.3));
+  --tool-card-border: light-dark(var(--color-gray-200), var(--color-sage-800));
+  --tool-card-widget: light-dark(white, var(--color-sage-950));
+
+  --menu-bg: light-dark(white, var(--color-sage-975));
+  --menu-border: light-dark(var(--color-gray-200), var(--color-sage-800));
+
+  --chat-input-height: 150px;
+
 
   --disabled: light-dark(var(--color-gray-200), var(--color-sage-800));
   --muted: light-dark(var(--color-gray-200), var(--color-sage-950));
   --muted-foreground: light-dark(oklch(0.552 0.016 285.938), oklch(0.705 0.015 286.067));
 
-  --accent: light-dark(var(--color-pink-200), var(--color-pink-200));
-  --accent-foreground: light-dark(var(--color-pink-900), var(--color-pink-900));
-  --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+
   --border: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 10%));
-  --input: light-dark(var(--color-grey-50), var(--color-sage-950));
+  --input: light-dark(var(--color-gray-50), var(--color-sage-950));
   --ring: light-dark(var(--color-accent), var(--color-accent));
   --chart-1: light-dark(oklch(0.871 0.15 154.449), oklch(0.871 0.15 154.449));
   --chart-2: light-dark(oklch(0.723 0.219 149.579), oklch(0.723 0.219 149.579));
@@ -299,4 +352,12 @@
   */
   --logo-small: var(--logo-dark-small, var(--logo-small-url));
   --logo-large: var(--logo-dark-large, var(--logo-large-url));
+
+  --muted-foreground: var(--color-neutral-300);
+  --gradient-name: linear-gradient(93deg, #9BD1F5 0%, #D997F1 100%);
+  --backdrop: oklch(from var(--color-gray-500) 0.2 c h / 50%);
+
+  & ul {
+    color-scheme: dark;
+  }
 }
