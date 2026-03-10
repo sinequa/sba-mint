@@ -54,18 +54,19 @@ export type PreviewTab = "summary" | "preview" | "discussion";
               <span sr-only class="hidden @min-md:inline">{{ "preview.discussion" | transloco }}</span>
             </Tab>
           }
+        }
 
-          @if (converterOptions().length) {
-            <div class="grow"></div>
-            <select
-              class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
-              [(ngModel)]="currentConversionIndex">
-              <option [value]="-1">{{ "preview.default" | transloco }}</option>
-              @for (option of converterOptions(); track $index) {
-                <option [value]="$index">{{ option.name | transloco }}</option>
-              }
-            </select>
-          }
+        <!-- converter options -->
+        @if (converterOptions().length) {
+          <div class="grow"></div>
+          <select
+            class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
+            [(ngModel)]="currentConversionIndex">
+            <option [value]="-1">{{ "preview.default" | transloco }}</option>
+            @for (option of converterOptions(); track $index) {
+              <option [value]="$index">{{ option.name | transloco }}</option>
+            }
+          </select>
         }
       </TabsList>
       <!-- tabs content -->
