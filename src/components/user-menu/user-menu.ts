@@ -79,7 +79,7 @@ export class UserMenuComponent {
   private readonly transloco = inject(TranslocoService);
 
   readonly user = computed(() => {
-    const principal = getState(this.principalStore).principal;
+    const principal = getState(this.principalStore);
     return principal;
   });
 
