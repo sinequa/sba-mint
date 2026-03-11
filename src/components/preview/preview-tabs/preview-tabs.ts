@@ -62,7 +62,9 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           <select
             class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
             [(ngModel)]="currentConversionIndex">
-            <option [value]="-1">{{ "preview.default" | transloco }}</option>
+            @if (showDefaultConverter()) {
+              <option [value]="-1">{{ "preview.default" | transloco }}</option>
+            }
             @for (option of converterOptions(); track $index) {
               <option [value]="$index">{{ option.name | transloco }}</option>
             }
@@ -206,6 +208,9 @@ export class PreviewTabsComponent {
     }
     return [];
   });
+
+  /** Whether to show the "Default" option in the converter list - if there are no default converter options to override it */
+  showDefaultConverter = computed(() => !this.converterOptions().some(c => c.default))
 
   constructor() {
     effect(() => {
