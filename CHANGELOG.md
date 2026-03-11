@@ -2,6 +2,130 @@
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2026-03-11
+
+### Added
+
+#### New Application Architecture (`src/app2/`)
+
+- **Complete alternative application structure**: New `src/app2/` directory providing an updated app layout
+  - `src/app2/app.component.html` / `app.component.ts` — root component
+  - `src/app2/app.config.ts` — application bootstrap configuration
+  - `src/app2/routes.ts` — routing configuration
+  - `src/app2/pages/assistant/assistant.layout.ts` — assistant page layout
+  - `src/app2/pages/home/home.html` / `home.ts` — home page
+  - `src/app2/pages/search/search-all.html` / `search-all.ts` / `search-layout.ts` — search pages
+  - `src/app2/pages/widgets/widgets-layout.ts` — widgets layout
+
+#### New Standalone Components Library (`src/components/`)
+
+- **Assistant**: `src/components/assistant/assistant.ts`, `assistant.css`, `document-upload/assistant-upload.component.ts`, `document-upload/upload.dialog.ts`
+- **Cards**: `src/components/cards/menu.ts`, `record/record-card.html`, `record/record-card.ts`, `record/skeleton.ts`, `slide/slide-card.html`, `slide/slide-card.ts`
+- **Preview**: `src/components/preview/dialog/preview-dialog.html`, `preview-dialog.ts`, `preview-content/preview-actions.ts`, `preview-content/preview-content.ts`, `preview-header/preview-header.html`, `preview-header/preview-header.ts`, `preview-navbar2/preview-navbar.html`, `preview-navbar2/preview-navbar.ts`, `preview-tabs/preview-tabs.ts`, `preview.html`, `preview2.ts`, `sheet-previewer.ts`
+- **Search**: `src/components/search/autocomplete/autocomplete.component.html`, `autocomplete.component.ts`, `saved-search-popover/saved-search-popover.ts`, `search-with-autocomplete.ts`, `search.component.html`, `search.component.ts`
+- **Sidebar**: `src/components/sidebar/sidebar.html`, `sidebar.ts`
+- **User Menu**: `src/components/user-menu/user-menu.html`, `user-menu.ts`
+- **Widgets**: `src/components/widgets/bookmarks/bookmarks.component.html`, `bookmarks.component.ts`, `collections/collections.component.ts`, `recent-searches/recent-searches.component.ts`, `saved-searches/saved-searches.component.html`, `saved-searches.component.ts`, `widgets-sidebar-group.ts`, `widgets-tabs.ts`
+
+#### New Configuration & Registry (`src/config/`, `src/registry/`)
+
+- **Bootstrap helper**: `src/config/bootstrap-new-app.ts` — utility to switch to the new app layout
+- **Highlight config**: `src/config/highlight.config.ts` — syntax highlighting configuration
+- **Transloco loader**: `src/config/transloco-loader.ts` — i18n loader configuration
+- **Document type registry**: `src/registry/document-type-registry.ts` — registry for document type handling
+
+#### Preview Components
+
+- **Preview Navbar**: New `src/app/components/preview/preview-navbar/preview-navbar.html` and `preview-navbar.ts` with back navigation, open/expand/bookmark/copy-link actions
+- **Preview Actions**: New `src/app/components/preview/preview-content/preview-actions.ts` with zoom controls and toggles for AI descriptions, extracts, and entities
+
+#### User Menu — Try New UI
+
+- **New layout switcher**: Added "Try the new UI" menu item in the user menu (`src/app/components/user-menu/user-menu.html` / `user-menu.ts`)
+  - Controlled by `features.newUI` feature flag via `AppStore`
+  - Calls `bootstrapNewApp()` to switch to the new application layout
+
+#### Search Enhancements
+
+- **Spelling Correction Mode**: Added `SpellingCorrectionMode` (`c`) query parameter support in `search-all.component.ts`
+  - New `c` URL param synced with `spellingCorrectionMode` in `QueryParamsStore`
+  - Passed through to query execution
+
+#### Internationalization
+
+- **User menu translations**: Added `userMenu.tryNewLayout` key
+  - English: `"Try the new UI"`
+  - French: `"Essayer la nouvelle UI"`
+  - German: `"Die neue UI ausprobieren"`
+
+#### Documentation
+
+- **Drawer Component**: New `docusaurus/docs/atomic-angular/components/drawer/drawer.component.md` with full usage documentation
+- **Changelog**: Added `docusaurus/docs/changelog.md`
+- **Pager**: Added examples to `docusaurus/docs/atomic-angular/components/pager.md`
+- **Search Service**: Updated `docusaurus/docs/atomic-angular/services/search.md`
+
+### Changed
+
+#### Dependencies
+
+- **Package version**: `0.0.0` → `11.13.0`
+- **Sinequa Packages**: Updated to latest versions
+  - `@sinequa/assistant`: `^3.10.5` → `^3.10.10`
+  - `@sinequa/atomic`: `^0.0.129` → `^0.0.137`
+  - `@sinequa/atomic-angular`: `^0.3.15` → `^0.4.12`
+  - `@sinequa/ui`: `^0.2.4` → `^0.2.10`
+- **New dependency**: `@tanstack/angular-virtual: ^4.0.7`
+- **Removed**: `@angular-eslint/schematics`
+- **Overrides**: Added `ajv: 8.18.0` to resolve peer dependency conflict
+
+#### Configuration
+
+- **`.gitignore`**: Added `/src/assets/i18n/user-profile` to ignored paths
+- **`tsconfig.json`**: Added TypeScript path aliases `@components/*`, `@config/*`, `@registry/*`
+
+#### Component Refactoring
+
+- **Assistant**: Simplified template by removing `@for` wrapper around `sq-chat-v3`; removed unused `ChangeDetectorRef` and `PrincipalStore` imports
+- **Search All**: Refactored effects with clearer comments distinguishing URL-sync from query-key updates; `spellingCorrectionMode` now included in query keys
+- **Search Layout**: Added `z-20` class to `PageHeader` for correct stacking context
+- **Sidebar**: Marked `AppSidebarComponent` as `@deprecated`
+- **Search All**: Marked `SearchAllComponent` as `@deprecated`
+- **Search Layout**: Marked layout component as `@deprecated`
+- **User Menu**: Marked `UserMenuComponent` as `@deprecated`; switched `principal` access to use `getState` directly
+
+#### Styling
+
+- **`chat-v3.css`**: Differentiated user vs. assistant message color styles; added table color; improved action button hover scaling; removed `z-index` override
+- **`saved-chat-v3.css`**: Refactored and reduced styles
+- **`theme.css`**: Updated theme variables
+- **`themes/chapsvision.css`**: Major refactor of CSS variable definitions
+- **`themes/sinequa.css`**: Updated theme variables
+- **`highlights.css`**: Adjusted highlight styles
+- **`styles.css`**: Added new utility imports
+
+#### Documentation
+
+- **`drawer-stack.md`**: Updated drawer stack documentation
+- **`filter-button.md`**: Removed outdated content
+- **`090_setup-multi-selection.md`**: Updated multi-selection tutorial
+
+### Migration Notes for This Release
+
+- **New UI**: A new application layout (`src/app2/`) is available as a preview. It can be activated via the user menu when the `features.newUI` flag is enabled in the app configuration.
+
+- **TypeScript path aliases**: Code can now use `@components/*`, `@config/*`, and `@registry/*` aliases. Update imports accordingly when using the new component library.
+
+- **Deprecated components**: `AppSidebarComponent`, `SearchAllComponent`, `SearchLayoutComponent`, and `UserMenuComponent` in `src/app/` are now marked `@deprecated`. Migrate to equivalents in `src/components/` and `src/app2/`.
+
+- **Spelling correction**: If you use search URL parameters, the new `c` param maps to `SpellingCorrectionMode`. No action required unless you parse URLs manually.
+
+### Breaking Changes
+
+- None
+
+---
+
 ## [Release 11.13.0] - 2025-12-19
 
 ### Added
