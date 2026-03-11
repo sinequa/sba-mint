@@ -3,5 +3,9 @@
     "*.scss": "tailwindcss",
     "*.css": "tailwindcss"
   },
-  "github-enterprise.uri": "https://github.sinequa.com"
+  "github-enterprise.uri": "https://github.sinequa.com",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "proxy.conf.json": "proxy.conf.json, proxy.conf.*.json"
+  }
 }

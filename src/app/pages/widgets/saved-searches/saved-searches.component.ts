@@ -6,6 +6,12 @@ import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
 import { ApplicationService, DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
 import { ButtonComponent } from '@sinequa/ui';
 
+/**
+ * Component for displaying user saved searches.
+ * It retrieves saved searches from the SavedSearchesService and displays them in a list.
+ * Users can click on a saved search to navigate to it or delete it from their list.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'SavedSearches',
   imports: [TranslocoPipe, ButtonComponent],

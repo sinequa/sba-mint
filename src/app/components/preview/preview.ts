@@ -1,26 +1,29 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, output, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { Article as A } from '@sinequa/atomic';
-import { AdvancedSearchComponent, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { AdvancedSearch, ApplicationService, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
 
-import { PreviewNavbarComponent } from './navbar/navbar';
+import { PreviewNavbarComponent } from './preview-navbar/preview-navbar';
 import { PreviewHeaderComponent } from './preview-header/preview-header';
 import { PreviewTabsComponent } from './preview-tabs/preview-tabs';
 
 type Article = A & {
   [key: string]: string[] | undefined;
 };
-
+/**
+ * Preview component displaying the preview navbar, header, and tabs.
+ * @deprecated This component will be removed in future releases.
+ */
 @Component({
   selector: 'preview, Preview',
   providers: [provideTranslocoScope({ scope: 'preview' })],
-  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearchComponent],
+  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch],
   templateUrl: './preview.html',
   host: {
     '[class]':
-      'cn("grow w-full h-full overflow-hidden grid transition-all ease-out duration-200", extended() ? "grid-cols-[auto_400px]" : "grid-cols-[auto_0%]")'
+      'cn("grow w-full h-full overflow-hidden grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")'
   }
 })
 export class PreviewComponent {

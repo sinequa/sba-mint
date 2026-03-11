@@ -1,9 +1,13 @@
 ---
+
 layout: default
 title: Setup Multi-Selection Toolbar
 parent: Tutorial
 sidebar_position: 9
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Setup Multi-Selection Toolbar
 
@@ -49,27 +53,33 @@ If none is specified, the default variant is `dark`.
 
 ### Dark (Default)
 
-:::tabs
+<Tabs>
 
-@tab Default
+  <TabItem value="dark" label="Dark" default>
 
-```html
-<MultiSelectionToolbar /> <MultiSelectionToolbar variant="dark" />
-```
+  ```html
+  <MultiSelectionToolbar /> <MultiSelectionToolbar variant="dark" />
+  ```
 
-@tab Light
+  </TabItem>
 
-```html
-<MultiSelectionToolbar variant="light" />
-```
+  <TabItem value="light" label="Light">
 
-@tab Glassy
+  ```html
+  <MultiSelectionToolbar variant="light" />
+  ```
 
-```html
-<MultiSelectionToolbar variant="glassy" />
-```
+  </TabItem>
+  
+  <TabItem value="glassy" label="Glassy">
 
-:::
+  ```html
+  <MultiSelectionToolbar variant="glassy" />
+  ```
+
+  </TabItem>
+
+</Tabs>
 
 4. Save your changes.
 
@@ -140,10 +150,10 @@ In your component's HTML template (e.g., `record-card.html`), add a checkbox or 
 
 ### 3. How it Works
 
-1.  **`SelectionStore`**: This store is responsible for managing the list of selected documents.
-2.  **`checked` and `multiSelected`**: These signals are used to keep the state of the checkbox in sync with the `SelectionStore`.
-3.  **`onMultiSelectToggle`**: This method is called when the user clicks on the checkbox. It updates the `SelectionStore` by adding or removing the document from the selection.
-4.  **`effect`**: The effect is used to automatically update the `checked` signal whenever the `multiSelected` computed signal changes.
+1. **`SelectionStore`**: This store is responsible for managing the list of selected documents.
+2. **`checked` and `multiSelected`**: These signals are used to keep the state of the checkbox in sync with the `SelectionStore`.
+3. **`onMultiSelectToggle`**: This method is called when the user clicks on the checkbox. It updates the `SelectionStore` by adding or removing the document from the selection.
+4. **`effect`**: The effect is used to automatically update the `checked` signal whenever the `multiSelected` computed signal changes.
 
 When a document is added to or removed from the `SelectionStore`, the multi-selection toolbar will automatically update to reflect the number of selected items.
 

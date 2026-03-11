@@ -135,5 +135,8 @@
     "find": "Find",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar"
+  },
+  "userMenu": {
+    "tryNewLayout": "Try the new UI"
   }
 }
