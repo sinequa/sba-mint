@@ -229,6 +229,8 @@ export class PreviewContentComponent {
     if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
+    } else if (this.isSecondary() && this.passagePageNumber !== undefined) {
+      this.scrollToPage();
     }
 
     // this.previewService.getPageInfo();
