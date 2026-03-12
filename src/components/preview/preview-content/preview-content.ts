@@ -144,6 +144,8 @@ export class PreviewContentComponent {
     }
   });
 
+  readonly isSecondary = computed(() => this.conversion()?.primary === false || (this.conversion()?.conversion?.isPrimary === false));
+
   /**
    * A resource that validates the preview content by checking if the cached document URL is accessible.
    *
@@ -195,10 +197,8 @@ export class PreviewContentComponent {
     });
 
     effect(() => {
-      const isSecondary = this.conversion()?.primary === false || (this.conversion()?.conversion?.isPrimary === false);
-
       // if we are on a secondary conversion with a selected passage, we should fetch the page of the passage and scroll to it
-      if (this.previewUrl() && isSecondary) {
+      if (this.previewUrl() && this.isSecondary()) {
         if (this.passagePageNumber !== undefined) { // if page already fetched, trigger scrolling
           this.scrollToPage();
         } else { // if no page fetched yet, loading it
@@ -226,7 +226,7 @@ export class PreviewContentComponent {
    */
   onLoaded() {
     const { previewHighlights } = getState(this.selectionStore);
-    if (previewHighlights?.snippetId !== undefined) {
+    if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
