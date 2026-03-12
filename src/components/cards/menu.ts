@@ -1,14 +1,13 @@
-import { Component, computed, inject, input, model } from "@angular/core";
+import { Component, inject, input, model } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { getState } from "@ngrx/signals";
 
 import { Article as A, error } from "@sinequa/atomic";
-import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from "@sinequa/atomic-angular";
+import { AppStore, CollectionsDialog, LabelsEditDialog, SelectionStore } from "@sinequa/atomic-angular";
 import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 
 type Article = A & {
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 @Component({
@@ -22,7 +21,7 @@ type Article = A & {
         <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
       </button>
 
-      <MenuContent [position]="drawerOpened() ? 'bottom-end' : 'right-start'">
+      <MenuContent>
         @if (appStore.allowLabels()) {
           <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ "article.editLabels" | transloco }} </MenuItem>
         }
@@ -40,7 +39,6 @@ type Article = A & {
 })
 export class CardMenuComponent {
   dialogService = inject(DialogService);
-  drawerStack = inject(DrawerStackService);
   selectionStore = inject(SelectionStore);
   appStore = inject(AppStore);
   queryClient = inject(QueryClient);
@@ -49,7 +47,6 @@ export class CardMenuComponent {
 
   // by default add to assistant is disabled
   readonly allowAI = input(false);
-  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   editLabels(): void {
     this.dialogService
@@ -62,24 +59,29 @@ export class CardMenuComponent {
   }
 
   addToCollection(): void {
-    this.dialogService.open(CollectionsDialog, this.article()).then((event: any) => {
-      if (event === "dialog-confirm") {
-        this.queryClient.invalidateQueries();
-      }
-    });
+    this.dialogService
+      .open(CollectionsDialog, this.article())
+      .then((event: unknown) => {
+        if (event === "dialog-confirm") {
+          this.queryClient.invalidateQueries().catch(e => error("Error invalidating queries", e));
+        }
+      })
+      .catch(e => error("CollectionsDialog error", e));
   }
 
   attachToAssistant(): void {
     const id = this.article()?.id;
     if (!id) return;
 
-    const { assistantIdsToAttach } = getState(this.selectionStore);
+    const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
     const ids = assistantIdsToAttach || [];
 
     if ((assistantIdsToAttach || []).indexOf(id) === -1) {
       ids.push(id);
     }
 
-    this.selectionStore.update({ assistantIdsToAttach: ids });
+    // update the selection store with the new list of article ids to attach,
+    // the spread operator is used to create a new array, which is necessary to trigger change detection in the store
+    this.selectionStore.update({ assistantIdsToAttach: [...ids] });
   }
 }
