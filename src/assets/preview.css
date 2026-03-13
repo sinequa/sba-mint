@@ -214,8 +214,10 @@ body {
       }
       &.screenshot-extended {
         position: absolute;
-        width: 100%;
+        width: calc(100% - 8px);
         left: 0;
+        z-index: 9;
+        border: 4px black solid;
       }
     }
   }
