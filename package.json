@@ -49,7 +49,7 @@
     "@ngrx/store": "^20.1.0",
     "@sinequa/assistant": "^3.10.10",
     "@sinequa/atomic": "^0.0.137",
-    "@sinequa/atomic-angular": "^0.4.10",
+    "@sinequa/atomic-angular": "^0.4.19",
     "@sinequa/ui": "^0.2.6",
     "@tailwindcss/postcss": "^4.1.3",
     "@tanstack/angular-query-experimental": "^5.40.0",
