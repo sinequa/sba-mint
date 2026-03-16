@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, inject, linkedSignal, output, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
@@ -10,22 +10,17 @@ import {
   OverrideUserDialogComponent,
   PrincipalStore,
   ResetUserSettingsDialogComponent,
-  UserProfileDialog,
   UserProfileService,
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
-  AvatarComponent,
-  AvatarFallbackComponent,
-  AvatarImageComponent,
   ChevronRightIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  Separator,
-  UserIcon
+  Separator
 } from "@sinequa/ui";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -34,38 +29,13 @@ type Theme = (typeof THEME)[number];
 const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
-/**
- * User menu component
- * Displays a user menu with options to change language, theme, override user, reset settings, and logout.
- *
- * @example
- * ```html
- * <user-menu></user-menu>
- * ```
- */
 @Component({
-  selector: "user-menu",
-  imports: [
-    FormsModule,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
-    TranslocoPipe,
-    OverrideUserDialogComponent,
-    ResetUserSettingsDialogComponent,
-    UserIcon,
-    ChevronRightIcon,
-    AvatarComponent,
-    AvatarImageComponent,
-    AvatarFallbackComponent,
-    Separator,
-    UserProfileDialog,
-    NgComponentOutlet
-  ],
-  templateUrl: "./user-menu.html",
+  selector: "sidebar-user-menu-content",
+  imports: [FormsModule, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe, ChevronRightIcon, Separator, NgComponentOutlet],
+  templateUrl: "./sidebar-user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
 })
-export class UserMenuComponent {
+export class SidebarUserMenuComponent {
   AllThemes: { name: Theme; icon: string }[] = [
     { name: "light", icon: "fa-fw fal fa-sun-bright" },
     { name: "dark", icon: "fa-fw fal fa-moon" },
@@ -80,7 +50,6 @@ export class UserMenuComponent {
   readonly menus = viewChildren(MenuComponent);
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
-  readonly userProfileDialog = viewChild(UserProfileDialog);
 
   protected readonly principalStore = inject(PrincipalStore);
   private readonly router = inject(Router);
@@ -149,17 +118,7 @@ export class UserMenuComponent {
     logout().then(() => this.router.navigate(["/logout"]));
   }
 
-  handleOverride() {
-    this.overrideUserDialog()?.open();
-  }
-
-  handleOverrideUser() {
-    this.overrideUserDialog()?.handleOverrideUser();
-  }
-
-  handleUserProfile() {
-    this.userProfileDialog()?.open();
-  }
+  onEventClick = output<"profile" | "reset-user-settings" | "override-user" | "revert-override-user" | undefined>();
 
   handleResetUserSettings() {
     this.resetUserSettingsDialog()?.open();

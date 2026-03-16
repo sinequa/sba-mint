@@ -1,6 +1,7 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, inject, signal, Type } from "@angular/core";
-import { EventType, Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { Component, computed, inject, signal, Type } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { EventType, NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { AlertsComponent, BookmarksComponent, CollectionsComponent, RecentSearchesComponent, SavedSearchesComponent } from "@sinequa/atomic-angular";
 import {
@@ -19,6 +20,7 @@ import {
   SidebarService,
   TooltipDirective
 } from "@sinequa/ui";
+import { filter, map, startWith } from "rxjs";
 
 export type NavbarMenu = {
   name: string;
@@ -41,14 +43,15 @@ export type NavbarMenu = {
  *
  */
 @Component({
-  selector: "widgets-sidebar-group",
+  selector: "widgets-sidebar-group,app-sidebar-group-widgets",
   template: `
+  @if(showWidgetsGroup()){
     <sidebar-group>
       <sidebar-group-label>Widgets</sidebar-group-label>
       <sidebar-group-content>
         <sidebar-menu>
-          @for (menu of menus(); track $index) {
-            @let isMobile = BreakpointObserverService.isMobile();
+          @for (menu of menus(); track menu.name) {
+            @let isMobile = breakpointService.isMobile();
             <sidebar-menu-item [attr.aria-label]="menu.display | transloco">
               @if (isMobile) {
                 <!-- On mobile, navigate to a dedicated route -->
@@ -93,6 +96,7 @@ export type NavbarMenu = {
         </sidebar-menu>
       </sidebar-group-content>
     </sidebar-group>
+  }
   `,
   imports: [
     TranslocoPipe,
@@ -146,16 +150,32 @@ export class WidgetsSidebarGroupComponent {
     { name: "alerts", display: "alerts.label", iconClass: "far fa-bell", component: AlertsComponent }
   ]);
 
-  router = inject(Router);
-  BreakpointObserverService = inject(BreakpointObserverService);
-  sidebarService = inject(SidebarService);
+  private readonly router = inject(Router);
+  protected readonly breakpointService = inject(BreakpointObserverService);
+  private readonly sidebarService = inject(SidebarService);
 
   constructor() {
-    this.router.events.subscribe(event => {
-      // Close the sidebar in mobile after navigation
-      if (event.type === EventType.NavigationEnd && this.BreakpointObserverService.isMobile()) {
+    // Close the sidebar in mobile after navigation
+    this.router.events.pipe(
+      filter(e => e.type === EventType.NavigationEnd),
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      if (this.breakpointService.isMobile()) {
         this.sidebarService.setOpenMobile(false);
       }
     });
   }
+
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url)
+    )
+  );
+
+  readonly showWidgetsGroup = computed(() => {
+    const url = this.currentUrl() ?? "";
+    return url.startsWith("/search") || url.startsWith("/widgets");
+  });
 }

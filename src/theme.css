@@ -34,7 +34,7 @@
 /* Force dark mode to be used with .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+@theme inline {
   --color-white: #f2f2f3;
   --color-black: #182021;
 
