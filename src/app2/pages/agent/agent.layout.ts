@@ -10,7 +10,7 @@ import { notify } from "@sinequa/atomic";
   imports: [AgentInjector, SheetPreviewerComponent],
   template: `
     <div class="grid relative" [style.--background]="'transparent'">
-      <div class="h-[calc(100dvh-12rem)] overflow-y-auto scrollbar-none">
+      <div class="h-full overflow-y-auto scrollbar-none">
         <AgentInjector instanceId="chatSearchInstance" />
       </div>
     </div>

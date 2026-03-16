@@ -1,9 +1,9 @@
 import { Component, computed, inject, signal, viewChild } from "@angular/core";
-import { SidebarGroupAgentComponent } from "@components/sidebar/sidebar-group-agent";
-import { SidebarGroupAssistantComponent } from "@components/sidebar/sidebar-group-assistant";
-import { SidebarGroupNavigationComponent } from "@components/sidebar/sidebar-group-navigation";
-import { WidgetsSidebarGroupComponent } from "@components/sidebar/sidebar-group-widgets";
-import { SidebarUserMenuComponent } from "@components/sidebar/sidebar-user-menu";
+import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
+import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
+import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
+import { WidgetsSidebarGroupComponent } from "@components/sidebar-groups/sidebar-group-widgets";
+import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
 import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserProfileDialog } from "@sinequa/atomic-angular";

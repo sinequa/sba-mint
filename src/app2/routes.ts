@@ -1,6 +1,7 @@
 import { Data, Route } from "@angular/router";
 
 import { AuthGuard, AuthPageComponent, ErrorComponent, LoadingComponent, queryNameResolver } from "@sinequa/atomic-angular";
+import { AgentLayoutComponent } from "./pages/agent/agent.layout";
 import { HomeComponent } from "./pages/home/home";
 import { SearchLayoutComponent } from "./pages/search/search.layout";
 import { SearchAllComponent } from "./pages/search/search-all";
@@ -31,8 +32,20 @@ export const routes: ExtendedRoutes = [
   },
   {
     path: "agent",
-    loadComponent: () => import("./pages/agent/agent-layout").then(m => m.AgentLayoutComponent),
-    canActivate: [AuthGuard()]
+    component: AgentLayoutComponent,
+    children: [
+      {
+        path: ":id",
+        canActivate: [AuthGuard()],
+        loadComponent: () => import("./pages/agent/id.page").then(m => m.ChatIdPage)
+      },
+      {
+        path: "new",
+        canActivate: [AuthGuard()],
+        loadComponent: () => import("./pages/agent/new.page").then(m => m.ChatNewPage)
+      },
+      { path: "**", redirectTo: "new", pathMatch: "full" }
+    ]
   },
   {
     path: "widgets",

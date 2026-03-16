@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router";
-import { SavedChatComponent } from "@sinequa/agent";
+import { AgentsStore, SavedChatComponent } from "@sinequa/agent";
 import {
   SidebarGroupComponent,
   SidebarGroupLabelComponent,
@@ -13,6 +13,7 @@ import {
   useSidebar
 } from "@sinequa/ui";
 import { filter, map, startWith } from "rxjs";
+import { ReloadLinkDirective } from "../../app2/components/reload-link.directive";
 
 @Component({
   selector: "app-sidebar-group-agent",
@@ -38,7 +39,7 @@ import { filter, map, startWith } from "rxjs";
         <sidebar-group class="p-0">
           <!--new chat-->
           <sidebar-menu-item class="group-data-[collapsible=icon]:items-center"
-            routerLink="/chat"
+            routerLink="/agent/new"
           >
             <sidebar-menu-button
               [tooltip]="isCollapsed() ? 'New chat' : ''"
@@ -60,17 +61,6 @@ import { filter, map, startWith } from "rxjs";
                   fill="currentColor" />
               </svg>
               <span>Search Chats</span>
-            </sidebar-menu-button>
-          </sidebar-menu-item>
-          <!--worksets-->
-          <sidebar-menu-item class="group-data-[collapsible=icon]:items-center">
-            <sidebar-menu-button [tooltip]="isCollapsed() ? 'Worksets' : ''" tooltip-position="right">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" viewBox="0 0 15 12" fill="none">
-                <path
-                  d="M12.8 8.4H4C3.78 8.4 3.6 8.22 3.6 8V1.6C3.6 1.38 3.78 1.2 4 1.2H6.9375C7.0425 1.2 7.145 1.2425 7.22 1.3175L8.1175 2.215C8.4925 2.59 9.0025 2.8 9.5325 2.8H12.8C13.02 2.8 13.2 2.98 13.2 3.2V8C13.2 8.22 13.02 8.4 12.8 8.4ZM4 9.6H12.8C13.6825 9.6 14.4 8.8825 14.4 8V3.2C14.4 2.3175 13.6825 1.6 12.8 1.6H9.5325C9.32 1.6 9.1175 1.515 8.9675 1.365L8.0675 0.4675C7.7675 0.1675 7.3625 0 6.9375 0H4C3.1175 0 2.4 0.7175 2.4 1.6V8C2.4 8.8825 3.1175 9.6 4 9.6ZM1.2 3C1.2 2.6675 0.9325 2.4 0.6 2.4C0.2675 2.4 0 2.6675 0 3V10.4C0 11.2825 0.7175 12 1.6 12H11.4C11.7325 12 12 11.7325 12 11.4C12 11.0675 11.7325 10.8 11.4 10.8H1.6C1.38 10.8 1.2 10.62 1.2 10.4V3Z"
-                  fill="currentColor" />
-              </svg>
-              <span>Worksets</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
         </sidebar-group>
@@ -103,8 +93,12 @@ import { filter, map, startWith } from "rxjs";
 })
 export class SidebarGroupAgentComponent {
   readonly sidebar = useSidebar();
+
   private readonly router = inject(Router);
-  showSavedChats = signal(false);
+  private readonly agentsStore = inject(AgentsStore);
+
+  private readonly instanceId = "chatSearchInstance";
+  protected readonly showSavedChats = computed(() => this.agentsStore.getAgentInstanceConfiguration(this.instanceId)?.savedChatSettings?.display === true);
 
   readonly isCollapsed = computed(() => this.sidebar.state() === "collapsed");
 
