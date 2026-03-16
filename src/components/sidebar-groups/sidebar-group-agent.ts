@@ -13,7 +13,6 @@ import {
   useSidebar
 } from "@sinequa/ui";
 import { filter, map, startWith } from "rxjs";
-import { ReloadLinkDirective } from "../../app2/components/reload-link.directive";
 
 @Component({
   selector: "app-sidebar-group-agent",
