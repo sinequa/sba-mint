@@ -179,18 +179,19 @@ export class MainSidebarComponent {
   }
 
   handleClick(e: string | undefined) {
-    console.log("handle click", e);
-    if (e === "profile") {
-      this.userProfileDialog()?.open();
-    }
-    if (e === "reset-user-settings") {
-      this.resetUserSettingsDialog()?.open();
-    }
-    if (e === "override-user") {
-      this.overrideUserDialog()?.open();
-    }
-    if (e === "revert-override-user") {
-      this.overrideUserDialog()?.handleOverrideUser();
+    switch (e) {
+      case "profile":
+        this.userProfileDialog()?.open();
+        break;
+      case "reset-user-settings":
+        this.resetUserSettingsDialog()?.open();
+        break;
+      case "override-user":
+        this.overrideUserDialog()?.open();
+        break;
+      case "revert-override-user":
+        this.overrideUserDialog()?.handleOverrideUser();
+        break;
     }
   }
 }
