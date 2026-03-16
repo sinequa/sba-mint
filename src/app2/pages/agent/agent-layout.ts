@@ -1,31 +1,19 @@
 import { Component, DestroyRef, effect, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
-import { SidebarMainComponent } from "@components/sidebar/sidebar";
 import { HubConnectionState } from "@microsoft/signalr";
 import { AgentInjector, AgentsStore, NotificationsService, SignalRWebService } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
-import { SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 
 @Component({
   selector: "app-agent-layout",
-  imports: [AgentInjector, SidebarProviderComponent, SidebarMainComponent, SidebarTriggerComponent, SheetPreviewerComponent],
+  imports: [AgentInjector, SheetPreviewerComponent],
   template: `
-    <sidebar-provider>
-      <main-sidebar triggerName="sidebar-agent">
-        <header>
-          <nav class="mt-4 ml-4 flex items-center justify-between">
-            <sidebar-trigger />
-          </nav>
-        </header>
-        <div class="grid relative" [style.--background]="'transparent'">
-          <div class="h-[calc(100dvh-12rem)] overflow-y-auto scrollbar-none">
-            <AgentInjector instanceId="chatSearchInstance" />
-          </div>
-        </div>
-      </main-sidebar>
-    </sidebar-provider>
-
+    <div class="grid relative" [style.--background]="'transparent'">
+      <div class="h-[calc(100dvh-12rem)] overflow-y-auto scrollbar-none">
+        <AgentInjector instanceId="chatSearchInstance" />
+      </div>
+    </div>
     <sheet-previewer />
   `
 })

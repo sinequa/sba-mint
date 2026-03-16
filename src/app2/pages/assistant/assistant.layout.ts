@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, 
 import { AssistantComponent } from "@components/assistant/assistant";
 import { AssistantUploadComponent } from "@components/assistant/document-upload/assistant-upload.component";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
-import { SidebarMainComponent } from "@components/sidebar/sidebar";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -27,7 +26,6 @@ import {
   SidebarGroupLabelComponent,
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
-  SidebarProviderComponent,
   SidebarService,
   SidebarTriggerComponent
 } from "@sinequa/ui";
@@ -41,8 +39,6 @@ import { firstValueFrom } from "rxjs";
     SavedChatsComponent,
     AssistantUploadComponent,
     ButtonComponent,
-    SidebarProviderComponent,
-    SidebarMainComponent,
     SidebarTriggerComponent,
     SidebarGroupComponent,
     SidebarGroupLabelComponent,
@@ -54,12 +50,8 @@ import { firstValueFrom } from "rxjs";
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
-    <sidebar-provider [style.--sidebar-width]="'12rem'" [style.--sidebar-width-mobile]="'20rem'" [style.--sidebar-width-icon]="'3rem'">
-      <main-sidebar triggerName="sidebar-assistant">
         <div class="grid h-[calc(100vh-1rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[300px_1fr]">
           <div class="scrollbar-stable scrollbar-thin hidden h-full space-y-2 overflow-y-auto pt-2 pb-2 pl-2 md:block">
-            <sidebar-trigger />
-
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
@@ -122,8 +114,6 @@ import { firstValueFrom } from "rxjs";
             </sidebar-group-content>
           </sidebar-group>
         }
-      </main-sidebar>
-    </sidebar-provider>
     <sheet-previewer />
   `,
   styles: [

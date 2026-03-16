@@ -2,15 +2,7 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import {
-  APP_INITIALIZER,
-  type ApplicationConfig,
-  inject,
-  isDevMode,
-  LOCALE_ID,
-  provideAppInitializer,
-  provideZonelessChangeDetection,
-} from "@angular/core";
+import { APP_INITIALIZER, type ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, withComponentInputBinding, withHashLocation } from "@angular/router";
 import { TranslocoHttpLoader } from "@config/transloco-loader";
@@ -20,16 +12,10 @@ import { FlowInjectionToken } from "@flowjs/ngx-flow";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
-import {
-  provideDefaultRendererPlugins,
-  provideDefaultShikiHighlighterConfig,
-  provideDefaultToolCardPlugins,
-  provideToolCardPlugins,
-} from "@sinequa/agent";
+import { provideDefaultRendererPlugins, provideDefaultShikiHighlighterConfig, provideDefaultToolCardPlugins } from "@sinequa/agent";
 import {
   ASSISTANT_CUSTOM_ELEMENTS,
   ASSISTANT_MARKDOWN_IT_PLUGINS,
-  CodeBlockComponent,
   CustomElementsService,
   DocumentReferenceComponent,
   ImageReferenceComponent,
@@ -41,7 +27,7 @@ import {
   markdownItPageReferencePlugin,
   markdownItTableToolsPlugin,
   PageReferenceComponent,
-  TableToolsComponent,
+  TableToolsComponent
 } from "@sinequa/assistant/chat";
 import { appInitializerFn } from "@sinequa/atomic";
 import {
@@ -64,12 +50,12 @@ import {
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
   toastInterceptorFn,
-  withBootstrapApp,
+  withBootstrapApp
 } from "@sinequa/atomic-angular";
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
+import { SearchLayoutComponent } from "./pages/search/search.layout";
 import { SearchAllComponent } from "./pages/search/search-all";
-import { SearchLayoutComponent } from "./pages/search/search-layout";
 import { routes } from "./routes";
 
 registerLocaleData(localeFr);
@@ -80,23 +66,13 @@ export const appConfig: ApplicationConfig = {
     provideNoopAnimations(), // used by the Assistant components
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    provideHttpClient(
-      withInterceptors([
-        bodyInterceptorFn,
-        authInterceptorFn,
-        auditInterceptorFn,
-        errorInterceptorFn,
-        toastInterceptorFn,
-      ]),
-    ),
+    provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
 
     // this function is used to configure the application before it is loaded
     provideAppInitializer(appInitializerFn),
 
     // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() =>
-      withBootstrapApp(inject(ApplicationService), { createRoutes: true }),
-    ),
+    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
 
     // Provide default agent renderer plugins (code-block, links, references, ...)
     provideDefaultRendererPlugins(),
@@ -113,7 +89,7 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeCustomElements,
       multi: true,
-      deps: [CustomElementsService],
+      deps: [CustomElementsService]
     },
 
     // Assistant custom elements and markdown-it plugins configuration
@@ -124,8 +100,8 @@ export const appConfig: ApplicationConfig = {
         "page-reference": PageReferenceComponent,
         "image-reference": ImageReferenceComponent,
         // 'code-block': CodeBlockComponent,
-        "table-tools": TableToolsComponent,
-      },
+        "table-tools": TableToolsComponent
+      }
     },
     {
       provide: ASSISTANT_MARKDOWN_IT_PLUGINS,
@@ -135,8 +111,8 @@ export const appConfig: ApplicationConfig = {
         markdownItImageReferencePlugin,
         markdownItLinkPlugin,
         markdownItCodeBlockPlugin,
-        markdownItTableToolsPlugin,
-      ],
+        markdownItTableToolsPlugin
+      ]
     },
 
     { provide: LOCALE_ID, useValue: "fr-FR" },
@@ -149,7 +125,7 @@ export const appConfig: ApplicationConfig = {
     // the function should return a DocumentTypeMap object
     {
       provide: COMPONENTS_FOR_DOCUMENT_TYPE,
-      useValue: getComponentsForDocumentType,
+      useValue: getComponentsForDocumentType
     },
 
     // those tokens are used to configure the path of the widgets
@@ -161,32 +137,32 @@ export const appConfig: ApplicationConfig = {
       useValue: {
         ...RECENT_SEARCHES_OPTIONS,
         routerLink: "/widgets/recent-searches",
-        showLoadMore: false,
-      },
+        showLoadMore: false
+      }
     },
     {
       provide: SAVED_SEARCHES_CONFIG,
       useValue: {
         ...SAVED_SEARCHES_OPTIONS,
         routerLink: "/widgets/saved-searches",
-        showLoadMore: false,
-      },
+        showLoadMore: false
+      }
     },
     {
       provide: BOOKMARKS_CONFIG,
       useValue: {
         ...BOOKMARKS_OPTIONS,
         routerLink: "/widgets/bookmarks",
-        showLoadMore: false,
-      },
+        showLoadMore: false
+      }
     },
     {
       provide: COLLECTIONS_CONFIG,
       useValue: {
         ...COLLECTIONS_OPTIONS,
         routerLink: "/widgets/collections",
-        showLoadMore: false,
-      },
+        showLoadMore: false
+      }
     },
     // this token is used to configure how the extracts will be retrieved
     // if worker is allowed by your Security Policy, the extracts will be retrieved using a web worker
@@ -201,13 +177,13 @@ export const appConfig: ApplicationConfig = {
         {
           path: "search",
           component: SearchLayoutComponent,
-          isRoot: true,
+          isRoot: true
         },
         {
           path: "all",
-          component: SearchAllComponent,
-        },
-      ],
+          component: SearchAllComponent
+        }
+      ]
     },
 
     // this token is used to add specific aggregations to the filters bar
@@ -231,10 +207,10 @@ export const appConfig: ApplicationConfig = {
             gcTime: 0,
             retry() {
               return false;
-            },
-          },
-        },
-      }),
+            }
+          }
+        }
+      })
     ),
     provideTransloco({
       config: {
@@ -246,11 +222,11 @@ export const appConfig: ApplicationConfig = {
         fallbackLang: "en",
         missingHandler: {
           logMissingKey: true,
-          useFallbackTranslation: true,
-        },
+          useFallbackTranslation: true
+        }
       },
-      loader: TranslocoHttpLoader,
+      loader: TranslocoHttpLoader
     }),
-    provideTranslocoMessageformat(),
-  ],
+    provideTranslocoMessageformat()
+  ]
 };

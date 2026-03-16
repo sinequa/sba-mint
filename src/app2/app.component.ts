@@ -2,12 +2,22 @@ import { Component, DestroyRef, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
+import { SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
+import { MainSidebarComponent } from "./components/sidebar";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, NgxSonnerToaster, MultiSelectionToolbarComponent],
+  imports: [
+    RouterOutlet,
+    MainSidebarComponent,
+    NgxSonnerToaster,
+    MultiSelectionToolbarComponent,
+    SidebarProviderComponent,
+    SidebarInsetComponent,
+    SidebarTriggerComponent
+  ],
   templateUrl: "./app.component.html"
 })
 export class AppComponent {
