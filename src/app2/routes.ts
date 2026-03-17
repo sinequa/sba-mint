@@ -1,10 +1,10 @@
 import { Data, Route } from "@angular/router";
 
 import { AuthGuard, AuthPageComponent, ErrorComponent, LoadingComponent, queryNameResolver } from "@sinequa/atomic-angular";
-
+import { AgentLayoutComponent } from "./pages/agent/agent.layout";
 import { HomeComponent } from "./pages/home/home";
+import { SearchLayoutComponent } from "./pages/search/search.layout";
 import { SearchAllComponent } from "./pages/search/search-all";
-import { SearchLayoutComponent } from "./pages/search/search-layout";
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -12,7 +12,7 @@ type ExtendedData = Data & {
   display?: string; // the label you want to display in the interface
   wsQueryTab?: string; // the name of the "tab" associated with the query you want to use
   icon?: string; // the icon you want to associate with the label in the interface
-  [key: string | symbol]: any; // all the "custom" parameters you want
+  [key: string | symbol]: unknown; // all the "custom" parameters you want
 };
 type ExtendedRoute = Route & {
   data?: ExtendedData;
@@ -23,8 +23,8 @@ type ExtendedRoutes = ExtendedRoute[];
 export const routes: ExtendedRoutes = [
   { path: "login", component: AuthPageComponent },
   { path: "logout", component: AuthPageComponent },
-  { path: 'auth/:mode', component: AuthPageComponent },
-  { path: "home", component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
+  { path: "auth/:mode", component: AuthPageComponent },
+  { path: "home", component: HomeComponent },
   {
     path: "assistant",
     loadComponent: () => import("./pages/assistant/assistant.layout").then(m => m.AssistantLayoutComponent),
@@ -32,12 +32,24 @@ export const routes: ExtendedRoutes = [
   },
   {
     path: "agent",
-    loadComponent: () => import("./pages/agent/agent-layout").then(m => m.AgentLayoutComponent),
-    canActivate: [AuthGuard()]
+    component: AgentLayoutComponent,
+    children: [
+      {
+        path: ":id",
+        canActivate: [AuthGuard()],
+        loadComponent: () => import("./pages/agent/id.page").then(m => m.ChatIdPage)
+      },
+      {
+        path: "new",
+        canActivate: [AuthGuard()],
+        loadComponent: () => import("./pages/agent/new.page").then(m => m.ChatNewPage)
+      },
+      { path: "**", redirectTo: "new", pathMatch: "full" }
+    ]
   },
   {
     path: "widgets",
-    loadComponent: () => import("./pages/widgets/widgets-layout").then(m => m.WidgetsLayout2Component),
+    loadComponent: () => import("./pages/widgets/widgets.layout").then(m => m.WidgetsLayout2Component),
     canActivate: [AuthGuard()],
     children: [
       {
