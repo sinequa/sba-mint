@@ -19,6 +19,7 @@ import {
   AvatarFallbackComponent,
   AvatarImageComponent,
   ChevronRightIcon,
+  DialogService,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
   MenuComponent,
@@ -59,7 +60,6 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    UserProfileDialog,
     NgComponentOutlet
   ],
   templateUrl: "./user-menu.html",
@@ -88,6 +88,7 @@ export class UserMenuComponent {
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
+  private readonly dialogService = inject(DialogService);
 
   /**
    * Determines whether password change functionality should be enabled for the current user.
@@ -158,7 +159,7 @@ export class UserMenuComponent {
   }
 
   handleUserProfile() {
-    this.userProfileDialog()?.open();
+    this.dialogService.open(UserProfileDialog);
   }
 
   handleResetUserSettings() {
