@@ -9,7 +9,7 @@ import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupC
   selector: "app-chat-new",
   imports: [AgentInjector, ResizablePanelGroupComponent, ResizablePanelComponent, ResizableHandleComponent, PreviewContentComponent],
   template: `
-        <main class="mt-3 flex flex-1">
+        <main class="flex flex-1">
           <ResizablePanelGroup>
             <ResizablePanel [defaultSize]="100" [minSize]="40">
               <div class="h-[calc(100vh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">

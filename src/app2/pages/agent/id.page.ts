@@ -11,21 +11,23 @@ import {
   ErrorDirective,
   FeedbackDirective
 } from "@sinequa/agent";
-import { SidebarTriggerComponent } from "@sinequa/ui";
 
 @Component({
   selector: "app-chat-id",
-  imports: [AgentInjector, SidebarTriggerComponent],
+  imports: [AgentInjector],
   providers: [],
   template: `
-    <header class="flex h-14 shrink-0 items-center gap-2 px-4 md:hidden">
-      <sidebar-trigger />
-    </header>
     <main class="flex flex-1">
       <AgentInjector class="grow" [chatId]="chatId()" instanceId="chatSearchInstance" />
     </main>
   `,
-  hostDirectives: [AgentGenerationDirective, CopyToClipboardDirective, FeedbackDirective, AdminDirective, ErrorDirective],
+  hostDirectives: [
+    AgentGenerationDirective,
+    CopyToClipboardDirective,
+    FeedbackDirective,
+    AdminDirective,
+    ErrorDirective
+  ],
   host: {
     class: "flex h-screen text-foreground bg-background"
   }
