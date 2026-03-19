@@ -38,17 +38,17 @@
       <div class="flex gap-1 has-[+ul>li.no-records]:hidden">
         <button variant="ghost" (click)="selectAll()">
           @switch (selectedAll()) {
-            @case ('all') {
+            @case ("all") {
               <i class="fa-fw fa-regular fa-square-check"></i>
-              {{ 'searches.selection.unselectAll' | transloco }}
+              {{ "searches.selection.unselectAll" | transloco }}
             }
-            @case ('some') {
+            @case ("some") {
               <i class="fa-fw fa-regular fa-square-minus"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              {{ "searches.selection.selectAll" | transloco }}
             }
             @default {
               <i class="fa-fw fa-regular fa-square"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              {{ "searches.selection.selectAll" | transloco }}
             }
           }
         </button>
@@ -127,6 +127,6 @@
     </div>
 
     <!-- display a panel to inform the user that no results were found -->
-    <NoResult class="mt-4" />
+    <NoResult class="mt-4 bg-warning text-warning-foreground" />
   }
 </main>
