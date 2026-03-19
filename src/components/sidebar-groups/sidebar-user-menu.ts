@@ -1,10 +1,11 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, linkedSignal, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, linkedSignal, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
 
-import { globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
+import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import {
   AppStore,
   OverrideUserDialogComponent,
@@ -15,13 +16,16 @@ import {
 } from "@sinequa/atomic-angular";
 import {
   ChevronRightIcon,
+  DebugIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
-  Separator
+  Separator,
+  SwitchComponent
 } from "@sinequa/ui";
+import { injectCurrentUrl } from "../../utils/routing";
 
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
@@ -31,7 +35,18 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 @Component({
   selector: "sidebar-user-menu-content",
-  imports: [FormsModule, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe, ChevronRightIcon, Separator, NgComponentOutlet],
+  imports: [
+    FormsModule,
+    MenuComponent,
+    MenuContentComponent,
+    MenuItemComponent,
+    TranslocoPipe,
+    ChevronRightIcon,
+    Separator,
+    NgComponentOutlet,
+    DebugIcon,
+    SwitchComponent
+  ],
   templateUrl: "./sidebar-user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
 })
@@ -52,12 +67,18 @@ export class SidebarUserMenuComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
 
   protected readonly principalStore = inject(PrincipalStore);
+  protected readonly agentsStore = inject(AgentsStore);
   private readonly router = inject(Router);
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
 
+  private readonly currentUrl = injectCurrentUrl();
+  readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
+  agentInstanceId = inject(AGENT_INSTANCE_ID);
+  allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
+  readonly debug = model<boolean>(false);
   /**
    * Determines whether password change functionality should be enabled for the current user.
    *
@@ -91,8 +112,12 @@ export class SidebarUserMenuComponent {
   });
   readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || "");
 
+  constructor() {
+    effect(() => this.agentsStore.setDebugMessages(this.debug()));
+  }
+
   changeLanguage(lang: string) {
-    this.userSettingsStore.updateLanguage(lang);
+    this.userSettingsStore.updateLanguage(lang).catch(err => error("update langugage failed", err));
 
     if (this.transloco.getActiveLang() !== lang) {
       this.transloco.setActiveLang(lang);
@@ -103,19 +128,21 @@ export class SidebarUserMenuComponent {
   switchTheme(mode: Theme) {
     const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
-    this.userSettingsStore.setUserTheme(mode);
+    this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed", err));
   }
 
   onChangePassword() {
     this.menus()?.forEach(m => {
       m?.close?.();
     });
-    this.router.navigate(["/auth", "changepassword"]);
+    this.router.navigate(["/auth", "changepassword"]).catch(err => error("navigation to /auth failed", err));
   }
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout().then(() => this.router.navigate(["/logout"]));
+    logout()
+      .then(() => this.router.navigate(["/logout"]))
+      .catch(err => error("navigation to /logout failed", err));
   }
 
   onEventClick = output<"profile" | "reset-user-settings" | "override-user" | "revert-override-user" | undefined>();
