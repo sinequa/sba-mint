@@ -3,11 +3,19 @@ import { PreviewContentComponent } from "@components/preview/preview-content/pre
 import { getState } from "@ngrx/signals";
 import { AdminDirective, AgentGenerationDirective, AgentInjector, CopyToClipboardDirective, ErrorDirective, FeedbackDirective } from "@sinequa/agent";
 import { SelectionStore } from "@sinequa/atomic-angular";
-import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupComponent } from "@sinequa/ui";
+import { ButtonComponent, ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupComponent, XMarkICon } from "@sinequa/ui";
 
 @Component({
   selector: "app-chat-new",
-  imports: [AgentInjector, ResizablePanelGroupComponent, ResizablePanelComponent, ResizableHandleComponent, PreviewContentComponent],
+  imports: [
+    AgentInjector,
+    ResizablePanelGroupComponent,
+    ResizablePanelComponent,
+    ResizableHandleComponent,
+    PreviewContentComponent,
+    ButtonComponent,
+    XMarkICon
+  ],
   template: `
         <main class="flex flex-1">
           <ResizablePanelGroup>
@@ -19,7 +27,12 @@ import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupC
             <ResizableHandle [withHandle]="true" [class]="previewCollapsed() ? 'hidden' : ''" />
             <ResizablePanel [defaultSize]="0" [minSize]="40">
               <div class="sticky top-14 h-full overflow-auto">
-                <preview-content />
+                <div class="relative h-full">
+                  <button variant="ghost" size="icon" (click)="closePreview()" class="m-2" aria-label="Close preview">
+                    <XMarkIcon class="size-4" />
+                  </button>
+                  <preview-content class="h-full" />
+                </div>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -28,8 +41,7 @@ import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupC
   `,
   hostDirectives: [AgentGenerationDirective, CopyToClipboardDirective, FeedbackDirective, AdminDirective, ErrorDirective],
   host: {
-    class: "flex h-screen text-foreground bg-background",
-    "(preview-close)": "closePreview()"
+    class: "flex h-screen text-foreground bg-background"
   }
 })
 export class ChatNewPage {
