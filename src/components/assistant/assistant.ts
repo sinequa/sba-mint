@@ -89,7 +89,7 @@ export class AssistantComponent {
   open = signal(false);
 
   noProgress = false;
-  _progress = effect(() => (this.noProgress = !this.showProgress()));
+  _progress = effect(() => {this.noProgress = !this.showProgress()});
 
   initChat: InitChat | undefined = undefined;
   config = signal<ChatConfig | undefined>(undefined);
@@ -103,8 +103,7 @@ export class AssistantComponent {
   query = input<Query>();
 
   // used to handle the user avatar
-  protected principal = computed(() => this.principalStore.principal?.());
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principal);
+  protected userProfileResource = this.userProfileService.getUserProfile(getState(this.principalStore));
   readonly userProfile = linkedSignal(() => {
     if (this.userProfileResource.hasValue()) {
       return this.userProfileResource.value();
