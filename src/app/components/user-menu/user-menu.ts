@@ -104,7 +104,7 @@ export class UserMenuComponent {
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
 
   readonly user = computed(() => {
-    const principal = this.principalStore.principal();
+    const principal = getState(this.principalStore);
     return principal;
   });
 
