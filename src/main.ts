@@ -10,6 +10,7 @@ import Datepicker from "vanillajs-datepicker/Datepicker";
 import de from "vanillajs-datepicker/locales/de";
 // @ts-expect-error: missing types
 import fr from "vanillajs-datepicker/locales/fr";
+import agent from "../node_modules/@sinequa/agent/package.json";
 import atomic from "../node_modules/@sinequa/atomic/package.json";
 import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
 import { AppComponent } from "./app2/app.component";
@@ -37,6 +38,7 @@ bootstrapApplication(AppComponent, appConfig)
   .then(() => {
     info("atomic", atomic.version);
     info("atomic-angular", atomicAngular.version);
+    info("agent", agent.version);
   })
   .catch(err => {
     // this catch is triggered when the bootstrapApplication fails, for example when the appConfig is not valid
@@ -44,5 +46,5 @@ bootstrapApplication(AppComponent, appConfig)
 
     localStorage.setItem("errorMessage", JSON.stringify(err));
     // Redirect to the error page with the URL causing the error
-    window.location.href = "assets/error.html";
+    window.location.href = "assets/error/500.html";
   });

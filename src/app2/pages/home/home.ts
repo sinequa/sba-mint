@@ -10,7 +10,7 @@ import { KeyboardNavigatorOptions } from "@sinequa/ui";
 @Component({
   selector: "app-home",
   template: `
-  <div class="mt-4">
+  <div>
     <header>
       <img class="mx-auto mt-auto mb-8 w-64 content-[var(--logo-large)/var(--logo-alt-text)] md:mb-16" alt="logo" />
     </header>
@@ -24,7 +24,10 @@ import { KeyboardNavigatorOptions } from "@sinequa/ui";
   <sheet-previewer />
   `,
   imports: [SearchWithAutocompleteComponent, WidgetsTabsComponent, SheetPreviewerComponent],
-  providers: [provideTranslocoScope("bookmarks", "searches", "collections")]
+  providers: [provideTranslocoScope("bookmarks", "searches", "collections")],
+  host: {
+    "class": "block mt-16"
+  }
 })
 export class HomeComponent {
   readonly injector = inject(Injector);
