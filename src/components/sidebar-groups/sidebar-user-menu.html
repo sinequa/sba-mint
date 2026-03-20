@@ -78,6 +78,15 @@
 
 <Separator />
 
+@if (allowAgent()) {
+  <MenuItem>
+    <debug-icon />
+    <label class="flex-1 truncate">Debug</label>
+    <Switch [variant]="debug() ? 'primary' : 'secondary'" [(toggled)]="debug" />
+  </MenuItem>
+  <Separator />
+}
+
 <MenuItem (click)="openSinequa()" class="justify-between">
   <img class="size-4" src="assets/logo/logo-small.svg" alt="sinequa logo" />
   <span class="grow">{{ "userMenu.aboutSinequa" | transloco }}</span>

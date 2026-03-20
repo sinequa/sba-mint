@@ -2,33 +2,14 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import { APP_INITIALIZER, type ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
-import { provideNoopAnimations } from "@angular/platform-browser/animations";
+import { type ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter, withComponentInputBinding, withHashLocation } from "@angular/router";
+import { provideAgent } from "@config/agent.providers";
+import { provideAssistant } from "@config/assistant.providers";
 import { TranslocoHttpLoader } from "@config/transloco-loader";
-// @ts-expect-error
-import Flow from "@flowjs/flow.js";
-import { FlowInjectionToken } from "@flowjs/ngx-flow";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
-import { provideDefaultRendererPlugins, provideDefaultShikiHighlighterConfig, provideDefaultToolCardPlugins } from "@sinequa/agent";
-import {
-  ASSISTANT_CUSTOM_ELEMENTS,
-  ASSISTANT_MARKDOWN_IT_PLUGINS,
-  CustomElementsService,
-  DocumentReferenceComponent,
-  ImageReferenceComponent,
-  initializeCustomElements,
-  markdownItCodeBlockPlugin,
-  markdownItDocumentReferencePlugin,
-  markdownItImageReferencePlugin,
-  markdownItLinkPlugin,
-  markdownItPageReferencePlugin,
-  markdownItTableToolsPlugin,
-  PageReferenceComponent,
-  TableToolsComponent
-} from "@sinequa/assistant/chat";
 import { appInitializerFn } from "@sinequa/atomic";
 import {
   ApplicationService,
@@ -63,7 +44,6 @@ registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideNoopAnimations(), // used by the Assistant components
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
@@ -74,46 +54,10 @@ export const appConfig: ApplicationConfig = {
     // this function is used to sign in the user and bootstrap the application
     provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
 
-    // Provide default agent renderer plugins (code-block, links, references, ...)
-    provideDefaultRendererPlugins(),
-
-    // Provide default shiki highlighter configuration
-    provideDefaultShikiHighlighterConfig(),
-
-    // Provide default tool card plugins (tool-card, tool-card-error, ...)
-    provideDefaultToolCardPlugins(),
-
-    // Provides an APP_INITIALIZER which will initialize the custom elements defined in the @sinequa/assistant/chat
-    // library. This is required to be able to use the custom elements in Angular components templates.
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeCustomElements,
-      multi: true,
-      deps: [CustomElementsService]
-    },
-
-    // Assistant custom elements and markdown-it plugins configuration
-    {
-      provide: ASSISTANT_CUSTOM_ELEMENTS,
-      useValue: {
-        "document-reference": DocumentReferenceComponent,
-        "page-reference": PageReferenceComponent,
-        "image-reference": ImageReferenceComponent,
-        // 'code-block': CodeBlockComponent,
-        "table-tools": TableToolsComponent
-      }
-    },
-    {
-      provide: ASSISTANT_MARKDOWN_IT_PLUGINS,
-      useValue: [
-        markdownItDocumentReferencePlugin,
-        markdownItPageReferencePlugin,
-        markdownItImageReferencePlugin,
-        markdownItLinkPlugin,
-        markdownItCodeBlockPlugin,
-        markdownItTableToolsPlugin
-      ]
-    },
+    /* assistant's providers */
+    provideAssistant(),
+    /* agent's providers */
+    provideAgent(),
 
     { provide: LOCALE_ID, useValue: "fr-FR" },
 
@@ -195,9 +139,6 @@ export const appConfig: ApplicationConfig = {
     // in the case of the example, we set the number of filters to 10, so if we have 15 filters, 10 will be displayed in the filter bar and 5 will be moved to the "More" button
     // if the space is not enough, the filters will be moved to the "More" button
     { provide: FILTERS_BREAKPOINT, useValue: 10 },
-
-    // used by the upload Assistant service
-    { provide: FlowInjectionToken, useValue: Flow },
 
     provideTanStackQuery(
       new QueryClient({

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router";
-import { AgentsStore, SavedChatComponent } from "@sinequa/agent";
+import { RouterLink, RouterLinkActive } from "@angular/router";
+import { AGENT_INSTANCE_ID, AgentsStore, createAgentNewChatEvent, SavedChatComponent } from "@sinequa/agent";
+import { AppStore } from "@sinequa/atomic-angular";
 import {
   SidebarGroupComponent,
   SidebarGroupLabelComponent,
@@ -12,17 +12,18 @@ import {
   TooltipDirective,
   useSidebar
 } from "@sinequa/ui";
-import { filter, map, startWith } from "rxjs";
+import { injectCurrentUrl } from "@utils/routing";
 
 @Component({
   selector: "app-sidebar-group-agent",
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+  @if(allowAgent()) {
     <sidebar-menu>
       <sidebar-menu-item aria-label="Agent">
         <sidebar-menu-button
           class="text-lg"
-          routerLink="/agent"
+          routerLink="/chat/new"
           routerLinkActive="active"
           #rla2="routerLinkActive"
           [attr.data-active]="rla2.isActive || null">
@@ -37,10 +38,10 @@ import { filter, map, startWith } from "rxjs";
       <sidebar-menu class="gap-2">
         <sidebar-group class="p-0">
           <!--new chat-->
-          <sidebar-menu-item class="group-data-[collapsible=icon]:items-center"
-            routerLink="/agent/new"
-          >
+          <sidebar-menu-item class="group-data-[collapsible=icon]:items-center">
             <sidebar-menu-button
+              routerLink="/chat/new"
+              (click)="startNewChat()"
               [tooltip]="isCollapsed() ? 'New chat' : ''"
               tooltip-position="right">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -49,17 +50,6 @@ import { filter, map, startWith } from "rxjs";
                   fill="currentColor" />
               </svg>
               <span>New Chat</span>
-            </sidebar-menu-button>
-          </sidebar-menu-item>
-          <!--search chats-->
-          <sidebar-menu-item class="group-data-[collapsible=icon]:items-center">
-            <sidebar-menu-button [tooltip]="isCollapsed() ? 'Search chats' : ''" tooltip-position="right">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M10.8001 6.8001C10.8001 4.5901 9.0101 2.8001 6.8001 2.8001C4.5901 2.8001 2.8001 4.5901 2.8001 6.8001C2.8001 9.0101 4.5901 10.8001 6.8001 10.8001C9.0101 10.8001 10.8001 9.0101 10.8001 6.8001ZM10.0276 10.8776C9.1426 11.5801 8.0201 12.0001 6.8001 12.0001C3.9276 12.0001 1.6001 9.6726 1.6001 6.8001C1.6001 3.9276 3.9276 1.6001 6.8001 1.6001C9.6726 1.6001 12.0001 3.9276 12.0001 6.8001C12.0001 8.0201 11.5801 9.1426 10.8776 10.0276L14.2251 13.3751C14.4601 13.6101 14.4601 13.9901 14.2251 14.2226C13.9901 14.4551 13.6101 14.4576 13.3776 14.2226L10.0276 10.8776Z"
-                  fill="currentColor" />
-              </svg>
-              <span>Search Chats</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
         </sidebar-group>
@@ -73,6 +63,7 @@ import { filter, map, startWith } from "rxjs";
       </sidebar-menu>
     </sidebar-group>
     }
+  }
   `,
   imports: [
     SidebarGroupComponent,
@@ -93,21 +84,23 @@ import { filter, map, startWith } from "rxjs";
 export class SidebarGroupAgentComponent {
   readonly sidebar = useSidebar();
 
-  private readonly router = inject(Router);
+  private readonly appStore = inject(AppStore);
   private readonly agentsStore = inject(AgentsStore);
 
-  private readonly instanceId = "chatSearchInstance";
   protected readonly showSavedChats = computed(() => this.agentsStore.getAgentInstanceConfiguration(this.instanceId)?.savedChatSettings?.display === true);
 
   readonly isCollapsed = computed(() => this.sidebar.state() === "collapsed");
 
-  private readonly currentUrl = toSignal(
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
-      map(() => this.router.url),
-      startWith(this.router.url)
-    )
-  );
+  private readonly instanceId = inject(AGENT_INSTANCE_ID);
+  protected readonly allowAgent = computed(() => {
+    return !!this.appStore.isAgentAllowed(this.instanceId);
+  });
 
-  readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/agent") ?? false);
+  private readonly currentUrl = injectCurrentUrl();
+  readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
+
+  startNewChat() {
+    const event = createAgentNewChatEvent(this.instanceId);
+    document.dispatchEvent(event);
+  }
 }

@@ -1,17 +1,18 @@
 import { Component, DestroyRef, effect, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { RouterModule } from "@angular/router";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { HubConnectionState } from "@microsoft/signalr";
-import { AgentInjector, AgentsStore, NotificationsService, SignalRWebService } from "@sinequa/agent";
+import { AgentsStore, NotificationsService, SignalRWebService } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
 
 @Component({
   selector: "app-agent-layout",
-  imports: [AgentInjector, SheetPreviewerComponent],
+  imports: [SheetPreviewerComponent, RouterModule],
   template: `
-    <div class="grid relative" [style.--background]="'transparent'">
+    <div class="grid relative">
       <div class="h-full overflow-y-auto scrollbar-none">
-        <AgentInjector instanceId="chatSearchInstance" />
+        <router-outlet />
       </div>
     </div>
     <sheet-previewer />
