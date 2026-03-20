@@ -64,7 +64,11 @@ const homeFeatures: HomeTab[] = [
     component: CollectionsComponent
   }
 ];
-
+/**
+ * Home page component that provides an interface for searching and accessing user features like bookmarks and recent searches.
+ * It includes an autocomplete search bar, user menu, and tabs for different features.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'app-home',
   imports: [
@@ -128,6 +132,13 @@ export class HomeComponent {
     effect(() => {
       if (!this.drawerOpened()) {
         this.applicationService.setTitle('Home');
+      }
+    });
+
+    effect(() => {
+      const state = getState(this.queryParamsStore);
+      if (state.filters !== undefined && state.filters.length > 0) {
+        this.search(this.searchText());
       }
     });
 
