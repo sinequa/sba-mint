@@ -83,7 +83,7 @@ export class SidebarUserMenuComponent {
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
 
-  protected userProfileResource = this.userProfileService.getUserProfile(getState(this.principalStore));
+  protected userProfileResource = this.userProfileService.getUserProfile(this.principalStore.userId);
   readonly userProfile = linkedSignal(() => {
     if (this.userProfileResource.hasValue()) {
       return this.userProfileResource.value();
