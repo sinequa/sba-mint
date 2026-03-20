@@ -22,7 +22,7 @@ import { getState } from '@ngrx/signals';
 import { toast } from 'ngx-sonner';
 import { debounceTime, Subject } from 'rxjs';
 
-import { CCApp } from '@sinequa/atomic';
+import { CCApp, warn } from '@sinequa/atomic';
 import { AppStore, AutocompleteService, DrawerAdvancedFiltersComponent, DrawerStackService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
 import {
   ButtonComponent,
@@ -40,6 +40,12 @@ import {
 import { ActiveSuggestion } from './autocomplete/autocomplete.component';
 import { SavedSearchPopover } from './saved-search-popover/saved-search-popover';
 
+/**
+ * Search component that includes a search input, autocomplete dropdown, and optional saved search popover.
+ * It handles user input, debounced search text emission, and integrates with various services for
+ * routing, state management, and UI interactions.
+ * @deprecated will be removed in future versions.
+ */
 @Component({
   selector: 'app-search',
   imports: [
@@ -138,7 +144,6 @@ export class SearchComponent {
     const { queryName } = this.route.snapshot.data;
     return this.appStore.allowEmptySearch(queryName);
   });
-
   allowAdvancedFilters = computed(() => this.appStore.customizationJson()?.allowAdvancedFilters);
   protected readonly overlayOpen = this.autocompleteService.opened;
 
@@ -226,7 +231,7 @@ export class SearchComponent {
     this.dropdownComponent().close();
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
       const message = this.translocoService.translate('searchInput.allowEmptySearch');
-      console.warn(message);
+      warn(message);
       toast.info(message);
       return;
     }

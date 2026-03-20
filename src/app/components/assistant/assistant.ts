@@ -1,17 +1,4 @@
-import {
-  afterNextRender,
-  ChangeDetectorRef,
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  viewChild,
-  ViewEncapsulation
-} from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
@@ -186,7 +173,7 @@ export class AssistantComponent {
 
     effect(() => {
       // each time the selection store changes, we need to update the attached IDs
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
     });
 
@@ -195,7 +182,7 @@ export class AssistantComponent {
       // that's why we need to use a reference of the DestroyRef class here
 
       // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
     });
   }
@@ -238,7 +225,11 @@ export class AssistantComponent {
   }
 
   public newChat(): void {
-    this.sqChat()?.newChat();
+    try {
+      this.sqChat()?.newChat();
+    } catch (err) {
+      error('Error while starting a new chat', err);
+    }
   }
 
   handleSuggestAction(action: SuggestedAction) {

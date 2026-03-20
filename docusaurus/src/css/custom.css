@@ -332,12 +332,14 @@ table td {
  */
 .new,
 .draft,
-.update {
+.update,
+.deprecated {
   position: relative;
 }
 .new::after,
 .draft::after,
-.update::after {
+.update::after,
+.deprecated::after {
   position: absolute;
   font-size: 10px;
   color: white;
@@ -365,4 +367,10 @@ table td {
   color: var(--ifm-color-success);
   border: 1px solid var(--ifm-color-success);
   background-color: rgb(from var(--ifm-color-success) r g b / 0.1);
+}
+.deprecated::after {
+  content: 'deprecated';
+  color: var(--ifm-color-danger);
+  border: 1px solid var(--ifm-color-danger);
+  background-color: rgb(from var(--ifm-color-danger) r g b / 0.1);
 }

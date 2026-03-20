@@ -11,6 +11,7 @@ import atomic from '../node_modules/@sinequa/atomic/package.json';
 
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
+
 import { environment } from './environments/environment';
 
 // datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
@@ -22,8 +23,6 @@ import de from 'vanillajs-datepicker/locales/de';
 Object.assign(Datepicker.locales, fr, de);
 
 setGlobalConfig(environment);
-
-// applyConsoleLogLevels();
 
 /**
  * keyux configuration

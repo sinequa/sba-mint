@@ -52,15 +52,6 @@
     <Separator orientation="vertical" />
   }
 
-  @if (expandPreview()) {
-    <button variant="ghost" [attr.title]="'expand' | transloco" (click)="onExpand()">
-      <i class="fa-fw far fa-up-right-and-down-left-from-center"></i>
-      {{ 'previewDialog.expand' | transloco }}
-    </button>
-
-    <Separator orientation="vertical" />
-  }
-
   @if (canBookmark()) {
     <button variant="ghost" size="icon" [attr.title]="'bookmark.bookmarkDocument' | transloco">
       <bookmark-button [article]="article()!" />

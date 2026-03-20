@@ -8,7 +8,7 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
 
 import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R } from '@sinequa/atomic';
+import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
 import {
   AggregationsStore,
   AppStore,
@@ -44,8 +44,13 @@ type QueryParamsProps = {
   q?: string; // query text
   b?: string; // basket,
   n?: string; // query name
+  c?: SpellingCorrectionMode; // correction mode
 };
 
+/**
+ * Component for displaying all search results with various features like sorting, filtering, infinite scrolling, and an assistant.
+ * @deprecated This component is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'app-search-all',
   imports: [
@@ -115,6 +120,7 @@ export class SearchAllComponent {
   protected readonly f = input<string>(); // filters
   protected readonly n = input<string>(); // query param
   protected readonly id = input<string>(); // record.id
+  protected readonly c = input<SpellingCorrectionMode>(); // correction mode
 
   // all signals used in the component
   protected readonly drawerOpened = computed(() => this.drawerStack.isOpened());
@@ -147,7 +153,7 @@ export class SearchAllComponent {
       if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
       const q = this.queryParamsStore.getQuery();
 
-      const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket } as Query;
+      const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
       this.assistantQuery = { ...this.assistantQuery, ...query };
 
       // Add the current search to the user settings when the text is not empty
@@ -263,19 +269,27 @@ export class SearchAllComponent {
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
-    // Update the query params store with the filters from the query params
+    // Update the query params store with the filters from the URL query params
     // This allows Browser back/forward to work correctly
     effect(() => {
       const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-      this.queryParamsStore.patch({ text: this.q(), tab: this.t(), basket: this.b(), sort: this.s(), filters, name: this.n() });
+      this.queryParamsStore.patch({
+        text: this.q(),
+        tab: this.t(),
+        basket: this.b(),
+        sort: this.s(),
+        filters,
+        name: this.n(),
+        spellingCorrectionMode: this.c()
+      });
     });
 
-    // Update the URL with the query params
+    // Update the URL with the query params from the query params store
     effect(() => {
       this.hideFeedback.set(false);
 
       const queryParams: QueryParamsProps = {};
-      const { text, filters = [], page, sort, tab, basket, name } = getState(this.queryParamsStore);
+      const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
 
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
@@ -284,16 +298,26 @@ export class SearchAllComponent {
       queryParams.q = text;
       queryParams.b = basket;
       queryParams.n = name;
+      queryParams.c = spellingCorrectionMode;
 
       this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
     });
 
-    // Update the URL with the query params
+    // Update keys to retrigger the query when relevant parameters change
     effect(() => {
       this.hideFeedback.set(false);
 
       const state = getState(this.queryParamsStore);
-      const r = { tab: state.tab, text: state.text, filters: state.filters, sort: state.sort, basket: state.basket, name: state.name, page: state.page };
+      const r = {
+        tab: state.tab,
+        text: state.text,
+        filters: state.filters,
+        sort: state.sort,
+        basket: state.basket,
+        name: state.name,
+        page: state.page,
+        spellingCorrectionMode: state.spellingCorrectionMode
+      };
       if (this.currentKeys() === undefined) {
         this.currentKeys.set(r);
         return;
