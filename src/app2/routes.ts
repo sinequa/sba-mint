@@ -31,18 +31,17 @@ export const routes: ExtendedRoutes = [
     canActivate: [AuthGuard()]
   },
   {
-    path: "agent",
+    path: "chat",
+    canActivate: [AuthGuard()],
     component: AgentLayoutComponent,
     children: [
       {
-        path: ":id",
-        canActivate: [AuthGuard()],
-        loadComponent: () => import("./pages/agent/id.page").then(m => m.ChatIdPage)
+        path: "new",
+        loadComponent: () => import("./pages/agent/new.page").then(m => m.ChatNewPage)
       },
       {
-        path: "new",
-        canActivate: [AuthGuard()],
-        loadComponent: () => import("./pages/agent/new.page").then(m => m.ChatNewPage)
+        path: ":id",
+        loadComponent: () => import("./pages/agent/id.page").then(m => m.ChatIdPage)
       },
       { path: "**", redirectTo: "new", pathMatch: "full" }
     ]

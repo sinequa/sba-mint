@@ -2,7 +2,6 @@ import { Component, computed, inject, linkedSignal, signal, viewChild } from "@a
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
-import { WidgetsSidebarGroupComponent } from "@components/sidebar-groups/sidebar-group-widgets";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
 import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
@@ -26,7 +25,6 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
     SidebarGroupNavigationComponent,
     SidebarGroupAgentComponent,
     SidebarGroupAssistantComponent,
-    WidgetsSidebarGroupComponent,
     SidebarMenuComponent,
     SidebarMenuItemComponent,
     SidebarUserMenuComponent,
@@ -37,7 +35,7 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
     UserIcon
 ],
   template: `
-    <sidebar variant="inset" collapsible="icon" class="border-none bg-background h-full">
+    <sidebar collapsible="icon" class="border-none bg-background h-full">
       <sidebar-header class="px-3 pt-6">
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
@@ -66,9 +64,6 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
 
           <!-- agents and worksets menu -->
           <app-sidebar-group-agent />
-
-          <!-- other sidebar groups can be added here -->
-          <app-sidebar-group-widgets />
 
         </app-sidebar-group-navigation>
 
