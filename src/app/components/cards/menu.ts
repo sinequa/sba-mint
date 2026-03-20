@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, model } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
 
 import { Article as A, error } from '@sinequa/atomic';
 import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from '@sinequa/atomic-angular';
@@ -8,7 +7,7 @@ import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContent
 import { QueryClient } from '@tanstack/angular-query-experimental';
 
 type Article = A & {
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 @Component({
@@ -58,24 +57,27 @@ export class CardMenuComponent {
   }
 
   addToCollection(): void {
-    this.dialogService.open(CollectionsDialog, this.article()).then((event: any) => {
-      if (event === 'dialog-confirm' || event === 'dialog-no') {
-        this.queryClient.invalidateQueries();
-      }
-    });
+    this.dialogService
+      .open(CollectionsDialog, this.article())
+      .then((event: unknown) => {
+        if (event === 'dialog-confirm' || event === 'dialog-no') {
+          this.queryClient.invalidateQueries().catch(e => error('Invalidate queries error', e));
+        }
+      })
+      .catch(e => error('CollectionsDialog error', e));
   }
 
   attachToAssistant(): void {
     const id = this.article()?.id;
     if (!id) return;
 
-    const { assistantIdsToAttach } = getState(this.selectionStore);
-    let ids = assistantIdsToAttach || [];
+    const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
+    const ids = assistantIdsToAttach || [];
 
     if ((assistantIdsToAttach || []).indexOf(id) === -1) {
       ids.push(id);
     }
 
-    this.selectionStore.update({ assistantIdsToAttach: ids });
+    this.selectionStore.update({ assistantIdsToAttach: [...ids] });
   }
 }
