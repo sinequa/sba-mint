@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, linkedSignal, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, inject, output, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
@@ -11,7 +11,6 @@ import {
   OverrideUserDialogComponent,
   PrincipalStore,
   ResetUserSettingsDialogComponent,
-  UserProfileService,
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
@@ -57,7 +56,6 @@ export class SidebarUserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly userProfileService = inject(UserProfileService);
 
   /**
    * Determines whether password change functionality should be enabled for the current user.
@@ -82,15 +80,6 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
-
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principalStore.userId);
-  readonly userProfile = linkedSignal(() => {
-    if (this.userProfileResource.hasValue()) {
-      return this.userProfileResource.value();
-    }
-    return undefined;
-  });
-  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || "");
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang);

@@ -126,7 +126,8 @@ export class AssistantComponent {
   query = input<Query>();
 
   // used to handle the user avatar
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principalStore.userId);
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
+  protected userProfileResource = this.userProfileService.getUserProfile(!this.enabledUserProfile() ? signal(undefined) : this.principalStore.userId);
   readonly userProfile = linkedSignal(() => {
     if (this.userProfileResource.hasValue()) {
       return this.userProfileResource.value();
