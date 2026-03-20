@@ -93,7 +93,7 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
 
         @if (isAdminOrDelegatedAdmin()) {
           <Menu>
-            <sidebar-menu-button [tooltip]="isCollapsed() ? 'Admin' : ''" tooltip-position="right" size="lg">
+            <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
               <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
                 <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
                 <AvatarFallback>
@@ -117,9 +117,16 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
             </MenuContent>
           </Menu>
         } @else {
-          <sidebar-menu-button size="lg">
+          <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
             <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-              <AvatarFallback>{{ initials() }}</AvatarFallback>
+                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                <AvatarFallback>
+                  @if (initials()) {
+                    <span>{{ initials() }}</span>
+                  } @else {
+                    <UserIcon class="size-6 p-1" />
+                  }
+                </AvatarFallback>
             </Avatar>
 
             <div class="grid flex-1 text-left text-sm leading-tight">
