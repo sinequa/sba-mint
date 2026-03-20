@@ -6,6 +6,11 @@ import { PageHeaderComponent } from '@sinequa/ui';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 
+/**
+ * Layout component for the widgets pages.
+ * It includes a sidebar, a page header with a navbar, and a router outlet for displaying the main content.
+ * @deprecated This layout is deprecated and will be removed in future versions.
+ */
 @Component({
   selector: 'widgets-layout',
   imports: [RouterOutlet, PageHeaderComponent, NavbarComponent, AppSidebarComponent],

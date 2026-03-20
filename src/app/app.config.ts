@@ -3,7 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeDe from '@angular/common/locales/de';
 import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
@@ -52,12 +52,12 @@ import {
   withBootstrapApp
 } from '@sinequa/atomic-angular';
 
-import { PREVIEW_HIGHLIGHTS } from './highlight.config';
+import { TranslocoHttpLoader } from '@config/transloco-loader';
+import { PREVIEW_HIGHLIGHTS } from '@config/highlight.config';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
 import { SearchLayoutComponent } from './pages/search/layout';
 import { getComponentsForDocumentType } from './registry/document-type-registry';
 import { routes } from './routes';
-import { TranslocoHttpLoader } from './transloco-loader';
 
 // @ts-ignore
 import Flow from '@flowjs/flow.js';
@@ -68,7 +68,7 @@ registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
+    provideNoopAnimations(), // used by the Assistant components
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),

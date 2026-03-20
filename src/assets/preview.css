@@ -173,18 +173,3 @@ body {
   color: transparent;
   background-color: #ff0c !important;
 }
-
-/* invisible extracts locations (remove black squares) */
-.invisible .extractslocations,
-.invisible .extractslocations * {
-  background-color: transparent;
-  color: transparent;
-}
-.invisible::selection {
-  color: rgba(0, 0, 0, 0.1);
-  background: rgba(0, 0, 255, 0.2);
-}
-.invisible .matchlocations {
-  color: transparent;
-  background-color: #ff0c !important;
-}

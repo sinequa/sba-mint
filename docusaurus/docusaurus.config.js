@@ -25,7 +25,6 @@ const config = {
   projectName: 'sba-mint', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
   trailingSlash: false,
   // Even if you don't use internationalization, you can use this field to set
@@ -173,7 +172,10 @@ const config = {
   // In order for Mermaid code blocks in Markdown to work,
   // you also need to enable the Remark plugin with this option
   markdown: {
-    mermaid: true
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'warn'
+    }
   }
 };
 

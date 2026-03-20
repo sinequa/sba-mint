@@ -1,6 +1,7 @@
 sq-chat-v3 {
   ul {
     scrollbar-width: thin;
+    padding: 0;
   }
 
   sq-chat-message {
@@ -21,8 +22,28 @@ sq-chat-v3 {
     color: var(--color-foreground) !important;
   }
 
-  div.message-content {
-    color: var(--color-foreground);
+  /* User message styles */
+  .message-user {
+    & .message-content {
+      color: var(--ast-primary-foreground);
+      --ast-user-font-weight: 500;
+    }
+  }
+
+  /* Assistant message styles */
+  .message-assistant {
+    & .message-content {
+      color: var(--ast-secondary-foreground);
+      --ast-user-font-weight: 500;
+      & strong {
+        color: var(--ast-color-strong);
+        font-weight: 600;
+      }
+    }
+  }
+
+  table {
+    color: light-dark(var(--color-gray-900), var(--color-white));
   }
 
   .references li {
@@ -30,7 +51,21 @@ sq-chat-v3 {
   }
 
   .sq-chat-message-actions {
-    z-index: 1 !important;
+    --ast-size-5: 1.5rem;
+    & button:hover {
+      transform: scale(1.25);
+    }
+  }
+}
+
+/* when the assistant is in a Card with variant="ai" */
+/* set the ai-foreground color appropriately */
+card[variant='ai'] {
+  sq-chat-message {
+    summary.text-muted,
+    summary.text-muted + ul {
+      color: var(--ai-card-foreground);
+    }
   }
 }
 
