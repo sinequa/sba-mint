@@ -28,7 +28,7 @@
       }
 
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" />
+      <filters-bar class="flex gap-2 pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
@@ -38,17 +38,17 @@
       <div class="flex gap-1 has-[+ul>li.no-records]:hidden">
         <button variant="ghost" (click)="selectAll()">
           @switch (selectedAll()) {
-            @case ('all') {
+            @case ("all") {
               <i class="fa-fw fa-regular fa-square-check"></i>
-              {{ 'searches.selection.unselectAll' | transloco }}
+              {{ "searches.selection.unselectAll" | transloco }}
             }
-            @case ('some') {
+            @case ("some") {
               <i class="fa-fw fa-regular fa-square-minus"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              {{ "searches.selection.selectAll" | transloco }}
             }
             @default {
               <i class="fa-fw fa-regular fa-square"></i>
-              {{ 'searches.selection.selectAll' | transloco }}
+              {{ "searches.selection.selectAll" | transloco }}
             }
           }
         </button>
@@ -119,7 +119,7 @@
         <navbar-tabs class="mt-2 block" />
       }
       <!-- if results have been found -->
-      <filters-bar class="pt-4 pb-4" />
+      <filters-bar class="flex gap-2 pt-4 pb-4" />
 
       <DidYouMean class="text-alert py-1 empty:hidden" [result]="result()" />
 
