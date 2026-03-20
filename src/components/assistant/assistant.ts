@@ -1,7 +1,19 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, linkedSignal, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  output,
+  signal,
+  ViewEncapsulation,
+  viewChild
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
-import { getState } from "@ngrx/signals";
 import {
   ChatComponent,
   ChatConfig,
@@ -13,7 +25,16 @@ import {
   SuggestedAction
 } from "@sinequa/assistant/chat";
 import { Article, error, Query } from "@sinequa/atomic";
-import { AppStore, PreviewHighlights, PreviewService, PrincipalStore, QueryParamsStore, SelectionStore, UserProfileService, UserSettingsStore } from "@sinequa/atomic-angular";
+import {
+  AppStore,
+  PreviewHighlights,
+  PreviewService,
+  PrincipalStore,
+  QueryParamsStore,
+  SelectionStore,
+  UserProfileService,
+  UserSettingsStore
+} from "@sinequa/atomic-angular";
 import { cn } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 
@@ -89,7 +110,9 @@ export class AssistantComponent {
   open = signal(false);
 
   noProgress = false;
-  _progress = effect(() => (this.noProgress = !this.showProgress()));
+  _progress = effect(() => {
+    this.noProgress = !this.showProgress();
+  });
 
   initChat: InitChat | undefined = undefined;
   config = signal<ChatConfig | undefined>(undefined);
@@ -103,8 +126,7 @@ export class AssistantComponent {
   query = input<Query>();
 
   // used to handle the user avatar
-  protected principal = computed(() => this.principalStore.principal?.());
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principal);
+  protected userProfileResource = this.userProfileService.getUserProfile(this.principalStore.userId);
   readonly userProfile = linkedSignal(() => {
     if (this.userProfileResource.hasValue()) {
       return this.userProfileResource.value();
@@ -207,7 +229,7 @@ export class AssistantComponent {
             snippetId: event.$partId !== undefined ? event.$partId! - 1 : undefined
           }
         : undefined;
-    
+
     // Save the passage offset data which can be used for the preview
     const part = event.parts.find(p => p.partId === event.$partId);
     if (part) {
