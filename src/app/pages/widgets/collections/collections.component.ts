@@ -1,14 +1,15 @@
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { afterNextRender, ChangeDetectorRef, Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { CdkDragDrop, DragDropModule } from "@angular/cdk/drag-drop";
+import { afterNextRender, ChangeDetectorRef, Component, ElementRef, effect, inject, signal, viewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router, RouterModule } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 
-import { ApplicationService, Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui';
+import { error } from "@sinequa/atomic";
+import { ApplicationService, Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, InputComponent, ListItemComponent } from "@sinequa/ui";
 
 @Component({
-  selector: 'Collections',
+  selector: "Collections",
   imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent],
   template: `
     <div class="layout-search overflow-auto">
@@ -32,7 +33,7 @@ import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui'
               (keydown.enter)="postCreate()"
               (keydown.escape)="$event.preventDefault(); onCreate()" />
 
-            <button decoration="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
+            <button variant="outline" class="w-fit" tabindex="0" [attr.title]="'collections.cancelCreation' | transloco" (click)="onCreate()">
               {{ 'collections.cancelCreation' | transloco }}
             </button>
             <button tabindex="1" [attr.title]="'collections.save' | transloco" [disabled]="!newCollectionName().trim()" (click)="postCreate()">
@@ -103,7 +104,7 @@ import { ButtonComponent, InputComponent, ListItemComponent } from '@sinequa/ui'
     <delete-collection-dialog />
   `,
   host: {
-    class: 'flex flex-col h-full w-full'
+    class: "flex flex-col h-full w-full"
   },
   providers: [TranslocoDateImpurePipe]
 })
@@ -113,11 +114,11 @@ export class CollectionsComponent {
   readonly transloco = inject(TranslocoService);
   readonly applicationService = inject(ApplicationService);
 
-  readonly renameInput = viewChild<ElementRef>('renameInput');
-  readonly createInput = viewChild<ElementRef>('createInput');
+  readonly renameInput = viewChild<ElementRef>("renameInput");
+  readonly createInput = viewChild<ElementRef>("createInput");
 
-  collectionName = signal<string>('');
-  newCollectionName = signal<string>('');
+  collectionName = signal<string>("");
+  newCollectionName = signal<string>("");
   creating = signal<boolean>(false);
   modifiedIndex = signal<number | undefined>(undefined);
 
@@ -142,11 +143,11 @@ export class CollectionsComponent {
       return;
     }
     this.tmpCollections.splice(drop.currentIndex, 0, this.tmpCollections.splice(drop.previousIndex, 1)[0]);
-    this.save();
+    this.save().catch(err => error("update basket failed!", err));
   }
 
   onClick(collection: Basket): void {
-    this.router.navigate(['/search'], { queryParams: { b: collection.name } });
+    this.router.navigate(["/search"], { queryParams: { b: collection.name } }).catch(err => error("navigation to /search failed!", err));
   }
 
   onEdit(collection: Basket, index: number): void {
@@ -160,7 +161,10 @@ export class CollectionsComponent {
   }
 
   onCreate(): void {
-    if (this.creating()) return this.creating.set(false);
+    if (this.creating()) {
+      this.creating.set(false);
+      return;
+    }
 
     this.creating.set(true);
     setTimeout(() => {
@@ -185,8 +189,8 @@ export class CollectionsComponent {
     if (!this.newCollectionName().trim()) return;
 
     const collection: Basket = { name: this.newCollectionName().trim() };
-    this.userSettingsStore.createBasket(collection);
-    this.newCollectionName.set('');
+    this.userSettingsStore.createBasket(collection).catch(err => error("create basket failed!", err));
+    this.newCollectionName.set("");
     this.creating.set(false);
   }
 
@@ -210,7 +214,7 @@ export class CollectionsComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('myCollections');
+    const title = this.transloco.translate("myCollections");
     this.applicationService.setTitle(title);
   }
 }
