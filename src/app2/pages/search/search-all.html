@@ -14,7 +14,7 @@
   </div>
 
   @if (allowAI()) {
-    <div class="mx-2.5 mt-2 h-[calc(100vh-12rem)]">
+    <div class="mx-2.5 mt-2">
       <app-search-overview class="block h-full w-full" />
     </div>
   }
@@ -27,7 +27,9 @@
       @if (query.isPending()) {
         <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
           @for (n of [1, 2, 3]; track $index) {
-            <li><CardSkeleton /></li>
+            <li>
+              <CardSkeleton />
+            </li>
           }
         </ul>
       }
@@ -98,7 +100,7 @@
 
     <!-- column 2 -->
     <!-- main results -->
-    <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
+    <div class="relative flex w-full grow flex-col px-2.5" [class.sm:w-[30%]]="allowAI()" [class.sm:max-w-2xl]="!allowAI()" [class.mx-auto]="!allowAI()">
       <app-search-actions
         [class]="
           cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')
@@ -111,7 +113,9 @@
       @if (query.isPending()) {
         <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
           @for (n of [1, 2, 3]; track $index) {
-            <li><CardSkeleton /></li>
+            <li>
+              <CardSkeleton />
+            </li>
           }
         </ul>
       }
