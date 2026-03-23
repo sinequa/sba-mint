@@ -100,7 +100,7 @@
 
     <!-- column 2 -->
     <!-- main results -->
-    <div class="relative flex w-full grow flex-col px-2.5" [class.sm:w-[30%]]="allowAI()" [class.sm:max-w-2xl]="!allowAI()" [class.mx-auto]="!allowAI()">
+    <div [class]="cn('relative flex w-full grow flex-col px-2.5', allowAI() && 'sm:w-[30%]', !allowAI() && 'mx-auto sm:max-w-2xl')">
       <app-search-actions
         [class]="
           cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')
