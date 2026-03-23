@@ -30,7 +30,7 @@ import { BreakpointObserverService, cn } from "@sinequa/ui";
 import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
 import { SearchActionsComponent } from "./search-actions";
 
-const MOBILE_BREAKPOINT = 1024; // px
+const MOBILE_BREAKPOINT = 1536; // px 2xl
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
