@@ -104,13 +104,13 @@ import {
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-        @let initials = principal.initials() ? principal.initials() : "N/A";
-        @if (isAdminOrDelegatedAdmin()) {
-          <Menu>
-            <sidebar-menu-button [tooltip]="isCollapsed() ? 'Admin' : ''" tooltip-position="right" size="lg">
-              <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarFallback>{{ initials }}</AvatarFallback>
-              </Avatar>
+          @let initials = principal.initials() ? principal.initials() : "N/A";
+          @if (isAdminOrDelegatedAdmin()) {
+            <Menu>
+              <sidebar-menu-button [tooltip]="isCollapsed() ? 'Admin' : ''" tooltip-position="right" size="lg">
+                <Avatar class="bg-accent-alt font-semibold text-accent-foreground">
+                  <AvatarFallback>{{ initials }}</AvatarFallback>
+                </Avatar>
 
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-medium">{{ fullname() }}</span>
@@ -118,16 +118,16 @@ import {
               </div>
             </sidebar-menu-button>
 
-            <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
-              <!-- <Settings class="mt-auto" [debug]="true" /> -->
-              <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
-            </MenuContent>
-          </Menu>
-        } @else {
-          <sidebar-menu-button size="lg">
-            <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-              <AvatarFallback>{{ initials }}</AvatarFallback>
-            </Avatar>
+              <MenuContent position="top-end" class="min-w-max rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+                <!-- <Settings class="mt-auto" [debug]="true" /> -->
+                <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
+              </MenuContent>
+            </Menu>
+          } @else {
+            <sidebar-menu-button size="lg">
+              <Avatar class="bg-accent-alt font-semibold text-accent-foreground">
+                <AvatarFallback>{{ initials }}</AvatarFallback>
+              </Avatar>
 
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{ fullname() }}</span>
