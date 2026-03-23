@@ -239,8 +239,7 @@ export class SearchAllComponent {
     }
     return `search-results-assistant`;
   });
-  // readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
-  readonly allowAI = signal(true);
+  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
   readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.["modeSettings"]?.["enabledUserInput"] === true);
   // assistantQuery: Query = { name: 'assistant' };
 
