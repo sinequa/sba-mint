@@ -98,7 +98,8 @@ export class UserMenuComponent {
   readonly allowChangePassword = computed(() => {
     const { useCredentials } = globalConfig;
     const { allowChangePassword = false } = this.appStore.general()?.features || {};
-    return allowChangePassword && useCredentials;
+    const { editablePartition } = getState(this.principalStore);
+    return allowChangePassword && useCredentials && editablePartition;
   });
 
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);

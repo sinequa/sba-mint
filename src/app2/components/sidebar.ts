@@ -1,27 +1,12 @@
-import { Component, computed, inject, signal, viewChild } from "@angular/core";
+import { Component, computed, inject, linkedSignal, signal, viewChild } from "@angular/core";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
 import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
-import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserProfileDialog } from "@sinequa/atomic-angular";
-import {
-  AvatarComponent,
-  AvatarFallbackComponent,
-  MenuComponent,
-  MenuContentComponent,
-  Sidebar,
-  SidebarContentComponent,
-  SidebarFooterComponent,
-  SidebarHeaderComponent,
-  SidebarMenuButtonComponent,
-  SidebarMenuComponent,
-  SidebarMenuItemComponent,
-  SidebarTriggerComponent,
-  TooltipDirective,
-  useSidebar
-} from "@sinequa/ui";
+import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserProfileDialog, UserProfileService } from "@sinequa/atomic-angular";
+import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentComponent, Sidebar, SidebarContentComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemComponent, SidebarTriggerComponent, TooltipDirective, useSidebar, AvatarImageComponent, UserIcon } from "@sinequa/ui";
 
 @Component({
   selector: "app-sidebar",
@@ -45,8 +30,10 @@ import {
     SidebarUserMenuComponent,
     UserProfileDialog,
     OverrideUserDialogComponent,
-    ResetUserSettingsDialogComponent
-  ],
+    ResetUserSettingsDialogComponent,
+    AvatarImageComponent,
+    UserIcon
+],
   template: `
     <sidebar collapsible="icon" class="border-none bg-background h-full">
       <sidebar-header class="px-3 pt-6">
@@ -99,12 +86,18 @@ import {
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-        @let initials = principal.initials() ? principal.initials() : "N/A";
         @if (isAdminOrDelegatedAdmin()) {
           <Menu>
-            <sidebar-menu-button [tooltip]="isCollapsed() ? 'Admin' : ''" tooltip-position="right" size="lg">
+            <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
               <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarFallback>{{ initials }}</AvatarFallback>
+                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                <AvatarFallback>
+                  @if (initials()) {
+                    <span>{{ initials() }}</span>
+                  } @else {
+                    <UserIcon class="size-6 p-1" />
+                  }
+                </AvatarFallback>
               </Avatar>
 
               <div class="grid flex-1 text-left text-sm leading-tight">
@@ -119,9 +112,16 @@ import {
             </MenuContent>
           </Menu>
         } @else {
-          <sidebar-menu-button size="lg">
+          <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
             <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-              <AvatarFallback>{{ initials }}</AvatarFallback>
+                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                <AvatarFallback>
+                  @if (initials()) {
+                    <span>{{ initials() }}</span>
+                  } @else {
+                    <UserIcon class="size-6 p-1" />
+                  }
+                </AvatarFallback>
             </Avatar>
 
             <div class="grid flex-1 text-left text-sm leading-tight">
@@ -147,8 +147,10 @@ export class MainSidebarComponent {
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   private readonly transloco = inject(TranslocoService);
+  private readonly userProfileService = inject(UserProfileService);
 
   readonly principal = inject(PrincipalStore);
+  readonly appStore = inject(AppStore);
   readonly sidebar = useSidebar();
 
   isAdminOrDelegatedAdmin = signal(true);
@@ -157,6 +159,25 @@ export class MainSidebarComponent {
 
   readonly email = computed(() => this.principal.email());
   readonly fullname = computed(() => (this.principal.fullName() ? this.principal.fullName() : this.principal.name()));
+
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
+  protected userProfileResource = this.userProfileService.getUserProfile(!this.enabledUserProfile() ? signal(undefined) : this.principal.userId);
+  readonly userProfile = linkedSignal(() => {
+    if (this.userProfileResource.hasValue()) {
+      return this.userProfileResource.value();
+    }
+    return undefined;
+  });
+  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || "");
+  readonly initials = computed(() => {
+    const fullName = this.userProfile()?.data?.fullName;
+    if (!fullName) return this.principal.initials();
+
+    return fullName
+      .split(" ")
+      .map((word) => word[0].toUpperCase())
+      .join("");
+  });
 
   openHelp() {
     const url = getHelpIndexUrl(this.transloco.getActiveLang(), {

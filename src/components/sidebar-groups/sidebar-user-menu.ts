@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, effect, inject, linkedSignal, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
@@ -12,7 +12,6 @@ import {
   OverrideUserDialogComponent,
   PrincipalStore,
   ResetUserSettingsDialogComponent,
-  UserProfileService,
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
@@ -73,7 +72,6 @@ export class SidebarUserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly userProfileService = inject(UserProfileService);
 
   private readonly currentUrl = injectCurrentUrl();
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
@@ -103,19 +101,6 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
-
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principalStore.userId);
-  readonly userProfile = linkedSignal(() => {
-    if (this.userProfileResource.hasValue()) {
-      return this.userProfileResource.value();
-    }
-    return undefined;
-  });
-  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || "");
-
-  constructor() {
-    effect(() => this.agentsStore.setDebugMessages(this.debug()));
-  }
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang).catch(err => error("update langugage failed", err));

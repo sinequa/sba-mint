@@ -3,6 +3,7 @@ import { Component, computed, inject, linkedSignal, signal, Type, viewChild, vie
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
 import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import {
@@ -103,7 +104,8 @@ export class UserMenuComponent {
     if (this.enabledUserProfile()) return false;
     const { useCredentials } = globalConfig;
     const { allowChangePassword = false } = this.appStore.general()?.features || {};
-    return allowChangePassword && useCredentials && this.principal().editablePartition;
+    const { editablePartition } = getState(this.principalStore);
+    return allowChangePassword && useCredentials && editablePartition;
   });
 
   readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
@@ -113,8 +115,7 @@ export class UserMenuComponent {
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
 
-  protected principal = computed(() => this.principalStore.principal?.());
-  protected userProfileResource = this.userProfileService.getUserProfile(this.principal);
+  protected userProfileResource = this.userProfileService.getUserProfile(!this.enabledUserProfile() ? signal(undefined) : this.principalStore.userId);
   readonly userProfile = linkedSignal(() => {
     if (this.userProfileResource.hasValue()) {
       return this.userProfileResource.value();
