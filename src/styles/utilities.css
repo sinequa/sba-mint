@@ -1,0 +1,86 @@
+/* AI utilities */
+
+@utility text-ai {
+  /* Sets the text as gradient */
+  position: relative;
+  color: transparent;
+
+  background: linear-gradient(90deg, var(--ai-from) 0%, var(--ai-via) 50%, var(--ai-to) 100%);
+
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-fill-color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility underline-ai {
+  /* Adds an after element to simulate underline with gradient */
+  content: '';
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 3px;
+
+  height: 1px;
+
+  background: linear-gradient(90deg, var(--ai-from) 0%, var(--ai-via) 50%, var(--ai-to) 100%);
+}
+
+/* Gradient border [0-100]% */
+@utility border-ai-* {
+  --from: oklch(from var(--ai-from) l c h / calc(--value(integer) / 100));
+  --via: oklch(from var(--ai-via) l c h / calc(--value(integer) / 100));
+  --to: oklch(from var(--ai-to) l c h / calc(--value(integer) / 100));
+
+  background:
+    linear-gradient(var(--background) 0 0) padding-box,
+    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
+  border: 1px solid transparent;
+}
+
+/* Gradient border 100% (default) */
+@utility border-ai {
+  --from: var(--ai-from);
+  --via: var(--ai-via);
+  --to: var(--ai-to);
+
+  background:
+    linear-gradient(var(--background) 0 0) padding-box,
+    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
+  border: 1px solid transparent;
+}
+
+/* Gradient border with gradient background [0-100]% */
+@utility border-bg-ai-* {
+  --from: oklch(from var(--ai-from) l c h / calc(--value(integer) / 100));
+  --via: oklch(from var(--ai-via) l c h / calc(--value(integer) / 100));
+  --to: oklch(from var(--ai-to) l c h / calc(--value(integer) / 100));
+
+  --offset: --modifier(integer);
+  --offset-safe: var(--offset, 50);
+
+  --from-bg: color-mix(in srgb, var(--background), var(--from) calc(var(--offset-safe) * 1%));
+  --via-bg: color-mix(in srgb, var(--background), var(--via) calc(var(--offset-safe) * 1%));
+  --to-bg: color-mix(in srgb, var(--background), var(--to) calc(var(--offset-safe) * 1%));
+
+  background:
+    linear-gradient(90deg, var(--from-bg) 0%, var(--via-bg) 50%, var(--to-bg) 100%) padding-box,
+    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
+  border: 1px solid transparent;
+}
+
+/* Gradient border with gradient background 100% (default) */
+@utility border-bg-ai {
+  --from: oklch(from var(--ai-from) l c h);
+  --via: oklch(from var(--ai-via) l c h);
+  --to: oklch(from var(--ai-to) l c h);
+  --from-bg: color-mix(in srgb, var(--ai-from), var(--background) 80%);
+  --via-bg: color-mix(in srgb, var(--ai-via), var(--background) 80%);
+  --to-bg: color-mix(in srgb, var(--ai-to), var(--background) 80%);
+
+  background:
+    linear-gradient(90deg, var(--from-bg) 0%, var(--via-bg) 50%, var(--to-bg) 100%) padding-box,
+    linear-gradient(90deg, var(--from) 0%, var(--via) 50%, var(--to) 100%) border-box;
+  border: 1px solid transparent;
+}
