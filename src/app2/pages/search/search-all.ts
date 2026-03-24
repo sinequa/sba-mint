@@ -145,7 +145,7 @@ export class SearchAllComponent {
   hideFeedback = signal(false);
 
   // all rows from all pages to display in the UI, computed from the query result
-  allRows = computed(() => this.query.data()?.pages.flatMap(page => page.records) ?? []);
+  allRows = computed(() => this.query.data()?.pages?.flatMap(page => page.records) ?? []);
 
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({
