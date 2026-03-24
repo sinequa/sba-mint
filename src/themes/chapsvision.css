@@ -146,9 +146,9 @@
 }
 
 :root {
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url('../assets/logo/logo-small-white.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-light-small and
     --logo-light-large
@@ -341,8 +341,8 @@
 }
 
 .dark {
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url('../assets/logo/logo-small-white.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-dark-small and
     --logo-dark-large
@@ -506,16 +506,19 @@ app-sidebar-group-navigation [data-sidebar="menu-button"] i > svg {
   opacity: 0;
 }
 
-[data-sidebar="trigger"] button:hover {
+sidebar [data-sidebar="trigger"] button:hover,
+sheet-content [data-sidebar="trigger"] button:hover {
   background-color: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
 }
 
-[data-sidebar="trigger"] button:active {
+sidebar [data-sidebar="trigger"] button:active,
+sheet-content [data-sidebar="trigger"] button:active {
   background-color: var(--sidebar-active);
 }
 
-[data-sidebar="trigger"] button {
+sidebar [data-sidebar="trigger"] button,
+sheet-content [data-sidebar="trigger"] button {
   border-radius: 0.5rem;
   color: var(--sidebar-foreground);
 }
