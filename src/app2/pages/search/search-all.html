@@ -155,10 +155,7 @@
     @if (hasRowCount()) {
       <div
         [class]="
-          cn(
-            'sticky top-48 hidden h-[calc(100dvh-230px)] grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2',
-            hasPreview() && 'rounded border border-aside-border lg:w-1/2'
-          )
+          cn('sticky top-48 hidden h-[calc(100dvh-1px)] grow lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')
         ">
         <div class="relative size-full">
           <preview
