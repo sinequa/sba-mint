@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
+import { LoggerService } from "@sinequa/agent";
 import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import { SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
@@ -18,6 +19,7 @@ import { MainSidebarComponent } from "./components/sidebar";
     SidebarInsetComponent,
     SidebarTriggerComponent
   ],
+  providers: [LoggerService],
   templateUrl: "./app.component.html"
 })
 export class AppComponent {

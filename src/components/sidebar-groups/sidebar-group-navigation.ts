@@ -9,6 +9,8 @@ import {
   SidebarMenuComponent,
   SidebarMenuItemComponent
 } from "@sinequa/ui";
+import { injectCurrentUrl } from "../../utils/routing";
+import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
 
 @Component({
   selector: "app-sidebar-group-navigation",
@@ -29,7 +31,7 @@ import {
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-          @if (allowEmptySearch()) {
+          @if (allowEmptySearch() ||isSearchRoute()) {
             <sidebar-menu-item aria-label="Search">
               <sidebar-menu-button
                 class="text-lg"
@@ -41,6 +43,11 @@ import {
                 <span class="text-sm" sr-only>Search</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
+          }
+
+          @if(isSearchRoute()) {
+            <!-- other sidebar groups can be added here -->
+            <app-sidebar-group-widgets />
           }
 
           <ng-content />
@@ -57,7 +64,8 @@ import {
     SidebarMenuItemComponent,
     SidebarMenuButtonComponent,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
+    WidgetsSidebarGroupComponent
   ],
   host: {
     class: "contents"
@@ -67,5 +75,9 @@ export class SidebarGroupNavigationComponent {
   private readonly appStore = inject(AppStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
 
-  allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ''));
+  allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ""));
+
+  private readonly currentUrl = injectCurrentUrl();
+
+  readonly isSearchRoute = computed(() => this.currentUrl()?.startsWith("/search") ?? false);
 }

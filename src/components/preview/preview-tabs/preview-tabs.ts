@@ -62,9 +62,6 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           <select
             class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
             [(ngModel)]="currentConversionIndex">
-            @if (showDefaultConverter()) {
-              <option [value]="-1">{{ "preview.default" | transloco }}</option>
-            }
             @for (option of converterOptions(); track $index) {
               <option [value]="$index">{{ option.name | transloco }}</option>
             }
@@ -209,9 +206,6 @@ export class PreviewTabsComponent {
     return [];
   });
 
-  /** Whether to show the "Default" option in the converter list - if there are no default converter options to override it */
-  showDefaultConverter = computed(() => !this.converterOptions().some(c => c.default))
-
   constructor() {
     effect(() => {
       const { article } = getState(this.selectionStore);
@@ -222,7 +216,10 @@ export class PreviewTabsComponent {
       // set conversion url to the first default converter if any
       if (this.previewMultiConversion() && this.converterOptions()) {
         if (this.converterOptions()?.length) {
-          this.currentConversionIndex.set(this.converterOptions().findIndex(c => c.default));
+          // setting the current conversion to the first default conversion if exists, otherwise first primary, otherwise first item
+          const defaultIndex = this.converterOptions().findIndex(c => c.default);
+          const primaryIndex = this.converterOptions().findIndex(c => c.primary);
+          this.currentConversionIndex.set(defaultIndex !== -1 ? defaultIndex : (primaryIndex !== -1 ? primaryIndex : 0));
         }
       }
     });

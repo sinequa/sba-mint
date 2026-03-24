@@ -1,11 +1,20 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
-import { SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemComponent, TooltipDirective } from "@sinequa/ui";
+import { AGENT_INSTANCE_ID } from "@sinequa/agent";
+import { AppStore } from "@sinequa/atomic-angular";
+import {
+  SidebarMenuButtonComponent,
+  SidebarMenuComponent,
+  SidebarMenuItemComponent,
+  TooltipDirective,
+  useSidebar
+} from "@sinequa/ui";
 
 @Component({
   selector: "app-sidebar-group-agent",
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+  @if(allowAgent()) {
     <sidebar-menu>
       <sidebar-menu-item aria-label="Agent">
         <sidebar-menu-button class="text-lg" routerLink="/agent" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
@@ -14,10 +23,22 @@ import { SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemCompon
         </sidebar-menu-button>
       </sidebar-menu-item>
     </sidebar-menu>
+  }
   `,
   imports: [SidebarMenuComponent, SidebarMenuItemComponent, SidebarMenuButtonComponent, TooltipDirective, RouterLink, RouterLinkActive],
   host: {
     class: "contents"
   }
 })
-export class SidebarGroupAgentComponent {}
+export class SidebarGroupAgentComponent {
+  readonly sidebar = useSidebar();
+
+  private readonly appStore = inject(AppStore);
+
+  private readonly instanceId = inject(AGENT_INSTANCE_ID);
+  protected readonly allowAgent = computed(() => {
+    return !!this.appStore.isAgentAllowed(this.instanceId);
+  });
+
+
+}
