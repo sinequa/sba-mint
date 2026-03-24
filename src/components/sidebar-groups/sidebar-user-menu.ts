@@ -1,19 +1,13 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
-import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
 import { getState } from "@ngrx/signals";
+import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
 
 import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
-import {
-  AppStore,
-  OverrideUserDialogComponent,
-  PrincipalStore,
-  ResetUserSettingsDialogComponent,
-  UserSettingsStore
-} from "@sinequa/atomic-angular";
+import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import {
   ChevronRightIcon,
   DebugIcon,
@@ -101,6 +95,11 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+
+  constructor() {
+    // enable agent's debug mode
+    effect(() => this.agentsStore.setDebugMessages(this.debug()));
+  }
 
   changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang).catch(err => error("update langugage failed", err));
