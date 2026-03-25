@@ -209,7 +209,7 @@ export class PreviewTabsComponent {
 
   constructor() {
     effect(() => {
-      const { article } = getState(this.selectionStore);
+      const article = this.selectionStore.article?.();
       this.article.set(article as Article);
     });
 
