@@ -200,13 +200,10 @@ export class PreviewContentComponent {
     });
 
     effect(() => {
-      // if we are on a secondary conversion with a selected passage, we should fetch the page of the passage and scroll to it
-      if (this.previewUrl() && this.isSecondary()) {
-        if (this.scrollPage() !== undefined) { // if page already fetched, trigger scrolling
-          this.scrollToPage();
-        } else { // if no page fetched yet, loading it
-          this.getPassagePage();
-        }
+      if (this.scrollPage() !== undefined) { // if already a page to scroll to, trigger scrolling
+        this.scrollToPage();
+      } else if (this.previewUrl() && this.isSecondary()) { // if secondary document, scroll to clicked passage if any (checked in method)
+        this.getPassagePage();
       }
     });
 
