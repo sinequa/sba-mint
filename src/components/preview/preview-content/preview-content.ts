@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, signal, viewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 
@@ -89,7 +89,9 @@ export class PreviewContentComponent {
     return queryText;
   });
   protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
-  protected passagePageNumber?: number;
+  protected passagePageNumber = signal<number | undefined>(undefined);
+  protected currentPage = signal<string | undefined>(undefined); // used to go back to the last visited page when changing of conversion for a document
+  protected scrollPage = computed(() => this.currentPage() !== undefined ? this.currentPage() : (this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined));
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -192,24 +194,34 @@ export class PreviewContentComponent {
 
     effect(() => {
       if (this.id()) {
-        this.passagePageNumber = undefined; // resetting the page number if we change of selected document
+        this.currentPage.set(undefined);
+        this.passagePageNumber.set(undefined); // resetting the page number if we change of selected document
       }
     });
 
     effect(() => {
-      // if we are on a secondary conversion with a selected passage, we should fetch the page of the passage and scroll to it
-      if (this.previewUrl() && this.isSecondary()) {
-        if (this.passagePageNumber !== undefined) {
-          // if page already fetched, trigger scrolling
-          this.scrollToPage();
-        } else {
-          // if no page fetched yet, loading it
-          this.getPassagePage();
-        }
+      if (this.scrollPage() !== undefined) { // if already a page to scroll to, trigger scrolling
+        this.scrollToPage();
+      } else if (this.previewUrl() && this.isSecondary()) { // if secondary document, scroll to clicked passage if any (checked in method)
+        this.getPassagePage();
       }
     });
 
+    const controller = new AbortController();
+
+    window.addEventListener(
+      "message",
+      (event: MessageEvent) => {
+        const message = event.data;
+        if (message.type === "current-page") {
+          this.currentPage.set(message.data);
+        }
+      },
+      { signal: controller.signal }
+    );
+
     this.destroyRef.onDestroy(() => {
+      controller.abort();
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
@@ -231,7 +243,7 @@ export class PreviewContentComponent {
     if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
-    } else if (this.isSecondary() && this.passagePageNumber !== undefined) {
+    } else if (this.isSecondary() && this.scrollPage() !== undefined) {
       this.scrollToPage();
     }
 
@@ -249,7 +261,7 @@ export class PreviewContentComponent {
       .getDocPage(id, offset, length)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((pageNumber: number) => {
-        this.passagePageNumber = pageNumber;
+        this.passagePageNumber.set(pageNumber);
         this.scrollToPage();
       });
   }
@@ -258,8 +270,8 @@ export class PreviewContentComponent {
    * Scroll to the stored page number
    */
   scrollToPage(): void {
-    if (this.passagePageNumber === undefined) return;
+    if (this.scrollPage() === undefined) return;
     this.previewService.events.set("scrollTo");
-    this.previewService.sendMessage({ action: "select", id: `sq-page-start-${this.passagePageNumber}`, usePassageHighlighter: false });
+    this.previewService.sendMessage({ action: "select", id: this.scrollPage(), usePassageHighlighter: false });
   }
 }

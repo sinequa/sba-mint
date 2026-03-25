@@ -201,7 +201,8 @@ export class PreviewTabsComponent {
           converter.conversion = this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format);
           return converter;
         })
-        .sort((a, b) => (a.default && !b.default ? -1 : 1));
+        // sort to have defaults first, then primaries, then others
+        .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1));
     }
     return [];
   });
@@ -213,14 +214,10 @@ export class PreviewTabsComponent {
     });
 
     effect(() => {
-      // set conversion url to the first default converter if any
-      if (this.previewMultiConversion() && this.converterOptions()) {
-        if (this.converterOptions()?.length) {
-          // setting the current conversion to the first default conversion if exists, otherwise first primary, otherwise first item
-          const defaultIndex = this.converterOptions().findIndex(c => c.default);
-          const primaryIndex = this.converterOptions().findIndex(c => c.primary);
-          this.currentConversionIndex.set(defaultIndex !== -1 ? defaultIndex : primaryIndex !== -1 ? primaryIndex : 0);
-        }
+      // setting the current conversion to the first conversion
+      // (the conversions being sorted to be defaults then primaries first, the first element will always be the one to pick by default)
+      if (this.previewMultiConversion() && this.converterOptions()?.length) {
+        this.currentConversionIndex.set(0);
       }
     });
 
