@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, signal, viewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 
