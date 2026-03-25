@@ -263,7 +263,21 @@ document.addEventListener('DOMContentLoaded', function () {
         parentElement.classList.toggle("screenshot-extended");
       }
     });
+    var pages = document.querySelectorAll('[id^="sq-page-start"]');
     window.addEventListener('scroll', function () {
+      if (pages?.length) {
+        let index = 0;
+        let found = false;
+        pages.forEach(page => {
+          if (!found) {
+            if (isElementInViewport(page)) {
+              found = true;
+              returnMessage('current-page', page.id);
+            }
+            index++;
+          }
+        });
+      }
       return returnMessage('scroll', { x: window.scrollX, y: window.scrollY });
     });
     if (highlights) {
@@ -639,4 +653,14 @@ document.addEventListener('DOMContentLoaded', function () {
       return e.remove();
     });
   }
+
+  function isElementInViewport (el) {
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
 });
