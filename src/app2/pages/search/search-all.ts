@@ -1,4 +1,4 @@
-import { NgComponentOutlet } from "@angular/common";
+import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { SearchOverviewComponent } from "@components/assistant-overview";
@@ -9,11 +9,22 @@ import { fetchServerPage } from "@config/fetch-server-page";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { MessageHandler } from "@sinequa/assistant/chat";
-import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from "@sinequa/atomic";
+import {
+  Aggregation,
+  Article,
+  bisect,
+  CCApp,
+  debug,
+  isNotInputEvent,
+  LegacyFilter,
+  Query,
+  QueryParams,
+  Result as R,
+  SpellingCorrectionMode
+} from "@sinequa/atomic";
 import {
   AggregationsStore,
   AppStore,
-  AsideFiltersComponent,
   FiltersBarComponent,
   InfinityScrollDirective,
   NavbarTabsComponent,
@@ -49,6 +60,7 @@ type QueryParamsProps = {
   selector: "app-search-all",
   imports: [
     NgComponentOutlet,
+    NgTemplateOutlet,
     InfinityScrollDirective,
     NoResultComponent,
     SearchFeedbackComponent,
@@ -56,7 +68,6 @@ type QueryParamsProps = {
     NavbarTabsComponent,
     CardSkeleton,
     SearchFeedbackComponent,
-    AsideFiltersComponent,
     SearchOverviewComponent,
     PreviewComponent,
     SheetPreviewerComponent,
@@ -68,6 +79,7 @@ type QueryParamsProps = {
       :host {
         /* to avoid z-index collisions */
         isolation: isolate;
+        --search-content-height: calc(100dvh - 230px);
       }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
@@ -240,19 +252,19 @@ export class SearchAllComponent {
     return `search-results-assistant`;
   });
   readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
-  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.["modeSettings"]?.["enabledUserInput"] === true);
+  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true);
   // assistantQuery: Query = { name: 'assistant' };
 
   readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
 
-  conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
+  conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
     // Update the query params store with the filters from the URL query params
     // This allows Browser back/forward to work correctly
     effect(() => {
       debug("effect - 1. update query params store from URL");
-      const filters = this.f() ? JSON.parse(this.f() ?? "") : []; // Parse the filters from the query params
+      const filters = (this.f() ? JSON.parse(this.f() ?? "") : []) as LegacyFilter[]; // Parse the filters from the query params
       this.queryParamsStore.patch({
         text: this.q(),
         tab: this.t(),

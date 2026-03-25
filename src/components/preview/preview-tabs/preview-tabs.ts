@@ -208,7 +208,7 @@ export class PreviewTabsComponent {
 
   constructor() {
     effect(() => {
-      const { article } = getState(this.selectionStore);
+      const article = this.selectionStore.article?.();
       this.article.set(article as Article);
     });
 
@@ -219,7 +219,7 @@ export class PreviewTabsComponent {
           // setting the current conversion to the first default conversion if exists, otherwise first primary, otherwise first item
           const defaultIndex = this.converterOptions().findIndex(c => c.default);
           const primaryIndex = this.converterOptions().findIndex(c => c.primary);
-          this.currentConversionIndex.set(defaultIndex !== -1 ? defaultIndex : (primaryIndex !== -1 ? primaryIndex : 0));
+          this.currentConversionIndex.set(defaultIndex !== -1 ? defaultIndex : primaryIndex !== -1 ? primaryIndex : 0);
         }
       }
     });
