@@ -1,21 +1,12 @@
 import { Component, effect, inject, signal, untracked, viewChild } from "@angular/core";
-import { PreviewContentComponent } from "@components/preview/preview-content/preview-content";
-import { getState } from "@ngrx/signals";
 import { AdminDirective, AgentGenerationDirective, AgentInjector, CopyToClipboardDirective, ErrorDirective, FeedbackDirective } from "@sinequa/agent";
 import { SelectionStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupComponent, XMarkICon } from "@sinequa/ui";
+import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupComponent } from "@sinequa/ui";
+import { AgentPreview } from "../../../components/preview/agent/agent-preview";
 
 @Component({
   selector: "app-chat-new",
-  imports: [
-    AgentInjector,
-    ResizablePanelGroupComponent,
-    ResizablePanelComponent,
-    ResizableHandleComponent,
-    PreviewContentComponent,
-    ButtonComponent,
-    XMarkICon
-  ],
+  imports: [AgentInjector, ResizablePanelGroupComponent, ResizablePanelComponent, ResizableHandleComponent, AgentPreview],
   template: `
         <main class="flex flex-1">
           <ResizablePanelGroup>
@@ -28,10 +19,7 @@ import { ButtonComponent, ResizableHandleComponent, ResizablePanelComponent, Res
             <ResizablePanel [defaultSize]="0" [minSize]="40">
               <div class="sticky top-14 h-full overflow-auto">
                 <div class="relative h-full">
-                  <button variant="ghost" size="icon" (click)="closePreview()" class="m-2" aria-label="Close preview">
-                    <XMarkIcon class="size-4" />
-                  </button>
-                  <preview-content class="h-full" />
+                  <agent-preview class="absolute inset-0 size-full" (onClose)="closePreview()" />
                 </div>
               </div>
             </ResizablePanel>
@@ -53,7 +41,7 @@ export class ChatNewPage {
 
   constructor() {
     effect(() => {
-      const { id } = getState(this.selectionStore);
+      const id = this.selectionStore.id?.();
       if (id && untracked(() => this.previewCollapsed())) {
         this.previewCollapsed.set(false);
         queueMicrotask(() => this.panelGroup()?.setLayout([60, 40]));

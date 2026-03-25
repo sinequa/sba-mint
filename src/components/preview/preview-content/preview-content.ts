@@ -1,10 +1,9 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, signal, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, resource, viewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { getState } from "@ngrx/signals";
 
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore, QueryService } from "@sinequa/atomic-angular";
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
 
 import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BreakpointObserverService, cn } from "@sinequa/ui";
@@ -78,15 +77,15 @@ export class PreviewContentComponent {
    */
   article = input<Article | undefined>(undefined);
   protected id = computed<string | undefined>(() => {
-    const { id } = this.article() || getState(this.selectionStore);
+    const id = this.article()?.id ?? this.selectionStore.id?.();
     return id;
   });
   protected previewHighlights = computed<PreviewHighlights | undefined>(() => {
-    const { previewHighlights } = getState(this.selectionStore);
+    const previewHighlights = this.selectionStore.previewHighlights?.();
     return previewHighlights;
   });
   protected queryText = computed<string | undefined>(() => {
-    const { queryText } = getState(this.selectionStore);
+    const queryText = this.selectionStore.queryText?.();
     return queryText;
   });
   protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
@@ -95,8 +94,9 @@ export class PreviewContentComponent {
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const id = this.id() || getState(this.selectionStore).id || "";
-      const { queryText = "", previewHighlights = { highlights: [] } } = getState(this.selectionStore);
+      const id = this.id() || this.selectionStore.id?.() || "";
+      const queryText = this.selectionStore.queryText?.() || "";
+      const previewHighlights = this.selectionStore.previewHighlights?.() || { highlights: [] };
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: undefined,
@@ -144,7 +144,7 @@ export class PreviewContentComponent {
     }
   });
 
-  readonly isSecondary = computed(() => this.conversion()?.primary === false || (this.conversion()?.conversion?.isPrimary === false));
+  readonly isSecondary = computed(() => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false);
 
   /**
    * A resource that validates the preview content by checking if the cached document URL is accessible.
@@ -199,9 +199,11 @@ export class PreviewContentComponent {
     effect(() => {
       // if we are on a secondary conversion with a selected passage, we should fetch the page of the passage and scroll to it
       if (this.previewUrl() && this.isSecondary()) {
-        if (this.passagePageNumber !== undefined) { // if page already fetched, trigger scrolling
+        if (this.passagePageNumber !== undefined) {
+          // if page already fetched, trigger scrolling
           this.scrollToPage();
-        } else { // if no page fetched yet, loading it
+        } else {
+          // if no page fetched yet, loading it
           this.getPassagePage();
         }
       }
@@ -225,7 +227,7 @@ export class PreviewContentComponent {
    * The message is then sent to the preview service.
    */
   onLoaded() {
-    const { previewHighlights } = getState(this.selectionStore);
+    const previewHighlights = this.selectionStore.previewHighlights?.();
     if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
@@ -243,7 +245,9 @@ export class PreviewContentComponent {
     const { id, offset, length } = this.previewService.passageOffset() || {};
     if (id === undefined || offset === undefined || length === undefined) return;
 
-    this.queryService.getDocPage(id, offset, length).pipe(takeUntilDestroyed(this.destroyRef))
+    this.queryService
+      .getDocPage(id, offset, length)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((pageNumber: number) => {
         this.passagePageNumber = pageNumber;
         this.scrollToPage();

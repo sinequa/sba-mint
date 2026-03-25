@@ -1,8 +1,8 @@
-import { Environment } from './env.model';
+import { Environment } from "./env.model";
 
 export const environment: Environment = {
   production: false,
-  app: 'mint_rnd',
+  app: "agent"
   // autoSAMLProvider: 'identity-dev',
-  autoOAuthProvider: 'identity-dev'
+  // autoOAuthProvider: 'identity-dev'
 };

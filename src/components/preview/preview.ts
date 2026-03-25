@@ -1,14 +1,13 @@
-import { afterNextRender, Component, computed, DOCUMENT, effect, ElementRef, inject, signal, viewChild } from "@angular/core";
+import { afterNextRender, Component, computed, DOCUMENT, ElementRef, effect, inject, output, signal, viewChild } from "@angular/core";
+import { EventManager } from "@angular/platform-browser";
 import { provideTranslocoScope } from "@jsverse/transloco";
-
 import { Article as A } from "@sinequa/atomic";
 import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 import { cn, SheetService } from "@sinequa/ui";
-
 import { PreviewHeaderComponent } from "./preview-header/preview-header";
 import { PreviewNavbarComponent } from "./preview-navbar/preview-navbar";
 import { PreviewTabsComponent } from "./preview-tabs/preview-tabs";
-import { EventManager } from "@angular/platform-browser";
+import { PreviewContentComponent } from "./preview-content/preview-content";
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -28,7 +27,7 @@ type Article = A & {
 @Component({
   selector: "preview, Preview",
   providers: [provideTranslocoScope({ scope: "preview" })],
-  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch],
+  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch, PreviewContentComponent],
   templateUrl: "./preview.html",
   host: {
     "[class]": 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
@@ -44,6 +43,8 @@ export class PreviewComponent {
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
   protected readonly applicationService = inject(ApplicationService);
+
+  onClose = output();
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
