@@ -262,7 +262,7 @@
   --chart-5: oklch(0.448 0.119 151.328);
 
   --sidebar: var(--color-sage-950);
-  --sidebar-foreground: var(--color-sage-200);
+  --sidebar-foreground: var(--color-sage-700);
   --sidebar-primary: oklch(0.648 0.2 131.684);
   --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
   --sidebar-accent: oklch(from var(--color-sage-800) l c h / 30%);
