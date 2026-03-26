@@ -54,3 +54,35 @@ In order to open the preview drawer, multiple steps are at play:
 - When opening, the Drawer (`DrawerStackComponent`) takes the last selected article from the Selection Service (`SelectionHistoryService`) which is based on the Selection Store.
 - The found article is then injected into the children component, here being the Preview Drawer
 - The Preview then initializes itself based on the configuration to display the different elements (filters, tabs for the assistants)
+
+## Multi conversion
+
+### Workflow
+
+If configured on the platform side, it can be enabled with the customization JSON's feature flag `previewMultiConversion`.
+It is mainly handled inside `PreviewTabsComponent` which relies on the feature flag and and `previewData.conversions` data fetched after the initial preview loading.
+
+There are different steps going on:
+- Upon loading the preview, we get the `previewData` which contains its `conversions` data
+- Based on that and the feature flag, we select the first default conversion if any, or primary if any, and we display a dropdown at the end of the preview tabs to allow switching between them
+- Upon choosing a conversion, it is transmitted to `PreviewContentComponent` which will use it for a couple of interactions:
+  - use its URL for the preview iframe
+  - in case we have a selected passage, we check if the document is primary, and if not there are no possible highlighting so we force a scrolling to the page (only works if HTML) that we first get through the `queryService.getDocPage` Service
+- Choosing a conversion also emits it, which is then used by `PreviewNavbarComponent` to only display the button to toggle `AdvancedSearch` if the document is primary
+
+### Workflow Diagram
+
+```mermaid
+flowchart TD
+    A[Preview] -->|on loaded| B(PreviewData)
+    B --> C{Has conversions?}
+    D[previewMultiConversion feature flag] --> C
+    C -->|No conversions| E[Nothing displayed]
+    C -->|Disabled flag| E
+    C -->|Has conversions and flag enabled| F[Handles conversions]
+    F --> G{Has default conversions?}
+    G -->|Yes| H[Sets preview to first default conversion]
+    G -->|No| I{Has primary conversions?}
+    I -->|Yes| J[Sets preview to first primary conversion]
+    I -->|No| K[Sets preview to first conversion from the list]
+```

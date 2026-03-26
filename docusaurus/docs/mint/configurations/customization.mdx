@@ -364,7 +364,8 @@ For more details on each configuration, refer to the Mint and Sinequa documentat
 - `editablepartition`: whether this is an editable partition.
 - `allowChatDrawer`: enables the chat in the drawer.
 - `showAggregationItemCount`: displays the item counts for aggregations.
-- `userProfile`: user profile configuration, contains `enabled` to enable the feature and `customData` for any custom data to have in the profile form.
+- `userProfile`: user profile configuration, contains `enabled` to enable the feature, `data` to choose which default parameters to show (all are visible if not defined) ,and `customData` for any custom data to have in the profile form.
+- `previewMultiConversion`: enables the multi conversion feature for the preview.
 
 ## How to Use
 
@@ -384,8 +385,11 @@ For more details on each configuration, refer to the Mint and Sinequa documentat
         "quickFilter": true,
         "expandPreview": true,
         "userProfile": {
-            "enabled": true
-        }
+            "enabled": true,
+            "data": ["mail", "fullName"],
+            "customData": ["phoneNumber"]
+        },
+        "previewMultiConversion": true
     },
     ...
 }
