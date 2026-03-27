@@ -146,9 +146,9 @@
 }
 
 :root {
-  --logo-small-url: url('../assets/logo/logo-small.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url('../assets/logo/logo-small-white.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-light-small and
     --logo-light-large
@@ -262,7 +262,7 @@
   --chart-5: oklch(0.448 0.119 151.328);
 
   --sidebar: var(--color-sage-950);
-  --sidebar-foreground: var(--color-sage-700);
+  --sidebar-foreground: var(--color-sage-200);
   --sidebar-primary: oklch(0.648 0.2 131.684);
   --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
   --sidebar-accent: oklch(from var(--color-sage-800) l c h / 30%);
@@ -341,8 +341,8 @@
 }
 
 .dark {
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url('../assets/logo/logo-small-white.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-dark-small and
     --logo-dark-large
@@ -457,6 +457,24 @@
 }
 
 /*sidebar customizations*/
+[data-collapsible="icon"] app-sidebar-group-navigation [data-sidebar="menu-item"] {
+  align-items: center;
+}
+
+
+app-sidebar-group-navigation [data-sidebar="menu-button"] i.fa-fw {
+  font-size: 1rem;
+  width: 1rem;
+  text-align: center;
+  line-height: 1.5rem;
+}
+
+app-sidebar-group-navigation [data-sidebar="menu-button"] i > svg {
+  width: 1rem;
+  height: 1rem;
+  margin: auto;
+}
+
 [data-slot="sidebar-inner"] {
   border-top-right-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
@@ -488,10 +506,23 @@
   opacity: 0;
 }
 
-[data-sidebar="trigger"] button:hover {
+sidebar [data-sidebar="trigger"] button:hover,
+sheet-content [data-sidebar="trigger"] button:hover {
   background-color: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
 }
+
+sidebar [data-sidebar="trigger"] button:active,
+sheet-content [data-sidebar="trigger"] button:active {
+  background-color: var(--sidebar-active);
+}
+
+sidebar [data-sidebar="trigger"] button,
+sheet-content [data-sidebar="trigger"] button {
+  border-radius: 0.5rem;
+  color: var(--sidebar-foreground);
+}
+
 
 .heading-4 {
   @apply text-primary-foreground-muted text-xs font-semibold tracking-wider uppercase;
