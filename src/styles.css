@@ -13,6 +13,10 @@
 @source "../node_modules/@sinequa/agent";
 @source not "../docusaurus/";
 
+:root {
+  --mobile-header-height: 3.5rem;
+}
+
 *,
 *::before,
 *::after {

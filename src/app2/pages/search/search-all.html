@@ -51,6 +51,12 @@
       (selectAll)="selectAll()" />
   </div>
 
+  @if (allowAI() && hasRowCount()) {
+    <div class="mx-2.5 mt-2">
+      <app-search-overview class="block h-full w-full" />
+    </div>
+  }
+
   <div class="mb-8 flex gap-2">
     <!-- column 1 — main results -->
     <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
@@ -71,20 +77,21 @@
 
   <div class="flex h-(--search-content-height) gap-2">
     <!-- column 2 — main results -->
-    <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
+    <div
+      [class]="cn('relative flex w-full flex-col px-2.5', !allowAI() && !hasPreview() ? 'mx-auto sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl' : 'grow sm:w-[30%]')">
       <app-search-actions
         [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
         [result]="result()"
         [selectedAll]="selectedAll()"
         (selectAll)="selectAll()" />
 
-      <div class="grow overflow-y-auto">
+      <div class="overflow-y-auto">
         <ng-container *ngTemplateOutlet="resultsList" />
       </div>
     </div>
 
     <!-- column 3 -->
-    @if (hasRowCount()) {
+    @if (hasPreview() || (allowAI() && hasRowCount())) {
       <div
         [class]="cn('mx-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
         <div class="relative size-full">
@@ -94,15 +101,17 @@
             " />
 
           <!-- if assistant is allowed -->
-          <app-search-overview
-            [class]="
-              cn(
-                'absolute inset-0 hidden h-full w-full',
-                !hasPreview() && 'animate-slide-in-right',
-                hasPreview() && 'translate-x-full transform animate-slide-out-right opacity-0',
-                (currentKeys()?.text?.length || 0) > 0 && 'block'
-              )
-            " />
+          @if (allowAI()) {
+            <app-search-overview
+              [class]="
+                cn(
+                  'absolute inset-0 hidden h-full w-full',
+                  !hasPreview() && 'animate-slide-in-right',
+                  hasPreview() && 'translate-x-full transform animate-slide-out-right opacity-0',
+                  (currentKeys()?.text?.length || 0) > 0 && 'block'
+                )
+              " />
+          }
         </div>
       </div>
     }

@@ -9,6 +9,7 @@ import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
 import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import {
+  BreakpointObserverService,
   ChevronRightIcon,
   DebugIcon,
   FlagEnglishIconComponent,
@@ -20,6 +21,7 @@ import {
   SwitchComponent
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
+import { Placement } from "@floating-ui/dom";
 
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
@@ -66,6 +68,7 @@ export class SidebarUserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly breakpointService = inject(BreakpointObserverService);
 
   private readonly currentUrl = injectCurrentUrl();
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
@@ -95,6 +98,8 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+
+  readonly menuPosition = computed<Placement>(() => this.breakpointService.isMobile() ? "bottom-start" : "left-start");
 
   constructor() {
     // enable agent's debug mode
