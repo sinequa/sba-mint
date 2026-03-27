@@ -157,6 +157,9 @@ export class ChatNewPage {
   }
 
   toggleHistory(): void {
+    if (this.historyCollapsed() && !this.previewCollapsed()) {
+      this.closePreview();
+    }
     this.historyCollapsed.set(!this.historyCollapsed());
   }
 
