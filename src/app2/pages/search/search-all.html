@@ -13,7 +13,7 @@
       (selectAll)="selectAll()" />
   </div>
 
-  @if (allowAI()) {
+  @if (allowAI() && hasRowCount()) {
     <div class="mx-2.5 mt-2">
       <app-search-overview class="block h-full w-full" />
     </div>
@@ -100,7 +100,7 @@
 
     <!-- column 2 -->
     <!-- main results -->
-    <div [class]="cn('relative flex w-full grow flex-col px-2.5', allowAI() && 'sm:w-[30%]', !allowAI() && 'mx-auto sm:max-w-2xl')">
+    <div [class]="cn('relative flex w-full grow flex-col px-2.5', allowAI() ? 'sm:w-[30%]' : 'mx-auto sm:max-w-2xl')">
       <app-search-actions
         [class]="
           cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')
@@ -162,7 +162,7 @@
     </div>
 
     <!-- column 3 -->
-    @if (hasPreview() || allowAI()) {
+    @if (hasPreview() || (allowAI() && hasRowCount())) {
       <div
         [class]="
           cn(
