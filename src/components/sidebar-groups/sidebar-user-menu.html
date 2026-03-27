@@ -8,13 +8,13 @@
   <Separator />
 } @else {
   <!-- language selection -->
-  <menu position="left-start" class="dropdown-content">
+  <menu class="dropdown-content">
     <MenuItem>
       <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
       <ChevronRight class="size-4" />
     </MenuItem>
 
-    <MenuContent position="left-start" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+    <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
       @for (lang of AllLanguages; track lang.code) {
         <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
           <span>{{ lang.label }}</span>
@@ -31,14 +31,14 @@
 }
 
 <!-- theme selection -->
-<menu position="left-start" class="dropdown-content">
+<menu class="dropdown-content">
   <MenuItem>
     <i class="fa-fw fal fa-palette text-[16px]"></i>
     <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
     <ChevronRight class="size-4" />
   </MenuItem>
 
-  <MenuContent position="left-start" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+  <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
     @for (theme of AllThemes; track theme.name) {
       <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
         <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>

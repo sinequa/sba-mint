@@ -150,7 +150,7 @@
 
   --logo-small-url: url('../assets/logo/logo-small.svg');
   --logo-large-url: url('../assets/logo/logo-sinequa.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-light-small and
     --logo-light-large
@@ -268,8 +268,8 @@
 
 .dark {
   color-scheme: dark;
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url('../assets/logo/logo-small-white.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-dark-small and
     --logo-dark-large

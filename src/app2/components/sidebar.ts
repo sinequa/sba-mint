@@ -35,7 +35,7 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
     UserIcon
 ],
   template: `
-    <sidebar collapsible="icon" class="border-none bg-background h-full">
+    <sidebar collapsible="icon" class="border-none h-full">
       <sidebar-header class="px-3 pt-6">
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
