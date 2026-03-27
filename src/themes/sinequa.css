@@ -1,4 +1,29 @@
 @theme inline {
+  --color-sage-50: #f5f8f7;
+  --color-sage-100: #e8f0ee;
+  --color-sage-200: #d1e1dd;
+  --color-sage-300: #a9c1b8;
+  --color-sage-400: #7a9b95;
+  --color-sage-500: #607c7f;
+  --color-sage-600: #5d7374;
+  --color-sage-700: #4f6162;
+  --color-sage-800: #445556; /* 👑 */
+  --color-sage-900: #374648; /* headers */
+  --color-sage-950: #2d393a; /* sidebar */
+  --color-sage-975: #222d30;
+
+  --color-almond-50: #f1f8f4;
+  --color-almond-100: #dcefe3; /* 👑 */
+  --color-almond-200: #bbdfca;
+  --color-almond-300: #8ec7a9;
+  --color-almond-400: #5fa884;
+  --color-almond-500: #3d8c69;
+  --color-almond-600: #2c6f52;
+  --color-almond-700: #235944;
+  --color-almond-800: #1e4737;
+  --color-almond-900: #193b2e;
+  --color-almond-950: rgb(13, 33, 26);
+
   --color-green-50: #f6faf5;
   --color-green-100: #e5eee3;
   --color-green-200: #c4d6c0;
@@ -46,6 +71,20 @@
   --color-blue-800: #253846;
   --color-blue-900: #1a2833;
   --color-blue-950: #101920;
+
+  /* Vivid blues — primary action colors */
+  --color-blue-vivid-100: #cce5ff;
+  --color-blue-vivid-300: #6699ff;
+  --color-blue-vivid-500: #0084ff; /* 👑 */
+  --color-blue-vivid-600: #0070dd;
+  --color-blue-vivid-700: #005acc;
+
+  /* Vivid reds — dark mode primary action colors */
+  --color-red-vivid-200: #ff6688;
+  --color-red-vivid-400: #ff1a66;
+  --color-red-vivid-500: #ff0055; /* 👑 */
+  --color-red-vivid-600: #ee0052;
+  --color-red-vivid-800: #992638;
 }
 
 :root {

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from "@angular/core";
+import { Component, DestroyRef, computed, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import { LoggerService } from "@sinequa/agent";
@@ -7,6 +7,7 @@ import { SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponen
 import { QueryClient } from "@tanstack/angular-query-experimental";
 import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
 import { MainSidebarComponent } from "./components/sidebar";
+import { injectCurrentUrl } from "../utils/routing";
 
 @Component({
   selector: "app-root",
@@ -28,6 +29,9 @@ export class AppComponent {
   private readonly applicationStore = inject(ApplicationStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly queryClient = inject(QueryClient);
+
+  private readonly currentUrl = injectCurrentUrl();
+  protected readonly isAuthRoute = computed(() => /^\/(login|logout|auth)/.test(this.currentUrl() ?? ""));
 
   constructor() {
     this.setupApplicationLanguage();

@@ -1,6 +1,8 @@
 <!-- Main content goes here -->
 <sidebar-provider [style.--sidebar-width-icon]="'4rem'">
-  <app-sidebar />
+  @if (!isAuthRoute()) {
+    <app-sidebar />
+  }
 
   <sidebar-inset class="w-95 overflow-hidden">
     <div>
