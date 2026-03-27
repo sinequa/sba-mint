@@ -10,7 +10,7 @@ import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightI
   imports: [ChevronRightIcon, CardContentComponent, AssistantComponent, CardComponent, CardHeaderComponent],
   template: `
     @if (allowAI()) {
-      <div class="h-[calc(100dvh-230px)] [--height:350px]">
+      <div class="h-full [--height:350px]">
         <Card variant="ai" hover="no" class="mb-4 h-full border-none bg-linear-to-r from-ai-from/20 via-ai-via/20 to-ai-to/20 shadow-none">
           <CardHeader class="flex cursor-pointer items-center gap-1 px-0 text-base font-semibold text-ai-card-foreground" (click)="onAssistantCollapse()">
             <div class="flex size-8 items-center justify-center">

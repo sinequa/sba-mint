@@ -79,7 +79,7 @@ type QueryParamsProps = {
       :host {
         /* to avoid z-index collisions */
         isolation: isolate;
-        --search-content-height: calc(100dvh - 230px);
+        --search-content-height: calc(100dvh - 210px);
       }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
