@@ -42,10 +42,10 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
     <main class="flex flex-1">
       <!-- for mobile -> action buttons fixed to top-right -->
       <div class="fixed top-0 right-0 z-20 flex h-14 items-center gap-1 px-2 md:hidden">
-        <button [variant]="'ghost'" [size]="'icon'" (click)="toggleHistory()" title="New Chat">
+        <button [variant]="'ghost'" [size]="'icon'" (click)="toggleHistory()" title="History">
           <history-icon />
         </button>
-        <button [variant]="'ghost'" [size]="'icon'" (click)="startNewChat()" title="History">
+        <button [variant]="'ghost'" [size]="'icon'" (click)="startNewChat()" title="New Chat">
           <new-chat-icon />
         </button>
       </div>
@@ -62,7 +62,7 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
               <div class="flex items-center justify-between">
                 <span class="font-semibold">History</span>
                 <button [variant]="'ghost'" [size]="'icon'" class="text-gray-800" (click)="toggleHistory()" aria-label="Close history">
-                  <xmark-icon></xmark-icon>
+                  <xmark-icon />
                 </button>
               </div>
               <!-- content -->
@@ -88,7 +88,7 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
             </div>
 
             <!-- agent -->
-            <div class="h-[calc(100vh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
+            <div class="h-[calc(100dvh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
               <AgentInjector [instanceId]="instanceId" />
             </div>
           </div>
