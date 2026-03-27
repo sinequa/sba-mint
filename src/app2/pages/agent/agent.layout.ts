@@ -1,21 +1,19 @@
 import { Component, DestroyRef, effect, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
-import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { HubConnectionState } from "@microsoft/signalr";
 import { AgentsStore, NotificationsService, SignalRWebService } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
 
 @Component({
   selector: "app-agent-layout",
-  imports: [SheetPreviewerComponent, RouterModule],
+  imports: [RouterModule],
   template: `
     <div class="grid relative">
       <div class="h-full overflow-y-auto scrollbar-none">
         <router-outlet />
       </div>
     </div>
-    <sheet-previewer />
   `
 })
 export class AgentLayoutComponent {

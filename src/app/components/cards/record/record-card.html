@@ -34,13 +34,13 @@
 
         <section class="flex items-center gap-2 text-xs">
           @if (docformatMetadata()) {
-            <Badge size="xs" decoration="outline" hover="yes" (click)="setFilter(docformatMetadata()!.field, docformatMetadata()!.value, $event)">
+            <Badge size="xs" variant="outline" hover="yes" (click)="setFilter(docformatMetadata()!.field, docformatMetadata()!.value, $event)">
               {{ docformatMetadata()!.value }}
             </Badge>
           }
 
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
-            @if ((article().authors || { authors: [''] }).length > 0) {
+            @if ((article().authors || { authors: [""] }).length > 0) {
               <span>
                 <i class="far fa-user mr-1"></i>
                 {{ article().authors[0] }}
@@ -49,7 +49,7 @@
             @if (article().modified) {
               <p class="flex items-baseline gap-1">
                 <i class="fa-fw far fa-calendar-day"></i>
-                <span class="w-max">{{ article()!.modified!.split(' ')[0] | translocoDate: 'mediumDate' }}</span>
+                <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
               </p>
             }
           </div>

@@ -51,7 +51,7 @@ import { firstValueFrom } from "rxjs";
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
         <div class="grid h-[calc(100vh-1rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[300px_1fr]">
-          <div class="scrollbar-stable scrollbar-thin hidden h-full space-y-2 overflow-y-auto pt-2 pb-2 pl-2 md:block">
+          <div class="scrollbar-stable scrollbar-thin hidden h-full space-y-2 overflow-y-auto pt-2 pb-2 pl-2 md:flex md:flex-col">
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
@@ -76,7 +76,7 @@ import { firstValueFrom } from "rxjs";
                 </section>
               }
             }
-            <section>
+            <section class="grow">
               <Aggregation #treepath name="Sources" column="treepath" showFiltersCount [collapsible]="true" class="p-4" />
             </section>
             <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->

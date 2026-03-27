@@ -1,5 +1,5 @@
 import { Location, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, Input, inject, input, model, signal, viewChild } from "@angular/core";
+import { Component, computed, Input, inject, input, model, output, signal, viewChild } from "@angular/core";
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
 import { AppStore, BookmarkButtonComponent, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
@@ -74,6 +74,8 @@ export class PreviewNavbarComponent {
     this.navConfig = { ...DEFAULT_CONFIG, ...config };
   }
 
+  onClose = output();
+
   /* used to toggle the extended view when not displayed inside the drawer */
   public readonly extended = model(false);
 
@@ -138,5 +140,6 @@ export class PreviewNavbarComponent {
     this.queryParamsStore.patch({ id: undefined });
     // clear the selection
     this.selectionStore.clear();
+    this.onClose.emit();
   }
 }

@@ -3,7 +3,8 @@
     class="block border-b border-muted-foreground/18"
     [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
     [(extended)]="extended"
-    [article]="article()" />
+    [article]="article()"
+    (onClose)="onClose.emit()" />
 
   <div class="@container relative mb-2 flex h-full flex-col gap-0.5">
     @if (article()) {
@@ -16,11 +17,13 @@
 
       <!-- Tab Navigation only if the "display summary is available " -->
       <preview-tabs class="h-full" (onConversionSelect)="conversion.set($event)" />
+    } @else {
+      <preview-content class="h-full" />
     }
   </div>
 </div>
 
 <advanced-search
-  class="max-w-(clamp(200px,350px,100%)) h-full overflow-y-auto border-l border-foreground/18 bg-menu"
+  [class]="cn('max-w-(clamp(200px,350px,100%)) h-full overflow-y-auto border-foreground/18 bg-menu', extended() && 'border-l')"
   [article]="article()"
   previewStrategy="replace" />

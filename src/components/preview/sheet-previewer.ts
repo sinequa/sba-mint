@@ -77,7 +77,7 @@ export class SheetPreviewerComponent {
   extended = signal(false);
 
   article = computed(() => {
-    const { article } = getState(this.selectionStore);
+    const article = this.selectionStore.article?.();
     if (article) {
       this.applicationService.setTitle(article.title || "Preview");
     }
