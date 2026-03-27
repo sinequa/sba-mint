@@ -1,9 +1,47 @@
+<!-- results list template — defined once, used in both mobile and desktop branches -->
+<ng-template #resultsList>
+  <!-- skeleton part -->
+  @if (query.isPending()) {
+    <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
+      @for (n of [1, 2, 3]; track $index) {
+        <li><CardSkeleton /></li>
+      }
+    </ul>
+  }
+  <!-- if results have been found -->
+  @else if (hasRowCount()) {
+    <!-- display all records -->
+    <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
+      @for (row of allRows(); track row.id) {
+        @let article = row;
+        <ng-container
+          *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace', allowAI: allowAI() && enabledUserInput() }" />
+      }
+    </ul>
+
+    <feedback
+      [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
+      [pages]="query.data()?.pages"
+      (onClose)="onFeedbackClose()" />
+
+    <!-- infinite scroll trigger -->
+    @if (query.hasNextPage()) {
+      <div infinity-scroll (onScroll)="nextPage()"></div>
+    }
+  }
+  <!-- if no results have been found -->
+  @else {
+    <NoResult class="mt-4 bg-warning text-warning-foreground" />
+  }
+</ng-template>
+
 <!-- on mobile devices use sheet previewer -->
 @if (isMobile()) {
   <div class="@container sticky top-17 z-5 mx-2 bg-background">
     @if (isTabSearchActive()) {
       <navbar-tabs class="**:[[role=tablist]]:justify-start lg:**:[[role=tablist]]:justify-center" />
     }
+
     <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
 
     <app-search-actions
@@ -14,57 +52,9 @@
   </div>
 
   <div class="mb-8 flex gap-2">
-    <!-- column 1 -->
-    <!-- main results -->
+    <!-- column 1 — main results -->
     <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
-      <!-- skeleton part -->
-      @if (query.isPending()) {
-        <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
-          @for (n of [1, 2, 3]; track $index) {
-            <li><CardSkeleton /></li>
-          }
-        </ul>
-      }
-      <!-- if results have been found -->
-      @else if (hasRowCount()) {
-        <!-- display all records -->
-        <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
-          @for (row of allRows(); track row.id) {
-            @let article = row;
-            <ng-container
-              *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace', allowAI: allowAI() && enabledUserInput() }" />
-          }
-        </ul>
-
-        <feedback
-          [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
-          [pages]="query.data()?.pages"
-          (onClose)="onFeedbackClose()" />
-
-        <!-- infinite scroll trigger -->
-        @if (query.hasNextPage()) {
-          <div infinity-scroll (onScroll)="nextPage()"></div>
-        }
-
-        <!-- pagination buttons -->
-        <!-- <div class="flex justify-end mt-6 gap-2">
-        <button
-          (click)="query.fetchPreviousPage()"
-          [disabled]="!query.hasPreviousPage() || query.isFetchingPreviousPage()">
-          {{ query.isFetchingPreviousPage() ? 'Loading...' : 'previous page' }}
-        </button>
-        <button
-          (click)="query.fetchNextPage()"
-          [disabled]="!query.hasNextPage() || query.isFetchingNextPage()">
-          {{ query.isFetchingNextPage() ? 'Loading...' : 'next page' }}
-        </button>
-      </div> -->
-      }
-      <!-- if no results have been found -->
-      @else {
-        <!-- display a panel to inform the user that no results were found -->
-        <NoResult class="mt-4 bg-warning text-warning-foreground" />
-      }
+      <ng-container *ngTemplateOutlet="resultsList" />
     </div>
   </div>
 
@@ -79,84 +69,24 @@
     <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
   </div>
 
-  <div class="mb-8 flex gap-2">
-    <!-- column 1 -->
-    <!-- [--height:350px] allows us to fix the aggregation's height to manage the overflow -->
-    @if (false) {
-      <div class="sticky top-48 mx-2 hidden h-[calc(100dvh-230px)] lg:block lg:w-[max(15%,300px)] lg:min-w-[min(30%,300px)]">
-        @if (query.isSuccess() && hasRowCount()) {
-          <aside-filters class="scrollbar-thin scrollbar-none h-[calc(100dvh-230px)] rounded-sm border border-aside-border bg-aside p-4 [--height:350px]" />
-        }
-      </div>
-    }
-
-    <!-- column 2 -->
-    <!-- main results -->
+  <div class="flex h-(--search-content-height) gap-2">
+    <!-- column 2 — main results -->
     <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
       <app-search-actions
-        [class]="
-          cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')
-        "
+        [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
         [result]="result()"
         [selectedAll]="selectedAll()"
         (selectAll)="selectAll()" />
 
-      <!-- skeleton part -->
-      @if (query.isPending()) {
-        <ul class="mt-4 flex flex-col gap-2 overflow-auto" aria-hidden="true">
-          @for (n of [1, 2, 3]; track $index) {
-            <li><CardSkeleton /></li>
-          }
-        </ul>
-      }
-      <!-- if results have been found -->
-      @else if (hasRowCount()) {
-        <!-- display all records -->
-        <ul class="mt-4 flex flex-col gap-2.5" role="list" aria-label="results">
-          @for (row of allRows(); track row.id) {
-            @let article = row;
-            <ng-container
-              *ngComponentOutlet="getArticleType(article?.docformat); inputs: { article, strategy: 'replace', allowAI: allowAI() && enabledUserInput() }" />
-          }
-        </ul>
-
-        <feedback
-          [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
-          [pages]="query.data()?.pages"
-          (onClose)="onFeedbackClose()" />
-
-        <!-- infinite scroll trigger -->
-        @if (query.hasNextPage()) {
-          <div infinity-scroll (onScroll)="nextPage()"></div>
-        }
-
-        <!-- pagination buttons -->
-        <!-- <div class="flex justify-end mt-6 gap-2">
-        <button
-          (click)="query.fetchPreviousPage()"
-          [disabled]="!query.hasPreviousPage() || query.isFetchingPreviousPage()">
-          {{ query.isFetchingPreviousPage() ? 'Loading...' : 'previous page' }}
-        </button>
-        <button
-          (click)="query.fetchNextPage()"
-          [disabled]="!query.hasNextPage() || query.isFetchingNextPage()">
-          {{ query.isFetchingNextPage() ? 'Loading...' : 'next page' }}
-        </button>
-      </div> -->
-      }
-      <!-- if no results have been found -->
-      @else {
-        <!-- display a panel to inform the user that no results were found -->
-        <NoResult class="mt-4 bg-warning text-warning-foreground" />
-      }
+      <div class="grow overflow-y-auto">
+        <ng-container *ngTemplateOutlet="resultsList" />
+      </div>
     </div>
 
     <!-- column 3 -->
     @if (hasRowCount()) {
       <div
-        [class]="
-          cn('sticky top-48 hidden h-[calc(100dvh-1px)] grow lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')
-        ">
+        [class]="cn('mx-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
         <div class="relative size-full">
           <preview
             [class]="
