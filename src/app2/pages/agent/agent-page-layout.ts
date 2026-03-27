@@ -7,10 +7,10 @@ import {
   AgentGenerationDirective,
   AgentInjector,
   CopyToClipboardDirective,
+  createAgentNewChatEvent,
   ErrorDirective,
   FeedbackDirective,
-  SavedChatComponent,
-  createAgentNewChatEvent
+  SavedChatComponent
 } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
@@ -42,10 +42,10 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
     <main class="flex flex-1">
       <!-- for mobile -> action buttons fixed to top-right -->
       <div class="fixed top-0 right-0 z-20 flex h-14 items-center gap-1 px-2 md:hidden">
-        <button [variant]="'ghost'" [size]="'icon'" (click)="toggleHistory()" title="History">
+        <button variant="ghost" size="icon" (click)="toggleHistory()" title="History">
           <history-icon />
         </button>
-        <button [variant]="'ghost'" [size]="'icon'" (click)="startNewChat()" title="New Chat">
+        <button variant="ghost" size="icon" (click)="startNewChat()" title="New Chat">
           <new-chat-icon />
         </button>
       </div>
@@ -62,7 +62,7 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
               <!-- header -->
               <div class="flex items-center justify-between">
                 <span class="font-semibold">History</span>
-                <button [variant]="'ghost'" [size]="'icon'" class="text-gray-800" (click)="toggleHistory()" aria-label="Close history">
+                <button variant="ghost" size="icon" (click)="toggleHistory()" aria-label="Close history">
                   <xmark-icon />
                 </button>
               </div>
@@ -80,10 +80,10 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
           <div class="flex h-full flex-col">
             <!-- buttons -->
             <div class="hidden shrink-0 items-center gap-2 bg-background px-2 pt-6 pb-2 md:flex">
-              <button class="text-gray-800" [variant]="'ghost'" [size]="'icon'" (click)="toggleHistory()">
+              <button variant="ghost" size="icon" (click)="toggleHistory()">
                 <history-icon />
               </button>
-              <button class="text-gray-800" [variant]="'ghost'" [size]="'icon'" (click)="startNewChat()">
+              <button variant="ghost" size="icon" (click)="startNewChat()">
                 <new-chat-icon />
               </button>
             </div>
@@ -169,3 +169,4 @@ export class AgentPageLayoutComponent {
     this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
   }
 }
+
