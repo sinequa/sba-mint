@@ -77,14 +77,15 @@
 
   <div class="flex h-(--search-content-height) gap-2">
     <!-- column 2 — main results -->
-    <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
+    <div
+      [class]="cn('relative flex w-full flex-col px-2.5', !allowAI() && !hasPreview() ? 'mx-auto sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl' : 'grow sm:w-[30%]')">
       <app-search-actions
         [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
         [result]="result()"
         [selectedAll]="selectedAll()"
         (selectAll)="selectAll()" />
 
-      <div class="grow overflow-y-auto">
+      <div class="overflow-y-auto">
         <ng-container *ngTemplateOutlet="resultsList" />
       </div>
     </div>
