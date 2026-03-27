@@ -1,8 +1,8 @@
 import { Component, computed, effect, inject, output, signal } from "@angular/core";
-import { PreviewNavbarComponent } from "@components/preview/preview-navbar/preview-navbar";
-import { PreviewHeaderComponent } from "@components/preview/preview-header/preview-header";
-import { Article as A } from "@sinequa/atomic";
 import { PreviewContentComponent } from "@components/preview/preview-content/preview-content";
+import { PreviewHeaderComponent } from "@components/preview/preview-header/preview-header";
+import { PreviewNavbarComponent } from "@components/preview/preview-navbar/preview-navbar";
+import { Article as A } from "@sinequa/atomic";
 import { CConverter, PreviewService } from "@sinequa/atomic-angular";
 
 type Article = A & {
@@ -49,7 +49,7 @@ export class AgentPreview {
     effect(() => {
       const events = this.previewService.events();
 
-      if (events == "loading") {
+      if (events === "loading") {
         this.article.set(undefined);
       }
 

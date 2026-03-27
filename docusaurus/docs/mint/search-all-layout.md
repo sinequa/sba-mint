@@ -60,4 +60,4 @@
 | **COL 3 — Droite** | `mx-4` + `overflow-hidden` sur le conteneur. Panneau coulissant : soit `preview` (document sélectionné), soit `app-search-overview` (AI assistant) — mutuellement exclusifs via animation slide. Les deux composants restent **toujours dans le DOM** (voulu) pour éviter le destroy/recreate et conserver leur état entre les transitions. |
 | **sheet-previewer** | Version mobile du panneau preview (drawer) |
 | **feedback** | Bouton flottant fixe (bottom-3), masqué en mobile |
-| **--search-content-height** | CSS variable définie dans `:host` = `calc(100dvh - 230px)`, utilisée pour la hauteur du conteneur desktop |
+| **--search-content-height** | CSS variable définie dans `:host` = `calc(100dvh - 210px)`, utilisée pour la hauteur du conteneur desktop |

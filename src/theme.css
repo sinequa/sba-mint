@@ -162,6 +162,7 @@
   --color-header-foreground: var(--header-foreground);
   --color-menu: var(--menu);
   --color-menu-foreground: var(--menu-foreground);
+  --color-backdrop: var(--backdrop);
 
   --color-ai-from: var(--ai-from);
   --color-ai-via: var(--ai-via);
