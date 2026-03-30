@@ -147,8 +147,8 @@
 
 :root {
   --logo-small-url: url('../assets/logo/logo-small-white.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa.svg');
+  --logo-large-url: url('../assets/logo/logo-sinequa.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
     --logo-light-small and
     --logo-light-large
@@ -350,6 +350,7 @@
   */
   --logo-small: var(--logo-dark-small, var(--logo-small-url));
   --logo-large: var(--logo-dark-large, var(--logo-large-url));
+
 
   --background: var(--color-sage-975);
   --foreground: oklch(0.985 0 0);
