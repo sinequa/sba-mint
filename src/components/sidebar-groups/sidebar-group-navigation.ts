@@ -7,7 +7,8 @@ import {
   SidebarGroupLabelComponent,
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
-  SidebarMenuItemComponent
+  SidebarMenuItemComponent,
+  useSidebar
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
 import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
@@ -25,7 +26,8 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
               routerLink="/home"
               routerLinkActive="active"
               #rlaHome="routerLinkActive"
-              [attr.data-active]="rlaHome.isActive || null">
+              [attr.data-active]="rlaHome.isActive || null"
+              (click)="closeSidebarOnMobile()">
               <i tooltip="Home" tooltip-position="right" class="fa-fw far fa-home" aria-hidden="true"></i>
               <span class="text-sm" sr-only>Home</span>
             </sidebar-menu-button>
@@ -38,7 +40,8 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
                 routerLink="/search"
                 routerLinkActive="active"
                 #rlaSearch="routerLinkActive"
-                [attr.data-active]="rlaSearch.isActive || null">
+                [attr.data-active]="rlaSearch.isActive || null"
+                (click)="closeSidebarOnMobile()">
                 <i tooltip="Search" tooltip-position="right" class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
                 <span class="text-sm" sr-only>Search</span>
               </sidebar-menu-button>
@@ -74,10 +77,17 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
 export class SidebarGroupNavigationComponent {
   private readonly appStore = inject(AppStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  readonly sidebar = useSidebar();
 
   allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ""));
 
   private readonly currentUrl = injectCurrentUrl();
 
   readonly isSearchRoute = computed(() => this.currentUrl()?.startsWith("/search") ?? false);
+
+  closeSidebarOnMobile() {
+    if (this.sidebar.isMobile()) {
+      this.sidebar.setOpenMobile(false);
+    }
+  }
 }
