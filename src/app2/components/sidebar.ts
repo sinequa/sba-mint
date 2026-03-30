@@ -5,8 +5,32 @@ import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/side
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
 import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
-import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserProfileDialog, UserProfileService } from "@sinequa/atomic-angular";
-import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentComponent, Sidebar, SidebarContentComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemComponent, SidebarTriggerComponent, TooltipDirective, useSidebar, AvatarImageComponent, UserIcon } from "@sinequa/ui";
+import {
+  AppStore,
+  OverrideUserDialogComponent,
+  PrincipalStore,
+  ResetUserSettingsDialogComponent,
+  UserProfileDialog,
+  UserProfileService
+} from "@sinequa/atomic-angular";
+import {
+  AvatarComponent,
+  AvatarFallbackComponent,
+  AvatarImageComponent,
+  MenuComponent,
+  MenuContentComponent,
+  Sidebar,
+  SidebarContentComponent,
+  SidebarFooterComponent,
+  SidebarHeaderComponent,
+  SidebarMenuButtonComponent,
+  SidebarMenuComponent,
+  SidebarMenuItemComponent,
+  SidebarTriggerComponent,
+  TooltipDirective,
+  UserIcon,
+  useSidebar
+} from "@sinequa/ui";
 
 @Component({
   selector: "app-sidebar",
@@ -33,14 +57,14 @@ import { AvatarComponent, AvatarFallbackComponent, MenuComponent, MenuContentCom
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
     UserIcon
-],
+  ],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
       <sidebar-header class="px-3 pt-6">
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
             class="h-8 w-32 bg-contain bg-left bg-no-repeat group-data-[collapsible=icon]:hidden"
-            style="background-image: var(--logo-large)"></div>
+            style="background-image: var(--logo-large-alt)"></div>
           <div
             class="logo-collapse-container relative hidden size-8 items-center justify-center group-data-[collapsible=icon]:flex">
             <div
@@ -175,7 +199,7 @@ export class MainSidebarComponent {
 
     return fullName
       .split(" ")
-      .map((word) => word[0].toUpperCase())
+      .map(word => word[0].toUpperCase())
       .join("");
   });
 
