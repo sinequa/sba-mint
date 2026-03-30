@@ -148,7 +148,7 @@
 :root {
   --logo-small-url: url('../assets/logo/logo-small-white.svg');
   --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa-white.svg');
+  --logo-large-alt-url: url('../assets/logo/logo-sinequa.svg');
   /*
     --logo-light-small and
     --logo-light-large
@@ -173,17 +173,17 @@
   --primary: var(--color-sage-800);
   --primary-foreground: var(--color-sage-50);
   --primary-hovered: var(--color-sage-950);
-  --primary-hovered-foreground: var(--color-white);
+  --primary-hovered-foreground: var(--color-sage-900);
+  --primary-foreground-hovered: var(--color-sage-900);
   --primary-pressed: var(--color-sage-300);
   --primary-pressed-foreground: var(--color-black);
+  --primary-foreground-pressed: var(--color-black);
   --primary-active: var(--color-primary);
   --primary-active-foreground: var(--color-white);
   --primary-disabled: var(--color-disabled);
   --primary-disabled-foreground: var(--color-muted);
   --primary-foreground-base: var(--color-sage-800);
   --primary-foreground-muted: var(--color-sage-500);
-  --primary-foreground-hovered: var(--color-sage-900);
-  --primary-foreground-pressed: var(--color-black);
   --primary-light: var(--color-sage-200);
   --primary-lighter: var(--color-sage-100);
   --primary-lightest: var(--color-sage-50);
@@ -363,16 +363,17 @@
   --primary: var(--color-sage-950);
   --primary-foreground: var(--color-sage-300);
   --primary-hovered: var(--color-sage-900);
+  --primary-foreground-hovered: var(--color-sage-50);
+  --primary-hovered-foreground: var(--color-sage-50);
   --primary-pressed: var(--color-sage-800);
   --primary-pressed-foreground: var(--color-sage-300);
+  --primary-foreground-pressed: var(--color-sage-50);
   --primary-active: var(--color-sage-600);
   --primary-active-foreground: var(--color-sage-50);
   --primary-disabled: var(--color-sage-800);
   --primary-disabled-foreground: var(--color-sage-500);
   --primary-foreground-base: var(--color-sage-100);
   --primary-foreground-muted: var(--color-sage-300);
-  --primary-foreground-hovered: var(--color-sage-50);
-  --primary-foreground-pressed: var(--color-sage-50);
   --primary-light: var(--color-sage-700);
   --primary-lighter: var(--color-sage-900);
   --primary-lightest: var(--color-sage-950);
