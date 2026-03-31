@@ -19,15 +19,15 @@
       }
     </ul>
 
+    <!-- infinite scroll trigger -->
+    @if (query.hasNextPage()) {
+      <div class="h-3.75" infinity-scroll (onScroll)="nextPage()"></div>
+    }
+
     <feedback
       [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
-
-    <!-- infinite scroll trigger -->
-    @if (query.hasNextPage()) {
-      <div infinity-scroll (onScroll)="nextPage()"></div>
-    }
   }
   <!-- if no results have been found -->
   @else {
