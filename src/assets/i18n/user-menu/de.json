@@ -9,9 +9,11 @@
   "resetUserSettings": "Benutzereinstellungen zurücksetzen",
   "revertOverride": "Benutzerüberschreibung zurücknehmen",
   "selectLanguage": "Sprache auswählen",
+  "manageProfile": "Profil verwalten",
   "selectTheme": "Thema auswählen",
   "lightMode": "Licht",
   "darkMode": "Dunkel",
   "systemMode": "System",
-  "help": "Hilfe"
+  "help": "Hilfe",
+  "changePassword": "Passwort ändern"
 }

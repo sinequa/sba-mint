@@ -90,12 +90,12 @@
 :root {
   color-scheme: light;
 
-  --logo-small-url: url('../assets/logo/small.svg');
-  --logo-large-url: url('../assets/logo/large.svg');
+  --logo-small-url: url("../assets/logo/small.svg");
+  --logo-large-url: url("../assets/logo/large.svg");
   --logo-small: var(--logo-light-small, var(--logo-small-url));
   --logo-large: var(--logo-light-large, var(--logo-large-url));
   --logo-large-alt: var(--logo-large);
-  --logo-alt-text: 'Sinequa logo';
+  --logo-alt-text: "Sinequa logo";
 
   --radius: 0.375rem;
   --radius-button: var(--radius-md);
@@ -115,58 +115,33 @@
   --header: light-dark(var(--color-gray-50), var(--color-gray-800));
   --menu: var(--background);
 
-  --primary: light-dark(var(--color-blue-vivid-500), var(--color-red-vivid-500));
+  --primary: light-dark(#0084ff, #ff0055);
   --primary-foreground: light-dark(var(--background), var(--foreground));
-  --primary-hovered: light-dark(var(--color-blue-vivid-600), var(--color-red-vivid-400));
+  --primary-hovered: light-dark(#0070dd, #ff1a66);
   --primary-hovered-foreground: light-dark(var(--color-white), var(--color-white));
-  --primary-pressed: light-dark(var(--color-blue-vivid-700), var(--color-red-vivid-600));
+  --primary-pressed: light-dark(#005acc, #ee0052);
   --primary-pressed-foreground: light-dark(var(--color-white), var(--color-white));
-  --primary-active: light-dark(var(--color-blue-vivid-500), var(--color-red-vivid-500));
+  --primary-active: light-dark(#0084ff, #ff0055);
   --primary-active-foreground: light-dark(var(--color-white), var(--color-white));
-  --primary-disabled: light-dark(var(--color-blue-vivid-100), var(--color-red-vivid-800));
-  --primary-disabled-foreground: light-dark(var(--color-blue-vivid-300), var(--color-red-vivid-200));
-  --primary-foreground-base: light-dark(var(--color-blue-800), var(--color-red-200));
-  --primary-foreground-muted: light-dark(var(--color-blue-500), var(--color-red-400));
-  --primary-foreground-hovered: light-dark(var(--color-blue-900), var(--color-red-100));
-  --primary-foreground-pressed: light-dark(var(--color-black), var(--color-white));
-  --primary-light: light-dark(var(--color-blue-200), var(--color-red-800));
-  --primary-lighter: light-dark(var(--color-blue-100), var(--color-red-900));
-  --primary-lightest: light-dark(var(--color-blue-50), var(--color-red-950));
-  --primary-foreground-dark: light-dark(var(--color-blue-950), var(--color-red-50));
+  --primary-disabled: light-dark(#cce5ff, #992638);
+  --primary-disabled-foreground: light-dark(#6699ff, #ff6688);
 
-  --secondary: light-dark(var(--color-blue-100), var(--color-red-950));
-  --secondary-foreground: light-dark(var(--color-blue-900), var(--color-red-100));
-  --secondary-hovered: light-dark(var(--color-blue-100), var(--color-red-900));
-  --secondary-hovered-foreground: light-dark(var(--color-blue-900), var(--color-red-200));
-  --secondary-pressed: light-dark(var(--color-blue-200), var(--color-red-800));
-  --secondary-pressed-foreground: light-dark(var(--color-blue-950), var(--color-red-200));
-  --secondary-active: light-dark(#fff, var(--color-red-700));
-  --secondary-active-foreground: light-dark(var(--color-primary), var(--color-red-50));
-  --secondary-disabled: light-dark(var(--color-disabled), var(--color-red-900));
-  --secondary-disabled-foreground: light-dark(var(--color-muted), var(--color-red-500));
-  --secondary-base-alt: light-dark(var(--color-blue-800), var(--color-red-200));
-  --secondary-foreground-hovered: light-dark(var(--color-blue-900), var(--color-red-200));
-  --secondary-foreground-pressed: light-dark(var(--color-blue-950), var(--color-red-100));
-  --secondary-foreground-base-alt: light-dark(var(--color-blue-600), var(--color-red-300));
-  --secondary-light: light-dark(var(--color-blue-200), var(--color-red-800));
-  --secondary-lighter: light-dark(var(--color-blue-100), var(--color-red-900));
-  --secondary-lightest: light-dark(var(--color-blue-50), var(--color-red-950));
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --secondary-hovered: light-dark(var(--color-sage-100), var(--color-sage-900));
+  --secondary-hovered-foreground: light-dark(var(--color-sage-900), var(--color-sage-800));
+  --secondary-pressed: light-dark(var(--color-sage-200), var(--color-sage-800));
+  --secondary-pressed-foreground: light-dark(var(--color-sage-950), var(--color-sage-300));
+  --secondary-active: light-dark(#fff, var(--color-sage-600));
+  --secondary-active-foreground: light-dark(var(--color-primary), var(--color-sage-50));
+  --secondary-disabled: light-dark(var(--color-neutral-disabled), var(--color-sage-800));
+  --secondary-disabled-foreground: light-dark(var(--color-neutral-muted), var(--color-sage-500));
 
   --muted: light-dark(oklch(0.967 0.001 286.375), oklch(0.274 0.006 286.033));
   --muted-foreground: light-dark(oklch(0.552 0.016 285.938), oklch(0.705 0.015 286.067));
-  --accent: light-dark(var(--color-orange-100), var(--color-green-500));
-  --accent-foreground: light-dark(var(--color-orange-900), var(--color-green-50));
-
+  --accent: light-dark(var(--color-pink-200), oklch(51.654% 0.01253 285.892));
+  --accent-foreground: light-dark(var(--color-pink-900), oklch(0.985 0 0));
   --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
-  --destructive-hovered: light-dark(var(--color-red-700), var(--color-red-400));
-  --destructive-pressed: light-dark(var(--color-red-300), var(--color-red-700));
-  --destructive-alt: light-dark(var(--color-red-200), var(--color-red-800));
-  --destructive-lighter: light-dark(var(--color-red-100), var(--color-red-900));
-  --destructive-lightest: light-dark(var(--color-red-50), var(--color-red-950));
-  --destructive-foreground: light-dark(var(--color-red-800), var(--color-red-100));
-  --destructive-foreground-muted: light-dark(var(--color-red-600), var(--color-red-300));
-  --destructive-foreground-light: light-dark(var(--color-red-200), var(--color-red-800));
-
   --border: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 10%));
   --input: light-dark(oklch(0.92 0.004 286.32), oklch(1 0 0 / 15%));
   --ring: var(--color-primary);
