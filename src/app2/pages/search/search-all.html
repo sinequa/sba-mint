@@ -97,7 +97,11 @@
         <div class="relative size-full">
           <preview
             [class]="
-              cn('absolute inset-0 size-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right opacity-0')
+              cn(
+                'absolute inset-0 size-full',
+                hasPreview() && 'z-0 animate-slide-in-right',
+                !hasPreview() && 'z-1 translate-x-full animate-slide-out-right opacity-0'
+              )
             " />
 
           <!-- if assistant is allowed -->
@@ -106,8 +110,8 @@
               [class]="
                 cn(
                   'absolute inset-0 hidden h-full w-full',
-                  !hasPreview() && 'animate-slide-in-right',
-                  hasPreview() && 'translate-x-full transform animate-slide-out-right opacity-0',
+                  !hasPreview() && 'z-0 animate-slide-in-right',
+                  hasPreview() && 'z-1 translate-x-full transform animate-slide-out-right opacity-0',
                   (currentKeys()?.text?.length || 0) > 0 && 'block'
                 )
               " />
