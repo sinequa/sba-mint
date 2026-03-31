@@ -58,8 +58,9 @@
   }
 
   /* Animating `display` as a discrete property requires Chrome 116+, Firefox 117+, Safari 17.4+.
-     The 0%/1% split ensures the element is hidden before the animation starts (slide-in)
-     and after it ends (slide-out), preventing flash of invisible content. */
+     `slide-out-right` uses a 99%/100% split to apply `display: none` after the element
+     has fully translated out, keeping it out of the DOM flow. `forwards` retains the
+     final keyframe state after both animations end. */
   --animate-slide-in-right: slide-in-right 0.3s ease-out forwards;
   @keyframes slide-in-right {
     0% {
