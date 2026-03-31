@@ -6,8 +6,7 @@ import {
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
   SidebarMenuItemComponent,
-  TooltipDirective,
-  useSidebar
+  TooltipDirective
 } from "@sinequa/ui";
 
 @Component({
@@ -17,8 +16,7 @@ import {
   @if(allowAgent()) {
     <sidebar-menu>
       <sidebar-menu-item aria-label="Agent">
-        <sidebar-menu-button class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null"
-          (click)="closeSidebarOnMobile()">
+        <sidebar-menu-button class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
           <i tooltip="Agent" tooltip-position="right" class="fa-fw far fa-robot [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true"></i>
           <span class="text-sm" sr-only>Agent</span>
         </sidebar-menu-button>
@@ -32,18 +30,10 @@ import {
   }
 })
 export class SidebarGroupAgentComponent {
-  readonly sidebar = useSidebar();
-
   private readonly appStore = inject(AppStore);
-
   private readonly instanceId = inject(AGENT_INSTANCE_ID);
+
   protected readonly allowAgent = computed(() => {
     return !!this.appStore.isAgentAllowed(this.instanceId);
   });
-
-  closeSidebarOnMobile() {
-    if (this.sidebar.isMobile()) {
-      this.sidebar.setOpenMobile(false);
-    }
-  }
 }
