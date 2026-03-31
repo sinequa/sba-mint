@@ -8,6 +8,7 @@
     "docs:ci": "cd docusaurus && npm ci",
     "docs:start": "npm run start:docs",
     "ng": "ng",
+    "postinstall": "npm run transloco:extract-scoped-libs",
     "prepare": "husky",
     "prettier:check": "prettier --config .prettierrc --check src/**/*.html",
     "prettier:write": "prettier --config .prettierrc --write src/**/*.html",
