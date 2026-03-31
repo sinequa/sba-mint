@@ -1,30 +1,33 @@
 {
   "name": "sinequa-mint",
-  "version": "11.13.0",
+  "version": "11.14.0",
   "scripts": {
     "build": "ng build",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal",
     "docs:ci": "cd docusaurus && npm ci",
     "docs:start": "npm run start:docs",
-    "lint": "ng lint",
     "ng": "ng",
     "postinstall": "npm run transloco:extract-scoped-libs",
     "prepare": "husky",
-    "prettier:check": "prettier --config .prettierrc --check src/**/*.{js,ts,html,scss,css,json}",
-    "prettier:write": "prettier --config .prettierrc --write src/**/*.{js,ts,html,scss,css,json}",
+    "prettier:check": "prettier --config .prettierrc --check src/**/*.html",
+    "prettier:write": "prettier --config .prettierrc --write src/**/*.html",
     "start": "ng serve",
     "start:docs": "cd docusaurus && npm start",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
     "t:extract": "transloco-scoped-libs",
     "test": "ng test",
     "transloco:extract-scoped-libs": "npm run t:extract",
-    "watch": "ng build --watch --configuration development"
+    "watch": "ng build --watch --configuration development",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "lint-staged": {
-    "*.{js,ts,html,scss,css,json}": [
-      "prettier --write"
-    ]
+    "*.{js,ts}": "npm run lint",
+    "*.w{js,ts,scss,css,json}": "oxfmt --no-error-on-unmatched-pattern",
+    "*.html": "prettier --write"
   },
   "private": true,
   "dependencies": {
@@ -47,10 +50,11 @@
     "@microsoft/signalr": "^7.0.14",
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
-    "@sinequa/assistant": "^3.10.11",
+    "@sinequa/agent": "4.0.0",
+    "@sinequa/assistant": "4.0.0",
     "@sinequa/atomic": "^0.0.139",
-    "@sinequa/atomic-angular": "^0.4.22",
-    "@sinequa/ui": "^0.2.12",
+    "@sinequa/atomic-angular": "0.4.33",
+    "@sinequa/ui": "^0.2.16",
     "@tailwindcss/postcss": "^4.1.3",
     "@tanstack/angular-query-experimental": "^5.40.0",
     "@tanstack/angular-virtual": "^4.0.7",
@@ -67,15 +71,22 @@
     "prismjs-components-importer": "^0.2.0",
     "rxjs": "~7.8.0",
     "safecolor": "^1.0.1",
+    "shiki": "^3.22.0",
+    "tailwindcss": "^4.1.18",
     "tslib": "^2.3.0",
     "vanillajs-datepicker": "^1.3.4",
+    "xstate": "^5.28.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.15",
+    "@biomejs/biome": "2.3.14",
     "@jsverse/transloco-scoped-libs": "^7.0.1",
+    "@shikijs/markdown-it": "^3.22.0",
+    "@statelyai/inspect": "^0.4.0",
+    "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.16",
     "@types/flowjs": "^2.13.14",
     "@types/markdown-it": "^14.1.2",
@@ -84,14 +95,16 @@
     "autoprefixer": "^10.4.16",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.1",
-    "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
+    "oxfmt": "^0.31.0",
+    "oxlint": "^1.46.0",
+    "oxlint-tsgolint": "^0.12.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
     "prettier-plugin-package": "^1.4.0",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwind-merge": "^2.2.2",
-    "tailwindcss": "^4.1.3",
     "typescript": "~5.8.3",
-    "zod": "^3.24.2"
+    "zod": "^4.1.9"
   },
   "overrides": {
     "ajv": "8.18.0"

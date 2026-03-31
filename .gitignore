@@ -52,6 +52,7 @@ docusaurus/node_modules/*
 
 /src/assets/i18n/recent-searches
 /src/assets/i18n/saved-searches
+/src/assets/i18n/user-profile
 /src/assets/i18n/bookmarks
 /src/assets/i18n/collections
 /src/assets/i18n/alerts

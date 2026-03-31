@@ -25,7 +25,8 @@
     "paths": {
       "@components/*": ["./src/components/*"],
       "@config/*": ["./src/config/*"],
-      "@registry/*": ["./src/registry/*"]
+      "@registry/*": ["./src/registry/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "angularCompilerOptions": {
