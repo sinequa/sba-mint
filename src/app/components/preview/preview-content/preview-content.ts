@@ -1,15 +1,15 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
+import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 
-import { rxResource } from '@angular/core/rxjs-interop';
-import { BreakpointObserverService, cn } from '@sinequa/ui';
-import { catchError, of } from 'rxjs';
-import { PreviewActionsComponent } from './preview-actions';
+import { rxResource } from "@angular/core/rxjs-interop";
+import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { catchError, of } from "rxjs";
+import { PreviewActionsComponent } from "./preview-actions";
 
 /**
  * Preview content component
@@ -25,23 +25,23 @@ import { PreviewActionsComponent } from './preview-actions';
  * It also includes preview actions and navigation controls.
  */
 @Component({
-  selector: 'preview-content',
+  selector: "preview-content",
   imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
-        <i class="fa-fw far fa-spinner fa-spin text-primary mb-6 text-6xl"></i>
+        <i class="fa-fw far fa-spinner fa-spin mb-6 text-6xl text-primary"></i>
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
-      <div class="relative flex h-[calc(100%_-_0.5rem)] flex-col gap-4">
-        <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
-        <preview-actions [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
-        <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
+      <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
+        <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
+        <preview-actions [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
-          <i class="fa-fw far fa-image text-secondary mb-6 text-6xl"></i><br />
+          <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
           {{ 'previewUnavailable' | transloco }}
         </p>
       </div>
@@ -58,7 +58,7 @@ import { PreviewActionsComponent } from './preview-actions';
 })
 export class PreviewContentComponent {
   cn = cn;
-  iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
+  iframe = viewChild<ElementRef<HTMLIFrameElement>>("preview");
 
   breakpointService = inject(BreakpointObserverService);
   protected readonly appStore = inject(AppStore);
@@ -67,7 +67,7 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
+  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
   /**
    * The article to be previewed.
@@ -92,8 +92,9 @@ export class PreviewContentComponent {
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const id = this.id() || getState(this.selectionStore).id || '';
-      const { queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
+      const id = this.id() || this.selectionStore.id?.() || "";
+      const queryText = this.selectionStore.queryText?.() || "";
+      const previewHighlights = this.selectionStore.previewHighlights?.() || { highlights: [] };
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: undefined,
@@ -147,10 +148,10 @@ export class PreviewContentComponent {
     loader: async ({ params }) => {
       try {
         if (!params.url || !params.previewData?.documentCachedContentUrl) {
-          throw new Error('Invalid parameters for preview validation');
+          throw new Error("Invalid parameters for preview validation");
         }
 
-        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: 'HEAD' });
+        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: "HEAD" });
         return { isValid: response.status === 200 };
       } catch {
         // In case of an error during fetch, we consider the preview as invalid
@@ -191,7 +192,7 @@ export class PreviewContentComponent {
   onLoaded() {
     const { previewHighlights } = getState(this.selectionStore);
     if (previewHighlights?.snippetId !== undefined) {
-      const message = { action: 'select', id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
+      const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
 

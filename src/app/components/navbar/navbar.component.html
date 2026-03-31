@@ -1,5 +1,8 @@
 <a id="navbar-logo" routerLink="/home" class="ml-8 place-self-start transition-[margin-left_0.2s]">
-  <img id="logo" alt="logo" class="h-8 max-h-8 w-full content-[var(--logo-small)/var(--logo-alt-text)]" />
+  <img
+    id="logo"
+    alt="logo"
+    class="h-8 max-h-8 w-full content-[var(--logo-small)/var(--logo-alt-text)] sm:content-[var(--logo-large-alt)/var(--logo-alt-text)]" />
 </a>
 
 @if (showInput()) {
@@ -28,7 +31,7 @@
               <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
             </button>
 
-            <PopoverContent class="w-[380px] max-w-md min-w-sm" position="bottom-end">
+            <PopoverContent class="w-95 max-w-md min-w-sm" position="bottom-end">
               <ng-container [ngComponentOutlet]="menu.component"></ng-container>
             </PopoverContent>
           </Popover>
