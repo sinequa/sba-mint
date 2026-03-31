@@ -60,7 +60,11 @@
   --animate-slide-in-right: slide-in-right 0.3s ease-out;
   @keyframes slide-in-right {
     0% {
+      display: none
+    }
+    1% {
       opacity: 0;
+      display: block;
       transform: translateX(100%);
     }
     100% {
@@ -72,11 +76,16 @@
   @keyframes slide-out-right {
     0% {
       opacity: 1;
+      display: block;
       transform: translateX(0);
     }
-    100% {
+    99% {
       opacity: 0;
+      display: block;
       transform: translateX(100%);
+    }
+    100% {
+      display: none;
     }
   }
 }
