@@ -1,7 +1,7 @@
 ---
 
 layout: default
-title: Setup Multi-Selection Toolbar
+title: Set Up Multi-Selection Toolbar
 parent: Tutorial
 sidebar_position: 9
 ---
