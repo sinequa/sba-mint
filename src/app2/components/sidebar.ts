@@ -64,7 +64,7 @@ import {
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
             class="h-8 w-32 bg-contain bg-left bg-no-repeat group-data-[collapsible=icon]:hidden"
-            style="background-image: var(--logo-large-alt)"></div>
+            style="background-image: var(--logo-sidebar)"></div>
           <div
             class="logo-collapse-container relative hidden size-8 items-center justify-center group-data-[collapsible=icon]:flex">
             <div

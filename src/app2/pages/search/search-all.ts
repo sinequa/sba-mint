@@ -5,6 +5,7 @@ import { SearchOverviewComponent } from "@components/assistant-overview";
 import { CardSkeleton } from "@components/cards/record/skeleton";
 import { PreviewComponent } from "@components/preview/preview";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { fetchServerPage } from "@config/fetch-server-page";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
@@ -71,7 +72,8 @@ type QueryParamsProps = {
     SearchOverviewComponent,
     PreviewComponent,
     SheetPreviewerComponent,
-    SearchActionsComponent
+    SearchActionsComponent,
+    SearchWithAutocompleteComponent
   ],
   templateUrl: "./search-all.html",
   styles: [
@@ -79,7 +81,7 @@ type QueryParamsProps = {
       :host {
         /* to avoid z-index collisions */
         isolation: isolate;
-        --search-content-height: calc(100dvh - 210px);
+        --search-content-height: calc(100dvh - 100px);
       }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
