@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, effect, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
@@ -74,7 +74,7 @@ export class SidebarUserMenuComponent {
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
   agentInstanceId = inject(AGENT_INSTANCE_ID);
   allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
-  readonly debug = model<boolean>(false);
+
   /**
    * Determines whether password change functionality should be enabled for the current user.
    *
@@ -98,6 +98,7 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+  readonly debug = model(this.userSettingsStore.isDebugMode());
 
   readonly menuPosition = computed<Placement>(() => this.breakpointService.isMobile() ? "bottom-start" : "left-start");
 
@@ -120,6 +121,12 @@ export class SidebarUserMenuComponent {
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed", err));
   }
+
+  toggleDebugMode = effect(() => {
+    untracked(() => {
+      this.userSettingsStore.setDebugMode(this.debug());
+    });
+  })
 
   onChangePassword() {
     this.menus()?.forEach(m => {
