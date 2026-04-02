@@ -51,13 +51,12 @@
         [selectedAll]="selectedAll()"
         (selectAll)="selectAll()" />
 
-      @if (allowAI() && hasRowCount()) {
-        <div class="mx-2.5 mt-2">
-          <app-search-overview class="block h-full w-full" />
-        </div>
-      }
-
       <div class="min-h-0 flex-1 overflow-y-auto">
+        @if (allowAI() && hasRowCount()) {
+          <div class="mx-2.5 mt-2">
+            <app-search-overview class="block h-full w-full" />
+          </div>
+        }
         <ng-container *ngTemplateOutlet="resultsList" />
       </div>
     </div>
@@ -99,7 +98,7 @@
     <!-- column 3 -->
     @if (hasPreview() || (allowAI() && hasRowCount())) {
       <div
-        [class]="cn('mx-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
+        [class]="cn('m-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
         <div class="relative size-full">
           <preview
             [class]="
