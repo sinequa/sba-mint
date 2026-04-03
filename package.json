@@ -78,6 +78,9 @@
     "xstate": "^5.28.0",
     "zone.js": "~0.15.0"
   },
+  "overrides": {
+    "brace-expansion": "^5.0.0"
+  },
   "devDependencies": {
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
@@ -105,8 +108,5 @@
     "tailwind-merge": "^2.2.2",
     "typescript": "~5.8.3",
     "zod": "^4.1.9"
-  },
-  "overrides": {
-    "ajv": "8.18.0"
   }
 }
