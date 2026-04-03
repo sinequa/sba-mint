@@ -11,6 +11,11 @@
   <main class="flex h-[50vh] flex-col gap-16">
     <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
       <app-autocomplete [text]="searchText()" />
+      @if (allowFilters()) {
+        <SearchFooter>
+          <filters-bar [aggregations]="aggregations()" showMoreFiltersButton="false" [offset]="4" />
+        </SearchFooter>
+      }
     </app-search>
 
     <Tabs class="flex max-h-full grow flex-col">

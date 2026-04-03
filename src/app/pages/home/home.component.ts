@@ -7,10 +7,12 @@ import {
   AggregationsStore,
   ApplicationService,
   AppStore,
+  ApplicationService,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  FiltersBarComponent,
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
@@ -21,8 +23,8 @@ import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent }
 
 import { getState } from '@ngrx/signals';
 import { error, fetchQuery } from '@sinequa/atomic';
-import { ActiveSuggestion, AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
-import { SearchComponent } from '../../components/search/search.component';
+import { AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
+import { SearchComponent, SearchFooter } from '../../components/search/search.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
@@ -81,6 +83,8 @@ const homeFeatures: HomeTab[] = [
     TabComponent,
     TabContent,
     AppSidebarComponent,
+    SearchFooter,
+    FiltersBarComponent,
     TabsListComponent,
     Separator
   ],
@@ -103,11 +107,23 @@ export class HomeComponent {
   readonly autocompleteService = inject(AutocompleteService);
   readonly router = inject(Router);
   readonly appStore = inject(AppStore);
+  readonly generalSettings = this.appStore.general();
   readonly drawerStack = inject(DrawerStackService);
   readonly aggregationStore = inject(AggregationsStore);
   readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
   readonly applicationService = inject(ApplicationService);
+
+  readonly aggregations = computed(() => {
+    const filters = this.appStore.filters().filter(f => f.homepage === true);
+    return this.appStore.getAuthorized(filters);
+  });
+
+  readonly allowFilters = computed(() => {
+    // by default, filters are not allowed on the homepage
+    const { filters: { homepage = false } = {} } = this.generalSettings?.features || {};
+    return homepage;
+  });
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: 'tabsNavigator',
@@ -125,7 +141,7 @@ export class HomeComponent {
 
   constructor(private destroyRef: DestroyRef) {
     afterNextRender(() => {
-      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
+      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined, basket: undefined });
     });
 
     // react to drawer state changes to update the application title when the drawer is closed

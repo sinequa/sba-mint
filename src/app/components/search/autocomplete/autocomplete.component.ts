@@ -1,11 +1,12 @@
+import { NgComponentOutlet } from '@angular/common';
 import {
   Component,
   computed,
-  effect,
   ElementRef,
-  inject,
+  effect,
   InjectionToken,
   Injector,
+  inject,
   input,
   output,
   resource,
@@ -21,6 +22,7 @@ import { error, Suggestion as S } from '@sinequa/atomic';
 import {
   AppStore,
   AuditService,
+  Autocomplete,
   AutocompleteService,
   DrawerAdvancedFiltersComponent,
   DrawerStackService,
@@ -74,7 +76,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent],
+  imports: [NgComponentOutlet, ListItemComponent, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent],
   styles: [
     `
       :host {
@@ -124,9 +126,9 @@ export class AutocompleteComponent {
     params: () => ({
       text: this.text(),
       wasSearchClicked: this.wasSearchClicked(),
-      autocomplete: this.autocomplete() ?? 3
+      autocomplete: this.autocomplete()
     }),
-    loader: async ({ params }) => this.fetchSuggestions(params)
+    loader: async ({ params: { text, autocomplete } }) => this.fetchSuggestions({ text, autocomplete })
   });
 
   // Track previous suggestions
@@ -222,18 +224,16 @@ export class AutocompleteComponent {
    *
    * @throws Will log errors from suggest queries API but won't throw, returning empty array instead
    */
-  private fetchSuggestions = async ({ text, autocomplete }: { text: string; autocomplete?: number }) => {
+  private fetchSuggestions = async ({ text, autocomplete = 3 }: { text: string; autocomplete?: number | Autocomplete }) => {
     this.currentSuggestIndex.set(-1);
     const testText = text;
-    const autocompleteValue = autocomplete ?? 3;
-
-    const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocompleteValue);
+    const fromUserSettings = this.autocompleteService.getFromUserSettingsForText(testText, autocomplete);
 
     if (!testText) {
       return fromUserSettings;
     }
 
-    let fromSuggestQueries: any[] = [];
+    let fromSuggestQueries: S[][] = [];
     try {
       fromSuggestQueries = await this.autocompleteService.getFromSuggestQueriesForText(testText);
     } catch (err: any) {

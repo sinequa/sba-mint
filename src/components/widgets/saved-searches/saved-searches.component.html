@@ -1,12 +1,12 @@
 <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
   <i class="fa-fw fas fa-star" aria-hidden></i>
-  {{ 'mySavedSearches' | transloco }}
+  {{ "mySavedSearches" | transloco }}
 </h1>
 
 <ul class="mt-4 flex flex-col gap-2" role="list">
   @for (savedSearch of savedSearches(); track savedSearch.display + $index) {
     <a
-      class="group hover:bg-foreground/5 grid grid-cols-[min-content_auto_20%_min-content] items-center rounded-md p-1 hover:cursor-pointer"
+      class="group grid grid-cols-[min-content_auto_20%_min-content] items-center rounded-md p-1 hover:cursor-pointer hover:bg-foreground/5"
       role="link"
       (click)="onClick(savedSearch)"
       (keydown.enter)="onClick(savedSearch)">
@@ -17,28 +17,25 @@
       </span>
 
       <span class="text-muted-foreground">
-        {{ 'in' | transloco }}
+        {{ "in" | transloco }}
 
         <span class="font-semibold capitalize">
-          {{ savedSearch.queryParams?.tab ?? 'all' }}
+          {{ savedSearch.queryParams?.tab ?? "all" }}
         </span>
 
         @if (savedSearch.filterCount) {
           ,
-          <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ 'filters' | transloco }} </span>
+          <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ "filters" | transloco }} </span>
         }
       </span>
 
-      <button
-        title="Remove saved search"
-        class="text-destructive invisible group-hover:visible hover:scale-125 hover:cursor-pointer"
-        (click)="onDelete($event, $index)">
-        <i class="fa-fw far fa-trash-can" aria-hidden></i>
+      <button variant="ghost" size="icon" title="Remove saved search" class="invisible text-destructive group-hover:visible" (click)="onDelete($event, $index)">
+        <TrashIcon />
       </button>
     </a>
   } @empty {
     <li class="no-records">
-      {{ 'searches.saved.noSavedSearches' | transloco }}
+      {{ "searches.saved.noSavedSearches" | transloco }}
     </li>
   }
 </ul>

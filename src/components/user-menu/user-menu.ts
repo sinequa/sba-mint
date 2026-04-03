@@ -1,17 +1,26 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { NgComponentOutlet } from "@angular/common";
+import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { logout, setGlobalConfig } from '@sinequa/atomic';
-import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
+import {
+  AppStore,
+  OverrideUserDialogComponent,
+  PrincipalStore,
+  ResetUserSettingsDialogComponent,
+  UserProfileDialog,
+  UserProfileService,
+  UserSettingsStore
+} from "@sinequa/atomic-angular";
 import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
   ChevronRightIcon,
+  DialogService,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
   MenuComponent,
@@ -19,12 +28,12 @@ import {
   MenuItemComponent,
   Separator,
   UserIcon
-} from '@sinequa/ui';
+} from "@sinequa/ui";
 
-const THEME = ['light', 'dark', 'system'] as const;
+const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
 
-const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 /**
@@ -37,7 +46,7 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
  * ```
  */
 @Component({
-  selector: 'user-menu',
+  selector: "user-menu",
   imports: [
     FormsModule,
     MenuComponent,
@@ -54,53 +63,69 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     Separator,
     NgComponentOutlet
   ],
-  templateUrl: './user-menu.html',
-  providers: [provideTranslocoScope('user-menu')]
+  templateUrl: "./user-menu.html",
+  providers: [provideTranslocoScope("user-menu")]
 })
 export class UserMenuComponent {
   AllThemes: { name: Theme; icon: string }[] = [
-    { name: 'light', icon: 'fa-fw fal fa-sun-bright' },
-    { name: 'dark', icon: 'fa-fw fal fa-moon' },
-    { name: 'system', icon: 'fa-fw fal fa-desktop' }
+    { name: "light", icon: "fa-fw fal fa-sun-bright" },
+    { name: "dark", icon: "fa-fw fal fa-moon" },
+    { name: "system", icon: "fa-fw fal fa-desktop" }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
-    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
-    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
+    { code: "en", label: "English", icon: FlagEnglishIconComponent },
+    { code: "fr", label: "Français", icon: FlagFrenchIconComponent }
   ] as const;
 
   readonly menus = viewChildren(MenuComponent);
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
+  readonly userProfileDialog = viewChild(UserProfileDialog);
 
+  protected readonly principalStore = inject(PrincipalStore);
   private readonly router = inject(Router);
-  private readonly principalStore = inject(PrincipalStore);
   private readonly userSettingsStore = inject(UserSettingsStore);
+  private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly userProfileService = inject(UserProfileService);
+  private readonly dialogService = inject(DialogService);
 
-  readonly user = computed(() => {
-    const principal = getState(this.principalStore);
-    return principal;
+  /**
+   * Determines whether password change functionality should be enabled for the current user.
+   *
+   * This computed property evaluates two conditions:
+   * - The application must be configured to use credentials authentication
+   * - The password change feature must be explicitly enabled in the application settings
+   *
+   * @returns True if both credential authentication is enabled and the password change feature is allowed, false otherwise
+   */
+  readonly allowChangePassword = computed(() => {
+    if (this.enabledUserProfile()) return false;
+    const { useCredentials } = globalConfig;
+    const { allowChangePassword = false } = this.appStore.general()?.features || {};
+    const { editablePartition } = getState(this.principalStore);
+    return allowChangePassword && useCredentials && editablePartition;
   });
 
-  readonly initials = computed(() => {
-    const principal = this.user();
-    const separator = principal.fullName ? ' ' : '.';
-    return (principal.fullName || principal.name || '')
-      .split(separator)
-      .filter(word => word[0] && word[0] === word[0].toUpperCase())
-      .map(word => word[0])
-      .join('')
-      .slice(0, 3);
-  });
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
   readonly isOverridingUser = computed(() => this.principalStore.isOverridingUser());
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
 
+  protected userProfileResource = this.userProfileService.getUserProfile(!this.enabledUserProfile() ? signal(undefined) : this.principalStore.userId);
+  readonly userProfile = linkedSignal(() => {
+    if (this.userProfileResource.hasValue()) {
+      return this.userProfileResource.value();
+    }
+    return undefined;
+  });
+  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || "");
+
   changeLanguage(lang: string) {
-    this.userSettingsStore.updateLanguage(lang);
+    this.userSettingsStore.updateLanguage(lang).catch(err => error("update language failed!", err));
 
     if (this.transloco.getActiveLang() !== lang) {
       this.transloco.setActiveLang(lang);
@@ -109,14 +134,23 @@ export class UserMenuComponent {
   }
 
   switchTheme(mode: Theme) {
-    const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark', userTheme);
-    this.userSettingsStore.setUserTheme(mode);
+    const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", userTheme);
+    this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed!", err));
+  }
+
+  onChangePassword() {
+    this.menus()?.forEach(m => {
+      m?.close?.();
+    });
+    this.router.navigate(["/auth", "changepassword"]).catch(err => error("navigation to /auth failed!", err));
   }
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout().then(() => this.router.navigate(['/logout']));
+    logout()
+      .then(() => this.router.navigate(["/logout"]))
+      .catch(err => error("navigation to /logout failed!", err));
   }
 
   handleOverride() {
@@ -127,11 +161,15 @@ export class UserMenuComponent {
     this.overrideUserDialog()?.handleOverrideUser();
   }
 
+  handleUserProfile() {
+    this.dialogService.open(UserProfileDialog).catch(err => error("open user profile dialog failed!", err));
+  }
+
   handleResetUserSettings() {
     this.resetUserSettingsDialog()?.open();
   }
 
   openSinequa() {
-    window.open('https://sinequa.com', '_blank', 'noopener');
+    window.open("https://sinequa.com", "_blank", "noopener");
   }
 }

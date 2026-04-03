@@ -3,7 +3,7 @@ import { Component, signal, Type } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { BookmarksComponent, CollectionsComponent, RecentSearchesComponent, SavedSearchesComponent } from '@sinequa/atomic-angular';
-import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
+import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent, TooltipDirective } from '@sinequa/ui';
 
 type HomeTab = {
   name: string;
@@ -58,15 +58,16 @@ const homeFeatures: HomeTab[] = [
  */
 @Component({
   selector: 'widgets-tabs',
-  imports: [NgComponentOutlet, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, Separator],
+  imports: [NgComponentOutlet, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, Separator, TooltipDirective],
   template: `
     <!-- Desktop view -->
     <Tabs class="hidden max-h-full grow flex-col overflow-hidden md:flex">
       <TabsList class="flex w-full font-semibold" role="tablist" aria-label="widgets tabs">
         @for (tab of tabs(); track tab.label) {
-          <Tab variant="default" role="tab" [value]="tab.label" class="w-fit overflow-hidden" [attr.disabled]="tab.disabled ?? null" [active]="$first">
+          @let label = tab.label | transloco;
+          <Tab tooltip="{{ label }}" role="tab" [value]="tab.label" class="w-fit overflow-hidden" [attr.disabled]="tab.disabled ?? null" [active]="$first">
             <i class="fa-fw {{ tab.iconClass }}" aria-hidden="true"></i>
-            <span class="truncate">{{ tab.label | transloco }}</span>
+            <span class="truncate">{{ label }}</span>
           </Tab>
         }
       </TabsList>

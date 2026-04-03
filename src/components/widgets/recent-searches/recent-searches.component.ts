@@ -1,24 +1,23 @@
-import { afterNextRender, Component, effect, inject, signal, untracked } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-
-import { getRelativeDate } from '@sinequa/atomic';
-import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
+import { afterNextRender, Component, effect, inject, signal, untracked } from "@angular/core";
+import { Router, RouterModule } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { getRelativeDate } from "@sinequa/atomic";
+import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, ListItemComponent, TrashIcon } from "@sinequa/ui";
+import { toast } from "ngx-sonner";
 
 @Component({
-  selector: 'app-recent-searches',
-  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent],
+  selector: "app-recent-searches",
+  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, TrashIcon],
   template: `
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
       <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
-      {{ 'history' | transloco }}
+      {{ "history" | transloco }}
     </h1>
 
     <ul class="flex h-[calc(100%-72px)] flex-col overflow-auto">
       @for (scope of history(); track $index) {
-        <li role="presentation" class="bg-background sticky top-0 my-3 text-lg font-semibold capitalize">
+        <li role="presentation" class="sticky top-0 my-3 bg-background text-lg font-semibold capitalize">
           {{ getDate(scope.date) }}
         </li>
 
@@ -34,26 +33,26 @@ import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
             </span>
 
             <span class="text-muted-foreground">
-              {{ 'in' | transloco }}
+              {{ "in" | transloco }}
 
               <span class="font-semibold capitalize">
-                {{ search.queryParams?.tab ?? 'all' }}
+                {{ search.queryParams?.tab ?? "all" }}
               </span>
 
               @if (search.filterCount) {
                 ,
-                <span class="font-semibold lowercase"> {{ search.filterCount }} {{ 'filters' | transloco }} </span>
+                <span class="font-semibold lowercase"> {{ search.filterCount }} {{ "filters" | transloco }} </span>
               }
             </span>
 
-            <button variant="icon" size="icon" class="text-destructive invisible group-hover:visible hover:scale-125" (click)="remove($event, search)">
-              <i class="fa-fw far fa-trash-can" aria-hidden></i>
+            <button variant="ghost" size="icon" class="invisible text-destructive group-hover:visible" (click)="remove($event, search)">
+              <TrashIcon />
             </button>
           </li>
         }
       } @empty {
         <li class="no-records">
-          {{ 'searches.recent.noRecentSearches' | transloco }}
+          {{ "searches.recent.noRecentSearches" | transloco }}
         </li>
       }
     </ul>
@@ -79,7 +78,7 @@ export class RecentSearchesComponent {
       untracked(() => {
         const groupedByDay = recentSearches.reduce(
           (acc, search) => {
-            const date = new Date(search.date).toISOString().split('T')[0];
+            const date = new Date(search.date).toISOString().split("T")[0];
 
             if (!acc[date]) acc[date] = [];
 
@@ -105,7 +104,7 @@ export class RecentSearchesComponent {
     const index = this.userSettingsStore.recentSearches().findIndex(s => s === search);
     await this.userSettingsStore.deleteRecentSearch(index);
 
-    toast.success('Recent search deleted');
+    toast.success("Recent search deleted");
   }
 
   getQueryParams(search: SearchItem): Record<string, string> {
@@ -119,11 +118,11 @@ export class RecentSearchesComponent {
   }
 
   getDate(date: string): string {
-    const d = getRelativeDate('en', date);
-    const formattedDate = this.datePipe.transform(date, 'fullDate');
+    const d = getRelativeDate("en", date);
+    const formattedDate = this.datePipe.transform(date, "fullDate");
 
     // if today, add "Today - " in front of the formatted date
-    if (d.toLocaleLowerCase() === 'today') {
+    if (d.toLocaleLowerCase() === "today") {
       const langDate = getRelativeDate(this.transloco.getActiveLang(), date);
       return `${langDate} - ${formattedDate}`;
     }
@@ -138,7 +137,7 @@ export class RecentSearchesComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('history');
+    const title = this.transloco.translate("history");
     this.applicationService.setTitle(title);
   }
 }

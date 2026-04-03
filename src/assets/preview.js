@@ -254,7 +254,30 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('mousemove', function (e) {
       return onMouseMove(e);
     });
+    document.addEventListener('click', function (e) {
+      // add a click listener to toggle the class "screenshot-extended" for "sq-mediav2-screenshot"
+      // if we click on a screenshot for a converted video preview
+      e.stopImmediatePropagation();
+      var parentElement = e.target?.parentElement;
+      if (!!parentElement && parentElement.classList?.contains("sq-mediav2-screenshot")) {
+        parentElement.classList.toggle("screenshot-extended");
+      }
+    });
+    var pages = document.querySelectorAll('[id^="sq-page-start"]');
     window.addEventListener('scroll', function () {
+      if (pages?.length) {
+        let index = 0;
+        let found = false;
+        pages.forEach(page => {
+          if (!found) {
+            if (isElementInViewport(page)) {
+              found = true;
+              returnMessage('current-page', page.id);
+            }
+            index++;
+          }
+        });
+      }
       return returnMessage('scroll', { x: window.scrollX, y: window.scrollY });
     });
     if (highlights) {
@@ -630,4 +653,14 @@ document.addEventListener('DOMContentLoaded', function () {
       return e.remove();
     });
   }
+
+  function isElementInViewport (el) {
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
 });

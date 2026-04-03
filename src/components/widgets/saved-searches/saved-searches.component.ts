@@ -1,14 +1,14 @@
-import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
 import { ApplicationService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { ButtonComponent, TrashIcon } from '@sinequa/ui';
 
 @Component({
   selector: 'SavedSearches',
-  imports: [TranslocoPipe, ButtonComponent],
+  imports: [TranslocoPipe, ButtonComponent, TrashIcon],
   templateUrl: './saved-searches.component.html'
 })
 export class SavedSearchesComponent {
@@ -47,19 +47,19 @@ export class SavedSearchesComponent {
     this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
 
-  public onClick(savedSearch: SearchItem): void {
+  public async onClick(savedSearch: SearchItem) {
     const queryParams = {
       q: savedSearch.queryParams?.text
     } as { q: string; f?: string };
 
     if (savedSearch.queryParams?.filters && savedSearch.queryParams?.filters?.length > 0) queryParams.f = JSON.stringify(savedSearch.queryParams?.filters);
 
-    this.router.navigate([savedSearch.queryParams?.path], { queryParams });
+    await this.router.navigate([savedSearch.queryParams?.path], { queryParams });
   }
 
-  public async onDelete(event: Event, index: number) {
+  public onDelete(event: Event, index: number) {
     event.stopPropagation();
-    await this.savedSearchesService.deleteSavedSearch(index);
+    this.savedSearchesService.deleteSavedSearch(index);
     notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
   }
 

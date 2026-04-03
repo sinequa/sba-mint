@@ -10,7 +10,7 @@
   <!-- the "table" is encapsuled inside a div because "table" is displayed as "flex" and "hidden" does not works with "flex"  -->
   <table class="flex w-full flex-col gap-1">
     <tr>
-      <th>{{ 'location' | transloco }}</th>
+      <th>{{ "location" | transloco }}</th>
 
       <td class="flex items-center gap-2 overflow-hidden">
         <DocumentLocator [article]="article()" aggregation="Sources" />
@@ -19,7 +19,7 @@
 
     @if ((article().authors || []).length > 0) {
       <tr>
-        <th>{{ 'lastUpdatedBy' | transloco }}</th>
+        <th>{{ "lastUpdatedBy" | transloco }}</th>
 
         <td class="flex flex-wrap gap-2">
           <Metadata variant="outline" hover="yes" [article]="article()!" metadata="authors" />
@@ -29,29 +29,29 @@
 
     @if (article().modified) {
       <tr>
-        <th>{{ 'lastUpdatedOn' | transloco }}</th>
+        <th>{{ "lastUpdatedOn" | transloco }}</th>
 
         <td class="flex gap-2">
-          <p>{{ article()!.modified | translocoDate: 'mediumDate' }}</p>
+          <p>{{ article()!.modified | translocoDate: "mediumDate" }}</p>
         </td>
       </tr>
     }
 
     @if (hasLabels()) {
       <tr>
-        <th>{{ 'labels' | transloco }}</th>
+        <th>{{ "labels" | transloco }}</th>
 
         <td class="flex flex-col gap-1">
           <!-- public labels-->
           <Metadata class="cursor-pointer" [article]="article()!" [metadata]="labels.public" (click)="onMetadataClick($event)" />
           <!-- private labels -->
-          <Metadata class="bg-secondary/20 cursor-pointer" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
+          <Metadata class="cursor-pointer bg-secondary/20" [article]="article()!" [metadata]="labels.private" (click)="onMetadataClick($event)" />
         </td>
       </tr>
     }
 
     <tr>
-      <th>{{ 'type' | transloco }}</th>
+      <th>{{ "type" | transloco }}</th>
 
       <td>
         <Metadata class="cursor-pointer" [article]="article()!" metadata="docformat" (click)="onMetadataClick($event)" />

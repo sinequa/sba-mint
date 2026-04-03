@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
+import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from "@angular/core";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
 
-import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
+import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
+import { CCApp, fetchQuery, Query } from "@sinequa/atomic";
 import {
   AggregationComponent,
   AggregationsStore,
@@ -14,17 +14,17 @@ import {
   PrincipalStore,
   QueryParamsStore,
   SelectionStore
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
+} from "@sinequa/atomic-angular";
+import { ButtonComponent, cn, PageHeaderComponent } from "@sinequa/ui";
 
-import { firstValueFrom } from 'rxjs';
-import { AssistantComponent } from '../../components/assistant/assistant';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
+import { firstValueFrom } from "rxjs";
+import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
+import { AssistantComponent } from "../../components/assistant/assistant";
+import { NavbarComponent } from "../../components/navbar/navbar.component";
+import { AppSidebarComponent } from "../../components/sidebar/sidebar.component";
 
 @Component({
-  selector: 'assistant-layout, AssistantLayout',
+  selector: "assistant-layout, AssistantLayout",
   imports: [
     TranslocoPipe,
     AssistantComponent,
@@ -36,7 +36,7 @@ import { AssistantUploadComponent } from '../../../components/assistant/document
     ButtonComponent,
     AppSidebarComponent
   ],
-  providers: [provideTranslocoScope('filters')],
+  providers: [provideTranslocoScope("filters")],
   template: `
     <PageHeader>
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
@@ -49,7 +49,7 @@ import { AssistantUploadComponent } from '../../../components/assistant/document
           opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
         )
       ">
-      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:block', !opened() && 'p-4 opacity-100')">
+      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col', !opened() && 'p-4 opacity-100')">
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
@@ -74,7 +74,7 @@ import { AssistantUploadComponent } from '../../../components/assistant/document
             </section>
           }
         }
-        <section class="pt-6">
+        <section class="pt-6 grow">
           <Aggregation
             #treepath
             name="Sources"
@@ -132,9 +132,8 @@ export class AssistantLayoutComponent {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
     }
-    return `standalone-assistant`;
+    return "standalone-assistant";
   });
-
   // this is the assistant component who triggers the connection is established
   connectionEstablished = signal(false);
 
@@ -145,10 +144,10 @@ export class AssistantLayoutComponent {
   backLevel = 0;
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.['savedChatSettings']?.['display']));
+  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.["savedChatSettings"]?.["display"]));
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']));
+  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]));
 
   // this is used to display the saved chats component
   readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
@@ -199,7 +198,7 @@ export class AssistantLayoutComponent {
     // react to drawer state changes to update the application title when the drawer is closed
     effect(() => {
       if (!this.drawerStackService.isOpened()) {
-        this.applicationService.setTitle('Assistant');
+        this.applicationService.setTitle("Assistant");
       }
     });
 
@@ -212,14 +211,14 @@ export class AssistantLayoutComponent {
   }
 
   async getFirstPageQuery() {
-    const query = this.appStore.getDefaultQuery() || { name: '_default' };
+    const query = this.appStore.getDefaultQuery() || { name: "_default" };
     const response = await fetchQuery({ isFirstPage: true, name: query.name });
     this.aggregationStore.update(response.aggregations);
   }
 
   handleConnection(connection: HubConnection) {
     // to properly instanciate the saved-chats component, we need to wait for the connection to be established
-    if (connection.state === 'Connected') {
+    if (connection.state === "Connected") {
       this.connectionEstablished.set(true);
     }
   }
@@ -255,7 +254,7 @@ export class AssistantLayoutComponent {
     }
     const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
     const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
+    const firstUserMessage = history.find(msg => msg.role === "user" && msg.content);
     if (firstUserMessage) {
       this.query.update(q => {
         if (q && firstUserMessage) {

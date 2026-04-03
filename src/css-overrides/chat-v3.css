@@ -69,17 +69,6 @@ card[variant='ai'] {
   }
 }
 
-/* when the assistant is in a Card with variant="ai" */
-/* set the ai-foreground color appropriately */
-card[variant='ai'] {
-  sq-chat-message {
-    summary.text-muted,
-    summary.text-muted + ul {
-      color: var(--ai-card-foreground);
-    }
-  }
-}
-
 /*
   Styles for the custom <sq-document-list> component.
   This section contains overrides and customizations for the chat-v3 interface,

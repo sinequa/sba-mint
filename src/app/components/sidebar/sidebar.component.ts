@@ -31,14 +31,14 @@ export class AppSidebarComponent {
 
   readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly isDarkMode = computed(() => this.userSettings.isDarkMode());
+
   readonly instanceId = computed(() => {
     const { usePrefixName = false } = this.appFeatures?.assistant || {};
     if (usePrefixName) {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
-    } else {
-      return 'standalone-assistant';
     }
+    return `standalone-assistant`;
   });
 
   // Updated allowAI computed signal
