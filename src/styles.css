@@ -4,12 +4,7 @@
 @import "./theme.css";
 @import "./themes/chapsvision.css";
 
-
 @plugin "@tailwindcss/typography";
-
-/* Application specific styles */
-@import './theme.css';
-@import './themes/sinequa.css';
 
 /* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";

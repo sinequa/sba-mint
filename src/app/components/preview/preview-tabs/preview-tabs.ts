@@ -169,17 +169,6 @@ export class PreviewTabsComponent {
     this.tabs()?.setActiveTab(tab);
   }
 
-  constructor() {
-    effect(() => {
-      const { article } = getState(this.selectionStore);
-      this.article.set(article as Article);
-    });
-  }
-
-  setActiveTab(tab: PreviewTab) {
-    this.tabs()?.setActiveTab(tab);
-  }
-
   setSummaryAssistant() {
     const assistants = this.showAssistants().filter(assistant => assistant.name !== "summary");
     this.showAssistants.set([...assistants, { name: "summary", enabled: true, visible: true }]);
