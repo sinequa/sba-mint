@@ -1,34 +1,37 @@
-import { Component, computed, inject, input, model } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { Component, inject, input, model } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
 
-import { Article as A, error } from '@sinequa/atomic';
-import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from '@sinequa/ui';
-import { QueryClient } from '@tanstack/angular-query-experimental';
+import { Article as A, error } from "@sinequa/atomic";
+import { AppStore, CollectionsDialog, LabelsEditDialog, SelectionStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from "@sinequa/ui";
+import { QueryClient } from "@tanstack/angular-query-experimental";
 
 type Article = A & {
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 @Component({
-  selector: 'card-menu, CardMenu, cardmenu',
+  selector: "card-menu, CardMenu, cardmenu",
   standalone: true,
   imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe], // Add necessary imports
   template: `
     <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
       <button variant="ghost" size="icon" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
-        <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
+        <span class="sr-only">{{ "article.openMenu" | transloco }}</span>
         <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
       </button>
 
-      <MenuContent [position]="drawerOpened() ? 'bottom-end' : 'right-start'">
+      <MenuContent>
         @if (appStore.allowLabels()) {
-          <MenuItem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ "article.editLabels" | transloco }} </MenuItem>
         }
-        <MenuItem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </MenuItem>
+        <MenuItem class="whitespace-nowrap" (click)="addToCollection()">
+          <i class="fa-fw far fa-inbox"></i> {{ "article.addToCollection" | transloco }}
+        </MenuItem>
         @if (allowAI()) {
-          <MenuItem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" variant="ai" (click)="attachToAssistant()">
+            <i class="fa-fw fas fa-paperclip"></i> {{ "article.addToAIOverview" | transloco }}
+          </MenuItem>
         }
       </MenuContent>
     </menu>
@@ -36,7 +39,6 @@ type Article = A & {
 })
 export class CardMenuComponent {
   dialogService = inject(DialogService);
-  drawerStack = inject(DrawerStackService);
   selectionStore = inject(SelectionStore);
   appStore = inject(AppStore);
   queryClient = inject(QueryClient);
@@ -45,7 +47,6 @@ export class CardMenuComponent {
 
   // by default add to assistant is disabled
   readonly allowAI = input(false);
-  readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   editLabels(): void {
     this.dialogService
@@ -54,28 +55,33 @@ export class CardMenuComponent {
         // update the article with the new labels
         this.article.set({ ...v.article });
       })
-      .catch(e => error('LabelsEditDialog error', e));
+      .catch(e => error("LabelsEditDialog error", e));
   }
 
   addToCollection(): void {
-    this.dialogService.open(CollectionsDialog, this.article()).then((event: any) => {
-      if (event === 'dialog-confirm') {
-        this.queryClient.invalidateQueries();
-      }
-    });
+    this.dialogService
+      .open(CollectionsDialog, this.article())
+      .then((event: unknown) => {
+        if (event === "dialog-confirm") {
+          this.queryClient.invalidateQueries().catch(e => error("Error invalidating queries", e));
+        }
+      })
+      .catch(e => error("CollectionsDialog error", e));
   }
 
   attachToAssistant(): void {
     const id = this.article()?.id;
     if (!id) return;
 
-    const { assistantIdsToAttach } = getState(this.selectionStore);
-    let ids = assistantIdsToAttach || [];
+    const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
+    const ids = assistantIdsToAttach || [];
 
     if ((assistantIdsToAttach || []).indexOf(id) === -1) {
       ids.push(id);
     }
 
-    this.selectionStore.update({ assistantIdsToAttach: ids });
+    // update the selection store with the new list of article ids to attach,
+    // the spread operator is used to create a new array, which is necessary to trigger change detection in the store
+    this.selectionStore.update({ assistantIdsToAttach: [...ids] });
   }
 }

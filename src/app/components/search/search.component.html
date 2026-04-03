@@ -1,7 +1,7 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
     <SearchInput
-      class="text-foreground h-9 p-0"
+      class="h-9 p-0 text-foreground"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
@@ -9,7 +9,7 @@
       [attr.aria-label]="'searchInput.placeholder' | transloco"
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
-      @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+      @if (showSave() && (searchInputText() !== "" || hasFilters())) {
         <SavedSearchPopover [queryText]="searchInputText()" (onSavedSearch)="saved.emit($event)" />
       }
 

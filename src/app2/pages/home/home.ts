@@ -1,37 +1,45 @@
-import { Component, DestroyRef, Injector, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
-import { provideTranslocoScope } from '@jsverse/transloco';
-
-import { AggregationsStore, AppStore, ApplicationService, DrawerStackService, KeyboardNavigatorOptions, signIn } from '@sinequa/atomic-angular';
-
-import { error, fetchQuery } from '@sinequa/atomic';
-import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
-
-import { SearchWithAutocompleteComponent } from '@components/search/search-with-autocomplete';
-import { SidebarMainComponent } from '@components/sidebar/sidebar';
-import { WidgetsTabsComponent } from '@components/widgets/widgets-tabs';
+import { Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
+import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
+import { WidgetsTabsComponent } from "@components/widgets/widgets-tabs";
+import { provideTranslocoScope } from "@jsverse/transloco";
+import { error, fetchQuery } from "@sinequa/atomic";
+import { AggregationsStore, ApplicationService, AppStore, SelectionStore, signIn } from "@sinequa/atomic-angular";
+import { KeyboardNavigatorOptions } from "@sinequa/ui";
 
 @Component({
-  selector: 'app-home',
-  imports: [SidebarMainComponent, WidgetsTabsComponent, SearchWithAutocompleteComponent, SidebarTriggerComponent, SidebarProviderComponent],
-  templateUrl: './home.html',
+  selector: "app-home",
+  template: `
+  <div>
+    <header>
+      <img class="mx-auto mt-auto mb-8 w-64 content-[var(--logo-large)/var(--logo-alt-text)] md:mb-16" alt="logo" />
+    </header>
+    <div class="md:m-auto md:w-[80%]">
+      <div class="mx-2 flex flex-col gap-16">
+        <search-with-autocomplete />
+        <widgets-tabs />
+      </div>
+    </div>
+  </div>
+  <sheet-previewer />
+  `,
+  imports: [SearchWithAutocompleteComponent, WidgetsTabsComponent, SheetPreviewerComponent],
+  providers: [provideTranslocoScope("bookmarks", "searches", "collections")],
   host: {
-    '[attr.drawer-opened]': 'drawerOpened()'
-  },
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
+    "class": "block mt-16"
+  }
 })
 export class HomeComponent {
-  public drawerOpened = computed(() => this.drawerStack.isOpened());
-
-  readonly appStore = inject(AppStore);
-  readonly drawerStack = inject(DrawerStackService);
-  readonly aggregationStore = inject(AggregationsStore);
   readonly injector = inject(Injector);
+  readonly appStore = inject(AppStore);
   readonly applicationService = inject(ApplicationService);
+  readonly aggregationStore = inject(AggregationsStore);
+  readonly selectionStore = inject(SelectionStore);
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
-    name: 'tabsNavigator',
+    name: "tabsNavigator",
     optionSelector: '[role="tab"]:not([aria-disabled="true"])',
-    direction: 'horizontal',
+    direction: "horizontal",
     selectOnFocus: true,
     resetSelectionOnBlur: true
   });
@@ -42,32 +50,40 @@ export class HomeComponent {
     savedSearches: true
   };
 
-  constructor(private destroyRef: DestroyRef) {
-    // react to drawer state changes to update the application title when the drawer is closed
+  constructor() {
+    // Set the page title to "Home" if no preview is open (i.e., no selection in the selection store)
     effect(() => {
-      if (!this.drawerOpened()) {
-        this.applicationService.setTitle('Home');
+      const id = this.selectionStore.id?.();
+      if (!id) {
+        this.applicationService.setTitle("Home");
       }
     });
 
-    // when the component is destroyed, close all drawers
-    this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
-
     // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery();
+    this.getFirstPageQuery().catch(err => {
+      if (err.status === 401) {
+        console.error("Unauthorized access - please check your credentials:", err);
+      } else if (err.status === 404) {
+        console.log("404 Not Found!");
+      } else {
+        console.log(`HTTP error: ${err.status}`);
+      }
+    });
   }
 
   async getFirstPageQuery() {
     try {
-      const query = this.appStore.getDefaultQuery() || { name: '_default' };
+      const query = this.appStore.getDefaultQuery() || { name: "_default" };
       const response = await fetchQuery({ isFirstPage: true, name: query.name });
       this.aggregationStore.update(response.aggregations);
     } catch (err: any) {
       if (err.status === 401) {
-        error('Unauthorized access - please check your credentials:', err);
-        runInInjectionContext(this.injector, () => signIn());
+        error("Unauthorized access - please check your credentials:", err);
+        runInInjectionContext(this.injector, () => signIn()).catch(signInErr => {
+          console.error("Sign-in failed:", signInErr);
+        });
       } else if (err.status === 404) {
-        console.log('404 Not Found!');
+        console.log("404 Not Found!");
       } else {
         console.log(`HTTP error: ${err.status}`);
       }

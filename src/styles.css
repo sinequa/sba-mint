@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
+@import "tailwindcss";
+/* Application specific styles */
+@import "./theme.css";
+@import "./themes/chapsvision.css";
+
+
 @plugin "@tailwindcss/typography";
 
 /* Application specific styles */
@@ -9,7 +14,12 @@
 /* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";
 @source "../node_modules/@sinequa/atomic-angular";
+@source "../node_modules/@sinequa/agent";
 @source not "../docusaurus/";
+
+:root {
+  --mobile-header-height: 3.5rem;
+}
 
 *,
 *::before,
@@ -30,6 +40,6 @@ html:has(.sheet-portal[open]) {
 }
 
 body {
-  font-family: 'Hanken Grotesk', sans-serif;
+  font-family: "Hanken Grotesk", sans-serif;
   position: relative;
 }

@@ -1,9 +1,19 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { catchError, of } from 'rxjs';
-
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  output,
+  signal,
+  ViewEncapsulation,
+  viewChild
+} from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { HubConnection } from "@microsoft/signalr";
 import {
   ChatComponent,
   ChatConfig,
@@ -13,22 +23,37 @@ import {
   MessageHandler,
   RawMessage,
   SuggestedAction
-} from '@sinequa/assistant/chat';
-
-import { Article, error, Query } from '@sinequa/atomic';
-import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
+} from "@sinequa/assistant/chat";
+import { Article, error, Query } from "@sinequa/atomic";
+import {
+  AppStore,
+  PreviewHighlights,
+  PreviewService,
+  PrincipalStore,
+  QueryParamsStore,
+  SelectionStore,
+  UserProfileService,
+  UserSettingsStore
+} from "@sinequa/atomic-angular";
+import { cn } from "@sinequa/ui";
+import { catchError, of } from "rxjs";
 
 @Component({
-  selector: 'assistant, Assistant',
+  selector: "assistant, Assistant",
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     @if (isChatInitialized() || showAssistant()) {
       <sq-chat-v3
-        [class]="cn('prose dark:prose-invert prose-sm prose-p:m-0 prose-ul:gap-1! prose-ol:gap-1! prose-li:m-0 prose-li:p-0', class())"
+        [class]="
+          cn(
+            'prose-sm block h-[calc(100%-2rem)] dark:prose-invert prose-p:m-0 prose-ol:gap-1! prose-ul:gap-1! prose-li:m-0 prose-li:p-0 [&>div]:w-full',
+            class()
+          )
+        "
         #sqChat
         [query]="_query"
         [chat]="initChat"
+        [userMessageIcon]="profilePhoto() ? 'user-avatar' : ''"
         [instanceId]="instanceId()"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
@@ -47,9 +72,9 @@ import { cn } from '@sinequa/ui';
       </ng-template>
     }
   `,
-  styleUrl: './assistant.css',
+  styleUrl: "./assistant.css",
   host: {
-    '[attr.no-progress]': 'noProgress'
+    "[attr.no-progress]": "noProgress"
   },
   encapsulation: ViewEncapsulation.None
 })
@@ -63,8 +88,10 @@ export class AssistantComponent {
   appStore = inject(AppStore);
   selectionStore = inject(SelectionStore);
   protected readonly previewService = inject(PreviewService);
+  protected readonly principalStore = inject(PrincipalStore);
+  protected readonly userProfileService = inject(UserProfileService);
 
-  class = input<string>('');
+  class = input<string>("");
   // Used to initialize the chat unconditionally
   showAssistant = input<boolean | undefined>(false);
   instanceId = input.required<string>();
@@ -83,9 +110,10 @@ export class AssistantComponent {
   open = signal(false);
 
   noProgress = false;
-  _progress = effect(() => (this.noProgress = !this.showProgress()));
+  _progress = effect(() => {
+    this.noProgress = !this.showProgress();
+  });
 
-  drawerStack = inject(DrawerStackService);
   initChat: InitChat | undefined = undefined;
   config = signal<ChatConfig | undefined>(undefined);
 
@@ -93,9 +121,20 @@ export class AssistantComponent {
   queryParamsStore = inject(QueryParamsStore);
 
   // used to cronstruct a valid query object used by the sqChat component
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
+
+  // used to handle the user avatar
+  readonly enabledUserProfile = computed(() => this.appStore.general()?.features?.userProfile?.enabled);
+  protected userProfileResource = this.userProfileService.getUserProfile(!this.enabledUserProfile() ? signal(undefined) : this.principalStore.userId);
+  readonly userProfile = linkedSignal(() => {
+    if (this.userProfileResource.hasValue()) {
+      return this.userProfileResource.value();
+    }
+    return undefined;
+  });
+  readonly profilePhoto = computed(() => this.userProfile()?.data.profilePhoto || undefined);
 
   getChatConfig(config: ChatConfig): void {
     this.config.set(config);
@@ -122,20 +161,20 @@ export class AssistantComponent {
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError(err => {
-            error('Unhandled error in streaming', err);
+            error("Unhandled error in streaming", err);
             return [];
           })
         )
         .subscribe({
           next: streaming => this.isStreaming.emit(streaming),
-          error: err => error('Error in streaming', err)
+          error: err => error("Error in streaming", err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError(err => {
-            error('Unhandled error in init process', err);
+            error("Unhandled error in init process", err);
             return of(false);
           })
         )
@@ -146,8 +185,14 @@ export class AssistantComponent {
 
     effect(() => {
       // each time the selection store changes, we need to update the attached IDs
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
+    });
+
+    effect(() => {
+      if (this.profilePhoto()) {
+        document.documentElement.style.setProperty(`--user-avatar`, `url(${this.profilePhoto()!})`);
+      }
     });
 
     afterNextRender(() => {
@@ -155,7 +200,7 @@ export class AssistantComponent {
       // that's why we need to use a reference of the DestroyRef class here
 
       // once the component is created, we need to attach the assistantIdsToAttach to the chat if any
-      const { assistantIdsToAttach } = getState(this.selectionStore);
+      const assistantIdsToAttach = this.selectionStore.assistantIdsToAttach();
       this.attachToChat(assistantIdsToAttach);
     });
   }
@@ -173,14 +218,12 @@ export class AssistantComponent {
   }
 
   handlePreview(event: ChatContextAttachment, withQueryText = true) {
-    this.drawerStack.replace(event.record as Article);
-
     const previewHighlights: PreviewHighlights | undefined =
       event.parts && event.parts.length
         ? {
             highlights: [
               {
-                category: 'snippet',
+                category: "snippet",
                 highlights: event.parts
               }
             ],
@@ -188,12 +231,20 @@ export class AssistantComponent {
           }
         : undefined;
 
-    this.selectionStore.update({ previewHighlights });
+    // Save the passage offset data which can be used for the preview
+    const part = event.parts.find(p => p.partId === event.$partId);
+    if (part) {
+      const { offset, length } = part;
+      this.previewService.passageOffset.set({ id: event.recordId, offset, length });
+    }
+
+    // Update the selection store with the article and the preview highlights, this will trigger the preview to open with the correct highlights
+    this.selectionStore.update({ id: event.record.id, article: event.record as Article, previewHighlights });
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
     if (partId) {
-      this.previewService.events.set('scrollTo');
-      this.previewService.sendMessage({ action: 'select', id: `snippet_${partId}`, usePassageHighlighter: true });
+      this.previewService.events.set("scrollTo");
+      this.previewService.sendMessage({ action: "select", id: `snippet_${partId}`, usePassageHighlighter: true });
     }
   }
 
@@ -201,16 +252,16 @@ export class AssistantComponent {
     try {
       this.sqChat()?.newChat();
     } catch (err) {
-      error('Error while starting a new chat', err);
+      error("Error while starting a new chat", err);
     }
   }
 
   handleSuggestAction(action: SuggestedAction) {
     switch (action.type) {
-      case 'Prefill':
+      case "Prefill":
         this.insertText(action.content);
         break;
-      case 'Submit':
+      case "Submit":
         this.submitQuestion(action.content);
         break;
       default:
@@ -221,8 +272,8 @@ export class AssistantComponent {
   handleRedirect($event: any) {
     const url = $event.url1;
 
-    if (url && typeof url === 'string' && url.trim() !== '') {
-      window.open(url, '_blank');
+    if (url && typeof url === "string" && url.trim() !== "") {
+      window.open(url, "_blank");
     }
   }
 
@@ -242,13 +293,21 @@ export class AssistantComponent {
     const config = this.appStore.assistants()[this.instanceId()!];
 
     if (question && config) {
-      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const systemMsg = {
+        role: "system",
+        content: config.defaultValues.systemPrompt,
+        additionalProperties: { display: false }
+      } as RawMessage;
       const messages: RawMessage[] = [
         systemMsg,
         {
-          role: 'user',
-          content: question || '',
-          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+          role: "user",
+          content: question || "",
+          additionalProperties: {
+            display: true,
+            isUserInput: true,
+            additionalWorkflowProperties: config.additionalWorkflowProperties
+          }
         }
       ];
       this.initChat = { messages } as InitChat;
@@ -284,7 +343,7 @@ export class AssistantComponent {
     if (sqChatInstance) {
       sqChatInstance.attachToChat(ids);
     } else {
-      error('sqChat instance is not defined');
+      error("sqChat instance is not defined");
     }
   }
 

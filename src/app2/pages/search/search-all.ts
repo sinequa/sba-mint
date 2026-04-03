@@ -1,18 +1,32 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, tap } from 'rxjs';
-
-import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
+import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
+import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { SearchOverviewComponent } from "@components/assistant-overview";
+import { CardSkeleton } from "@components/cards/record/skeleton";
+import { PreviewComponent } from "@components/preview/preview";
+import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { fetchServerPage } from "@config/fetch-server-page";
+import { getState } from "@ngrx/signals";
+import { getComponentsForDocumentType } from "@registry/document-type-registry";
+import { MessageHandler } from "@sinequa/assistant/chat";
+import {
+  Aggregation,
+  Article,
+  bisect,
+  CCApp,
+  debug,
+  isNotInputEvent,
+  LegacyFilter,
+  Query,
+  QueryParams,
+  Result as R,
+  SpellingCorrectionMode
+} from "@sinequa/atomic";
 import {
   AggregationsStore,
   AppStore,
-  DidYouMeanComponent,
   FiltersBarComponent,
+  InfinityScrollDirective,
   NavbarTabsComponent,
   NoResultComponent,
   PrincipalStore,
@@ -21,16 +35,13 @@ import {
   SearchFeedbackComponent,
   SelectionService,
   SelectionStore,
-  SortingChoice,
-  SortSelectorComponent,
-  SponsoredResultsComponent,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
+} from "@sinequa/atomic-angular";
+import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
+import { SearchActionsComponent } from "./search-actions";
 
-import { AssistantComponent } from '@components/assistant/assistant';
-import { CardSkeleton } from '@components/cards/record/skeleton';
-import { getComponentsForDocumentType } from '@registry/document-type-registry';
+const MOBILE_BREAKPOINT = 1024; // px
 
 type Result = R & { nextPage?: number; previousPage?: number };
 type QueryParamsProps = {
@@ -41,34 +52,35 @@ type QueryParamsProps = {
   q?: string; // query text
   b?: string; // basket,
   n?: string; // query name
+  id?: string; // record id
   c?: SpellingCorrectionMode; // correction mode
 };
 
 @Component({
-  selector: 'app-search-all',
+  selector: "app-search-all",
   imports: [
     NgComponentOutlet,
-    SortSelectorComponent,
-    DidYouMeanComponent,
-    // InfinityScrollDirective,
-    SponsoredResultsComponent,
+    NgTemplateOutlet,
+    InfinityScrollDirective,
     NoResultComponent,
-    // SearchFeedbackComponent,
+    SearchFeedbackComponent,
     FiltersBarComponent,
     NavbarTabsComponent,
-    ButtonComponent,
-    AssistantComponent,
     CardSkeleton,
-    CardComponent,
-    CardHeaderComponent,
-    CardContentComponent,
-    TranslocoPipe,
-    ChevronRightIcon,
-    SearchFeedbackComponent
+    SearchFeedbackComponent,
+    SearchOverviewComponent,
+    PreviewComponent,
+    SheetPreviewerComponent,
+    SearchActionsComponent
   ],
-  templateUrl: './search-all.html',
+  templateUrl: "./search-all.html",
   styles: [
     `
+      :host {
+        /* to avoid z-index collisions */
+        isolation: isolate;
+        --search-content-height: calc(100dvh - 210px);
+      }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
       }
@@ -81,15 +93,20 @@ type QueryParamsProps = {
     `
   ],
   host: {
-    '(keydown.enter)': 'handleKeydownEnter($event)'
-  }
+    "(keydown.enter)": "handleKeydownEnter($event)",
+    "(window:resize)": "onResize($event)"
+  },
+  providers: [provideQueryClient(new QueryClient())]
 })
 export class SearchAllComponent {
   cn = cn;
 
+  private injector = inject(Injector);
+
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
   protected readonly selectionService = inject(SelectionService);
+  protected readonly breakpointService = inject(BreakpointObserverService);
 
   protected readonly appStore = inject(AppStore);
   protected readonly appFeatures = this.appStore.general()?.features;
@@ -97,7 +114,7 @@ export class SearchAllComponent {
   protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly principalStore = inject(PrincipalStore);
   protected readonly userSettingsStore = inject(UserSettingsStore);
-  readonly selectionStore = inject(SelectionStore);
+  protected readonly selectionStore = inject(SelectionStore);
 
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
@@ -114,13 +131,16 @@ export class SearchAllComponent {
   protected readonly p = input<number>(); // page number
 
   // all signals used in the component
+  currentInnerWidth = signal(window.innerWidth);
+  // breakpoin mobile set in the service is 768, but we want to use the sheet previewer for tablets as well, so we set the breakpoint to 1024
+  isMobile = computed(() => this.breakpointService.isMobile() || this.currentInnerWidth() < MOBILE_BREAKPOINT);
 
   protected readonly result = signal<Result | undefined>(undefined);
-  protected readonly queryText = signal<string>('');
+  protected readonly queryText = signal<string>("");
   protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
 
   // the Assistant is expanded and visible by default
-  protected readonly assistantCollapsed = signal<boolean>(true);
+  protected readonly assistantCollapsed = signal<boolean>(false);
   protected readonly showAssistant = signal<boolean>(false);
 
   // the aggregations are used to display the filters in the UI
@@ -136,90 +156,38 @@ export class SearchAllComponent {
   // Whether the feedback button is to hide
   hideFeedback = signal(false);
 
+  // all rows from all pages to display in the UI, computed from the query result
+  allRows = computed(() => this.query.data()?.pages?.flatMap(page => page.records) ?? []);
+
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({
     queryKey: [`search-${this.t()}`, this.currentKeys(), this.userOverrideActive()],
-    queryFn: ({ pageParam }) => {
-      if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
-      const q = this.queryParamsStore.getQuery();
-
-      console.log('current id', this.id());
-
-      const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
-      this.assistantQuery = { ...this.assistantQuery, ...query };
-
-      // Add the current search to the user settings when the text is not empty
-      if (query.text && query.text !== '') {
-        this.userSettingsStore.addCurrentSearch(query as QueryParams);
-      }
-
-      return lastValueFrom(
-        this.queryService.search(query).pipe(
-          tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
-          map(result => {
-            result.records?.map((article: Article) => {
-              return { ...article, value: article.title, type: 'default' };
-            });
-            return result;
-          }),
-          map(result => {
-            // If the id is set, open the drawer with the preview of the article
-            const id = this.id();
-            if (id) {
-              result.records?.forEach(article => {
-                if (article.id === id) {
-                  this.selectionService.setCurrentArticle(article);
-                }
-              });
-            }
-            return result;
-          })
-        )
-      );
-    },
+    queryFn: ({ pageParam }) =>
+      fetchServerPage(this.injector, pageParam, {
+        currentKeys: this.currentKeys(),
+        basket: this.b(),
+        id: this.id(),
+        q: this.queryParamsStore.getQuery(),
+        tab: this.t(),
+        spellingCorrectionMode: this.c()
+      }),
     initialPageParam: this.p(),
     getPreviousPageParam: firstPage => firstPage.previousPage ?? undefined,
     getNextPageParam: lastPage => lastPage.nextPage ?? undefined
   }));
 
+  // standard injectQuery without infinite loading
   // query = injectQuery(() => ({
   //   queryKey: [`search-${this.t()}`, this.currentKeys(), this.userOverrideActive()],
-  //   queryFn: () => {
-  //     if (this.currentKeys() === undefined) return Promise.resolve({} as Result);
-  //     const q = this.queryParamsStore.getQuery();
-
-  //     const query = { ...q, page: this.p(), tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
-  //     this.assistantQuery = { ...this.assistantQuery, ...query };
-
-  //     // Add the current search to the user settings when the text is not empty
-  //     if (query.text && query.text !== '') {
-  //       this.userSettingsStore.addCurrentSearch(query as QueryParams);
-  //     }
-
-  //     return lastValueFrom(
-  //       this.queryService.search(query).pipe(
-  //         tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
-  //         map(result => {
-  //           result.records?.map((article: Article) => {
-  //             return { ...article, value: article.title, type: 'default' };
-  //           });
-  //           return result;
-  //         }),
-  //         map(result => {
-  //           // If the id is set, open the drawer with the preview of the article
-  //           const id = this.id();
-  //           if (id) {
-  //             result.records?.forEach(article => {
-  //               if (article.id === id) {
-  //                 this.selectionService.setCurrentArticle(article);
-  //               }
-  //             });
-  //           }
-  //           return result;
-  //         })
-  //       )
-  //     );
-  //   }
+  // queryFn: () =>
+  //   fetchServerPage(this.injector, pageParam, {
+  //     currentKeys: this.currentKeys(),
+  //     basket: this.b(),
+  //     id: this.id(),
+  //     q: this.queryParamsStore.getQuery(),
+  //     tab: this.t(),
+  //     spellingCorrectionMode: this.c()
+  //   }),
   // }));
 
   /**
@@ -257,7 +225,7 @@ export class SearchAllComponent {
   /**
    * Signal to track state of the selected all checkbox.
    */
-  selectedAll = signal<'all' | 'some' | 'none'>('none');
+  selectedAll = signal<"all" | "some" | "none">("none");
 
   /**
    * If query has rowCount greater than 0, we have results, otherwise no results found.
@@ -284,16 +252,19 @@ export class SearchAllComponent {
     return `search-results-assistant`;
   });
   readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
-  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true);
-  assistantQuery: Query = { name: 'assistant' };
+  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true);
+  // assistantQuery: Query = { name: 'assistant' };
 
-  conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
+  readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
+
+  conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
     // Update the query params store with the filters from the URL query params
     // This allows Browser back/forward to work correctly
     effect(() => {
-      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
+      debug("effect - 1. update query params store from URL");
+      const filters = (this.f() ? JSON.parse(this.f() ?? "") : []) as LegacyFilter[]; // Parse the filters from the query params
       this.queryParamsStore.patch({
         text: this.q(),
         tab: this.t(),
@@ -302,16 +273,18 @@ export class SearchAllComponent {
         filters,
         name: this.n(),
         page: this.p(),
+        id: this.id(),
         spellingCorrectionMode: this.c()
       });
     });
 
     // Update the URL with the query params from the query params store
     effect(() => {
+      debug("effect - 2. update URL from query params store");
       this.hideFeedback.set(false);
 
       const queryParams: QueryParamsProps = {};
-      const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
+      const { id, text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
 
       queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
       queryParams.p = page;
@@ -321,12 +294,13 @@ export class SearchAllComponent {
       queryParams.b = basket;
       queryParams.n = name;
       queryParams.c = spellingCorrectionMode;
-
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
+      queryParams.id = id;
+      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: "merge", queryParams, state: {} });
     });
 
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
+      debug("effect - 3. update keys to retrigger the query");
       this.hideFeedback.set(false);
 
       const state = getState(this.queryParamsStore);
@@ -340,20 +314,23 @@ export class SearchAllComponent {
         page: state.page,
         spellingCorrectionMode: state.spellingCorrectionMode
       };
-      if (this.currentKeys() === undefined) {
-        this.currentKeys.set(r);
-        return;
-      }
-      // checks if the current keys are different from the new ones
-      if (JSON.stringify(this.currentKeys()) !== JSON.stringify(r)) {
-        this.currentKeys.set(r);
-      }
+
+      untracked(() => {
+        if (this.currentKeys() === undefined) {
+          this.currentKeys.set(r);
+          return;
+        }
+        // checks if the current keys are different from the new ones
+        if (JSON.stringify(this.currentKeys()) !== JSON.stringify(r)) {
+          this.currentKeys.set(r);
+        }
+      });
     });
 
     // Make Result object available to children and update aggregations store
     effect(() => {
+      debug("effect - 4. make Result object available to children and update aggregations store");
       this.query.isSuccess();
-
       const result = this.query.data()?.pages[0];
 
       if (!result) return;
@@ -366,27 +343,39 @@ export class SearchAllComponent {
 
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
+      debug("effect - 5. update selectedAll signal based on the selection store and current pages");
       const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
       const selection = this.selectionStore.multiSelection().map(x => x.id);
       const b = bisect(articles, x => selection.includes(x));
 
-      if (b.true.length === 0) this.selectedAll.set('none');
-      else if (b.false.length === 0) this.selectedAll.set('all');
-      else this.selectedAll.set('some');
+      if (b.true.length === 0) this.selectedAll.set("none");
+      else if (b.false.length === 0) this.selectedAll.set("all");
+      else this.selectedAll.set("some");
     });
 
     effect(() => {
-      const { collapseAssistant } = getState(this.userSettingsStore);
+      debug("effect - 7. update assistant query from current keys");
+      const { page, tab, basket, spellingCorrectionMode, text } = this.currentKeys() || {};
+      const q = this.queryParamsStore.getQuery();
+      const query = { ...q, page, tab, basket, spellingCorrectionMode, text } as Query;
 
-      if (collapseAssistant !== undefined) {
-        this.assistantCollapsed.set(collapseAssistant);
-        if (!this.showAssistant()) {
-          this.showAssistant.set(!collapseAssistant);
+      // this.assistantQuery = { ...this.assistantQuery, ...query };
+
+      untracked(() => {
+        // Add the current search to the user settings when the text is not empty
+        if (text && text !== "") {
+          void this.userSettingsStore.addCurrentSearch(query as QueryParams);
         }
-      }
+
+        // Update the query text signal with the current query text
+        this.queryText.set(this.currentKeys()?.text ?? "");
+      });
     });
 
-    this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
+    this.conditionalMessageHandler.set("SkillsTester", {
+      handler: message => this.handleConditionalDisplayMessage(message),
+      isGlobalHandler: false
+    });
 
     // When the component is destroyed, clear the aggregations store
     // to avoid memory leaks and ensure that the aggregations are reset
@@ -394,7 +383,7 @@ export class SearchAllComponent {
   }
 
   selectAll() {
-    if (this.selectedAll() === 'all') {
+    if (this.selectedAll() === "all") {
       this.unselectAll();
       return;
     }
@@ -428,44 +417,27 @@ export class SearchAllComponent {
 
   onDrawerOpenedChange(opened: boolean): void {
     // Your function logic here
-    console.log(`Drawer opened state changed to: ${opened}`);
-  }
-
-  onSort(sort: SortingChoice): void {
-    const audit = {
-      type: 'Search_Sort',
-      detail: {
-        sort: sort.name,
-        orderByClause: sort.orderByClause
-      }
-    };
-    this.queryService.audit = audit;
-    this.queryParamsStore.patch({ sort: sort.name }, audit);
+    debug(`Drawer opened state changed to: ${opened}`);
   }
 
   getArticleType(docType?: string): Type<unknown> {
     return getComponentsForDocumentType(docType).articleComponent;
   }
 
-  handleConditionalDisplayMessage(message: any) {
-    const { result } = message as { result: string };
-    if (result.toLocaleLowerCase().includes('show overview')) {
+  handleConditionalDisplayMessage(message: { result: string }) {
+    const { result } = message;
+    if (result.toLocaleLowerCase().includes("show overview")) {
       this.hideAssistant.set(false);
     } else {
       this.hideAssistant.set(true);
     }
   }
 
-  onFeedbackClose(): void {
+  onFeedbackClose() {
     this.hideFeedback.set(true);
   }
 
-  /**
-   * Switch the assistant collapsed status.
-   */
-  onAssistantCollapse() {
-    const collapsed = !this.assistantCollapsed();
-    this.userSettingsStore.updateAssistantCollapsed(collapsed);
-    this.assistantCollapsed.set(collapsed);
+  onResize(event: Event) {
+    this.currentInnerWidth.set((event.target as Window).innerWidth);
   }
 }

@@ -1,27 +1,27 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
-import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
-import { QueryClient } from '@tanstack/angular-query-experimental';
-
-import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from '@sinequa/atomic-angular';
-
-import { SheetPreviewerComponent } from '@components/preview/sheet-previewer';
+import { Component, DestroyRef, computed, inject } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { TranslocoService } from "@jsverse/transloco";
+import { LoggerService } from "@sinequa/agent";
+import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
+import { SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
+import { QueryClient } from "@tanstack/angular-query-experimental";
+import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
+import { MainSidebarComponent } from "./components/sidebar";
+import { injectCurrentUrl } from "../utils/routing";
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, NgxSonnerToaster, MultiSelectionToolbarComponent, SheetPreviewerComponent],
-  templateUrl: './app.component.html',
-  styles: [
-    `
-      #navbar-logo {
-        content: var(--logo-small) / var(--logo-alt-text);
-      }
-    `
+  selector: "app-root",
+  imports: [
+    RouterOutlet,
+    MainSidebarComponent,
+    NgxSonnerToaster,
+    MultiSelectionToolbarComponent,
+    SidebarProviderComponent,
+    SidebarInsetComponent,
+    SidebarTriggerComponent
   ],
-  host: {
-    class: 'bg-sidebar'
-  }
+  providers: [LoggerService],
+  templateUrl: "./app.component.html"
 })
 export class AppComponent {
   private readonly transloco = inject(TranslocoService);
@@ -29,6 +29,9 @@ export class AppComponent {
   private readonly applicationStore = inject(ApplicationStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly queryClient = inject(QueryClient);
+
+  private readonly currentUrl = injectCurrentUrl();
+  protected readonly isAuthRoute = computed(() => /^\/(login|logout|auth)/.test(this.currentUrl() ?? ""));
 
   constructor() {
     this.setupApplicationLanguage();
@@ -38,10 +41,10 @@ export class AppComponent {
 
     // Listen for custom notifications and display them using ngx-sonner
     addEventListener(
-      'notification',
+      "notification",
       (event: Event) => {
         const customEvent = event as CustomEvent<{
-          type: 'success' | 'warning' | 'info' | 'error';
+          type: "success" | "warning" | "info" | "error";
           title?: string;
           message: string;
           options?: ExternalToast;
@@ -52,17 +55,17 @@ export class AppComponent {
       { signal: controller.signal }
     );
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-      document.documentElement.classList.toggle('dark', matches);
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+      document.documentElement.classList.toggle("dark", matches);
     });
 
     this.destroyRef.onDestroy(() => controller.abort());
   }
 
   private setupApplicationLanguage() {
-    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
+    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage("en");
 
-    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
+    this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? "en");
   }
 
   onUpdatedCollections(): void {

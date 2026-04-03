@@ -35,7 +35,7 @@
               "base": "dist/sinequa-mint",
               "browser": ""
             },
-            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend", "@flowjs/flow.js"],
+            "allowedCommonJsDependencies": ["prismjs", "@messageformat/core", "lodash", "is-buffer", "extend", "@flowjs/flow.js", "@statelyai/inspect"],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["src/polyfills.js"],
