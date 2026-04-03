@@ -11,7 +11,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 
   getTranslation(lang: string) {
     return this.http.get<Translation>(`assets/i18n/${lang}.json`).pipe(
-      catchError(err => {
+      catchError(() => {
         // to avoid infinite resources fetching
         return of({});
       })
