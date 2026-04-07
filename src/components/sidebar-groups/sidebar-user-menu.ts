@@ -100,11 +100,17 @@ export class SidebarUserMenuComponent {
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
   readonly debug = model(this.userSettingsStore.isDebugMode());
 
-  readonly menuPosition = computed<Placement>(() => this.breakpointService.isMobile() ? "bottom-start" : "left-start");
+  readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
 
   constructor() {
     // enable agent's debug mode
-    effect(() => this.agentsStore.setDebugMessages(this.debug()));
+    effect(() => {
+      const debug = this.debug();
+      this.agentsStore.setDebugMessages(debug);
+      untracked(() => {
+        this.userSettingsStore.setDebugMode(debug).catch(err => error("set debug mode failed", err));
+      });
+    });
   }
 
   changeLanguage(lang: string) {
@@ -121,12 +127,6 @@ export class SidebarUserMenuComponent {
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed", err));
   }
-
-  toggleDebugMode = effect(() => {
-    untracked(() => {
-      this.userSettingsStore.setDebugMode(this.debug());
-    });
-  })
 
   onChangePassword() {
     this.menus()?.forEach(m => {
