@@ -52,7 +52,7 @@
     "@ngrx/store": "^20.1.0",
     "@sinequa/agent": "4.0.0",
     "@sinequa/assistant": "4.0.0",
-    "@sinequa/atomic": "^0.0.140",
+    "@sinequa/atomic": "^0.0.141",
     "@sinequa/atomic-angular": "^0.4.44",
     "@sinequa/ui": "^0.2.17",
     "@tailwindcss/postcss": "^4.1.3",
