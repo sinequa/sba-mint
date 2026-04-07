@@ -6,8 +6,7 @@ import {
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
   SidebarMenuItemComponent,
-  TooltipDirective,
-  useSidebar
+  TooltipDirective
 } from "@sinequa/ui";
 
 @Component({
@@ -31,14 +30,10 @@ import {
   }
 })
 export class SidebarGroupAgentComponent {
-  readonly sidebar = useSidebar();
-
   private readonly appStore = inject(AppStore);
-
   private readonly instanceId = inject(AGENT_INSTANCE_ID);
+
   protected readonly allowAgent = computed(() => {
     return !!this.appStore.isAgentAllowed(this.instanceId);
   });
-
-
 }

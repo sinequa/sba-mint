@@ -36,4 +36,5 @@ export class SidebarGroupAssistantComponent {
   protected readonly allowAI = computed(() => {
     return !this.router.url.startsWith("/assistant") && !!this.appStore.isAssistantAllowed(this.instanceId());
   });
+
 }
