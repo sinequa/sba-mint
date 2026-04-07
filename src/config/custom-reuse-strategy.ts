@@ -1,4 +1,4 @@
-import { RouteReuseStrategy, DetachedRouteHandle, ActivatedRouteSnapshot } from '@angular/router';
+import type { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy } from '@angular/router';
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
   // A storage object to hold our "frozen" component instances
@@ -7,7 +7,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
   // 1. Should we "freeze" this component when leaving?
   shouldDetach(route: ActivatedRouteSnapshot): boolean {
     // We only want to save the 'assistant' route
-    return route.routeConfig?.path === 'assistant';
+    return !!route.data['reuse'];
   }
 
   // 2. Save the component into our storage
