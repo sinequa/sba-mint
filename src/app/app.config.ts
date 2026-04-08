@@ -4,7 +4,7 @@ import localeDe from '@angular/common/locales/de';
 import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, inject, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
+import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
@@ -62,6 +62,7 @@ import { routes } from './routes';
 // @ts-ignore
 import Flow from '@flowjs/flow.js';
 import { FlowInjectionToken } from '@flowjs/ngx-flow';
+import { CustomReuseStrategy } from '@config/custom-reuse-strategy';
 
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);
@@ -73,6 +74,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
 
+    // This provider is used to configure the route reuse strategy of the application.
+    // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
+    // With this provider, we can tell Angular to keep the component instance in memory and reuse it when navigating back to the route.
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     // this function is used to configure the application before it is loaded
     provideAppInitializer(appInitializerFn),
 
