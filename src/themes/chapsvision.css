@@ -331,7 +331,8 @@
   --ast-reference-expanded-hover-bg: var(--background);
   --ast-reference-passages-color: var(--color-foreground);
   --ast-reference-icon-color: var(--color-foreground);
-  --ast-saved-chat-hover-background: color-mix(in oklab, var(--color-foreground) 10%, transparent);
+  --ast-saved-chat-hover-background: var(--color-almond-50);
+  --ast-saved-chat-active-background: var(--color-almond-100);
 
   --ast-message-table-border-color: var(--color-muted-foreground);
   --ast-message-table-tr-bg: var(--background);
@@ -363,7 +364,7 @@
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
 
-  --primary: var(--color-sage-950);
+  --primary: var(--color-sage-200);
   --primary-foreground: var(--color-sage-300);
   --primary-hovered: var(--color-sage-900);
   --primary-foreground-hovered: var(--color-sage-50);
@@ -454,6 +455,9 @@
 
   --gradient-name: linear-gradient(93deg, #9BD1F5 0%, #D997F1 100%);
   --backdrop: oklch(from var(--color-gray-500) 0.2 c h / 50%);
+
+  --ast-saved-chat-hover-background: var(--color-sage-950);
+  --ast-saved-chat-active-background: var(--color-sage-900);
 
   & ul {
     color-scheme: dark;

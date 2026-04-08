@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, effect, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
@@ -74,7 +74,7 @@ export class SidebarUserMenuComponent {
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
   agentInstanceId = inject(AGENT_INSTANCE_ID);
   allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
-  readonly debug = model<boolean>(false);
+
   /**
    * Determines whether password change functionality should be enabled for the current user.
    *
@@ -98,12 +98,19 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+  readonly debug = model(this.userSettingsStore.isDebugMode());
 
-  readonly menuPosition = computed<Placement>(() => this.breakpointService.isMobile() ? "bottom-start" : "left-start");
+  readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
 
   constructor() {
     // enable agent's debug mode
-    effect(() => this.agentsStore.setDebugMessages(this.debug()));
+    effect(() => {
+      const debug = this.debug();
+      this.agentsStore.setDebugMessages(debug);
+      untracked(() => {
+        this.userSettingsStore.setDebugMode(debug).catch(err => error("set debug mode failed", err));
+      });
+    });
   }
 
   changeLanguage(lang: string) {

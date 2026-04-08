@@ -1,4 +1,7 @@
-import { Component, computed, inject, linkedSignal, signal, viewChild } from "@angular/core";
+import { Component, computed, effect, inject, linkedSignal, signal, viewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { NavigationEnd, Router } from "@angular/router";
+import { filter } from "rxjs";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
@@ -172,6 +175,18 @@ export class MainSidebarComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
+  private readonly navigationEnd = toSignal(
+    inject(Router).events.pipe(filter(e => e instanceof NavigationEnd))
+  );
+
+  constructor() {
+    effect(() => {
+      this.navigationEnd();
+      if (this.sidebar.isMobile()) {
+        this.sidebar.setOpenMobile(false);
+      }
+    });
+  }
 
   readonly principal = inject(PrincipalStore);
   readonly appStore = inject(AppStore);
