@@ -1,13 +1,12 @@
-import { NgComponentOutlet } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-import { firstValueFrom } from 'rxjs';
-
-import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { ApplicationService, AppStore, Bookmark, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
-
-import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { NgComponentOutlet } from "@angular/common";
+import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { Article, LegacyFilter, Query } from "@sinequa/atomic";
+import { ApplicationService, AppStore, Bookmark, QueryService, UserSettingsStore } from "@sinequa/atomic-angular";
+import { BookmarkIcon, TrashCanIcon } from "@sinequa/ui";
+import { toast } from "ngx-sonner";
+import { firstValueFrom } from "rxjs";
+import { getComponentsForDocumentType } from "../../../registry/document-type-registry";
 
 interface BookmarkArticle {
   bookmark: Bookmark;
@@ -15,9 +14,9 @@ interface BookmarkArticle {
 }
 
 @Component({
-  selector: 'Bookmarks',
-  imports: [TranslocoPipe, NgComponentOutlet],
-  templateUrl: './bookmarks.component.html'
+  selector: "Bookmarks",
+  imports: [TranslocoPipe, NgComponentOutlet, BookmarkIcon, TrashCanIcon],
+  templateUrl: "./bookmarks.component.html"
 })
 export class BookmarksComponent {
   cdr = inject(ChangeDetectorRef);
@@ -30,7 +29,7 @@ export class BookmarksComponent {
   private readonly queryService = inject(QueryService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
 
   constructor() {
@@ -43,7 +42,7 @@ export class BookmarksComponent {
     });
 
     // TODO: Set the page title when the drawer is closed
-    this.applicationService.setTitle('Bookmarks');
+    this.applicationService.setTitle("Bookmarks");
 
     this.transloco.langChanges$.subscribe(this.setTitle.bind(this));
   }
@@ -53,12 +52,12 @@ export class BookmarksComponent {
 
     const list: BookmarkArticle[] = [];
     this.bookmarks().forEach(async bookmark => {
-      const q = this.appStore.getQueryByName(bookmark.queryName || '');
-      const name = !!q ? q.name : this.defaultQueryName();
+      const q = this.appStore.getQueryByName(bookmark.queryName || "");
+      const name = q ? q.name : this.defaultQueryName();
       const query: Partial<Query> = {
         name,
         filters: {
-          field: 'id',
+          field: "id",
           value: bookmark.id
         } as LegacyFilter
       };
@@ -76,7 +75,7 @@ export class BookmarksComponent {
 
   public onDelete(bookmark: Bookmark) {
     this.userSettingsStore.unbookmark(bookmark.id);
-    toast.success('Bookmark removed', { duration: 2000 });
+    toast.success("Bookmark removed", { duration: 2000 });
   }
 
   /**
@@ -86,7 +85,7 @@ export class BookmarksComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('myBookmarks');
+    const title = this.transloco.translate("myBookmarks");
     this.applicationService.setTitle(title);
   }
 }

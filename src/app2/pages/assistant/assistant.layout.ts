@@ -20,6 +20,8 @@ import {
   BreakpointObserverService,
   ButtonComponent,
   cn,
+  CommentsIcon,
+  PlusIcon,
   SheetService,
   SidebarGroupComponent,
   SidebarGroupContentComponent,
@@ -46,7 +48,9 @@ import { firstValueFrom } from "rxjs";
     SidebarMenuComponent,
     SidebarMenuButtonComponent,
     SheetPreviewerComponent,
-    AggregationComponent
+    AggregationComponent,
+    CommentsIcon,
+    PlusIcon
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
@@ -58,7 +62,7 @@ import { firstValueFrom } from "rxjs";
                 <section class="h-56 max-h-56 p-4">
                   <div class="flex items-center justify-between">
                     <h3 class="pointer-events-none font-semibold text-muted-foreground">
-                      <i class="far fa-comments me-1"></i>
+                      <CommentsIcon class="me-1" />
                       {{ "assistant.saved-chats" | transloco }}
                     </h3>
                     <button
@@ -107,7 +111,7 @@ import { firstValueFrom } from "rxjs";
             <sidebar-group-content>
               <sidebar-menu>
                 <sidebar-menu-button (click)="chat()?.newChat(); sheetService.toggle()">
-                  <i class="far fa-plus"></i>
+                  <PlusIcon />
                   <span sr-only>{{ "assistant.new-discussion" | transloco }}</span>
                 </sidebar-menu-button>
               </sidebar-menu>

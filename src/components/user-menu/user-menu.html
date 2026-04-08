@@ -20,7 +20,7 @@
   <MenuContent position="bottom-start" class="min-w-max">
     @if (enabledUserProfile()) {
       <MenuItem (click)="handleUserProfile()">
-        <i class="fa-fw fal fa-user text-[16px]"></i>
+        <user-icon class="text-[16px]" />
         <span>{{ "userMenu.manageProfile" | transloco }}</span>
       </MenuItem>
       <Separator />
@@ -38,7 +38,7 @@
               <span>{{ lang.label }}</span>
               <div class="flex items-center gap-2">
                 @if (currentActiveLang() === lang.code) {
-                  <i class="fa-fw fas fa-check text-sm"></i>
+                  <check-icon class="text-sm" />
                 }
                 <ng-container *ngComponentOutlet="lang.icon"></ng-container>
               </div>
@@ -61,9 +61,9 @@
             <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
             <div class="flex items-center gap-2">
               @if (currentTheme() === theme.name) {
-                <i class="fa-fw fas fa-check text-sm"></i>
+                <check-icon class="text-sm" />
               }
-              <i class="{{ theme.icon }}"></i>
+              <ng-container *ngComponentOutlet="theme.icon" />
             </div>
           </MenuItem>
         }

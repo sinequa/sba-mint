@@ -3,7 +3,7 @@ import { TranslocoPipe } from "@jsverse/transloco";
 
 import { Article as A, error } from "@sinequa/atomic";
 import { AppStore, CollectionsDialog, DrawerStackService, LabelsEditDialog, SelectionStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from "@sinequa/ui";
+import { ButtonComponent, DialogEvent, DialogService, EllipsisVerticalIcon, InboxIcon, MenuComponent, MenuContentComponent, MenuItemComponent, PaperclipIcon, TagIcon } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 
 type Article = A & {
@@ -13,21 +13,21 @@ type Article = A & {
 @Component({
   selector: "card-menu, CardMenu, cardmenu",
   standalone: true,
-  imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe], // Add necessary imports
+  imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe, EllipsisVerticalIcon, TagIcon, InboxIcon, PaperclipIcon],
   template: `
     <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
       <button variant="ghost" size="icon" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
         <span class="sr-only">{{ 'article.openMenu' | transloco }}</span>
-        <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+        <EllipsisVerticalIcon />
       </button>
 
       <MenuContent [position]="drawerOpened() ? 'bottom-end' : 'right-start'">
         @if (appStore.allowLabels()) {
-          <menuitem (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ 'article.editLabels' | transloco }} </menuitem>
+          <menuitem (click)="editLabels()"> <TagIcon /> {{ 'article.editLabels' | transloco }} </menuitem>
         }
-        <menuitem (click)="addToCollection()"> <i class="fa-fw far fa-inbox"></i> {{ 'article.addToCollection' | transloco }} </menuitem>
+        <menuitem (click)="addToCollection()"> <InboxIcon /> {{ 'article.addToCollection' | transloco }} </menuitem>
         @if (allowAI()) {
-          <menuitem variant="ai" (click)="attachToAssistant()"> <i class="fa-fw fas fa-paperclip"></i> {{ 'article.addToAIOverview' | transloco }} </menuitem>
+          <menuitem variant="ai" (click)="attachToAssistant()"> <PaperclipIcon /> {{ 'article.addToAIOverview' | transloco }} </menuitem>
         }
       </MenuContent>
     </menu>

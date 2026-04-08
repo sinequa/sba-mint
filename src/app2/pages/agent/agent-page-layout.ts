@@ -1,7 +1,5 @@
 import { Component, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
-import { HistoryIcon } from "@components/icons/history.icon";
-import { NewChatIcon } from "@components/icons/new-chat.icon";
 import {
   AdminDirective,
   AgentGenerationDirective,
@@ -17,6 +15,8 @@ import { SelectionStore } from "@sinequa/atomic-angular";
 import {
   BreakpointObserverService,
   ButtonComponent,
+  HistoryIcon,
+  NewChatIcon,
   ResizableHandleComponent,
   ResizablePanelComponent,
   ResizablePanelGroupComponent,
