@@ -16,6 +16,8 @@ import {
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
+  ArrowRightFromBracketIcon,
+  ArrowUpRightFromSquareIcon,
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
@@ -25,13 +27,16 @@ import {
   DialogService,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  KeyIcon,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
   MoonIcon,
   Separator,
   SunBrightIcon,
-  UserIcon
+  TrashIcon,
+  UserIcon,
+  UserSecretIcon
 } from "@sinequa/ui";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -60,13 +65,18 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     UserIcon,
+    UserSecretIcon,
     ChevronRightIcon,
+    CheckIcon,
+    TrashIcon,
+    KeyIcon,
+    ArrowUpRightFromSquareIcon,
+    ArrowRightFromBracketIcon,
     AvatarComponent,
     AvatarImageComponent,
     AvatarFallbackComponent,
     Separator,
-    NgComponentOutlet,
-    CheckIcon
+    NgComponentOutlet
   ],
   templateUrl: "./user-menu.html",
   providers: [provideTranslocoScope("user-menu")]

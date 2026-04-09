@@ -71,7 +71,7 @@ import { firstValueFrom } from "rxjs";
                       [title]="'assistant.new-discussion' | transloco"
                       [attr.aria-label]="'assistant.new-discussion' | transloco"
                       (click)="chat()?.newChat()">
-                      <i class="far fa-plus"></i>
+                      <PlusIcon />
                     </button>
                   </div>
                   <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->

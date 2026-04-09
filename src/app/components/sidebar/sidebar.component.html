@@ -2,11 +2,11 @@
   <div class="mt-30 grow">
     @if (backLevel()) {
       <sidebar-item class="aspect-square size-9" title="Search" [attr.aria-label]="'Search'" (click)="location.historyGo(backLevel())">
-        <i class="fa-fw far fa-magnifying-glass"></i>
+        <magnifying-glass-icon />
       </sidebar-item>
     } @else {
       <sidebar-item class="aspect-square size-9" title="Search" [attr.aria-label]="'Search'" routerLink="/home">
-        <i class="fa-fw far fa-magnifying-glass"></i>
+        <magnifying-glass-icon />
       </sidebar-item>
     }
 
@@ -16,7 +16,7 @@
       title="Chats"
       [attr.aria-label]="'Chats'"
       routerLink="/assistant">
-      <i class="fa-fw far fa-comment"></i>
+      <comment-icon />
     </sidebar-item>
 
     <ng-content></ng-content>
@@ -24,11 +24,11 @@
 
   @if (isAdmin()) {
     <sidebar-item class="aspect-square size-9" title="Administration" [attr.aria-label]="'Administration'" (click)="openAdmin()">
-      <i class="fa-fw far fa-gear"></i>
+      <gear-icon />
     </sidebar-item>
   }
 
   <sidebar-item class="aspect-square size-9" title="Help" [attr.aria-label]="'Help'" (click)="openHelp()">
-    <i class="fa-fw far fa-question-circle"></i>
+    <question-circle-icon />
   </sidebar-item>
 </sidebar>
