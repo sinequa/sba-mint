@@ -106,8 +106,9 @@ export class SearchAllComponent {
   protected readonly s = input<string>(); // sort
   protected readonly f = input<string>(); // filters
   protected readonly n = input<string>(); // query param
-  protected readonly id = input<string>(); // record.id
   protected readonly c = input<SpellingCorrectionMode>(); // correction mode
+  protected readonly p = input<number>(); // page number
+  protected readonly id = input<string>(); // record.id
 
   // all signals used in the component
   protected readonly drawerOpened = computed(() => this.drawerStack.isOpened());
@@ -257,7 +258,7 @@ export class SearchAllComponent {
 
   constructor(destroyRef: DestroyRef) {
     // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
-    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c });
+    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c, p: this.p });
 
     // Reset the feedback visibility on any store change
     effect(() => {

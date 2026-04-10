@@ -1,7 +1,7 @@
 import { effect, inject, InputSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { SpellingCorrectionMode } from '@sinequa/atomic';
+import { LegacyFilter, SpellingCorrectionMode } from '@sinequa/atomic';
 import { QueryParamsStore } from '@sinequa/atomic-angular';
 
 /**
@@ -89,11 +89,9 @@ export interface UrlQueryParamsSyncOptions {
 export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: UrlQueryParamsSyncOptions = {}): void {
   const { syncToUrl = true } = options;
 
-  // These are injected here rather than in the component so that consumers don't need
-  // to inject Router/ActivatedRoute themselves just to use this composable.
+  // QueryParamsStore is always needed (Effect 1). Router/ActivatedRoute are injected
+  // only when Effect 2 is active to avoid unnecessary injections for one-way consumers.
   const queryParamsStore = inject(QueryParamsStore);
-  const router = inject(Router);
-  const route = inject(ActivatedRoute);
 
   // ─── Effect 1: URL → Store ────────────────────────────────────────────────
   // Runs whenever any of the provided input signals change (i.e. whenever the
@@ -104,7 +102,12 @@ export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: U
   // JSON string (e.g. `?f=[{"column":"doctype","values":["pdf"]}]`) because query
   // params are inherently flat strings. We parse it back to an array here.
   effect(() => {
-    const filters = inputs.f?.() ? JSON.parse(inputs.f!() ?? '') : [];
+    let filters: LegacyFilter[] = [];
+    try {
+      filters = inputs.f?.() ? JSON.parse(inputs.f!() ?? '') : [];
+    } catch {
+      filters = [];
+    }
     queryParamsStore.patch({
       text: inputs.q?.(),
       tab: inputs.t?.(),
@@ -130,6 +133,9 @@ export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: U
   // the case for components that only consume search context without modifying it
   // (e.g. the assistant page).
   if (syncToUrl) {
+    const router = inject(Router);
+    const route = inject(ActivatedRoute);
+
     effect(() => {
       const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(queryParamsStore);
       router.navigate([], {
