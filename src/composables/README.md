@@ -59,7 +59,9 @@ function injectUrlQueryParamsSync(
 
 ### Usage
 
-#### Bidirectional — `search-all` (URL ↔ Store)
+#### Bidirectional — `search-all` and `assistant.layout` (URL ↔ Store)
+
+Both components synchronize bidirectionally: URL changes update the store, and store changes update the URL.
 
 ```typescript
 export class SearchAllComponent {
@@ -73,10 +75,6 @@ export class SearchAllComponent {
 }
 ```
 
-#### One-way — `assistant.layout` (URL → Store only)
-
-The assistant reads search context from the URL but does not modify the query params.
-
 ```typescript
 export class AssistantLayoutComponent {
   readonly q = input<string>();
@@ -84,16 +82,32 @@ export class AssistantLayoutComponent {
   // ... other inputs
 
   constructor() {
-    injectUrlQueryParamsSync(
-      { q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c },
-      { syncToUrl: false }
-    );
+    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c });
 
     // React to store changes to update the local query signal
     effect(() => {
       getState(this.queryParamsStore);
       this.query.set(this.queryParamsStore.getQuery());
     });
+  }
+}
+```
+
+#### One-way — URL → Store only (`syncToUrl: false`)
+
+Use this option for components that read search context from the URL but must not write back to it (e.g. an embedded viewer that should not alter the browser history).
+
+```typescript
+export class SomeViewerComponent {
+  readonly q = input<string>();
+  readonly f = input<string>();
+  // ... other inputs
+
+  constructor() {
+    injectUrlQueryParamsSync(
+      { q: this.q, f: this.f },
+      { syncToUrl: false }
+    );
   }
 }
 ```
@@ -126,7 +140,7 @@ class SearchAllComponent extends WithUrlQueryParams {
 }
 
 class AssistantLayoutComponent extends WithUrlQueryParams {
-  constructor() { super({ syncToUrl: false }); }
+  constructor() { super(); }
 }
 ```
 
@@ -135,7 +149,7 @@ Technically, Angular Ivy handles `input()` signal inheritance well — `withComp
 **The reasons for rejection are architectural:**
 
 **1. Inheritance enforces too broad a contract.**
-All components would inherit all inputs (`q`, `t`, `b`, `s`, `f`, `n`, `c`, `p`), including ones they don't need. The assistant doesn't use `p` (pagination), for example. The composable, on the other hand, accepts only the inputs the component explicitly declares.
+All components would inherit all inputs (`q`, `t`, `b`, `s`, `f`, `n`, `c`, `p`), including ones they don't need. The assistant doesn't use `p` (pagination), for example. The composable accepts only the inputs the component explicitly declares.
 
 **2. Inheritance hides behavior.**
 A developer reading `AssistantLayoutComponent` has to look up the parent class to understand where the inputs come from and why `syncToUrl: false` is passed to `super()`. With the composable, everything is visible in the component constructor.

@@ -185,7 +185,7 @@ export class AssistantLayoutComponent {
       this.chat()?.newChat();
     });
 
-    // Synchronize URL query params → QueryParamsStore (URL → Store only)
+    // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
     injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c });
 
     // React to store updates to keep the local query signal in sync
