@@ -13,10 +13,10 @@ In this chapter, you will highlight entities in the Mint document preview.
 
 ## Backend Configuration
 
-When indexing data, you have to set up entities for extraction, which are stored in the Sinequa index(es). 
+When indexing data, you have to set up entities for extraction, which are stored in the Sinequa index(es).
 
 :::note
-In the Sinequa demo server, there are multiple entities extracted for you. 
+In the Sinequa demo server, there are multiple entities extracted for you.
 
 In this exercise, you will highlight two entities: *entity13*, using the column alias **exectitle**, and *entity14*, using the column alias **finance**.
 
@@ -31,20 +31,56 @@ Additionally, a Preview Web Service must be configured to define the highlights 
 
 ## Modifying the highlight.config.ts File
 
-1. Go to **src > app > highlight.config.ts**. 
+:::info File location per release
+The location of `highlight.config.ts` changed between releases:
+
+| Release                 | Path                              |
+|-------------------------|-----------------------------------|
+| **11.13.0 and earlier** | `src/app/highlight.config.ts`     |
+| **11.14.0 and later**   | `src/config/highlight.config.ts`  |
+
+The file structure and the `PREVIEW_HIGHLIGHTS` constant are identical in both locations — only the path differs.
+:::
+
+### release/11.13.0 and earlier
+
+1. Go to **src > app > highlight.config.ts**.
 
 2. Add the following to the **PREVIEW_HIGHLIGHTS** constant:
 
-    ```
+    ```ts
     {
-    name: 'exectitle',
-    color: 'black',
-    bgColor: '#F5DCD5'
+      name: 'exectitle',
+      color: 'black',
+      bgColor: '#F5DCD5'
     },
     {
-    name: 'finance',
-    color: 'black',
-    bgColor: '#59ED78'
+      name: 'finance',
+      color: 'black',
+      bgColor: '#59ED78'
+    },
+    ```
+
+3. Save your changes.
+
+### release/11.14.0 and later
+
+Starting from release 11.14.0, the configuration file was moved out of the `app/` folder into a dedicated `config/` folder to separate application configuration from Angular application code.
+
+1. Go to **src > config > highlight.config.ts**.
+
+2. Add the following to the **PREVIEW_HIGHLIGHTS** constant:
+
+    ```ts
+    {
+      name: 'exectitle',
+      color: 'black',
+      bgColor: '#F5DCD5'
+    },
+    {
+      name: 'finance',
+      color: 'black',
+      bgColor: '#59ED78'
     },
     ```
 
