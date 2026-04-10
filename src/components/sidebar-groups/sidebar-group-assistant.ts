@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { TranslocoPipe } from "@jsverse/transloco";
 import { AppStore } from "@sinequa/atomic-angular";
 import { SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemComponent, TooltipDirective, useSidebar } from "@sinequa/ui";
 
@@ -15,14 +16,14 @@ import { SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemCompon
           routerLinkActive="active"
           #rlaAssistant="routerLinkActive"
           [attr.data-active]="rlaAssistant.isActive || null">
-          <i tooltip="Chats" tooltip-position="right" class="fa-fw far fa-comment [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true"></i>
-          <span class="text-sm" sr-only>Chats</span>
+          <i [tooltip]="'chats' | transloco" tooltip-position="right" class="fa-fw far fa-comment [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true"></i>
+          <span class="text-sm" sr-only>{{ 'chats' | transloco }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>
     </sidebar-menu>
     }
   `,
-  imports: [SidebarMenuComponent, SidebarMenuItemComponent, SidebarMenuButtonComponent, RouterLink, RouterLinkActive, TooltipDirective]
+  imports: [SidebarMenuComponent, SidebarMenuItemComponent, SidebarMenuButtonComponent, RouterLink, RouterLinkActive, TooltipDirective, TranslocoPipe]
 })
 export class SidebarGroupAssistantComponent {
   private readonly router = inject(Router);
