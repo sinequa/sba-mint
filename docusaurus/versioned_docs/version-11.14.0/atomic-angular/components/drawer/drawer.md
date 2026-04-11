@@ -5,10 +5,6 @@ sidebar_class_name: deprecated
 
 This component represents a drawer that can be opened and extended. Each instance of the DrawerComponent has its own drawer service to handle its state and link it to the drawer stack.
 
-:::warning
- The `DrawerComponent` is marked as deprecated and will be removed in future releases. It is recommended to use alternative drawer implementations for new projects.
-:::
-
 **Selector:** `app-drawer`
 
 **Standalone:** true

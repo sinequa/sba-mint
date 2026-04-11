@@ -1,84 +1,87 @@
 ---
 title: Query Params
+sidebar_class_name: update
 ---
 
-This store is used to manage the query parameters. It is used to store the query parameters for the current page.
+The `QueryParamsStore` manages the current URL query parameters (search text, filters, page, basket, etc.).
 
-## Basic Features
+## Methods
 
-### setFromUrl()
+### `setFromUrl()`
 
-Sets the state from the given URL by extracting query parameters and updating the store.
+Parses a URL and updates the store state from its query parameters.
 
 ```typescript
 setFromUrl(url: string): void
 ```
 
-| Parameter | Type   | Description                          |
-|-----------|--------|--------------------------------------|
-| url       | string | The URL from which to extract params |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL from which to extract query parameters. |
 
-### addFilter()
+### `addFilter()`
 
-Adds a filter to the store's state.
+Adds a filter to the current state.
 
 ```typescript
 addFilter(filter: LegacyFilter): void
 ```
 
-| Parameter | Type         | Description          |
-|-----------|--------------|----------------------|
-| filter    | LegacyFilter | The filter to add    |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `filter` | `LegacyFilter` | ✓ | The filter to add. |
 
-### updateFilter()
+### `updateFilter()`
 
-Updates the filter with the given value.
+Updates an existing filter in the store.
 
 ```typescript
 updateFilter(filter: LegacyFilter): void
 ```
 
-| Parameter | Type         | Description          |
-|-----------|--------------|----------------------|
-| filter    | LegacyFilter | The filter to update |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `filter` | `LegacyFilter` | ✓ | The updated filter. |
 
-### clearFilter()
+### `clearFilter()`
 
-Clears the filter.
+Removes all active filters.
 
 ```typescript
 clearFilter(): void
 ```
 
-### clearBasket()
+### `clearBasket()`
 
-Clears the basket from the state.
+Removes the basket from the state.
 
 ```typescript
 clearBasket(): void
 ```
 
-### patch()
+### `patch()`
 
-Patches the query parameters with the given value.
+Merges the provided partial state into the current state.
 
 ```typescript
 patch(params: Partial<QueryParamsState>): void
 ```
 
-| Parameter | Type                     | Description                |
-|-----------|--------------------------|----------------------------|
-| params    | Partial\<QueryParamsState\> | The parameters to patch with |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `params` | `Partial<QueryParamsState>` | ✓ | The parameters to merge. |
 
-### getFilter()
+### `getFilter()`
 
-Retrieves a filter object based on the provided field or name.
+Retrieves a filter by field or name.
 
 ```typescript
 getFilter({ field, name }: { field: string | undefined; name: string | undefined }): Partial<LegacyFilter & { count: number }> | null
 ```
 
-| Parameter     | Type    | Description                          |
-|---------------|---------|--------------------------------------|
-| field         | string  | The field to search for in filters   |
-| name          | string  | The name to search for in filters    |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `field` | `string \| undefined` | | The field key to search for. |
+| `name` | `string \| undefined` | | The filter name to search for. |
+
+**Returns** `Partial<LegacyFilter & { count: number }> | null` — the matching filter or `null`.

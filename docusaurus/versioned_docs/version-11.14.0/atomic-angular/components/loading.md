@@ -1,5 +1,6 @@
 ---
 title: Loading
+sidebar_class_name: update
 ---
 
 The `Loading` component provides a visually appealing spinner that displays during application initialization or route transitions, with automatic timeout and error handling.
@@ -7,7 +8,7 @@ The `Loading` component provides a visually appealing spinner that displays duri
 ## Usage
 
 ```ts title="sample.component.ts"
-import { LoadingComponent } from "@angular/atomic-angular";
+import { LoadingComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",
@@ -42,7 +43,7 @@ External developers can extend this component to customize it for their specific
 
 ```ts title="custom-loading.component.ts"
 import { Component } from '@angular/core';
-import { LoadingComponent } from '@angular/atomic-angular';
+import { LoadingComponent } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'custom-wait',

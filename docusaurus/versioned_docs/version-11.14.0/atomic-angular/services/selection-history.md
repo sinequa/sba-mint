@@ -1,101 +1,93 @@
 ---
 title: Selection History
+sidebar_class_name: update
 ---
 
-The `SelectionHistoryService` class is responsible for managing the selection history. It keeps track of the history of selected articles and provides methods to navigate through the history. The service also emits events when the selection history changes. This service is used by the Drawer.
+The `SelectionHistoryService` maintains a navigable history of selected articles. It is used internally by the `DrawerComponent`.
 
-## Functions
+## Methods
 
-### getCurrentSelectionIndex()
+### `getCurrentSelectionIndex()`
 
-Retrieves the index of the current selection.
-
-```typescript
-public getCurrentSelectionIndex(): number
-```
-
-**Returns:**
-
-- `number`: The index of the current selection, which is the last element in the history array.
-
-**Usage Example:**
+Returns the index of the current (most recent) selection in the history.
 
 ```typescript
-const currentIndex = selectionHistoryService.getCurrentSelectionIndex();
-console.log(currentIndex);
+getCurrentSelectionIndex(): number
 ```
 
-### getSelection()
+**Returns** `number` — the index of the current selection.
 
-Retrieves an article from the selection history at the specified index.
+**Example**
 
 ```typescript
-public getSelection(index: number): Article | undefined
+import { inject } from '@angular/core';
+import { SelectionHistoryService } from '@sinequa/atomic-angular';
+
+const index = inject(SelectionHistoryService).getCurrentSelectionIndex();
 ```
 
-| Parameter | Type   | Description                                      |
-|-----------|--------|--------------------------------------------------|
-| `index`   | number | The index of the article to retrieve.            |
+### `getSelection()`
 
-**Returns:**
-
-- `Article | undefined`: The article at the specified index, or `undefined` if the index is out of bounds.
-
-**Usage Example:**
+Retrieves an article from the history at the specified index.
 
 ```typescript
-const article = selectionHistoryService.getSelection(0);
-console.log(article);
+getSelection(index: number): Article | undefined
 ```
 
-### getHistoryLength()
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the article to retrieve. |
 
-Retrieves the length of the history array.
+**Returns** `Article | undefined` — the article at that index, or `undefined` if out of bounds.
+
+**Example**
 
 ```typescript
-public getHistoryLength(): number
+const article = inject(SelectionHistoryService).getSelection(0);
 ```
 
-**Returns:**
+### `getHistoryLength()`
 
-- `number`: The number of entries in the history.
-
-**Usage Example:**
+Returns the number of entries in the history.
 
 ```typescript
-const historyLength = selectionHistoryService.getHistoryLength();
-console.log(historyLength);
+getHistoryLength(): number
 ```
 
-### clearHistory()
+**Returns** `number` — the history length.
+
+**Example**
+
+```typescript
+const length = inject(SelectionHistoryService).getHistoryLength();
+```
+
+### `clearHistory()`
 
 Clears the selection history and resets the current article selection.
 
 ```typescript
-public clearHistory(): void
+clearHistory(): void
 ```
 
-**Usage Example:**
+**Example**
 
 ```typescript
-selectionHistoryService.clearHistory();
+inject(SelectionHistoryService).clearHistory();
 ```
 
-### back()
+### `back()`
 
 Navigates back in the selection history.
 
 ```typescript
-public back(): Article | undefined
+back(): Article | undefined
 ```
 
-**Returns:**
+**Returns** `Article | undefined` — the previous article, or `undefined` if the history is empty.
 
-- `Article | undefined`: The last article in the history, or `undefined` if the history is empty.
-
-**Usage Example:**
+**Example**
 
 ```typescript
-const previousArticle = selectionHistoryService.back();
-console.log(previousArticle);
+const previous = inject(SelectionHistoryService).back();
 ```

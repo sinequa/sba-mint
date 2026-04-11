@@ -1,5 +1,6 @@
 ---
 title: Recent Searches
+sidebar_class_name: update
 ---
 
 The `RecentSearches` feature provides a UI and logic for displaying and managing a user's recent search queries. It helps users quickly revisit previous searches and improves search experience.
@@ -7,7 +8,7 @@ The `RecentSearches` feature provides a UI and logic for displaying and managing
 ## Usage
 
 ```ts title="sample.component.ts"
-import { RecentSearchesComponent } from "@angular/atomic-angular";
+import { RecentSearchesComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",

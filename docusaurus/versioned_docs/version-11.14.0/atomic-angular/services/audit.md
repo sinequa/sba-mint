@@ -1,68 +1,69 @@
 ---
 title: Audit
+sidebar_class_name: update
 ---
 
-The `AuditService` class is responsible for notifying the Sinequa server of various audit events such as login, logout, document events, and route changes. Below are the details of each function provided by this service.
+The `AuditService` notifies the Sinequa server of audit events such as login, logout, document interactions, and route changes.
 
 :::note
-The AuditService is the same as the AuditService provided by the Sinequa SDK.  
-This service is used to notify the Sinequa server of various audit events and exists to maintain the compatibility of the Angular application with the Sinequa SDK.
-
-Use the [`notify()`](/atomic/features/audit) function from the __@sinequa/atomic__ library whenever it's possible.
+Use the [`notify()`](/atomic/features/audit) function from `@sinequa/atomic` whenever possible. This service exists for compatibility with the Sinequa SDK.
 :::
 
-## Functions
+## Methods
 
-### notify()
+### `notify()`
 
-Notify the Sinequa server of a set of audit events.
+Notifies the server of a set of audit events.
 
 ```typescript
 notify(auditEvents: AuditEvents): void
 ```
 
-| Name        | Type        | Description                      |
-|-------------|-------------|----------------------------------|
-| `auditEvents` | `AuditEvents` | The audit events to notify. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `auditEvents` | `AuditEvents` | ✓ | The audit events to send. |
 
-__Usage Example:__
+**Example**
 
-```typescript
-const auditEvents: AuditEvents = { type: "Custom_Event" };
-auditService.notify(auditEvents);
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AuditService } from '@sinequa/atomic-angular';
+
+const auditService = inject(AuditService);
+auditService.notify({ type: 'Custom_Event' });
 ```
 
-### notifyLogin()
+### `notifyLogin()`
 
-It sends a login success audit event to the Audit Service.
+Sends a login success audit event.
 
 ```typescript
 notifyLogin(): void
 ```
 
-__Usage Example:__
+**Example**
 
 ```typescript
-auditService.notifyLogin();
+inject(AuditService).notifyLogin();
 ```
 
-### notifyLogout()
+### `notifyLogout()`
 
-Notify the Sinequa server of a logout event.
+Sends a logout audit event.
 
 ```typescript
 notifyLogout(): void
 ```
 
-__Usage Example:__
+**Example**
 
 ```typescript
-auditService.notifyLogout();
+inject(AuditService).notifyLogout();
 ```
 
-### notifyDocument()
+### `notifyDocument()`
 
-Notify the Sinequa server of a document event.
+Notifies the server of a document interaction event.
 
 ```typescript
 notifyDocument(
@@ -74,35 +75,37 @@ notifyDocument(
 ): void
 ```
 
-| Name            | Type                                                                 | Description                                                                 |
-|-----------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| `auditEventType`| `AuditEventType \| AuditEventTypeValues \| {} & Record<never, never>`| The audit event type.                                                       |
-| `doc`           | `Article`                                                            | The document (article) in question.                                         |
-| `resultsOrId`   | `Result \| string`                                                   | The result or result ID that contains the document.                         |
-| `parameters`    | `Record<string, string \| number \| boolean \| undefined>`           | Optional. Additional parameters.                                            |
-| `rfmParameters` | `Record<string, string \| number \| boolean \| undefined>`           | Optional. Additional RFM parameters.                                        |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `auditEventType` | `AuditEventType \| AuditEventTypeValues` | ✓ | The type of document audit event. |
+| `doc` | `Article` | ✓ | The document (article) in question. |
+| `resultsOrId` | `Result \| string` | ✓ | The result or result ID containing the document. |
+| `parameters` | `Record<string, string \| number \| boolean \| undefined>` | | Additional parameters. |
+| `rfmParameters` | `Record<string, string \| number \| boolean \| undefined>` | | Additional RFM parameters. |
 
-__Usage Example:__
+**Example**
 
-```typescript
-const article: Article = { /* article details */ };
-auditService.notifyDocument("Document_View", article, "resultId123", { param1: "value1" });
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AuditService } from '@sinequa/atomic-angular';
+
+inject(AuditService).notifyDocument('Document_View', article, 'resultId123');
 ```
 
-### notifyRouteChange()
+### `notifyRouteChange()`
 
-Notify the Sinequa server of a route change event.
+Notifies the server of a route change event.
 
 ```typescript
 notifyRouteChange(url: string): void
 ```
 
-| Name | Type     | Description                |
-|------|----------|----------------------------|
-| `url`| `string` | The URL of the new route.  |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL of the new route. |
 
-__Usage Example:__
+**Example**
 
 ```typescript
-auditService.notifyRouteChange("/new-route");
+inject(AuditService).notifyRouteChange('/new-route');
 ```

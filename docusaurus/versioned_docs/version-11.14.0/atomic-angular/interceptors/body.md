@@ -1,20 +1,20 @@
 ---
 title: BodyInterceptorFn
+sidebar_class_name: update
 ---
 
-Interceptor function that modifies the request body by appending a "locale" parameter with the value "fr".
-If the request body is of type FormData, the "locale" parameter is appended directly.  
-If the request body is an object, a new object is created with the "locale" parameter added.
+Intercepts HTTP requests to append a `locale` parameter to the request body. If the body is `FormData`, the parameter is appended directly; if it is a plain object, a new object is created with the `locale` field added.
 
-### Usage
+## Usage
 
-```ts title="app.config.ts"
+```typescript title="app.config.ts"
+import { bodyInterceptorFn } from '@sinequa/atomic-angular';
+
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(WithInterceptors([
+    provideHttpClient(withInterceptors([
       bodyInterceptorFn,
-      ...
-    ]))
-  ]
-}
+    ])),
+  ],
+};
 ```

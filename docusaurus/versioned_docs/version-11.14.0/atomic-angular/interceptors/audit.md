@@ -1,22 +1,20 @@
 ---
 title: AuditInterceptorFn
+sidebar_class_name: update
 ---
 
-Intercepts HTTP requests to add audit information if the request URL includes the API path.
+Intercepts HTTP requests to add audit information when the request URL includes the configured API path. If the request body is JSON-serializable and not an `HttpParams` instance, additional audit metadata is injected via `addAuditAdditionalInfo`.
 
-This interceptor checks if the request URL contains the specified API path from the global configuration.  
-If the request body is JSON serializable and not an instance of `HttpParams`, it adds additional audit information
-to the request body using the `addAuditAdditionalInfo` function.
+## Usage
 
-### Usage
+```typescript title="app.config.ts"
+import { auditInterceptorFn } from '@sinequa/atomic-angular';
 
-```ts title="app.config.ts"
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(WithInterceptors([
+    provideHttpClient(withInterceptors([
       auditInterceptorFn,
-      ...
-    ]))
-  ]
-}
+    ])),
+  ],
+};
 ```

@@ -16,7 +16,7 @@ The `NavbarTabs` component provides a responsive navigation tab system that auto
 ## Usage
 
 ```ts title="sample.component.ts"
-import { NavbarTabsComponent } from "@angular/atomic-angular";
+import { NavbarTabsComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",

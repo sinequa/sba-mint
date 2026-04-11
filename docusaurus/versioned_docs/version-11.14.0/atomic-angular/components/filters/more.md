@@ -40,7 +40,8 @@ export class SampleComponent {}
 |---------------|----------|-----------------------------------------------------|
 | `count` | `number` | Number of filters contained in the dropdown |
 | `position`    | `Placement` | Position of the dropdown (default: `bottom-end`) |
-| `excludeFilters` | `string[]` | Filters to exclude from the dropdown |
+| `includedFilters` | `string[]` | Filters to only be included in the dropdown |
+| `excludedFilters` | `string[]` | Filters to exclude from the dropdown |
 
 ## Schemas
 

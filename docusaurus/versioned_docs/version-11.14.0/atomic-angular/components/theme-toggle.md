@@ -1,26 +1,45 @@
 ---
 title: ThemeToggle
+sidebar_class_name: update
 ---
 
-The `ThemeToggle` component is an Angular component that allows toggling between dark and light mode.
+The `ThemeToggleComponent` provides a toggle button for switching between light and dark mode for a given scope.
 
-### Properties
+## Usage
 
-| Property   | Type                | Description                               |
-|------------|---------------------|-------------------------------------------|
-| `scope`    | `Input<string>`     | The application scope.                    |
-| `darkMode` | `Model<boolean>`    | Indicates whether dark mode is enabled.   |
+```typescript title="sample.component.ts"
+import { ThemeToggleComponent } from '@sinequa/atomic-angular';
+
+@Component({
+  selector: 'sample',
+  imports: [ThemeToggleComponent],
+  template: `<theme-toggle [scope]="scope" />`,
+})
+export class SampleComponent {
+  scope = 'main';
+}
+```
+
+## API Reference
+
+### Inputs
+
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `scope` | `string` | ✓ | The application scope identifier. |
+
+### Two-way bindings
+
+| Name | Type | Description |
+|------|------|-------------|
+| `darkMode` | `model<boolean>` | Whether dark mode is currently enabled. |
 
 ### Methods
 
-| Method             | Description                                  |
-|--------------------|----------------------------------------------|
-| `toggleDarkMode`   | Toggles between dark and light mode.         |
+#### `toggleDarkMode()`
 
-## Examples
+Toggles between dark and light mode for the configured scope.
 
-The `ThemeToggleComponent` can be used in the template of a parent component as follows:
-
-```html
-<theme-toggle [scope]="scope" />
+```typescript
+toggleDarkMode(): void
 ```

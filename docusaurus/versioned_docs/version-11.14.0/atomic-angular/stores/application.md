@@ -1,66 +1,69 @@
 ---
 title: Application
+sidebar_class_name: update
 ---
 
-This is our Application's store. Here we can manage differents flags used by __"Mint"__
+The `ApplicationStore` manages application-level flags (ready state, extracts) used by the Mint framework. It can be extended to add custom application state.
 
 :::info
-This store provide basic features you can easly inherits to create your own application's store
+This store provides basic features you can easily extend to create your own application store.
 :::
 
-## Basic features
+## Methods
 
-### update()
+### `update()`
 
-Updates the application state with the provided state properties.
+Updates the application state with the provided partial state.
 
 ```typescript
 update(state: Partial<ApplicationState>): void
 ```
 
-| Parameter | Type                    | Description                                      |
-|-----------|-------------------------|--------------------------------------------------|
-| `state`     | `Partial<ApplicationState>` | The partial state object containing properties to update. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `state` | `Partial<ApplicationState>` | ✓ | Partial state object with properties to update. |
 
-### updateReadyState()
+### `updateReadyState()`
 
-Updates the ready state of the application store.
+Sets the ready flag on the application store.
 
 ```typescript
-updateReadyState(value: boolean = true): void
+updateReadyState(value?: boolean): void
 ```
 
-| Parameter | Type     | Description                           |
-|-----------|----------|---------------------------------------|
-| `value`     | `boolean`  | Optional. The ready state to set. Defaults to true. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `value` | `boolean` | | The ready state to set. Default: `true`. |
 
-## Extracts features
+### `updateExtracts()`
 
-### extractsCount
-
-Get the extracts count.
-
-### updateExtracts()
-
-Updates the extracts for a given ID in the application store.
+Stores extract data for a given document ID.
 
 ```typescript
 updateExtracts(id: string, extracts: Extract[]): void
 ```
 
-| Parameter | Type     | Description                          |
-|-----------|----------|--------------------------------------|
-| `id`        | `string`   | The ID of the extracts to update.    |
-| `extracts`  | `Extract[]`| The extracts to set for the given ID.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The document ID. |
+| `extracts` | `Extract[]` | ✓ | The extracts to store for that document. |
 
-### getExtracts()
+### `getExtracts()`
 
-Retrieves extracts from the store based on the provided ID.
+Retrieves stored extracts for a given document ID.
 
 ```typescript
 getExtracts(id: string): Extract[]
 ```
 
-| Parameter | Type     | Description                          |
-|-----------|----------|--------------------------------------|
-| `id`        | `string`   | The ID of the extracts to retrieve.  |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The document ID. |
+
+**Returns** `Extract[]` — the extracts for that document.
+
+## Computed values
+
+### `extractsCount`
+
+**Returns** `number` — the total number of stored extracts.

@@ -1,5 +1,6 @@
 ---
 title: Missing Terms
+sidebar_class_name: update
 ---
 
 The `MissingTerms` component displays search terms that were not found in the current article and provides options to include them in a new search.
@@ -7,7 +8,7 @@ The `MissingTerms` component displays search terms that were not found in the cu
 ## Usage
 
 ```ts title="sample.component.ts"
-import { MissingTermsComponent } from "@angular/atomic-angular";
+import { MissingTermsComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",

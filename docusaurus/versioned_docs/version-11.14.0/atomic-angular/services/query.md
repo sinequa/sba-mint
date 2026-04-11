@@ -3,85 +3,80 @@ title: Query
 sidebar_class_name: update
 ---
 
-The `QueryService` is responsible for handling search queries, including fetching and displaying search results.
+The `QueryService` handles search queries, including fetching results and navigating between pages.
 
-## Functions
+## Methods
 
-### search()
+### `search()`
+
+Executes a search with the given query parameters.
 
 ```typescript
 search(q?: Partial<Query>, includeQueryParams?: boolean, audit?: AuditEvents): Observable<Result>
 ```
 
-| Name                | Type                | Description                                                                 |
-|---------------------|---------------------|-----------------------------------------------------------------------------|
-| `q`                 | `Partial<Query>`    | (Optional) The partial query object.                                        |
-| `includeQueryParams`| `boolean`           | (Optional) Indicates whether to include query parameters automatically.     |
-| `audit`             | `AuditEvents`       | (Optional) The audit events object.                                         |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `q` | `Partial<Query>` | | Partial query object to override current query parameters. |
+| `includeQueryParams` | `boolean` | | Whether to include URL query parameters automatically. |
+| `audit` | `AuditEvents` | | Audit events to associate with the search. |
 
-#### Returns
+**Returns** `Observable<Result>` — emits the search results.
 
-`Observable<Result>` - An observable that emits the search results.
+**Example**
 
-#### Usage
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { QueryService } from '@sinequa/atomic-angular';
 
-```typescript
-import { inject } from "@angular/core";
-import { QueryService } from "@sinequa/atomic-angular";
-
-const queryService = inject(QueryService);
-queryService.search({ text: 'example' }).subscribe(results => {
+inject(QueryService).search({ text: 'example' }).subscribe(results => {
   console.log(results);
 });
 ```
 
-### bulkSearch()
+### `bulkSearch()`
+
+Executes multiple search queries in parallel.
 
 ```typescript
 bulkSearch(q: Query[], audit?: AuditEvents): Observable<Result[]>
 ```
 
-| Name    | Type          | Description                                             |
-|---------|---------------|---------------------------------------------------------|
-| `q`     | `Query[]`     | An array of Query objects representing the search queries. |
-| `audit` | `AuditEvents` | (Optional) An object for auditing purposes.             |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `q` | `Query[]` | ✓ | Array of query objects to execute. |
+| `audit` | `AuditEvents` | | Audit events to associate with the searches. |
 
-#### Returns
+**Returns** `Observable<Result[]>` — emits an array of results in the same order as the input queries.
 
-`Observable<Result[]>` - An observable that emits an array of Result objects.
+**Example**
 
-#### Usage
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { QueryService } from '@sinequa/atomic-angular';
 
-```typescript
-import { inject } from "@angular/core";
-import { QueryService } from "@sinequa/atomic-angular";
-
-const queryService = inject(QueryService);
-queryService.bulkSearch([{ text: 'example1' }, { text: 'example2' }]).subscribe(results => {
+inject(QueryService).bulkSearch([{ text: 'example1' }, { text: 'example2' }]).subscribe(results => {
   console.log(results);
 });
 ```
 
-### gotoPage()
+### `gotoPage()`
 
-Navigates to the specified page and returns the search result.
+Navigates to the specified page number and triggers a new search.
 
 ```typescript
 gotoPage(page: number): void
 ```
 
-| Parameter | Type     | Description                  |
-|-----------|----------|------------------------------|
-| `page`    | `number` | The page number to navigate to. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `page` | `number` | ✓ | The page number to navigate to. |
 
-**Usage Example:**
+**Example**
 
-```typescript
-import { inject } from "@angular/core";
-import { QueryService } from "@sinequa/atomic-angular";
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { QueryService } from '@sinequa/atomic-angular';
 
-const queryService = inject(QueryService);
-queryService.gotoPage(2);
+inject(QueryService).gotoPage(2);
 ```
-
-This method updates the page number in the query parameters store and audit information about the page navigation.

@@ -1,59 +1,62 @@
 ---
 title: Highlights
+sidebar_class_name: update
 ---
 
-Allow you to customize the preview's highlights.
+The `HIGHLIGHTS` injection token provides an array of `PreviewHighlight` objects used to configure highlight colors in the document preview. It ships with five pre-configured highlights that can be overridden via dependency injection.
 
 ## Types
 
-### PreviewHighlightName
+### `PreviewHighlightName`
 
-`PreviewHighlightName` type is a TypeScript union type that restricts the possible values to a set of predefined strings: 'company', 'geo', 'person', 'extractslocations', and 'matchlocations'. This ensures that any variable of this type can only hold one of these specific string values.
+A union type restricting highlight names to predefined values.
 
-### PreviewHighlight
+```typescript
+type PreviewHighlightName = 'company' | 'geo' | 'person' | 'extractslocations' | 'matchlocations';
+```
 
-`PreviewHighlight` type is an object type that describes the shape of a highlight object. It has three properties: name, which must be one of the PreviewHighlightName values; color, which is a string representing the text color; and bgColor, which is a string representing the background color.
+### `PreviewHighlight`
 
-## Injection Token
+Describes a single highlight configuration.
 
-### HIGHLIGHTS
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `name` | `PreviewHighlightName` | ✓ | The highlight category name. |
+| `color` | `string` | ✓ | The text color. |
+| `bgColor` | `string` | ✓ | The background color. |
 
-`HIGHLIGHTS` constant is an instance of InjectionToken that is configured to provide an array of `PreviewHighlight` objects. The InjectionToken constructor takes two arguments: a description string ('highlights') and an options object. The options object includes a factory function that returns an array of pre-configured highlight objects. Each object in this array has a name, color, and bgColor property, corresponding to the PreviewHighlight type.
+## Token
 
-This setup allows the `HIGHLIGHTS` token to be used for dependency injection throughout the Angular application. By injecting this token, components and services can access the predefined highlight configurations, promoting consistency and reusability across the application.
+### `HIGHLIGHTS`
 
-<details open>
-  <summary>pre configured highlights's colors</summary>
-```ts
-// pre-configured highlights's colors
+An `InjectionToken<PreviewHighlight[]>` with a built-in factory providing default colors.
+
+**Default values**
+
+```typescript
+import { HIGHLIGHTS } from '@sinequa/atomic-angular';
+
 export const HIGHLIGHTS = new InjectionToken<PreviewHighlight[]>('highlights', {
   factory: () => [
-    {
-      name: 'company',
-      color: 'white',
-      bgColor: '#FF7675'
-    },
-    {
-      name: 'geo',
-      color: 'white',
-      bgColor: '#74B9FF'
-    },
-    {
-      name: 'person',
-      color: 'white',
-      bgColor: '#00ABB5'
-    },
-    {
-      name: 'extractslocations',
-      color: 'black',
-      bgColor: '#fffacd'
-    },
-    {
-      name: 'matchlocations',
-      color: 'black',
-      bgColor: '#ff0'
-    }
+    { name: 'company',          color: 'white', bgColor: '#FF7675' },
+    { name: 'geo',              color: 'white', bgColor: '#74B9FF' },
+    { name: 'person',           color: 'white', bgColor: '#00ABB5' },
+    { name: 'extractslocations',color: 'black', bgColor: '#fffacd' },
+    { name: 'matchlocations',   color: 'black', bgColor: '#ff0'    },
   ],
 });
 ```
-</details>
+
+**Override example**
+
+```typescript title="app.config.ts"
+import { HIGHLIGHTS } from '@sinequa/atomic-angular';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: HIGHLIGHTS, useValue: [
+      { name: 'matchlocations', color: 'black', bgColor: '#ffd700' },
+    ]},
+  ],
+};
+```

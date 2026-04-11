@@ -1,23 +1,23 @@
 ---
 title: User Settings
+sidebar_class_name: update
 ---
 
-This store is used to manage the user settings. It is used to store the user's preferences and settings, such as the language, the theme, and the highlights.
+The `UserSettingsStore` manages user preferences and settings, including language, theme, bookmarks, recent searches, saved searches, baskets, and alerts. It persists state to the backend API and keeps the store in sync.
 
-## Basic features
+## Methods
 
-### initialize()
+### `initialize()`
 
-Initializes the user settings store by fetching the user settings from the backend API
-and patching the store with the retrieved settings.
+Initializes the store by fetching user settings from the backend API and patching the store.
 
 ```typescript
 initialize(): Promise<void>
 ```
 
-### reset()
+### `reset()`
 
-Resets the user settings store to its initial state.
+Resets the store to its initial state.
 
 ```typescript
 reset(): Promise<void>
@@ -25,7 +25,7 @@ reset(): Promise<void>
 
 ## Bookmark features
 
-### updateBookmarks()
+### `updateBookmarks()`
 
 Updates the user's bookmarks in the store and optionally logs audit events.
 
@@ -33,12 +33,12 @@ Updates the user's bookmarks in the store and optionally logs audit events.
 updateBookmarks(bookmarks: UserSettings['bookmarks'], auditEvents?: AuditEvents): Promise<void>
 ```
 
-| Parameter    | Type                              | Description                                      |
-|--------------|-----------------------------------|--------------------------------------------------|
-| bookmarks  | `UserSettings['bookmarks']`       | The new bookmarks to be updated in the store.    |
-| auditEvents| `AuditEvents`          | Optional. Events to be logged for auditing purposes.       |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `bookmarks` | `UserSettings['bookmarks']` | ✓ | The new bookmarks to store. |
+| `auditEvents` | `AuditEvents` | | Optional audit events to log. |
 
-### bookmark()
+### `bookmark()`
 
 Adds an article to the bookmarks if it is not already bookmarked.
 
@@ -46,12 +46,12 @@ Adds an article to the bookmarks if it is not already bookmarked.
 bookmark(article: Article, queryName?: string): Promise<void>
 ```
 
-| Parameter  | Type                | Description                                      |
-|------------|---------------------|--------------------------------------------------|
-| article  | `Article`           | The article to be bookmarked.                    |
-| queryName| `string` | Optional. The name of the query associated with the article.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `article` | `Article` | ✓ | The article to bookmark. |
+| `queryName` | `string` | | The query name associated with the article. |
 
-### unbookmark()
+### `unbookmark()`
 
 Removes a bookmark by its ID.
 
@@ -59,23 +59,25 @@ Removes a bookmark by its ID.
 unbookmark(id: string): Promise<void>
 ```
 
-| Parameter | Type     | Description                          |
-|-----------|----------|--------------------------------------|
-| id        | `string` | The ID of the bookmark to remove.    |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The ID of the bookmark to remove. |
 
-### isBookmarked()
+### `isBookmarked()`
 
-Checks if the given article is bookmarked.
+Checks whether the given article is bookmarked.
 
 ```typescript
 isBookmarked(article: Partial<Article>): boolean
 ```
 
-| Parameter | Type              | Description                          |
-|-----------|-------------------|--------------------------------------|
-| article   | `Partial<Article>` | The article to check.                |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `article` | `Partial<Article>` | ✓ | The article to check. |
 
-### toggleBookmark()
+**Returns** `boolean` — `true` if the article is bookmarked.
+
+### `toggleBookmark()`
 
 Toggles the bookmark status of a given article.
 
@@ -83,38 +85,38 @@ Toggles the bookmark status of a given article.
 toggleBookmark(article: Article): Promise<void>
 ```
 
-| Parameter | Type      | Description                          |
-|-----------|-----------|--------------------------------------|
-| article   | `Article` | The article to toggle bookmark status.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `article` | `Article` | ✓ | The article whose bookmark status to toggle. |
 
 ## Recent Searches features
 
-### deleteRecentSearch()
+### `deleteRecentSearch()`
 
-Deletes a recent search entry from the user's recent searches list.
+Deletes a recent search entry by its index.
 
 ```typescript
 deleteRecentSearch(index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                           |
-|-----------|----------|---------------------------------------|
-| index      | `number` | The index of the recent search to delete.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the recent search to delete. |
 
-### updateRecentSearches()
+### `updateRecentSearches()`
 
-Updates the user's recent searches in the store and optionally logs audit events.
+Updates the user's recent searches and optionally logs audit events.
 
 ```typescript
 updateRecentSearches(recentSearches: UserSettings['recentSearches'], auditEvents?: AuditEvents): Promise<void>
 ```
 
-| Parameter    | Type                              | Description                                      |
-|--------------|-----------------------------------|--------------------------------------------------|
-| recentSearches  | `UserSettings['recentSearches']`       | The new recent searches to be updated in the store.    |
-| auditEvents| `AuditEvents`          | Optional. Events to be logged for auditing purposes.       |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `recentSearches` | `UserSettings['recentSearches']` | ✓ | The new recent searches to store. |
+| `auditEvents` | `AuditEvents` | | Optional audit events to log. |
 
-### addCurrentSearch()
+### `addCurrentSearch()`
 
 Adds the current search to the recent searches list.
 
@@ -122,25 +124,25 @@ Adds the current search to the recent searches list.
 addCurrentSearch(queryParams: QueryParams): Promise<void>
 ```
 
-| Parameter   | Type         | Description                          |
-|-------------|--------------|--------------------------------------|
-| queryParams | `QueryParams`| The parameters of the current search.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `queryParams` | `QueryParams` | ✓ | The parameters of the current search. |
 
 ## Saved Searches features
 
-### deleteSavedSearch()
+### `deleteSavedSearch()`
 
-Deletes a saved search entry from the user's saved searches list.
+Deletes a saved search entry by its index.
 
 ```typescript
 deleteSavedSearch(index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                           |
-|-----------|----------|---------------------------------------|
-| index      | `number` | The index of the saved search to delete.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the saved search to delete. |
 
-### updateSavedSearches()
+### `updateSavedSearches()`
 
 Updates the user's saved searches in the store.
 
@@ -148,25 +150,25 @@ Updates the user's saved searches in the store.
 updateSavedSearches(savedSearches: UserSettings['savedSearches']): Promise<void>
 ```
 
-| Parameter    | Type                              | Description                                      |
-|--------------|-----------------------------------|--------------------------------------------------|
-| savedSearches  | `UserSettings['savedSearches']`       | The new saved searches to be updated in the store.    |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `savedSearches` | `UserSettings['savedSearches']` | ✓ | The new saved searches to store. |
 
 ## Baskets features
 
-### deleteBasket()
+### `deleteBasket()`
 
-Deletes a basket from the user's baskets list.
+Deletes a basket by its index.
 
 ```typescript
 deleteBasket(index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                      |
-|-----------|----------|----------------------------------|
-| index     | `number` | The index of the basket to delete.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the basket to delete. |
 
-### createBasket()
+### `createBasket()`
 
 Adds a basket to the user's baskets list.
 
@@ -174,23 +176,23 @@ Adds a basket to the user's baskets list.
 createBasket(basket: Basket): Promise<void>
 ```
 
-| Parameter | Type     | Description                       |
-|-----------|----------|-----------------------------------|
-| basket    | `Basket` | The basket to add to the baskets list.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `basket` | `Basket` | ✓ | The basket to add. |
 
-### updateBaskets()
+### `updateBaskets()`
 
-Updates the user's baskets in the store.
+Replaces the full baskets list in the store.
 
 ```typescript
 updateBaskets(baskets: UserSettings['baskets']): Promise<void>
 ```
 
-| Parameter | Type                        | Description                      |
-|-----------|----------------------------|----------------------------------|
-| baskets   | `UserSettings['baskets']`  | The new baskets to be updated.   |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `baskets` | `UserSettings['baskets']` | ✓ | The new baskets to store. |
 
-### updateBasket()
+### `updateBasket()`
 
 Updates the basket at a specific index.
 
@@ -198,52 +200,52 @@ Updates the basket at a specific index.
 updateBasket(basket: Basket, index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                      |
-|-----------|----------|----------------------------------|
-| basket    | `Basket` | The updated basket data.         |
-| index     | `number` | The index of the basket to update.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `basket` | `Basket` | ✓ | The updated basket data. |
+| `index` | `number` | ✓ | The index of the basket to update. |
 
-### addToBasket()
+### `addToBasket()`
 
-Adds one or multiple records' id into a basket.
+Adds one or multiple record IDs to a named basket.
 
 ```typescript
 addToBasket(name: string, ids: string | string[]): Promise<void>
 ```
 
-| Parameter | Type                | Description                      |
-|-----------|---------------------|----------------------------------|
-| name      | `string`           | The basket name.                 |
-| ids       | `string \| string[]` | The id(s) to add to it.          |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `name` | `string` | ✓ | The basket name. |
+| `ids` | `string \| string[]` | ✓ | The record ID(s) to add. |
 
-### removeFromBasket()
+### `removeFromBasket()`
 
-Removes one or multiple records' id from a basket.
+Removes one or multiple record IDs from a named basket.
 
 ```typescript
 removeFromBasket(name: string, ids: string | string[]): Promise<void>
 ```
 
-| Parameter | Type                | Description                      |
-|-----------|---------------------|----------------------------------|
-| name      | `string`           | The basket name.                 |
-| ids       | `string \| string[]` | The id(s) to remove from it.     |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `name` | `string` | ✓ | The basket name. |
+| `ids` | `string \| string[]` | ✓ | The record ID(s) to remove. |
 
 ## Alert features
 
-### deleteAlert()
+### `deleteAlert()`
 
-Deletes an alert from the user's alerts list.
+Deletes an alert by its index.
 
 ```typescript
 deleteAlert(index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                     |
-|-----------|----------|---------------------------------|
-| index     | `number` | The index of the alert to delete.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the alert to delete. |
 
-### createAlert()
+### `createAlert()`
 
 Adds an alert to the user's alerts list.
 
@@ -251,11 +253,11 @@ Adds an alert to the user's alerts list.
 createAlert(alert: Alert): Promise<void>
 ```
 
-| Parameter | Type    | Description                      |
-|-----------|---------|----------------------------------|
-| alert     | `Alert` | The alert to add.                |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `alert` | `Alert` | ✓ | The alert to add. |
 
-### updateAlert()
+### `updateAlert()`
 
 Updates the alert at a specific index.
 
@@ -263,26 +265,26 @@ Updates the alert at a specific index.
 updateAlert(alert: Alert, index: number): Promise<void>
 ```
 
-| Parameter | Type     | Description                     |
-|-----------|----------|---------------------------------|
-| alert     | `Alert`  | The updated alert data.         |
-| index     | `number` | The index of the alert to update.|
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `alert` | `Alert` | ✓ | The updated alert data. |
+| `index` | `number` | ✓ | The index of the alert to update. |
 
-### updateAlerts()
+### `updateAlerts()`
 
-Updates the user's alerts in the store.
+Replaces the full alerts list in the store.
 
 ```typescript
 updateAlerts(alerts: Alert[]): Promise<void>
 ```
 
-| Parameter | Type      | Description                      |
-|-----------|-----------|----------------------------------|
-| alerts    | `Alert[]` | The new alerts to be updated.    |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `alerts` | `Alert[]` | ✓ | The new alerts to store. |
 
 ## Assistant features
 
-### updateAssistantSettings()
+### `updateAssistantSettings()`
 
 Updates the user's assistant settings in the store.
 
@@ -290,32 +292,32 @@ Updates the user's assistant settings in the store.
 updateAssistantSettings(assistantSettings: UserSettings['assistants']): Promise<void>
 ```
 
-| Parameter        | Type                         | Description                       |
-|------------------|------------------------------|-----------------------------------|
-| assistantSettings| `UserSettings['assistants']` | The new assistant settings.       |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `assistantSettings` | `UserSettings['assistants']` | ✓ | The new assistant settings. |
 
-### updateLanguage()
+### `updateLanguage()`
 
-Update the user's language and optionally logs audit events.
+Updates the user's language preference and optionally logs audit events.
 
 ```typescript
 updateLanguage(language: UserSettings['language'], auditEvents?: AuditEvents): Promise<void>
 ```
 
-| Parameter  | Type                       | Description                      |
-|------------|----------------------------|----------------------------------|
-| language   | `UserSettings['language']` | The language to update with.     |
-| auditEvents| `AuditEvents`             | Optional. Events to be logged.   |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `language` | `UserSettings['language']` | ✓ | The language to set. |
+| `auditEvents` | `AuditEvents` | | Optional audit events to log. |
 
-### updateAssistantCollapsed()
+### `updateAssistantCollapsed()`
 
-Update the user's assistant collapsed status and optionally logs audit events.
+Updates the assistant's collapsed state and optionally logs audit events.
 
 ```typescript
 updateAssistantCollapsed(collapseAssistant: UserSettings['collapseAssistant'], auditEvents?: AuditEvents): Promise<void>
 ```
 
-| Parameter        | Type                               | Description                      |
-|------------------|-----------------------------------|----------------------------------|
-| collapseAssistant| `UserSettings['collapseAssistant']`| The collapse status.             |
-| auditEvents      | `AuditEvents`                     | Optional. Events to be logged.   |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `collapseAssistant` | `UserSettings['collapseAssistant']` | ✓ | The new collapsed state. |
+| `auditEvents` | `AuditEvents` | | Optional audit events to log. |

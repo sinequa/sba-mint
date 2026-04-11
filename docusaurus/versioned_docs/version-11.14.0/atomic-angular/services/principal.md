@@ -1,6 +1,11 @@
 ---
 title: Principal
+sidebar_class_name: deprecated
 ---
+
+:::warning Deprecated
+Use `PrincipalStore` instead. `PrincipalService` will be removed in a future version.
+:::
 
 The `PrincipalService` is responsible for handling principal-related operations in the application. It provides methods to get the principal.
 

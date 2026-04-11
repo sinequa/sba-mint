@@ -1,6 +1,11 @@
 ---
 title: SelectArticleOnClick
+sidebar_class_name: deprecated
 ---
+
+:::warning Deprecated
+Use `SelectArticleDirective` (`[selectArticle]`) instead, which supports the same strategies plus `"redirect"` and `"emit"`.
+:::
 
 Directive that selects an article on click to be displayed into the stack panel using a open's specific strategy: __'stack'__ or __'replace'__.  
 

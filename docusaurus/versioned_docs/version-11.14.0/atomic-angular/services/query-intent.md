@@ -1,12 +1,13 @@
 ---
 title: Query Intent
+sidebar_class_name: update
 ---
 
-The `QueryIntentService` is responsible for analyzing queries to identify their intent. It maintains a cache to prevent analyzing the same query multiple times.
+The `QueryIntentService` analyzes queries to identify their intent. It maintains an internal cache to avoid analyzing the same query text multiple times.
 
-## Functions
+## Methods
 
-### getQueryIntent()
+### `getQueryIntent()`
 
 Retrieves query intent matches for a given query.
 
@@ -14,20 +15,19 @@ Retrieves query intent matches for a given query.
 getQueryIntent(query: Query): Observable<QueryIntentMatch[]>
 ```
 
-| Parameter | Type    | Description                          |
-|-----------|---------|--------------------------------------|
-| `query`   | `Query` | The query to analyze for intent.     |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `query` | `Query` | ✓ | The query to analyze for intent. |
 
-#### Returns
+**Returns** `Observable<QueryIntentMatch[]>` — emits an array of intent matches. Returns an empty array immediately if the query text is empty.
 
-`Observable<QueryIntentMatch[]>` - An observable that emits an array of query intent matches.
+**Example**
 
-**Usage Example:**
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { QueryIntentService } from '@sinequa/atomic-angular';
 
-```typescript
-queryIntentService.getQueryIntent(query).subscribe(intents => {
+inject(QueryIntentService).getQueryIntent(query).subscribe(intents => {
   console.log(intents);
 });
 ```
-
-The service maintains an internal cache to prevent analyzing the same query text multiple times. If the query text is empty, an empty array will be returned immediately.

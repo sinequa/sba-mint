@@ -1,77 +1,82 @@
 ---
 title: Saved Searches
+sidebar_class_name: update
 ---
 
-The Saved Searches Service is used to manage saved searches in the application. It provides methods to get, save, update, and delete saved searches.
+The `SavedSearchesService` manages saved searches: retrieving, saving, updating, and deleting them.
 
-## Functions
+## Methods
 
-### getSavedSearches()
+### `getSavedSearches()`
+
+Returns all saved searches.
 
 ```typescript
 getSavedSearches(): SavedSearch[]
 ```
 
-#### Returns
+**Returns** `SavedSearch[]` — the current list of saved searches.
 
-| Type           | Description                        |
-|----------------|------------------------------------|
-| `SavedSearch[]`| An array of saved searches.        |
+**Example**
 
-#### Example
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { SavedSearchesService } from '@sinequa/atomic-angular';
 
-```typescript
-const service = new SavedSearchesService();
-const searches = service.getSavedSearches();
-console.log(searches);
+const searches = inject(SavedSearchesService).getSavedSearches();
 ```
 
-### saveSearch()
+### `saveSearch()`
+
+Saves the current search query.
 
 ```typescript
 saveSearch(): void
 ```
 
-#### Example
+**Example**
 
 ```typescript
-const service = new SavedSearchesService();
-service.saveSearch();
+inject(SavedSearchesService).saveSearch();
 ```
 
-### updateSavedSearches()
+### `updateSavedSearches()`
 
-#### Signature
+Replaces the saved searches list with the provided array.
 
 ```typescript
 updateSavedSearches(savedSearches: SavedSearch[]): void
 ```
 
-| Parameter       | Type           | Description                        |
-|-----------------|----------------|------------------------------------|
-| `savedSearches` | `SavedSearch[]`| An array of SavedSearch objects to update. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `savedSearches` | `SavedSearch[]` | ✓ | The new saved searches list. |
 
-#### Example
+**Example**
 
-```typescript
-const service = new SavedSearchesService();
-const searches = [{ url: 'example.com', date: '2023-01-01', display: 'Example Search' }];
-service.updateSavedSearches(searches);
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { SavedSearchesService } from '@sinequa/atomic-angular';
+
+inject(SavedSearchesService).updateSavedSearches([
+  { url: 'example.com', date: '2024-01-01', display: 'Example Search' }
+]);
 ```
 
-### deleteSavedSearch()
+### `deleteSavedSearch()`
+
+Deletes the saved search at the given index.
 
 ```typescript
 deleteSavedSearch(index: number): void
 ```
 
-| Parameter | Type    | Description                          |
-|-----------|---------|--------------------------------------|
-| `index`   | `number`| The index of the saved search to delete. |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `index` | `number` | ✓ | The index of the saved search to delete. |
 
-#### Example
+**Example**
 
 ```typescript
-const service = new SavedSearchesService();
-service.deleteSavedSearch(0);
+inject(SavedSearchesService).deleteSavedSearch(0);
 ```

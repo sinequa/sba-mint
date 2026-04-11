@@ -1,11 +1,14 @@
 ---
 title: Theme
+sidebar_class_name: update
 ---
 
-This document provides an overview of the `ThemeStore` and its methods.  
-See [Theme](../theme) for more information.
+The `ThemeStore` loads and manages themes, handles scope-based theme assignment, and applies CSS variables to the DOM.
+See [Theme](../theme) for a conceptual overview.
 
-### loadDefaultTheme()
+## Methods
+
+### `loadDefaultTheme()`
 
 Loads the default theme for a given scope.
 
@@ -13,125 +16,79 @@ Loads the default theme for a given scope.
 loadDefaultTheme(scope: string, darkMode?: boolean): void
 ```
 
-| Parameter | Type      | Description                      |
-|-----------|-----------|----------------------------------|
-| scope     | `string`  | The scope for the theme.         |
-| darkMode  | `boolean` | Optional. Enable dark mode.      |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `scope` | `string` | ✓ | The scope identifier for which to load the default theme. |
+| `darkMode` | `boolean` | | Whether to enable dark mode. |
 
-**Usage Example:**
+**Example**
 
 ```typescript
-ThemeStore.loadDefaultTheme('main', true);
+inject(ThemeStore).loadDefaultTheme('main', true);
 ```
 
-### setCurrentTheme()
+### `setCurrentTheme()`
 
-Sets the current theme for a given scope.
+Switches the active theme for a given scope.
 
 ```typescript
 setCurrentTheme(scope: string, themeName: string, darkMode?: boolean): void
 ```
 
-| Parameter | Type      | Description                      |
-|-----------|-----------|----------------------------------|
-| scope     | `string`  | The scope for the theme.         |
-| themeName | `string`  | The name of the theme.           |
-| darkMode  | `boolean` | Optional. Enable dark mode.      |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `scope` | `string` | ✓ | The scope identifier. |
+| `themeName` | `string` | ✓ | The name of the theme to apply. |
+| `darkMode` | `boolean` | | Whether to enable dark mode. |
 
-**Usage Example:**
+**Example**
 
 ```typescript
-ThemeStore.setCurrentTheme('main', 'DarkTheme', true);
+inject(ThemeStore).setCurrentTheme('main', 'ruby', true);
 ```
 
-### setDarkMode()
+### `setDarkMode()`
 
-Sets the dark mode for a given scope.
+Toggles dark mode for a given scope.
 
 ```typescript
 setDarkMode(scope: string, darkMode: boolean): void
 ```
 
-| Parameter | Type      | Description                      |
-|-----------|-----------|----------------------------------|
-| scope     | `string`  | The scope for the theme.         |
-| darkMode  | `boolean` | Enable or disable dark mode.     |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `scope` | `string` | ✓ | The scope identifier. |
+| `darkMode` | `boolean` | ✓ | `true` to enable dark mode. |
 
-**Usage Example:**
+**Example**
 
 ```typescript
-ThemeStore.setDarkMode('main', true);
+inject(ThemeStore).setDarkMode('main', true);
 ```
 
-### processCssVars()
+### `processCssVars()`
 
-Processes the CSS variables for a given theme name.
+Processes and returns the CSS variables object for a given theme name.
 
 ```typescript
 processCssVars(themeName: string): CssVars
 ```
 
-| Parameter | Type     | Description              |
-|-----------|----------|--------------------------|
-| themeName | `string` | The name of the theme.   |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `themeName` | `string` | ✓ | The theme name to process. |
 
-**Usage Example:**
+**Returns** `CssVars` — the CSS variables for that theme.
 
-```typescript
-const cssVars = processCssVars('DarkTheme');
-```
+### `applyThemeToNativeElement()`
 
-### themeColorsToCssVariables()
-
-Converts theme colors to CSS variables.
-
-```typescript
-themeColorsToCssVariables(colors: any): any
-```
-
-| Parameter | Type  | Description              |
-|-----------|-------|--------------------------|
-| colors    | `any` | The theme colors object. |
-
-**Usage Example:**
-
-```typescript
-const cssVars = themeColorsToCssVariables(theme.colors);
-```
-
-### themeColorNameToCssVariable()
-
-Converts a theme color name to a CSS variable name.
-
-```typescript
-themeColorNameToCssVariable(name: string): string
-```
-
-| Parameter | Type     | Description              |
-|-----------|----------|--------------------------|
-| name      | `string` | The name of the color.   |
-
-**Usage Example:**
-
-```typescript
-const cssVarName = themeColorNameToCssVariable('primaryColor');
-```
-
-### applyThemeToNativeElement()
-
-Applies the theme CSS variables to a native HTML element.
+Applies theme CSS variables directly to an HTML element.
 
 ```typescript
 applyThemeToNativeElement(element: HTMLElement, cssVars?: Record<string, string>): void
 ```
 
-| Parameter | Type                      | Description                      |
-|-----------|---------------------------|----------------------------------|
-| element   | `HTMLElement`             | The HTML element.                |
-| cssVars   | `Record<string, string>`  | Optional. The CSS variables.     |
-
-**Usage Example:**
-
-```typescript
-applyThemeToNativeElement(document.body, cssVars.light);
-```
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `element` | `HTMLElement` | ✓ | The DOM element to apply the theme to. |
+| `cssVars` | `Record<string, string>` | | CSS variable overrides. |

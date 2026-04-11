@@ -1,14 +1,20 @@
 ---
 title: ThemeProvider
+sidebar_class_name: update
 ---
 
-Directive that applies a theme to a native element based on the theme scope.
+The `ThemeProviderDirective` applies a theme to its host element by resolving CSS variables from the `ThemeStore` for the given scope name.
 
-### Usage
+## Usage
 
 ```html
-<div themeProvider="myThemeScope"></div>
+<div themeProvider="ruby">...</div>
 ```
 
-- Requires a `themeProvider` input (string, the theme scope key)
-- Applies the theme variables to the host element using the ThemeStore.
+## API Reference
+
+### Inputs
+
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `themeProvider` | `string` | ✓ | The scope name used to look up the theme in `ThemeStore`. |

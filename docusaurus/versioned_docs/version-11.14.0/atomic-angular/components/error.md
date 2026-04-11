@@ -1,19 +1,28 @@
 ---
 title: Error
+sidebar_class_name: update
 ---
 
-The `Error` component is an Angular component that displays a stylized error page, allowing the user to reload the page.
+The `ErrorComponent` displays a stylized error page and allows the user to reload the application.
+
+## Usage
+
+```typescript title="app.routes.ts"
+import { ErrorComponent } from '@sinequa/atomic-angular';
+
+export const routes: Routes = [
+  { path: 'error', component: ErrorComponent },
+];
+```
+
+## API Reference
 
 ### Methods
 
-| Method   | Signature   | Description                                        |
-|----------|-------------|----------------------------------------------------|
-| `reload` | `(): void`  | Redirects to the base path and reloads the page.   |
+#### `reload()`
 
-## Examples
+Redirects to the base path and triggers a full page reload.
 
-The `ErrorComponent` is intended to be used in the application's routing configuration as follows:
-
-```ts
-{ path: 'error', component: ErrorComponent }
+```typescript
+reload(): void
 ```

@@ -27,7 +27,7 @@ The `debouncedSignal` function creates a debounced signal that updates its value
 ```typescript
 import { Component, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { debouncedSignal } from 'atomic-angular/utils';
+import { debouncedSignal } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-debounced-example',
@@ -55,7 +55,7 @@ export class DebouncedExampleComponent {
 ```typescript
 import { Component, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { debouncedSignal } from 'atomic-angular/utils';
+import { debouncedSignal } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'app-debounced-example',
