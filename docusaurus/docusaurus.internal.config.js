@@ -40,6 +40,7 @@ const config = {
       {
         docs: {
           routeBasePath: '/',
+          includeCurrentVersion: false,
           // path: 'docs',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -99,6 +100,10 @@ const config = {
             position: 'left',
             sidebarId: 'atomicAngular',
             label: 'Atomic for Angular'
+          },
+          {
+            type: 'docsVersionDropdown',
+            position: 'right'
           },
           {
             href: 'https://github.com/sinequa/sba-mint',
