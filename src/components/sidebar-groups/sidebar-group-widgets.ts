@@ -5,9 +5,14 @@ import { EventType, NavigationEnd, Router, RouterLink, RouterLinkActive } from "
 import { TranslocoPipe } from "@jsverse/transloco";
 import { AlertsComponent, BookmarksComponent, CollectionsComponent, RecentSearchesComponent, SavedSearchesComponent } from "@sinequa/atomic-angular";
 import {
+  ArrowUpRightFromSquareIcon,
+  BellIcon,
+  BookmarkIcon,
   BreakpointObserverService,
   DropdownComponent,
   DropdownContentComponent,
+  HistoryIcon,
+  InboxIcon,
   PopoverComponent,
   PopoverContentComponent,
   SidebarGroupComponent,
@@ -18,6 +23,7 @@ import {
   SidebarMenuComponent,
   SidebarMenuItemComponent,
   SidebarService,
+  StarIcon,
   TooltipDirective
 } from "@sinequa/ui";
 import { filter, map, startWith } from "rxjs";
@@ -25,7 +31,7 @@ import { filter, map, startWith } from "rxjs";
 export type NavbarMenu = {
   name: string;
   display: string;
-  iconClass: string;
+  icon: Type<unknown>;
   routerLink?: string;
   keepOnMouseLeave?: boolean;
   component: Type<unknown>;
@@ -62,14 +68,18 @@ export type NavbarMenu = {
                     routerLinkActive="active"
                     #rla="routerLinkActive"
                     [attr.data-active]="rla.isActive || null">
-                    <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
+                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                      <ng-container *ngComponentOutlet="menu.icon" />
+                    </span>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                 }
               } @else if (menu.name === "alerts") {
                 <Popover class="w-full rounded-lg border-neutral-300">
                   <sidebar-menu-button class="text-lg">
-                    <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
+                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                      <ng-container *ngComponentOutlet="menu.icon" />
+                    </span>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                   <PopoverContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
@@ -79,7 +89,9 @@ export type NavbarMenu = {
               } @else {
                 <Dropdown class="w-full rounded-lg border-neutral-300">
                   <sidebar-menu-button class="text-lg" [attr.data-active]="rla.isActive || null">
-                    <i tooltip="{{ menu.display | transloco }}" tooltip-position="right" class="fa-fw {{ menu.iconClass }}" aria-hidden="true"></i>
+                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                      <ng-container *ngComponentOutlet="menu.icon" />
+                    </span>
                     <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                   <DropdownContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
@@ -87,7 +99,7 @@ export type NavbarMenu = {
                   </DropdownContent>
                 </Dropdown>
                 <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
-                  <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                  <arrow-up-right-from-square-icon aria-hidden="true" />
                   <span class="sr-only">Move to {{ menu.display | transloco }}</span>
                 </sidebar-menu-action>
               }
@@ -114,7 +126,8 @@ export type NavbarMenu = {
     SidebarGroupContentComponent,
     PopoverComponent,
     PopoverContentComponent,
-    SidebarMenuActionComponent
+    SidebarMenuActionComponent,
+    ArrowUpRightFromSquareIcon
   ]
 })
 export class WidgetsSidebarGroupComponent {
@@ -122,32 +135,32 @@ export class WidgetsSidebarGroupComponent {
     {
       name: "recent-searches",
       display: "searches.recent.label",
-      iconClass: "far fa-clock-rotate-left",
+      icon: HistoryIcon,
       routerLink: "/widgets/recent-searches",
       component: RecentSearchesComponent
     },
     {
       name: "bookmarks",
       display: "bookmarks.label",
-      iconClass: "far fa-bookmark",
+      icon: BookmarkIcon,
       routerLink: "/widgets/bookmarks",
       component: BookmarksComponent
     },
     {
       name: "collections",
       display: "collections.label",
-      iconClass: "far fa-inbox",
+      icon: InboxIcon,
       routerLink: "/widgets/collections",
       component: CollectionsComponent
     },
     {
       name: "saved-searches",
       display: "searches.saved.label",
-      iconClass: "far fa-star",
+      icon: StarIcon,
       routerLink: "/widgets/saved-searches",
       component: SavedSearchesComponent
     },
-    { name: "alerts", display: "alerts.label", iconClass: "far fa-bell", component: AlertsComponent }
+    { name: "alerts", display: "alerts.label", icon: BellIcon, component: AlertsComponent }
   ]);
 
   private readonly router = inject(Router);

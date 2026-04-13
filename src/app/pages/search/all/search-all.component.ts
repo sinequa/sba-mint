@@ -26,7 +26,7 @@ import {
   SponsoredResultsComponent,
   UserSettingsStore
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn, SparklesIcon, SpinnerIcon, SquareCheckIcon, SquareIcon, SquareMinusIcon } from '@sinequa/ui';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map, tap } from 'rxjs';
 
@@ -69,7 +69,12 @@ type QueryParamsProps = {
     CardHeaderComponent,
     CardContentComponent,
     TranslocoPipe,
-    ChevronRightIcon
+    ChevronRightIcon,
+    SquareCheckIcon,
+    SquareMinusIcon,
+    SquareIcon,
+    SpinnerIcon,
+    SparklesIcon
   ],
   templateUrl: './search-all.component.html',
   styles: [

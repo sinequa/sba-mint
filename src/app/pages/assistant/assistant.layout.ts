@@ -15,7 +15,7 @@ import {
   QueryParamsStore,
   SelectionStore
 } from "@sinequa/atomic-angular";
-import { ButtonComponent, cn, PageHeaderComponent } from "@sinequa/ui";
+import { ButtonComponent, cn, CommentsIcon, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
 
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
@@ -34,7 +34,9 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     PageHeaderComponent,
     NavbarComponent,
     ButtonComponent,
-    AppSidebarComponent
+    AppSidebarComponent,
+    CommentsIcon,
+    PlusIcon
   ],
   providers: [provideTranslocoScope("filters")],
   template: `
@@ -56,7 +58,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
             <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
               <div class="flex items-center justify-between">
                 <h3 class="text-muted-foreground pointer-events-none font-semibold">
-                  <i class="far fa-comments me-1"></i>
+                  <comments-icon class="me-1" />
                   {{ 'assistant.saved-chats' | transloco }}
                 </h3>
                 <button
@@ -65,7 +67,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
                   [title]="'assistant.new-discussion' | transloco"
                   [attr.aria-label]="'assistant.new-discussion' | transloco"
                   (click)="chat()?.newChat()">
-                  <i class="far fa-plus"></i>
+                  <plus-icon />
                 </button>
               </div>
               <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->

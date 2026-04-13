@@ -35,6 +35,7 @@ import {
   SearchInputComponent,
   SearchInputFooter,
   SendHorizontalIconComponent,
+  SparklesIcon,
   type SearchVariants
 } from '@sinequa/ui';
 
@@ -54,6 +55,7 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
     TranslocoPipe,
     ButtonComponent,
     SendHorizontalIconComponent,
+    SparklesIcon,
     DropdownComponent,
     DropdownContentComponent,
     SearchInputComponent,

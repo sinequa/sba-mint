@@ -1,7 +1,5 @@
-import { Component, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
+import { Component, computed, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
-import { HistoryIcon } from "@components/icons/history.icon";
-import { NewChatIcon } from "@components/icons/new-chat.icon";
 import {
   AdminDirective,
   AgentGenerationDirective,
@@ -9,14 +7,18 @@ import {
   CopyToClipboardDirective,
   createAgentNewChatEvent,
   ErrorDirective,
+  ExpandedSearchResultsComponent,
   FeedbackDirective,
-  SavedChatComponent
+  SavedChatComponent,
+  SearchExpansionService
 } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
 import {
   BreakpointObserverService,
   ButtonComponent,
+  HistoryIcon,
+  NewChatIcon,
   ResizableHandleComponent,
   ResizablePanelComponent,
   ResizablePanelGroupComponent,
@@ -24,10 +26,13 @@ import {
 } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
 
+type Panel = "chat" | "search" | "preview";
+
 @Component({
   selector: "app-agent-page-layout",
   imports: [
     AgentInjector,
+    ExpandedSearchResultsComponent,
     ResizablePanelGroupComponent,
     ResizablePanelComponent,
     ResizableHandleComponent,
@@ -95,13 +100,21 @@ import { AgentPreview } from "../../../components/preview/agent/agent-preview";
           </div>
         </ResizablePanel>
 
-        <ResizableHandle [withHandle]="true" [class]="previewCollapsed() ? 'hidden' : ''" />
+        <!-- expanded search results -->
+        <ResizableHandle [withHandle]="true" [class.hidden]="!searchExpansion.isExpanded()" />
+        <ResizablePanel [defaultSize]="0" [minSize]="20" class="relative" [class.max-md:hidden]="activeMobilePanel() !== 'search'">
+          <div class="absolute inset-0 overflow-auto p-3 pt-14 md:p-5">
+            <ExpandedSearchResults class="h-full w-full" (close)="closeSearch()" />
+          </div>
+        </ResizablePanel>
+
 
         <!-- preview -->
-        <ResizablePanel [defaultSize]="0" [minSize]="40">
-          <div class="sticky top-14 h-full overflow-auto">
-            <div class="relative h-full">
-              <agent-preview class="absolute inset-0 size-full" (onClose)="closePreview()" />
+        <ResizableHandle [withHandle]="true" [class]="previewCollapsed() ? 'hidden' : ''" />
+        <ResizablePanel [defaultSize]="0" [minSize]="25">
+          <div class="sticky top-14 h-full mx-4">
+            <div class="relative h-full mx-4">
+              <agent-preview class="absolute inset-4 w-full h-[calc(100%-2rem)] bg-tool-card-widget border-tool-card-border flex flex-col gap-2 rounded-2xl border" (onClose)="closePreview()" />
             </div>
           </div>
         </ResizablePanel>
@@ -120,22 +133,27 @@ export class AgentPageLayoutComponent {
   private readonly router = inject(Router);
   readonly breakpointService = inject(BreakpointObserverService);
   private readonly selectionStore = inject(SelectionStore);
+  protected readonly searchExpansion = inject(SearchExpansionService);
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
 
   readonly previewCollapsed = signal(true);
   readonly historyCollapsed = signal(true);
 
+  // On mobile, only one panel is visible at a time.
+  // Preview takes priority (clicking a doc from search → show preview).
+  protected readonly activeMobilePanel = computed<Panel>(() => {
+    if (!this.previewCollapsed()) return "preview";
+    else if (this.searchExpansion.isExpanded()) return "search";
+    else return "chat";
+  });
+
   constructor() {
     effect(() => {
-      const collapsed = this.historyCollapsed();
+      this.historyCollapsed();
       queueMicrotask(() => {
-        if (collapsed) {
-          this.panelGroup()?.setLayout([0, 100, 0]);
-        } else if (this.breakpointService.isMobile()) {
-          this.panelGroup()?.setLayout([100, 0, 0]);
-        } else {
-          this.panelGroup()?.setLayout([25, 75, 0]);
-        }
+        this.previewCollapsed.set(true);
+        this.selectionStore.clear();
+        this.panelGroup()?.setLayout(this.computeLayout());
       });
     });
 
@@ -143,14 +161,82 @@ export class AgentPageLayoutComponent {
       const id = this.selectionStore.id?.();
       if (id && untracked(() => this.previewCollapsed())) {
         this.previewCollapsed.set(false);
-        queueMicrotask(() => this.panelGroup()?.setLayout([0, 60, 40]));
+        queueMicrotask(() => {
+          this.panelGroup()?.setLayout(this.computeLayout());
+        });
       }
+    });
+
+    // Resize panels when search expands
+    effect(() => {
+      const isExpanded = this.searchExpansion.isExpanded();
+      if (isExpanded) {
+        queueMicrotask(() => {
+          this.panelGroup()?.setLayout(this.computeLayout());
+        });
+      }
+    });
+  }
+
+  /**
+   * Computes panel sizes [history, chat, search, preview] based on current state.
+   *
+   * Layout matrix (approximate percentages):
+   *
+   * | History        | Search | Preview | Layout               |
+   * |----------------|--------|---------|----------------------|
+   * | closed         | closed | closed  | [0,  100, 0,  0 ]    |
+   * | closed         | open   | closed  | [0,  55,  45, 0 ]    |
+   * | closed         | closed | open    | [0,  60,  0,  40]    |
+   * | closed         | open   | open    | [0,  40,  30, 30]    |
+   * | open (desktop) | closed | closed  | [25, 75,  0,  0 ]    |
+   * | open (desktop) | open   | closed  | [25, 41,  34, 0 ]    |
+   * | open (desktop) | closed | open    | [25, 45,  0,  30]    |
+   * | open (desktop) | open   | open    | [25, 30,  23, 22]    |
+   * | open (mobile)  | closed | —       | [100, 0,  0,  0 ]    |
+   * | open (mobile)  | open   | —       | [90,  0,  10, 0 ]    |
+   */
+  private computeLayout(): number[] {
+    const historyOpen = !this.historyCollapsed();
+    const searchOpen = this.searchExpansion.isExpanded();
+    const previewOpen = !this.previewCollapsed();
+    const mobile = this.breakpointService.isMobile();
+
+    // On mobile, history takes over the full screen
+    if (mobile && historyOpen) {
+      return searchOpen ? [90, 0, 10, 0] : [100, 0, 0, 0];
+    }
+
+    const h = historyOpen ? 25 : 0;
+    const rem = 100 - h;
+
+    if (!searchOpen && !previewOpen) {
+      return [h, rem, 0, 0];
+    }
+    if (searchOpen && !previewOpen) {
+      const chat = Math.round(rem * 0.55);
+      return [h, chat, rem - chat, 0];
+    }
+    if (!searchOpen && previewOpen) {
+      const chat = Math.round(rem * 0.6);
+      return [h, chat, 0, rem - chat];
+    }
+    // search + preview
+    const chat = Math.round(rem * 0.4);
+    const search = Math.round(rem * 0.3);
+    return [h, chat, search, rem - chat - search];
+  }
+
+  protected closeSearch(): void {
+    this.searchExpansion.collapse();
+    queueMicrotask(() => {
+      this.panelGroup()?.setLayout(this.computeLayout());
     });
   }
 
   closePreview(): void {
     this.previewCollapsed.set(true);
-    this.panelGroup()?.setLayout([0, 100, 0]);
+    this.panelGroup()?.setLayout(this.computeLayout());
     // Clear selection so the effect can re-trigger if the user clicks
     // the same reference again after dismissing the panel.
     this.selectionStore.clear();

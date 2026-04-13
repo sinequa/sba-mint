@@ -13,7 +13,7 @@
         @if (checked()) {
           <SquareCheckBig class="text-lg" />
         } @else {
-          <Square class="hidden text-lg group-checked/checkbox:hidden group-hover/article:block" />
+          <SquareIcon class="hidden text-lg group-checked/checkbox:hidden group-hover/article:block" />
           <source
             class="text-lg group-checked/checkbox:hidden group-hover/article:hidden"
             [collection]="article().collection"
@@ -47,13 +47,13 @@
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
             @if ((article().authors || { authors: [""] }).length > 0) {
               <span>
-                <i class="far fa-user mr-1"></i>
+                <UserIcon class="mr-1" />
                 {{ article().authors[0] }}
               </span>
             }
             @if (article().modified) {
               <p class="flex items-baseline gap-1">
-                <i class="fa-fw far fa-calendar-day"></i>
+                <CalendarDayIcon />
                 <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
               </p>
             }
