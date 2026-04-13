@@ -3,86 +3,95 @@ title: Preview
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-The Preview feature allows the viewing of the content of a document with many searching tools.
-It is included in the side drawer opening upon clicking on a document in the results list.
+The Preview feature allows viewing the content of a document with contextual search tools.
+It opens when a user clicks on a result card in the search results list.
 
 ## Architecture
 
-The Preview component (`PreviewComponent`) is composed of many components:
+The Preview component (`PreviewComponent`) is composed of the following sub-components:
 
-<img src={useBaseUrl('img/preview/preview-panel.png')} alt='preview component' />
-
-- The Navbar (`PreviewNavbarComponent`) handling many actions related to the preview and document such as opening it in a new tab, adding it to the bookmarks or displaying the advanced search.
-- The Header (`PreviewHeaderComponent`) displays the document's data such as the title, location, modified date and type.
-- The Tabs (`PreviewTabsComponent`) displays some tabs navigation, used here to allow having a Summary and Discussion tabs to have the AI Assistant to respectively make a summary of the current document, and to chat about it. It is displayed if one of these assistants is allowed.
-- The Assistant (`AssistantComponent`) for both the summary and discussion tabs.
-- The Content (`PreviewContentComponent`) displaying the document content iframe.
-
-It is included in a drawer component (`DrawerPreviewComponent`), from the `@sinequa/atomic-angular` library, which couples it with a search component (`AdvancedSearchComponent`) offering ways to interact with the preview content such as navigating through the found entities and extracts.
+- **Navbar** (`PreviewNavbarComponent`): action bar with buttons to open the document externally, bookmark it, copy its link, toggle the Advanced Search panel, and close the preview. It can also open the [Expanded Preview Dialog](#expanded-preview-dialog) if the feature flag is enabled.
+- **Header** (`PreviewHeaderComponent`): displays the document's metadata such as title, location, modified date, type, and labels. Hidden on small container sizes.
+- **Tabs** (`PreviewTabsComponent`): tab navigation between the document content, an AI Summary, and an AI Discussion (Chat with doc). AI tabs are only shown when the corresponding assistant instance is allowed.
+- **Content** (`PreviewContentComponent`): fetches and renders the document inside an `<iframe>`. Includes a `<preview-navigator>` overlay for entity/passage navigation and a `<preview-actions>` overlay for additional controls.
+- **Advanced Search** (`AdvancedSearch`): rendered directly alongside the content area as a collapsible panel. Allows searching within the document and navigating between entities and extracts.
 
 ```mermaid
 block-beta
-columns 2
-  recordId
-  id1(("Selection Store\n{recordId}"))
+  columns 2
+  ArticleClick["Article clicked"]
+  id1(("SelectionStore\n{article}"))
   space
-  block:Drawer
-  columns 3
-    block:Preview
+  block:Preview["PreviewComponent"]
     columns 1
-      A["Preview navbar"]
-      B["Preview header"]
-      C["Preview tabs"]
-      D["Summary assistant"]
-      E["Discussion assistant"]
-      F["Preview document"]
-    end
-    space
-    G["Advanced Search"]
+    A["Navbar"]
+    B["Header"]
+    C["Tabs"]
+    D["Summary assistant"]
+    E["Discussion assistant"]
+    F["Preview iframe\n(PreviewContentComponent)"]
   end
+  AdvSearch["Advanced Search"]
 
-  recordId --> id1
+  ArticleClick --> id1
   Preview --> id1
-  G-- "Extract/Entities\n navigating" -->F
+  AdvSearch-- "Entity / Extract\nnavigation" -->F
 ```
 
-## How does the preview opens itself?
+## How the preview opens
 
-In order to open the preview drawer, multiple steps are at play:
+Opening the preview does not use a drawer or stack component. Instead, it is driven entirely by `SelectionStore` and CSS animation classes in the search results template.
 
-- Upon clicking on an article in the results list, it is selected in the Selection Store and the drawer is asked to be opened
-- When opening, the Drawer (`DrawerStackComponent`) takes the last selected article from the Selection Service (`SelectionHistoryService`) which is based on the Selection Store.
-- The found article is then injected into the children component, here being the Preview Drawer
-- The Preview then initializes itself based on the configuration to display the different elements (filters, tabs for the assistants)
+1. The user clicks an article card → `SelectionService.setCurrentArticle(article)` is called
+2. `SelectionStore.article()` signal updates with the selected article
+3. `SearchAllComponent.hasPreview()` computed signal becomes `true`
+4. The `<preview>` element becomes visible with an `animate-slide-in-right` CSS class on desktop, or `SheetPreviewerComponent` opens as a side sheet on mobile/tablet
+5. `PreviewComponent` reads the article directly from `SelectionStore` (no `@Input()` binding)
+6. `PreviewContentComponent` starts fetching the `PreviewData` object from the backend
 
-## Multi conversion
+Closing the preview clears `SelectionStore` and removes `id` from the URL query parameters, causing `hasPreview()` to return `false` and the slide-out animation to play.
+
+## Expanded Preview Dialog
+
+When the `expandPreview` feature flag is enabled on the platform, an expand button appears in the preview navbar. Clicking it opens `PreviewDialogComponent` — a full-screen modal that renders the document preview with its own set of tabs:
+
+| Tab | Description |
+|---|---|
+| Chat | Chat with the document (`preview-chatwithdoc-assistant` instance) |
+| Summary | AI document summary (`preview-summarize-assistant` instance) |
+| Find | Advanced search / entity navigation |
+
+The dialog owns its own `PreviewService` instance, keeping it independent from the inline preview.
+
+## Multi-conversion
+
+### Overview
+
+If configured on the platform side, multi-conversion can be enabled with the customization JSON's feature flag `previewMultiConversion`.
+It is handled inside `PreviewTabsComponent` which relies on the feature flag and the `previewData.conversions` data fetched after the initial preview loading by `PreviewContentComponent`.
 
 ### Workflow
 
-If configured on the platform side, it can be enabled with the customization JSON's feature flag `previewMultiConversion`.
-It is mainly handled inside `PreviewTabsComponent` which relies on the feature flag and `previewData.conversions` data fetched after the initial preview loading.
-
-There are different steps going on:
-- Upon loading the preview, we get the `previewData` which contains its `conversions` data
-- Based on that and the feature flag, we select the first default conversion if any, or primary if any, and we display a dropdown at the end of the preview tabs to allow switching between them
-- Upon choosing a conversion, it is transmitted to `PreviewContentComponent` which will use it for a couple of interactions:
-  - use its URL for the preview iframe
-  - in case we have a selected passage, we check if the document is primary, and if not there are no possible highlighting so we force a scrolling to the page (only works if HTML) that we first get through the `queryService.getDocPage` Service
-- Choosing a conversion also emits it, which is then used by `PreviewNavbarComponent` to only display the button to toggle `AdvancedSearch` if the document is primary
+- Upon loading, `PreviewContentComponent` fetches `PreviewData` which contains its `conversions` data
+- Based on that data and the `previewMultiConversion` flag, `PreviewTabsComponent` selects the first available conversion (defaults first, then primaries, then others), and displays a dropdown at the end of the tabs bar to allow switching between conversions
+- The selected `CConverter` object is emitted via `onConversionSelect` to `PreviewComponent`, which stores it in the `conversion` signal and passes it to `PreviewNavbarComponent` (to conditionally show the "Search in document" button) and back to `PreviewContentComponent` (to use the right iframe URL)
+- `PreviewContentComponent` uses the conversion's URL for the iframe. For secondary (non-primary) conversions, passage highlighting is replaced by page-level scrolling via `queryService.getDocPage()`
 
 ### Workflow Diagram
 
 ```mermaid
 flowchart TD
-    A[Preview] -->|on loaded| B(PreviewData)
-    B --> C{Has conversions?}
-    D[previewMultiConversion feature flag] --> C
-    C -->|No conversions| E[Nothing displayed]
-    C -->|Disabled flag| E
-    C -->|Has conversions and flag enabled| F[Handles conversions]
-    F --> G{Has default conversions?}
-    G -->|Yes| H[Sets preview to first default conversion]
-    G -->|No| I{Has primary conversions?}
-    I -->|Yes| J[Sets preview to first primary conversion]
-    I -->|No| K[Sets preview to first conversion from the list]
+    A[PreviewContentComponent\nloads PreviewData] -->|onLoadedData| B(PreviewTabsComponent)
+    B --> C{previewMultiConversion\nflag enabled AND\nhas conversions?}
+    C -->|No| E[No converter dropdown shown]
+    C -->|Yes| F[Build sorted converter list\ndefaults → primaries → others]
+    F --> G[Select first converter by default]
+    G --> H[Display dropdown in tab bar]
+    H -->|User selects a conversion| I[onConversionSelect emitted]
+    I --> J[PreviewComponent.conversion updated]
+    J --> K[PreviewContentComponent uses\nconversion URL for iframe]
+    J --> L[PreviewNavbar shows/hides\nSearch button based on isPrimary]
+    K --> M{Is secondary\nconversion?}
+    M -->|Yes| N[Scroll to page via\nqueryService.getDocPage]
+    M -->|No| O[Highlight passage via\nsnippetId postMessage]
 ```
