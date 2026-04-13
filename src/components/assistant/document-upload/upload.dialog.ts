@@ -8,7 +8,10 @@ import {
   DialogFooterComponent,
   DialogHeaderComponent,
   type DialogInterface,
-  DialogTitleComponent
+  DialogTitleComponent,
+  FolderOpenIcon,
+  SyncIcon,
+  TrashIcon
 } from "@sinequa/ui";
 
 @Component({
@@ -22,7 +25,10 @@ import {
     DialogContentComponent,
     DialogHeaderComponent,
     DialogTitleComponent,
-    DialogFooterComponent
+    DialogFooterComponent,
+    FolderOpenIcon,
+    SyncIcon,
+    TrashIcon
   ],
   template: `
     <div dialog #uploadDialog="dialog">
@@ -36,18 +42,18 @@ import {
         <div class="dark:bg-menu rounded-2xl border border-gray-200 p-4 shadow">
           <div class="text-muted-foreground flex items-center">
             <h3 class="pointer-events-none grow text-sm font-semibold">
-              <i class="far fa-folder-open me-1"></i>
+              <FolderOpenIcon class="me-1" />
               {{ 'assistant.uploaded' | transloco }}
             </h3>
             <button variant="ghost" [title]="'assistant.refresh' | transloco" [attr.aria-label]="'assistant.refresh' | transloco">
-              <i class="fas fa-sync"></i>
+              <SyncIcon />
             </button>
             <button
               variant="ghost"
               [title]="'assistant.delete-all' | transloco"
               [attr.aria-label]="'assistant.delete-all' | transloco"
               (click)="documentList?.deleteAllDocuments()">
-              <i class="fas fa-trash"></i>
+              <TrashIcon />
             </button>
           </div>
           <sq-document-list #documentList></sq-document-list>

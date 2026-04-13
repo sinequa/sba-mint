@@ -4,7 +4,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
 import { ApplicationService, DrawerStackService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { ButtonComponent, StarIcon, TrashCanIcon } from '@sinequa/ui';
 
 /**
  * Component for displaying user saved searches.
@@ -14,7 +14,7 @@ import { ButtonComponent } from '@sinequa/ui';
  */
 @Component({
   selector: 'SavedSearches',
-  imports: [TranslocoPipe, ButtonComponent],
+  imports: [TranslocoPipe, ButtonComponent, StarIcon, TrashCanIcon],
   templateUrl: './saved-searches.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

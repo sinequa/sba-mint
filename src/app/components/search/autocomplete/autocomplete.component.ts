@@ -41,6 +41,7 @@ import {
   MapPinIcon,
   SearchIcon,
   Separator,
+  SlidersIcon,
   StarIcon,
   UserIcon
 } from '@sinequa/ui';
@@ -75,7 +76,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  imports: [NgComponentOutlet, ListItemComponent, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent],
+  imports: [NgComponentOutlet, ListItemComponent, HighlightWordPipe, TranslocoPipe, ListItemComponent, Separator, ButtonComponent, SlidersIcon],
   styles: [
     `
       :host {
