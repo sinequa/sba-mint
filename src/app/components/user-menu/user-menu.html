@@ -14,15 +14,15 @@
   <MenuContent position="bottom-start" class="min-w-max">
     @if (enabledUserProfile()) {
       <MenuItem (click)="handleUserProfile()">
-        <i class="fa-fw fal fa-user text-[16px]"></i>
-        <span>{{ 'userMenu.manageProfile' | transloco }}</span>
+        <user-icon class="text-[16px]" />
+        <span>{{ "userMenu.manageProfile" | transloco }}</span>
       </MenuItem>
       <Separator />
     }
     <!-- language selection -->
     <menu position="left-start" class="dropdown-content">
       <MenuItem>
-        <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
+        <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
         <ChevronRight class="size-4" />
       </MenuItem>
 
@@ -32,7 +32,7 @@
             <span>{{ lang.label }}</span>
             <div class="flex items-center gap-2">
               @if (currentActiveLang() === lang.code) {
-                <i class="fa-fw fas fa-check text-sm"></i>
+                <check-icon class="text-sm" />
               }
               <ng-container *ngComponentOutlet="lang.icon"></ng-container>
             </div>
@@ -44,7 +44,7 @@
     <!-- theme selection -->
     <menu position="left-start" class="dropdown-content">
       <MenuItem>
-        <span class="grow">{{ 'userMenu.selectTheme' | transloco }}</span>
+        <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
         <ChevronRight class="size-4" />
       </MenuItem>
 
@@ -54,9 +54,9 @@
             <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
             <div class="flex items-center gap-2">
               @if (currentTheme() === theme.name) {
-                <i class="fa-fw fas fa-check text-sm"></i>
+                <check-icon class="text-sm" />
               }
-              <i class="{{ theme.icon }}"></i>
+              <ng-container *ngComponentOutlet="theme.icon" />
             </div>
           </MenuItem>
         }
@@ -66,8 +66,8 @@
     <Separator />
 
     <MenuItem variant="destructive" (click)="handleResetUserSettings()">
-      <i class="fa-fw fal fa-trash text-[16px]"></i>
-      <span>{{ 'userMenu.resetUserSettings' | transloco }}</span>
+      <trash-icon class="text-[16px]" />
+      <span>{{ "userMenu.resetUserSettings" | transloco }}</span>
     </MenuItem>
 
     @if (isOverridingUser()) {
@@ -76,40 +76,40 @@
 
     @if (allowUserOverride() && !isOverridingUser()) {
       <MenuItem (click)="handleOverride()">
-        <i class="fa-fw fal fa-user-secret text-[16px]"></i>
-        <span>{{ 'userMenu.overrideUser' | transloco }}</span>
+        <user-secret-icon class="text-[16px]" />
+        <span>{{ "userMenu.overrideUser" | transloco }}</span>
       </MenuItem>
     } @else if (isOverridingUser()) {
       <MenuItem (click)="handleOverrideUser()">
-        <i class="fa-fw fal fa-user text-[16px]"></i>
-        <span>{{ 'userMenu.revertOverride' | transloco }}</span>
+        <user-icon class="text-[16px]" />
+        <span>{{ "userMenu.revertOverride" | transloco }}</span>
       </MenuItem>
     }
 
     <Separator />
     @if (allowNewUI()) {
       <MenuItem (click)="handleNewLayout()" class="justify-between">
-        <span class="grow">{{ 'userMenu.tryNewLayout' | transloco }}</span>
-        <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
+        <span class="grow">{{ "userMenu.tryNewLayout" | transloco }}</span>
+        <arrow-up-right-from-square-icon class="text-[12px]" />
       </MenuItem>
       <Separator />
     }
 
     <MenuItem (click)="openSinequa()" class="justify-between">
       <img class="size-4" src="assets/logo/small.svg" alt="sinequa logo" />
-      <span class="grow">{{ 'userMenu.aboutSinequa' | transloco }}</span>
-      <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
+      <span class="grow">{{ "userMenu.aboutSinequa" | transloco }}</span>
+      <arrow-up-right-from-square-icon class="text-[12px]" aria-hidden="true" />
     </MenuItem>
     @if (allowChangePassword()) {
       <MenuItem (click)="onChangePassword()" class="justify-between">
-        <i class="fa-fw fal fa-key text-[16px]"></i>
-        <span class="grow">{{ 'userMenu.changePassword' | transloco }}</span>
+        <key-icon class="text-[16px]" />
+        <span class="grow">{{ "userMenu.changePassword" | transloco }}</span>
       </MenuItem>
     }
 
     <MenuItem (click)="handleLogout()">
-      <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
-      <span class="grow">{{ 'logout' | transloco }} {{ user().fullName || user().name }}</span>
+      <arrow-right-from-bracket-icon class="text-[16px]" />
+      <span class="grow">{{ "logout" | transloco }} {{ user().fullName || user().name }}</span>
     </MenuItem>
   </MenuContent>
 </menu>

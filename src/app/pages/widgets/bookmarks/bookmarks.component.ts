@@ -1,4 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
+import { BookmarkIcon, TrashCanIcon } from '@sinequa/ui';
 import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { toast } from 'ngx-sonner';
@@ -22,7 +23,7 @@ interface BookmarkArticle {
  */
 @Component({
   selector: 'Bookmarks',
-  imports: [TranslocoPipe, NgComponentOutlet],
+  imports: [TranslocoPipe, NgComponentOutlet, BookmarkIcon, TrashCanIcon],
   templateUrl: './bookmarks.component.html',
   host: {
     class: 'flex flex-col h-full w-full'

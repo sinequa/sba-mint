@@ -1,7 +1,7 @@
 import { NgComponentOutlet } from "@angular/common";
 import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Router, ɵEmptyOutletComponent } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
@@ -16,18 +16,27 @@ import {
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
+  ArrowRightFromBracketIcon,
+  ArrowUpRightFromSquareIcon,
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  CheckIcon,
   ChevronRightIcon,
+  DesktopIcon,
   DialogService,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  KeyIcon,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  MoonIcon,
   Separator,
-  UserIcon
+  SunBrightIcon,
+  TrashIcon,
+  UserIcon,
+  UserSecretIcon
 } from "@sinequa/ui";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -56,7 +65,13 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     UserIcon,
+    UserSecretIcon,
     ChevronRightIcon,
+    CheckIcon,
+    TrashIcon,
+    KeyIcon,
+    ArrowUpRightFromSquareIcon,
+    ArrowRightFromBracketIcon,
     AvatarComponent,
     AvatarImageComponent,
     AvatarFallbackComponent,
@@ -67,10 +82,10 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
   providers: [provideTranslocoScope("user-menu")]
 })
 export class UserMenuComponent {
-  AllThemes: { name: Theme; icon: string }[] = [
-    { name: "light", icon: "fa-fw fal fa-sun-bright" },
-    { name: "dark", icon: "fa-fw fal fa-moon" },
-    { name: "system", icon: "fa-fw fal fa-desktop" }
+  AllThemes: { name: Theme; icon: Type<unknown> }[] = [
+    { name: "light", icon: SunBrightIcon },
+    { name: "dark", icon: MoonIcon },
+    { name: "system", icon: DesktopIcon }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [

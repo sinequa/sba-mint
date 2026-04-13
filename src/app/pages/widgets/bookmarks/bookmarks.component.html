@@ -1,8 +1,8 @@
 <div class="layout-search" [attr.drawer-opened]="drawerOpened()">
   <div class="col-span-2 col-start-2">
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw fas fa-bookmark" aria-hidden></i>
-      {{ 'myBookmarks' | transloco }}
+      <bookmark-icon aria-hidden />
+      {{ "myBookmarks" | transloco }}
     </h1>
 
     <ul class="mt-4 flex flex-col gap-2">
@@ -18,14 +18,14 @@
                 [attr.title]="'bookmark.removeBookmark' | transloco"
                 [attr.aria-label]="'bookmark.removeBookmark' | transloco"
                 (click)="onDelete(bookmark.bookmark)">
-                <i class="fa-fw fa-regular fa-trash-can" aria-hidden="true"></i>
+                <trash-can-icon aria-hidden="true" />
               </button>
             </div>
           }
         </li>
       } @empty {
         <li class="no-records">
-          {{ 'bookmarks.noBookmarks' | transloco }}
+          {{ "bookmarks.noBookmarks" | transloco }}
         </li>
       }
     </ul>

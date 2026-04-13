@@ -2,7 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, SourceComponent, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent } from '@sinequa/ui';
+import { BadgeComponent, CalendarDayIcon, CardComponent, CardContentComponent, SquareCheckIcon, SquareIcon, UserIcon } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 import { RecordCard } from '../record/record-card';
@@ -19,7 +19,11 @@ import { RecordCard } from '../record/record-card';
     CardContentComponent,
     BadgeComponent,
     CardMenuComponent,
-    SourceComponent
+    SourceComponent,
+    SquareCheckIcon,
+    SquareIcon,
+    UserIcon,
+    CalendarDayIcon
   ],
   templateUrl: './slide-card.html',
   host: {

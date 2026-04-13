@@ -16,7 +16,7 @@ import {
   SourceComponent,
   TranslocoDateImpurePipe
 } from '@sinequa/atomic-angular';
-import { BadgeComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn, SquareCheckBigIcon, Square } from '@sinequa/ui';
+import { BadgeComponent, CalendarDayIcon, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn, SquareCheckBigIcon, SquareIcon, UserIcon } from '@sinequa/ui';
 
 import { CardMenuComponent } from '../menu';
 
@@ -49,7 +49,9 @@ const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 
     CardFooterComponent,
     CardMenuComponent,
     SquareCheckBigIcon,
-    Square
+    SquareIcon,
+    UserIcon,
+    CalendarDayIcon
   ],
   templateUrl: './record-card.html',
   host: {

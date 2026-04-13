@@ -10,11 +10,11 @@ import {
   SortingChoice,
   SponsoredResultsComponent
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, Square, SquareCheckBigIcon, SquareMinusIcon } from '@sinequa/ui';
+import { ButtonComponent, SquareCheckBigIcon, SquareIcon, SquareMinusIcon } from '@sinequa/ui';
 
 @Component({
   selector: 'app-search-actions',
-  imports: [TranslocoPipe, ButtonComponent, DidYouMeanComponent, SponsoredResultsComponent, SquareCheckBigIcon, SquareMinusIcon, Square, SortSelectorComponent],
+  imports: [TranslocoPipe, ButtonComponent, DidYouMeanComponent, SponsoredResultsComponent, SquareCheckBigIcon, SquareMinusIcon, SquareIcon, SortSelectorComponent],
   template: `
     <!-- did you mean and sponsored links -->
     <div class="px-3">
@@ -32,11 +32,11 @@ import { ButtonComponent, Square, SquareCheckBigIcon, SquareMinusIcon } from '@s
               <span class="truncate">{{ 'searches.selection.unselectAll' | transloco }}</span>
             }
             @case ('some') {
-              <SquareMinus />
+              <SquareMinusIcon />
               <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
             @default {
-              <Square />
+              <SquareIcon />
               <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
           }
