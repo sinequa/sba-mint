@@ -2,10 +2,11 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import { type ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
-import { provideRouter, withComponentInputBinding, withHashLocation } from "@angular/router";
+import { ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
+import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
 import { provideAgent } from "@config/agent.providers";
 import { provideAssistant } from "@config/assistant.providers";
+import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 import { TranslocoHttpLoader } from "@config/transloco-loader";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
@@ -48,6 +49,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
 
+    // This provider is used to configure the route reuse strategy of the application.
+    // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
+    // With this provider, we can tell Angular to keep the component instance in memory and reuse it when navigating back to the route.
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     // this function is used to configure the application before it is loaded
     provideAppInitializer(appInitializerFn),
 
