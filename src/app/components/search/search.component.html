@@ -9,7 +9,7 @@
       [attr.aria-label]="'searchInput.placeholder' | transloco"
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
-      @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+      @if (showSave() && (searchInputText() !== "" || hasFilters())) {
         <SavedSearchPopover [queryText]="searchInputText()" (onSavedSearch)="saved.emit($event)" />
       }
 
@@ -18,12 +18,12 @@
           variant="ai"
           size="xs"
           class="hidden rounded-sm transition ease-in sm:block"
-          title="Ask AI"
-          aria-label="Ask AI"
+          [attr.title]="'askAI' | transloco"
+          [attr.aria-label]="'askAI' | transloco"
           (click)="handleRouting($event)"
           [disabled]="searchInputText() === ''">
           <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
-          Ask AI
+          {{ "askAI" | transloco }}
         </button>
       }
       <button

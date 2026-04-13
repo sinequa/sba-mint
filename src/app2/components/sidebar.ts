@@ -6,7 +6,7 @@ import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-g
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -59,7 +59,8 @@ import {
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
-    UserIcon
+    UserIcon,
+    TranslocoPipe
   ],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
@@ -102,14 +103,14 @@ import {
             <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
               <sidebar-menu-button class="text-lg">
                 <i tooltip="Administration" tooltip-position="right" class="fa-fw far fa-gear" aria-hidden="true"></i>
-                <span class="text-sm" sr-only>Administration</span>
+                <span class="text-sm" sr-only>{{ 'administration' | transloco }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
           <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
             <sidebar-menu-button class="text-lg">
               <i tooltip="Help" tooltip-position="right" class="fa-fw far fa-question-circle" aria-hidden="true"></i>
-              <span class="text-sm" sr-only>Help</span>
+              <span class="text-sm" sr-only>{{ 'help' | transloco }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
