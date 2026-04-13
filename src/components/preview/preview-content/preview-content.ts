@@ -6,7 +6,7 @@ import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
 import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
 
 import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
 
@@ -25,11 +25,11 @@ import { PreviewActionsComponent } from "./preview-actions";
  */
 @Component({
   selector: "preview-content",
-  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
-        <i class="fa-fw far fa-spinner fa-spin mb-6 text-6xl text-primary"></i>
+        <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
@@ -42,7 +42,7 @@ import { PreviewActionsComponent } from "./preview-actions";
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
-          <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
+          <image-icon class="mb-6 text-6xl text-secondary" /><br />
           {{ "previewUnavailable" | transloco }}
         </p>
       </div>

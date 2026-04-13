@@ -22,7 +22,7 @@
           [attr.aria-label]="'askAI' | transloco"
           (click)="handleRouting($event)"
           [disabled]="searchInputText() === ''">
-          <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
+          <sparkles-icon class="me-1" aria-hidden="true" />
           {{ "askAI" | transloco }}
         </button>
       }

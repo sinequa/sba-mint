@@ -3,12 +3,7 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { AGENT_INSTANCE_ID } from "@sinequa/agent";
 import { AppStore } from "@sinequa/atomic-angular";
-import {
-  SidebarMenuButtonComponent,
-  SidebarMenuComponent,
-  SidebarMenuItemComponent,
-  TooltipDirective
-} from "@sinequa/ui";
+import { RobotIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMenuItemComponent, TooltipDirective } from "@sinequa/ui";
 
 @Component({
   selector: "app-sidebar-group-agent",
@@ -17,15 +12,24 @@ import {
   @if(allowAgent()) {
     <sidebar-menu>
       <sidebar-menu-item aria-label="Agent">
-        <sidebar-menu-button class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
-          <i [tooltip]="'agent' | transloco" tooltip-position="right" class="fa-fw far fa-robot [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true"></i>
+        <sidebar-menu-button [tooltip]="'agent' | transloco" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
+          <robot-icon aria-hidden="true" />
           <span class="text-sm" sr-only>{{ 'agent' | transloco }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>
     </sidebar-menu>
   }
   `,
-  imports: [SidebarMenuComponent, SidebarMenuItemComponent, SidebarMenuButtonComponent, TooltipDirective, RouterLink, RouterLinkActive, TranslocoPipe],
+  imports: [
+    SidebarMenuComponent,
+    SidebarMenuItemComponent,
+    SidebarMenuButtonComponent,
+    TooltipDirective,
+    RouterLink,
+    RouterLinkActive,
+    TranslocoPipe,
+    RobotIcon
+  ],
   host: {
     class: "contents"
   }

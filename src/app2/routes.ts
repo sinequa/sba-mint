@@ -28,7 +28,9 @@ export const routes: ExtendedRoutes = [
   {
     path: "assistant",
     loadComponent: () => import("./pages/assistant/assistant.layout").then(m => m.AssistantLayoutComponent),
-    canActivate: [AuthGuard()]
+    canActivate: [AuthGuard()],
+    resolve: { queryName: queryNameResolver },
+    data: { reuse: true } // This route will be "frozen" when we navigate away from it, and "thawed" when we come back to it
   },
   {
     path: "chat",

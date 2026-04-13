@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, linkedSignal, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router } from "@angular/router";
-import { filter } from "rxjs";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
@@ -20,8 +19,10 @@ import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  GearIcon,
   MenuComponent,
   MenuContentComponent,
+  QuestionCircleIcon,
   Sidebar,
   SidebarContentComponent,
   SidebarFooterComponent,
@@ -34,6 +35,7 @@ import {
   UserIcon,
   useSidebar
 } from "@sinequa/ui";
+import { filter } from "rxjs";
 
 @Component({
   selector: "app-sidebar",
@@ -60,7 +62,9 @@ import {
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
     UserIcon,
-    TranslocoPipe
+    TranslocoPipe,
+    GearIcon,
+    QuestionCircleIcon
   ],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
@@ -102,14 +106,14 @@ import {
           @if (isAdminOrDelegatedAdmin()) {
             <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
               <sidebar-menu-button class="text-lg">
-                <i tooltip="Administration" tooltip-position="right" class="fa-fw far fa-gear" aria-hidden="true"></i>
+                <gear-icon aria-hidden="true" />
                 <span class="text-sm" sr-only>{{ 'administration' | transloco }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
           <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
             <sidebar-menu-button class="text-lg">
-              <i tooltip="Help" tooltip-position="right" class="fa-fw far fa-question-circle" aria-hidden="true"></i>
+              <question-circle-icon aria-hidden="true" />
               <span class="text-sm" sr-only>{{ 'help' | transloco }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
@@ -176,9 +180,7 @@ export class MainSidebarComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
-  private readonly navigationEnd = toSignal(
-    inject(Router).events.pipe(filter(e => e instanceof NavigationEnd))
-  );
+  private readonly navigationEnd = toSignal(inject(Router).events.pipe(filter(e => e instanceof NavigationEnd)));
 
   constructor() {
     effect(() => {
