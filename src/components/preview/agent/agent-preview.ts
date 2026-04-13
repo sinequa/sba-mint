@@ -21,7 +21,7 @@ type Article = A & {
         [article]="article()"
         (onClose)="onClose.emit()" />
 
-      <div class="@container relative mb-2 flex h-full flex-col gap-0.5">
+      <div class="@container relative flex h-full flex-col gap-0.5">
         @if (article()) {
           <section class="relative hidden border-b border-muted-foreground/18 px-6 py-4 @min-lg:block">
             <preview-header [article]="article()!" />
