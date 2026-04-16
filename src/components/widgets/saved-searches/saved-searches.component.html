@@ -1,6 +1,6 @@
 <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-  <i class="fa-fw fas fa-star" aria-hidden></i>
-  {{ 'mySavedSearches' | transloco }}
+  <star-icon />
+  {{ "mySavedSearches" | transloco }}
 </h1>
 
 <ul class="mt-4 flex flex-col gap-2" role="list">
@@ -10,22 +10,22 @@
       role="link"
       (click)="onClick(savedSearch)"
       (keydown.enter)="onClick(savedSearch)">
-      <i class="fas fa-star ps-2"></i>
+      <star-icon class="ps-2" />
 
       <span class="ms-2">
         {{ savedSearch.display || savedSearch.label }}
       </span>
 
       <span class="text-muted-foreground">
-        {{ 'in' | transloco }}
+        {{ "in" | transloco }}
 
         <span class="font-semibold capitalize">
-          {{ savedSearch.queryParams?.tab ?? 'all' }}
+          {{ savedSearch.queryParams?.tab ?? "all" }}
         </span>
 
         @if (savedSearch.filterCount) {
           ,
-          <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ 'filters' | transloco }} </span>
+          <span class="font-semibold lowercase"> {{ savedSearch.filterCount }} {{ "filters" | transloco }} </span>
         }
       </span>
 
@@ -35,7 +35,7 @@
     </a>
   } @empty {
     <li class="no-records">
-      {{ 'searches.saved.noSavedSearches' | transloco }}
+      {{ "searches.saved.noSavedSearches" | transloco }}
     </li>
   }
 </ul>

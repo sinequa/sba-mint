@@ -3,15 +3,15 @@ import { Router, RouterModule } from "@angular/router";
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getRelativeDate } from "@sinequa/atomic";
 import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, ListItemComponent, TrashIcon } from "@sinequa/ui";
+import { ButtonComponent, HistoryIcon, ListItemComponent, TrashIcon } from "@sinequa/ui";
 import { toast } from "ngx-sonner";
 
 @Component({
   selector: "app-recent-searches",
-  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, TrashIcon],
+  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, TrashIcon, HistoryIcon],
   template: `
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
+      <HistoryIcon aria-hidden="true" />
       {{ "history" | transloco }}
     </h1>
 

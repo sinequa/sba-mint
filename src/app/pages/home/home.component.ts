@@ -18,7 +18,7 @@ import {
   SavedSearchesComponent,
   signIn
 } from '@sinequa/atomic-angular';
-import { Separator, TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
+import { BookmarkIcon, HistoryIcon, InboxIcon, Separator, StarIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
 
 import { getState } from '@ngrx/signals';
 import { error, fetchQuery } from '@sinequa/atomic';
@@ -29,7 +29,7 @@ import { UserMenuComponent } from '../../components/user-menu/user-menu';
 
 type HomeTab = {
   name: string;
-  iconClass: string;
+  icon: Type<unknown>;
   label: string;
   component: Type<unknown>;
   inputs?: Record<string, unknown>;
@@ -39,28 +39,28 @@ type HomeTab = {
 const homeFeatures: HomeTab[] = [
   {
     name: 'recentSearches',
-    iconClass: 'fa-regular fa-clock-rotate-left',
+    icon: HistoryIcon,
     label: 'searches.recent.label',
     inputs: { options: { itemsPerPage: 5 } },
     component: RecentSearchesComponent
   },
   {
     name: 'savedSearches',
-    iconClass: 'fa-regular fa-star',
+    icon: StarIcon,
     label: 'searches.saved.label',
     inputs: { options: { itemsPerPage: 5 } },
     component: SavedSearchesComponent
   },
   {
     name: 'bookmarks',
-    iconClass: 'fa-regular fa-bookmark',
+    icon: BookmarkIcon,
     label: 'bookmarks.label',
     inputs: { options: { itemsPerPage: 5 } },
     component: BookmarksComponent
   },
   {
     name: 'baskets',
-    iconClass: 'fa-regular fa-inbox',
+    icon: InboxIcon,
     label: 'collections.label',
     component: CollectionsComponent
   }

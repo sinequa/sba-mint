@@ -5,16 +5,16 @@ import { toast } from 'ngx-sonner';
 
 import { getRelativeDate } from '@sinequa/atomic';
 import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
+import { ButtonComponent, HistoryIcon, ListItemComponent, TrashCanIcon } from '@sinequa/ui';
 
 @Component({
   selector: 'app-recent-searches',
-  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent],
+  imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, HistoryIcon, TrashCanIcon],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2 overflow-hidden">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <i class="fa-fw far fa-clock-rotate-left" aria-hidden></i>
+          <HistoryIcon aria-hidden="true" />
           {{ 'history' | transloco }}
         </h1>
 
@@ -49,7 +49,7 @@ import { ButtonComponent, ListItemComponent } from '@sinequa/ui';
                 </span>
 
                 <button variant="icon" size="icon" class="text-destructive invisible group-hover:visible hover:scale-125" (click)="remove($event, search)">
-                  <i class="fa-fw far fa-trash-can" aria-hidden></i>
+                  <TrashCanIcon />
                 </button>
               </li>
             }
