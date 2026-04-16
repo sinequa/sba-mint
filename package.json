@@ -78,9 +78,7 @@
     "xstate": "^5.28.0",
     "zone.js": "~0.15.0"
   },
-  "overrides": {
-    "brace-expansion": "^5.0.0"
-  },
+  "overrides": {},
   "devDependencies": {
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
