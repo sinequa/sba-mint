@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from "@angular/core";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
-
 import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
 import { CCApp, fetchQuery, Query } from "@sinequa/atomic";
 import {
@@ -16,7 +16,6 @@ import {
   SelectionStore
 } from "@sinequa/atomic-angular";
 import { ButtonComponent, CommentsIcon, cn, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
-
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
 import { AssistantComponent } from "../../components/assistant/assistant";
@@ -47,11 +46,11 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     <div
       [class]="
         cn(
-          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
-          opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
+          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[15%_1fr]',
+          opened() && '-translate-x-[15%] md:grid-cols-[15%_50%]'
         )
       ">
-      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col', !opened() && 'p-4 opacity-100')">
+      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col max-w-80', !opened() && 'p-4 opacity-100')">
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
@@ -111,7 +110,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -214,6 +213,18 @@ export class AssistantLayoutComponent {
         this.applicationService.setTitle("Assistant");
       }
     });
+
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
+    // react to drawer state changes to update the application title when the drawer is closed
+    this.applicationService.setTitle("Assistant");
 
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries

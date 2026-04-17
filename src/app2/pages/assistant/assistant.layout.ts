@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, 
 import { AssistantComponent } from "@components/assistant/assistant";
 import { AssistantUploadComponent } from "@components/assistant/document-upload/assistant-upload.component";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -131,7 +132,7 @@ import { firstValueFrom } from "rxjs";
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -230,6 +231,15 @@ export class AssistantLayoutComponent {
       this.chat()?.askAI(question);
     });
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
     // react to drawer state changes to update the application title when the drawer is closed
     this.applicationService.setTitle("Assistant");
 
