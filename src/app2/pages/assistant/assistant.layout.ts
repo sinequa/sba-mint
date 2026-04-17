@@ -33,6 +33,7 @@ import {
 import { AssistantComponent } from '@components/assistant/assistant';
 import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
+import { OnRouteAttached } from '@config/custom-reuse-strategy';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -142,7 +143,7 @@ import { AssistantUploadComponent } from '@components/assistant/document-upload/
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -208,8 +209,11 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
-      // also start a new chat
-      this.chat()?.newChat();
+      const chat = this.chat();
+      if (chat && this.isAssistantReady()) {
+        // also start a new chat
+        this.chat()?.newChat();
+      }
     });
 
     effect(() => {
@@ -233,6 +237,15 @@ export class AssistantLayoutComponent {
     // react to drawer state changes to update the application title when the drawer is closed
     this.applicationService.setTitle('Assistant');
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();
