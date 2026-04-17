@@ -2,14 +2,18 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import { ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
+import {
+  ApplicationConfig,
+  inject,
+  LOCALE_ID,
+  provideAppInitializer,
+  provideZonelessChangeDetection
+} from "@angular/core";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
 import { provideAgent } from "@config/agent.providers";
 import { provideAssistant } from "@config/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
-import { TranslocoHttpLoader } from "@config/transloco-loader";
-import { provideTransloco } from "@jsverse/transloco";
-import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
+import { provideTranslocoProviders } from "@config/transcolo-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { appInitializerFn } from "@sinequa/atomic";
 import {
@@ -47,7 +51,15 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    provideHttpClient(withInterceptors([bodyInterceptorFn, authInterceptorFn, auditInterceptorFn, errorInterceptorFn, toastInterceptorFn])),
+    provideHttpClient(
+      withInterceptors([
+        bodyInterceptorFn,
+        authInterceptorFn,
+        auditInterceptorFn,
+        errorInterceptorFn,
+        toastInterceptorFn
+      ])
+    ),
 
     // This provider is used to configure the route reuse strategy of the application.
     // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
