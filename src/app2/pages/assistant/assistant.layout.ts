@@ -19,8 +19,8 @@ import {
 import {
   BreakpointObserverService,
   ButtonComponent,
-  cn,
   CommentsIcon,
+  cn,
   PlusIcon,
   SheetService,
   SidebarGroupComponent,
@@ -168,16 +168,24 @@ export class AssistantLayoutComponent {
   backLevel = 0;
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display));
+  readonly allowSavedChats = computed(() =>
+    Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display)
+  );
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled));
+  readonly allowDocumentUploader = computed(() =>
+    Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled)
+  );
 
   // this is used to display the saved chats component
-  readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showSavedChats = computed(
+    () => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // this is used to display the saved chats component
-  readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showDocumentUploader = computed(
+    () => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // queryparams input binding
   q = input<string>();
@@ -188,7 +196,7 @@ export class AssistantLayoutComponent {
   assistantKey = signal(0);
   // Call this method when you need to recreate
   recreateAssistant() {
-    this.assistantKey.update(v => v + 1);
+    this.assistantKey.update((v) => v + 1);
   }
   /* End of assistant recreation code */
 
@@ -197,8 +205,11 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
-      // also start a new chat
-      this.chat()?.newChat();
+      const chat = this.chat();
+      if(chat && this.isAssistantReady()) {
+        // also start a new chat
+        this.chat()?.newChat();
+      }
     });
 
     effect(() => {
@@ -279,9 +290,9 @@ export class AssistantLayoutComponent {
     }
     const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
     const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === "user" && msg.content);
+    const firstUserMessage = history.find((msg) => msg.role === "user" && msg.content);
     if (firstUserMessage) {
-      this.query.update(q => {
+      this.query.update((q) => {
         if (q && firstUserMessage) {
           const newQuery = { ...q };
           newQuery.text = firstUserMessage.content as string;
