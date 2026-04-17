@@ -1,5 +1,9 @@
 import type { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy } from '@angular/router';
 
+export interface OnRouteAttached {
+  onRouteAttached(): void;
+}
+
 export class CustomReuseStrategy implements RouteReuseStrategy {
   // A storage object to hold our "frozen" component instances
   private handlers: { [key: string]: DetachedRouteHandle } = {};
@@ -25,7 +29,14 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
   // 4. Retrieve the saved component from storage
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
     if (!route.routeConfig?.path) return null;
-    return this.handlers[route.routeConfig.path];
+    const handle = this.handlers[route.routeConfig.path];
+    if (handle) {
+      const componentRef = (handle as any).componentRef;
+      if (componentRef?.instance && 'onRouteAttached' in componentRef.instance) {
+        Promise.resolve().then(() => (componentRef.instance as OnRouteAttached).onRouteAttached());
+      }
+    }
+    return handle ?? null;
   }
 
   // 5. Should we reuse the route? (Standard logic)
