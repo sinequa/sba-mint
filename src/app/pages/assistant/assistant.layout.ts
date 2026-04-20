@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from "@angular/core";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
-
 import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
 import { CCApp, fetchQuery, Query } from "@sinequa/atomic";
 import {
@@ -16,7 +16,6 @@ import {
   SelectionStore
 } from "@sinequa/atomic-angular";
 import { ButtonComponent, CommentsIcon, cn, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
-
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
 import { AssistantComponent } from "../../components/assistant/assistant";
@@ -111,7 +110,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -215,6 +214,17 @@ export class AssistantLayoutComponent {
       }
     });
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
+    // react to drawer state changes to update the application title when the drawer is closed
+    this.applicationService.setTitle("Assistant");
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();
