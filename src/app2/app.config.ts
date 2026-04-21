@@ -13,7 +13,7 @@ import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashL
 import { provideAgent } from "@config/agent.providers";
 import { provideAssistant } from "@config/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
-import { provideTranslocoProviders } from "@config/transcolo-providers";
+import { provideTranslocoProviders } from "@config/transloco-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { appInitializerFn } from "@sinequa/atomic";
 import {
