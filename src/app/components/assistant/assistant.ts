@@ -1,9 +1,19 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { catchError, of } from 'rxjs';
-
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  ViewEncapsulation,
+  viewChild
+} from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
 import {
   ChatComponent,
   ChatConfig,
@@ -13,9 +23,8 @@ import {
   MessageHandler,
   RawMessage,
   SuggestedAction
-} from '@sinequa/assistant/chat';
-
-import { Article, error, Query } from '@sinequa/atomic';
+} from "@sinequa/assistant/chat";
+import { Article, error, Query } from "@sinequa/atomic";
 import {
   AppStore,
   DrawerStackService,
@@ -25,11 +34,12 @@ import {
   QueryParamsStore,
   SelectionStore,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
+} from "@sinequa/atomic-angular";
+import { cn } from "@sinequa/ui";
+import { catchError, of } from "rxjs";
 
 @Component({
-  selector: 'assistant, Assistant',
+  selector: "assistant, Assistant",
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     @if (isChatInitialized() || showAssistant()) {
@@ -58,9 +68,9 @@ import { cn } from '@sinequa/ui';
       }
     }
   `,
-  styleUrl: './assistant.css',
+  styleUrl: "./assistant.css",
   host: {
-    '[attr.no-progress]': 'noProgress'
+    "[attr.no-progress]": "noProgress"
   },
   encapsulation: ViewEncapsulation.None
 })
@@ -75,7 +85,7 @@ export class AssistantComponent {
   selectionStore = inject(SelectionStore);
   protected readonly previewService = inject(PreviewService);
 
-  class = input<string>('');
+  class = input<string>("");
   // Used to initialize the chat unconditionally
   showAssistant = input<boolean | undefined>(false);
   instanceId = input.required<string>();
@@ -104,7 +114,7 @@ export class AssistantComponent {
   queryParamsStore = inject(QueryParamsStore);
 
   // used to cronstruct a valid query object used by the sqChat component
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 
@@ -119,7 +129,7 @@ export class AssistantComponent {
   assistantKey = signal(0);
   // Call this method when you need to recreate
   protected recreateAssistant() {
-    this.assistantKey.update(v => v + 1);
+    this.assistantKey.update((v) => v + 1);
   }
   /* End of assistant recreation code */
 
@@ -148,26 +158,26 @@ export class AssistantComponent {
       this.sqChat()
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(err => {
-            error('Unhandled error in streaming', err);
+          catchError((err) => {
+            error("Unhandled error in streaming", err);
             return [];
           })
         )
         .subscribe({
-          next: streaming => this.isStreaming.emit(streaming),
-          error: err => error('Error in streaming', err)
+          next: (streaming) => this.isStreaming.emit(streaming),
+          error: (err) => error("Error in streaming", err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError(err => {
-            error('Unhandled error in init process', err);
+          catchError((err) => {
+            error("Unhandled error in init process", err);
             return of(false);
           })
         )
         .subscribe({
-          next: value => this.onReady.emit(value)
+          next: (value) => this.onReady.emit(value)
         });
     });
 
@@ -207,7 +217,7 @@ export class AssistantComponent {
         ? {
             highlights: [
               {
-                category: 'snippet',
+                category: "snippet",
                 highlights: event.parts
               }
             ],
@@ -219,25 +229,25 @@ export class AssistantComponent {
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
     if (partId) {
-      this.previewService.events.set('scrollTo');
-      this.previewService.sendMessage({ action: 'select', id: `snippet_${partId}`, usePassageHighlighter: true });
+      this.previewService.events.set("scrollTo");
+      this.previewService.sendMessage({ action: "select", id: `snippet_${partId}`, usePassageHighlighter: true });
     }
   }
 
   public newChat(): void {
     try {
       this.sqChat()?.newChat();
-    } catch (err) {
-      error('Error while starting a new chat', err);
+    } catch {
+      // error('Error while starting a new chat', err);
     }
   }
 
   handleSuggestAction(action: SuggestedAction) {
     switch (action.type) {
-      case 'Prefill':
+      case "Prefill":
         this.insertText(action.content);
         break;
-      case 'Submit':
+      case "Submit":
         this.submitQuestion(action.content);
         break;
       default:
@@ -248,8 +258,8 @@ export class AssistantComponent {
   handleRedirect($event: any) {
     const url = $event.url1;
 
-    if (url && typeof url === 'string' && url.trim() !== '') {
-      window.open(url, '_blank');
+    if (url && typeof url === "string" && url.trim() !== "") {
+      window.open(url, "_blank");
     }
   }
 
@@ -269,13 +279,21 @@ export class AssistantComponent {
     const config = this.appStore.assistants()[this.instanceId()!];
 
     if (question && config) {
-      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const systemMsg = {
+        role: "system",
+        content: config.defaultValues.systemPrompt,
+        additionalProperties: { display: false }
+      } as RawMessage;
       const messages: RawMessage[] = [
         systemMsg,
         {
-          role: 'user',
-          content: question || '',
-          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+          role: "user",
+          content: question || "",
+          additionalProperties: {
+            display: true,
+            isUserInput: true,
+            additionalWorkflowProperties: config.additionalWorkflowProperties
+          }
         }
       ];
       this.initChat = { messages } as InitChat;
@@ -311,7 +329,7 @@ export class AssistantComponent {
     if (sqChatInstance) {
       sqChatInstance.attachToChat(ids);
     } else {
-      error('sqChat instance is not defined');
+      error("sqChat instance is not defined");
     }
   }
 

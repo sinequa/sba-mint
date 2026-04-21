@@ -24,7 +24,7 @@ export const routes: ExtendedRoutes = [
   { path: "login", component: AuthPageComponent },
   { path: "logout", component: AuthPageComponent },
   { path: "auth/:mode", component: AuthPageComponent },
-  { path: "home", component: HomeComponent },
+  { path: "home", component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: "assistant",
     loadComponent: () => import("./pages/assistant/assistant.layout").then(m => m.AssistantLayoutComponent),
