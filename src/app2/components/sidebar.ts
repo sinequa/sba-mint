@@ -5,7 +5,7 @@ import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-g
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -62,6 +62,7 @@ import { filter } from "rxjs";
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
     UserIcon,
+    TranslocoPipe,
     GearIcon,
     QuestionCircleIcon
   ],
@@ -102,18 +103,30 @@ import { filter } from "rxjs";
 
       <sidebar-footer class="px-3 py-6">
         <sidebar-menu>
-          @if (isAdminOrDelegatedAdmin()) {
-            <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
-              <sidebar-menu-button class="text-lg" tooltip="Administration" tooltip-position="right" >
+           @if (isAdminOrDelegatedAdmin()) {
+            @let administration = ('administration' | transloco);
+            <sidebar-menu-item
+              [attr.aria-label]="administration"
+              (click)="openAdmin()"
+              [tooltip]="administration"
+              tooltip-position="right"
+            >
+              <sidebar-menu-button class="text-lg">
                 <gear-icon aria-hidden="true" />
-                <span class="text-sm" sr-only>Administration</span>
+                <span class="text-sm" sr-only>{{ administration }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
-          <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
-            <sidebar-menu-button class="text-lg" tooltip="Help" tooltip-position="right">
+          @let help = ('help' | transloco);
+          <sidebar-menu-item
+            [attr.aria-label]="help"
+            (click)="openHelp()"
+            [tooltip]="help"
+            tooltip-position="right"
+          >
+            <sidebar-menu-button class="text-lg">
               <question-circle-icon aria-hidden="true" />
-              <span class="text-sm" sr-only>Help</span>
+              <span class="text-sm" sr-only>{{ help }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 

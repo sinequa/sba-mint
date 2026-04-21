@@ -96,6 +96,9 @@
   "bookmark": "Lesezeichen",
   "recent-search": "Letzte Suchen",
   "saved-search": "Gespeicherte Suchen",
+  "help": "Hilfe",
+  "administration": "Verwaltung",
+  "askAI": "KI fragen",
   "assistant": {
     "userPrompt": "Hallo, mein Name ist [[principal.fullName]].",
     "connectionErrorMessage": "Verbindung verloren! Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
