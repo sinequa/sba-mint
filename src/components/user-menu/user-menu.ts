@@ -1,7 +1,7 @@
 import { NgComponentOutlet } from "@angular/common";
 import { Component, computed, inject, linkedSignal, signal, Type, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router, ɵEmptyOutletComponent } from "@angular/router";
+import { Router } from "@angular/router";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
