@@ -1,6 +1,6 @@
 <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
   <bookmark-icon />
-  {{ "myBookmarks" | transloco }}
+  {{ "bookmarks.myBookmarks" | transloco }}
 </h1>
 
 <ul class="mt-4 flex flex-col gap-2">
@@ -13,8 +13,8 @@
           <span class="line-clamp-1 grow text-neutral-500">{{ bookmark.bookmark.id }}</span>
           <button
             class="text-alert ms-1 hover:scale-125"
-            [attr.title]="'bookmark.removeBookmark' | transloco"
-            [attr.aria-label]="'bookmark.removeBookmark' | transloco"
+            [attr.title]="'bookmarks.removeBookmark' | transloco"
+            [attr.aria-label]="'bookmarks.removeBookmark' | transloco"
             (click)="onDelete(bookmark.bookmark)">
             <trash-can-icon />
           </button>
