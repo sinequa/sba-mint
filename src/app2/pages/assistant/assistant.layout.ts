@@ -207,7 +207,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       getState(this.principalStore);
       this.recreateAssistant();
       const chat = this.chat();
-      if(chat && this.isAssistantReady()) {
+      if (chat && this.isAssistantReady()) {
         // also start a new chat
         this.chat()?.newChat();
       }
@@ -243,6 +243,15 @@ export class AssistantLayoutComponent implements OnRouteAttached {
     // react to drawer state changes to update the application title when the drawer is closed
     this.applicationService.setTitle("Assistant");
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();
