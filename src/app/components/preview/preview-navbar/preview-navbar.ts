@@ -1,9 +1,9 @@
-import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, DestroyRef, Input, inject, input, model, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Event, NavigationEnd, Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Article } from '@sinequa/atomic';
+import { Location, NgTemplateOutlet } from "@angular/common";
+import { Component, computed, DestroyRef, Input, inject, input, model, signal, viewChild } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Event, NavigationEnd, Router } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { Article } from "@sinequa/atomic";
 import {
   BookmarkButtonComponent,
   DrawerNavbarComponent,
@@ -11,11 +11,21 @@ import {
   DrawerService,
   DrawerStackService,
   PreviewService
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator } from '@sinequa/ui';
-import { toast } from 'ngx-sonner';
+} from "@sinequa/atomic-angular";
+import {
+  ArrowLeftIcon,
+  ArrowUpRightFromSquareIcon,
+  ButtonComponent,
+  CircleCheckIconComponent,
+  cn,
+  EyeIcon,
+  EyeSlashIcon,
+  LinkIcon,
+  Separator
+} from "@sinequa/ui";
+import { toast } from "ngx-sonner";
 
-import { PreviewDialogComponent } from '../dialog/preview-dialog';
+import { PreviewDialogComponent } from "../dialog/preview-dialog";
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -32,7 +42,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
  * @deprecated This component will be removed in future releases.
  */
 @Component({
-  selector: 'preview-navbar, PreviewNavbar, previewnavbar',
+  selector: "preview-navbar, PreviewNavbar, previewnavbar",
   imports: [
     NgTemplateOutlet,
     BookmarkButtonComponent,
@@ -42,9 +52,13 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     CircleCheckIconComponent,
     DrawerNavbarComponent,
     PreviewDialogComponent,
-    Separator
+    Separator,
+    ArrowLeftIcon,
+    ArrowUpRightFromSquareIcon,
+    EyeSlashIcon,
+    EyeIcon
   ],
-  templateUrl: './preview-navbar.html',
+  templateUrl: "./preview-navbar.html",
   providers: [DrawerService]
 })
 export class PreviewNavbarComponent {
@@ -77,7 +91,7 @@ export class PreviewNavbarComponent {
 
     try {
       const url = new URL(this.article()?.url1!);
-      return url.protocol === 'http:' || url.protocol === 'https:';
+      return url.protocol === "http:" || url.protocol === "https:";
     } catch (e) {
       return false;
     }
@@ -125,7 +139,7 @@ export class PreviewNavbarComponent {
         this.copied.set(false);
       }, 2000);
 
-      toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
+      toast.success(this.transloco.translate("preview.linkCopiedToClipboard"), { duration: 2000 });
     }
   }
 

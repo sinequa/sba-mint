@@ -1,13 +1,17 @@
 import { Component, computed, inject } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
+import { TranslocoPipe } from "@jsverse/transloco";
 import { AppStore, QueryParamsStore } from "@sinequa/atomic-angular";
 import {
+  HomeIcon,
+  MagnifyingGlassIcon,
   SidebarGroupComponent,
   SidebarGroupContentComponent,
   SidebarGroupLabelComponent,
   SidebarMenuButtonComponent,
   SidebarMenuComponent,
-  SidebarMenuItemComponent
+  SidebarMenuItemComponent,
+  TooltipDirective
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
 import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
@@ -21,26 +25,28 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
         <sidebar-menu>
           <sidebar-menu-item aria-label="Search">
             <sidebar-menu-button
+              [tooltip]="'home' | transloco" tooltip-position="right"
               class="text-lg"
               routerLink="/home"
               routerLinkActive="active"
               #rlaHome="routerLinkActive"
               [attr.data-active]="rlaHome.isActive || null">
-              <i tooltip="Home" tooltip-position="right" class="fa-fw far fa-home" aria-hidden="true"></i>
-              <span class="text-sm" sr-only>Home</span>
+              <home-icon aria-hidden="true" />
+              <span class="text-sm" sr-only>{{ 'home' | transloco }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
           @if (allowEmptySearch() ||isSearchRoute()) {
             <sidebar-menu-item aria-label="Search">
               <sidebar-menu-button
+                [tooltip]="'search' | transloco" tooltip-position="right"
                 class="text-lg"
                 routerLink="/search"
                 routerLinkActive="active"
                 #rlaSearch="routerLinkActive"
                 [attr.data-active]="rlaSearch.isActive || null">
-                <i tooltip="Search" tooltip-position="right" class="fa-fw far fa-magnifying-glass" aria-hidden="true"></i>
-                <span class="text-sm" sr-only>Search</span>
+                <magnifying-glass-icon aria-hidden="true" />
+                <span class="text-sm" sr-only>{{ 'search' | transloco }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
@@ -65,7 +71,11 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
     SidebarMenuButtonComponent,
     RouterLink,
     RouterLinkActive,
-    WidgetsSidebarGroupComponent
+    WidgetsSidebarGroupComponent,
+    TranslocoPipe,
+    TooltipDirective,
+    HomeIcon,
+    MagnifyingGlassIcon
   ],
   host: {
     class: "contents"

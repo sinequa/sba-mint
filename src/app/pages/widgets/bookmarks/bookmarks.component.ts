@@ -1,13 +1,20 @@
-import { NgComponentOutlet } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
-import { firstValueFrom } from 'rxjs';
+import { NgComponentOutlet } from "@angular/common";
+import { afterNextRender, ChangeDetectorRef, Component, computed, effect, inject, signal, Type } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { Article, LegacyFilter, Query } from "@sinequa/atomic";
+import {
+  ApplicationService,
+  AppStore,
+  Bookmark,
+  DrawerStackService,
+  QueryService,
+  UserSettingsStore
+} from "@sinequa/atomic-angular";
+import { BookmarkIcon, TrashCanIcon } from "@sinequa/ui";
+import { toast } from "ngx-sonner";
+import { firstValueFrom } from "rxjs";
 
-import { Article, LegacyFilter, Query } from '@sinequa/atomic';
-import { ApplicationService, AppStore, Bookmark, DrawerStackService, QueryService, UserSettingsStore } from '@sinequa/atomic-angular';
-
-import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+import { getComponentsForDocumentType } from "../../../registry/document-type-registry";
 
 interface BookmarkArticle {
   bookmark: Bookmark;
@@ -21,11 +28,11 @@ interface BookmarkArticle {
  * @deprecated This component is deprecated and will be removed in future versions.
  */
 @Component({
-  selector: 'Bookmarks',
-  imports: [TranslocoPipe, NgComponentOutlet],
-  templateUrl: './bookmarks.component.html',
+  selector: "Bookmarks",
+  imports: [TranslocoPipe, NgComponentOutlet, BookmarkIcon, TrashCanIcon],
+  templateUrl: "./bookmarks.component.html",
   host: {
-    class: 'flex flex-col h-full w-full'
+    class: "flex flex-col h-full w-full"
   }
 })
 export class BookmarksComponent {
@@ -40,7 +47,7 @@ export class BookmarksComponent {
   private readonly drawerStack = inject(DrawerStackService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
   readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
@@ -56,7 +63,7 @@ export class BookmarksComponent {
     // Set the page title when the drawer is closed
     effect(() => {
       if (!this.drawerOpened()) {
-        this.applicationService.setTitle('Bookmarks');
+        this.applicationService.setTitle("Bookmarks");
       }
     });
 
@@ -67,13 +74,13 @@ export class BookmarksComponent {
     if (!this.bookmarks()) return;
 
     const list: BookmarkArticle[] = [];
-    this.bookmarks().forEach(async bookmark => {
-      const q = this.appStore.getQueryByName(bookmark.queryName || '');
-      const name = !!q ? q.name : this.defaultQueryName();
+    this.bookmarks().forEach(async (bookmark) => {
+      const q = this.appStore.getQueryByName(bookmark.queryName || "");
+      const name = q ? q.name : this.defaultQueryName();
       const query: Partial<Query> = {
         name,
         filters: {
-          field: 'id',
+          field: "id",
           value: bookmark.id
         } as LegacyFilter
       };
@@ -91,7 +98,7 @@ export class BookmarksComponent {
 
   public onDelete(bookmark: Bookmark) {
     this.userSettingsStore.unbookmark(bookmark.id);
-    toast.success('Bookmark removed', { duration: 2000 });
+    toast.success("Bookmark removed", { duration: 2000 });
   }
 
   /**
@@ -101,7 +108,7 @@ export class BookmarksComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('myBookmarks');
+    const title = this.transloco.translate("myBookmarks");
     this.applicationService.setTitle(title);
   }
 }

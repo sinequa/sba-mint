@@ -1,4 +1,4 @@
-name: Build and deploy the Mint documentation on Github Enterprise
+name: Deploy Docs on Github Enterprise
 
 on:
   #push:

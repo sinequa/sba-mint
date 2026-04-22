@@ -4,7 +4,7 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
 import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
-import { TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
+import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
@@ -27,7 +27,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 @Component({
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
-  imports: [FormsModule, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
+  imports: [FormsModule, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent, SpinnerIcon, SparklesIcon, CommentsIcon],
   template: `
     <Tabs class="@container block h-full px-4">
       <!-- tabs list -->
@@ -40,9 +40,9 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           @if (displaySummary()) {
             <Tab variant="secondary" shadow="none" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <spinner-icon class="animate-spin" />
               } @else {
-                <i class="fa-solid fa-sparkles"></i>
+                <sparkles-icon />
               }
               <span sr-only class="hidden @min-md:inline">{{ "preview.summarize" | transloco }}</span>
             </Tab>
@@ -50,7 +50,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 
           @if (displayChatWithDoc()) {
             <Tab variant="secondary" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
-              <i class="fa-solid fa-comments"></i>
+              <comments-icon />
               <span sr-only class="hidden @min-md:inline">{{ "preview.discussion" | transloco }}</span>
             </Tab>
           }

@@ -1,13 +1,11 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, effect, inject, input, resource, viewChild } from "@angular/core";
+import { rxResource } from "@angular/core/rxjs-interop";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
-
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
 import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
-
-import { rxResource } from "@angular/core/rxjs-interop";
-import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
 
@@ -26,11 +24,11 @@ import { PreviewActionsComponent } from "./preview-actions";
  */
 @Component({
   selector: "preview-content",
-  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
-        <i class="fa-fw far fa-spinner fa-spin mb-6 text-6xl text-primary"></i>
+        <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
@@ -41,7 +39,7 @@ import { PreviewActionsComponent } from "./preview-actions";
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
         <p class="text-center text-xl">
-          <i class="fa-fw far fa-image mb-6 text-6xl text-secondary"></i><br />
+          <image-icon class="mb-6 text-6xl text-secondary" /><br />
           {{ 'previewUnavailable' | transloco }}
         </p>
       </div>
@@ -90,7 +88,10 @@ export class PreviewContentComponent {
   });
 
   /* resources */
-  public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
+  public readonly previewDataResource = rxResource<
+    PreviewData | undefined,
+    { id: string; text: string; previewHighlights: CustomHighlights[] }
+  >({
     params: () => {
       const id = this.id() || this.selectionStore.id?.() || "";
       const queryText = this.selectionStore.queryText?.() || "";
@@ -151,7 +152,9 @@ export class PreviewContentComponent {
           throw new Error("Invalid parameters for preview validation");
         }
 
-        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: "HEAD" });
+        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, {
+          method: "HEAD"
+        });
         return { isValid: response.status === 200 };
       } catch {
         // In case of an error during fetch, we consider the preview as invalid

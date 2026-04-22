@@ -3,7 +3,18 @@ import { Component, computed, Input, inject, input, model, output, signal, viewC
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
 import { AppStore, BookmarkButtonComponent, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, CircleCheckIconComponent, cn, LinkIcon, Separator, SheetCloseDirective } from "@sinequa/ui";
+import {
+  ArrowLeftIcon,
+  ArrowUpRightFromSquareIcon,
+  ButtonComponent,
+  CircleCheckIconComponent,
+  cn,
+  EyeIcon,
+  EyeSlashIcon,
+  LinkIcon,
+  Separator,
+  SheetCloseDirective
+} from "@sinequa/ui";
 import { toast } from "ngx-sonner";
 import { PreviewDialogComponent } from "../dialog/preview-dialog";
 
@@ -52,7 +63,11 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     CircleCheckIconComponent,
     PreviewDialogComponent,
     Separator,
-    SheetCloseDirective
+    SheetCloseDirective,
+    ArrowLeftIcon,
+    ArrowUpRightFromSquareIcon,
+    EyeSlashIcon,
+    EyeIcon
   ],
   templateUrl: "./preview-navbar.html",
   providers: []
