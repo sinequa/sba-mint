@@ -1,20 +1,29 @@
-import { Component, computed, inject, input, output } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { Result } from '@sinequa/atomic';
+import { Component, computed, inject, input, output } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { Result } from "@sinequa/atomic";
 import {
   DidYouMeanComponent,
   QueryParamsStore,
   QueryService,
   SelectionStore,
-  SortSelectorComponent,
   SortingChoice,
+  SortSelectorComponent,
   SponsoredResultsComponent
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, Square, SquareCheckBigIcon, SquareMinusIcon } from '@sinequa/ui';
+} from "@sinequa/atomic-angular";
+import { ButtonComponent, SquareCheckBigIcon, SquareIcon, SquareMinusIcon } from "@sinequa/ui";
 
 @Component({
-  selector: 'app-search-actions',
-  imports: [TranslocoPipe, ButtonComponent, DidYouMeanComponent, SponsoredResultsComponent, SquareCheckBigIcon, SquareMinusIcon, Square, SortSelectorComponent],
+  selector: "app-search-actions",
+  imports: [
+    TranslocoPipe,
+    ButtonComponent,
+    DidYouMeanComponent,
+    SponsoredResultsComponent,
+    SquareCheckBigIcon,
+    SquareMinusIcon,
+    SquareIcon,
+    SortSelectorComponent
+  ],
   template: `
     <!-- did you mean and sponsored links -->
     <div class="px-3">
@@ -32,11 +41,11 @@ import { ButtonComponent, Square, SquareCheckBigIcon, SquareMinusIcon } from '@s
               <span class="truncate">{{ 'searches.selection.unselectAll' | transloco }}</span>
             }
             @case ('some') {
-              <SquareMinus />
+              <SquareMinusIcon />
               <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
             @default {
-              <Square />
+              <SquareIcon />
               <span class="truncate">{{ 'searches.selection.selectAll' | transloco }}</span>
             }
           }
@@ -52,14 +61,14 @@ export class SearchActionsComponent {
   protected readonly selectionStore = inject(SelectionStore);
 
   selectAll = output();
-  selectedAll = input.required<'all' | 'some' | 'none'>();
+  selectedAll = input.required<"all" | "some" | "none">();
 
   result = input.required<Result | undefined>();
   hasRowCount = computed(() => (this.result()?.rowCount || 0) > 0);
 
   onSort(sort: SortingChoice): void {
     const audit = {
-      type: 'Search_Sort',
+      type: "Search_Sort",
       detail: {
         sort: sort.name,
         orderByClause: sort.orderByClause

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, 
 import { AssistantComponent } from "@components/assistant/assistant";
 import { AssistantUploadComponent } from "@components/assistant/document-upload/assistant-upload.component";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -19,7 +20,9 @@ import {
 import {
   BreakpointObserverService,
   ButtonComponent,
+  CommentsIcon,
   cn,
+  PlusIcon,
   SheetService,
   SidebarGroupComponent,
   SidebarGroupContentComponent,
@@ -46,7 +49,9 @@ import { firstValueFrom } from "rxjs";
     SidebarMenuComponent,
     SidebarMenuButtonComponent,
     SheetPreviewerComponent,
-    AggregationComponent
+    AggregationComponent,
+    CommentsIcon,
+    PlusIcon
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
@@ -58,7 +63,7 @@ import { firstValueFrom } from "rxjs";
                 <section class="h-56 max-h-56 p-4">
                   <div class="flex items-center justify-between">
                     <h3 class="pointer-events-none font-semibold text-muted-foreground">
-                      <i class="far fa-comments me-1"></i>
+                      <CommentsIcon class="me-1" />
                       {{ "assistant.saved-chats" | transloco }}
                     </h3>
                     <button
@@ -67,7 +72,7 @@ import { firstValueFrom } from "rxjs";
                       [title]="'assistant.new-discussion' | transloco"
                       [attr.aria-label]="'assistant.new-discussion' | transloco"
                       (click)="chat()?.newChat()">
-                      <i class="far fa-plus"></i>
+                      <PlusIcon />
                     </button>
                   </div>
                   <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
@@ -107,7 +112,7 @@ import { firstValueFrom } from "rxjs";
             <sidebar-group-content>
               <sidebar-menu>
                 <sidebar-menu-button (click)="chat()?.newChat(); sheetService.toggle()">
-                  <i class="far fa-plus"></i>
+                  <PlusIcon />
                   <span sr-only>{{ "assistant.new-discussion" | transloco }}</span>
                 </sidebar-menu-button>
               </sidebar-menu>
@@ -127,7 +132,7 @@ import { firstValueFrom } from "rxjs";
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -164,16 +169,24 @@ export class AssistantLayoutComponent {
   backLevel = 0;
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display));
+  readonly allowSavedChats = computed(() =>
+    Boolean(this.appStore.assistants()[this.instanceId()].savedChatSettings.display)
+  );
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled));
+  readonly allowDocumentUploader = computed(() =>
+    Boolean(this.appStore.customizationJson()?.documentsUploadSettings?.enabled)
+  );
 
   // this is used to display the saved chats component
-  readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showSavedChats = computed(
+    () => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // this is used to display the saved chats component
-  readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showDocumentUploader = computed(
+    () => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // queryparams input binding
   q = input<string>();
@@ -184,7 +197,7 @@ export class AssistantLayoutComponent {
   assistantKey = signal(0);
   // Call this method when you need to recreate
   recreateAssistant() {
-    this.assistantKey.update(v => v + 1);
+    this.assistantKey.update((v) => v + 1);
   }
   /* End of assistant recreation code */
 
@@ -193,8 +206,11 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
-      // also start a new chat
-      this.chat()?.newChat();
+      const chat = this.chat();
+      if (chat && this.isAssistantReady()) {
+        // also start a new chat
+        this.chat()?.newChat();
+      }
     });
 
     effect(() => {
@@ -215,6 +231,15 @@ export class AssistantLayoutComponent {
       this.chat()?.askAI(question);
     });
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
     // react to drawer state changes to update the application title when the drawer is closed
     this.applicationService.setTitle("Assistant");
 
@@ -275,9 +300,9 @@ export class AssistantLayoutComponent {
     }
     const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
     const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === "user" && msg.content);
+    const firstUserMessage = history.find((msg) => msg.role === "user" && msg.content);
     if (firstUserMessage) {
-      this.query.update(q => {
+      this.query.update((q) => {
         if (q && firstUserMessage) {
           const newQuery = { ...q };
           newQuery.text = firstUserMessage.content as string;

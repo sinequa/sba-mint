@@ -17,14 +17,14 @@
         class="absolute top-0 flex size-10 min-w-10 items-center justify-center rounded-full text-primary group-hover/article:bg-muted/50"
         (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
-        <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
-        <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
+        <square-check-icon class="hidden text-lg peer-checked/checkbox:block" />
+        <square-icon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
       </div>
     } @else {
       <div class="flex size-10 min-w-10 items-center justify-center rounded-full bg-muted text-primary" (click)="onMultiSelectToggle($event)">
         <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
-        <i class="fa-fw fas fa-square-check hidden text-lg peer-checked/checkbox:block"></i>
-        <i class="fa-fw far fa-square hidden text-lg group-hover/article:block peer-checked/checkbox:hidden"></i>
+        <square-check-icon class="hidden text-lg peer-checked/checkbox:block" />
+        <square-icon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
         <source class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
@@ -61,13 +61,13 @@
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
             @if ((article().authors || { authors: [""] }).length > 0) {
               <span>
-                <i class="far fa-user mr-1"></i>
+                <user-icon class="mr-1" />
                 {{ article().authors[0] }}
               </span>
             }
             @if (article().modified) {
               <p class="flex items-baseline gap-1">
-                <i class="fa-fw far fa-calendar-day"></i>
+                <calendar-day-icon />
                 <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
               </p>
             }

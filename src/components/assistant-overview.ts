@@ -1,13 +1,29 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
-import { AssistantComponent } from '@components/assistant/assistant';
-import { getState } from '@ngrx/signals';
-import { CCApp, debug } from '@sinequa/atomic';
-import { AppStore, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
+import { Component, computed, effect, inject, signal, untracked } from "@angular/core";
+import { AssistantComponent } from "@components/assistant/assistant";
+import { getState } from "@ngrx/signals";
+import { CCApp, debug } from "@sinequa/atomic";
+import { AppStore, QueryParamsStore, UserSettingsStore } from "@sinequa/atomic-angular";
+import {
+  CardComponent,
+  CardContentComponent,
+  CardHeaderComponent,
+  ChevronRightIcon,
+  cn,
+  SparklesIcon,
+  SpinnerIcon
+} from "@sinequa/ui";
 
 @Component({
-  selector: 'app-search-overview',
-  imports: [ChevronRightIcon, CardContentComponent, AssistantComponent, CardComponent, CardHeaderComponent],
+  selector: "app-search-overview",
+  imports: [
+    ChevronRightIcon,
+    CardContentComponent,
+    AssistantComponent,
+    CardComponent,
+    CardHeaderComponent,
+    SpinnerIcon,
+    SparklesIcon
+  ],
   template: `
     @if (allowAI()) {
       <div class="h-full [--height:350px]">
@@ -15,9 +31,9 @@ import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightI
           <CardHeader class="flex cursor-pointer items-center gap-1 px-0 text-base font-semibold text-ai-card-foreground" (click)="onAssistantCollapse()">
             <div class="flex size-8 items-center justify-center">
               @if (isStreaming()) {
-                <i class="fas fa-spinner animate-spin"></i>
+                <SpinnerIcon class="animate-spin"></SpinnerIcon>
               } @else {
-                <i class="fas fa-sparkles"></i>
+                <SparklesIcon></SparklesIcon>
               }
             </div>
 
@@ -78,7 +94,7 @@ export class SearchOverviewComponent {
   constructor() {
     // Update the assistant collapsed state from the user settings
     effect(() => {
-      debug('effect - 6. update assistant collapsed state from user settings');
+      debug("effect - 6. update assistant collapsed state from user settings");
       const { collapseAssistant } = getState(this.userSettingsStore);
 
       untracked(() => {

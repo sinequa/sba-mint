@@ -15,17 +15,26 @@ import {
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
+  ArrowRightFromBracketIcon,
+  ArrowUpRightFromSquareIcon,
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  CheckIcon,
   ChevronRightIcon,
+  DesktopIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  KeyIcon,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  MoonIcon,
   Separator,
-  UserIcon
+  SunBrightIcon,
+  TrashIcon,
+  UserIcon,
+  UserSecretIcon
 } from "@sinequa/ui";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -51,7 +60,13 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     UserIcon,
+    UserSecretIcon,
     ChevronRightIcon,
+    CheckIcon,
+    TrashIcon,
+    KeyIcon,
+    ArrowUpRightFromSquareIcon,
+    ArrowRightFromBracketIcon,
     AvatarComponent,
     AvatarImageComponent,
     AvatarFallbackComponent,
@@ -63,10 +78,10 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
   providers: [provideTranslocoScope("user-menu")]
 })
 export class UserMenuComponent {
-  AllThemes: { name: Theme; icon: string }[] = [
-    { name: "light", icon: "fa-fw fal fa-sun-bright" },
-    { name: "dark", icon: "fa-fw fal fa-moon" },
-    { name: "system", icon: "fa-fw fal fa-desktop" }
+  AllThemes: { name: Theme; icon: Type<unknown> }[] = [
+    { name: "light", icon: SunBrightIcon },
+    { name: "dark", icon: MoonIcon },
+    { name: "system", icon: DesktopIcon }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
@@ -114,8 +129,8 @@ export class UserMenuComponent {
     const separator = principal.fullName ? " " : ".";
     return (principal.fullName || principal.name || "")
       .split(separator)
-      .filter(word => word[0] && word[0] === word[0].toUpperCase())
-      .map(word => word[0])
+      .filter((word) => word[0] && word[0] === word[0].toUpperCase())
+      .map((word) => word[0])
       .join("")
       .slice(0, 3);
   });
@@ -136,7 +151,9 @@ export class UserMenuComponent {
   }
 
   switchTheme(mode: Theme) {
-    const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const userTheme =
+      mode === "dark" ||
+      (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode);
   }
@@ -171,7 +188,7 @@ export class UserMenuComponent {
   }
 
   onChangePassword() {
-    this.menus()?.forEach(m => (m as any)?.close?.());
+    this.menus()?.forEach((m) => (m as any)?.close?.());
     this.router.navigate(["/auth", "changepassword"]);
   }
 }

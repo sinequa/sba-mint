@@ -5,6 +5,7 @@ import { SearchOverviewComponent } from "@components/assistant-overview";
 import { CardSkeleton } from "@components/cards/record/skeleton";
 import { PreviewComponent } from "@components/preview/preview";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
+import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { fetchServerPage } from "@config/fetch-server-page";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
@@ -71,7 +72,8 @@ type QueryParamsProps = {
     SearchOverviewComponent,
     PreviewComponent,
     SheetPreviewerComponent,
-    SearchActionsComponent
+    SearchActionsComponent,
+    SearchWithAutocompleteComponent
   ],
   templateUrl: "./search-all.html",
   styles: [
@@ -79,7 +81,7 @@ type QueryParamsProps = {
       :host {
         /* to avoid z-index collisions */
         isolation: isolate;
-        --search-content-height: calc(100dvh - 210px);
+        --search-content-height: calc(100dvh - 100px);
       }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
@@ -251,7 +253,10 @@ export class SearchAllComponent {
     }
     return `search-results-assistant`;
   });
-  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
+  // allowAI is true if we are not in a basket search and the assistant is allowed for the current instance id
+  // if the current search is a basket search, we don't want to show the assistant even if it's allowed, because the assistant is not designed to handle basket searches and it could lead to a bad user experience
+  // and search with empty text should not show assistant as well, as it would not provide any value and could lead to a bad user experience
+  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()) && ((this.currentKeys()?.text?.length || 0) > 0));
   readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true);
   // assistantQuery: Query = { name: 'assistant' };
 

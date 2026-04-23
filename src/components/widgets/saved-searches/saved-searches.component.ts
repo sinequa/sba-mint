@@ -1,15 +1,15 @@
-import { afterNextRender, ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { afterNextRender, ChangeDetectorRef, Component, effect, inject, signal } from "@angular/core";
+import { Router } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 
-import { getQueryParamsFromUrl, notify } from '@sinequa/atomic';
-import { ApplicationService, SavedSearchesService, SearchItem } from '@sinequa/atomic-angular';
-import { ButtonComponent, TrashIcon } from '@sinequa/ui';
+import { getQueryParamsFromUrl, notify } from "@sinequa/atomic";
+import { ApplicationService, SavedSearchesService, SearchItem } from "@sinequa/atomic-angular";
+import { ButtonComponent, StarIcon, TrashIcon } from "@sinequa/ui";
 
 @Component({
-  selector: 'SavedSearches',
-  imports: [TranslocoPipe, ButtonComponent, TrashIcon],
-  templateUrl: './saved-searches.component.html'
+  selector: "SavedSearches",
+  imports: [TranslocoPipe, ButtonComponent, TrashIcon, StarIcon],
+  templateUrl: "./saved-searches.component.html"
 })
 export class SavedSearchesComponent {
   cdr = inject(ChangeDetectorRef);
@@ -33,7 +33,7 @@ export class SavedSearchesComponent {
 
           acc.push(
             Object.assign(savedSearch, {
-              label: queryParams?.text || '',
+              label: queryParams?.text || "",
               filterCount: queryParams?.filters?.length || 0,
               queryParams
             })
@@ -60,7 +60,7 @@ export class SavedSearchesComponent {
   public onDelete(event: Event, index: number) {
     event.stopPropagation();
     this.savedSearchesService.deleteSavedSearch(index);
-    notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
+    notify.success(this.transloco.translate("searches.saved.deleted"), { duration: 2000 });
   }
 
   /**
@@ -70,7 +70,7 @@ export class SavedSearchesComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('mySavedSearches');
+    const title = this.transloco.translate("mySavedSearches");
     this.applicationService.setTitle(title);
   }
 }
