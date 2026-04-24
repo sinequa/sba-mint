@@ -1,6 +1,5 @@
 ---
 title: Sort Selector
-sidebar_class_name: update
 ---
 
 The `SortSelectorComponent` provides a dropdown menu for selecting the sort order of search results. It displays available sorting options (such as relevance, date, etc.) and emits an event when the user selects a new sort option.

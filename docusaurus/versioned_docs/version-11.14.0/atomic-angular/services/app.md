@@ -1,6 +1,5 @@
 ---
 title: App
-sidebar_class_name: update
 ---
 
 The `AppService` retrieves the application configuration from the Sinequa server.

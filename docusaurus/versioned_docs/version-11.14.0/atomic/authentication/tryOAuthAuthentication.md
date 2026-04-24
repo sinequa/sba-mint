@@ -1,6 +1,5 @@
 ---
 title: tryOAuthAuthentication
-sidebar_class_name: update
 ---
 
 Initiates the OAuth authentication flow by redirecting the user to the configured OAuth provider's login page. The current URL is saved to `localStorage` so the application can redirect back after authentication.

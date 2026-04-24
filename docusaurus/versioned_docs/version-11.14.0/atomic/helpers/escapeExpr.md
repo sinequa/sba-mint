@@ -1,6 +1,5 @@
 ---
 title: escapeExpr
-sidebar_class_name: update
 ---
 
 Escapes a string for safe use in a Sinequa fielded search expression. Backslashes are doubled, backquotes are prefixed with a backslash, and the result is enclosed in backquotes.

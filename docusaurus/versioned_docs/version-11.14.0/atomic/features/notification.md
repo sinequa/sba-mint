@@ -1,6 +1,5 @@
 ---
 title: Notification System
-sidebar_class_name: update
 ---
 
 The notification system provides a simple, event-based API for dispatching user notifications (success, info, warning, error) throughout your application. Notifications are dispatched as DOM `CustomEvent`s on `window`, making them easy to intercept and display in any UI framework.

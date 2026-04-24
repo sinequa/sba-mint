@@ -1,6 +1,5 @@
 ---
 title: Types Table
-sidebar_class_name: update
 ---
 
 Complete reference of all exported types and enums.

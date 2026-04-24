@@ -2,30 +2,27 @@
 title: Web API Helpers
 ---
 
-This module provides a comprehensive set of utilities for making HTTP requests to the Sinequa API endpoints. It includes:
+This module provides the foundational utilities for making HTTP requests to the Sinequa API. It includes:
 
-- Error handling classes for API communication
-- Request creation and response handling functions
-- HTTP methods implementations (GET, POST, PUT, DELETE, PATCH)
-- Support for authentication token management
-- Retry logic for failed requests
+- Structured error classes for typed error handling
+- Request configuration and header generation
+- HTTP method helpers (GET, POST, PUT, PATCH, DELETE)
+- Retry logic and request cancellation via timeout controllers
 
 ## Error Classes
 
-The module defines several error classes for handling different types of API errors:
+### `ApiError`
 
-### ApiError
-
-Base class for all API errors.
+Base class for all API-related errors. Carries an HTTP `status` code and a `message`.
 
 ```typescript
 import { ApiError } from '@sinequa/atomic';
 
 try {
-  // API operation that might fail
+  await get('api/v1/query');
 } catch (error) {
   if (error instanceof ApiError) {
-    console.log(`API Error: ${error.message}, Status: ${error.status}`);
+    console.log(`API Error ${error.status}: ${error.message}`);
   }
 }
 ```
@@ -33,76 +30,115 @@ try {
 ### Error Subclasses
 
 | Class | Status Code | Description |
-| ----- | ----------- | ----------- |
-| `UnauthorizedError` | 401 | Thrown when authentication fails |
-| `TimeoutError` | 408 | Thrown when a request times out |
-| `ServerError` | 500 | Thrown when the server encounters an internal error |
+|-------|:-----------:|-------------|
+| `UnauthorizedError` | 401 | Authentication failed or token expired |
+| `TimeoutError` | 408 | Request exceeded the configured timeout |
+| `ServerError` | 500 | The server encountered an internal error |
 
 ## Interfaces
 
-### RequestOptions
+### `RequestOptions`
 
 Configuration options for HTTP requests.
 
 ```typescript
 interface RequestOptions {
-  /** Headers personnalisés à inclure dans la requête */
   headers?: Headers;
-  /** Type de réponse attendu */
-  responseType?: 'arraybuffer'|'blob'|'json'|'text';
-  /** Temps maximum d'attente avant expiration de la requête (en ms) */
+  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
   timeout?: number;
-  /** Signal pour annuler la requête */
   abortSignal?: AbortSignal;
-  /** Nombre maximum de tentatives en cas d'échec */
   maxRetries?: number;
-  /** Délai entre les tentatives (en ms) */
   retryDelay?: number;
 }
 ```
 
+| Property | Type | Description |
+|----------|------|-------------|
+| `headers` | `Headers` | Custom headers to include in the request |
+| `responseType` | `'arraybuffer' \| 'blob' \| 'json' \| 'text'` | Expected response format. Default: `'json'` |
+| `timeout` | `number` | Request timeout in milliseconds |
+| `abortSignal` | `AbortSignal` | Signal to cancel the request |
+| `maxRetries` | `number` | Maximum number of retry attempts on failure |
+| `retryDelay` | `number` | Delay between retries in milliseconds |
+
+## HTTP Methods
+
+Each method automatically includes authentication tokens, CSRF token management, and consistent error handling.
+
+### `get()`
+
+```typescript
+import { get } from '@sinequa/atomic';
+
+// Simple GET
+const data = await get<MyType>('api/v1/principal');
+
+// GET with URL parameters
+const params = new URLSearchParams({ action: 'get' });
+const result = await get<MyType>('api/v1/principal', params);
+
+// GET with custom options
+const blob = await get<Blob>('api/v1/export', params, { responseType: 'blob' });
+```
+
+### `post()`
+
+```typescript
+import { post } from '@sinequa/atomic';
+
+const results = await post<SearchResults>('api/v1/query', {
+  query: { name: '_query', text: 'hello' }
+});
+```
+
+### `put()`
+
+```typescript
+import { put } from '@sinequa/atomic';
+
+const result = await put<UpdateResponse>('api/v1/resource', { id: '123', title: 'Updated' });
+```
+
+### `patch()`
+
+```typescript
+import { patch } from '@sinequa/atomic';
+
+const result = await patch<UpdateResponse>('api/v1/resource', { id: '123', title: 'Partial' });
+```
+
+### `del()`
+
+```typescript
+import { del } from '@sinequa/atomic';
+
+const params = new URLSearchParams({ id: '123' });
+await del('api/v1/resource', params);
+```
+
 ## Utility Functions
 
-### Request Creation
+### `createHeaders()`
 
-#### createHeaders
-
-Creates headers for web API requests with the necessary Sinequa-specific headers.
+Creates the standard headers for Sinequa API requests, including the `Sinequa-Force-Camel-Case` header and the CSRF token if available.
 
 ```typescript
 import { createHeaders } from '@sinequa/atomic';
 
 const headers = createHeaders();
-// Headers now include Sinequa-Force-Camel-Case and CSRF token if available
 ```
 
-#### createTimeoutController
+### `createTimeoutController()`
 
-Creates an `AbortController` with a timeout.
+Creates an `AbortController` with an automatic timeout.
 
 ```typescript
 import { createTimeoutController } from '@sinequa/atomic';
 
 const { controller, signal } = createTimeoutController(5000); // 5 second timeout
-// Use signal with fetch request
 ```
 
-### Response Handling
-
-#### handleResponse
-
-Processes API responses, handling token refresh and error conditions.
-
-```typescript
-import { handleResponse } from '@sinequa/atomic';
-
-const response = await fetch(url, options);
-const data = await handleResponse(response);
-```
-
-### Request Execution
-
-#### withRetry
+### `withRetry()`
 
 Executes a fetch function with configurable retry logic.
 
@@ -111,87 +147,9 @@ import { withRetry } from '@sinequa/atomic';
 
 const result = await withRetry(
   () => fetch(url, options),
-  3,  // max retries
-  1000 // retry delay in ms
+  3,    // max retries
+  1000  // retry delay in ms
 );
-```
-
-## HTTP Methods
-
-The module provides functions for all standard HTTP methods. Each method:
-
-- Automatically includes authentication tokens
-- Handles CSRF token management
-- Processes error responses consistently
-- Supports custom headers and response types
-- Includes app name and locale in requests
-
-### GET Requests
-
-```typescript
-import { get } from '@sinequa/atomic';
-import { API_ENDPOINTS } from '@sinequa/atomic';
-
-// Simple GET request
-const data = await get<MyResponseType>(API_ENDPOINTS.QUERY);
-
-// GET with URL parameters
-const params = new URLSearchParams();
-params.append('id', '123');
-const dataWithParams = await get<MyResponseType>(API_ENDPOINTS.DOCUMENT, params);
-
-// GET with custom options
-const options = {
-  responseType: 'blob',
-  headers: new Headers({ 'Custom-Header': 'value' })
-};
-const blobData = await get<Blob>(API_ENDPOINTS.DOCUMENT_DOWNLOAD, params, options);
-```
-
-### POST Requests
-
-```typescript
-import { post } from '@sinequa/atomic';
-
-const body = {
-  query: 'search terms',
-  page: 1
-};
-const searchResults = await post<SearchResults>(API_ENDPOINTS.QUERY, body);
-```
-
-### PUT Requests
-
-```typescript
-import { put } from '@sinequa/atomic';
-
-const documentData = {
-  id: '123',
-  title: 'Updated Document'
-};
-const result = await put<UpdateResponse>(API_ENDPOINTS.DOCUMENT, documentData);
-```
-
-### DELETE Requests
-
-```typescript
-import { del } from '@sinequa/atomic';
-
-const params = new URLSearchParams();
-params.append('id', '123');
-await del(API_ENDPOINTS.DOCUMENT, params);
-```
-
-### PATCH Requests
-
-```typescript
-import { patch } from '@sinequa/atomic';
-
-const partialUpdate = {
-  id: '123',
-  title: 'Partially Updated Document'
-};
-await patch<UpdateResponse>(API_ENDPOINTS.DOCUMENT, partialUpdate);
 ```
 
 ## Advanced Usage
@@ -199,86 +157,48 @@ await patch<UpdateResponse>(API_ENDPOINTS.DOCUMENT, partialUpdate);
 ### Error Handling
 
 ```typescript
-import { get, ApiError, UnauthorizedError, ServerError } from '@sinequa/atomic';
+import { get, ApiError, UnauthorizedError, ServerError, TimeoutError } from '@sinequa/atomic';
 
 try {
-  const data = await get<MyResponseType>(API_ENDPOINTS.QUERY);
-  // Process successful response
+  const data = await get<MyType>('api/v1/query');
 } catch (error) {
   if (error instanceof UnauthorizedError) {
-    // Handle authentication issues
-    console.log('Authentication failed. Please log in again.');
+    console.log('Session expired. Please log in again.');
+  } else if (error instanceof TimeoutError) {
+    console.log('Request timed out. Retrying...');
   } else if (error instanceof ServerError) {
-    // Handle server errors
-    console.log('Server error occurred. Please try again later.');
+    console.log('Server error. Try again later.');
   } else if (error instanceof ApiError) {
-    // Handle other API errors
-    console.log(`API error: ${error.status} - ${error.message}`);
-  } else {
-    // Handle network or other errors
-    console.log('An unexpected error occurred:', error);
+    console.log(`API error ${error.status}: ${error.message}`);
   }
 }
 ```
 
-### Custom Response Types
+### Request Cancellation with Timeout
 
 ```typescript
-import { get } from '@sinequa/atomic';
+import { get, createTimeoutController, TimeoutError } from '@sinequa/atomic';
 
-// Getting a binary file
-const pdfData = await get<ArrayBuffer>(
-  API_ENDPOINTS.DOCUMENT_DOWNLOAD,
-  params,
-  { responseType: 'arraybuffer' }
-);
-
-// Getting a text response
-const textData = await get<string>(
-  API_ENDPOINTS.EXPORT,
-  params,
-  { responseType: 'text' }
-);
-```
-
-### Request Cancellation
-
-```typescript
-import { get, createTimeoutController } from '@sinequa/atomic';
-
-// Create a timeout controller
-const { signal } = createTimeoutController(10000); // 10 second timeout
-
-// Use with a request
-const options = {
-  headers: new Headers(),
-  responseType: 'json',
-  abortSignal: signal
-};
+const { signal } = createTimeoutController(10000);
 
 try {
-  const data = await get<MyResponseType>(API_ENDPOINTS.QUERY, params, options);
-  // Process response
+  const data = await get<MyType>('api/v1/query', undefined, { abortSignal: signal });
 } catch (error) {
   if (error instanceof TimeoutError) {
-    console.log('Request timed out');
+    console.log('Request timed out after 10 seconds');
   }
 }
 ```
 
 ### User Override
 
-The helpers automatically handle user override when configured in the global configuration:
-
 ```typescript
-import { globalConfig } from '@sinequa/atomic';
+import { setGlobalConfig } from '@sinequa/atomic';
 
-// Set user override
-globalConfig.userOverride = {
-  username: 'admin',
-  domain: 'sinequa'
-};
-globalConfig.userOverrideActive = true;
+setGlobalConfig({
+  userOverride: { username: 'admin', domain: 'sinequa' },
+  userOverrideActive: true
+});
 
 // All subsequent API calls will include the override headers
 ```

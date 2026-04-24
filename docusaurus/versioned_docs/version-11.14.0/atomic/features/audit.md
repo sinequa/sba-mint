@@ -1,6 +1,5 @@
 ---
 title: Audit
-sidebar_class_name: update
 ---
 
 The Audit module provides functions for sending audit events to the server and enriching request bodies with audit metadata (session ID, URL). It supports both direct audit notifications and automatic injection into API request bodies.

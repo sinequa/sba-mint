@@ -2,24 +2,25 @@
 title: isArrayBuffer
 ---
 
-Checks if the given value is an ArrayBuffer.
+Checks whether the given value is an `ArrayBuffer` instance.
 
-| parameter | type | description |
-| --- | --- | --- |
-| `value` | `unknown` | The value to check |
+**Parameters**
 
-__Returns__ `boolean`: True if the value is an ArrayBuffer, false otherwise.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `value` | `unknown` | ✓ | The value to check |
 
-#### Example
+**Returns** `boolean` — `true` if the value is an `ArrayBuffer`, `false` otherwise.
 
-```js title="is-array-buffer.js"
-import { isArrayBuffer } from "@sinequa/atomic";
+**Example**
 
-console.log(isArrayBuffer(null));      // Output: false
-console.log(isArrayBuffer(undefined)); // Output: false
-console.log(isArrayBuffer(42));        // Output: false
-console.log(isArrayBuffer("test"));    // Output: false
-console.log(isArrayBuffer([]));        // Output: false
-console.log(isArrayBuffer({}));        // Output: false
-console.log(isArrayBuffer(new ArrayBuffer(10))); // Output: true
+```typescript title="is-array-buffer.ts"
+import { isArrayBuffer } from '@sinequa/atomic';
+
+console.log(isArrayBuffer(null));                  // false
+console.log(isArrayBuffer('test'));                // false
+console.log(isArrayBuffer([]));                    // false
+console.log(isArrayBuffer({}));                    // false
+console.log(isArrayBuffer(new Blob()));            // false
+console.log(isArrayBuffer(new ArrayBuffer(10)));   // true
 ```

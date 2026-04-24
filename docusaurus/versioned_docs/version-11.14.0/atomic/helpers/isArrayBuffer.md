@@ -1,6 +1,5 @@
 ---
 title: isArrayBuffer
-sidebar_class_name: update
 ---
 
 Checks whether the given value is an `ArrayBuffer` instance.

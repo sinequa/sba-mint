@@ -2,41 +2,32 @@
 title: getMetadata
 ---
 
-Retrieves metadata from an article object.
+Retrieves metadata from an article record and returns it as a normalized array of display objects. Useful for rendering metadata fields (authors, keywords, dates, etc.) in a consistent format.
 
-| parameter | type | description |
-| --- | --- | --- |
-| `article` | `Article` | The article object containing the metadata |
-| `metadata` | `KeyOf<Article>` | The key of the metadata to retrieve. |
+**Parameters**
 
-__Returns__ An array of objects with a `display` property representing the metadata.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `article` | `Article` | ✓ | The article object to extract metadata from |
+| `metadata` | `KeyOf<Article>` | ✓ | The field key to retrieve |
 
-#### Example
+**Returns** `{ display: string }[]` — array of display objects, one per metadata value.
 
-```js title="get-metadata.js"
-import { getMetadata } from "@sinequa/atomic";
+**Example**
 
-// Sample article object
+```typescript title="get-metadata.ts"
+import { getMetadata } from '@sinequa/atomic';
+
 const article = {
-  id: "123",
-  title: "Sample Article",
-  authors: ["John Doe", "Jane Smith"],
-  publicationDate: "2023-05-15",
-  keywords: ["technology", "science", "research"]
+  id: '123',
+  title: 'Sample Article',
+  authors: ['John Doe', 'Jane Smith'],
+  keywords: ['technology', 'research']
 };
 
-// Retrieve authors metadata
-const authorsMetadata = getMetadata(article, "authors");
-console.log("Authors:", authorsMetadata);
-// Output: Authors: [{ display: "John Doe" }, { display: "Jane Smith" }]
+const authors = getMetadata(article, 'authors');
+// [{ display: 'John Doe' }, { display: 'Jane Smith' }]
 
-// Retrieve publication date metadata
-const dateMetadata = getMetadata(article, "publicationDate");
-console.log("Publication Date:", dateMetadata);
-// Output: Publication Date: [{ display: "2023-05-15" }]
-
-// Retrieve keywords metadata
-const keywordsMetadata = getMetadata(article, "keywords");
-console.log("Keywords:", keywordsMetadata);
-// Output: Keywords: [{ display: "technology" }, { display: "science" }, { display: "research" }]
+const keywords = getMetadata(article, 'keywords');
+// [{ display: 'technology' }, { display: 'research' }]
 ```

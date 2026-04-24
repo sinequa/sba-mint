@@ -1,6 +1,5 @@
 ---
 title: Help Resources
-sidebar_class_name: update
 ---
 
 This module provides utilities for resolving locale-aware help file URLs. It is useful for applications that serve their help documentation in multiple languages.

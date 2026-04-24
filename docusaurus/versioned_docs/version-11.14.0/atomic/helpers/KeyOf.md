@@ -1,6 +1,5 @@
 ---
 title: KeyOf
-sidebar_class_name: update
 ---
 
 A TypeScript utility type that extracts the union of all keys from a given type `T`. Equivalent to `keyof T` with string-only filtering.

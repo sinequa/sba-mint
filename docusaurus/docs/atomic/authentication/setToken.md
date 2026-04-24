@@ -2,13 +2,20 @@
 title: setToken
 ---
 
-Saves the CSRF token into session storage.
+Saves a CSRF token into session storage under the `sinequa-credentials` key.
 
-#### Example
+**Parameters**
 
-```js title="set-token.js"
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `token` | `string` | ✓ | The CSRF token to store |
+
+**Returns** `void`
+
+**Example**
+
+```typescript title="set-token.ts"
 import { setToken } from '@sinequa/atomic';
 
-// Sets the CSRF token in session storage
-setToken("new token value");
+setToken('my-csrf-token-value');
 ```

@@ -2,25 +2,26 @@
 title: isJsonable
 ---
 
-Checks if the given value can be safely converted to JSON.
+Checks whether the given value can be safely serialized to JSON. Returns `true` for plain objects and arrays, `false` for `null`, primitives, `ArrayBuffer`, `Blob`, and strings.
 
-| parameter | type | description |
-| --- | --- | --- |
-| `obj` | `unknown` | The value to check |
+**Parameters**
 
-__Returns__ `boolean`: True if the value can be safely converted to JSON, false otherwise.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `obj` | `unknown` | ✓ | The value to check |
 
-#### Example
+**Returns** `boolean` — `true` if the value is JSON-serializable, `false` otherwise.
 
-```js title="is-jsonable.js"
-import { isJsonable } from "@sinequa/atomic";
+**Example**
 
-console.log(isJsonable(null));      // Output: false
-console.log(isJsonable(undefined)); // Output: false
-console.log(isJsonable(42));        // Output: false
-console.log(isJsonable("test"));    // Output: false
-console.log(isJsonable([]));        // Output: true
-console.log(isJsonable({}));        // Output: true
-console.log(isJsonable(new ArrayBuffer(10))); // Output: false
-console.log(isJsonable(new Blob())); // Output: false
+```typescript title="is-jsonable.ts"
+import { isJsonable } from '@sinequa/atomic';
+
+console.log(isJsonable(null));                  // false
+console.log(isJsonable(42));                    // false
+console.log(isJsonable('test'));                // false
+console.log(isJsonable(new ArrayBuffer(10)));   // false
+console.log(isJsonable(new Blob()));            // false
+console.log(isJsonable([]));                    // true
+console.log(isJsonable({}));                    // true
 ```

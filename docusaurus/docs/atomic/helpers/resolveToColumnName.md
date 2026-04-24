@@ -2,23 +2,23 @@
 title: resolveToColumnName
 ---
 
-Resolves an alias to a column name from a query or indexes schema
+Resolves a column alias to its actual column name using the application's query configuration or index schema.
 
-| parameter | type | description |
-| --- | --- | --- |
-| `alias` | `string` | The alias of the column to resolve |
-| `app` | `CCApp` | The application state object |
-| `queryName` | `string` | Optional. The name of the query to use for resolution |
+**Parameters**
 
-#### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `alias` | `string` | ✓ | The alias to resolve |
+| `app` | `CCApp` | ✓ | The application configuration object |
+| `queryName` | `string` | | The name of the query to use for resolution |
 
-```js title="resolve-to-column-name.js"
-import { resolveToColumnName } from "@sinequa/atomic";
+**Returns** `string` — the resolved column name, or the original alias if no match is found.
 
-const alias = 'recordType';
-const appObject = { /* ... */ }; // Assuming this is your CCApp object
-const queryName = 'main_query';
+**Example**
 
-const resolved = resolveToColumnName(alias, appObject, queryName);
-console.log(resolved); // Output: 'sourcestr1'
+```typescript title="resolve-to-column-name.ts"
+import { resolveToColumnName } from '@sinequa/atomic';
+
+const columnName = resolveToColumnName('recordType', app, 'main_query');
+console.log(columnName); // e.g. 'sourcestr1'
 ```

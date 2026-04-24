@@ -2,65 +2,64 @@
 title: JSON Method Plugin
 ---
 
-The `JsonMethodPluginService` provides methods to call JSON plugins using HTTP GET and POST requests.
+The `JsonMethodPluginService` provides methods to call Sinequa JSON plugins via HTTP GET and POST requests.
 
-## Functions
+## Methods
 
-### post()
+### `post()`
+
+Calls a JSON plugin via HTTP POST.
 
 ```typescript
 post<U>(method: string, query: U, options?: Options): Observable<any>
 ```
 
-#### Parameters
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `method` | `string` | ✓ | The name of the JSON plugin method to call. |
+| `query` | `U` | ✓ | Parameters to pass to the plugin. |
+| `options` | `Options` | | HTTP request options. |
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `method`  | `string` | The name of the JSON plugin method to call. |
-| `query`   | `U` | Parameters to pass to the plugin. |
-| `options` | `Options` | HTTP options for the request. |
+**Returns** `Observable<any>` — emits the plugin's response.
 
-#### Returns
+**Example**
 
-| Type | Description |
-|------|-------------|
-| `Observable<any>` | An observable of the plugin's return value. |
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { JsonMethodPluginService } from '@sinequa/atomic-angular';
 
-#### Example
-
-```typescript
-const service = new JsonMethodPluginService();
-service.post('exampleMethod', { param1: 'value1' }).subscribe(response => {
+inject(JsonMethodPluginService).post('myMethod', { param: 'value' }).subscribe(response => {
   console.log(response);
 });
 ```
 
-### get()
+### `get()`
+
+Calls a JSON plugin via HTTP GET.
 
 ```typescript
-get<U extends Record<string, string | boolean | number | Date | object | undefined>>
-  (method: string, query: U, options?: Options): Observable<any>
+get<U extends Record<string, string | boolean | number | Date | object | undefined>>(
+  method: string,
+  query: U,
+  options?: Options
+): Observable<any>
 ```
 
-#### Parameters
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `method` | `string` | ✓ | The name of the JSON plugin method to call. |
+| `query` | `U` | ✓ | Parameters to pass to the plugin. |
+| `options` | `Options` | | HTTP request options. |
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `method`  | `string` | The name of the JSON plugin method to call. |
-| `query`   | `U` | Parameters to pass to the plugin. |
-| `options` | `Options` | HTTP options for the request. |
+**Returns** `Observable<any>` — emits the plugin's response.
 
-#### Returns
+**Example**
 
-| Type | Description |
-|------|-------------|
-| `Observable<any>` | An observable of the plugin's return value. |
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { JsonMethodPluginService } from '@sinequa/atomic-angular';
 
-#### Example
-
-```typescript
-const service = new JsonMethodPluginService();
-service.get('exampleMethod', { param1: 'value1' }).subscribe(response => {
+inject(JsonMethodPluginService).get('myMethod', { param: 'value' }).subscribe(response => {
   console.log(response);
 });
 ```

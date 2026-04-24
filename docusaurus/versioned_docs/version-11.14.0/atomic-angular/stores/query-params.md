@@ -1,6 +1,5 @@
 ---
 title: Query Params
-sidebar_class_name: update
 ---
 
 The `QueryParamsStore` manages the current URL query parameters (search text, filters, page, basket, etc.).

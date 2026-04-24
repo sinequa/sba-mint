@@ -1,6 +1,5 @@
 ---
 title: Web API Helpers
-sidebar_class_name: update
 ---
 
 This module provides the foundational utilities for making HTTP requests to the Sinequa API. It includes:

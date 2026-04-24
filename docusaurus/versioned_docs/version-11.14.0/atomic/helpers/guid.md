@@ -1,6 +1,5 @@
 ---
 title: guid
-sidebar_class_name: update
 ---
 
 Generates a pseudo-GUID string using `Math.random`.

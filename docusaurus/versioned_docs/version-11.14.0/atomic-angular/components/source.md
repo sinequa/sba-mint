@@ -1,6 +1,5 @@
 ---
 title: Source
-sidebar_class_name: update
 ---
 
 The `SourceComponent` displays an icon representing the source or collection of a document. It resolves the appropriate font icon or image from the application's source configuration (`AppStore.sources`).

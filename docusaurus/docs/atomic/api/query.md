@@ -2,74 +2,76 @@
 title: Query
 ---
 
-The Query API provides functions for fetching data from the backend. These functions allow you to execute single or
- multiple queries, retrieve results, and optionally record audit events. The API supports both individual and
- bulk query operations, enabling efficient data retrieval for various use cases.
+The Query module provides functions to execute search queries against the Sinequa backend. It supports single and bulk query execution, optional audit event recording, and query intent analysis integration.
+
+The results are automatically enriched with:
+- `$hasMore` on each aggregation (indicates whether more items are available)
+- `$path` and `$level` on tree aggregation nodes
+- `value` and `type` on each article record
+- `nextPage` / `previousPage` pagination helpers
 
 ## Functions
 
-### fetchQuery()
+### `fetchQuery()`
 
-Fetches data from the backend using the specified query.
+Executes a single query and returns the results.
 
-__Returns__ A promise that resolves to the fetched data.
+**Parameters**
 
-#### Parameters
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `query` | `Query` | ✓ | The query object to execute |
+| `audit` | `AuditEvents` | | Audit events to record with this query |
+| `queryIntentData` | `QueryIntentData` | | Additional intent data to send with the query |
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `query` | `string` | The query string to be executed on the backend |
-| `audit` | `AuditEvents` | Optional. audit event to be recorded with the save action. |
-| `queryIntentData` | `QueryIntentData` | Optional. Additional data to be sent with the query for intent processing |
+**Returns** `Promise<Result>` — the query results, enriched with pagination helpers (`nextPage`, `previousPage`).
 
-__Returns__ A promise that resolves to the query results.
+**Example**
 
-#### Example
+```typescript title="fetch-query.ts"
+import { fetchQuery } from '@sinequa/atomic';
 
-```js title="example-fetch-query.js"
-import { fetchQuery } from "@sinequa/atomic";
+const result = await fetchQuery({
+  name: '_query',
+  text: 'hello world',
+  pageSize: 10,
+  page: 1
+});
 
-const query = {
-  "name":"_query",
-  "text":"hello world",
-}
-
-fetchQuery(query)
-  .then((data) => console.log("data", data))
-  .catch((error) => console.log("error", error))
+console.log(result.records);
+console.log(result.rowCount);
+console.log(result.nextPage); // next page number or undefined
 ```
 
-### fetchBulkQuery()
+---
 
-Fetches multiple queries in bulk from the backend.
+### `fetchBulkQuery()`
 
-#### Parameters
+Executes multiple queries in parallel and returns an array of results.
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `queries` | `Query[]` | An array of query objects to be executed on the backend |
-| `mode` | `"parallel"` | Optional. Specifies the execution mode. If set to "parallel", queries are executed concurrently. Default is "parallel". |
-| `auditEvents` | `AuditEvents` | Optional. Audit events to be recorded with the bulk query action. |
+**Parameters**
 
-__Returns__ A promise that resolves to an array of query results, corresponding to the input queries.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `queries` | `Query[]` | ✓ | Array of query objects to execute |
+| `mode` | `'parallel'` | | Execution mode. Default: `'parallel'` |
+| `auditEvents` | `AuditEvents` | | Audit events to record with the bulk request |
 
-#### Example
+**Returns** `Promise<Result[]>` — array of results in the same order as the input queries, each enriched with pagination helpers.
 
-```js title="example-fetch-bulk-query.js"
-import { fetchBulkQuery } from "@sinequa/atomic";
+**Example**
 
-const query = {
-  "name": "_query",
-  "pageSize": 20,
-  "text": "tesla",
-  "page": 1
-};
+```typescript title="fetch-bulk-query.ts"
+import { fetchBulkQuery } from '@sinequa/atomic';
 
-fetchBulkQuery([
-  query,
-  {...query, page: 2},
-  {...query, name: '_query_test', page: 4}
-  ])
-  .then((data) => console.log("data", data))
-  .catch((error) => console.log("error", error));
+const baseQuery = { name: '_query', pageSize: 10, text: 'tesla' };
+
+const [page1, page2, altQuery] = await fetchBulkQuery([
+  { ...baseQuery, page: 1 },
+  { ...baseQuery, page: 2 },
+  { ...baseQuery, name: '_query_test', page: 1 }
+]);
+
+console.log(page1.rowCount);
+console.log(page2.records);
 ```

@@ -2,123 +2,134 @@
 title: Audit
 ---
 
-The Audit module provides essential functions for managing audit-related activities in your application.  
-These functions allow you to:
-
-- Send audit events to the server for logging and tracking purposes
-- Enhance existing data objects with additional audit information
-
-By utilizing these capabilities, you can maintain comprehensive audit trails, track user actions, and enrich your
-application's data with valuable context for auditing and analysis.
+The Audit module provides functions for sending audit events to the server and enriching request bodies with audit metadata (session ID, URL). It supports both direct audit notifications and automatic injection into API request bodies.
 
 ## Functions
 
-### notify()
+### `Audit.notify()`
 
-Notifies the server about audit events.
-
-| parameter | type | description |
-| --- | --- | --- |
-| `auditEvents` | `AuditEvents` | The audit events to be sent to the server |
-
-__Returns__ A promise that resolves to the updated audit events.
+Sends audit events to the server.
 
 :::caution
-Unlike others functions, this function is contained within an `Audit` namespace.
+This function is accessed via the `Audit` namespace: `Audit.notify(...)`.
 :::
 
-#### Example
+**Parameters**
 
-```js title="notify.js"
-import { Audit } from "@sinequa/atomic";
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `auditEvents` | `AuditEvents` | ✓ | The audit events to send to the server |
+| `addUrl` | `boolean` | | Whether to automatically include the current URL in event details. Default: `true` |
 
-const response = await Audit.notify({ 
-  type: "Search_Text",
-  details: {
-    ...
-  }
+**Returns** `Promise<AuditEvents>` — the server response.
+
+**Example**
+
+```typescript title="audit-notify.ts"
+import { Audit } from '@sinequa/atomic';
+
+await Audit.notify({
+  type: 'Search_Text',
+  detail: { querytext: 'hello world' }
 });
-
-console.log("notify response", auditEvents);
-// will display the response
 ```
 
-### addAuditAdditionalInfo()
+---
 
-Adds additional audit information to the provided body object. As the _`body`_ reference is used here, the function does not returns nothing.
+### `addAuditAdditionalInfo()`
 
-| parameter | type | description |
-| --- | --- | --- |
-| `body` | `unknown` | Reference to the body object to add audit information to |
+Enriches a request body object with audit metadata: adds a session ID and optionally the current page URL to all audit events present in `body.$auditRecord`.
 
-:::caution
-_`body`_ is modified via its reference.  
-This is something that is likely to change in the future to ensure the immutability of the arguments.
+:::warning
+This function mutates the `body` object via its reference. This behavior may change in a future version to ensure argument immutability.
 :::
 
-#### Example
+**Parameters**
 
-```ts title="example-add-audit-additional-info.ts"
-import { addAuditAdditionalInfo } from "@sinequa/atomic";
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `body` | `unknown` | ✓ | The request body object. Must have a `$auditRecord` property of type `AuditEvents`. |
+| `addUrlParam` | `boolean` | | Whether to add the current page URL to audit event details. Default: `true` |
 
-// arbitrary audit trail
-const audit: { type: "audit-info", details: { id: "abc", message: "audit message" }}
+**Returns** `void`
+
+**Example**
+
+```typescript title="add-audit-info.ts"
+import { addAuditAdditionalInfo } from '@sinequa/atomic';
 
 const body = {
-  action: "save",
+  action: 'save',
   userSettings,
-  $auditRecord:  { auditEvents: [audit] },
+  $auditRecord: {
+    auditEvents: [{ type: 'Search_Text', detail: { querytext: 'hello' } }]
+  }
 };
 
 addAuditAdditionalInfo(body);
-// `$auditRecord` will contains { auditEvents: [{ type: "audit-info", details: { id: "abc", message: "audit message", sessionId: "...", url: "..." } }]}
+// body.$auditRecord.auditEvents[0].detail now includes:
+// { querytext: 'hello', sessionid: '...', url: 'https://...' }
 ```
 
-:::warning
-The following functions are used internally, use them with caution.  
-Prefers using the [`addAuditAdditionalInfo()`](#addauditadditionalinfo)
-:::
+---
 
-### ensureAuditRecord(_obj_)
+## Types
 
-Handle legacy calls where auditEvents is either an AuditEvent, AuditEvent[] or AuditRecord.  
+### `AuditEvent`
 
-| parameter | type | description |
-| --- | --- | --- |
-| `obj` | `AuditEvents` | The object to be checked |
+```typescript
+type AuditEvent = {
+  type: AuditEventType | AuditEventTypeValues | string;
+  detail?: Record<string, any>;
+  rfmDetail?: {};
+};
+```
 
-__Returns__ The AuditRecord if the object is valid, otherwise undefined.
+### `AuditEvents`
 
-### addSessionId()
+A composite type that accepts a single event, an array of events, or a full audit record:
 
-Add a sessionid to all the audit events
+```typescript
+type AuditEvents = AuditEvent | AuditEvent[] | AuditRecord;
+```
 
-| parameter | type | description |
-| --- | --- | --- |
-| `auditRecord` | `AuditRecord` | The audit record to modify. |
+### `AuditRecord`
 
-```js title="AuditRecord Type"
-export type AuditRecord = {
-    auditEvents?: AuditEvent[],
-    mlAuditEvents?: any[]
+```typescript
+type AuditRecord = {
+  auditEvents?: AuditEvent[];
+  mlAuditEvents?: any[];
+};
+```
+
+### `AuditEventType`
+
+The `AuditEventType` enum defines all standard audit event type strings. Custom string values are also accepted.
+
+<details>
+<summary>View all AuditEventType values</summary>
+
+```typescript
+enum AuditEventType {
+  None = 'None',
+
+  // Search events
+  Search_FirstPage = 'Search_FirstPage',
+  Search_Text = 'Search_Text',
+  Search_Refine = 'Search_Refine',
+  Search_Select_Item = 'Search_Select_Item',
+  Search_GotoPage = 'Search_GotoPage',
+  Search_ExportCSV = 'Search_ExportCSV',
+  Search_Login_Success = 'Login_Success_Form',
+  Search_QueryIntent_Detected = 'Search_QueryIntent_Detected',
+  // ... and many more
+
+  // Password events
+  Change_Password_Failed = 'change.password.failed',
+  Change_Password_Success_Form = 'change.password.success.form',
+  Login_Denied = 'login.denied',
+  Login_Success_Form = 'login.success.form',
+  // ...
 }
 ```
-
-__Returns__ The modified audit record with the session ID added.
-
-### addUrl()
-
-Add the URL to all the audit events
-
-| parameter | type | description |
-| --- | --- | --- |
-| `auditRecord` | `AuditRecord` | The audit record to modify. |
-
-__Returns__ The updated audit record with the URL added.
-
-```js title="AuditRecord Type"
-export type AuditRecord = {
-    auditEvents?: AuditEvent[],
-    mlAuditEvents?: any[]
-}
-```
+</details>

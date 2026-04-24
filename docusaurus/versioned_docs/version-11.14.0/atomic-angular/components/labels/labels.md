@@ -1,6 +1,5 @@
 ---
 title: Labels
-sidebar_class_name: update
 ---
 
 The `labels` feature provides a flexible system for adding, editing, and managing labels (tags) on articles or items in your Angular application. It supports both public and private labels, label suggestions, and integrates with backend services for persistence and access control.

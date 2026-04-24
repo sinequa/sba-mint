@@ -1,6 +1,5 @@
 ---
 title: Date Utilities
-sidebar_class_name: update
 ---
 
 This module provides utility functions for comparing dates and generating localized relative time strings such as "in 2 days" or "4 days ago". It uses the browser's `Intl.RelativeTimeFormat` API.

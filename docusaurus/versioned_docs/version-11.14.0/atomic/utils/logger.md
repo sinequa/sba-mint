@@ -1,6 +1,5 @@
 ---
 title: Logger
-sidebar_class_name: update
 ---
 
 This module provides a centralized, configurable logging system with multiple severity levels. The log level can be controlled at runtime to filter output and optionally disable console output entirely.

@@ -1,6 +1,5 @@
 ---
 title: User Settings
-sidebar_class_name: update
 sidebar_position: 3
 ---
 

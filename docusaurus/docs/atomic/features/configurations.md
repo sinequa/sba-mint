@@ -2,82 +2,80 @@
 title: Configurations
 ---
 
-This module provides functionality for managing global configuration settings essential for connecting to the Sinequa platform.
-It includes:
+This module manages the global configuration settings required to connect to the Sinequa platform. It provides:
 
-- A global configuration object with default values for API paths and backend URLs
-- A function to set and customize the global configuration
-- Various configuration options to control authentication methods, user overrides, logging, and API interactions
+- A global configuration object with default values
+- A function to merge custom settings into the global configuration
+- Options to control authentication, user overrides, logging, and routing
 
-These tools allow developers to centralize and easily adjust application-wide settings, ensuring consistent configuration across
-the application for seamless integration with Sinequa services.
+## `globalConfig`
 
-## globalConfig
+The global configuration object used by all modules (authentication, API calls, logging, etc.).
 
-This object contains the global configuration to enable connection to the Sinequa platform.  
-
-:::info
-By default the `globalConfig` object contains the following values:
+:::info Default values
 
 ```json
-{ 
-  "apiPath": "api/v1", 
-  "loginPath": "/login", 
-  "backendUrl": window.location.origin 
+{
+  "loginPath": "/login",
+  "createRoutes": false
 }
 ```
 
+The `backendUrl` is automatically set to `window.location.origin` by [`appInitializerFn()`](../api/app#appinitializerfn) if not specified.
 :::
 
-```typescript title="AppGlobalConfig Type"
-export type AppGlobalConfig = {
+**Type**
+
+```typescript
+type AppGlobalConfig<T extends Record<string, any> = {}> = {
   app: string;
   backendUrl: string;
-  apiPath: string;
   autoOAuthProvider: string;
   autoSAMLProvider: string;
+  bearerToken: string;
   loginPath: string;
   userOverride: {
     username: string;
     domain: string;
   };
   userOverrideActive: boolean;
-  useCredentials: boolean;           // when true, the credentials are sent with the request
-  useSSO: boolean;                   // when true, SSO is used
-  useCredentialsOrSSO: boolean;      // when true, maybe SSO or credentials are used
-  useSAML: boolean;                  // when true, SAML is used even if OAuth is available
-  logLevel: LogLevel;                // controls the application log level
-};
+  useCredentials: boolean;   // when true, credentials are sent with requests
+  useSSO: boolean;           // when true, SSO is used
+  useSAML: boolean;          // when true, SAML is used even if OAuth is available
+  logLevel: LogLevel;        // controls the application log level
+  createRoutes: boolean;     // when true, the application creates routes (default: false)
+} & T;
 ```
 
-### Example
+**Example**
 
-```js title="example-config.ts"
-import { globalConfig } from "@sinequa/atomic";
+```typescript title="read-global-config.ts"
+import { globalConfig } from '@sinequa/atomic';
 
-console.log("configuration", globalConfig);
-// Output: { apiPath: "api/v1", loginPath: "/login", backendUrl: <your-current-url> }
+console.log(globalConfig.loginPath); // '/login'
+console.log(globalConfig.app);       // undefined until set
 ```
 
-## setGlobalConfig()
+## `setGlobalConfig()`
 
-Sets the global configuration for the application.  
-Use this function when you need to customize the global configuration within your application.
+Merges a partial configuration object into the existing global configuration.
 
-| parameter | type | description |
-| --- | --- | --- |
-| config | `Partial<AppGlobalConfig>` | The partial configuration object to be merged with the existing global configuration. |
+**Parameters**
 
-### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `config` | `Partial<AppGlobalConfig>` | ✓ | Configuration properties to merge. Supports custom properties via generic type extension. |
 
-```js title="example-get-global-config.ts"
-import { globalConfig, setGlobalConfig } from "@sinequa/atomic";
+**Returns** `void`
 
-// update the configuration with the `app` property
-setGlobalConfig({ app: "training" })
+**Example**
 
-const conf = globalConfig;
-// will display: { app: "training", apiPath: "api/v1", loginPath: "/login", backendUrl: <your-current-url> }
+```typescript title="set-global-config.ts"
+import { globalConfig, setGlobalConfig } from '@sinequa/atomic';
+
+setGlobalConfig({ app: 'training', logLevel: LogLevel.DEBUG });
+
+console.log(globalConfig.app); // 'training'
 ```
 
 ---
@@ -87,32 +85,31 @@ const conf = globalConfig;
 ```mermaid
 graph TD
     A[setGlobalConfig] --> B[globalConfig]
-    B --> C[Used by authentication, API, and other modules]
+    B --> C[Authentication modules]
+    B --> D[API modules]
+    B --> E[Logger]
 ```
 
 ---
 
 ## Summary Table
 
-| Property                | Description                                                  |
-|-------------------------|--------------------------------------------------------------|
-| `app`                   | Sinequa application name                                     |
-| `backendUrl`            | URL of the backend server                                    |
-| `apiPath`               | API path for requests                                        |
-| `autoOAuthProvider`     | Name of the OAuth provider                                   |
-| `autoSAMLProvider`      | Name of the SAML provider                                    |
-| `loginPath`             | Login path                                                   |
-| `userOverride`          | User override credentials (username, domain)                 |
-| `userOverrideActive`    | Whether user override is active                              |
-| `useCredentials`        | Use credentials for authentication                           |
-| `useSSO`                | Use SSO for authentication                                   |
-| `useCredentialsOrSSO`   | Use SSO or credentials for authentication                    |
-| `useSAML`               | Use SAML even if OAuth is available                          |
-| `logLevel`              | Application log level                                        |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `app` | `string` | — | Sinequa application name |
+| `backendUrl` | `string` | `window.location.origin` | URL of the backend server |
+| `autoOAuthProvider` | `string` | — | Name of the OAuth provider |
+| `autoSAMLProvider` | `string` | — | Name of the SAML provider |
+| `bearerToken` | `string` | — | Bearer token for authentication |
+| `loginPath` | `string` | `'/login'` | Login route path |
+| `userOverride` | `{ username, domain }` | — | User override credentials |
+| `userOverrideActive` | `boolean` | — | Whether user override is active |
+| `useCredentials` | `boolean` | — | Send credentials with requests |
+| `useSSO` | `boolean` | — | Use SSO for authentication |
+| `useSAML` | `boolean` | — | Use SAML even if OAuth is available |
+| `logLevel` | `LogLevel` | — | Application log level |
+| `createRoutes` | `boolean` | `false` | Create routes for the application |
 
----
-
-**Note:**
-
-- All properties are optional when calling `setGlobalConfig`, but the full type is shown above for reference.
-- The actual `globalConfig` object may contain additional properties for extensibility.
+:::note
+All properties are optional when calling `setGlobalConfig()`. The `AppGlobalConfig` type supports additional custom properties via its generic parameter `T`.
+:::

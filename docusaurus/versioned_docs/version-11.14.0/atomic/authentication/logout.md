@@ -1,6 +1,5 @@
 ---
 title: logout
-sidebar_class_name: update
 ---
 
 Logs out the current user. Removes the CSRF token from session storage, deletes the web token cookie, and emits an `'authenticated'` event with `false`.

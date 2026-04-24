@@ -1,6 +1,5 @@
 ---
 title: ThemeToggle
-sidebar_class_name: update
 ---
 
 The `ThemeToggleComponent` provides a toggle button for switching between light and dark mode for a given scope.

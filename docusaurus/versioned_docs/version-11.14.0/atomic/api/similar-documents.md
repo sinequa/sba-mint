@@ -1,6 +1,5 @@
 ---
 title: Similar Documents
-sidebar_class_name: update
 ---
 
 The Similar Documents module provides a function to find documents related to a given document. This enables "more like this" features in search applications.

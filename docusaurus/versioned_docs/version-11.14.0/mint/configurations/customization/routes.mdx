@@ -1,5 +1,6 @@
 ---
 title: Routes
+sidebar_class_name: update
 ---
 
 This document provides a high-level overview of how routing is structured and managed within the application.
@@ -19,8 +20,12 @@ A simplified view of the main application routes is shown below:
 graph LR
     App --> Login["/login"]
     App --> Logout["/logout"]
+    App --> AuthMode["/auth/:mode"]
     App --> Home["/home"]
     App --> Assistant["/assistant"]
+    App --> Chat["/chat"]
+    Chat --> ChatNew["/chat/new"]
+    Chat --> ChatId["/chat/:id"]
     App --> Widgets["/widgets"]
     Widgets --> RecentSearches["/widgets/recent-searches"]
     Widgets --> Bookmarks["/widgets/bookmarks"]
@@ -38,12 +43,12 @@ We'll explore the routing configuration in detail, including how to define route
 
 ## The "routes.ts" file
 
-The core of our application's routing configuration resides in the `src/app/routes.ts` file.
+The core of our application's routing configuration resides in the `src/app2/routes.ts` file.
 This file defines an array of route objects that map URL paths to specific Angular components.
 
 The application uses Angular's standard `Route` type, but extends it with custom types `ExtendedRoute` and `ExtendedData` to include additional application-specific information.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 import { Data, Route } from '@angular/router';
 // ...
 
@@ -53,7 +58,7 @@ type ExtendedData = Data & {
   display?: string; // label you want to display in the interface
   wsQueryTab?: string; // name of the "tab" associated with the query you want to use
   icon?: string; // icon you want to associate with the label in the interface
-  [key: string | symbol]: any; // anything you might need
+  [key: string | symbol]: unknown; // anything you might need
 };
 type ExtendedRoute = Route & {
   data?: ExtendedData; // custom data for the route
@@ -134,6 +139,7 @@ Key custom properties include:
 | `display`                       | A user-friendly label for the route.                                                                                                                                               |
 | `wsQueryTab`                    | The name of a "tab" associated with a specific query.                                                                                                                              |
 | `icon`                          | An icon to be displayed alongside the route's label in the UI.                                                                                                                     |
+| `reuse`                         | When set to `true`, the route component is "frozen" when navigating away and "thawed" when returning, preserving its state without re-initialization.                              |
 | `[key: string \| symbol]: any;` | Allows for any other custom parameters to be added as needed.                                                                                                                      |
 
 :::note
@@ -143,23 +149,26 @@ The specifics of how this JSON file is used will be detailed in a separate secti
 
 ## Key Route Examples and Their Purpose
 
-Let's look at some important routes defined in `src/app/routes.ts`:
+Let's look at some important routes defined in `src/app2/routes.ts`:
 
 ### Authentication routes
 
-These handle user login and logout.
+These handle user login, logout, and alternative authentication modes.
 
-```typescript title="src/app/routes.ts"
-{ path: 'login', component: SignInComponent },
-{ path: 'logout', component: SignInComponent },
+```typescript title="src/app2/routes.ts"
+{ path: 'login', component: AuthPageComponent },
+{ path: 'logout', component: AuthPageComponent },
+{ path: 'auth/:mode', component: AuthPageComponent },
 ```
+
+The `auth/:mode` route accepts a dynamic `:mode` parameter to support different authentication flows (e.g., SAML, SSO) without requiring a dedicated route for each.
 
 ### Home route
 
 This is typically the main landing page after a user logs in.
-It's protected by `AuthGuard` (user must be logged in) and `InitializationGuard` (application must be initialized).
+It's protected by `AuthGuard` (user must be logged in) and the `queryNameResolver` pre-fetches the default query name before rendering.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 {
   path: 'home',
   component: HomeComponent,
@@ -168,48 +177,87 @@ It's protected by `AuthGuard` (user must be logged in) and `InitializationGuard`
 },
 ```
 
-### Assistant route (lazy loaded)
+### Assistant route (lazy loaded, with state reuse)
 
 This route loads the `AssistantLayoutComponent` on demand.
+The `data: { reuse: true }` property instructs the router to freeze the component state when navigating away and restore it when returning, so the assistant context is preserved without re-initialization.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 {
   path: 'assistant',
   loadComponent: () => import('./pages/assistant/assistant.layout').then(m => m.AssistantLayoutComponent),
   canActivate: [AuthGuard()],
-  resolve: { queryName: queryNameResolver }
+  resolve: { queryName: queryNameResolver },
+  data: { reuse: true }
 },
 ```
 
-### Widgets routes (nested structure)
+### Chat route (nested structure)
 
-The `/widgets` path uses `WidgetsLayoutComponent` as a container and defines child routes for specific widgets like recent searches and bookmarks.
+The `/chat` path uses `AgentLayoutComponent` as a container and defines two lazy-loaded child routes: one to start a new chat session and one to resume an existing one by ID.
+Any unmatched sub-path redirects to `/chat/new`.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
+{
+  path: 'chat',
+  canActivate: [AuthGuard()],
+  component: AgentLayoutComponent,
+  children: [
+    {
+      path: 'new',
+      loadComponent: () => import('./pages/agent/new.page').then(m => m.ChatNewPage)
+    },
+    {
+      path: ':id',
+      loadComponent: () => import('./pages/agent/id.page').then(m => m.ChatIdPage)
+    },
+    { path: '**', redirectTo: 'new', pathMatch: 'full' }
+  ]
+},
+```
+
+### Widgets routes (nested lazy-loaded structure)
+
+The `/widgets` path uses a lazy-loaded layout component as a container.
+All child routes are also lazy-loaded, so each widget's code is only fetched when the user navigates to it.
+
+```typescript title="src/app2/routes.ts"
 {
   path: 'widgets',
-  component: WidgetsLayoutComponent,
+  loadComponent: () => import('./pages/widgets/widgets.layout').then(m => m.WidgetsLayout2Component),
   canActivate: [AuthGuard()],
   children: [
-    { path: 'recent-searches', component: RecentSearchesComponent, /* ...guards */ },
-    { path: 'bookmarks', component: BookmarksComponent, /* ...guards */ },
-    // ... other widget routes
+    {
+      path: 'recent-searches',
+      loadComponent: () => import('../components/widgets/recent-searches/recent-searches.component').then(m => m.RecentSearchesComponent)
+    },
+    {
+      path: 'bookmarks',
+      loadComponent: () => import('../components/widgets/bookmarks/bookmarks.component').then(m => m.BookmarksComponent)
+    },
+    {
+      path: 'saved-searches',
+      loadComponent: () => import('../components/widgets/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent)
+    },
+    {
+      path: 'collections',
+      loadComponent: () => import('../components/widgets/collections/collections.component').then(m => m.CollectionsComponent)
+    }
   ]
 },
 ```
 
 ### Search route
 
-This handles the main search functionality
+This handles the main search functionality.
 The `children` array with `path: '**'` acts as a wildcard, meaning any path under `/search/...` will render the `SearchAllComponent`.
 This is useful to keep the global layout for all search pages while using specific view for each search result types.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 {
   path: 'search',
   component: SearchLayoutComponent,
   canActivate: [AuthGuard()],
-  resolve: { queryName: queryNameResolver },
   children: [
     { path: '**', component: SearchAllComponent, resolve: { queryName: queryNameResolver } }
   ]
@@ -220,7 +268,7 @@ This is useful to keep the global layout for all search pages while using specif
 
 These provide components for loading states, error display, and a general fallback mechanism.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 { path: 'loading', component: LoadingComponent },
 { path: 'error', component: ErrorComponent },
 { path: '**', redirectTo: 'home', pathMatch: 'full' } // Wildcard: redirects any unmatched URL to 'home'
@@ -239,7 +287,7 @@ Here are a few focused examples to illustrate common routing patterns:
 
 This shows the simplest form of a route, mapping a path to a component.
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 // ...
 {
   path: 'some-feature', // The URL will be your-app.com/some-feature
@@ -252,7 +300,7 @@ This shows the simplest form of a route, mapping a path to a component.
 
 This route can only be accessed if the `AuthGuard` allows it (e.g., user is logged in).
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 // ...
 {
   path: 'profile',
@@ -268,7 +316,7 @@ This route can only be accessed if the `AuthGuard` allows it (e.g., user is logg
 
 This defines a main `/search` route with child routes for `/search/all` (generic search document) and `/search/slides` (slide focused result presentation).
 
-```typescript title="src/app/routes.ts"
+```typescript title="src/app2/routes.ts"
 // ...
 {
   path: 'search',
@@ -277,7 +325,7 @@ This defines a main `/search` route with child routes for `/search/all` (generic
   resolve: { queryName: queryNameResolver },          // Resolve the default query name
   children: [
     { path: 'slides', component: SearchSlidesComponent }
-    { path: '**', component: SearchAllComponent, queryName: queryNameResolver },
+    { path: '**', component: SearchAllComponent, resolve: { queryName: queryNameResolver } },
     // wildcard path matches all others search/* routes and use default component and query
   ]
 }

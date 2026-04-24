@@ -1,43 +1,50 @@
 ---
-title: Fetch Similar Documents
+title: Similar Documents
 ---
 
-This module provides functionality for retrieving documents that are similar to a given document. It allows users to:
-
-- Fetch similar documents based on a specified document ID and query name
-
-These operations enable efficient retrieval of related documents, enhancing user experience in search and discovery scenarios.
+The Similar Documents module provides a function to find documents related to a given document. This enables "more like this" features in search applications.
 
 ## Functions
 
-### fetchSimilarDocuments()
+### `fetchSimilarDocuments()`
 
-Fetches similar documents based on the provided document ID and query name.
+Fetches documents that are similar to the specified document, using the given query configuration.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `documentId` | `string` | The ID of the document to compare against. |
-| `queryName` | `string` | The name of the query to use for comparison. |
+**Parameters**
 
-__Returns__ A promise that resolves to an object containing an array of `Article` objects and a `methodresult` string.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `documentId` | `string` | ✓ | The ID of the reference document |
+| `queryName` | `string` | ✓ | The name of the similarity query configured on the server |
+| `signal` | `AbortSignal` | | An `AbortSignal` to cancel the request |
 
-#### Example
+**Returns** `Promise<Article[]>` — array of similar document records.
 
-```typescript
+**Example**
+
+```typescript title="fetch-similar-documents.ts"
 import { fetchSimilarDocuments } from '@sinequa/atomic';
 
-// Example 1: Fetch similar documents using a document ID and query name
-async function exampleFetchSimilarDocuments() {
-  try {
-    const documentId = '12345';
-    const queryName = 'similarityQuery';
-    const result = await fetchSimilarDocuments(documentId, queryName);
-    console.log('Similar Documents:', result.data);
-    console.log('Method Result:', result.methodresult);
-  } catch (error) {
-    console.error('Error fetching similar documents:', error);
+const similarDocs = await fetchSimilarDocuments('doc-id-123', '_query');
+similarDocs.forEach(doc => console.log(doc.title));
+```
+
+**Example with cancellation**
+
+```typescript title="fetch-similar-documents-cancel.ts"
+import { fetchSimilarDocuments } from '@sinequa/atomic';
+
+const controller = new AbortController();
+
+// Cancel after 5 seconds
+setTimeout(() => controller.abort(), 5000);
+
+try {
+  const docs = await fetchSimilarDocuments('doc-id-123', '_query', controller.signal);
+  console.log(docs);
+} catch (error) {
+  if (error.name === 'AbortError') {
+    console.log('Request was cancelled');
   }
 }
-
-exampleFetchSimilarDocuments();
 ```

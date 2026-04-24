@@ -1,5 +1,6 @@
 ---
 title: SourceIcon
+sidebar_class_name: deprecated
 ---
 
 The SourceIconPipe transforms a collection of strings into a corresponding icon class based on the source name. If the collection is empty or undefined, it returns a default icon class.

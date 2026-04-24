@@ -2,25 +2,28 @@
 title: App
 ---
 
-The `AppService` is responsible for retrieving the application configuration from the server. It provides a method to fetch the configuration using an HTTP GET request.
+The `AppService` retrieves the application configuration from the Sinequa server.
 
-## Functions
+## Methods
 
-### getApp()
+### `getApp()`
 
-Retrieves the application configuration from the server.
-
-#### Returns
-
-- `Observable<CCApp>`: An observable that emits the application configuration.
-
-#### Remarks
-
-This method constructs an HTTP GET request to fetch the application configuration using the `app` parameter from the global configuration. If the request fails, it logs the error to the console and returns an empty observable.
-
-#### Example
+Fetches the application configuration via HTTP GET.
 
 ```typescript
+getApp(): Observable<CCApp>
+```
+
+**Returns** `Observable<CCApp>` — emits the application configuration. Errors are logged and an empty observable is returned on failure.
+
+**Example**
+
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AppService } from '@sinequa/atomic-angular';
+
+const appService = inject(AppService);
+
 appService.getApp().subscribe(appConfig => {
   console.log(appConfig);
 });

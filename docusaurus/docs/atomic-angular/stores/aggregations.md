@@ -2,56 +2,62 @@
 title: Aggregations
 ---
 
-Each time a search is performed, the result's aggregations are stored in this store.
-It is thus easier to access this information directly than from the `Result` object returned by the backend.
+Each time a search is performed, the result's aggregations are stored in this store. This makes it easier to access aggregation data directly rather than from the `Result` object.
 
-## Basic features
+## Methods
 
-### update()
+### `update()`
 
-Updates the state with the provided aggregations.
-  
-  ```typescript
-  update(aggregations: Aggregation[]): void
-  ```
+Replaces the current aggregations state with the provided array.
 
-| parameter    | type           | description                                      |
-|--------------|----------------|--------------------------------------------------|
-| `aggregations` | `Aggregation[]`  | The new aggregations to update the state with.   |
+```typescript
+update(aggregations: Aggregation[]): void
+```
 
-### updateAggregation()
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `aggregations` | `Aggregation[]` | ✓ | The new aggregations to set. |
 
-Updates an aggregation in the store.
-  
-  ```typescript
-  updateAggregation(aggregation: Aggregation): void
-  ```
+### `updateAggregation()`
 
-| parameter    | type           | description                                      |
-|--------------|----------------|--------------------------------------------------|
-| `aggregation`  | `Aggregation`    | The aggregation to update the state with.        |
+Updates a single aggregation in the store by matching its name.
 
-### clear()
+```typescript
+updateAggregation(aggregation: Aggregation): void
+```
 
-Clears the aggregations in the store by setting the `aggregations` property to an empty array.
-  
-  ```typescript
-  clear(): void
-  ```
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `aggregation` | `Aggregation` | ✓ | The aggregation to update. |
 
-:::info
-This method uses the `patchState` function to update the state of the store.
-:::
+### `clear()`
 
-### getAggregation()
+Resets the aggregations to an empty array.
+
+```typescript
+clear(): void
+```
+
+### `getAggregation()`
 
 Retrieves an aggregation by name or column.
-  
-  ```typescript
-  getAggregation(name: string, kind?: 'column' | 'name'): Aggregation
-  ```
-  
-| parameter | type   | description                                      |
-|-----------|--------|--------------------------------------------------|
-| `name`      | `string` | The name or column of the aggregation to retrieve.|
-| `kind`      | `column \| name` | The kind of the name parameter. Default is aggregation's __"name"__.|
+
+```typescript
+getAggregation(name: string, kind?: 'column' | 'name'): Aggregation
+```
+
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `name` | `string` | ✓ | The name or column of the aggregation to retrieve. |
+| `kind` | `'column' \| 'name'` | | Whether `name` refers to the aggregation name or column. Default: `'name'`. |
+
+**Returns** `Aggregation` — the matching aggregation.
+
+**Example**
+
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AggregationsStore } from '@sinequa/atomic-angular';
+
+const agg = inject(AggregationsStore).getAggregation('geo', 'column');
+```

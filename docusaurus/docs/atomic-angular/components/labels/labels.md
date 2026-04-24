@@ -16,7 +16,7 @@ The labels system is composed of several key parts:
 ## Usage Example
 
 ```ts
-import { MultiSelectLabelsComponent } from '@angular/atomic-angular';
+import { MultiSelectLabelsComponent } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'my-component',

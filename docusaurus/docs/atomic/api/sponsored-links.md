@@ -2,32 +2,14 @@
 title: Sponsored Links
 ---
 
-This module provides functionality for retrieving sponsored links based on user queries. It enables:
+The Sponsored Links module provides a function to fetch promoted or featured links associated with a search query. These links are returned alongside regular search results to enhance discoverability.
 
-- Fetching relevant sponsored content tied to search terms
-- Integrating promotional or featured links into search results
-- Enhancing search experiences with targeted, context-specific links
+## Types
 
-These operations allow for the seamless incorporation of sponsored content alongside regular search results,
- potentially improving user engagement and monetization opportunities.
+### `LinkResult`
 
-## Functions
-
-### fetchSponsoredLinks()
-
-Fetches sponsored links based on the provided webservice and query.  
-This function sends a POST request to the "query.links" endpoint with the specified webservice and query parameters
-to retrieve sponsored links.
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `webservice` | `string` | The name of the webservice to use for fetching sponsored links. |
-| `query` | `Query` | The query object containing search parameters. |
-
-__Returns__ A promise that resolves to an array of LinkResult objects, each representing a sponsored link with the original query attached.
-
-```js title="LinkResult Type"
-export interface LinkResult {
+```typescript
+interface LinkResult {
   id: string;
   title: string;
   url: string;
@@ -40,26 +22,32 @@ export interface LinkResult {
 }
 ```
 
-#### Example
+## Functions
 
-```js title="example-sponsored-links.js"
-import { fetchSponsoredLinks } from "@sinequa/atomic";
+### `fetchSponsoredLinks()`
 
-// Define the webservice and query
-const webservice = "sponsoredlinks";
-const query = {
-  name: "_query",
-  text: "electric vehicles"
-};
+Fetches sponsored links matching the current query from a given web service.
 
-// Fetch sponsored links
-fetchSponsoredLinks(webservice, query)
-  .then(sponsoredLinks => {
-    console.log("Sponsored Links:", sponsoredLinks);
-    // Output: an array of sponsored link objects
-  })
-  .catch(error => {
-    console.error("Error fetching sponsored links:", error);
-  });
+**Parameters**
 
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `webservice` | `string` | ✓ | Name of the sponsored links web service configured on the server |
+| `query` | `Query` | ✓ | The search query context |
+
+**Returns** `Promise<LinkResult[]>` — array of sponsored link objects.
+
+**Example**
+
+```typescript title="fetch-sponsored-links.ts"
+import { fetchSponsoredLinks } from '@sinequa/atomic';
+
+const links = await fetchSponsoredLinks('sponsoredlinks', {
+  name: '_query',
+  text: 'electric vehicles'
+});
+
+links.forEach(link => {
+  console.log(link.title, link.url);
+});
 ```

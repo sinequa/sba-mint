@@ -1,104 +1,100 @@
 ---
-sidebar_position: 3
 title: User Settings
+sidebar_position: 3
 ---
 
-This module provides functionality to interact with user settings:
-
-- Retrieve current user settings from the backend
-- Save complete user settings to the backend
-- Update partial user settings in the backend
-
-These operations allow for efficient management and synchronization
-of user preferences and configurations within the application.
+This module provides functions to manage user settings on the backend. User settings are typed via a generic parameter, allowing full type safety for custom settings schemas.
 
 ## Functions
 
-### fetchUserSettings\<T\>()
+### `fetchUserSettings<T>()`
 
-Fetches the user settings from the backend API.
+Fetches the current user's settings from the backend.
 
-__Returns__ A promise that resolves to the user settings.
+**Returns** `Promise<T>` — the user settings object.
 
-#### Example
+**Example**
 
-```js title="example-fetch-user-settings.js"
-import { fetchUserSettings } from "@sinequa/atomic";
+```typescript title="fetch-user-settings.ts"
+import { fetchUserSettings } from '@sinequa/atomic';
 
-type UserSettings = {
-  bookmarks: Bookmark[],
-  recentSearches: RecentSearch[],
-  savedSearches: SavedSearch[],
-  assistants: Record<string, unknown>
+type MySettings = {
+  bookmarks: Bookmark[];
+  recentSearches: RecentSearch[];
+  savedSearches: SavedSearch[];
 };
 
-const settings = await fetchUserSettings<UserSettings>();
-console.log("settings", settings);
-// Output: a UserSettings object
+const settings = await fetchUserSettings<MySettings>();
+console.log(settings.bookmarks);
 ```
 
-### saveUserSettings\<T\>()
+---
 
-Saves user settings to the server.
+### `saveUserSettings<T>()`
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `usersettings` | `T` | The user settings object to be saved. |
-| `audit` | `AuditEvents` | Optional audit event to be recorded with the save action. |
+Replaces the user's settings entirely.
 
-__Returns__ A promise that resolves to the saved user settings object.
+**Parameters**
 
-#### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `userSettings` | `T` | ✓ | The complete user settings object to save |
+| `audit` | `AuditEvents` | | Audit event to record with the save action |
 
-```js title="example-save-user-settings.js"
-import { saveUserSettings } from "@sinequa/atomic";
+**Returns** `Promise<void>`
 
-saveUserSettings(usersettings).then(_ => console.log("save succeeded!"))
+**Example**
+
+```typescript title="save-user-settings.ts"
+import { saveUserSettings } from '@sinequa/atomic';
+
+await saveUserSettings({ flag: true, bookmarks: [] });
+console.log('Settings saved.');
 ```
 
-### patchUserSettings\<T\>()
+---
 
-Patches (partially updates) user settings on the server.
+### `patchUserSettings<T>()`
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `usersettings` | `Partial<T>` | The partial user settings object containing the properties to be updated. |
-| `audit` | `AuditEvents` | Optional audit event to be recorded with the save action. |
+Partially updates the user's settings, merging the provided object with existing settings.
 
-__Returns__ A promise that resolves to the updated user settings object.
+**Parameters**
 
-#### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `userSettings` | `Partial<T>` | ✓ | The settings properties to update |
+| `audit` | `AuditEvents` | | Audit event to record with the update action |
 
-```js title="example-patch-user-settings.js"
-import { patchUserSettings } from "@sinequa/atomic";
+**Returns** `Promise<T>` — the updated settings object.
 
-// imagine your stored userSettings are: 
-// { flag: false, bookmarks: [{id:1, url: "https://mybookmarks.com/bookmark?id=1" }] }
+**Example**
 
-// update the flag state
-const settings = await patchUserSettings({ flag: true });
-console.log("settings", settings);
-// Output: { flag: true, bookmarks: [{id:1, url: "https://mybookmarks.com/bookmark?id=1" }] }
+```typescript title="patch-user-settings.ts"
+import { patchUserSettings } from '@sinequa/atomic';
+
+// Existing settings: { flag: false, bookmarks: [{ id: 1 }] }
+const updated = await patchUserSettings({ flag: true });
+// Result: { flag: true, bookmarks: [{ id: 1 }] }
+console.log(updated.flag); // true
 ```
 
-### deleteUserSettings()
+---
 
-Deletes all user settings by saving an empty object.
+### `deleteUserSettings()`
+
+Resets the user's settings to their default state by saving an empty object.
+
 :::warning
-This effectively resets the user settings to their default state.
+This operation is irreversible and deletes all stored user settings.
 :::
 
-__Returns__ A promise that resolves when the user settings have been successfully deleted.
+**Returns** `Promise<void>`
 
-#### Example
+**Example**
 
-```js title="example-delete-user-settings.js"
-import { deleteUserSettings } from "@sinequa/atomic";
+```typescript title="delete-user-settings.ts"
+import { deleteUserSettings } from '@sinequa/atomic';
 
-// Delete all user settings
-deleteUserSettings().then(() => {
-  console.log("User settings have been deleted successfully.");
-}).catch((error) => {
-  console.error("Failed to delete user settings:", error);
-});
+await deleteUserSettings();
+console.log('User settings have been reset.');
 ```

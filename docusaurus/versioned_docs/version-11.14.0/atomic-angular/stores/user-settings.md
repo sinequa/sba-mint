@@ -1,6 +1,5 @@
 ---
 title: User Settings
-sidebar_class_name: update
 ---
 
 The `UserSettingsStore` manages user preferences and settings, including language, theme, bookmarks, recent searches, saved searches, baskets, and alerts. It persists state to the backend API and keeps the store in sync.

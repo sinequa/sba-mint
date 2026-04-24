@@ -2,13 +2,15 @@
 title: deleteWebTokenCookie
 ---
 
-Deletes the JSON Web Token (JWT) cookie by sending a GET request to the backend server.
+Deletes the JSON Web Token (JWT) cookie by sending a GET request to the backend server's cookie-deletion endpoint. This is typically called during logout.
 
-#### Example
+**Returns** `Promise<void>`
 
-```js title="delete-web-token-cookie.js"
+**Example**
+
+```typescript title="delete-web-token-cookie.ts"
 import { deleteWebTokenCookie } from '@sinequa/atomic';
 
-// Deletes the JWT cookie
-const response = await deleteWebTokenCookie();
+await deleteWebTokenCookie();
+console.log('JWT cookie deleted');
 ```

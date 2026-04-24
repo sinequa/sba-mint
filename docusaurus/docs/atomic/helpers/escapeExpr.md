@@ -2,42 +2,39 @@
 title: escapeExpr
 ---
 
-Escape a string so that the characters in it are not processed by the fielded search expression parser.
-Single occurrences of the backslash character are replaced by two backslashes and backquote characters
-are prefixed by a backslash. Finally, the string is enclosed in backquotes.
-
-| parameter | type | description |
-|---|---|---|
-| `value` | `string` | The string to escape (optional) |
-
-:::tip examples
-
-```text
-`` a\`\b `` => `` a\\\`\\b ``
-\ => \\  
-` => \`  
-```
-
-:::
+Escapes a string for safe use in a Sinequa fielded search expression. Backslashes are doubled, backquotes are prefixed with a backslash, and the result is enclosed in backquotes.
 
 :::caution
-This function has very specific use cases.
+This function is designed for a specific use case: escaping values for the Sinequa expression parser. Use it only when building fielded search expressions.
 :::
 
-#### Example
+**Parameters**
 
-```js title="escapeExpr.js"
-import { escapeExpr } from "@sinequa/atomic";
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `value` | `string \| undefined` | | The string to escape. Returns ` `` ` if `undefined` or empty. |
 
-const value = "web/wikipedia/*";
-const column = "source";
-const expr = `${column}: ${escapeExpr(value)}`;
-console.log(expr); // Output: "source: `web/wikipedia/*`
+**Returns** `string` — the escaped expression string, enclosed in backquotes.
 
-console.log(escapeExpr(undefined)); // Output: ``
-console.log(escapeExpr(""));        // Output: ``
-console.log(escapeExpr("test"));    // Output: `test`
-console.log(escapeExpr("a\\b"));    // Output: `a\\\\b`
-console.log(escapeExpr("a`b"));     // Output: `a\\`b`
-console.log(escapeExpr("a\\`b"));   // Output: `a\\\\\\`b`
+:::tip Escape rules
+- `\` → `\\`
+- `` ` `` → `` \` ``
+- Result is wrapped in `` ` `` ... `` ` ``
+:::
+
+**Example**
+
+```typescript title="escape-expr.ts"
+import { escapeExpr } from '@sinequa/atomic';
+
+const column = 'source';
+const value = 'web/wikipedia/*';
+const expr = `${column}:${escapeExpr(value)}`;
+// 'source:`web/wikipedia/*`'
+
+console.log(escapeExpr(undefined)); // ``
+console.log(escapeExpr(''));        // ``
+console.log(escapeExpr('test'));    // `test`
+console.log(escapeExpr('a\\b'));    // `a\\b`
+console.log(escapeExpr('a`b'));     // `a\`b`
 ```

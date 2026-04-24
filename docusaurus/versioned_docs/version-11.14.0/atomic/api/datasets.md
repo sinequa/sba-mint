@@ -1,6 +1,5 @@
 ---
 title: Datasets
-sidebar_class_name: update
 ---
 
 The Datasets module provides functions to fetch data from Sinequa dataset web services. It supports individual dataset retrieval, bulk fetching, and listing available datasets.

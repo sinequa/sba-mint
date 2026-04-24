@@ -2,64 +2,41 @@
 title: Application
 ---
 
-The `ApplicationService` is responsible for handling application-related operations in the application. It provides methods to initialize the application and create routes dynamically based on queries and configuration.
+The `ApplicationService` initializes the application: fetches app config, loads the principal and user settings, and optionally creates Angular routes from the Sinequa administration configuration.
 
-## Functions
+## Methods
 
-### initAndCreateRoutes()
+### `initialize()`
 
-Initializes the application and creates routes.
+Initializes the application and optionally creates Angular routes.
 
 ```typescript
-async initAndCreateRoutes(withCreateRoutes = true): Promise<void>
+initialize(withCreateRoutes?: boolean): Promise<void>
 ```
 
-#### Parameters
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `withCreateRoutes` | `boolean` | | Whether to create routes after initialization. Default: `true`. |
 
-| Parameter         | Type      | Description                                                                 |
-|-------------------|-----------|-----------------------------------------------------------------------------|
-| withCreateRoutes  | `boolean` | Whether to create routes after initialization. Defaults to `true`.          |
+**Returns** `Promise<void>` — resolves when the application is fully initialized.
 
-This method performs the following actions:
+When `withCreateRoutes` is `true`, Angular routes are created from the `routes` custom JSON defined in the Sinequa administration panel and merged into the `search` children route.
 
-1. Throws an error if no components are registered and withCreateRoutes is true
-2. Calls the `init` method to initialize the application.
-3. If withCreateRoutes is true and the query has tab search configuration, it calls the `createRoutes` private method to set up the application routes.
+**Example**
 
-#### Example
+```typescript title="app.config.ts"
+import { inject } from '@angular/core';
+import { ApplicationService } from '@sinequa/atomic-angular';
 
-```typescript
-appService.initAndCreateRoutes().then(() => {
-  console.log('Application initialized and routes created');
+provideAppInitializer(() => {
+  const applicationService = inject(ApplicationService);
+  return applicationService.initialize();
 });
 ```
 
-### init()
+## Components Registration
 
-Initializes the application.
-
-```typescript
-async init(): Promise<void>
-```
-
-This method performs the following actions:
-
-- Fetches the application configuration via appStore.initialize()
-- Loads the principal (user information) via principalStore.initialize()
-- Loads the user settings via userSettingsStore.initialize()
-- Handles and logs any errors during initialization
-
-#### Example
-
-```typescript
-appService.init().then(() => {
-  console.log('Application initialized');
-});
-```
-
-## Component Registration
-
-Components are registered via the `ROUTE_COMPONENTS` injection token. This token accepts an array of `ComponentMapping` objects with the following structure:
+Register page components via the `ROUTE_COMPONENTS` injection token so they can be wired to dynamically created routes.
 
 ```typescript
 export type ComponentMapping = {
@@ -69,21 +46,23 @@ export type ComponentMapping = {
 };
 ```
 
-#### Example
+**Example**
 
-```typescript
-// In your app.module.ts
-@NgModule({
+```typescript title="app.config.ts"
+import { ROUTE_COMPONENTS } from '@sinequa/atomic-angular';
+import { Home } from './pages/home';
+import { Search } from './pages/search';
+
+export const appConfig: ApplicationConfig = {
   providers: [
     {
       provide: ROUTE_COMPONENTS,
       useValue: [
-        { path: 'home', component: HomeComponent },
-        { path: 'search', component: SearchLayoutComponent, isRoot: true }
+        { path: 'home', component: Home },
+        { path: 'search', component: Search, isRoot: true },
       ],
-      multi: true
-    }
-  ]
-})
-export class AppModule { }
+      multi: true,
+    },
+  ],
+};
 ```

@@ -2,48 +2,34 @@
 title: KeyOf
 ---
 
-Type alias that extracts the keys of a given type `T`.
+A TypeScript utility type that extracts the union of all keys from a given type `T`. Equivalent to `keyof T` with string-only filtering.
 
-#### Example
+**Type Definition**
 
-```js title="example.js"
-import { KeyOf } from '@sinequa/atomic';
+```typescript
+type KeyOf<T> = keyof T;
+```
 
-// Define a sample interface
+**Example**
+
+```typescript title="key-of.ts"
+import type { KeyOf } from '@sinequa/atomic';
+
 interface User {
   id: number;
   name: string;
   email: string;
-  age: number;
   isActive: boolean;
 }
 
-// Use the KeyOf<T> type alias
-type UserStringKeys = KeyOf<User>;
-// Equals to: type UserStringKeys = "id" | "name" | "email" | "age" | "isActive"
+type UserKey = KeyOf<User>;
+// 'id' | 'name' | 'email' | 'isActive'
 
-// Example usage
-const userKey: UserStringKeys = "name";
-
-// This would be valid
-const validKey: UserStringKeys = "email";
-
-console.log("Valid user key:", userKey);
-// Output: Valid user key: name
-
-// Function that uses KeyOf<T>
-function getUserProperty(user: User, key: KeyOf<User>): string {
-  return String(user[key]);
+function getUserProperty(user: User, key: KeyOf<User>): unknown {
+  return user[key];
 }
 
-const sampleUser: User = {
-  id: 1,
-  name: "John Doe",
-  email: "john@example.com",
-  age: 30,
-  isActive: true
-};
-
-console.log(getUserProperty(sampleUser, "name")); // Output: John Doe
-console.log(getUserProperty(sampleUser, "email")); // Output: john@example.com
+const user: User = { id: 1, name: 'John', email: 'john@example.com', isActive: true };
+console.log(getUserProperty(user, 'name'));  // 'John'
+console.log(getUserProperty(user, 'email')); // 'john@example.com'
 ```

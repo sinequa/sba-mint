@@ -2,23 +2,25 @@
 title: isObject
 ---
 
-Checks if the given value is an object.
+Checks whether the given value is a non-null object (including arrays).
 
-| parameter | type | description |
-| --- | --- | --- |
-| `obj` | `unknown` | The value to check |
+**Parameters**
 
-__Returns__ `boolean`: True if the value is an object, false otherwise.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `value` | `unknown` | ✓ | The value to check |
 
-#### Example
+**Returns** `boolean` — `true` if the value is an object (and not `null`), `false` otherwise.
 
-```js title="is-object.js"
-import { isObject } from "@sinequa/atomic";
+**Example**
 
-console.log(isObject(null));      // Output: false
-console.log(isObject(undefined)); // Output: false
-console.log(isObject(42));        // Output: false
-console.log(isObject("test"));    // Output: false
-console.log(isObject([]));        // Output: true
-console.log(isObject({}));        // Output: true
+```typescript title="is-object.ts"
+import { isObject } from '@sinequa/atomic';
+
+console.log(isObject(null));      // false
+console.log(isObject(undefined)); // false
+console.log(isObject(42));        // false
+console.log(isObject('test'));    // false
+console.log(isObject([]));        // true
+console.log(isObject({}));        // true
 ```

@@ -2,72 +2,70 @@
 title: Preview
 ---
 
-This module provides functionality for retrieving and displaying document previews. It allows users to:
-
-- Fetch preview data for specific documents based on queries
-- Retrieve cached document content URLs
-- Access highlighted text segments within previews
-- Obtain full document content from cached URLs
-
-These operations enable efficient document preview functionality, enhancing the user's ability to quickly assess document
-relevance and content without opening the full document.
+The Preview module provides functions to fetch document preview data and retrieve cached document content. It enables displaying highlighted document previews without opening the full document.
 
 ## Functions
 
-### fetchPreview()
+### `fetchPreview()`
 
-Fetches preview data for a given id and query.
+Fetches preview data for a specific document based on a query. The returned object includes highlight data and the URL of the cached document content.
 
-__Returns__ A promise that resolves to the [`PreviewData`](#previewdata-type).
+**Parameters**
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `id` | `string` | The unique identifier of the document to fetch preview data for. |
-| `query` | `Query` | The query object used to retrieve the preview data. |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The unique document identifier |
+| `query` | `Query` | ✓ | The current query (used for highlight computation) |
 
-#### PreviewData Type
+**Returns** `Promise<PreviewData>` — preview data including cache URL and highlight positions.
 
-```js
-export type PreviewData = {
-    record: Article,
-    resultId: string,
-    cacheId: string,
-    highlightsPerCategory: HighlightDataPerCategory,
-    highlightsPerLocation: HighlightDataPerLocation[],
-    documentCachedContentUrl: string
-}
-```
-
-#### Example
-
-```js title="example-fetch-preview.js"
-import { fetchPreview } from "@sinequa/atomic";
-
-const query = {
-  name,
-  "text": "Tesla"
+```typescript title="PreviewData type"
+type PreviewData = {
+  record: Article;
+  resultId: string;
+  cacheId: string;
+  highlightsPerCategory: HighlightDataPerCategory;
+  highlightsPerLocation: HighlightDataPerLocation[];
+  documentCachedContentUrl: string;
 };
-
-const response = await fetchPreview(id, query)
-const { documentCachedContentUrl } = response;
-console.log("document cache content url", documentCachedContentUrl);
 ```
 
-### fetchPreviewUrl()
+**Example**
 
-Fetches preview document content from a given URL.
+```typescript title="fetch-preview.ts"
+import { fetchPreview } from '@sinequa/atomic';
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `url` | `string` | The URL from which to fetch the preview document content. |
+const preview = await fetchPreview('doc-id-123', {
+  name: '_query',
+  text: 'Tesla'
+});
 
-__Returns__ A promise that resolves to the preview document content as a string.
+console.log(preview.documentCachedContentUrl);
+// Load this URL in an <iframe> or fetch the content directly
+```
 
-#### Example
+---
 
-```js title="example-fetch-preview-url.js"
-import { fetchPreviewUrl } from "@sinequa/atomic";
+### `fetchPreviewUrl()`
 
-const content = await fetchPreviewUrl("https://my-website.com/index.html");
-console.log("content", content); // Output: the document content
+Fetches the HTML content of a cached document preview URL.
+
+**Parameters**
+
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The cached document URL (typically from `PreviewData.documentCachedContentUrl`) |
+
+**Returns** `Promise<string>` — the document content as an HTML string.
+
+**Example**
+
+```typescript title="fetch-preview-url.ts"
+import { fetchPreview, fetchPreviewUrl } from '@sinequa/atomic';
+
+const { documentCachedContentUrl } = await fetchPreview('doc-id-123', query);
+const htmlContent = await fetchPreviewUrl(documentCachedContentUrl);
+
+// Inject into an iframe or display in a shadow DOM
+document.getElementById('preview-container')!.innerHTML = htmlContent;
 ```

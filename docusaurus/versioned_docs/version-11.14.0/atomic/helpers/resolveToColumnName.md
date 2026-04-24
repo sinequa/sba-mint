@@ -1,6 +1,5 @@
 ---
 title: resolveToColumnName
-sidebar_class_name: update
 ---
 
 Resolves a column alias to its actual column name using the application's query configuration or index schema.

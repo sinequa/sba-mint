@@ -1,6 +1,5 @@
 ---
 title: Concepts
-sidebar_class_name: update
 ---
 
 This module provides utility functions for parsing, rewriting, and manipulating search concepts in text. Concepts are represented using a pattern syntax (groups, adjacent, exact, regex, token) and are commonly used in advanced search query building.

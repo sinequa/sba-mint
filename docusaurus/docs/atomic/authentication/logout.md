@@ -2,19 +2,23 @@
 title: logout
 ---
 
-Logs out the user, removes tokens from storage, and deletes cookies via `deleteWebTokenCookie`.
-Emits the `'authenticated'` event with `false`.
+Logs out the current user. Removes the CSRF token from session storage, deletes the web token cookie, and emits an `'authenticated'` event with `false`.
 
-#### Example
+**Returns** `Promise<void>`
 
-```js title="logout.js"
+**Example**
+
+```typescript title="logout.ts"
 import { logout } from '@sinequa/atomic';
 
-addEventListener('authenticated', (event) => {
-  console.log('Authenticated:', event.detail.authenticated);
+document.addEventListener('authenticated', (event: Event) => {
+  const { authenticated } = (event as CustomEvent).detail;
+  if (!authenticated) {
+    // Redirect to login page
+    window.location.href = '/login';
+  }
 });
 
-logout().then(() => {
-  console.log('User logged out successfully');
-});
+await logout();
+console.log('User logged out.');
 ```

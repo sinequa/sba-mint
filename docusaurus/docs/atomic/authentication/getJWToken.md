@@ -2,20 +2,25 @@
 title: getJWToken
 ---
 
-Retrieves a JSON Web Token (JWT) by sending a POST request to the backend server with credentials.
-If a valid CSRF token is returned, it is stored in session storage.
+Sends credentials to the backend to obtain a JSON Web Token (JWT). If a valid CSRF token is returned in the response, it is automatically stored in session storage.
 
-| parameter    | type          |
-| ------------ | ------------- |
-| `credentials`  | `Credentials` |
+**Parameters**
 
-#### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `credentials` | `Credentials` | ✓ | Username and password credentials |
 
-```js title="get-jwt-token.js"
+**Returns** `Promise<string | null>` — the JWT token if authentication succeeded, or `null` otherwise.
+
+**Example**
+
+```typescript title="get-jwt-token.ts"
 import { getJWToken } from '@sinequa/atomic';
 
 const token = await getJWToken({ username: 'user', password: 'pa$$word' });
-if(token) {
-  console.log("Token", token);
+if (token) {
+  console.log('JWT token:', token);
+} else {
+  console.log('Authentication failed');
 }
 ```

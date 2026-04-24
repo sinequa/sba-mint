@@ -1,6 +1,5 @@
 ---
 title: Query Params from URL
-sidebar_class_name: update
 ---
 
 This module provides utility functions to extract and parse query parameters and filters from a URL string. These helpers are useful for restoring search state from a URL (e.g., when sharing or bookmarking a search result page).

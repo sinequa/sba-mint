@@ -1,6 +1,5 @@
 ---
 title: Query
-sidebar_class_name: update
 ---
 
 The Query module provides functions to execute search queries against the Sinequa backend. It supports single and bulk query execution, optional audit event recording, and query intent analysis integration.

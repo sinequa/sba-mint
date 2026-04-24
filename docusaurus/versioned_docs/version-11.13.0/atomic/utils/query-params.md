@@ -1,6 +1,5 @@
 ---
 title: Query Params
-sidebar_class_name: update
 ---
 
 This module provides utility functions for extracting and parsing query parameters from URLs,

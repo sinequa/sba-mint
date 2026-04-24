@@ -31,13 +31,27 @@ const config = {
     locales: ['en']
   },
 
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    require.resolve('docusaurus-lunr-search'),
+    function suppressVscodeLangserverWarning() {
+      return {
+        name: 'suppress-vscode-languageserver-warning',
+        configureWebpack() {
+          return {
+            module: {
+              noParse: [/vscode-languageserver-types[\\/]lib[\\/]umd[\\/]main\.js/]
+            }
+          };
+        }
+      };
+    }
+  ],
 
   presets: [
     [
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
-      {
+      ({
         docs: {
           routeBasePath: '/',
           includeCurrentVersion: false,
@@ -67,13 +81,13 @@ const config = {
         theme: {
           customCss: './src/css/custom.css'
         }
-      }
+      })
     ]
   ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    {
+    ({
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       docs: {
@@ -83,7 +97,7 @@ const config = {
         }
       },
       navbar: {
-        title: 'Mint',
+        title: '🍵 Mint',
         logo: {
           alt: 'Sinequa Logo',
           src: 'img/Logo_SINEQUA_RVB-170.png'
@@ -93,13 +107,13 @@ const config = {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomic',
-            label: 'Atomic'
+            label: '⚛️ Atomic'
           },
           {
             type: 'docSidebar',
             position: 'left',
             sidebarId: 'atomicAngular',
-            label: 'Atomic for Angular'
+            label: '🅰️ Atomic for Angular'
           },
           {
             type: 'docsVersionDropdown',
@@ -162,7 +176,7 @@ const config = {
           }
         ]
       }
-    },
+    }),
   themes: ['@docusaurus/theme-mermaid'],
   // In order for Mermaid code blocks in Markdown to work,
   // you also need to enable the Remark plugin with this option

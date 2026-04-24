@@ -1,83 +1,69 @@
 ---
 title: Aggregations
-sidebar_class_name: update
 ---
 
-The `AggregationsService` is responsible for handling aggregation-related operations in the application. It provides methods to load more aggregation items, open aggregation nodes, and retrieve sorted aggregations based on a query name.
+The `AggregationsService` handles aggregation-related operations: loading more items in a flat aggregation or opening a node in a tree aggregation.
 
 :::note
-The functionality for retrieving sorted aggregations based on a query name is provided by the [`getAuthorizedFilters`](../stores/app.mdx#getauthorizedfilters) method in the [`AppStore`](../stores/app.mdx), not in this service.
-See the AppStore documentation for details on retrieving sorted aggregations.
+Retrieving sorted aggregations based on a query name is provided by [`getAuthorizedFilters()`](../stores/app.mdx#getauthorizedfilters) in `AppStore`, not in this service.
 :::
 
-## Functions
+## Methods
 
-### loadMore()
+### `loadMore()`
 
 Loads more items for a given aggregation.
 
-#### Parameters
+```typescript
+loadMore(query: Partial<Query>, aggregation: Aggregation, audit?: AuditEvents): Observable<Aggregation>
+```
 
-| Parameter     | Type                | Description                                                                 |
-|---------------|---------------------|-----------------------------------------------------------------------------|
-| `query`       | `Partial<Query>`    | The query object containing the current query parameters.                   |
-| `aggregation` | `Aggregation`       | The aggregation object for which more items need to be loaded.              |
-| `audit`       | `AuditEvents`       | (Optional) Audit events to be recorded.                                     |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `query` | `Partial<Query>` | ✓ | The current query parameters. |
+| `aggregation` | `Aggregation` | ✓ | The aggregation for which to load more items. |
+| `audit` | `AuditEvents` | | Optional audit events to record. |
 
-#### Returns
+**Returns** `Observable<Aggregation>` — emits the updated aggregation with additional items.
 
-| Type                | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| `Observable<Aggregation>` | An observable that emits the updated aggregation with more items.     |
+**Example**
 
-### open()
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AggregationsService } from '@sinequa/atomic-angular';
 
-Opens a node in a tree aggregation.
+const aggregationsService = inject(AggregationsService);
 
-#### Parameters
+aggregationsService.loadMore(query, aggregation).subscribe(updated => {
+  console.log(updated);
+});
+```
 
-| Parameter     | Type                    | Description                                                                 |
-|---------------|-------------------------|-----------------------------------------------------------------------------|
-| `query`       | `Partial<Query>`        | The query object containing the current query parameters.                   |
-| `aggregation` | `TreeAggregation`       | The tree aggregation object containing the node to be opened.               |
-| `item`        | `TreeAggregationNode`   | The node to be opened.                                                      |
+### `open()`
 
-#### Returns
-
-| Type                    | Description                                                                 |
-|-------------------------|-----------------------------------------------------------------------------|
-| `Observable<TreeAggregation>` | An observable that emits the updated tree aggregation with the node opened. |
-
-## Example
+Opens a node in a tree aggregation to reveal its children.
 
 ```typescript
-import { AggregationsService } from './services/aggregations.service';
+open(query: Partial<Query>, aggregation: TreeAggregation, item: TreeAggregationNode): Observable<TreeAggregation>
+```
 
-constructor(private aggregationsService: AggregationsService) {}
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `query` | `Partial<Query>` | ✓ | The current query parameters. |
+| `aggregation` | `TreeAggregation` | ✓ | The tree aggregation containing the node to open. |
+| `item` | `TreeAggregationNode` | ✓ | The node to open. |
 
-loadMoreAggregations() {
-  const query = { /* query parameters */ };
-  const aggregation = { /* aggregation object */ };
-  
-  this.aggregationsService.loadMore(query, aggregation).subscribe(updatedAggregation => {
-    console.log(updatedAggregation);
-  });
-}
+**Returns** `Observable<TreeAggregation>` — emits the updated tree aggregation with the node opened.
 
-openAggregationNode() {
-  const query = { /* query parameters */ };
-  const aggregation = { /* tree aggregation object */ };
-  const item = { /* tree aggregation node */ };
-  
-  this.aggregationsService.open(query, aggregation, item).subscribe(updatedAggregation => {
-    console.log(updatedAggregation);
-  });
-}
+**Example**
 
-// To get sorted aggregations, use the AppStore instead
-getAuthorizedFilters() {
-  const route = this.router.routerState.root;
-  const sortedAggregations = this.appStore.getAuthorizedFilters(route);
-  console.log(sortedAggregations);
-}
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { AggregationsService } from '@sinequa/atomic-angular';
+
+const aggregationsService = inject(AggregationsService);
+
+aggregationsService.open(query, treeAggregation, node).subscribe(updated => {
+  console.log(updated);
+});
 ```

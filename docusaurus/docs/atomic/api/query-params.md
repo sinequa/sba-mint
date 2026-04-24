@@ -1,208 +1,165 @@
 ---
-title: QueryParams from URL
+title: Query Params from URL
 ---
 
-This utility functions to extract query parameters and filters from a URL.
-These functions help in parsing and handling URL parameters efficiently.
+This module provides utility functions to extract and parse query parameters and filters from a URL string. These helpers are useful for restoring search state from a URL (e.g., when sharing or bookmarking a search result page).
 
-## Get Query Params
+## Types
 
-### getQueryParamsFromUrl()
+### `QueryParams`
 
-Extract params from the given URL and return a [`QueryParams`](#queryparams) Object which is a simplified `Query` Object.
+A simplified `Query` object extended with URL-specific fields:
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
-
-#### QueryParams
-
-```ts
-import { LegacyFilter, Query, SpellingCorrectionMode } from "@sinequa/atomic";
-
-export type QueryParams = Query & {
+```typescript
+type QueryParams = Query & {
   path?: string;
   filters?: LegacyFilter[];
   id?: string;
   queryName?: string;
-}
+};
 ```
 
-#### Usage
+## Functions
 
-```ts
-const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
-const queryParams = getQueryParamsFromUrl(url);
-console.log(queryParams);
-// Output
-{
-  path: 'https://www.sinequa.com',
-  text: 'hello',
-  filters: undefined,
-  page: 3,
-  sort: 'date',
-  tab: 'all',
-  scope: 'web'
-}
+### `getQueryParamsFromUrl()`
+
+Parses a URL and returns a `QueryParams` object containing all recognized query parameters.
+
+**Parameters**
+
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL to parse |
+
+**Returns** `QueryParams` — parsed query parameters.
+
+**Example**
+
+```typescript title="get-query-params.ts"
+import { getQueryParamsFromUrl } from '@sinequa/atomic';
+
+const params = getQueryParamsFromUrl(
+  'https://myapp.com/search?q=hello&scope=web&sort=date&t=all&p=3'
+);
+// {
+//   path: 'https://myapp.com/search',
+//   text: 'hello',
+//   page: 3,
+//   sort: 'date',
+//   tab: 'all',
+//   scope: 'web'
+// }
 ```
 
-## Get filters
+---
 
-### getFiltersFromUrl()
+### `getFiltersFromUrl()`
 
-Extract filters from the given URL and returns a `LegacyFilter` array.
+Extracts the `LegacyFilter` array from a URL's `f` parameter.
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
+**Parameters**
 
-#### Usage
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL containing filters in the `f` parameter |
 
-```ts
-const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
-console.log(getFiltersFromUrl(url));
-// Output
-[
-  {
-    field: 'geo',
-    value: 'AMERICA',
-    operator: 'contains',
-    display: 'America'
-  }
-]
+**Returns** `LegacyFilter[]` — array of parsed legacy filters.
+
+**Example**
+
+```typescript title="get-filters-from-url.ts"
+import { getFiltersFromUrl } from '@sinequa/atomic';
+
+const url = 'https://myapp.com/search?q=Tesla&f=%5B%7B"field":"geo","value":"AMERICA"%7D%5D';
+const filters = getFiltersFromUrl(url);
+// [{ field: 'geo', value: 'AMERICA' }]
 ```
 
-### getFiltersFromURI()
+---
 
-Get a `LegacyFilter` array from URI string
+### `getFiltersFromURI()`
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| uri       | string | The URI string to parse |
+Parses a URI-encoded filter string directly into a `LegacyFilter` array.
 
-#### Usage
+**Parameters**
 
-##### From an URL
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `uri` | `string` | ✓ | URI-encoded filter string (the raw value of the `f` parameter) |
 
-```ts
-const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
-const { f } = queryParamsFromUrl(url);  // retrieve filters URI value
-console.log(getFiltersFromURI(f));      // convert URI value into a LegacyFilters[]
-// Output
-[
-  {
-    field: 'geo',
-    value: 'AMERICA',
-    operator: 'contains',
-    display: 'America'
-  }
-]
+**Returns** `LegacyFilter[]` — array of parsed legacy filters.
+
+**Example**
+
+```typescript title="get-filters-from-uri.ts"
+import { getFiltersFromURI } from '@sinequa/atomic';
+
+const uri = '%5B%7B"field":"geo","value":"AMERICA"%7D%5D';
+const filters = getFiltersFromURI(uri);
+// [{ field: 'geo', value: 'AMERICA' }]
 ```
 
-##### From an URI value
+---
 
-```ts
-const uri = '%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
-console.log(getFiltersFromURI(uri));
-// Output
-[
-  {
-    field: 'geo',
-    value: 'AMERICA',
-    operator: 'contains',
-    display: 'America'
-  }
-]
+## Helper Functions
+
+### `getQueryTextFromUrl()`
+
+Extracts the query text (`q` parameter) from a URL.
+
+**Parameters**
+
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL to parse |
+
+**Returns** `string | undefined`
+
+**Example**
+
+```typescript
+getQueryTextFromUrl('https://myapp.com?q=hello&p=2');
+// 'hello'
 ```
 
-:::tip
-Same can be achieved with `getQueryParamsFromUrl()` 👇
+---
 
-```ts
-const url = 'https://www.sinequa.com/?q=Nikola%20Tesla&t=all&f=%5B%7B"field":"geo","value":"AMERICA","operator":"contains","display":"America"%7D%5D';
-const { filters } = getQueryParamsFromUrl(url) as { filters: [] };
-console.log(filters);
-// Output:
-[
-  {
-    field: 'geo',
-    value: 'AMERICA',
-    operator: 'contains',
-    display: 'America'
-  }
-]
-```
+### `getIdFromUrl()`
 
-:::
+Extracts the document ID (`id` parameter) from a URL.
 
-## Helpers
+**Parameters**
 
-These functions are useful for parsing URLs and extracting specific query parameters, which can be helpful in various web development scenarios, such as filtering search results or navigating through paginated content.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL to parse |
 
-### getQueryTextFromUrl()
+**Returns** `string | undefined`
 
-Retrieves the query Text from a URL or undefined.
+---
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
+### `getQueryPageFromUrl()`
 
-#### Usage
+Extracts the page number (`p` parameter) from a URL.
 
-```ts
-const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
-const text  = getQueryTextFromUrl(url);
-console.log(text);
-// Output: "hello"
-```
+**Parameters**
 
-### getIdFromUrl()
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL to parse |
 
-Retrieves the query Id from a URL or undefined.
+**Returns** `number`
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
+---
 
-#### Usage
+### `getQueryTabFromUrl()`
 
-```ts
-const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3&id=ref123';
-const id  = getIdFromUrl(url);
-console.log(id);
-// Output: "ref123"
-```
+Extracts the active tab (`t` parameter) from a URL.
 
-### getQueryPageFromUrl()
+**Parameters**
 
-Retrieves the query Page from a URL.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `url` | `string` | ✓ | The URL to parse |
 
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
-
-#### Usage
-
-```ts
-const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
-const page  = getQueryPageFromUrl(url);
-console.log(page);
-// Output: 3
-```
-
-### getQueryTabFromUrl()
-
-Retrieves the query Tab from a URL.
-
-| Parameter | Type   | Description                |
-|-----------|--------|----------------------------|
-| url       | string | The URL to extract params from |
-
-#### Usage
-
-```ts
-const url = 'https://www.sinequa.com?q=hello&scope=web&sort=date&t=all&p=3';
-const tab  = getQueryTabFromUrl(url);
-console.log(tab);
-// Output: "all"
-```
+**Returns** `string | undefined`

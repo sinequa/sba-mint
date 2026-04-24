@@ -7,7 +7,7 @@ The `MissingTerms` component displays search terms that were not found in the cu
 ## Usage
 
 ```ts title="sample.component.ts"
-import { MissingTermsComponent } from "@angular/atomic-angular";
+import { MissingTermsComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",

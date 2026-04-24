@@ -4,11 +4,15 @@ title: getToken
 
 Retrieves the CSRF token from session storage.
 
-#### Example
+**Returns** `string | null` — the CSRF token, or `null` if not present.
 
-```js title="get-token.js"
+**Example**
+
+```typescript title="get-token.ts"
 import { getToken } from '@sinequa/atomic';
 
-// Retrieves the CSRF token
 const token = getToken();
+if (token) {
+  console.log('CSRF token:', token);
+}
 ```

@@ -1,6 +1,5 @@
 ---
 title: App
-sidebar_class_name: update
 sidebar_position: 1
 ---
 

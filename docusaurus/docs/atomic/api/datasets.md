@@ -2,123 +2,81 @@
 title: Datasets
 ---
 
-The `datasets` module offers a suite of functions to interact with datasets through various web services.
-It allows users to fetch individual datasets, multiple datasets, and lists of dataset descriptions based on specific queries
-and parameters. This module is essential for applications that need to retrieve and manage data dynamically from different sources.
-
-Key functionalities include:
-
-- Fetching a single dataset with `fetchDataset`.
-- Retrieving multiple datasets using `fetchDatasets`.
-- Obtaining a list of dataset descriptions via `fetchDatasetList`.
-
-These functions ensure that users can efficiently access and handle datasets as per their requirements.
+The Datasets module provides functions to fetch data from Sinequa dataset web services. It supports individual dataset retrieval, bulk fetching, and listing available datasets.
 
 ## Functions
 
-### fetchDataset()
+### `fetchDataset<T>()`
 
-Fetches a dataset from the specified web service and query name.
+Fetches a single dataset from a named web service.
 
-| **Parameters**      | **Type**   | **Description** |
-|---------------------|------------|-----------------|
-| `webserviceName`    | `string`   | The name of the web service to fetch the dataset from. |
-| `queryName`         | `string`   | The name of the query to execute. |
-| `parameters`        | `object`   | Optional parameters to pass to the query. Defaults to an empty object. |
+**Parameters**
 
-| **Returns**         | **Description** |
-|---------------------|-----------------|
-| `Promise<T>`        | A promise that resolves to the fetched dataset. Where `T` is the type of the dataset, defaults to Result.  |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `webserviceName` | `string` | ✓ | Name of the dataset web service |
+| `queryName` | `string` | ✓ | Name of the query to execute within the service |
+| `parameters` | `object` | | Additional parameters to pass to the query. Default: `{}` |
 
-| **Throws**          | **Description** |
-|---------------------|-----------------|
-| `Error`             | If the dataset contains an error code and message. |
+**Returns** `Promise<T>` — the fetched dataset. Defaults to `Result` if no type parameter is provided.
 
-#### Example Fetching a Single Dataset
+**Example**
 
-```javascript
-import { fetchDataset } from 'datasets';
+```typescript title="fetch-dataset.ts"
+import { fetchDataset } from '@sinequa/atomic';
 
-async function getSingleDataset() {
-  try {
-    const dataset = await fetchDataset('exampleService', 'exampleQuery', { param1: 'value1' });
-    console.log(dataset);
-  } catch (error) {
-    console.error('Error fetching dataset:', error);
-  }
-}
-
-getSingleDataset();
+const dataset = await fetchDataset('myDatasetService', 'myQuery', { param1: 'value1' });
+console.log(dataset);
 ```
 
-### fetchDatasets()
+---
 
-Fetches datasets from a specified web service.
+### `fetchDatasets<T>()`
 
-#### Parameters
+Fetches one or more named datasets from a web service in a single request.
 
-| **Parameter**       | **Type**   | **Description**                                                                 |
-|---------------------|------------|---------------------------------------------------------------------------------|
-| `webserviceName`    | `string`   | The name of the web service to fetch datasets from.                             |
-| `options`           | `{parameters?: {}, datasets?: string[]}`   | The options for the request.|
+**Parameters**
 
-| **Options**         | **Type**   | **Description**                                                                 |
-|---------------------|------------|---------------------------------------------------------------------------------|
-| `parameters`        | `object`   | Optional. The body of the request, defaults to an empty object.                 |
-| `datasets`          | `string[]` | Optional. An array of dataset names to fetch, defaults to an empty array.       |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `webserviceName` | `string` | ✓ | Name of the dataset web service |
+| `options` | `object` | ✓ | Fetch options |
+| `options.parameters` | `object` | | Request body parameters. Default: `{}` |
+| `options.datasets` | `string[]` | | Names of datasets to fetch. Default: `[]` |
 
-#### Returns
+**Returns** `Promise<DataSet<T>>` — the fetched datasets keyed by name.
 
-- `Promise<DataSet<T>>`: A promise that resolves to the fetched datasets.
+**Example**
 
-#### Example Fetching Multiple Datasets
+```typescript title="fetch-datasets.ts"
+import { fetchDatasets } from '@sinequa/atomic';
 
-```javascript
-import { fetchDatasets } from 'datasets';
-
-async function getMultipleDatasets() {
-  try {
-    const datasets = await fetchDatasets('exampleService', { 
-      parameters: {value1: 'value1' }, 
-      datasets: ['dataset1', 'dataset2']
-    });
-    console.log(datasets);
-  } catch (error) {
-    console.error('Error fetching datasets:', error);
-  }
-}
-
-getMultipleDatasets();
+const result = await fetchDatasets('myService', {
+  parameters: { filter: 'active' },
+  datasets: ['dataset1', 'dataset2']
+});
+console.log(result);
 ```
 
-### fetchDatasetList()
+---
 
-Fetches a list of dataset descriptions from the specified web service.
+### `fetchDatasetList()`
 
-#### Parameters
+Fetches the list of dataset descriptions available in a given web service.
 
-| **Parameter**       | **Type**   | **Description**                                                                 |
-|---------------------|------------|---------------------------------------------------------------------------------|
-| `webserviceName`    | `string`   | The name of the web service to fetch the dataset list from.                     |
+**Parameters**
 
-#### Returns
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `webserviceName` | `string` | ✓ | Name of the dataset web service |
 
-- `Promise<DatasetDescription[]>`: A promise that resolves to an array of `DatasetDescription` objects.
-This module provides functionality for retrieving and managing datasets based on user queries.
+**Returns** `Promise<DatasetDescription[]>` — array of dataset descriptions.
 
-#### Example Fetching a List of Dataset Descriptions
+**Example**
 
-```javascript
-import { fetchDatasetList } from 'datasets';
+```typescript title="fetch-dataset-list.ts"
+import { fetchDatasetList } from '@sinequa/atomic';
 
-async function getDatasetList() {
-  try {
-    const datasetList = await fetchDatasetList('exampleService');
-    console.log(datasetList);
-  } catch (error) {
-    console.error('Error fetching dataset list:', error);
-  }
-}
-
-getDatasetList();
+const datasets = await fetchDatasetList('myService');
+datasets.forEach(d => console.log(d.name, d.description));
 ```

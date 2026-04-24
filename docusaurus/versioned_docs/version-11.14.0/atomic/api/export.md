@@ -1,6 +1,5 @@
 ---
 title: Export
-sidebar_class_name: update
 ---
 
 The Export module provides a function to export query results in various formats (CSV, XLSX, etc.) from the Sinequa backend.

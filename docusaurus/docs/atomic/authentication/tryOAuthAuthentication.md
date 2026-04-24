@@ -2,13 +2,19 @@
 title: tryOAuthAuthentication
 ---
 
-Initiates the OAuth authentication process and redirects the user to the provider's login page. Stores the redirect URL in localStorage.
+Initiates the OAuth authentication flow by redirecting the user to the configured OAuth provider's login page. The current URL is saved to `localStorage` so the application can redirect back after authentication.
 
-#### Example
+:::info
+The OAuth provider name is read from `globalConfig.autoOAuthProvider`. Ensure `appInitializerFn()` has been called before using this function.
+:::
 
-```js title="try-oauth-authentication.js"
+**Returns** `Promise<void>`
+
+**Example**
+
+```typescript title="try-oauth-authentication.ts"
 import { tryOAuthAuthentication } from '@sinequa/atomic';
 
-// Initiates the OAuth authentication process
+// Redirect to the OAuth provider
 await tryOAuthAuthentication();
 ```

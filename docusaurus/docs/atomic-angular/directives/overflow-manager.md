@@ -1,6 +1,5 @@
 ---
 title: OverflowManager
-sidebar_class_name: new
 ---
 
 Directive that handles a list of elements and manages the overflow of the list. It listens to the resize event and emits

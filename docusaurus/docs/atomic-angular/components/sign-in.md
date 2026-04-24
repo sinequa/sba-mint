@@ -7,7 +7,7 @@ The `SignIn` component provides a user authentication interface for your Angular
 ## Usage
 
 ```ts title="sample.component.ts"
-import { SignInComponent } from "@angular/atomic-angular";
+import { SignInComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",
@@ -47,7 +47,7 @@ External developers can extend this component to customize it for their specific
 
 ```ts title="custom-sign-in.component.ts"
 import { Component, inject } from '@angular/core';
-import { SignInComponent } from '@angular/atomic-angular';
+import { SignInComponent } from '@sinequa/atomic-angular';
 
 @Component({
   selector: 'custom-sign-in',

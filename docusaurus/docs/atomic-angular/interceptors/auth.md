@@ -2,22 +2,18 @@
 title: AuthInterceptorFn
 ---
 
-Intercepts HTTP requests to add authentication headers and handle CSRF tokens.
+Intercepts HTTP requests to add authentication headers and handle CSRF tokens. When the user is logged in, the interceptor injects the CSRF token; when user override is active it sets override-user and override-domain headers. It also refreshes the CSRF token from response headers when present.
 
-This interceptor checks if the user is logged in and adds necessary headers
-to the request, including a CSRF token. If user override is active, it sets
-the override user and domain headers instead. It also updates the CSRF token
-from the response headers if present.
+## Usage
 
-### Usage
+```typescript title="app.config.ts"
+import { authInterceptorFn } from '@sinequa/atomic-angular';
 
-```ts title="app.config.ts"
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(WithInterceptors([
+    provideHttpClient(withInterceptors([
       authInterceptorFn,
-      ...
-    ]))
-  ]
-}
+    ])),
+  ],
+};
 ```

@@ -2,26 +2,21 @@
 title: guid
 ---
 
-Generates a globally unique identifier (GUID).
+Generates a pseudo-GUID string using `Math.random`.
 
-| parameter | type | description |
-| --- | --- | --- |
-| `withHyphens` | `boolean` | Optional. If true, includes hyphens in the GUID. Default is true. |
+**Parameters**
 
-__Returns__ `string`: A newly generated GUID.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `withHyphens` | `boolean` | | Include hyphens in the output. Default: `true` |
 
-#### Example
+**Returns** `string` — a newly generated GUID.
 
-```js title="guid-with-hypens.js"
-  import { guid } from "@sinequa/atomic";
+**Example**
 
-  console.log(guid());
-  // Output: "550e8400-e29b-41d4-a716-446655440000" (example GUID)
-```
+```typescript title="guid.ts"
+import { guid } from '@sinequa/atomic';
 
-```js title="guid-without-hyphens.js"
-import { guid } from "@sinequa/atomic";
-
-console.log(guid(false));
-// Output: "550e8400e29b41d4a716446655440000" (example GUID without hyphens)
+console.log(guid());       // '550e8400-e29b-41d4-a716-446655440000'
+console.log(guid(false));  // '550e8400e29b41d4a716446655440000'
 ```

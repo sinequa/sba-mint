@@ -1,6 +1,5 @@
 ---
 title: Preview
-sidebar_class_name: update
 description: Documentation for the Preview Service, which handles document previews, highlights, and interactions with the preview iframe.
 ---
 

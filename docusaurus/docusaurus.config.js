@@ -35,7 +35,21 @@ const config = {
     locales: ['en']
   },
 
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    require.resolve('docusaurus-lunr-search'),
+    function suppressVscodeLangserverWarning() {
+      return {
+        name: 'suppress-vscode-languageserver-warning',
+        configureWebpack() {
+          return {
+            module: {
+              noParse: [/vscode-languageserver-types[\\/]lib[\\/]umd[\\/]main\.js/]
+            }
+          };
+        }
+      };
+    }
+  ],
 
   presets: [
     [

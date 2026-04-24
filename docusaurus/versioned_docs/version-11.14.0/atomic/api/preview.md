@@ -1,6 +1,5 @@
 ---
 title: Preview
-sidebar_class_name: update
 ---
 
 The Preview module provides functions to fetch document preview data and retrieve cached document content. It enables displaying highlighted document previews without opening the full document.

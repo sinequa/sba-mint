@@ -1,6 +1,5 @@
 ---
 title: getJWToken
-sidebar_class_name: update
 ---
 
 Sends credentials to the backend to obtain a JSON Web Token (JWT). If a valid CSRF token is returned in the response, it is automatically stored in session storage.

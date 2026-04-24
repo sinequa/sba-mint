@@ -1,6 +1,5 @@
 ---
 title: App
-sidebar_class_name: update
 ---
 
 Contains all the `CCApp` informations
@@ -233,19 +232,32 @@ Retrieves the sorted aggregations based on the query name included in the route 
 Returns an array of sorted aggregations.
 
 ```ts
-getAuthorizedFilters(route: ActivatedRoute): Aggregation[]
+getAuthorizedFilters(): Aggregation[]
 ```
-
-| parameter  | type   | description |
-|------------|--------|-------------|
-| `route`  | `ActivatedRoute` | The activated route containing the query name in its data. |
 
 #### Usage
 
 ```ts
-const route = inject(ActivatedRoute);
-const aggregations = inject(AppStore).getAuthorizedFilters(route);
+const aggregations = inject(AppStore).getAuthorizedFilters();
 // Output: [{ column: "geo", icon: "fa-solid fa-earth-europe", hidden: false }]
+```
+
+## getAuthorized()
+
+Returns the subset of authorized filters that match the provided filters.
+
+```ts
+getAuthorized(filters: {name: string, column: string}[]): Aggregation[]
+```
+
+### Usage
+
+```ts
+const filters = [
+  { name: "geo", column: "geo" },
+  { name: "company", column: "company" }
+];
+const authorized = inject(AppStore).getAuthorized(filters);
 ```
 
 ## Customization features
@@ -404,7 +416,7 @@ getDefaultQuery(): CCQuery | undefined
 ```
 
 :::important
-The default query is __always__ the first query in the list of queries.
+The default query is **always** the first query in the list of queries.
 :::
 
 #### Usage

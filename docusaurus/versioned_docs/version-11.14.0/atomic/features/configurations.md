@@ -1,6 +1,5 @@
 ---
 title: Configurations
-sidebar_class_name: update
 ---
 
 This module manages the global configuration settings required to connect to the Sinequa platform. It provides:
@@ -14,13 +13,15 @@ This module manages the global configuration settings required to connect to the
 The global configuration object used by all modules (authentication, API calls, logging, etc.).
 
 :::info Default values
+
 ```json
 {
   "loginPath": "/login",
   "createRoutes": false
 }
 ```
-The `backendUrl` is automatically set to `window.location.origin` by [`appInitializerFn()`](./app#appinitializerfn) if not specified.
+
+The `backendUrl` is automatically set to `window.location.origin` by [`appInitializerFn()`](../api/app#appinitializerfn) if not specified.
 :::
 
 **Type**

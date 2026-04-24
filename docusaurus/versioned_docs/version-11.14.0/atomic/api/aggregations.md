@@ -1,6 +1,5 @@
 ---
 title: Aggregations
-sidebar_class_name: update
 ---
 
 The Aggregations module provides a function to fetch updated aggregation data for a specific facet based on the current query. This is useful for refreshing a single aggregation independently of the full query execution.

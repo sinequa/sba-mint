@@ -1,6 +1,5 @@
 ---
 title: Principal
-sidebar_class_name: update
 sidebar_position: 2
 ---
 

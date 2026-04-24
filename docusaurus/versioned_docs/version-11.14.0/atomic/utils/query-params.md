@@ -1,6 +1,5 @@
 ---
 title: Query Parameters
-sidebar_class_name: update
 ---
 
 This module provides utility functions for building, parsing, and serializing URL query parameters for search state management.

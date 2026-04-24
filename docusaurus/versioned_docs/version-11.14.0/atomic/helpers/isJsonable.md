@@ -1,6 +1,5 @@
 ---
 title: isJsonable
-sidebar_class_name: update
 ---
 
 Checks whether the given value can be safely serialized to JSON. Returns `true` for plain objects and arrays, `false` for `null`, primitives, `ArrayBuffer`, `Blob`, and strings.

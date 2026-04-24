@@ -1,24 +1,30 @@
 ---
 title: isString
+sidebar_class_name: deprecated
 ---
 
-Checks if the given value is a string.
+:::warning Deprecated
+Use `typeof value === "string"` directly instead.
+:::
 
-| parameter | type | description |
-| --- | --- | --- |
-| `value` | `unknown` | The value to check |
+Checks whether the given value is a string.
 
-__Returns__ `boolean`: True if the value is a string, false otherwise.
+**Parameters**
 
-#### Example
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `value` | `unknown` | ✓ | The value to check |
 
-```js title="is-string.js"
-import { isString } from "@sinequa/atomic";
+**Returns** `boolean` — `true` if the value is a string, `false` otherwise.
 
-console.log(isString(null));      // Output: false
-console.log(isString(undefined)); // Output: false
-console.log(isString(42));        // Output: false
-console.log(isString("test"));    // Output: true
-console.log(isString([]));        // Output: false
-console.log(isString({}));        // Output: false
+**Example**
+
+```typescript title="is-string.ts"
+import { isString } from '@sinequa/atomic';
+
+console.log(isString('hello')); // true
+console.log(isString(42));      // false
+
+// Preferred alternative:
+console.log(typeof 'hello' === 'string'); // true
 ```

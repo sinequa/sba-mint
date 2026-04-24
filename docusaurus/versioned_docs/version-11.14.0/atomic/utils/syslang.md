@@ -1,6 +1,5 @@
 ---
 title: sysLang
-sidebar_class_name: update
 ---
 
 Extracts and returns the translation for a given locale from a system language-formatted string. If no matching locale is found, the default (first) value is returned.

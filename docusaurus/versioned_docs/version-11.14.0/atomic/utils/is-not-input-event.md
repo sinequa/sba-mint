@@ -1,6 +1,5 @@
 ---
 title: isNotInputEvent
-sidebar_class_name: update
 ---
 
 Returns `true` if the keyboard event did not originate from an `<input>` or `<textarea>` element. Useful for implementing global keyboard shortcuts that should not fire when the user is typing in a form field.

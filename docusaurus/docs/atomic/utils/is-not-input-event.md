@@ -2,37 +2,31 @@
 title: isNotInputEvent
 ---
 
-This utility provides a function to determine if a keyboard event did not originate from an input or textarea element.
-This is useful for handling global keyboard shortcuts or events that should not trigger when the user is typing in a form field.
-
-### isNotInputEvent()
-
-Returns `true` if the event target is not an `<input>` or `<textarea>` element.
+Returns `true` if the keyboard event did not originate from an `<input>` or `<textarea>` element. Useful for implementing global keyboard shortcuts that should not fire when the user is typing in a form field.
 
 ```typescript
 function isNotInputEvent(event: KeyboardEvent): boolean
 ```
 
-#### Parameters
+**Parameters**
 
-| Parameter | Type           | Description                                 |
-|-----------|----------------|---------------------------------------------|
-| `event`   | `KeyboardEvent`| The keyboard event to check                 |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `event` | `KeyboardEvent` | ✓ | The keyboard event to inspect |
 
-#### Returns
+**Returns** `boolean` — `true` if the event target is NOT an `<input>` or `<textarea>`.
 
-| Type      | Description                                 |
-|-----------|---------------------------------------------|
-| `boolean` | `true` if the event target is not an input or textarea, otherwise `false` |
+**Example**
 
-#### Example
-
-```typescript
+```typescript title="global-shortcut.ts"
 import { isNotInputEvent } from '@sinequa/atomic';
 
 document.addEventListener('keydown', (event) => {
   if (isNotInputEvent(event)) {
-    // Handle global shortcut
+    // Safe to handle as a global shortcut
+    if (event.key === '/') {
+      openSearchBar();
+    }
   }
 });
 ```

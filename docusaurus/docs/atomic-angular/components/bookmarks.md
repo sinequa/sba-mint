@@ -7,7 +7,7 @@ The `Bookmarks` feature provides an user interface and logic for managing bookma
 ## Usage
 
 ```ts title="sample.component.ts"
-import { BookmarksComponent } from "@angular/atomic-angular";
+import { BookmarksComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",
@@ -55,7 +55,7 @@ You can override these defaults by providing your own options.
 ### Example: Providing Custom Options (Standalone API)
 
 ```ts
-import { BOOKMARKS_CONFIG, BookmarksConfig, BookmarksComponent } from '@sineque/atomic-angular';
+import { BOOKMARKS_CONFIG, BookmarksConfig, BookmarksComponent } from '@sinequa/atomic-angular';
 
 const customBookmarksOptions: BookmarksConfig = {
   itemsPerPage: 20,

@@ -1,6 +1,5 @@
 ---
 title: AuditInterceptorFn
-sidebar_class_name: update
 ---
 
 Intercepts HTTP requests to add audit information when the request URL includes the configured API path. If the request body is JSON-serializable and not an `HttpParams` instance, additional audit metadata is injected via `addAuditAdditionalInfo`.

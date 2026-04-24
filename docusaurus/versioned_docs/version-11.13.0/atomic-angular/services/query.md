@@ -1,6 +1,5 @@
 ---
 title: Query
-sidebar_class_name: update
 ---
 
 The `QueryService` is responsible for handling search queries, including fetching and displaying search results.

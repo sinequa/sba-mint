@@ -1,7 +1,6 @@
 ---
 title: Localization
 sidebar_position: 3
-sidebar_class_name: new
 ---
 
 This documentation provides step-by-step instructions on how to configure a new localization in your Sinequa application.

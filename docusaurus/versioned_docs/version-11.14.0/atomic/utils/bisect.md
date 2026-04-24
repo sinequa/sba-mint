@@ -1,6 +1,5 @@
 ---
 title: Bisect
-sidebar_class_name: update
 ---
 
 Splits an array into two sub-arrays based on a predicate function. A single O(n) pass partitions elements into those that satisfy the predicate (`true`) and those that do not (`false`).

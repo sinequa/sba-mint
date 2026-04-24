@@ -2,13 +2,13 @@
 title: Text Chunk
 ---
 
-The `TextChunkService` is responsible for retrieving text chunks from the backend based on various parameters.
+The `TextChunkService` retrieves text chunks from the Sinequa backend for a given document and set of highlight locations.
 
-## Functions
+## Methods
 
-### getTextChunks()
+### `getTextChunks()`
 
-Retrieves text chunks based on the provided parameters.
+Fetches text chunks with surrounding context sentences and highlights.
 
 ```typescript
 getTextChunks(
@@ -21,22 +21,27 @@ getTextChunks(
 ): Observable<TextChunk[]>
 ```
 
-| Parameter            | Type             | Description                                                                 |
-|----------------------|------------------|-----------------------------------------------------------------------------|
-| `id`                 | `string`         | The ID of the record.                                                       |
-| `textChunks`         | `TextLocation[]` | An array of `TextLocation` objects representing the location of the text chunks. |
-| `highlights`         | `string[]`       | An array of strings representing the highlights to be applied to the text chunks. |
-| `query`              | `Query`          | The query used to retrieve the text chunks.                                 |
-| `leftSentencesCount` | `number`         | The number of sentences to include before the text chunks.                  |
-| `rightSentencesCount`| `number`         | The number of sentences to include after the text chunks.                   |
+| Name | Type | Required | Description |
+|------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The ID of the record. |
+| `textChunks` | `TextLocation[]` | ✓ | Text locations within the document. |
+| `highlights` | `string[]` | ✓ | Highlight category names to apply. |
+| `query` | `Query` | ✓ | The query used to retrieve the chunks. |
+| `leftSentencesCount` | `number` | ✓ | Number of sentences to include before each chunk. |
+| `rightSentencesCount` | `number` | ✓ | Number of sentences to include after each chunk. |
 
-**Usage Example:**
+**Returns** `Observable<TextChunk[]>` — emits the retrieved text chunks.
 
-```typescript
-textChunkService.getTextChunks(
+**Example**
+
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
+import { TextChunkService } from '@sinequa/atomic-angular';
+
+inject(TextChunkService).getTextChunks(
   'recordId',
   [{ start: 0, end: 100 }],
-  ['highlight1', 'highlight2'],
+  ['extractslocations', 'matchlocations'],
   query,
   2,
   2

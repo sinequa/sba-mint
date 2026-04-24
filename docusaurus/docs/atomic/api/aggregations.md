@@ -2,53 +2,44 @@
 title: Aggregations
 ---
 
-This module provides functionality for retrieving and managing aggregations based on user queries. It enables:
-
-- Fetching aggregated data for specific queries
-- Applying filters and parameters to refine aggregation results
-- Optionally logging audit events with aggregation requests
-
-These operations allow for efficient data analysis and visualization, enhancing the ability to gain insights from search results and improve the overall user experience.
+The Aggregations module provides a function to fetch updated aggregation data for a specific facet based on the current query. This is useful for refreshing a single aggregation independently of the full query execution.
 
 ## Functions
 
-### fetchAggregation()
+### `fetchAggregation()`
 
-Fetches an aggregation based on the provided parameters.
+Fetches the current state of an aggregation for the given query.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `aggregation` | `Aggregation` | The aggregation to fetch. |
-| `query` | `Query` | The query object to use for fetching the aggregation. |
-| `audit` | `AuditEvents` | Optional. Audit events to be logged with the request. |
+**Parameters**
 
-__Returns__ A `promise<Aggregation>` that resolves to the fetched aggregation.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `aggregation` | `Aggregation` | ✓ | The aggregation to refresh |
+| `query` | `Query` | ✓ | The current query context |
+| `audit` | `AuditEvents` | | Audit events to record with the request |
 
-#### Example
+**Returns** `Promise<Aggregation>` — the refreshed aggregation.
 
-```js title="fetch-aggregation"
+**Example**
+
+```typescript title="fetch-aggregation.ts"
 import { fetchAggregation } from '@sinequa/atomic';
 
-// Example usage
 const aggregation = {
-  name: 'userStats',
+  name: 'Modified',
   isTree: false,
   items: []
 };
 
 const query = {
-  name: "_query",
-  text: "tesla",
+  name: '_query',
+  text: 'tesla'
 };
 
-const audit = {
-  type: "Search_Text",
-  details: {
-    querytext: query.text
-  }
-};
+const result = await fetchAggregation(aggregation, query, {
+  type: 'Search_Text',
+  detail: { querytext: query.text }
+});
 
-const result = await fetchAggregation(aggregation, query, audit);
-console.log('Fetched aggregation:', result);
-// Output: an Aggregation object type
+console.log('Aggregation items:', result.items);
 ```

@@ -2,16 +2,16 @@
 title: Help Resources
 ---
 
-Provides utility types and functions for working with help/documentation folders and locale-based file resolution.
+This module provides utilities for resolving locale-aware help file URLs. It is useful for applications that serve their help documentation in multiple languages.
 
 ## Types
 
-### HelpFolderOptions
+### `HelpFolderOptions`
 
-Options for resolving help folder and index file paths.
+Options for resolving the help folder and index file path.
 
 ```typescript
-export type HelpFolderOptions = {
+type HelpFolderOptions = {
   path: string;
   folder?: string;
   indexFile?: string;
@@ -20,47 +20,52 @@ export type HelpFolderOptions = {
 };
 ```
 
-| Property            | Type      | Description                                                                 |
-|---------------------|-----------|-----------------------------------------------------------------------------|
-| `path`              | `string`  | The base path for the help folder                                           |
-| `folder`            | `string?` | The name of the folder (optional)                                           |
-| `indexFile`         | `string?` | The name of the index file (optional)                                       |
-| `useLocale`         | `boolean?`| If true, the locale will be used to determine the folder to use (optional)   |
-| `useLocaleAsPrefix` | `boolean?`| If true, the locale will be used as a prefix for the help folder (optional)  |
+| Property | Type | Required | Description |
+|----------|------|:--------:|-------------|
+| `path` | `string` | ✓ | Base path for the help folder |
+| `folder` | `string` | | Subfolder name |
+| `indexFile` | `string` | | Name of the help index file |
+| `useLocale` | `boolean` | | If `true`, prefix the file path with the locale (e.g. `en-US/`) |
+| `useLocaleAsPrefix` | `boolean` | | If `true`, prefix the filename with the locale (e.g. `en-US.index.html`) |
 
 ## Functions
 
-### getHelpIndexUrl()
+### `getHelpIndexUrl()`
 
-Resolves the help index file URL based on locale and options.
+Resolves the help index file URL based on the current locale and options.
 
 ```typescript
 function getHelpIndexUrl(locale: string, options: HelpFolderOptions): string
 ```
 
-#### Parameters
+**Parameters**
 
-| Parameter | Type                | Description                                 |
-|-----------|---------------------|---------------------------------------------|
-| `locale`  | `string`            | The locale to use (e.g., 'en-US')           |
-| `options` | `HelpFolderOptions` | Options for folder and file resolution       |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `locale` | `string` | ✓ | BCP 47 locale code (e.g. `'en-US'`) |
+| `options` | `HelpFolderOptions` | ✓ | Folder and file resolution options |
 
-#### Returns
+**Returns** `string` — resolved URL path to the help index file.
 
-| Type      | Description                                 |
-|-----------|---------------------------------------------|
-| `string`  | The resolved help index file URL             |
+**Example**
 
-#### Example
-
-```typescript
+```typescript title="get-help-index-url.ts"
 import { getHelpIndexUrl } from '@sinequa/atomic';
 
-const url = getHelpIndexUrl('en-US', {
+// With locale as folder prefix
+getHelpIndexUrl('en-US', {
   path: 'help',
   folder: 'docs',
   indexFile: 'index.html',
   useLocale: true
 });
-// url: 'help/docs/en-US/index.html'
+// 'help/docs/en-US/index.html'
+
+// With locale as filename prefix
+getHelpIndexUrl('fr-FR', {
+  path: 'help',
+  indexFile: 'index.html',
+  useLocaleAsPrefix: true
+});
+// 'help/fr-FR.index.html'
 ```

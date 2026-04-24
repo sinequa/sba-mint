@@ -1,6 +1,5 @@
 ---
 title: Sponsored Links
-sidebar_class_name: update
 ---
 
 The Sponsored Links module provides a function to fetch promoted or featured links associated with a search query. These links are returned alongside regular search results to enhance discoverability.

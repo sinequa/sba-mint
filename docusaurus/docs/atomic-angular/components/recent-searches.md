@@ -7,7 +7,7 @@ The `RecentSearches` feature provides a UI and logic for displaying and managing
 ## Usage
 
 ```ts title="sample.component.ts"
-import { RecentSearchesComponent } from "@angular/atomic-angular";
+import { RecentSearchesComponent } from "@sinequa/atomic-angular";
 
 @Component({
     selector: "sample-component",

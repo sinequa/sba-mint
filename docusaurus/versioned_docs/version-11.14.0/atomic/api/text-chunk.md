@@ -1,6 +1,5 @@
 ---
 title: Text Chunks
-sidebar_class_name: update
 ---
 
 The Text Chunks module provides a function to extract specific text segments from documents, with optional highlighting. This is useful for rendering relevant extracts, entity highlights, or contextual sentences around a match.

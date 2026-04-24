@@ -22,7 +22,7 @@ The `LabelService` provides methods for managing labels, including fetching labe
 ## Usage Example
 
 ```ts
-import { LabelService } from '@angular/atomic-angular';
+import { LabelService } from '@sinequa/atomic-angular';
 
 @Component({
   ...,

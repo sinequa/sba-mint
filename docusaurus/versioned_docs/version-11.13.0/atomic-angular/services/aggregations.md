@@ -1,6 +1,5 @@
 ---
 title: Aggregations
-sidebar_class_name: update
 ---
 
 The `AggregationsService` is responsible for handling aggregation-related operations in the application. It provides methods to load more aggregation items, open aggregation nodes, and retrieve sorted aggregations based on a query name.

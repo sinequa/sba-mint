@@ -1,6 +1,5 @@
 ---
 title: getMetadata
-sidebar_class_name: update
 ---
 
 Retrieves metadata from an article record and returns it as a normalized array of display objects. Useful for rendering metadata fields (authors, keywords, dates, etc.) in a consistent format.

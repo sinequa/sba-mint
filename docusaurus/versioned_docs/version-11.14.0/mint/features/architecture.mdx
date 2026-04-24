@@ -3,6 +3,7 @@ title: Application Architecture
 sidebar_label: Architecture
 sidebar_position: 0
 description: High-level overview of Mint's application architecture, technology stack, and bootstrapping process.
+sidebar_class_name: update
 ---
 
 # Application Architecture
@@ -131,6 +132,7 @@ The `AppComponent` (`src/app2/app.component.ts`) renders:
 - A `<ngx-sonner-toaster>` for toast messages
 
 On initialization, `AppComponent`:
+
 1. Reads the user's preferred language from `UserSettingsStore` and activates it via Transloco
 2. Listens for system `prefers-color-scheme` changes to toggle dark mode
 3. Invalidates the TanStack Query cache when collections are modified (via a custom DOM event)

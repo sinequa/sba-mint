@@ -2,61 +2,48 @@
 title: Text Chunks
 ---
 
-This module provides functionality for working with text chunks in documents. It allows users to:
+The Text Chunks module provides a function to extract specific text segments from documents, with optional highlighting. This is useful for rendering relevant extracts, entity highlights, or contextual sentences around a match.
 
-- Retrieve specific portions of text from documents
-- Apply highlights to selected text segments
-- Fetch contextual sentences surrounding the main text chunks
-
-These operations enable efficient text analysis, extraction, and presentation of relevant document content.
+:::info
+Offset and length values used in `textChunks` come from the document's `Record` object returned after a search (e.g., from `extractslocations`, `matchlocations`, or entity fields).
+:::
 
 ## Functions
 
-### fetchTextChunks()
+### `fetchTextChunks()`
 
-Fetches text chunks for a given document based on the provided parameters.
+Fetches text chunks for a given document at the specified locations, with optional context sentences.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `id` | `string` | The unique identifier of the document. |
-| `textChunks` | `TextLocations[]` | An array of text chunks to fetch. |
-| `highlights` | `string[]` | An array of highlights to apply to the text chunks. |
-| `query` | `Query` | The query object used to retrieve the text chunks. |
-| `leftSentencesCount` | `number` | The number of sentences to include before the main text chunk. |
-| `rightSentencesCount` | `number` | The number of sentences to include after the main text chunk. |
+**Parameters**
 
-__Returns__ A promise that resolves to an `{ chunks: TextChunk [] }` object type.
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `id` | `string` | ✓ | The document's unique identifier |
+| `textChunks` | `TextLocation[]` | ✓ | Array of `{ offset, length }` locations to extract |
+| `highlights` | `string[]` | ✓ | Array of highlight category names to apply (e.g. `'extractslocations'`, `'person'`) |
+| `query` | `Query` | ✓ | The current query context |
+| `leftSentencesCount` | `number` | ✓ | Number of context sentences to include before each chunk |
+| `rightSentencesCount` | `number` | ✓ | Number of context sentences to include after each chunk |
 
-#### Example
+**Returns** `Promise<{ chunks: TextChunk[] }>` — object containing the array of extracted text chunks.
 
-:::info
-Parameters values seems cryptics, but can be found in each Record retrieved after a search.
-Offset values and length are part of a Record.
-This function allow you to extract text at specific places
-:::
+**Example**
 
-```js title="example-text-chunks.js"
-const query = {
-  name,
-  "text": "tesla"
-};
+```typescript title="fetch-text-chunks.ts"
+import { fetchTextChunks } from '@sinequa/atomic';
 
-// do not use originalLocations
 const response = await fetchTextChunks(
-  "record.id",
+  'record-id-123',
   [
-    { offset: 14937, length: 10 },
-    { offset: 538, length: 7 },     // "geo" chunks
-    { offset: 14937, length: 147 }, // "extractslocations" chunk
-    { offset: 1069, length: 4 },    // "entity1" chunk
-    { offset: 1188, length: 13 },   // "person" chunk
-
-    {offset:25803,length:6},{offset:25955,length:6},{offset:26199,length:6},{offset:26279,length:6}
+    { offset: 14937, length: 147 }, // extract location
+    { offset: 1069, length: 4 },   // entity chunk
+    { offset: 1188, length: 13 },  // person chunk
   ],
-  ["extractslocations","matchlocations","person","geo","company","money"],
-  [],
-  query, 1, 3 );
+  ['extractslocations', 'matchlocations', 'person', 'geo'],
+  { name: '_query', text: 'tesla' },
+  1,  // 1 sentence before each chunk
+  3   // 3 sentences after each chunk
+);
 
-// display each text chunk
 response.chunks.forEach(chunk => console.log(chunk.text));
 ```

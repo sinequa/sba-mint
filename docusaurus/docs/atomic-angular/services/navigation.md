@@ -2,48 +2,35 @@
 title: Navigation
 ---
 
-The `NavigationService` is responsible for handling navigation events and extracting relevant information from the URL.
+The `NavigationService` exposes Angular router events as observables and provides helpers to extract route information from URLs.
 
-## Functions
+## Observables
 
-### navigationEnd$
+### `navigationEnd$`
 
-Observable that emits events of type `NavigationEnd` from the Angular Router.
+Emits `NavigationEnd` router events. Taps into the stream to extract the route name, notify the audit service of route changes, and share the latest value with new subscribers.
 
-**Operations:**
+**Type** `Observable<RouterEvent>`
 
-- Maps all router events to `RouterEvent`.
-- Filters the events to only include instances of `NavigationEnd`.
-- Taps into the event stream to extract the route name from the URL and notify the audit service of route changes, excluding the "loading" route and duplicate navigations.
-- Updates the `urlAfterNavigation` property with the current URL after navigation.
-- Shares the replayed value with a buffer size of 1 to ensure subscribers receive the latest emitted value.
+### `path$`
 
-**Type:** `Observable<RouterEvent>`
+Emits the current tab name extracted from the URL pathname.
 
-### path$
-
-An observable that emits the tab extracted from the URL pathname or the last part of the URL.
-
-**Operations:**
-
-- Listens to navigation end events and processes the URL to determine the current tab.
-- Creates a fake URL object to extract the pathname.
-- Uses the `getQueryParamsFromUrl` function to extract the tab from the URL pathname or defaults to the last part of the URL if no tab is found.
-
-**Type:** `Observable<string>`
+**Type** `Observable<string>`
 
 ## Example
 
-```typescript
+```typescript title="example.component.ts"
+import { inject } from '@angular/core';
 import { NavigationService } from '@sinequa/atomic-angular';
 
-constructor(private navigationService: NavigationService) {
-  this.navigationService.navigationEnd$.subscribe(event => {
-    console.log('Navigation ended:', event);
-  });
+const navigationService = inject(NavigationService);
 
-  this.navigationService.path$.subscribe(tab => {
-    console.log('Current tab:', tab);
-  });
-}
+navigationService.navigationEnd$.subscribe(event => {
+  console.log('Navigation ended:', event);
+});
+
+navigationService.path$.subscribe(tab => {
+  console.log('Current tab:', tab);
+});
 ```

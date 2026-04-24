@@ -1,7 +1,6 @@
 ---
 title: Localization
 sidebar_position: 3
-sidebar_class_name: new
 ---
 
 This documentation provides step-by-step instructions on how to configure a new localization in your Sinequa application.
@@ -126,27 +125,16 @@ Create a new file named `de.json` in the `src/assets/i18n` directory of your Ang
 
 ### 🔧 Update the App Configuration
 
-In your `app.config.ts` file, set the default language to German (de):
+The Transloco configuration is centralised in `src/config/transcolo-providers.ts`. Add `'de'` to `availableLangs`:
 
-```ts title="src/app/app.config.ts"
-import { registerLocaleData } from '@angular/common';
-
-// add-start
-import localeDe from '@angular/common/locales/de';
-registerLocaleData(localeDe); // needed to use DatePipe, CurrencyPipe, etc. for German locale
-// add-end
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // add
-    { provide: LOCALE_ID, useValue: 'de' }, // Set default locale to German if needed
-    // other providers...
-        provideTransloco({
+```ts title="src/config/transcolo-providers.ts"
+export function provideTranslocoProviders(): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    provideTransloco({
       config: {
         // add
         availableLangs: ['en', 'fr', 'de'], // Add German to the list of available languages
         defaultLang: 'en',
-        // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
         fallbackLang: 'en',
@@ -155,107 +143,111 @@ export const appConfig: ApplicationConfig = {
           useFallbackTranslation: true
         }
       },
-      loader: TranslocoHttpLoader
+      loader: TranslocoHttpLoaderOverrides
     }),
     provideTranslocoMessageformat()
-  ],
+  ]);
 }
+```
+
+In `app.config.ts`, also register the German locale data if you need locale-aware pipes (e.g. `DatePipe`, `CurrencyPipe`):
+
+```ts title="src/app2/app.config.ts"
+import { registerLocaleData } from '@angular/common';
+// add
+import localeDe from '@angular/common/locales/de';
+
+// add
+registerLocaleData(localeDe);
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ...
+    provideTranslocoProviders()
+  ]
+};
 ```
 
 ### 🌐 Update the User Menu
 
-This component is typically used to allow users to switch between languages.
-In this example, we will modify the user menu to include a German language option.
-
-```html title="src/components/user-menu/user-menu.html"
-<menu>
-  <Avatar class="cursor-pointer">
-    ...
-  </Avatar>
-
-  <!-- min-w-max used to display all the content -->
-  <MenuContent position="bottom-start" class="min-w-max">
-    <menu position="left-start" class="dropdown-content">
-      <menuitem>
-        <span class="grow">{{ 'userMenu.selectLanguage' | transloco }}</span>
-        <ChevronRight class="size-4" />
-      </menuitem>
-
-      <!-- max with to fit content but min width is 10rem (160px) -->
-      <MenuContent position="left-start" class="max-w-fit min-w-40">
-        <menuitem (click)="changeLanguage('en')" class="justify-between">
-          <span>{{ 'userMenu.english' | transloco }}</span>
-          <FlagEnglish class="size-4" />
-        </menuitem>
-
-        <menuitem (click)="changeLanguage('fr')" class="justify-between">
-          <span>{{ 'userMenu.french' | transloco }}</span>
-          <FlagFrench class="size-4" />
-        </menuitem>
-
-        // add-start
-        <menuitem (click)="changeLanguage('de')" class="justify-between">
-          <span>{{ 'userMenu.deutsch' | transloco }}</span>
-          <FlagGerman class="size-4" />
-        </menuitem>
-        // add-end
-      </MenuContent>
-    </menu>
-    ...
-</menu>
-```
+The user menu uses an `AllLanguages` array to render language options dynamically via `NgComponentOutlet`.
+Add an entry for German in the component class:
 
 ```ts title="src/components/user-menu/user-menu.ts"
-import { FlagGermanIcon } from '@sinequa/ui';
+// add
+import { FlagGermanIconComponent } from '@sinequa/ui';
 
 @Component({
-  selector: 'app-user-menu',
+  selector: 'user-menu',
   imports: [
+    NgComponentOutlet,
     FormsModule,
     MenuComponent,
     MenuContentComponent,
     MenuItemComponent,
-    HorizontalDividerComponent,
     TranslocoPipe,
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
-    FlagEnglishIconComponent,
-    FlagFrenchIconComponent,
-    // add
-    FlagGermanIcon,
-    UserRoundIconComponent,
-    ChevronRightIconComponent,
+    UserIcon,
+    ChevronRightIcon,
     AvatarComponent,
     AvatarImageComponent,
-    AvatarFallbackComponent
+    AvatarFallbackComponent,
+    Separator
   ],
   templateUrl: './user-menu.html',
   providers: [provideTranslocoScope('user-menu')]
 })
-export class UserMenuComponent { ... }
+export class UserMenuComponent {
+  AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
+    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
+    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent },
+    // add
+    { code: 'de', label: 'Deutsch', icon: FlagGermanIconComponent }
+  ];
+}
 ```
 
 :::note
-Make sure to import the `FlagGermanIcon` from the Sinequa UI library in your component file.
+`FlagGermanIconComponent` must be imported from `@sinequa/ui`. There is no need to add it to the component's `imports` array — it is rendered dynamically by `NgComponentOutlet` at runtime.
 :::
+
+The HTML template iterates over `AllLanguages` and renders each flag with `*ngComponentOutlet`, so no template changes are needed:
+
+```html title="src/components/user-menu/user-menu.html"
+<MenuContent position="left-start" class="max-w-fit min-w-40">
+  @for (lang of AllLanguages; track lang.code) {
+    <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
+      <span>{{ lang.label }}</span>
+      <div class="flex items-center gap-2">
+        @if (currentActiveLang() === lang.code) {
+          <i class="fa-fw fas fa-check text-sm"></i>
+        }
+        <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+      </div>
+    </MenuItem>
+  }
+</MenuContent>
+```
 
 ### 🗣️ Update the User Menu Translations
 
-To ensure the user menu supports German, update or add the `de.json` file in the `src/assets/i18n/user-menu` directory
-with the necessary translations.
+To ensure the user menu supports German, add a `de.json` file in the `src/assets/i18n/user-menu` directory.
 
-```json title="src/assets/i18n/user-menu.json"
+:::note
+Language names (English, Français, Deutsch) are now hardcoded in the `AllLanguages` array in `user-menu.ts` and are no longer driven by translation keys.
+:::
+
+```json title="src/assets/i18n/user-menu/de.json"
 {
   "aboutSinequa": "Über Sinequa",
-  "administration": "Verwaltung",
-  "contactAdmin": "Administrator kontaktieren",
-  "english": "Englisch",
-  "french": "Französisch",
-  "deutsch": "Deutsch",
   "overrideUser": "Benutzer überschreiben",
   "resetUserSettings": "Benutzereinstellungen zurücksetzen",
   "revertOverride": "Benutzerüberschreibung zurücknehmen",
   "selectLanguage": "Sprache auswählen",
-  "help": "Hilfe"
+  "selectTheme": "Design auswählen",
+  "lightMode": "Hell",
+  "darkMode": "Dunkel",
+  "systemMode": "System"
 }
 ```

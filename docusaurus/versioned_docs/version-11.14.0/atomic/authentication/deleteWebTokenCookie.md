@@ -1,6 +1,5 @@
 ---
 title: deleteWebTokenCookie
-sidebar_class_name: update
 ---
 
 Deletes the JSON Web Token (JWT) cookie by sending a GET request to the backend server's cookie-deletion endpoint. This is typically called during logout.

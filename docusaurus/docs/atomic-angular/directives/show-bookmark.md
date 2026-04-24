@@ -1,6 +1,11 @@
 ---
 title: ShowBookmark
+sidebar_class_name: deprecated
 ---
+
+:::warning Deprecated
+This directive is deprecated and will be removed in a future version.
+:::
 
 Directive that handles the behavior of showing a bookmark for an article.
 

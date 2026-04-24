@@ -2,13 +2,19 @@
 title: getCsrfToken
 ---
 
-Retrieves the CSRF token from the backend server and stores it in session storage. Returns the token if successful, or `null` if not.
+Requests a CSRF token from the backend server and stores it in session storage.
 
-#### Example
+**Returns** `Promise<string | null>` — the CSRF token if obtained, or `null` if the request failed.
 
-```js title="get-csrf-token.js"
+**Example**
+
+```typescript title="get-csrf-token.ts"
 import { getCsrfToken } from '@sinequa/atomic';
 
-// Retrieves the CSRF token
 const token = await getCsrfToken();
+if (token) {
+  console.log('CSRF token obtained:', token);
+} else {
+  console.log('No CSRF token available (user may need to log in)');
+}
 ```
