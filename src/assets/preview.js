@@ -222,15 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (bodyElement === null || bodyElement.tagName == 'FRAMESET') {
       bodyElement = document.querySelector('frameset>frame').contentDocument.body;
     }
-    const elts = bodyElement.querySelectorAll('p');
-    const firstVisibleElt = Array.from(elts).find(elt => {
-      const { top, bottom } = elt.getBoundingClientRect();
-      return bottom > 0 && top < window.innerHeight;
-    });
     bodyElement.style.setProperty('--factor', value);
-    if (firstVisibleElt) {
-      firstVisibleElt.scrollIntoView();
-    }
   }
 
   function returnMessage(type, data) {
@@ -316,9 +308,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const el = elements.length > 0 ? visibleElements[0] || elements[0] : null;
     if (el) {
+      // container: 'nearest' stops scroll propagation to it's nearest parent.
+      // This will stop the application body page from automatically scrolling
+      // back to the top after you have navigated through the preview.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#container
       el.scrollIntoView({
         block: 'center',
-        behavior: 'instant'
+        behavior: 'instant',
+        container: 'nearest'
       });
 
       setTimeout(() => {
