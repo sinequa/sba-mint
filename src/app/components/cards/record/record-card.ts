@@ -24,6 +24,7 @@ import {
   CardFooterComponent,
   CardHeaderComponent,
   cn,
+  SquareCheckBigIcon,
   SquareCheckIcon,
   SquareIcon,
   UserIcon
@@ -59,7 +60,7 @@ const HIDDEN_METADATA = ["web", "htm", "html", "xhtm", "xhtml", "mht", "mhtml", 
     CardContentComponent,
     CardFooterComponent,
     CardMenuComponent,
-    SquareCheckIcon,
+    SquareCheckBigIcon,
     SquareIcon,
     UserIcon,
     CalendarDayIcon
@@ -77,7 +78,9 @@ const HIDDEN_METADATA = ["web", "htm", "html", "xhtm", "xhtml", "mht", "mhtml", 
 })
 export class RecordCard {
   cn = cn;
-  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: "labels", fields: ["public_label", "private_label"] }]);
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([
+    { title: "labels", fields: ["public_label", "private_label"] }
+  ]);
   public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
 
@@ -96,7 +99,7 @@ export class RecordCard {
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
   // state of checkbox for multi-select
   checked = signal<boolean>(false);
-  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find(a => a.id === this.article().id));
+  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find((a) => a.id === this.article().id));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
@@ -118,7 +121,8 @@ export class RecordCard {
     if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
       return { field: "docformat", value: this.article().docformat! };
 
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return { field: "doctype", value: this.article().doctype! };
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase()))
+      return { field: "doctype", value: this.article().doctype! };
 
     return undefined;
   });

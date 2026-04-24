@@ -1,9 +1,20 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { Component, DestroyRef, effect, inject, signal } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, LightbulbSlashIcon, MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon, SlashIcon, SparklesIcon } from '@sinequa/ui';
+import { PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import {
+  ArrowsMaximizeIcon,
+  ButtonComponent,
+  FlashlightIcon,
+  IconButtonComponent,
+  LightbulbIcon,
+  LightbulbSlashIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
+  SlashIcon,
+  SparklesIcon
+} from "@sinequa/ui";
 
 /**
  * Preview actions component
@@ -16,36 +27,45 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
  *
  */
 @Component({
-  selector: 'preview-actions',
-  imports: [TranslocoPipe, ButtonComponent, ArrowsMaximizeIcon, MagnifyingGlassPlusIcon, MagnifyingGlassMinusIcon, SparklesIcon, SlashIcon, FlashlightIcon, LightbulbIcon, LightbulbSlashIcon],
+  selector: "preview-actions",
+  imports: [
+    TranslocoPipe,
+    IconButtonComponent,
+    ButtonComponent,
+    ArrowsMaximizeIcon,
+    MagnifyingGlassPlusIcon,
+    MagnifyingGlassMinusIcon,
+    SparklesIcon,
+    SlashIcon,
+    FlashlightIcon,
+    LightbulbIcon,
+    LightbulbSlashIcon
+  ],
   template: `
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
       <arrows-maximize-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <magnifying-glass-plus-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
       <magnifying-glass-minus-icon class="shrink-0" />
     </button>
+
 
     @if (hasAIDescription()) {
       @if (showAIDescription()) {
         <button
-          variant="ghost"
-          class="dark:hover:bg-background/10 dark:text-white"
-          size="icon"
+          variant="none" icon-button
           [attr.title]="'preview.toggleAIDescription' | transloco"
           (click)="toggleAIDescription()">
           <sparkles-icon class="shrink-0" />
         </button>
       } @else {
         <button
-          variant="ghost"
-          size="icon"
-          class="dark:hover:bg-background/10 dark:text-white"
+          variant="none" icon-button
           [attr.title]="'preview.toggleAIDescription' | transloco"
           (click)="toggleAIDescription()">
           <span class="relative shrink-0 inline-flex items-center justify-center">
@@ -58,18 +78,14 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
 
     @if (extracts()) {
       <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
+        variant="none" icon-button
         [attr.title]="'preview.toggleExtracts' | transloco"
         (click)="toggleExtracts()">
         <flashlight-icon class="shrink-0" />
       </button>
     } @else {
       <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
+        variant="none" icon-button
         [attr.title]="'preview.toggleExtracts' | transloco"
         (click)="toggleExtracts()">
         <span class="relative shrink-0 inline-flex items-center justify-center">
@@ -81,18 +97,14 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
 
     @if (entities()) {
       <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
+        variant="none" icon-button
         [title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <lightbulb-icon class="shrink-0" />
       </button>
     } @else {
       <button
-        variant="ghost"
-        class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
+        variant="none" icon-button
         [attr.title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <lightbulb-slash-icon class="shrink-0" />
@@ -122,20 +134,20 @@ export class PreviewActionsComponent {
     effect(() => {
       const { article } = getState(this.selectionStore);
       if (!article) return;
-      this.hasAIDescription.set(article.flags?.includes('ps') ?? false);
+      this.hasAIDescription.set(article.flags?.includes("ps") ?? false);
     });
 
     const controller = new AbortController();
 
     window.addEventListener(
-      'message',
+      "message",
       (event: MessageEvent) => {
         const message = event.data;
-        if (message.type === 'selected-position') {
+        if (message.type === "selected-position") {
           this.previewService.toggle(this.extracts(), this.entities());
         }
 
-        if (message.type === 'ready') {
+        if (message.type === "ready") {
           this.previewService.toggle(this.extracts(), this.entities());
         }
       },
@@ -163,11 +175,11 @@ export class PreviewActionsComponent {
   }
 
   toggleExtracts() {
-    this.toggle('extracts');
+    this.toggle("extracts");
   }
 
   toggleEntities() {
-    this.toggle('entities');
+    this.toggle("entities");
   }
 
   /**
@@ -175,9 +187,9 @@ export class PreviewActionsComponent {
    * If the specified type is already active, it will be deactivated.
    * @param type - The type to toggle ('extracts' or 'entities').
    */
-  private toggle(type: 'extracts' | 'entities') {
+  private toggle(type: "extracts" | "entities") {
     // Determine the current signal based on the type, and toggle its value
-    const currentSignal = type === 'extracts' ? this.extracts : this.entities;
+    const currentSignal = type === "extracts" ? this.extracts : this.entities;
     const value = !currentSignal();
     currentSignal.set(value);
 
@@ -185,8 +197,8 @@ export class PreviewActionsComponent {
     this.previewService.toggle(this.extracts(), this.entities());
 
     // If extracts are being turned off, send an 'unselect' action to the preview service
-    if (type === 'extracts' && value === false) {
-      this.previewService.sendMessage({ action: 'unselect' });
+    if (type === "extracts" && value === false) {
+      this.previewService.sendMessage({ action: "unselect" });
     }
   }
 }
