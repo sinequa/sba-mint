@@ -1,37 +1,40 @@
 <Dropdown class="w-full">
   <form [formGroup]="form">
+    @let placeholder = "searchInput.placeholder" | transloco;
     <SearchInput
       class="h-9 p-0 text-foreground"
       id="autocomplete-anchor"
       controls="search-suggestions"
       [variant]="variant()"
-      [placeholder]="'searchInput.placeholder' | transloco"
-      [attr.aria-label]="'searchInput.placeholder' | transloco"
+      [placeholder]="placeholder"
+      [attr.aria-label]="placeholder"
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
-      @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+      @if (showSave() && (searchInputText() !== "" || hasFilters())) {
         <SavedSearchPopover [queryText]="searchInputText()" (onSavedSearch)="saved.emit($event)" />
       }
 
       @if (allowAI()) {
+        @let askAI = "askAI" | transloco;
         <button
           variant="ai"
           size="xs"
-          class="hidden rounded-sm transition ease-in sm:block"
-          title="Ask AI"
-          aria-label="Ask AI"
+          class="hidden rounded-sm transition ease-in sm:inline-flex"
+          [attr.title]="askAI"
+          [attr.aria-label]="askAI"
           (click)="handleRouting($event)"
           [disabled]="searchInputText() === ''">
-          <i class="fa-fw fa-regular fa-sparkles me-1" aria-hidden="true"></i>
-          Ask AI
+          <sparkles-icon class="me-1" aria-hidden="true" />
+          {{ askAI }}
         </button>
       }
+      @let searchLabel = "search" | transloco;
       <button
         variant="icon"
         size="icon"
         class="transition-transform duration-200 ease-in-out hover:scale-110"
-        [title]="'search' | transloco"
-        [attr.aria-label]="'search' | transloco"
+        [title]="searchLabel"
+        [attr.aria-label]="searchLabel"
         [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
         [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
         (keydown.enter)="onSearch($event)"

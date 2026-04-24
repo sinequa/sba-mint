@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from "@angular/core";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
-
 import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
 import { CCApp, fetchQuery, Query } from "@sinequa/atomic";
 import {
@@ -15,8 +15,7 @@ import {
   QueryParamsStore,
   SelectionStore
 } from "@sinequa/atomic-angular";
-import { ButtonComponent, cn, PageHeaderComponent } from "@sinequa/ui";
-
+import { ButtonComponent, CommentsIcon, cn, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
 import { AssistantComponent } from "../../components/assistant/assistant";
@@ -34,7 +33,9 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     PageHeaderComponent,
     NavbarComponent,
     ButtonComponent,
-    AppSidebarComponent
+    AppSidebarComponent,
+    CommentsIcon,
+    PlusIcon
   ],
   providers: [provideTranslocoScope("filters")],
   template: `
@@ -45,18 +46,18 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     <div
       [class]="
         cn(
-          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[25%_1fr]',
-          opened() && '-translate-x-[25%] md:grid-cols-[25%_50%]'
+          'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[15%_1fr]',
+          opened() && '-translate-x-[15%] md:grid-cols-[15%_50%]'
         )
       ">
-      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col', !opened() && 'p-4 opacity-100')">
+      <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col max-w-80', !opened() && 'p-4 opacity-100')">
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
             <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
               <div class="flex items-center justify-between">
                 <h3 class="text-muted-foreground pointer-events-none font-semibold">
-                  <i class="far fa-comments me-1"></i>
+                  <comments-icon class="me-1" />
                   {{ 'assistant.saved-chats' | transloco }}
                 </h3>
                 <button
@@ -65,7 +66,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
                   [title]="'assistant.new-discussion' | transloco"
                   [attr.aria-label]="'assistant.new-discussion' | transloco"
                   (click)="chat()?.newChat()">
-                  <i class="far fa-plus"></i>
+                  <plus-icon />
                 </button>
               </div>
               <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
@@ -109,7 +110,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -144,16 +145,24 @@ export class AssistantLayoutComponent {
   backLevel = 0;
 
   // this is used to know if the saved chats component should be displayed
-  readonly allowSavedChats = computed(() => Boolean(this.appStore.assistants()[this.instanceId()]?.["savedChatSettings"]?.["display"]));
+  readonly allowSavedChats = computed(() =>
+    Boolean(this.appStore.assistants()[this.instanceId()]?.["savedChatSettings"]?.["display"])
+  );
 
   // this is used to know if the document uploader component should be displayed
-  readonly allowDocumentUploader = computed(() => Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]));
+  readonly allowDocumentUploader = computed(() =>
+    Boolean(this.appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"])
+  );
 
   // this is used to display the saved chats component
-  readonly showSavedChats = computed(() => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showSavedChats = computed(
+    () => this.allowSavedChats() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // this is used to display the saved chats component
-  readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
+  readonly showDocumentUploader = computed(
+    () => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady()
+  );
 
   // queryparams input binding
   q = input<string>();
@@ -164,7 +173,7 @@ export class AssistantLayoutComponent {
   assistantKey = signal(0);
   // Call this method when you need to recreate
   recreateAssistant() {
-    this.assistantKey.update(v => v + 1);
+    this.assistantKey.update((v) => v + 1);
   }
   /* End of assistant recreation code */
 
@@ -173,8 +182,11 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
-      // also start a new chat
-      this.chat()?.newChat();
+      const chat = this.chat();
+      if (chat && this.isAssistantReady()) {
+        // also start a new chat
+        this.chat()?.newChat();
+      }
     });
 
     effect(() => {
@@ -201,6 +213,18 @@ export class AssistantLayoutComponent {
         this.applicationService.setTitle("Assistant");
       }
     });
+
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
+    // react to drawer state changes to update the application title when the drawer is closed
+    this.applicationService.setTitle("Assistant");
 
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
@@ -254,9 +278,9 @@ export class AssistantLayoutComponent {
     }
     const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
     const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === "user" && msg.content);
+    const firstUserMessage = history.find((msg) => msg.role === "user" && msg.content);
     if (firstUserMessage) {
-      this.query.update(q => {
+      this.query.update((q) => {
         if (q && firstUserMessage) {
           const newQuery = { ...q };
           newQuery.text = firstUserMessage.content as string;

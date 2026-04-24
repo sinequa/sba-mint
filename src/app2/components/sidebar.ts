@@ -1,12 +1,11 @@
 import { Component, computed, effect, inject, linkedSignal, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router } from "@angular/router";
-import { filter } from "rxjs";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -20,8 +19,10 @@ import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  GearIcon,
   MenuComponent,
   MenuContentComponent,
+  QuestionCircleIcon,
   Sidebar,
   SidebarContentComponent,
   SidebarFooterComponent,
@@ -34,6 +35,7 @@ import {
   UserIcon,
   useSidebar
 } from "@sinequa/ui";
+import { filter } from "rxjs";
 
 @Component({
   selector: "app-sidebar",
@@ -59,7 +61,10 @@ import {
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
-    UserIcon
+    UserIcon,
+    TranslocoPipe,
+    GearIcon,
+    QuestionCircleIcon
   ],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
@@ -67,7 +72,7 @@ import {
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
             class="h-8 w-32 bg-contain bg-left bg-no-repeat group-data-[collapsible=icon]:hidden"
-            style="background-image: var(--logo-large-alt)"></div>
+            style="background-image: var(--logo-sidebar)"></div>
           <div
             class="logo-collapse-container relative hidden size-8 items-center justify-center group-data-[collapsible=icon]:flex">
             <div
@@ -98,18 +103,30 @@ import {
 
       <sidebar-footer class="px-3 py-6">
         <sidebar-menu>
-          @if (isAdminOrDelegatedAdmin()) {
-            <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
+           @if (isAdminOrDelegatedAdmin()) {
+            @let administration = ('administration' | transloco);
+            <sidebar-menu-item
+              [attr.aria-label]="administration"
+              (click)="openAdmin()"
+              [tooltip]="administration"
+              tooltip-position="right"
+            >
               <sidebar-menu-button class="text-lg">
-                <i tooltip="Administration" tooltip-position="right" class="fa-fw far fa-gear" aria-hidden="true"></i>
-                <span class="text-sm" sr-only>Administration</span>
+                <gear-icon aria-hidden="true" />
+                <span class="text-sm" sr-only>{{ administration }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
-          <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
+          @let help = ('help' | transloco);
+          <sidebar-menu-item
+            [attr.aria-label]="help"
+            (click)="openHelp()"
+            [tooltip]="help"
+            tooltip-position="right"
+          >
             <sidebar-menu-button class="text-lg">
-              <i tooltip="Help" tooltip-position="right" class="fa-fw far fa-question-circle" aria-hidden="true"></i>
-              <span class="text-sm" sr-only>Help</span>
+              <question-circle-icon aria-hidden="true" />
+              <span class="text-sm" sr-only>{{ help }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
@@ -175,9 +192,7 @@ export class MainSidebarComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
-  private readonly navigationEnd = toSignal(
-    inject(Router).events.pipe(filter(e => e instanceof NavigationEnd))
-  );
+  private readonly navigationEnd = toSignal(inject(Router).events.pipe(filter(e => e instanceof NavigationEnd)));
 
   constructor() {
     effect(() => {

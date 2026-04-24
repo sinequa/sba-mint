@@ -24,9 +24,7 @@
     <!-- tabs and filters -->
     <div class="sticky top-16 z-10 -mx-1 bg-background pt-1 pb-2">
       @if (isTabSearchActive()) {
-        <div class="max-w-full overflow-hidden">
-          <navbar-tabs noTruncate="true" class="px-2" />
-        </div>
+        <navbar-tabs noTruncate="true" class="mt-2 block" />
       }
 
       <!-- if results have been found -->
@@ -41,15 +39,15 @@
         <button variant="ghost" (click)="selectAll()">
           @switch (selectedAll()) {
             @case ("all") {
-              <i class="fa-fw fa-regular fa-square-check"></i>
+              <square-check-icon />
               {{ "searches.selection.unselectAll" | transloco }}
             }
             @case ("some") {
-              <i class="fa-fw fa-regular fa-square-minus"></i>
+              <square-minus-icon />
               {{ "searches.selection.selectAll" | transloco }}
             }
             @default {
-              <i class="fa-fw fa-regular fa-square"></i>
+              <square-icon />
               {{ "searches.selection.selectAll" | transloco }}
             }
           }
@@ -65,9 +63,9 @@
         <CardHeader class="flex items-center gap-1 px-0 text-base font-semibold text-ai-card-foreground">
           <div class="flex size-8 items-center justify-center">
             @if (isStreaming()) {
-              <i class="fas fa-spinner animate-spin"></i>
+              <spinner-icon class="animate-spin" />
             } @else {
-              <i class="fas fa-sparkles"></i>
+              <sparkles-icon />
             }
           </div>
 
@@ -118,9 +116,7 @@
     <!-- tabs and filters -->
     <div class="sticky top-16 z-10 -mx-1 bg-background pt-1 pb-2">
       @if (isTabSearchActive()) {
-        <div class="max-w-full overflow-hidden">
-          <navbar-tabs noTruncate="true" class="px-2" />
-        </div>
+        <navbar-tabs noTruncate="true" class="mt-2 block" />
       }
       <!-- if results have been found -->
       <filters-bar class="block space-x-2 pt-4 pb-4" />

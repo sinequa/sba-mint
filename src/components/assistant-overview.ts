@@ -3,11 +3,11 @@ import { AssistantComponent } from '@components/assistant/assistant';
 import { getState } from '@ngrx/signals';
 import { CCApp, debug } from '@sinequa/atomic';
 import { AppStore, QueryParamsStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
+import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn, SpinnerIcon, SparklesIcon } from '@sinequa/ui';
 
 @Component({
   selector: 'app-search-overview',
-  imports: [ChevronRightIcon, CardContentComponent, AssistantComponent, CardComponent, CardHeaderComponent],
+  imports: [ChevronRightIcon, CardContentComponent, AssistantComponent, CardComponent, CardHeaderComponent, SpinnerIcon, SparklesIcon],
   template: `
     @if (allowAI()) {
       <div class="h-full [--height:350px]">
@@ -15,9 +15,9 @@ import { CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightI
           <CardHeader class="flex cursor-pointer items-center gap-1 px-0 text-base font-semibold text-ai-card-foreground" (click)="onAssistantCollapse()">
             <div class="flex size-8 items-center justify-center">
               @if (isStreaming()) {
-                <i class="fas fa-spinner animate-spin"></i>
+                <SpinnerIcon class="animate-spin"></SpinnerIcon>
               } @else {
-                <i class="fas fa-sparkles"></i>
+                <SparklesIcon></SparklesIcon>
               }
             </div>
 

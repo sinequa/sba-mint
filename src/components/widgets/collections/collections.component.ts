@@ -6,14 +6,14 @@ import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { error } from "@sinequa/atomic";
 
 import { ApplicationService, Basket, DeleteCollectionDialog, TranslocoDateImpurePipe, UserSettingsStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, InputComponent, ListItemComponent } from "@sinequa/ui";
+import { BarsIcon, ButtonComponent, InboxIcon, InputComponent, ListItemComponent, PenToSquareIcon, TrashIcon } from "@sinequa/ui";
 
 @Component({
   selector: "Collections",
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent],
+  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent, InboxIcon, PenToSquareIcon, TrashIcon, BarsIcon],
   template: `
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw fas fa-inbox" aria-hidden></i>
+      <InboxIcon aria-hidden="true" />
       {{ 'myCollections' | transloco }}
     </h1>
 
@@ -55,7 +55,7 @@ import { ButtonComponent, InputComponent, ListItemComponent } from "@sinequa/ui"
             role="listitem"
             cdkDrag
             (click)="onClick(collection)">
-            <i class="fas fa-inbox ps-2"></i>
+            <InboxIcon class="ps-2" />
 
             <span class="mx-2">{{ collection.name }}</span>
 
@@ -64,7 +64,7 @@ import { ButtonComponent, InputComponent, ListItemComponent } from "@sinequa/ui"
               variant="ghost"
               class="text-primary invisible group-hover:visible"
               (click)="$event.stopPropagation(); onEdit(collection, $index)">
-              <i class="fa-fw far fa-pen-to-square" aria-hidden></i>
+              <PenToSquareIcon />
             </button>
 
             <button
@@ -72,11 +72,11 @@ import { ButtonComponent, InputComponent, ListItemComponent } from "@sinequa/ui"
               variant="ghost"
               class="text-destructive invisible group-hover:visible"
               (click)="$event.stopPropagation(); deleteCollection(collection, $index)">
-              <i class="fa-fw far fa-trash" aria-hidden></i>
+              <TrashIcon />
             </button>
 
             <button size="icon" variant="ghost">
-              <i class="fa-fw far fa-bars" aria-hidden></i>
+              <BarsIcon />
             </button>
           </li>
         } @else {

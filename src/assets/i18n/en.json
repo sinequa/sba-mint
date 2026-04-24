@@ -96,6 +96,9 @@
   "bookmark": "Bookmark",
   "recent-search": "Recent searches",
   "saved-search": "Saved searches",
+  "help": "Help",
+  "administration": "Administration",
+  "askAI": "Ask AI",
   "assistant": {
     "userPrompt": "Hi, my name is [[principal.fullName]].",
     "connectionErrorMessage": "Connection lost! Please check your network connection and try again.",

@@ -156,6 +156,7 @@
   */
   --logo-small: var(--logo-light-small, var(--logo-small-url));
   --logo-large: var(--logo-light-large, var(--logo-large-url));
+  --logo-sidebar: var(--logo-light-sidebar, var(--logo-large-alt-url));
   --logo-large-alt: var(--logo-large-alt-url);
   --logo-alt-text: 'Sinequa logo';
 
@@ -351,6 +352,7 @@
   */
   --logo-small: var(--logo-dark-small, var(--logo-small-url));
   --logo-large: var(--logo-dark-large, var(--logo-large-url));
+  --logo-sidebar: var(--logo-dark-sidebar, var(--logo-large-alt-url));
 
 
   --background: var(--color-sage-975);
