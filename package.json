@@ -50,7 +50,7 @@
     "@microsoft/signalr": "^7.0.14",
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
-    "@sinequa/agent": "4.0.2",
+    "@sinequa/agent": "^4.0.2",
     "@sinequa/assistant": "4.0.2",
     "@sinequa/atomic": "^1.0.0",
     "@sinequa/atomic-angular": "^1.1.0",
@@ -78,7 +78,9 @@
     "xstate": "^5.28.0",
     "zone.js": "~0.15.0"
   },
-  "overrides": {},
+  "overrides": {
+    "uuid": ">=14.0.0"
+  },
   "devDependencies": {
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
