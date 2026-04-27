@@ -157,4 +157,4 @@ There should now be different filters available.
 As a reminder, the *filter buttons* appears in the Mint UI in the **same order** as the aggregations found in the *mint_query web service*. If you wish to reorder the filters, you simply need to reorder the aggregations in your mint_query web service.
 :::
 
-For more information about filters in Mint, see the [**Filters**](../configurations/filters.mdx) documentation page.
+For more information about filters in Mint, see the [**Filters**](../configurations/customization/filters.mdx) documentation page.
