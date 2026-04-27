@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
@@ -17,12 +17,13 @@ import {
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map, skip, take, timeout } from 'rxjs';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
 import { OnRouteAttached } from '@config/custom-reuse-strategy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -65,7 +66,7 @@ import { OnRouteAttached } from '@config/custom-reuse-strategy';
                   size="icon"
                   [title]="'assistant.new-discussion' | transloco"
                   [attr.aria-label]="'assistant.new-discussion' | transloco"
-                  (click)="chat()?.newChat()">
+                  (click)="startNewChat()">
                   <i class="far fa-plus"></i>
                 </button>
               </div>
@@ -124,6 +125,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly applicationService = inject(ApplicationService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   query = signal<Query | undefined>(undefined);
 
@@ -170,6 +172,9 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   }
   /* End of assistant recreation code */
 
+  // Local storage key for persisting chat ID
+  private readonly STORAGE_KEY = 'assistant_current_chat_id';
+
   constructor() {
     effect(() => {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
@@ -178,7 +183,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       const chat = this.chat();
       if (chat && this.isAssistantReady()) {
         // also start a new chat
-        this.chat()?.newChat();
+        this.startNewChat();
       }
     });
 
@@ -239,9 +244,48 @@ export class AssistantLayoutComponent implements OnRouteAttached {
     }
   }
 
+  startNewChat() {
+    const assistantComponent = this.chat();
+    if (!assistantComponent) {
+      return;
+    }
+
+    // Remove previous chat id first to avoid restoring old chat after F5.
+    localStorage.removeItem(this.STORAGE_KEY);
+    assistantComponent.newChat();
+
+    const newChatId = assistantComponent.sqChat()?.chatService?.chatId;
+    if (newChatId) {
+      localStorage.setItem(this.STORAGE_KEY, newChatId);
+    }
+  }
+
   handleReady(ready: boolean) {
-    if (ready) {
-      this.isAssistantReady.set(true);
+    if (!ready) {
+      return;
+    }
+
+    this.isAssistantReady.set(true);
+
+    const storedChatId = localStorage.getItem(this.STORAGE_KEY);
+    if (storedChatId) {
+      const chatService = this.chat()?.sqChat()?.chatService;
+
+      chatService?.savedChats$?.pipe(skip(1), take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: chats => {
+          console.log('Saved chats loaded:', chats);
+          // Check if the storedChatId exists in the chats array
+          const chatExists = chats.some(chat => chat.id === storedChatId);
+          if (chatExists) {
+            this.handleLoadSavedChat({ id: storedChatId } as SavedChat);
+          } else {
+            this.startNewChat();
+          }
+        },
+        error: err => {
+          console.error('Error loading saved chats:', err);
+        }
+      });
     }
   }
 
@@ -261,25 +305,55 @@ export class AssistantLayoutComponent implements OnRouteAttached {
    * - If no chat service is available or no user message is found, the method returns early
    */
   async handleLoadSavedChat(savedChat: SavedChat) {
-    // 1. fetch the saved chat to get its history
-    // 2. find the first user message in the history
-    // 3. update the query signal with the first user message content
-    const chatService = this.chat()?.sqChat()?.chatService;
-    if (!chatService) {
+    console.log('Loading saved chat:', savedChat.id);
+    localStorage.setItem(this.STORAGE_KEY, savedChat.id);
+
+    const assistantComponent = this.chat();
+    if (!assistantComponent) {
+      console.warn('Assistant component not available');
       return;
     }
-    const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
-    const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
-    if (firstUserMessage) {
-      this.query.update(q => {
-        if (q && firstUserMessage) {
-          const newQuery = { ...q };
-          newQuery.text = firstUserMessage.content as string;
-          return newQuery;
-        }
-        return q;
-      });
+
+    const chatService = assistantComponent.sqChat()?.chatService;
+    if (!chatService) {
+      console.warn('Chat service not available');
+      return;
+    }
+
+    // Prevent loading the same chat again
+    if (chatService.chatId === savedChat.id) {
+      console.log('Chat already loaded:', savedChat.id);
+      return;
+    }
+
+    try {
+      // Use the loadSavedChat$ subject to trigger loading
+      chatService.loadSavedChat$.next(savedChat);
+
+      // Generate/Set the chat ID to the loaded chat's ID
+      chatService.generateChatId(savedChat.id);
+
+      // Optional: Fetch the history to get the first user message
+      const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
+      const history = response?.history || [];
+
+      // Find the first user message to pre-populate the query input
+      const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
+      if (firstUserMessage) {
+        // Small delay to ensure the chat component has processed the loaded chat
+        setTimeout(() => {
+          this.query.update(q => {
+            if (q && firstUserMessage) {
+              return { ...q, text: firstUserMessage.content as string };
+            }
+            return q;
+          });
+        }, 100);
+      }
+
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error loading saved chat:', error);
     }
   }
 }
