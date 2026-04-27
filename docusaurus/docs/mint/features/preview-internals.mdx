@@ -1,0 +1,282 @@
+---
+title: Preview Internals
+sidebar_label: Preview Internals
+sidebar_position: 3
+description: Detailed explanation of how the document preview is triggered, rendered, and configured in Mint — selection flow, highlights, iframe loading, and responsive behaviour.
+---
+
+# Preview Internals
+
+This page explains in detail how the document preview works in Mint: how it is triggered when a user clicks a result, how the iframe content is fetched and validated, how entity highlights are applied, and how it adapts to different screen sizes.
+
+:::tip
+For a higher-level overview of the Preview component and its sub-components (navbar, header, tabs, assistant), see [Preview](./preview.mdx).
+:::
+
+## Triggering the Preview
+
+### Step 1 — User clicks an article
+
+Each article card calls `SelectionService.setCurrentArticle(article)`. This method writes the article into `SelectionStore`, making it available as a signal across the application.
+
+### Step 2 — SelectionStore drives visibility
+
+`SearchAllComponent` computes `hasPreview()` directly from the store:
+
+```typescript
+readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
+```
+
+When `hasPreview()` becomes `true`, the right-hand panel becomes visible via conditional rendering and CSS animation classes.
+
+### Step 3 — Preview panel renders
+
+There is no Drawer component. The `<preview>` element is rendered directly in the search results template:
+
+**Desktop (≥ 1024 px):**
+
+```html
+<!-- src/app2/pages/search/search-all.html -->
+<preview
+  [class]="cn(
+    'absolute inset-0 size-full',
+    hasPreview() && 'z-0 animate-slide-in-right',
+    !hasPreview() && 'z-1 translate-x-full animate-slide-out-right opacity-0'
+  )" />
+```
+
+The panel slides in from the right using CSS animation classes. When `hasPreview()` is `false`, the reverse animation plays and the element becomes invisible.
+
+**Mobile / Tablet (< 1024 px):**
+
+A `<sheet-previewer>` side sheet component is used instead:
+
+```html
+<sheet-previewer class="hidden md:block" />
+```
+
+The `SheetPreviewerComponent` uses a `<sheet>` (side sheet from `@sinequa/ui`). It adapts its content based on the breakpoint:
+- **Mobile (< 768 px):** shows only `<preview-content>` with the article title in a `<sheet-header>`
+- **Tablet (768 px–1023 px):** shows the full `<preview>` component inside the sheet
+
+### Step 4 — PreviewComponent reads the article
+
+`PreviewComponent` does **not** receive the article as an `@Input()`. It reads it directly from `SelectionStore`:
+
+```typescript
+// src/components/preview/preview.ts
+protected readonly article = computed(() => {
+  const article = this.selectionStore.article?.();
+  if (article) {
+    this.applicationService.setTitle(article.title || "Preview");
+  }
+  return article as Article;
+});
+```
+
+## Closing the Preview
+
+Closing the preview goes through `PreviewNavbarComponent`:
+
+```typescript
+// src/components/preview/preview-navbar/preview-navbar.ts
+handleClose() {
+  this.queryParamsStore.patch({ id: undefined }); // removes id from URL
+  this.selectionStore.clear();                    // clears SelectionStore
+  this.onClose.emit();
+}
+```
+
+Clearing `SelectionStore` sets `selectionStore.id()` to `undefined`, which makes `hasPreview()` return `false` in `SearchAllComponent`, triggering the slide-out animation.
+
+For the `SheetPreviewerComponent`, closure is handled by the sheet itself:
+
+```typescript
+handleChange(open: boolean) {
+  this.sheetService.setOpen(open);
+  if (!open) {
+    setTimeout(() => this.selectionService.clearCurrentArticle(), 200); // waits for animation
+  }
+}
+```
+
+ESC key also closes the sheet via:
+
+```typescript
+// src/components/preview/preview.ts
+this.eventManager.addEventListener(this.document.body, "keyup", (event: KeyboardEvent) => {
+  if (event.key === "Escape") this.sheetService.setOpen(false);
+});
+```
+
+## Auto-open from URL
+
+If the URL contains an `id` parameter (e.g., `#/search/all?id=doc-42`), `fetchServerPage` automatically opens the preview for the matching record as soon as the first page loads:
+
+```typescript
+// src/config/fetch-server-page.ts
+if (id) {
+  result.records?.forEach(article => {
+    if (article.id === id) selectionService.setCurrentArticle(article);
+  });
+}
+```
+
+This makes preview state **shareable via URL**. The `id` parameter is written to the URL by Effect 2 in `SearchAllComponent` whenever `queryParamsStore.id` is set.
+
+## PreviewContentComponent — iframe Loading Pipeline
+
+`PreviewContentComponent` (`src/components/preview/preview-content/preview-content.ts`) manages the document iframe. It runs two Angular resources in sequence:
+
+### Resource 1 — Fetch PreviewData
+
+```typescript
+previewDataResource = rxResource({
+  params: () => ({
+    id: this.id() || this.selectionStore.id?.() || "",
+    text: this.selectionStore.queryText?.() || "",
+    previewHighlights: this.selectionStore.previewHighlights?.()?.highlights
+  }),
+  stream: ({ params: { id, text, previewHighlights } }) =>
+    this.previewService.preview(id, { name: this.queryName, text }, previewHighlights)
+});
+```
+
+`previewService.preview()` calls the Sinequa backend to retrieve the `PreviewData` object, which contains the `documentCachedContentUrl` — the URL of the cached HTML version of the document.
+
+### Resource 2 — Validate the cached URL
+
+Before displaying the iframe, a HEAD request verifies the cached content is actually accessible:
+
+```typescript
+previewValidationResource = resource({
+  params: () => ({ url: this.previewUrl(), previewData: this.previewData() }),
+  loader: async ({ params }) => {
+    const response = await fetch(
+      window.location.origin + params.previewData.documentCachedContentUrl,
+      { method: "HEAD" }
+    );
+    return { isValid: response.status === 200 };
+  }
+});
+```
+
+If the fetch fails, `previewService.DOMContentLoaded.set(true)` is called to stop the loading indicator, and a "preview unavailable" message is shown.
+
+### Template states
+
+| State | Display |
+|---|---|
+| `isLoading()` on either resource | Spinning loader icon |
+| Both resources have values and `previewUrl()` is defined | iframe + preview navigator + preview actions |
+| No preview data or validation failed | "Preview unavailable" message |
+
+### iframe Communication
+
+Once the iframe is mounted, its `contentWindow` is registered with `PreviewService`:
+
+```typescript
+effect(() => {
+  const iframeElement = this.iframe();
+  if (iframeElement) this.previewService.setIframe(iframeElement.nativeElement.contentWindow);
+});
+```
+
+The parent and iframe communicate via `postMessage`:
+- **To iframe:** `previewService.sendMessage({ action: "select", id: "snippet_123", usePassageHighlighter: true })`
+- **From iframe:** `window.addEventListener("message", ...)` — receives `current-page` events to track the currently visible page
+
+## Advanced Search (Entity / Extract Navigation)
+
+The `<advanced-search>` component is rendered directly inside `PreviewComponent` (not in a separate drawer):
+
+```html
+<!-- src/components/preview/preview.html -->
+<advanced-search
+  [class]="cn('max-w-(clamp(200px,350px,100%)) h-full overflow-y-auto border-foreground/18 bg-menu', extended() && 'border-l')"
+  [article]="article()"
+  previewStrategy="replace" />
+```
+
+The host grid switches between `grid-cols-[auto_0fr]` (collapsed, Advanced Search invisible) and `grid-cols-[1fr_.5fr]` (extended, Advanced Search visible) based on the `extended` signal.
+
+The "Search in document" button in the navbar toggles this signal:
+
+```typescript
+toggleExtended(): void {
+  this.extended.set(!this.extended());
+}
+```
+
+The button is only shown when `isPrimary` is `true` (primary document conversion) and `showSearchButton` is enabled in the navbar config.
+
+## Expanded Preview Dialog
+
+When the `expandPreview` feature flag is enabled (`AppStore.general()?.features?.expandPreview`), the navbar shows an expand button. Clicking it opens `PreviewDialogComponent`:
+
+```typescript
+onExpand(): void {
+  this.previewDialog()?.open(this.article() as Article);
+}
+```
+
+`PreviewDialogComponent` (`src/components/preview/dialog/preview-dialog.ts`) is a full-screen modal dialog that renders the preview with its own set of tabs:
+
+| Tab | Description |
+|---|---|
+| Chat | Chat with the document (assistant, `preview-chatwithdoc-assistant`) |
+| Summary | AI summary of the document (`preview-summarize-assistant`) |
+| Find | Advanced search / entity navigation |
+
+It provides its own `PreviewService` instance (`providers: [PreviewService]`) to keep the dialog's iframe state independent from the inline preview.
+
+## Entity Highlighting
+
+When the preview renders a document's content, named entities (companies, people, places, amounts, etc.) are highlighted with distinct colors.
+
+### Configuration
+
+The highlights are configured in `src/config/highlight.config.ts` and provided via the `HIGHLIGHTS` token:
+
+```typescript
+// src/app2/app.config.ts
+{ provide: HIGHLIGHTS, useValue: PREVIEW_HIGHLIGHTS }
+```
+
+Each entry defines a category name, a CSS class applied in the iframe, and a color for the navigation UI.
+
+| Category | Color |
+|---|---|
+| `company` | Red (`#FF7675`) |
+| `geo` | Blue (`#74B9FF`) |
+| `person` | Teal (`#00ABB5`) |
+| `money` | Green (`#85BB65`) |
+| `entity12` | Gold (`#FFD700`) |
+| `matchlocations` / `extractslocations` | Yellow |
+
+### How it works
+
+The highlights configuration is consumed by `PreviewService` and `PreviewNavigator`:
+1. CSS rules are injected into the iframe to colorize each entity class
+2. The `<preview-navigator>` overlay (displayed above the iframe) lists entity categories and allows jumping between occurrences
+
+## Passage Navigation
+
+When a search result with a selected passage is opened, `PreviewContentComponent` scrolls the iframe to the relevant passage:
+
+1. `SelectionStore.previewHighlights()` provides the `snippetId`
+2. On iframe load, `previewService.sendMessage({ action: "select", id: "snippet_X", usePassageHighlighter: true })` scrolls and highlights the passage
+
+For **secondary conversions** (multi-conversion), passage highlighting is not possible, so the component falls back to page-level scrolling:
+
+1. `previewService.passageOffset()` provides the passage offset in the original document
+2. `queryService.getDocPage(id, offset, length)` resolves the page number for that offset
+3. `previewService.sendMessage({ action: "select", id: "sq-page-start-N" })` scrolls to the page
+
+## Responsive Summary
+
+| Screen size | Preview presentation | Opened by |
+|---|---|---|
+| Desktop (≥ 1024 px) | Inline right panel, 50% width, slide-in animation | `hasPreview()` CSS toggle |
+| Tablet (768 px–1023 px) | Side sheet (full `<preview>`) from the right | `SheetPreviewerComponent` |
+| Mobile (< 768 px) | Side sheet (title + `<preview-content>` only) from the right | `SheetPreviewerComponent` |

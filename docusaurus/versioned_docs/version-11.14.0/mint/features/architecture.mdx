@@ -1,0 +1,146 @@
+---
+title: Application Architecture
+sidebar_label: Architecture
+sidebar_position: 0
+description: High-level overview of Mint's application architecture, technology stack, and bootstrapping process.
+sidebar_class_name: update
+---
+
+# Application Architecture
+
+This page describes the overall architecture of the Mint application located in `src/app2/`. It covers the technology stack, bootstrapping sequence, dependency injection model, and routing structure.
+
+:::info
+All references in this page point to `src/app2/`, which is the current version of the application.
+:::
+
+## Technology Stack
+
+| Technology | Role |
+|---|---|
+| Angular 20 (Standalone Components) | UI framework, dependency injection, routing |
+| Angular Signals | Reactive state (no Zone.js — zoneless change detection) |
+| TanStack Query (`@tanstack/angular-query-experimental`) | Server-state management, pagination, caching |
+| `@sinequa/atomic` | Core Sinequa domain models (`Query`, `Result`, `Article`, …) |
+| `@sinequa/atomic-angular` | Angular stores, services, interceptors, and shared components |
+| `@sinequa/agent` | Chat agent and SignalR real-time communication |
+| `@jsverse/transloco` | i18n / translation |
+| `ngx-sonner` | Toast notifications |
+| `@ngrx/signals` | Signal-based store utilities (`getState`) |
+
+## Bootstrap Sequence
+
+The application entry-point is `src/app2/app.config.ts`. Two `provideAppInitializer` calls run sequentially at startup:
+
+```
+1. appInitializerFn          — configures the @sinequa/atomic layer
+                               (reads environment, sets API base URL, …)
+
+2. withBootstrapApp(         — contacts the Sinequa server to load the
+     ApplicationService,        application configuration (CCApp), then
+     { createRoutes: true }     dynamically injects routes derived from
+   )                            the server-side query definitions
+```
+
+After both initializers complete, the Angular router is ready and the root `AppComponent` is rendered.
+
+## Dependency Injection — Key Tokens
+
+`app.config.ts` registers all application-wide providers. The most important ones:
+
+| Token | Value | Effect |
+|---|---|---|
+| `HIGHLIGHTS` | `PREVIEW_HIGHLIGHTS` | CSS class names used to highlight entities in the document preview |
+| `COMPONENTS_FOR_DOCUMENT_TYPE` | `getComponentsForDocumentType` | Function that maps a document format string to the correct article and preview components |
+| `PREVIEW_CONFIG` | `{ allowWorker: true }` | Enables a Web Worker for extract retrieval in the preview |
+| `FILTERS_BREAKPOINT` | `10` | Maximum number of filter chips displayed before being collapsed into a "More" menu |
+| `ROUTE_COMPONENTS` | `[SearchLayoutComponent, SearchAllComponent]` | Overrides the default components used for the `/search` routes |
+| `*_CONFIG` (bookmarks, collections, …) | Widget options | Path and display options for the widget pages |
+
+## HTTP Interceptors
+
+Every outgoing HTTP request passes through five interceptors, applied in the following order:
+
+```
+bodyInterceptorFn   →  authInterceptorFn  →  auditInterceptorFn
+    →  errorInterceptorFn  →  toastInterceptorFn
+```
+
+| Interceptor | Responsibility |
+|---|---|
+| `bodyInterceptorFn` | Transforms request/response bodies (serialization, camelCase ↔ snake_case) |
+| `authInterceptorFn` | Attaches the authentication token to every request |
+| `auditInterceptorFn` | Emits audit events for each search or navigation action |
+| `errorInterceptorFn` | Catches 4xx/5xx responses and converts them to typed errors |
+| `toastInterceptorFn` | Displays a toast notification when an HTTP error occurs |
+
+## TanStack Query Configuration
+
+```typescript
+new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,  // No silent background refetch
+      gcTime: 0,                    // No in-memory cache between navigations
+      retry: () => false            // No automatic retry on error
+    }
+  }
+})
+```
+
+These settings are intentional: Mint always fetches fresh data on navigation and delegates all pagination state to the infinite-query pages array.
+
+## Routing
+
+The router uses **hash-based navigation** (`withHashLocation()`) and **component-input binding** (`withComponentInputBinding()`), which means URL query parameters are automatically injected as `input()` signals in the target component.
+
+```
+#/home                     →  HomeComponent
+#/search/**                →  SearchLayoutComponent → SearchAllComponent
+#/assistant                →  AssistantLayoutComponent
+#/chat/new                 →  AgentLayoutComponent  → ChatNewPage
+#/chat/:id                 →  AgentLayoutComponent  → ChatIdPage
+#/widgets/recent-searches  →  WidgetsLayout2Component → RecentSearchesComponent
+#/widgets/bookmarks        →  WidgetsLayout2Component → BookmarksComponent
+#/widgets/saved-searches   →  WidgetsLayout2Component → SavedSearchesComponent
+#/widgets/collections      →  WidgetsLayout2Component → CollectionsComponent
+#/login|logout|auth/:mode  →  AuthPageComponent
+```
+
+All routes except authentication require `AuthGuard`. Feature pages are **lazy-loaded** (except `HomeComponent` and the search layout).
+
+### Extended Route Data
+
+Routes can carry custom metadata via the `ExtendedData` type defined in `src/app2/routes.ts`:
+
+```typescript
+type ExtendedData = Data & {
+  queryName?: string;    // Name of the Sinequa admin query
+  display?: string;      // Label shown in the UI
+  wsQueryTab?: string;   // Tab name associated with the query
+  icon?: string;         // Icon identifier
+};
+```
+
+## Application Shell
+
+The `AppComponent` (`src/app2/app.component.ts`) renders:
+
+- A `<sui-sidebar-provider>` wrapping the sidebar and the main content area
+- A `<router-outlet>` for page-level components
+- A fixed `<multi-selection-toolbar>` for batch operations on selected results
+- A `<ngx-sonner-toaster>` for toast messages
+
+On initialization, `AppComponent`:
+
+1. Reads the user's preferred language from `UserSettingsStore` and activates it via Transloco
+2. Listens for system `prefers-color-scheme` changes to toggle dark mode
+3. Invalidates the TanStack Query cache when collections are modified (via a custom DOM event)
+
+## Internationalization
+
+- **Available languages:** `en`, `fr`, `de`
+- **Default language:** `en`
+- Locale data for `fr-FR` and `de` is registered at module load time
+- Translation files are loaded lazily from `assets/i18n/{lang}.json` via `TranslocoHttpLoader`
+- `provideTranslocoMessageformat()` enables ICU message formatting (plurals, selects)
