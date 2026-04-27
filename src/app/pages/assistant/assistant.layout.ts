@@ -4,7 +4,7 @@ import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
+import { CCApp, fetchQuery, globalConfig, Query } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -178,12 +178,16 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   constructor() {
     effect(() => {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
-      getState(this.principalStore);
-      this.recreateAssistant();
-      const chat = this.chat();
-      if (chat && this.isAssistantReady()) {
-        // also start a new chat
-        this.startNewChat();
+      const principal = getState(this.principalStore);
+      const { userOverrideActive } = globalConfig;
+      // reload the assistant if the principal changes and the user override is active
+      if (principal && userOverrideActive) {
+        this.recreateAssistant();
+        const chat = this.chat();
+        if (chat && this.isAssistantReady()) {
+          // also start a new chat
+          this.startNewChat();
+        }
       }
     });
 
@@ -267,26 +271,57 @@ export class AssistantLayoutComponent implements OnRouteAttached {
 
     this.isAssistantReady.set(true);
 
-    const storedChatId = localStorage.getItem(this.STORAGE_KEY);
-    if (storedChatId) {
-      const chatService = this.chat()?.sqChat()?.chatService;
+    // Load the saved chat from local storage if it exists
+    this.loadSavedChatFromStorage();
+  }
 
-      chatService?.savedChats$?.pipe(skip(1), take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: chats => {
-          console.log('Saved chats loaded:', chats);
-          // Check if the storedChatId exists in the chats array
-          const chatExists = chats.some(chat => chat.id === storedChatId);
-          if (chatExists) {
-            this.handleLoadSavedChat({ id: storedChatId } as SavedChat);
-          } else {
-            this.startNewChat();
-          }
-        },
-        error: err => {
-          console.error('Error loading saved chats:', err);
-        }
-      });
+  /**
+   * Loads a saved chat from localStorage and restores it if it exists.
+   *
+   * This function retrieves a stored chat ID from localStorage and attempts to
+   * load the corresponding saved chat from the chat service. If the chat exists
+   * in the saved chats list, it will be restored; otherwise, a new chat will be started.
+   *
+   * The subscription automatically unsubscribes when the component is destroyed
+   * using `takeUntilDestroyed`.
+   *
+   * @returns {void}
+   *
+   * @example
+   * // Called after the assistant is ready
+   * this.loadSavedChatFromStorage();
+   *
+   * @remarks
+   * - The function does nothing if no chat ID is found in localStorage
+   * - The function does nothing if the chat service or savedChats$ observable is unavailable
+   * - The subscription uses `skip(1)` to ignore the initial empty state
+   * - Errors during chat loading are logged to the console but not thrown
+   */
+  private loadSavedChatFromStorage(): void {
+    const storedChatId = localStorage.getItem(this.STORAGE_KEY);
+    if (!storedChatId) {
+      return;
     }
+
+    const chatService = this.chat()?.sqChat()?.chatService;
+    if (!chatService?.savedChats$) {
+      return;
+    }
+
+    chatService.savedChats$.pipe(skip(1), take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: chats => {
+        console.log('Saved chats loaded:', chats);
+        const chatExists = chats.some(chat => chat.id === storedChatId);
+        if (chatExists) {
+          this.handleLoadSavedChat({ id: storedChatId } as SavedChat);
+        } else {
+          this.startNewChat();
+        }
+      },
+      error: err => {
+        console.error('Error loading saved chats:', err);
+      }
+    });
   }
 
   /**
@@ -305,7 +340,6 @@ export class AssistantLayoutComponent implements OnRouteAttached {
    * - If no chat service is available or no user message is found, the method returns early
    */
   async handleLoadSavedChat(savedChat: SavedChat) {
-    console.log('Loading saved chat:', savedChat.id);
     localStorage.setItem(this.STORAGE_KEY, savedChat.id);
 
     const assistantComponent = this.chat();
