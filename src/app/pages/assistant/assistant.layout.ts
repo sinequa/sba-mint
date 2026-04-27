@@ -4,7 +4,7 @@ import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, globalConfig, Query } from '@sinequa/atomic';
+import { CCApp, fetchQuery, globalConfig, error, Query } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -310,7 +310,6 @@ export class AssistantLayoutComponent implements OnRouteAttached {
 
     chatService.savedChats$.pipe(skip(1), take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: chats => {
-        console.log('Saved chats loaded:', chats);
         const chatExists = chats.some(chat => chat.id === storedChatId);
         if (chatExists) {
           this.handleLoadSavedChat({ id: storedChatId } as SavedChat);
@@ -319,7 +318,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
         }
       },
       error: err => {
-        console.error('Error loading saved chats:', err);
+        error('Error loading saved chats:', err);
       }
     });
   }
@@ -356,7 +355,6 @@ export class AssistantLayoutComponent implements OnRouteAttached {
 
     // Prevent loading the same chat again
     if (chatService.chatId === savedChat.id) {
-      console.log('Chat already loaded:', savedChat.id);
       return;
     }
 
@@ -386,8 +384,8 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       }
 
       this.cdr.detectChanges();
-    } catch (error) {
-      console.error('Error loading saved chat:', error);
+    } catch (err) {
+      error('Error loading saved chat:', err);
     }
   }
 }
