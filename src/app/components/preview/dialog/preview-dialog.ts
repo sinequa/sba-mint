@@ -13,7 +13,8 @@ import {
   DialogTitleComponent,
   Separator,
   TabComponent,
-  TabsComponent
+  TabsComponent,
+  TabsListComponent
 } from '@sinequa/ui';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
@@ -39,6 +40,7 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
     DialogTitleComponent,
     DialogHeaderComponent,
     PreviewContentComponent,
+    TabsListComponent,
     TabsComponent,
     TabComponent,
     TranslocoPipe,

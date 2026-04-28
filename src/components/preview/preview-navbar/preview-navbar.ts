@@ -2,7 +2,13 @@ import { Location, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, Input, inject, input, model, output, signal, viewChild } from "@angular/core";
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
-import { AppStore, BookmarkButtonComponent, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
+import {
+  AppStore,
+  BookmarkButtonComponent,
+  PreviewService,
+  QueryParamsStore,
+  SelectionStore
+} from "@sinequa/atomic-angular";
 import {
   ArrowLeftIcon,
   ArrowUpRightFromSquareIcon,

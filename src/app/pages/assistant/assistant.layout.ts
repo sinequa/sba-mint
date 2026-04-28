@@ -15,7 +15,7 @@ import {
   QueryParamsStore,
   SelectionStore
 } from "@sinequa/atomic-angular";
-import { ButtonComponent, CommentsIcon, cn, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
+import { ButtonComponent, CommentsIcon, cn, IconButtonComponent, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
 import { AssistantComponent } from "../../components/assistant/assistant";
@@ -35,7 +35,8 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     ButtonComponent,
     AppSidebarComponent,
     CommentsIcon,
-    PlusIcon
+    PlusIcon,
+    IconButtonComponent
   ],
   providers: [provideTranslocoScope("filters")],
   template: `
@@ -54,15 +55,15 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
-            <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
-              <div class="flex items-center justify-between">
-                <h3 class="text-muted-foreground pointer-events-none font-semibold">
-                  <comments-icon class="me-1" />
+            <section class="border-foreground/10 dark:bg-menu h-56 max-h-56 rounded-2xl border p-4">
+              <div class="flex items-center gap-2">
+                <comments-icon />
+                <h3 class="text-muted-foreground pointer-events-none font-semibold grow">
                   {{ 'assistant.saved-chats' | transloco }}
                 </h3>
                 <button
-                  variant="ghost"
-                  size="icon"
+                  variant="none"
+                  icon-button
                   [title]="'assistant.new-discussion' | transloco"
                   [attr.aria-label]="'assistant.new-discussion' | transloco"
                   (click)="chat()?.newChat()">
@@ -70,7 +71,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
                 </button>
               </div>
               <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
-              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
+              <sq-saved-chats-v3 #savedchats class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
               </sq-saved-chats-v3>
             </section>
           }
@@ -82,12 +83,12 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
             column="treepath"
             showFiltersCount
             [collapsible]="true"
-            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
+            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4" />
         </section>
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showDocumentUploader()) {
-            <assistant-upload [instanceId]="instanceId()" />
+            <assistant-upload [instanceId]="instanceId()" class="rounded-2xl border border-foreground/10 dark:bg-menu"  />
           }
         }
       </div>
@@ -113,6 +114,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
 export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
+  savedChat = viewChild<SavedChatsComponent>("savedchats");
 
   drawerStackService = inject(DrawerStackService);
   opened = computed(() => this.drawerStackService.isOpened());
