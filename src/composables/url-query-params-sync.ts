@@ -1,7 +1,7 @@
 import { effect, inject, InputSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getState } from '@ngrx/signals';
-import { LegacyFilter, SpellingCorrectionMode } from '@sinequa/atomic';
+import { LegacyFilter, SpellingCorrectionMode, warn } from '@sinequa/atomic';
 import { QueryParamsStore } from '@sinequa/atomic-angular';
 
 /**
@@ -103,9 +103,11 @@ export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: U
   // params are inherently flat strings. We parse it back to an array here.
   effect(() => {
     let filters: LegacyFilter[] = [];
+    const fRaw = inputs.f?.() ?? '';
     try {
-      filters = inputs.f?.() ? JSON.parse(inputs.f!() ?? '') : [];
-    } catch {
+      filters = fRaw ? JSON.parse(fRaw) : [];
+    } catch (err) {
+      warn(`[injectUrlQueryParamsSync] Failed to parse ?f= param:${fRaw}`, err);
       filters = [];
     }
     queryParamsStore.patch({
