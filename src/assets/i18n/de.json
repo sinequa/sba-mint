@@ -124,5 +124,7 @@
   },
   "userMenu": {
     "tryNewLayout": "Die neue UI ausprobieren"
-  }
+  },
+  "closeSidebar": "Seitenleiste schließen",
+  "all": "alles"
 }
