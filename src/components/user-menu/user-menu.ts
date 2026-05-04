@@ -163,9 +163,13 @@ export class UserMenuComponent {
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout()
-      .then(() => this.router.navigate(["/logout"]))
-      .catch(err => error("navigation to /logout failed!", err));
+    logout().then(redirectUrl => {
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        this.router.navigate(['/logout']);
+      }
+    });
   }
 
   handleOverride() {
