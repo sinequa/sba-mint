@@ -50,7 +50,7 @@
     "@microsoft/signalr": "^7.0.14",
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
-    "@sinequa/agent": "^4.0.2",
+    "@sinequa/agent": "^4.0.2-dev.8",
     "@sinequa/assistant": "4.0.2",
     "@sinequa/atomic": "^1.0.0",
     "@sinequa/atomic-angular": "^1.2.0",
