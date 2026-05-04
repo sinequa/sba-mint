@@ -36,7 +36,6 @@ import {
   useSidebar
 } from "@sinequa/ui";
 import { filter } from "rxjs";
-import { CdkConnectedOverlay } from "@angular/cdk/overlay";
 
 @Component({
   selector: "app-sidebar",
@@ -79,7 +78,7 @@ import { CdkConnectedOverlay } from "@angular/cdk/overlay";
             <div
               class="logo-small size-8 bg-contain bg-center bg-no-repeat transition-opacity"
               style="background-image: var(--logo-small)"></div>
-            <sidebar-trigger tooltip="Open sidebar" tooltip-position="right" />
+            <sidebar-trigger [tooltip]="'openSidebar' | transloco" tooltip-position="right" />
           </div>
           <sidebar-trigger
             [tooltip]="'closeSidebar' | transloco"

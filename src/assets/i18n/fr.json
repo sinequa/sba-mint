@@ -146,5 +146,6 @@
     "tryNewLayout": "Essayer la nouvelle UI"
   },
   "closeSidebar": "Fermer la barre latérale",
+  "openSidebar": "Ouvrir la barre latérale",
   "all": "tous"
 }
