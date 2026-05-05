@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import type { OnRouteAttached } from '@config/custom-reuse-strategy';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { HubConnection } from '@microsoft/signalr';
+import type { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
-
-import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
+import { type SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
+import { type CCApp, fetchQuery, type Query } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -16,12 +16,11 @@ import {
   SelectionStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
-
 import { firstValueFrom } from 'rxjs';
+import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
 import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -109,7 +108,7 @@ import { AssistantUploadComponent } from '../../../components/assistant/document
     `
   ]
 })
-export class AssistantLayoutComponent {
+export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
 
@@ -174,8 +173,11 @@ export class AssistantLayoutComponent {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
       getState(this.principalStore);
       this.recreateAssistant();
-      // also start a new chat
-      this.chat()?.newChat();
+      const chat = this.chat();
+      if (chat && this.isAssistantReady()) {
+        // also start a new chat
+        this.chat()?.newChat();
+      }
     });
 
     effect(() => {
@@ -203,6 +205,17 @@ export class AssistantLayoutComponent {
       }
     });
 
+    // when the component is initialized, we want to set the application title and clear the selection store
+    this.initialize();
+  }
+
+  onRouteAttached(): void {
+    this.initialize();
+  }
+
+  private initialize() {
+    // react to drawer state changes to update the application title when the drawer is closed
+    this.applicationService.setTitle('Assistant');
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();

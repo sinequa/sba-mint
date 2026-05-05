@@ -1,4 +1,4 @@
-import { Data, Route } from '@angular/router';
+import type { Data, Route } from '@angular/router';
 
 import { AuthGuard, ErrorComponent, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
 
@@ -27,9 +27,15 @@ export const routes: ExtendedRoutes = [
     path: 'assistant',
     loadComponent: () => import('./pages/assistant/assistant.layout').then(m => m.AssistantLayoutComponent),
     canActivate: [AuthGuard()],
+    resolve: { queryName: queryNameResolver },
+    data: { reuse: true } // This route will be "frozen" when we navigate away from it, and "thawed" when we come back to it
+  },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard()],
     resolve: { queryName: queryNameResolver }
   },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
     path: 'widgets',
     loadComponent: () => import('./pages/widgets/widgets-layout').then(m => m.WidgetsLayout2Component),

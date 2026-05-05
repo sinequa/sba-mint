@@ -1,8 +1,8 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, inject, signal, type Type, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 
 import { logout, setGlobalConfig } from '@sinequa/atomic';
@@ -64,7 +64,11 @@ export class UserMenuComponent {
     { name: 'system', icon: 'fa-fw fal fa-desktop' }
   ] as const;
 
-  AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
+  AllLanguages: {
+    code: SupportedLanguage;
+    label: string;
+    icon: Type<unknown>;
+  }[] = [
     { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
     { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
   ] as const;
@@ -116,7 +120,13 @@ export class UserMenuComponent {
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout().then(() => this.router.navigate(['/logout']));
+    logout().then(redirectUrl => {
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        this.router.navigate(['/logout']);
+      }
+    });
   }
 
   handleOverride() {
