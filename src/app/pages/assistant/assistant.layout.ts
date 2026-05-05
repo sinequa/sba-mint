@@ -4,7 +4,7 @@ import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query } from '@sinequa/atomic';
+import { CCApp, fetchQuery, Query, SpellingCorrectionMode } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -19,6 +19,7 @@ import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
 
 import { firstValueFrom } from 'rxjs';
 import { AssistantComponent } from '../../components/assistant/assistant';
+import { injectUrlQueryParamsSync } from '../../../composables/url-query-params-sync';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
 import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
@@ -157,8 +158,14 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   // this is used to display the saved chats component
   readonly showDocumentUploader = computed(() => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady());
 
-  // queryparams input binding
-  q = input<string>();
+  // url query param input bindings
+  readonly q = input<string>();
+  readonly t = input<string>();
+  readonly b = input<string>();
+  readonly s = input<string>();
+  readonly f = input<string>();
+  readonly n = input<string>();
+  readonly c = input<SpellingCorrectionMode>();
 
   /* To force the recreation of the assistant component when the principal changes,*/
   readonly principalStore = inject(PrincipalStore);
@@ -182,8 +189,12 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       }
     });
 
+    // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
+    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c });
+
+    // React to store updates to keep the local query signal in sync
     effect(() => {
-      this.queryParamsStore.setFromUrl(window.location.hash);
+      getState(this.queryParamsStore);
       this.query.set(this.queryParamsStore.getQuery());
       this.backLevel--;
     });
