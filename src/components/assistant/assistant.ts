@@ -1,23 +1,29 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, ViewEncapsulation, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
+import type { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
-import { catchError, of } from 'rxjs';
-
 import {
   ChatComponent,
-  ChatConfig,
-  ChatContextAttachment,
+  type ChatConfig,
+  type ChatContextAttachment,
   ChatSettingsV3Component,
-  InitChat,
-  MessageHandler,
-  RawMessage,
-  SuggestedAction
+  type InitChat,
+  type MessageHandler,
+  type RawMessage,
+  type SuggestedAction
 } from '@sinequa/assistant/chat';
-
-import { Article, error, Query } from '@sinequa/atomic';
-import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { type Article, error, type Query } from '@sinequa/atomic';
+import {
+  AppStore,
+  DrawerStackService,
+  type PreviewHighlights,
+  PreviewService,
+  QueryParamsStore,
+  SelectionStore,
+  UserSettingsStore
+} from '@sinequa/atomic-angular';
 import { cn } from '@sinequa/ui';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'assistant, Assistant',
@@ -193,15 +199,19 @@ export class AssistantComponent {
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
     if (partId) {
       this.previewService.events.set('scrollTo');
-      this.previewService.sendMessage({ action: 'select', id: `snippet_${partId}`, usePassageHighlighter: true });
+      this.previewService.sendMessage({
+        action: 'select',
+        id: `snippet_${partId}`,
+        usePassageHighlighter: true
+      });
     }
   }
 
   public newChat(): void {
     try {
       this.sqChat()?.newChat();
-    } catch (err) {
-      error('Error while starting a new chat', err);
+    } catch {
+      // error('Error while starting a new chat', err);
     }
   }
 
@@ -242,13 +252,21 @@ export class AssistantComponent {
     const config = this.appStore.assistants()[this.instanceId()!];
 
     if (question && config) {
-      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const systemMsg = {
+        role: 'system',
+        content: config.defaultValues.systemPrompt,
+        additionalProperties: { display: false }
+      } as RawMessage;
       const messages: RawMessage[] = [
         systemMsg,
         {
           role: 'user',
           content: question || '',
-          additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
+          additionalProperties: {
+            display: true,
+            isUserInput: true,
+            additionalWorkflowProperties: config.additionalWorkflowProperties
+          }
         }
       ];
       this.initChat = { messages } as InitChat;
