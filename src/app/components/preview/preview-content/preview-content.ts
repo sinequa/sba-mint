@@ -1,10 +1,12 @@
-import { Component, computed, DestroyRef, ElementRef, effect, inject, input, resource, viewChild } from "@angular/core";
-import { rxResource } from "@angular/core/rxjs-interop";
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
+
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
 import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+
+import { rxResource } from "@angular/core/rxjs-interop";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
@@ -88,10 +90,7 @@ export class PreviewContentComponent {
   });
 
   /* resources */
-  public readonly previewDataResource = rxResource<
-    PreviewData | undefined,
-    { id: string; text: string; previewHighlights: CustomHighlights[] }
-  >({
+  public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
       const id = this.id() || this.selectionStore.id?.() || "";
       const queryText = this.selectionStore.queryText?.() || "";
@@ -152,9 +151,7 @@ export class PreviewContentComponent {
           throw new Error("Invalid parameters for preview validation");
         }
 
-        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, {
-          method: "HEAD"
-        });
+        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: "HEAD" });
         return { isValid: response.status === 200 };
       } catch {
         // In case of an error during fetch, we consider the preview as invalid

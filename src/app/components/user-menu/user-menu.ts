@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, inject, signal, viewChild, viewChildren, Type } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { bootstrapNewApp } from "@config/bootstrap-new-app";
@@ -129,8 +129,8 @@ export class UserMenuComponent {
     const separator = principal.fullName ? " " : ".";
     return (principal.fullName || principal.name || "")
       .split(separator)
-      .filter((word) => word[0] && word[0] === word[0].toUpperCase())
-      .map((word) => word[0])
+      .filter(word => word[0] && word[0] === word[0].toUpperCase())
+      .map(word => word[0])
       .join("")
       .slice(0, 3);
   });
@@ -151,16 +151,20 @@ export class UserMenuComponent {
   }
 
   switchTheme(mode: Theme) {
-    const userTheme =
-      mode === "dark" ||
-      (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode);
   }
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout().then(() => this.router.navigate(["/logout"]));
+    logout().then(redirectUrl => {
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        this.router.navigate(['/logout']);
+      }
+    });
   }
 
   handleOverride() {
@@ -188,7 +192,7 @@ export class UserMenuComponent {
   }
 
   onChangePassword() {
-    this.menus()?.forEach((m) => (m as any)?.close?.());
+    this.menus()?.forEach(m => (m as any)?.close?.());
     this.router.navigate(["/auth", "changepassword"]);
   }
 }

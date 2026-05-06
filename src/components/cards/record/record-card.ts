@@ -1,9 +1,9 @@
-import { Component, computed, DestroyRef, effect, inject, input, model, signal } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
-import { TranslocoPipe } from "@jsverse/transloco";
-import { getState } from "@ngrx/signals";
+import { Component, computed, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 
-import { Article as A, LegacyFilter } from "@sinequa/atomic";
+import { Article as A, LegacyFilter } from '@sinequa/atomic';
 import {
   BookmarkButtonComponent,
   MetadataComponent,
@@ -15,23 +15,12 @@ import {
   SelectionStrategy,
   SourceComponent,
   TranslocoDateImpurePipe
-} from "@sinequa/atomic-angular";
-import {
-  BadgeComponent,
-  CalendarDayIcon,
-  CardComponent,
-  CardContentComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  cn,
-  SquareCheckBigIcon,
-  SquareIcon,
-  UserIcon
-} from "@sinequa/ui";
+} from '@sinequa/atomic-angular';
+import { BadgeComponent, CalendarDayIcon, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, cn, SquareCheckBigIcon, SquareIcon, UserIcon } from '@sinequa/ui';
 
-import { CardMenuComponent } from "../menu";
+import { CardMenuComponent } from '../menu';
 
-type Tab = "attachments" | "similars";
+type Tab = 'attachments' | 'similars';
 
 type CustomMetadata = {
   fields: string[];
@@ -42,10 +31,10 @@ type Article = A & {
   [key: string]: any;
 };
 
-const HIDDEN_METADATA = ["web", "htm", "html", "xhtm", "xhtml", "mht", "mhtml", "mht", "aspx", "page"];
+const HIDDEN_METADATA = ['web', 'htm', 'html', 'xhtm', 'xhtml', 'mht', 'mhtml', 'mht', 'aspx', 'page'];
 
 @Component({
-  selector: "record-card, recordcard, RecordCard",
+  selector: 'record-card, recordcard, RecordCard',
   imports: [
     BadgeComponent,
     BookmarkButtonComponent,
@@ -64,22 +53,20 @@ const HIDDEN_METADATA = ["web", "htm", "html", "xhtm", "xhtml", "mht", "mhtml", 
     UserIcon,
     CalendarDayIcon
   ],
-  templateUrl: "./record-card.html",
+  templateUrl: './record-card.html',
   host: {
-    "(document:keydown.shift.t)": "isLineClamped.set(!isLineClamped())"
+    '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
   },
   hostDirectives: [
     {
       directive: SelectArticleDirective,
-      inputs: ["article", "strategy"]
+      inputs: ['article', 'strategy']
     }
   ]
 })
 export class RecordCard {
   cn = cn;
-  public readonly customMetadata = input<CustomMetadata[] | undefined>([
-    { title: "labels", fields: ["public_label", "private_label"] }
-  ]);
+  public readonly customMetadata = input<CustomMetadata[] | undefined>([{ title: 'labels', fields: ['public_label', 'private_label'] }]);
   public readonly article = model<Article>({} as Article);
   public readonly strategy = input<SelectionStrategy>();
 
@@ -98,7 +85,7 @@ export class RecordCard {
   selected = computed(() => this.article()?.id === getState(this.selectionStore).id);
   // state of checkbox for multi-select
   checked = signal<boolean>(false);
-  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find((a) => a.id === this.article().id));
+  multiSelected = computed(() => getState(this.selectionStore).multiSelection.find(a => a.id === this.article().id));
 
   protected extract = computed(() => {
     if (!this.article().matchingpassages) return this.article().relevantExtracts;
@@ -110,18 +97,17 @@ export class RecordCard {
   protected title = computed(() => {
     // article().displayTitle is the title used in the search results and may contain HTML tags, this will be sanitized
     const { displayTitle, title, id } = this.article();
-    return this.sanitize.bypassSecurityTrustHtml(displayTitle || title || id || "");
+    return this.sanitize.bypassSecurityTrustHtml(displayTitle || title || id || '');
   });
 
   protected showTab = signal(false);
-  protected currentTab: Tab = "attachments";
+  protected currentTab: Tab = 'attachments';
 
   protected docformatMetadata = computed(() => {
     if (this.article().docformat && !HIDDEN_METADATA.includes(this.article().docformat.toLowerCase()))
-      return { field: "docformat", value: this.article().docformat! };
+      return { field: 'docformat', value: this.article().docformat! };
 
-    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase()))
-      return { field: "doctype", value: this.article().doctype! };
+    if (this.article().doctype && !HIDDEN_METADATA.includes(this.article().doctype!.toLowerCase())) return { field: 'doctype', value: this.article().doctype! };
 
     return undefined;
   });
@@ -150,7 +136,7 @@ export class RecordCard {
    */
   setFilter(field: string, value: string, event: Event): void {
     event.stopImmediatePropagation();
-    const filter: LegacyFilter = { field, value };
+    let filter: LegacyFilter = { field, value };
     this.queryParamStore.updateFilter(filter);
   }
 

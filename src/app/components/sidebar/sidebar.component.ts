@@ -1,37 +1,21 @@
-import { Location } from "@angular/common";
-import { Component, computed, inject, input } from "@angular/core";
-import { Router, RouterLink } from "@angular/router";
-import { TranslocoService } from "@jsverse/transloco";
-import { getState } from "@ngrx/signals";
+import { Location } from '@angular/common';
+import { Component, computed, inject, input } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+import { getState } from '@ngrx/signals';
 
-import { CCApp, getHelpIndexUrl } from "@sinequa/atomic";
-import { AppStore, PrincipalStore, UserSettingsStore } from "@sinequa/atomic-angular";
-import {
-  CommentIcon,
-  cn,
-  GearIcon,
-  MagnifyingGlassIcon,
-  QuestionCircleIcon,
-  SidebarComponent,
-  SidebarItemComponent
-} from "@sinequa/ui";
+import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
+import { AppStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
+import { cn, CommentIcon, GearIcon, MagnifyingGlassIcon, QuestionCircleIcon, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
 /**
  * Sidebar component for the application.
  * @deprecated used with previous layout using the Drawer component
  */
 @Component({
-  selector: "app-sidebar",
-  imports: [
-    RouterLink,
-    SidebarComponent,
-    SidebarItemComponent,
-    MagnifyingGlassIcon,
-    CommentIcon,
-    GearIcon,
-    QuestionCircleIcon
-  ],
-  templateUrl: "./sidebar.component.html"
+  selector: 'app-sidebar',
+  imports: [RouterLink, SidebarComponent, SidebarItemComponent, MagnifyingGlassIcon, CommentIcon, GearIcon, QuestionCircleIcon],
+  templateUrl: './sidebar.component.html'
 })
 export class AppSidebarComponent {
   cn = cn;
@@ -45,9 +29,7 @@ export class AppSidebarComponent {
 
   readonly backLevel = input<number | undefined>(undefined);
 
-  readonly isAdmin = computed(
-    () => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin
-  );
+  readonly isAdmin = computed(() => this.principalStore.principal().isAdministrator || this.principalStore.principal().isDelegatedAdmin);
   readonly isDarkMode = computed(() => this.userSettings.isDarkMode());
 
   readonly instanceId = computed(() => {
@@ -61,26 +43,26 @@ export class AppSidebarComponent {
 
   // Updated allowAI computed signal
   protected readonly allowAI = computed(() => {
-    return !this.router.url.startsWith("/assistant") && !!this.appStore.isAssistantAllowed(this.instanceId());
+    return !this.router.url.startsWith('/assistant') && !!this.appStore.isAssistantAllowed(this.instanceId());
   });
 
   openHelp() {
     const url = getHelpIndexUrl(this.transloco.getActiveLang(), {
-      folder: "mint-search",
-      path: "/r/_sinequa/webpackages/help",
-      indexFile: "olh-index.html",
+      folder: 'mint-search',
+      path: '/r/_sinequa/webpackages/help',
+      indexFile: 'olh-index.html',
       useLocale: true,
       useLocaleAsPrefix: true
     });
-    window.open(url, "_blank", "noopener");
+    window.open(url, '_blank', 'noopener');
   }
 
   switchDarkMode() {
-    document.documentElement.classList.toggle("dark", !this.isDarkMode());
+    document.documentElement.classList.toggle('dark', !this.isDarkMode());
     this.userSettings.toggleDarkMode();
   }
 
   openAdmin() {
-    window.open(`${window.location.origin}/admin`, "_blank", "noopener");
+    window.open(`${window.location.origin}/admin`, '_blank', 'noopener');
   }
 }

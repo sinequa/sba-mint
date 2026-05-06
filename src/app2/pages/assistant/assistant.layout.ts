@@ -22,6 +22,7 @@ import {
   ButtonComponent,
   CommentsIcon,
   cn,
+  IconButtonComponent,
   PlusIcon,
   SheetService,
   SidebarGroupComponent,
@@ -51,7 +52,8 @@ import { firstValueFrom } from "rxjs";
     SheetPreviewerComponent,
     AggregationComponent,
     CommentsIcon,
-    PlusIcon
+    PlusIcon,
+    IconButtonComponent
   ],
   providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
@@ -61,14 +63,14 @@ import { firstValueFrom } from "rxjs";
             @for (key of [assistantKey()]; track key) {
               @if (showSavedChats()) {
                 <section class="h-56 max-h-56 p-4">
-                  <div class="flex items-center justify-between">
-                    <h3 class="pointer-events-none font-semibold text-muted-foreground">
-                      <CommentsIcon class="me-1" />
+                  <div class="flex items-center gap-2">
+                    <CommentsIcon/>
+                    <h3 class="pointer-events-none font-semibold text-muted-foreground grow">
                       {{ "assistant.saved-chats" | transloco }}
                     </h3>
                     <button
-                      variant="ghost"
-                      size="icon"
+                      variant="none"
+                      icon-button
                       [title]="'assistant.new-discussion' | transloco"
                       [attr.aria-label]="'assistant.new-discussion' | transloco"
                       (click)="chat()?.newChat()">

@@ -1,27 +1,43 @@
-import { Component, signal, viewChild, ElementRef, input, output, computed, inject } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-
-import { DropdownComponent, ButtonComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
-import { UserSettingsStore, SavedSearchesService, type SearchItem } from '@sinequa/atomic-angular';
-import { notify } from '@sinequa/atomic';
+import { Component, computed, ElementRef, inject, input, output, signal, viewChild } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { notify } from "@sinequa/atomic";
+import { SavedSearchesService, type SearchItem, UserSettingsStore } from "@sinequa/atomic-angular";
+import {
+  ButtonComponent,
+  DropdownComponent,
+  IconButtonComponent,
+  InputComponent,
+  PopoverComponent,
+  PopoverContentComponent,
+  StarIcon
+} from "@sinequa/ui";
 
 @Component({
-  selector: 'saved-search-popover, SavedSearchPopover, savedsearchpopover',
-  imports: [TranslocoPipe, ButtonComponent, PopoverComponent, PopoverContentComponent, InputComponent, StarIcon],
+  selector: "saved-search-popover, SavedSearchPopover, savedsearchpopover",
+  imports: [
+    TranslocoPipe,
+    ButtonComponent,
+    PopoverComponent,
+    PopoverContentComponent,
+    InputComponent,
+    StarIcon,
+    IconButtonComponent
+  ],
   template: `
     @if (!savedSearch()) {
-      <Popover #popover class="rounded-lg border-neutral-300">
+      <Popover #popover class="flex!" >
         <button
-          variant="icon"
-          size="icon"
-          class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
+          variant="none"
+          icon-button
+          size="sm"
+
           [title]="'searchInput.saveSearch' | transloco"
           [attr.aria-label]="'searchInput.saveSearch' | transloco"
           (click)="openSavedSearch($event)">
           <StarIcon />
         </button>
 
-        <PopoverContent class="min-w-xs p-2" position="bottom-end" strategy="fixed">
+        <PopoverContent class="min-w-xs" position="bottom-end" strategy="fixed">
           <div class="cursor-default">
             <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
             <div class="py-4">
@@ -50,8 +66,10 @@ import { notify } from '@sinequa/atomic';
       </Popover>
     } @else {
       <button
-        variant="icon"
-        size="icon"
+        variant="none"
+        icon-button
+        size="sm"
+
         class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
         [attr.title]="'searchInput.saveSearch' | transloco"
         [attr.aria-label]="'searchInput.saveSearch' | transloco"
@@ -60,25 +78,28 @@ import { notify } from '@sinequa/atomic';
         <StarIcon solid class="animate-save" />
       </button>
     }
-  `
+  `,
+  host: {
+    class: "flex"
+  }
 })
 export class SavedSearchPopover {
   // "saved search" popover reference
   protected readonly popoverComponent = viewChild.required(PopoverComponent);
   // autocomplete dropdown reference
   protected readonly dropdownComponent = inject(DropdownComponent);
-  protected readonly savedNameInputRef = viewChild<ElementRef<HTMLInputElement>>('savedNameInput');
+  protected readonly savedNameInputRef = viewChild<ElementRef<HTMLInputElement>>("savedNameInput");
 
   protected readonly userSettingsStore = inject(UserSettingsStore);
   protected readonly savedSearchesService = inject(SavedSearchesService);
   protected readonly transloco = inject(TranslocoService);
 
-  queryText = input<string>('');
+  queryText = input<string>("");
 
   onSavedSearch = output<SearchItem | undefined>();
 
   // used by saved search
-  protected readonly savedName = signal<string>('');
+  protected readonly savedName = signal<string>("");
 
   /** Returns true if the current search (current input() + filters) is in the saved searches */
   protected readonly savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.queryText()));
@@ -109,12 +130,12 @@ export class SavedSearchPopover {
       const index = this.savedSearchesService.getSavedSearches().indexOf(savedSearch);
       if (index !== -1) {
         this.savedSearchesService.deleteSavedSearch(index);
-        notify.success(this.transloco.translate('searches.saved.deleted'), { duration: 2000 });
+        notify.success(this.transloco.translate("searches.saved.deleted"), { duration: 2000 });
       }
       this.onSavedSearch.emit(savedSearch);
     } else {
       this.savedSearchesService.saveSearch(savedName || this.savedName().trim());
-      notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
+      notify.success(this.transloco.translate("searches.saved.saved"), { duration: 2000 });
       this.popoverComponent().close();
     }
   }
