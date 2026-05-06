@@ -1,119 +1,293 @@
 ---
-title: CSS Variables Reference
+title: CSS Variables & Theming
+sidebar_class_name: update
 ---
+
 export const Color = ({children, value}) => (
   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-    <span style={{ backgroundColor: value, border: '1px solid black', padding: '0.5rem', height: '16px', width: '16px' }}></span>
+    <span style={{ backgroundColor: value, border: '1px solid #ccc', padding: '0.5rem', height: '16px', width: '16px', display: 'inline-block', borderRadius: '3px' }}></span>
     {children}
   </div>
 )
 
-CSS variables (also known as custom properties) are a powerful feature of CSS that allow you to define reusable values throughout
-your stylesheets. They enable you to create a consistent design system and make it easier to manage and update your styles.
+Mint uses a **three-layer theming system** built on CSS custom properties and Tailwind CSS v4. Understanding this architecture makes it straightforward to apply your own branding.
 
-## Variables
+## Architecture Overview
 
-### Typography
+```text
+src/themes/chapsvision.css          src/theme.css
+─────────────────────────           ─────────────────────────────
+Layer 1 · Color Palette             Layer 3 · Tailwind Mapping
+  @theme {                            @theme inline {
+    --color-sage-800: #445556;          --color-primary: var(--primary);
+    --color-pink-200: #efc9f3;          --color-accent:  var(--accent);
+    ...                                 ...
+  }                                   }
+                                    ↓
+Layer 2 · Semantic Tokens           Tailwind utility classes
+  :root {                             bg-primary, text-accent,
+    --primary: var(--color-sage-800);  border-secondary, ...
+    --accent:  var(--color-pink-200);
+    ...
+  }
+  .dark {
+    --primary: var(--color-sage-200);
+    ...
+  }
+```
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--font-display` | 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif' | Main display font family |
-| `--text-xxs` | 0.625rem | Extra small text size |
+| Layer | File | Purpose |
+|-------|------|---------|
+| **1 – Color Palette** | `src/themes/chapsvision.css` (`@theme` block) | Raw color scales (`--color-sage-*`, `--color-pink-*`, …). These are the building blocks. |
+| **2 – Semantic Tokens** | `src/themes/chapsvision.css` (`:root` / `.dark`) | Maps palette colors to roles (`--primary`, `--accent`, `--sidebar`, …). Change these for branding. |
+| **3 – Tailwind Mapping** | `src/theme.css` (`@theme inline`) | Exposes semantic tokens as Tailwind utilities (`bg-primary`, `text-accent`, …). Do not edit unless adding new utilities. |
 
-### Layout & Stacking
+---
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--zindex-filter` | 100 | Z-index level for filters |
-| `--zindex-backdrop` | 1000 | Z-index level for modal backdrop |
-| `--zindex-drawer` | 2000 | Z-index level for side drawers |
-| `--zindex-tooltip` | 3000 | Z-index level for tooltips |
-| `--cdk-z-index-overlay` | 5000 | Z-index for CDK overlays |
-| `--panel-max-height` | 100% | Maximum panel height |
+## Customizing Your Branding
 
-### Branding
+To apply custom branding, **override the semantic tokens** (Layer 2) in your own CSS file — you never need to touch `chapsvision.css` directly or re-declare the full palette.
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--logo-small` | url('assets/logo/small.svg') | Path to small logo |
-| `--logo-large` | url('assets/logo/large.svg') | Path to large logo |
-| `--logo-alt-text` | 'Sinequa logo' | Alternative text for logo |
+### Minimal Override
 
-### Colors - Base
+Create or edit `src/styles/custom-theme.css` (imported after `theme.css`):
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--color-background` | <Color value="#ffffff">#ffffff</Color> | Main background color |
-| `--color-foreground` | <Color value="#23272e">#23272e</Color> | Main text color |
-| `--color-border` | <Color value="#f6f7f9">#f6f7f9</Color> | Border color |
-| `--color-input` | <Color value="#d5d9e2">#d5d9e2</Color> | Input field color |
-| `--color-ring` | <Color value="#1a73e8">#1a73e8</Color> | Focus ring color |
+```css
+:root {
+  /* Your brand primary color */
+  --primary: #1a56db;
+  --primary-foreground: #ffffff;
 
-### Colors - Components
+  /* Your brand accent color */
+  --accent: #e0f2fe;
+  --accent-foreground: #0c4a6e;
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--color-card` | <Color value="#ffffff">#ffffff</Color> | Card background color |
-| `--color-card-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Card text color |
-| `--color-popover` | <Color value="#ffffff">#ffffff</Color> | Popover background color |
-| `--color-popover-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Popover text color |
-| `--color-backdrop` | <Color value="rgba(0, 0, 0, 0.4)">rgba(0, 0, 0, 0.4)</Color> | Semi-transparent backdrop color |
+  /* Sidebar & header */
+  --sidebar: #1e3a5f;
+  --header: #1e3a5f;
+}
 
-### Colors - Interactive
+.dark {
+  --primary: #93c5fd;
+  --accent: #1e3a5f;
+}
+```
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--color-primary` | <Color value="#0084ff">#0084ff</Color> | Primary color |
-| `--color-primary-hover` | <Color value="#0056ff">#0056ff</Color> | Primary color hover state |
-| `--color-primary-active` | <Color value="#0040bf">#0040bf</Color> | Primary color active state |
-| `--color-primary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on primary background |
-| `--color-secondary` | <Color value="#526077">#526077</Color> | Secondary color |
-| `--color-secondary-hover` | <Color value="#434e61">#434e61</Color> | Secondary color hover state |
-| `--color-secondary-active` | <Color value="#3a4252">#3a4252</Color> | Secondary color active state |
-| `--color-secondary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on secondary background |
-| `--color-muted` | <Color value="#f6f7f9">#f6f7f9</Color> | Muted state color |
-| `--color-muted-foreground` | <Color value="#8695aa">#8695aa</Color> | Muted text color |
-| `--color-accent` | <Color value="#f2f2f2">#f2f2f2</Color> | Accent color |
-| `--color-accent-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Text color on accent background |
+### Key Tokens for Branding
 
-### Colors - Status
+| Token | Role | Light default |
+|-------|------|---------------|
+| `--primary` | Main brand color (buttons, links, active states) | <Color value="#445556">`#445556`</Color> |
+| `--primary-foreground` | Text/icon on primary backgrounds | <Color value="#f5f8f7">`#f5f8f7`</Color> |
+| `--accent` | Highlights, selections, badges | <Color value="#efc9f3">`#efc9f3`</Color> |
+| `--accent-foreground` | Text on accent backgrounds | <Color value="#6c467b">`#6c467b`</Color> |
+| `--secondary` | Secondary buttons and surfaces | <Color value="#e8f0ee">`#e8f0ee`</Color> |
+| `--sidebar` | Sidebar background | <Color value="#2d393a">`#2d393a`</Color> |
+| `--sidebar-foreground` | Sidebar text and icons | <Color value="#d1e1dd">`#d1e1dd`</Color> |
+| `--header` | Top header bar background | <Color value="#374648">`#374648`</Color> |
+| `--header-foreground` | Header text and icons | <Color value="#f5f8f7">`#f5f8f7`</Color> |
+| `--background` | Page background | <Color value="#fdfefe">`#fdfefe`</Color> |
+| `--foreground` | Default text color | <Color value="#1e1e27">`~#1e1e27`</Color> |
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--color-destructive` | <Color value="#ff2a1d">#ff2a1d</Color> | Color for destructive actions |
-| `--color-destructive-hover` | <Color value="#c8180d">#c8180d</Color> | Destructive hover state |
-| `--color-destructive-active` | <Color value="#a5180f">#a5180f</Color> | Destructive active state |
-| `--color-destructive-disable` | <Color value="#ffc8c5">#ffc8c5</Color> | Destructive disabled state |
-| `--color-destructive-foreground` | <Color value="#ffffff">#ffffff</Color> | Text on destructive background |
-| `--color-alert` | <Color value="#ff2a1d">#ff2a1d</Color> | Alert color |
-| `--color-success` | <Color value="#2ed73f">#2ed73f</Color> | Success color |
-| `--color-highlight` | <Color value="#fff7ab">#fff7ab</Color> | Highlight color |
+---
 
-### Effects
+## Light & Dark Mode
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--drawer-box-shadow` | -10px 0px 10px rgba(0, 0, 0, 0.1) | Shadow for side drawers |
-| `--shadow-dropdown` | 6px 4px 20px 0px rgba(0, 0, 0, 0.2) | Shadow for dropdowns |
-| `--shadow-article` | 4px 4px 12px 0px rgba(0, 0, 0, 0.15) | Shadow for articles |
-| `--backdrop` | rgba(0, 0, 0, 0.4) | Modal backdrop color |
-| `--backdrop-filter` | blur(2px) | Blur effect for modal backdrop |
-| `--animate-progress` | progress 5s linear infinite | Progress bar animation |
+Mint uses a **class-based dark mode** — the `.dark` class is applied to the `<html>` element. The semantic tokens are declared twice:
 
-## Chat Variables
+- `:root` → light mode values
+- `.dark` → dark mode overrides
 
-| Variable | Value(s) | Description |
-|----------|----------|-------------|
-| `--ast-reference-expanded-hover-bg` | <Color value="#fff9">#fff9</Color> | Background color for expanded references on hover |
-| `--ast-input-bg` | <Color value="white">white</Color>, <Color value="#f8f8f8">#f8f8f8</Color> | Background color for chat input area |
-| `--ast-secondary-bg` | <Color value="#ffeab9">#ffeab9</Color> | Secondary background color for assistant messages |
-| `--ast-user-font-weight` | 600 | Font weight for user messages |
-| `--ast-primary-bg` | white | Primary background color for chat messages |
-| `--ast-size-3` | 1.5rem | Base size for chat elements |
-| `--text-xxs` | 0.625rem | Extra small text size for chat interface |
-| `--zindex-drawer-chat` | 2500 | Z-index for chat drawer |
-| `--color-primary` | <Color value="#0084ff">#0084ff</Color> | Primary color for interactive elements |
-| `--color-primary-hover` | <Color value="#0056ff">#0056ff</Color> | Hover state for primary interactive elements |
-| `--color-primary-foreground` | <Color value="#ffffff">#ffffff</Color> | Text color on primary background |
-| `--color-muted` | <Color value="#f6f7f9">#f6f7f9</Color> | Background color for muted elements |
-| `--color-accent-foreground` | <Color value="#1c1c1c">#1c1c1c</Color> | Text color on accent background |
+```css
+:root {
+  --primary: var(--color-sage-800); /* #445556 */
+}
+
+.dark {
+  --primary: var(--color-sage-200); /* #d1e1dd */
+}
+```
+
+When overriding, always provide both blocks to keep dark mode working correctly.
+
+:::note Chrome `light-dark()` workaround
+The CSS `light-dark()` function has a bug in Chrome (as of early 2026). Avoid using it for semantic token values. Use explicit `:root` / `.dark` declarations instead, as done throughout `chapsvision.css`.
+:::
+
+---
+
+## Tailwind Utilities
+
+Once defined in `src/theme.css`, every semantic token becomes available as Tailwind classes:
+
+| Semantic token | Tailwind classes generated |
+|----------------|---------------------------|
+| `--primary` | `bg-primary`, `text-primary`, `border-primary`, `ring-primary` |
+| `--primary-foreground` | `bg-primary-foreground`, `text-primary-foreground`, … |
+| `--accent` | `bg-accent`, `text-accent`, … |
+| `--sidebar` | `bg-sidebar`, `text-sidebar`, … |
+| `--destructive` | `bg-destructive`, `text-destructive`, … |
+
+The full mapping is in `src/theme.css` inside the `@theme inline` block.
+
+---
+
+## Full Semantic Token Reference
+
+### Core Colors
+
+| Token | Light value | Dark value | Tailwind utility |
+|-------|-------------|------------|-----------------|
+| `--background` | <Color value="#fdfefe">`--color-gray-50`</Color> | <Color value="#222d30">`--color-sage-975`</Color> | `bg-background` |
+| `--foreground` | `oklch(0.141…)` | `oklch(0.985…)` | `text-foreground` |
+| `--border` | `oklch(0.922…)` | `oklch(1 0 0 / 10%)` | `border-border` |
+| `--input` | <Color value="#fdfefe">`--color-gray-50`</Color> | <Color value="#2d393a">`--color-sage-950`</Color> | `bg-input` |
+| `--ring` | accent color | — | `ring-ring` |
+| `--muted` | <Color value="#eff2f6">`--color-gray-200`</Color> | <Color value="#2d393a">`--color-sage-950`</Color> | `bg-muted` |
+| `--muted-foreground` | `oklch(0.552…)` | `--color-neutral-300` | `text-muted-foreground` |
+
+### Primary
+
+| Token | Light value | Dark value | Tailwind utility |
+|-------|-------------|------------|-----------------|
+| `--primary` | <Color value="#445556">`--color-sage-800`</Color> | <Color value="#d1e1dd">`--color-sage-200`</Color> | `bg-primary` / `text-primary` |
+| `--primary-foreground` | <Color value="#f5f8f7">`--color-sage-50`</Color> | <Color value="#a9c1b8">`--color-sage-300`</Color> | `text-primary-foreground` |
+| `--primary-hovered` | <Color value="#2d393a">`--color-sage-950`</Color> | <Color value="#374648">`--color-sage-900`</Color> | `bg-primary-hovered` |
+| `--primary-pressed` | <Color value="#d1e1dd">`--color-sage-300`</Color> | <Color value="#4f6162">`--color-sage-700`</Color> | `bg-primary-pressed` |
+| `--primary-active` | primary color | <Color value="#5d7374">`--color-sage-600`</Color> | `bg-primary-active` |
+| `--primary-disabled` | <Color value="#eff2f6">`--color-disabled`</Color> | <Color value="#445556">`--color-sage-800`</Color> | `bg-primary-disabled` |
+| `--primary-light` | <Color value="#d1e1dd">`--color-sage-200`</Color> | <Color value="#4f6162">`--color-sage-700`</Color> | `bg-primary-light` |
+| `--primary-lighter` | <Color value="#e8f0ee">`--color-sage-100`</Color> | <Color value="#374648">`--color-sage-900`</Color> | `bg-primary-lighter` |
+| `--primary-lightest` | <Color value="#f5f8f7">`--color-sage-50`</Color> | <Color value="#2d393a">`--color-sage-950`</Color> | `bg-primary-lightest` |
+
+### Secondary
+
+| Token | Light value | Tailwind utility |
+|-------|-------------|-----------------|
+| `--secondary` | <Color value="#e8f0ee">`--color-sage-100`</Color> | `bg-secondary` |
+| `--secondary-foreground` | <Color value="#374648">`--color-sage-900`</Color> | `text-secondary-foreground` |
+| `--secondary-hovered` | <Color value="#e8f0ee">`--color-sage-100`</Color> | `bg-secondary-hovered` |
+| `--secondary-pressed` | <Color value="#d1e1dd">`--color-sage-200`</Color> | `bg-secondary-pressed` |
+| `--secondary-light` | <Color value="#bbdfca">`--color-almond-200`</Color> | `bg-secondary-light` |
+| `--secondary-lighter` | <Color value="#dcefe3">`--color-almond-100`</Color> | `bg-secondary-lighter` |
+| `--secondary-lightest` | <Color value="#f1f8f4">`--color-almond-50`</Color> | `bg-secondary-lightest` |
+
+### Accent
+
+| Token | Light value | Dark value | Tailwind utility |
+|-------|-------------|------------|-----------------|
+| `--accent` | <Color value="#efc9f3">`--color-pink-200`</Color> | (inherited) | `bg-accent` / `text-accent` |
+| `--accent-foreground` | <Color value="#6c467b">`--color-pink-900`</Color> | — | `text-accent-foreground` |
+| `--accent-alt` | <Color value="#efc9f3">`--color-pink-200`</Color> | <Color value="#926e9b">`--color-pink-700`</Color> | `bg-accent-alt` |
+| `--accent-hovered` | <Color value="#faecfb">`--color-pink-100`</Color> | <Color value="#bb6779">`--color-pink-500`</Color> | `bg-accent-hovered` |
+| `--accent-pressed` | <Color value="#6c467b">`--color-pink-900`</Color> | <Color value="#7f5a8b">`--color-pink-800`</Color> | `bg-accent-pressed` |
+
+### Status Colors
+
+| Token | Light value | Foreground token | Tailwind utility |
+|-------|-------------|-----------------|-----------------|
+| `--success` | <Color value="#c4d6c0">`--color-green-200`</Color> | `--success-foreground` → <Color value="#1f341b">`--color-green-800`</Color> | `bg-success` |
+| `--warning` | <Color value="#ffddc6">`--color-orange-200`</Color> | `--warning-foreground` → <Color value="#85461e">`--color-orange-800`</Color> | `bg-warning` |
+| `--info` | <Color value="#c5dbea">`--color-blue-200`</Color> | `--info-foreground` → <Color value="#253846">`--color-blue-800`</Color> | `bg-info` |
+| `--error` | <Color value="#ffbebf">`--color-red-200`</Color> | `--error-foreground` → <Color value="#701c1d">`--color-red-800`</Color> | `bg-error` |
+| `--destructive` | `oklch(0.577…)` ≈ <Color value="#c0392b">`red`</Color> | `--destructive-foreground` | `bg-destructive` |
+
+### Layout – Sidebar
+
+| Token | Light value | Dark value | Tailwind utility |
+|-------|-------------|------------|-----------------|
+| `--sidebar` | <Color value="#2d393a">`--color-sage-950`</Color> | <Color value="#374648">`--color-sage-900`</Color> | `bg-sidebar` |
+| `--sidebar-foreground` | <Color value="#d1e1dd">`--color-sage-200`</Color> | <Color value="#e8f0ee">`--color-sage-100`</Color> | `text-sidebar-foreground` |
+| `--sidebar-accent` | `30% opacity sage-800` | `30% opacity sage-975` | `bg-sidebar-accent` |
+| `--sidebar-active` | <Color value="#4f6162">`--color-sage-700`</Color> | <Color value="#222d30">`--color-sage-975`</Color> | `bg-sidebar-active` |
+| `--sidebar-border` | <Color value="#374648">`--color-sage-900`</Color> | `white 10%` | `border-sidebar-border` |
+| `--sidebar-ring` | <Color value="#dbbade">`--color-pink-400`</Color> | <Color value="#926e9b">`--color-pink-700`</Color> | `ring-sidebar-ring` |
+
+### Layout – Header & Card
+
+| Token | Light value | Tailwind utility |
+|-------|-------------|-----------------|
+| `--header` | <Color value="#374648">`--color-sage-900`</Color> | `bg-header` |
+| `--header-foreground` | <Color value="#f5f8f7">`--color-sage-50`</Color> | `text-header-foreground` |
+| `--card` | <Color value="#f1f8f4">`--color-almond-50`</Color> | `bg-card` |
+| `--card-foreground` | <Color value="#0d211a">`--color-almond-950`</Color> | `text-card-foreground` |
+| `--popover` | <Color value="#ffffff">`white`</Color> | `bg-popover` |
+| `--aside` | <Color value="#f5f8f7">`--color-sage-50`</Color> | `bg-aside` |
+| `--aside-border` | <Color value="#d1e1dd">`--color-sage-200`</Color> | `border-aside-border` |
+
+### Tooltip
+
+| Token | Light value | Tailwind utility |
+|-------|-------------|-----------------|
+| `--tooltip` | <Color value="#4d5260">`--color-gray-700`</Color> | `bg-tooltip` |
+| `--tooltip-foreground` | <Color value="#fdfefe">`--color-gray-50`</Color> | `text-tooltip-foreground` |
+
+### AI & Assistant
+
+| Token | Light value | Description |
+|-------|-------------|-------------|
+| `--ai-from` | <Color value="#5a87a4">`--color-blue-500`</Color> | AI gradient start |
+| `--ai-via` | <Color value="#6c5ce7">`#6c5ce7`</Color> | AI gradient mid |
+| `--ai-to` | <Color value="#8a3bff">`#8a3bff`</Color> | AI gradient end |
+| `--ai-foreground` | white | Text on AI gradient |
+| `--ai-border` | `--border` | AI card border |
+| `--assistant` | <Color value="#ff732e">`#ff732e`</Color> | Assistant brand color |
+| `--gradient-name` | `linear-gradient(93deg, #1B97BF, #8A3BFF)` | Animated name gradient |
+
+### Effects & Backdrop
+
+| Token | Default value | Description |
+|-------|--------------|-------------|
+| `--backdrop` | `oklch(from foreground l c h / 50%)` | Dialog/modal overlay color |
+| `--backdrop-filter` | `blur(2px)` | Frosted-glass blur on modal backdrop |
+| `--drawer-box-shadow` | `-10px 0px 10px rgba(0,0,0,0.1)` | Side drawer shadow |
+
+---
+
+## Z-index Reference
+
+Defined in `src/theme.css` under `@theme inline`:
+
+| Token | Value | Tailwind utility |
+|-------|-------|-----------------|
+| `--z-menu` | `100` | `z-menu` |
+| `--z-popover` | `100` | `z-popover` |
+| `--z-dropdown` | `100` | `z-dropdown` |
+| `--z-backdrop` | `1000` | `z-backdrop` |
+| `--z-drawer` | `2000` | `z-drawer` |
+| `--z-multiselection` | `2050` | `z-multiselection` |
+| `--cdk-z-index-overlay` | `5000` | — (CDK internal) |
+
+---
+
+## Typography & Spacing
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--radius` | `0.65rem` | Default border radius |
+| `--radius-sm` | `0.5rem` | Small border radius |
+| `--radius-button` | `100vw` | Pill-shaped button radius |
+| `--text-2xs` | `10px` | Extra-small font size |
+
+---
+
+## Color Palette Reference
+
+The full color scales are defined in `src/themes/chapsvision.css` inside the `@theme` block and are available as Tailwind utilities (`bg-sage-800`, `text-pink-200`, etc.):
+
+| Scale | Steps | Crown color (recommended for primary) |
+|-------|-------|--------------------------------------|
+| `sage` | 50 → 975 | <Color value="#445556">`sage-800`</Color> |
+| `almond` | 50 → 950 | <Color value="#dcefe3">`almond-100`</Color> |
+| `pink` | 50 → 950 | <Color value="#efc9f3">`pink-200`</Color> |
+| `green` | 50 → 950 | <Color value="#3e6936">`green-600`</Color> |
+| `orange` | 50 → 950 | <Color value="#bd6f3c">`orange-600`</Color> |
+| `red` | 50 → 950 | <Color value="#ad3739">`red-600`</Color> |
+| `blue` | 50 → 950 | <Color value="#45677e">`blue-600`</Color> |
+| `gray` | 50 → 950 | <Color value="#626c84">`gray-600`</Color> |
+| `yellow` | 50 → 950 | <Color value="#9d7930">`yellow-600`</Color> |
+| `cherry` | 50 → 950 | <Color value="#6e3d47">`cherry-600`</Color> |
+| `indigo` | 50 → 950 | <Color value="#505f97">`indigo-600`</Color> |
+| `cyan` | 50 → 950 | <Color value="#2a5050">`cyan-600`</Color> |
+
+Crown colors (👑 in the source file) are the recommended choices when picking a single representative color from each scale.

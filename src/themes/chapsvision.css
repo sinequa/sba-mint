@@ -1,3 +1,6 @@
+@import "./galactik-tokens";
+@import "./badge-tokens";
+
 @theme {
   --color-sage-50: #f5f8f7;
   --color-sage-100: #e8f0ee;
@@ -227,13 +230,8 @@
   --destructive-foreground-muted: var(--color-red-600);
   --destructive-foreground-light: var(--color-red-200);
 
-  --focus: var(--color-pink-700);
 
-  --neutral-foreground-muted: #626C84;
-  --neutral-foreground-white: #FFFFFF;
-  --neutral-foreground-black: #182021;
-  --neutral-foreground-base: #36383E;
-  --neutral-foreground-light: #EFF2F6;
+  --focus: var(--color-pink-700);
 
   --gradient-name: linear-gradient(93deg, #1B97BF 0%, #8A3BFF 100%);
 
@@ -266,8 +264,8 @@
   --sidebar-foreground: var(--color-sage-200);
   --sidebar-primary: oklch(0.648 0.2 131.684);
   --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
-  --sidebar-accent: oklch(from var(--color-sage-800) l c h / 30%);
-  --sidebar-accent-foreground: var(--color-sage-50);
+  --sidebar-accent: var(--color-sage-200);
+  --sidebar-accent-foreground: var(--color-sage-950);
   --sidebar-active: var(--color-sage-700);
   --sidebar-active-foreground: var(--color-white);
   --sidebar-border: var(--color-sage-900);
@@ -343,6 +341,155 @@
 }
 
 .dark {
+  /* ============================================================
+     FOREGROUND
+     Body text sits on sage-975/950 surfaces → use sage-50/100 as base.
+     ============================================================ */
+  --font-primary-dark:    var(--sage-50);    /* highest emphasis */
+  --font-primary-base:    var(--sage-100);   /* default body */
+  --font-primary-muted:   var(--sage-300);   /* secondary / captions */
+  --font-primary-hovered: var(--sage-50);
+  --font-primary-pressed: var(--sage-50);
+  --font-primary-light:   var(--sage-700);   /* disabled-ish on dark */
+
+  --font-secondary-base:     var(--almond-200);
+  --font-secondary-base-alt: var(--almond-300);
+  --font-secondary-hovered:  var(--almond-100);
+  --font-secondary-pressed:  var(--almond-50);
+
+  --font-accent-base:    var(--pink-950);    /* pink-950 in light → pink-100 in dark */
+  --font-accent-muted:   var(--pink-200);
+  --font-accent-light:   var(--pink-900);
+  --font-accent-pressed: var(--pink-950);
+
+  --font-neutral-base:   var(--grey-100);
+  --font-neutral-muted:  var(--grey-400);
+  --font-neutral-light:  var(--grey-800);
+  --font-neutral-white:  var(--sage-975);    /* "white-on-colored" becomes "dark-on-colored" */
+  --font-neutral-black:  var(--absolute-pure-white);
+
+  --font-success-base:   var(--green-200);
+  --font-success-muted:  var(--green-300);
+  --font-success-light:  var(--green-800);
+
+  --font-warning-base:   var(--orange-200);
+  --font-warning-muted:  var(--orange-300);
+  --font-warning-light:  var(--orange-800);
+
+  --font-info-base:      var(--blue-200);
+  --font-info-muted:     var(--blue-300);
+  --font-info-light:     var(--blue-800);
+
+  --font-error-base:     var(--red-200);
+  --font-error-muted:    var(--red-300);
+  --font-error-light:    var(--red-800);
+
+  --font-cherry-base:    var(--cherry-200);
+  --font-cherry-muted:   var(--cherry-300);
+  --font-indigo-base:    var(--indigo-200);
+  --font-indigo-muted:   var(--indigo-300);
+  --font-cyan-base:      var(--cyan-200);
+  --font-cyan-muted:     var(--cyan-300);
+  --font-yellow-base:    var(--yellow-200);
+  --font-yellow-muted:   var(--yellow-300);
+
+  /* ============================================================
+     BACKGROUND
+     App surface = sage-975. Cards lift via sage-950 / sage-900.
+     ============================================================ */
+  --bg-primary-base:       var(--sage-300);   /* primary button at rest */
+  --bg-primary-hovered:    var(--sage-200);
+  --bg-primary-pressed:    var(--sage-100);   /* mirrors light-mode sage-300 pressed */
+  --bg-primary-light:      var(--sage-800);
+  --bg-primary-lighter:    var(--sage-900);
+  --bg-primary-lightest:   var(--sage-950);
+
+  --bg-secondary-base:     var(--almond-400);
+  --bg-secondary-base-alt: var(--almond-200);
+  --bg-secondary-active:   var(--almond-600);
+  --bg-secondary-light:    var(--almond-800);
+  --bg-secondary-lighter:  var(--almond-900);
+  --bg-secondary-lightest: var(--almond-950);
+
+  --bg-accent-base:        var(--pink-900);   /* accent buttons invert 200 → 900 */
+  --bg-accent-base-alt:    var(--pink-200);
+  --bg-accent-hover:       var(--pink-800);
+  --bg-accent-pressed:     var(--pink-200);
+
+  --bg-neutral-base:       var(--sage-975);   /* APP BACKGROUND */
+  --bg-neutral-base-alt:   var(--grey-100);
+  --bg-neutral-white:      var(--sage-950);   /* "card white" in dark mode */
+  --bg-neutral-disabled:   var(--sage-800);
+
+  --bg-success-base:       var(--green-800);
+  --bg-success-base-alt:   var(--green-400);
+  --bg-success-lightest:   var(--green-950);
+
+  --bg-warning-base:       var(--orange-800);
+  --bg-warning-base-alt:   var(--orange-400);
+  --bg-warning-lightest:   var(--orange-950);
+
+  --bg-info-base:          var(--blue-800);
+  --bg-info-base-alt:      var(--blue-400);
+  --bg-info-lightest:      var(--blue-950);
+
+  --bg-error-base:         var(--red-800);
+  --bg-error-base-alt:     var(--red-400);
+  --bg-error-lightest:     var(--red-950);
+
+  --bg-cherry-base:        var(--cherry-800);
+  --bg-cherry-base-alt:    var(--cherry-400);
+  --bg-indigo-base:        var(--indigo-400);
+  --bg-indigo-base-alt:    var(--indigo-800);
+  --bg-cyan-base:          var(--cyan-400);
+  --bg-cyan-base-alt:      var(--cyan-800);
+  --bg-yellow-base:        var(--yellow-400);
+  --bg-yellow-base-alt:    var(--yellow-800);
+
+  /* ============================================================
+     STROKE
+     Borders need to breathe on dark — pull from 700/600 stops.
+     Focus ring stays PINK — brand signature across themes.
+     ============================================================ */
+  --stroke-focus:            var(--pink-700);   /* unchanged — signature */
+  --stroke-primary-base:     var(--sage-300);
+  --stroke-primary-hovered:  var(--sage-200);
+  --stroke-primary-pressed:  var(--sage-100);
+  --stroke-primary-muted:    var(--sage-400);
+  --stroke-primary-light:    var(--sage-700);
+  --stroke-primary-lighter:  var(--sage-800);
+
+  --stroke-secondary-base:   var(--almond-300);
+  --stroke-secondary-muted:  var(--almond-400);
+  --stroke-secondary-dark:   var(--almond-200);
+
+  --stroke-accent-base:      var(--pink-300);
+  --stroke-accent-muted:     var(--pink-400);
+
+  --stroke-success-base:     var(--green-300);
+  --stroke-success-muted:    var(--green-400);
+  --stroke-warning-base:     var(--orange-300);
+  --stroke-warning-muted:    var(--orange-400);
+  --stroke-info-base:        var(--blue-300);
+  --stroke-info-muted:       var(--blue-400);
+  --stroke-error-base:       var(--red-300);
+  --stroke-error-muted:      var(--red-400);
+
+  --stroke-neutral-dark:     var(--grey-200);
+  --stroke-neutral-black:    var(--absolute-pure-white);
+  --stroke-neutral-white:    var(--sage-975);
+  --stroke-neutral-disabled: var(--sage-700);
+
+  --stroke-yellow-base:      var(--yellow-300);
+  --stroke-yellow-muted:     var(--yellow-400);
+  --stroke-cherry-base:      var(--cherry-300);
+  --stroke-cherry-muted:     var(--cherry-400);
+  --stroke-indigo-base:      var(--indigo-300);
+  --stroke-indigo-muted:     var(--indigo-400);
+  --stroke-cyan-base:        var(--cyan-300);
+  --stroke-cyan-muted:       var(--cyan-400);
+
+
   --logo-small-url: url('../assets/logo/logo-small-white.svg');
   --logo-large-url: url('../assets/logo/logo-sinequa-white.svg');
   /*
@@ -364,14 +511,14 @@
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
 
-  --primary: var(--color-sage-200);
-  --primary-foreground: var(--color-sage-300);
-  --primary-hovered: var(--color-sage-900);
+  --primary: var(--color-sage-100);
+  --primary-foreground: var(--color-sage-900);
+  --primary-hovered: var(--color-sage-500);
   --primary-foreground-hovered: var(--color-sage-50);
   --primary-hovered-foreground: var(--color-sage-50);
-  --primary-pressed: var(--color-sage-800);
-  --primary-pressed-foreground: var(--color-sage-300);
-  --primary-foreground-pressed: var(--color-sage-50);
+  --primary-pressed: var(--color-sage-300);
+  --primary-pressed-foreground: var(--color-sage-400);
+  --primary-foreground-pressed: var(--color-sage-400);
   --primary-active: var(--color-sage-600);
   --primary-active-foreground: var(--color-sage-50);
   --primary-disabled: var(--color-sage-800);
@@ -416,11 +563,6 @@
   --destructive-foreground: var(--color-red-100);
   --destructive-foreground-muted: var(--color-red-300);
   --destructive-foreground-light: var(--color-red-800);
-
-  --neutral-foreground-white: #182021;
-  --neutral-foreground-black: #EFF2F6;
-  --neutral-foreground-base: #EFF2F6;
-  --neutral-foreground-light: #36383E;
 
   --tool-card-bg: var(--color-sage-975);
   --tool-card-bg-hovered: rgba(45, 57, 58, 0.3);

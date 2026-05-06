@@ -1,0 +1,45 @@
+---
+title: Advanced Filters Component
+sidebar_class_name: draft
+---
+
+The `AdvancedFiltersComponent` provides a drawer-based UI for advanced filter management, including custom fields, suggestions, and fielded search.
+
+## Features
+
+- Drawer UI for advanced filter management
+- Supports fielded search (content, title, location)
+- Provides suggestions and custom filter logic
+- Integrates with query parameters and stores
+
+## API Reference
+
+### Methods
+
+| Method                       | Description                                              |
+|------------------------------|----------------------------------------------------------|
+| `addItem(item: DropdownItem, filter: Filter)`      | Adds a filter value to the selected filter.              |
+| `removeItem(item: DropdownItem, filter: Filter)`   | Removes a filter value from the selected filter.         |
+| `onSearch()`                 | Applies all filters and updates the query.               |
+
+## Component Interaction Schema
+
+```mermaid
+flowchart TD
+    AdvancedFiltersComponent -- injects --> QueryParamsStore
+    AdvancedFiltersComponent -- injects --> AppStore
+    AdvancedFiltersComponent -- updates --> QueryParamsStore
+```
+
+## Store Interaction Schema
+
+```mermaid
+flowchart TD
+    AdvancedFiltersComponent -- injects --> QueryParamsStore
+    AdvancedFiltersComponent -- injects --> AppStore
+```
+
+## Notes
+
+- The advanced filters drawer is optional and can be used alongside the filters bar.
+- All filter state is managed via stores, ensuring consistency across the UI.

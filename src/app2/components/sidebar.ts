@@ -5,7 +5,7 @@ import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-g
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -62,7 +62,6 @@ import { filter } from "rxjs";
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
     UserIcon,
-    TranslocoPipe,
     GearIcon,
     QuestionCircleIcon
   ],
@@ -103,45 +102,60 @@ import { filter } from "rxjs";
 
       <sidebar-footer class="px-3 py-6">
         <sidebar-menu>
-           @if (isAdminOrDelegatedAdmin()) {
-            @let administration = ('administration' | transloco);
-            <sidebar-menu-item
-              [attr.aria-label]="administration"
-              (click)="openAdmin()"
-              [tooltip]="administration"
-              tooltip-position="right"
-            >
-              <sidebar-menu-button class="text-lg">
+          @if (isAdminOrDelegatedAdmin()) {
+            <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
+              <sidebar-menu-button class="text-lg" tooltip="Administration" tooltip-position="right" >
                 <gear-icon aria-hidden="true" />
-                <span class="text-sm" sr-only>{{ administration }}</span>
+                <span class="text-sm" sr-only>Administration</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
-          @let help = ('help' | transloco);
-          <sidebar-menu-item
-            [attr.aria-label]="help"
-            (click)="openHelp()"
-            [tooltip]="help"
-            tooltip-position="right"
-          >
-            <sidebar-menu-button class="text-lg">
+          <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
+            <sidebar-menu-button class="text-lg" tooltip="Help" tooltip-position="right">
               <question-circle-icon aria-hidden="true" />
-              <span class="text-sm" sr-only>{{ help }}</span>
+              <span class="text-sm" sr-only>Help</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
         @if (isAdminOrDelegatedAdmin()) {
           <Menu>
+          <sidebar-menu-item>
+              <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg" class="group/avatar">
+                <Avatar class="size-8 dark:bg-sage-200 dark:text-sage-900 group-hover/avatar:bg-sage-300">
+                  <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                  <AvatarFallback>
+                    @if (initials()) {
+                      <span>{{ initials() }}</span>
+                    } @else {
+                      <UserIcon />
+                    }
+                  </AvatarFallback>
+                </Avatar>
+
+                <div class="grid flex-1 text-left text-sm leading-tight">
+                  <span class="truncate font-medium">{{ fullname() }}</span>
+                  <span class="truncate text-xs">{{ email() }}</span>
+                </div>
+              </sidebar-menu-button>
+
+              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
+                <!-- <Settings class="mt-auto" [debug]="true" /> -->
+                <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
+              </MenuContent>
+            </sidebar-menu-item>
+          </Menu>
+        } @else {
+          <sidebar-menu-item>
             <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
-              <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
-                <AvatarFallback>
-                  @if (initials()) {
-                    <span>{{ initials() }}</span>
-                  } @else {
-                    <UserIcon class="size-6 p-1" />
-                  }
-                </AvatarFallback>
+              <Avatar class="size-8">
+                  <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                  <AvatarFallback>
+                    @if (initials()) {
+                      <span>{{ initials() }}</span>
+                    } @else {
+                      <UserIcon />
+                    }
+                  </AvatarFallback>
               </Avatar>
 
               <div class="grid flex-1 text-left text-sm leading-tight">
@@ -149,30 +163,7 @@ import { filter } from "rxjs";
                 <span class="truncate text-xs">{{ email() }}</span>
               </div>
             </sidebar-menu-button>
-
-            <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
-              <!-- <Settings class="mt-auto" [debug]="true" /> -->
-              <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
-            </MenuContent>
-          </Menu>
-        } @else {
-          <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
-            <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
-                <AvatarFallback>
-                  @if (initials()) {
-                    <span>{{ initials() }}</span>
-                  } @else {
-                    <UserIcon class="size-6 p-1" />
-                  }
-                </AvatarFallback>
-            </Avatar>
-
-            <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ fullname() }}</span>
-              <span class="truncate text-xs">{{ email() }}</span>
-            </div>
-          </sidebar-menu-button>
+          </sidebar-menu-item>
         }
         </sidebar-menu>
       </sidebar-footer>
