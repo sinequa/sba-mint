@@ -32,13 +32,13 @@ export type PreviewTab = "summary" | "preview" | "discussion";
     <Tabs class="contents">
       <!-- tabs list -->
       <TabsList class="w-full px-6" variant="ghost">
-        <Tab class="w-fit" shadow="none" value="preview" active>
+        <Tab variant="secondary" class="w-fit" value="preview" active>
           {{ 'preview.documentPreview' | transloco }}
         </Tab>
 
         @if (displaySummary() || displayChatWithDoc()) {
           @if (displaySummary()) {
-            <Tab class="w-fit" value="summary" (click)="setSummaryAssistant()">
+            <Tab variant="secondary" class="w-fit" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
                 <spinner-icon class="animate-spin" />
               } @else {
@@ -49,7 +49,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           }
 
           @if (displayChatWithDoc()) {
-            <Tab class="w-fit" value="discussion" (click)="setChatWithDocAssistant()">
+            <Tab class="w-fit" variant="secondary" value="discussion" (click)="setChatWithDocAssistant()">
               <comments-icon />
               {{ 'preview.discussion' | transloco }}
             </Tab>

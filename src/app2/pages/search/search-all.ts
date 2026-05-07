@@ -1,6 +1,16 @@
 import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  Injector,
+  inject,
+  input,
+  signal,
+  Type,
+  untracked
+} from "@angular/core";
 import { SearchOverviewComponent } from "@components/assistant-overview";
 import { CardSkeleton } from "@components/cards/record/skeleton";
 import { PreviewComponent } from "@components/preview/preview";
@@ -17,7 +27,6 @@ import {
   CCApp,
   debug,
   isNotInputEvent,
-  LegacyFilter,
   Query,
   QueryParams,
   Result as R,
@@ -40,22 +49,11 @@ import {
 } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, cn } from "@sinequa/ui";
 import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
+import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
 
 const MOBILE_BREAKPOINT = 1024; // px
-
 type Result = R & { nextPage?: number; previousPage?: number };
-type QueryParamsProps = {
-  f?: string; // filters list
-  p?: number; // page number
-  s?: string; // sort name
-  t?: string; // tab name
-  q?: string; // query text
-  b?: string; // basket,
-  n?: string; // query name
-  id?: string; // record id
-  c?: SpellingCorrectionMode; // correction mode
-};
 
 @Component({
   selector: "app-search-all",
@@ -81,7 +79,7 @@ type QueryParamsProps = {
       :host {
         /* to avoid z-index collisions */
         isolation: isolate;
-        --search-content-height: calc(100dvh - 100px);
+        --search-content-height: calc(100dvh - 3.5rem);
       }
       app-overview-people:not(.hidden) + app-overview-slides {
         margin-top: 1rem;
@@ -117,9 +115,6 @@ export class SearchAllComponent {
   protected readonly principalStore = inject(PrincipalStore);
   protected readonly userSettingsStore = inject(UserSettingsStore);
   protected readonly selectionStore = inject(SelectionStore);
-
-  protected readonly router = inject(Router);
-  protected readonly route = inject(ActivatedRoute);
 
   // input url bindings
   protected readonly q = input<string>(); // text
@@ -159,7 +154,7 @@ export class SearchAllComponent {
   hideFeedback = signal(false);
 
   // all rows from all pages to display in the UI, computed from the query result
-  allRows = computed(() => this.query.data()?.pages?.flatMap(page => page.records) ?? []);
+  allRows = computed(() => this.query.data()?.pages?.flatMap((page) => page.records) ?? []);
 
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({
@@ -174,8 +169,8 @@ export class SearchAllComponent {
         spellingCorrectionMode: this.c()
       }),
     initialPageParam: this.p(),
-    getPreviousPageParam: firstPage => firstPage.previousPage ?? undefined,
-    getNextPageParam: lastPage => lastPage.nextPage ?? undefined
+    getPreviousPageParam: (firstPage) => firstPage.previousPage ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined
   }));
 
   // standard injectQuery without infinite loading
@@ -256,8 +251,13 @@ export class SearchAllComponent {
   // allowAI is true if we are not in a basket search and the assistant is allowed for the current instance id
   // if the current search is a basket search, we don't want to show the assistant even if it's allowed, because the assistant is not designed to handle basket searches and it could lead to a bad user experience
   // and search with empty text should not show assistant as well, as it would not provide any value and could lead to a bad user experience
-  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()) && ((this.currentKeys()?.text?.length || 0) > 0));
-  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true);
+  readonly allowAI = computed(
+    () =>
+      !this.b() && this.appStore.isAssistantAllowed(this.instanceId()) && (this.currentKeys()?.text?.length || 0) > 0
+  );
+  readonly enabledUserInput = computed(
+    () => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true
+  );
   // assistantQuery: Query = { name: 'assistant' };
 
   readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
@@ -265,49 +265,26 @@ export class SearchAllComponent {
   conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
-    // Update the query params store with the filters from the URL query params
-    // This allows Browser back/forward to work correctly
-    effect(() => {
-      debug("effect - 1. update query params store from URL");
-      const filters = (this.f() ? JSON.parse(this.f() ?? "") : []) as LegacyFilter[]; // Parse the filters from the query params
-      this.queryParamsStore.patch({
-        text: this.q(),
-        tab: this.t(),
-        basket: this.b(),
-        sort: this.s(),
-        filters,
-        name: this.n(),
-        page: this.p(),
-        id: this.id(),
-        spellingCorrectionMode: this.c()
-      });
+    // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
+    injectUrlQueryParamsSync({
+      q: this.q,
+      t: this.t,
+      b: this.b,
+      s: this.s,
+      f: this.f,
+      n: this.n,
+      c: this.c,
+      p: this.p
     });
 
-    // Update the URL with the query params from the query params store
+    // Reset the feedback visibility on any store change
     effect(() => {
-      debug("effect - 2. update URL from query params store");
+      getState(this.queryParamsStore);
       this.hideFeedback.set(false);
-
-      const queryParams: QueryParamsProps = {};
-      const { id, text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
-
-      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
-      queryParams.p = page;
-      queryParams.s = sort;
-      queryParams.t = tab;
-      queryParams.q = text;
-      queryParams.b = basket;
-      queryParams.n = name;
-      queryParams.c = spellingCorrectionMode;
-      queryParams.id = id;
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: "merge", queryParams, state: {} });
     });
 
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
-      debug("effect - 3. update keys to retrigger the query");
-      this.hideFeedback.set(false);
-
       const state = getState(this.queryParamsStore);
       const r = {
         tab: state.tab,
@@ -349,9 +326,9 @@ export class SearchAllComponent {
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
       debug("effect - 5. update selectedAll signal based on the selection store and current pages");
-      const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
-      const selection = this.selectionStore.multiSelection().map(x => x.id);
-      const b = bisect(articles, x => selection.includes(x));
+      const articles = this.query.data()?.pages.flatMap((page) => page.records.map((x) => x.id)) || [];
+      const selection = this.selectionStore.multiSelection().map((x) => x.id);
+      const b = bisect(articles, (x) => selection.includes(x));
 
       if (b.true.length === 0) this.selectedAll.set("none");
       else if (b.false.length === 0) this.selectedAll.set("all");
@@ -378,7 +355,7 @@ export class SearchAllComponent {
     });
 
     this.conditionalMessageHandler.set("SkillsTester", {
-      handler: message => this.handleConditionalDisplayMessage(message),
+      handler: (message) => this.handleConditionalDisplayMessage(message),
       isGlobalHandler: false
     });
 
@@ -393,8 +370,8 @@ export class SearchAllComponent {
       return;
     }
 
-    this.query.data()?.pages?.forEach(page => {
-      page.records.forEach(record => {
+    this.query.data()?.pages?.forEach((page) => {
+      page.records.forEach((record) => {
         record.$selected = true;
         this.selectionStore.addArticleToMultiSelection(record as Article);
       });
@@ -402,8 +379,8 @@ export class SearchAllComponent {
   }
 
   unselectAll() {
-    this.query.data()?.pages?.forEach(page => {
-      page.records.forEach(record => {
+    this.query.data()?.pages?.forEach((page) => {
+      page.records.forEach((record) => {
         record.$selected = false;
         this.selectionStore.removeArticleFromMultiSelection(record as Article);
       });

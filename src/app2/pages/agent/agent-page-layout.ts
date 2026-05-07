@@ -18,11 +18,12 @@ import {
   BreakpointObserverService,
   ButtonComponent,
   HistoryIcon,
+  IconButtonComponent,
   NewChatIcon,
   ResizableHandleComponent,
   ResizablePanelComponent,
   ResizablePanelGroupComponent,
-  XMarkICon
+  XMarkIcon
 } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
 
@@ -40,17 +41,18 @@ type Panel = "chat" | "search" | "preview";
     NewChatIcon,
     HistoryIcon,
     SavedChatComponent,
-    XMarkICon,
-    ButtonComponent
+    XMarkIcon,
+    ButtonComponent,
+    IconButtonComponent
   ],
   template: `
     <main class="flex flex-1">
       <!-- for mobile -> action buttons fixed to top-right -->
       <div class="fixed top-0 right-0 z-20 flex h-14 items-center gap-1 px-2 md:hidden">
-        <button variant="ghost" size="icon" (click)="toggleHistory()" title="History">
+        <button variant="none" icon-button (click)="toggleHistory()" title="History">
           <history-icon />
         </button>
-        <button variant="ghost" size="icon" (click)="startNewChat()" title="New Chat">
+        <button variant="none" icon-button (click)="startNewChat()" title="New Chat">
           <new-chat-icon />
         </button>
       </div>
@@ -67,7 +69,7 @@ type Panel = "chat" | "search" | "preview";
               <!-- header -->
               <div class="flex items-center justify-between">
                 <span class="font-semibold">History</span>
-                <button variant="ghost" size="icon" (click)="toggleHistory()" aria-label="Close history">
+                <button variant="none" icon-button (click)="toggleHistory()" aria-label="Close history">
                   <xmark-icon />
                 </button>
               </div>
@@ -85,10 +87,10 @@ type Panel = "chat" | "search" | "preview";
           <div class="flex h-full flex-col">
             <!-- buttons -->
             <div class="hidden shrink-0 items-center gap-2 bg-background px-2 pt-6 pb-2 md:flex">
-              <button variant="ghost" size="icon" (click)="toggleHistory()">
+              <button variant="none" icon-button (click)="toggleHistory()">
                 <history-icon />
               </button>
-              <button variant="ghost" size="icon" (click)="startNewChat()">
+              <button variant="none" icon-button (click)="startNewChat()">
                 <new-chat-icon />
               </button>
             </div>
@@ -121,7 +123,13 @@ type Panel = "chat" | "search" | "preview";
       </ResizablePanelGroup>
     </main>
   `,
-  hostDirectives: [AgentGenerationDirective, CopyToClipboardDirective, FeedbackDirective, AdminDirective, ErrorDirective],
+  hostDirectives: [
+    AgentGenerationDirective,
+    CopyToClipboardDirective,
+    FeedbackDirective,
+    AdminDirective,
+    ErrorDirective
+  ],
   host: {
     class: "flex h-screen text-foreground bg-background"
   }
@@ -252,7 +260,6 @@ export class AgentPageLayoutComponent {
   startNewChat() {
     const event = createAgentNewChatEvent(this.instanceId);
     document.dispatchEvent(event);
-    this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
+    this.router.navigate(["/chat/new"]).catch((err) => error("navigation to chat/new failed!", err));
   }
 }
-

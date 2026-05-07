@@ -27,7 +27,11 @@
           </button>
         } @else if (menu.component) {
           <Popover class="rounded-lg border-neutral-300">
-            <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+            <button
+              variant="ghost"
+              class="hover:text-foreground dark:hover:bg-background"
+              title="{{ menu.display | transloco }}"
+              [attr.aria-label]="menu.display | transloco">
               <ng-container *ngComponentOutlet="menu.icon" />
             </button>
 
@@ -36,7 +40,11 @@
             </PopoverContent>
           </Popover>
         } @else {
-          <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
+          <button
+            variant="ghost"
+            class="hover:text-foreground dark:hover:bg-background"
+            title="{{ menu.display | transloco }}"
+            [attr.aria-label]="menu.display | transloco">
             <ng-container *ngComponentOutlet="menu.icon" />
           </button>
         }

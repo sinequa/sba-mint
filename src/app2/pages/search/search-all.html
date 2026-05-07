@@ -25,6 +25,8 @@
     }
 
     <feedback
+      variant="secondary"
+      [solid]="true"
       [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />

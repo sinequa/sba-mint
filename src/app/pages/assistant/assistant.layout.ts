@@ -4,7 +4,7 @@ import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
 import { SavedChat, SavedChatsComponent } from "@sinequa/assistant/chat";
-import { CCApp, fetchQuery, Query } from "@sinequa/atomic";
+import { CCApp, fetchQuery, Query, SpellingCorrectionMode } from "@sinequa/atomic";
 import {
   AggregationComponent,
   AggregationsStore,
@@ -15,9 +15,10 @@ import {
   QueryParamsStore,
   SelectionStore
 } from "@sinequa/atomic-angular";
-import { ButtonComponent, CommentsIcon, cn, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
+import { ButtonComponent, CommentsIcon, cn, IconButtonComponent, PageHeaderComponent, PlusIcon } from "@sinequa/ui";
 import { firstValueFrom } from "rxjs";
 import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
+import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { AssistantComponent } from "../../components/assistant/assistant";
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { AppSidebarComponent } from "../../components/sidebar/sidebar.component";
@@ -35,7 +36,8 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
     ButtonComponent,
     AppSidebarComponent,
     CommentsIcon,
-    PlusIcon
+    PlusIcon,
+    IconButtonComponent
   ],
   providers: [provideTranslocoScope("filters")],
   template: `
@@ -54,15 +56,15 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showSavedChats()) {
-            <section class="border-foreground/10 dark:bg-menu shadow' h-56 max-h-56 rounded-2xl border p-4">
-              <div class="flex items-center justify-between">
-                <h3 class="text-muted-foreground pointer-events-none font-semibold">
-                  <comments-icon class="me-1" />
+            <section class="border-foreground/10 dark:bg-menu h-56 max-h-56 rounded-2xl border p-4">
+              <div class="flex items-center gap-2">
+                <comments-icon />
+                <h3 class="text-muted-foreground pointer-events-none font-semibold grow">
                   {{ 'assistant.saved-chats' | transloco }}
                 </h3>
                 <button
-                  variant="ghost"
-                  size="icon"
+                  variant="none"
+                  icon-button
                   [title]="'assistant.new-discussion' | transloco"
                   [attr.aria-label]="'assistant.new-discussion' | transloco"
                   (click)="chat()?.newChat()">
@@ -70,7 +72,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
                 </button>
               </div>
               <!-- height of the saved chat component is 100% of the parent's height - 2rem (padding)  -->
-              <sq-saved-chats-v3 class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
+              <sq-saved-chats-v3 #savedchats class="block h-[calc(100%-2rem)] overflow-auto" [instanceId]="instanceId()" (load)="handleLoadSavedChat($event)">
               </sq-saved-chats-v3>
             </section>
           }
@@ -82,12 +84,12 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
             column="treepath"
             showFiltersCount
             [collapsible]="true"
-            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4 shadow" />
+            class="border-foreground/10 dark:bg-menu rounded-2xl border p-4" />
         </section>
         <!-- tricky way to force Angular to recreate the assistant component when the principal changes -->
         @for (key of [assistantKey()]; track key) {
           @if (showDocumentUploader()) {
-            <assistant-upload [instanceId]="instanceId()" />
+            <assistant-upload [instanceId]="instanceId()" class="rounded-2xl border border-foreground/10 dark:bg-menu"  />
           }
         }
       </div>
@@ -113,6 +115,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
 export class AssistantLayoutComponent implements OnRouteAttached {
   cn = cn;
   chat = viewChild(AssistantComponent);
+  savedChat = viewChild<SavedChatsComponent>("savedchats");
 
   drawerStackService = inject(DrawerStackService);
   opened = computed(() => this.drawerStackService.isOpened());
@@ -164,8 +167,14 @@ export class AssistantLayoutComponent implements OnRouteAttached {
     () => this.allowDocumentUploader() && this.connectionEstablished() && this.isAssistantReady()
   );
 
-  // queryparams input binding
-  q = input<string>();
+  // url query param input bindings
+  readonly q = input<string>();
+  readonly t = input<string>();
+  readonly b = input<string>();
+  readonly s = input<string>();
+  readonly f = input<string>();
+  readonly n = input<string>();
+  readonly c = input<SpellingCorrectionMode>();
 
   /* To force the recreation of the assistant component when the principal changes,*/
   readonly principalStore = inject(PrincipalStore);
@@ -189,8 +198,12 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       }
     });
 
+    // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
+    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c });
+
+    // React to store updates to keep the local query signal in sync
     effect(() => {
-      this.queryParamsStore.setFromUrl(window.location.hash);
+      getState(this.queryParamsStore);
       this.query.set(this.queryParamsStore.getQuery());
       this.backLevel--;
     });

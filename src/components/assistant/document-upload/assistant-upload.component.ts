@@ -11,9 +11,8 @@ import { UploadDialog } from "./upload.dialog";
   imports: [TranslocoPipe, DocumentOverviewComponent, FolderOpenIcon],
   template: `
     <section class="p-4">
-      <div class="text-muted-foreground flex items-center justify-between">
+      <div class="text-muted-foreground flex items-center gap-2">        <FolderOpenIcon />
         <h3 class="pointer-events-none font-semibold">
-          <FolderOpenIcon class="me-1" />
           {{ 'assistant.my-documents' | transloco }}
         </h3>
       </div>

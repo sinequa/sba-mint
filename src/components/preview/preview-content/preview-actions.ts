@@ -3,7 +3,18 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
 import { PreviewService, SelectionStore } from "@sinequa/atomic-angular";
-import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, LightbulbSlashIcon, MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon, SlashIcon, SparklesIcon } from "@sinequa/ui";
+import {
+  ArrowsMaximizeIcon,
+  ButtonComponent,
+  FlashlightIcon,
+  IconButtonComponent,
+  LightbulbIcon,
+  LightbulbSlashIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
+  SlashIcon,
+  SparklesIcon
+} from "@sinequa/ui";
 
 /**
  * Preview actions component
@@ -17,17 +28,29 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
  */
 @Component({
   selector: "preview-actions",
-  imports: [TranslocoPipe, ButtonComponent, ArrowsMaximizeIcon, MagnifyingGlassPlusIcon, MagnifyingGlassMinusIcon, SparklesIcon, SlashIcon, FlashlightIcon, LightbulbIcon, LightbulbSlashIcon],
+  imports: [
+    TranslocoPipe,
+    ButtonComponent,
+    ArrowsMaximizeIcon,
+    MagnifyingGlassPlusIcon,
+    MagnifyingGlassMinusIcon,
+    SparklesIcon,
+    SlashIcon,
+    FlashlightIcon,
+    LightbulbIcon,
+    LightbulbSlashIcon,
+    IconButtonComponent
+  ],
   template: `
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
       <arrows-maximize-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <magnifying-glass-plus-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
+    <button variant="none" icon-button   [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
       <magnifying-glass-minus-icon class="shrink-0" />
     </button>
 
@@ -35,18 +58,17 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
       @if (hasAIDescription()) {
         @if (showAIDescription()) {
           <button
-            variant="ghost"
-            class="dark:text-white dark:hover:bg-background/10"
-            size="icon"
+            variant="none" icon-button
+
             [attr.title]="'preview.toggleAIDescription' | transloco"
             (click)="toggleAIDescription()">
             <sparkles-icon class="shrink-0" />
           </button>
         } @else {
           <button
-            variant="ghost"
-            size="icon"
-            class="dark:text-white dark:hover:bg-background/10"
+            variant="none" icon-button
+
+
             [attr.title]="'preview.toggleAIDescription' | transloco"
             (click)="toggleAIDescription()">
             <span class="relative shrink-0 inline-flex items-center justify-center">
@@ -59,18 +81,18 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
 
       @if (extracts()) {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleExtracts' | transloco"
           (click)="toggleExtracts()">
           <flashlight-icon class="shrink-0" />
         </button>
       } @else {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleExtracts' | transloco"
           (click)="toggleExtracts()">
           <span class="relative shrink-0 inline-flex items-center justify-center">
@@ -82,18 +104,18 @@ import { ArrowsMaximizeIcon, ButtonComponent, FlashlightIcon, LightbulbIcon, Lig
 
       @if (entities()) {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [title]="'preview.toggleEntities' | transloco"
           (click)="toggleEntities()">
           <lightbulb-icon class="shrink-0" />
         </button>
       } @else {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleEntities' | transloco"
           (click)="toggleEntities()">
           <lightbulb-slash-icon class="shrink-0" />
