@@ -9,7 +9,7 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
   imports: [TranslocoPipe, ButtonComponent, PopoverComponent, PopoverContentComponent, InputComponent, StarIcon],
   template: `
     @if (!savedSearch()) {
-      <Popover #popover class="rounded-lg border-neutral-300">
+      <Popover #popover class="flex!">
         <button
           variant="icon"
           size="icon"
@@ -50,7 +50,7 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
     } @else {
       <button
         variant="icon"
-        size="icon"
+        [iconOnly]="true"
         class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
         [attr.title]="'searchInput.saveSearch' | transloco"
         [attr.aria-label]="'searchInput.saveSearch' | transloco"
@@ -59,7 +59,10 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
         <StarIcon solid class="animate-save" />
       </button>
     }
-  `
+  `,
+  host: {
+    "class": "flex"
+  }
 })
 export class SavedSearchPopover {
   // "saved search" popover reference

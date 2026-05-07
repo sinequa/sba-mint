@@ -30,7 +30,7 @@
               class="truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>
 
-            <bookmark-button class="invisible group-hover/article:visible [@media(hover:none)]:visible" [article]="article()" />
+            <bookmark-button size="sm" class="invisible group-hover/article:visible [@media(hover:none)]:visible" [article]="article()" />
           </span>
 
           <!-- card context-menu -->
@@ -46,16 +46,12 @@
 
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
             @if ((article().authors || { authors: [""] }).length > 0) {
-              <span>
-                <UserIcon class="mr-1" />
-                {{ article().authors[0] }}
-              </span>
+              <UserIcon class="mr-1" />
+              <span>{{ article().authors[0] }}</span>
             }
             @if (article().modified) {
-              <p class="flex items-baseline gap-1">
-                <CalendarDayIcon />
-                <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
-              </p>
+              <CalendarDayIcon />
+              <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
             }
           </div>
         </section>

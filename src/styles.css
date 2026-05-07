@@ -1,8 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 /* Application specific styles */
-@import "./theme.css";
 @import "./themes/chapsvision.css";
+@import "./theme.css";
 
 
 @plugin "@tailwindcss/typography";
