@@ -6,7 +6,7 @@ import { SavedChat } from '@sinequa/assistant/chat';
 import type { AssistantComponent } from '@components/assistant/assistant';
 import { CCApp, error, fetchQuery, globalConfig, Query, warn } from '@sinequa/atomic';
 import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
-import { firstValueFrom, skip, take } from 'rxjs';
+import { filter, firstValueFrom, skip, take } from 'rxjs';
 import { UrlQueryParamInputs, injectUrlQueryParamsSync } from './url-query-params-sync';
 
 // Minimal public API required from the assistant component
@@ -135,6 +135,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
     chatService.savedChats$.pipe(skip(1), take(1), takeUntilDestroyed(destroyRef)).subscribe({
       next: chats => {
         if (chats.some(c => c.id === storedChatId)) {
+          // Only `id` is consumed by handleLoadSavedChat; other SavedChat fields are not needed here.
           handleLoadSavedChat({ id: storedChatId } as SavedChat);
         } else {
           startNewChat();
@@ -153,7 +154,8 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
       return;
     }
 
-    const chatService = assistantComponent.sqChat()?.chatService;
+    const sqChat = assistantComponent.sqChat();
+    const chatService = sqChat?.chatService;
     if (!chatService) {
       warn('Chat service not available');
       return;
@@ -162,18 +164,25 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
     if (chatService.chatId === savedChat.id) return;
 
     try {
-      chatService.loadSavedChat$.next(savedChat);
-      chatService.generateChatId(savedChat.id);
-
       const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
       const firstUserMessage = (response?.history || []).find(msg => msg.role === 'user' && msg.content);
 
-      if (firstUserMessage) {
-        // Defer the query update to let the chat component finish processing the loaded chat
-        setTimeout(() => {
-          query.update(q => (q ? { ...q, text: firstUserMessage.content as string } : q));
-        }, 100);
+      if (firstUserMessage && sqChat) {
+        // Subscribe before triggering the load so we don't miss the false emission.
+        // loading$ is a hot EventEmitter (no initial value), so this is race-condition-free.
+        sqChat.loading$
+          .pipe(
+            filter(loading => !loading),
+            take(1),
+            takeUntilDestroyed(destroyRef)
+          )
+          .subscribe(() => {
+            query.update(q => (q ? { ...q, text: firstUserMessage.content as string } : q));
+          });
       }
+
+      chatService.loadSavedChat$.next(savedChat);
+      chatService.generateChatId(savedChat.id);
 
       cdr.detectChanges();
     } catch (err) {
