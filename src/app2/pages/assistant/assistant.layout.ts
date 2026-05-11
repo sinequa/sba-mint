@@ -1,11 +1,11 @@
-import { firstValueFrom } from 'rxjs';
-import { ChangeDetectorRef, Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { firstValueFrom, skip, take } from 'rxjs';
+import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
 
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, Query, SpellingCorrectionMode } from '@sinequa/atomic';
+import { CCApp, error, fetchQuery, globalConfig, Query, SpellingCorrectionMode, warn } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -35,6 +35,7 @@ import { injectUrlQueryParamsSync } from '../../../composables/url-query-params-
 import { SidebarMainComponent } from '@components/sidebar/sidebar';
 import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
 import { OnRouteAttached } from '@config/custom-reuse-strategy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -159,6 +160,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly applicationService = inject(ApplicationService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   query = signal<Query | undefined>(undefined);
 
@@ -211,15 +213,22 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   }
   /* End of assistant recreation code */
 
+  // Local storage key for persisting chat ID
+  private readonly STORAGE_KEY = 'assistant_current_chat_id';
+
   constructor() {
     effect(() => {
       // each time the principal store updates, we recreate the assistant component to make sure it uses the latest principal
-      getState(this.principalStore);
-      this.recreateAssistant();
-      const chat = this.chat();
-      if (chat && this.isAssistantReady()) {
-        // also start a new chat
-        this.chat()?.newChat();
+      const principal = getState(this.principalStore);
+      const { userOverrideActive } = globalConfig;
+      // reload the assistant if the principal changes and the user override is active
+      if (principal && userOverrideActive) {
+        this.recreateAssistant();
+        const chat = this.chat();
+        if (chat && this.isAssistantReady()) {
+          // also start a new chat
+          this.startNewChat();
+        }
       }
     });
 
@@ -245,9 +254,6 @@ export class AssistantLayoutComponent implements OnRouteAttached {
       this.chat()?.askAI(question);
     });
 
-    // react to drawer state changes to update the application title when the drawer is closed
-    this.applicationService.setTitle('Assistant');
-
     // when the component is initialized, we want to set the application title and clear the selection store
     this.initialize();
   }
@@ -257,6 +263,8 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   }
 
   private initialize() {
+    // react to drawer state changes to update the application title when the drawer is closed
+    this.applicationService.setTitle('Assistant');
     // clear the selection store
     // this is needed to avoid the selection store to be populated with the assistant queries
     this.selectionStore.clear();
@@ -278,10 +286,84 @@ export class AssistantLayoutComponent implements OnRouteAttached {
     }
   }
 
-  handleReady(ready: boolean) {
-    if (ready) {
-      this.isAssistantReady.set(true);
+  startNewChat() {
+    const assistantComponent = this.chat();
+    if (!assistantComponent) {
+      return;
     }
+
+    // Remove previous chat id first to avoid restoring old chat after F5.
+    localStorage.removeItem(this.STORAGE_KEY);
+    assistantComponent.newChat();
+
+    const newChatId = assistantComponent.sqChat()?.chatService?.chatId;
+    if (newChatId) {
+      localStorage.setItem(this.STORAGE_KEY, newChatId);
+    }
+  }
+
+  handleReady(ready: boolean) {
+    if (!ready) {
+      return;
+    }
+
+    this.isAssistantReady.set(true);
+
+    // Load the saved chat from local storage if it exists
+    this.loadSavedChatFromStorage();
+  }
+
+  /**
+   * Loads a saved chat from localStorage and restores it if it exists.
+   *
+   * This function retrieves a stored chat ID from localStorage and attempts to
+   * load the corresponding saved chat from the chat service. If the chat exists
+   * in the saved chats list, it will be restored; otherwise, a new chat will be started.
+   *
+   * The subscription automatically unsubscribes when the component is destroyed
+   * using `takeUntilDestroyed`.
+   *
+   * @returns {void}
+   *
+   * @example
+   * // Called after the assistant is ready
+   * this.loadSavedChatFromStorage();
+   *
+   * @remarks
+   * - The function does nothing if no chat ID is found in localStorage
+   * - The function does nothing if the chat service or savedChats$ observable is unavailable
+   * - The subscription uses `skip(1)` to ignore the initial empty state
+   * - Errors during chat loading are logged to the console but not thrown
+   */
+  private loadSavedChatFromStorage(): void {
+    const storedChatId = localStorage.getItem(this.STORAGE_KEY);
+    if (!storedChatId) {
+      return;
+    }
+
+    const chatService = this.chat()?.sqChat()?.chatService;
+    if (!chatService?.savedChats$) {
+      return;
+    }
+
+    // The savedChats$ observable emits an initial value when the service starts.
+    // We skip that first emission because it is usually an empty or placeholder state,
+    // then take the next emission only, since we only need a single real list of saved chats.
+    // takeUntilDestroyed ensures we unsubscribe automatically if the component is destroyed
+    // before the emitted value arrives.
+    chatService.savedChats$.pipe(skip(1), take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: chats => {
+        const chatExists = chats.some(chat => chat.id === storedChatId);
+        if (chatExists) {
+          this.handleLoadSavedChat({ id: storedChatId } as SavedChat);
+        } else {
+          this.startNewChat();
+        }
+      },
+      error: err => {
+        error('Error loading saved chats:', err);
+      }
+    });
   }
 
   /**
@@ -300,25 +382,53 @@ export class AssistantLayoutComponent implements OnRouteAttached {
    * - If no chat service is available or no user message is found, the method returns early
    */
   async handleLoadSavedChat(savedChat: SavedChat) {
-    // 1. fetch the saved chat to get its history
-    // 2. find the first user message in the history
-    // 3. update the query signal with the first user message content
-    const chatService = this.chat()?.sqChat()?.chatService;
-    if (!chatService) {
+    localStorage.setItem(this.STORAGE_KEY, savedChat.id);
+
+    const assistantComponent = this.chat();
+    if (!assistantComponent) {
+      warn('Assistant component not available');
       return;
     }
-    const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
-    const history = response?.history || [];
-    const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
-    if (firstUserMessage) {
-      this.query.update(q => {
-        if (q && firstUserMessage) {
-          const newQuery = { ...q };
-          newQuery.text = firstUserMessage.content as string;
-          return newQuery;
-        }
-        return q;
-      });
+
+    const chatService = assistantComponent.sqChat()?.chatService;
+    if (!chatService) {
+      warn('Chat service not available');
+      return;
+    }
+
+    // Prevent loading the same chat again
+    if (chatService.chatId === savedChat.id) {
+      return;
+    }
+
+    try {
+      // Use the loadSavedChat$ subject to trigger loading
+      chatService.loadSavedChat$.next(savedChat);
+
+      // Generate/Set the chat ID to the loaded chat's ID
+      chatService.generateChatId(savedChat.id);
+
+      // Optional: Fetch the history to get the first user message
+      const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
+      const history = response?.history || [];
+
+      // Find the first user message to pre-populate the query input
+      const firstUserMessage = history.find(msg => msg.role === 'user' && msg.content);
+      if (firstUserMessage) {
+        // Small delay to ensure the chat component has processed the loaded chat
+        setTimeout(() => {
+          this.query.update(q => {
+            if (q && firstUserMessage) {
+              return { ...q, text: firstUserMessage.content as string };
+            }
+            return q;
+          });
+        }, 100);
+      }
+
+      this.cdr.detectChanges();
+    } catch (err) {
+      error('Error loading saved chat:', err);
     }
   }
 }

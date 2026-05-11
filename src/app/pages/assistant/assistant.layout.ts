@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OnRouteAttached } from '@config/custom-reuse-strategy';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { HubConnection } from '@microsoft/signalr';
 import { getState } from '@ngrx/signals';
-
 import { SavedChat, SavedChatsComponent } from '@sinequa/assistant/chat';
-import { CCApp, fetchQuery, globalConfig, error, Query, SpellingCorrectionMode } from '@sinequa/atomic';
+import { CCApp, error, fetchQuery, globalConfig, Query, SpellingCorrectionMode, warn } from '@sinequa/atomic';
 import {
   AggregationComponent,
   AggregationsStore,
@@ -16,15 +17,12 @@ import {
   SelectionStore
 } from '@sinequa/atomic-angular';
 import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
-
-import { firstValueFrom, map, skip, take, timeout } from 'rxjs';
-import { AssistantComponent } from '../../components/assistant/assistant';
+import { firstValueFrom, skip, take } from 'rxjs';
+import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
 import { injectUrlQueryParamsSync } from '../../../composables/url-query-params-sync';
+import { AssistantComponent } from '../../components/assistant/assistant';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
-import { OnRouteAttached } from '@config/custom-reuse-strategy';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'assistant-layout, AssistantLayout',
@@ -354,13 +352,13 @@ export class AssistantLayoutComponent implements OnRouteAttached {
 
     const assistantComponent = this.chat();
     if (!assistantComponent) {
-      console.warn('Assistant component not available');
+      warn('Assistant component not available');
       return;
     }
 
     const chatService = assistantComponent.sqChat()?.chatService;
     if (!chatService) {
-      console.warn('Chat service not available');
+      warn('Chat service not available');
       return;
     }
 
