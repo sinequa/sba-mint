@@ -136,8 +136,8 @@ import { injectAssistantLayout } from '../../../composables/inject-assistant-lay
   ]
 })
 export class AssistantLayoutComponent implements OnRouteAttached {
-  cn = cn;
-  chat = viewChild(AssistantComponent);
+  readonly cn = cn;
+  readonly chat = viewChild(AssistantComponent);
 
   readonly breakpointObserverService = inject(BreakpointObserverService);
   readonly sidebarService = inject(SidebarService);

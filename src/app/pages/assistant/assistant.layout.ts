@@ -104,13 +104,14 @@ import { injectAssistantLayout } from '../../../composables/inject-assistant-lay
   ]
 })
 export class AssistantLayoutComponent implements OnRouteAttached {
-  cn = cn;
-  chat = viewChild(AssistantComponent);
+  readonly cn = cn;
+  readonly chat = viewChild(AssistantComponent);
 
   readonly drawerStackService = inject(DrawerStackService);
   readonly opened = computed(() => this.drawerStackService.isOpened());
   // kept for app-sidebar binding; no longer tracked reactively
   readonly backLevel = 0;
+  private readonly applicationService = inject(ApplicationService);
 
   readonly q = input<string>();
   readonly t = input<string>();
@@ -131,11 +132,10 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   });
 
   constructor() {
-    const applicationService = inject(ApplicationService);
     // Update the title when the drawer closes (app1-specific behaviour)
     effect(() => {
       if (!this.drawerStackService.isOpened()) {
-        applicationService.setTitle('Assistant');
+        this.applicationService.setTitle('Assistant');
       }
     });
   }
