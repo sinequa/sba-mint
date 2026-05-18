@@ -51,7 +51,7 @@
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
     "@sinequa/agent": "4.0.3",
-    "@sinequa/assistant": "4.0.2",
+    "@sinequa/assistant": "4.0.3",
     "@sinequa/atomic": "^1.1.0",
     "@sinequa/atomic-angular": "^1.2.5",
     "@sinequa/ui": "^1.2.0",
