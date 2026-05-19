@@ -1,29 +1,26 @@
-import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
+import { FocusMonitor, FocusOrigin } from "@angular/cdk/a11y";
 import {
   booleanAttribute,
   Component,
   computed,
   DestroyRef,
   Directive,
-  effect,
   ElementRef,
+  effect,
   inject,
   input,
   model,
   output,
   signal,
   viewChild
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { toast } from 'ngx-sonner';
-import { debounceTime, Subject } from 'rxjs';
-
-import { CCApp, warn } from '@sinequa/atomic';
-import { AppStore, AutocompleteService, QueryParamsStore, SearchItem } from '@sinequa/atomic-angular';
+} from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { CCApp, warn } from "@sinequa/atomic";
+import { AppStore, AutocompleteService, QueryParamsStore, SearchItem } from "@sinequa/atomic-angular";
 import {
   ButtonComponent,
   cn,
@@ -33,29 +30,33 @@ import {
   PopoverComponent,
   SearchInputComponent,
   SearchInputFooter,
+  type SearchVariants,
   SendHorizontalIconComponent,
-  type SearchVariants
-} from '@sinequa/ui';
+  SparklesIcon
+} from "@sinequa/ui";
+import { toast } from "ngx-sonner";
+import { debounceTime, Subject } from "rxjs";
 
-import { ActiveSuggestion } from './autocomplete/autocomplete.component';
-import { SavedSearchPopover } from './saved-search-popover/saved-search-popover';
+import { ActiveSuggestion } from "./autocomplete/autocomplete.component";
+import { SavedSearchPopover } from "./saved-search-popover/saved-search-popover";
 
 @Component({
-  selector: 'app-search',
+  selector: "app-search",
   imports: [
     ReactiveFormsModule,
     TranslocoPipe,
     ButtonComponent,
     SendHorizontalIconComponent,
+    SparklesIcon,
     DropdownComponent,
     DropdownContentComponent,
     SearchInputComponent,
     SavedSearchPopover,
     SearchInputFooter
   ],
-  templateUrl: './search.component.html',
+  templateUrl: "./search.component.html",
   host: {
-    '(keydown.enter)': 'emitText($event)'
+    "(keydown.enter)": "emitText($event)"
   },
   styles: [
     `
@@ -67,7 +68,7 @@ import { SavedSearchPopover } from './saved-search-popover/saved-search-popover'
       }
     `
   ],
-  providers: [provideTranslocoScope('search-input')]
+  providers: [provideTranslocoScope("search-input")]
 })
 export class SearchComponent {
   cn = cn;
@@ -79,7 +80,7 @@ export class SearchComponent {
   // search input reference
   inputComponent = viewChild.required<SearchInputComponent>(SearchInputComponent);
   // search input footer reference
-  searchFooterComponent = viewChild.required<ElementRef>('searchInputFooter');
+  searchFooterComponent = viewChild.required<ElementRef>("searchInputFooter");
 
   protected readonly route = inject(ActivatedRoute);
   protected readonly router = inject(Router);
@@ -91,7 +92,7 @@ export class SearchComponent {
   protected readonly appFeatures = this.appStore.general()?.features;
 
   public readonly showSave = input(true, { transform: booleanAttribute });
-  public readonly variant = input<SearchVariants['variant']>('default');
+  public readonly variant = input<SearchVariants["variant"]>("default");
   public readonly activeDescendant = input<ActiveSuggestion>();
 
   readonly debounced = output<string>();
@@ -103,7 +104,7 @@ export class SearchComponent {
   protected readonly lastFocusOrigin = signal<FocusOrigin>(null);
   private readonly focusMonitor = inject(FocusMonitor);
 
-  public readonly searchInputText = model<string>('');
+  public readonly searchInputText = model<string>("");
   private debounceInputText = new Subject<string>();
 
   filters = computed(() => {
@@ -125,7 +126,7 @@ export class SearchComponent {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-standalone-assistant`;
     } else {
-      return 'standalone-assistant';
+      return "standalone-assistant";
     }
   });
 
@@ -154,16 +155,18 @@ export class SearchComponent {
     });
 
     // on input value change, update directly searchInputText but have debounced to emit with debounceTime
-    this.form.controls.searchInputText.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string) => {
-      const changedText = value !== this.searchInputText() && value.length > 0 && this.searchInputText().length > 0;
-      this.searchInputText.set(value);
-      this.debounceInputText.next(value);
+    this.form.controls.searchInputText.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: string) => {
+        const changedText = value !== this.searchInputText() && value.length > 0 && this.searchInputText().length > 0;
+        this.searchInputText.set(value);
+        this.debounceInputText.next(value);
 
-      // open the dropdown if the text has properly changed
-      if (changedText && this.lastFocusOrigin() && !this.dropdownComponent().isOpen) {
-        this.dropdownComponent().toggle();
-      }
-    });
+        // open the dropdown if the text has properly changed
+        if (changedText && this.lastFocusOrigin() && !this.dropdownComponent().isOpen) {
+          this.dropdownComponent().toggle();
+        }
+      });
 
     this.debounceInputText.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300)).subscribe((value: string) => {
       this.debounced.emit(value);
@@ -172,7 +175,7 @@ export class SearchComponent {
     // first time the component is created, we set the input value from the query params
     effect(() => {
       const { text } = getState(this.queryParamsStore);
-      this.form.controls.searchInputText.setValue(text || '');
+      this.form.controls.searchInputText.setValue(text || "");
     });
 
     // focus monitor to track focus origin
@@ -180,9 +183,9 @@ export class SearchComponent {
       this.focusMonitor
         .monitor(this.inputComponent().searchInput(), true)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(origin => {
+        .subscribe((origin) => {
           this.lastFocusOrigin.set(origin);
-          if (origin === 'keyboard') {
+          if (origin === "keyboard") {
             this.dropdownComponent().toggle();
           }
         });
@@ -193,16 +196,16 @@ export class SearchComponent {
     if (text === undefined) return;
 
     this.searchInputText.set(text);
-    if (!silent) this.emitText(new Event('input'));
+    if (!silent) this.emitText(new Event("input"));
   }
 
   protected emitText(e: Event): void {
     e.stopImmediatePropagation();
-    if (this.allowAdvancedFilters() && this.searchInputText() === '') {
+    if (this.allowAdvancedFilters() && this.searchInputText() === "") {
       return;
     }
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
-      const message = this.translocoService.translate('searchInput.allowEmptySearch');
+      const message = this.translocoService.translate("searchInput.allowEmptySearch");
       console.warn(message);
       toast.info(message);
       return;
@@ -219,7 +222,7 @@ export class SearchComponent {
     e.stopImmediatePropagation();
     this.dropdownComponent().close();
     if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
-      const message = this.translocoService.translate('searchInput.allowEmptySearch');
+      const message = this.translocoService.translate("searchInput.allowEmptySearch");
       warn(message);
       toast.info(message);
       return;
@@ -230,7 +233,7 @@ export class SearchComponent {
   }
 
   onSelected($event: HTMLElement | null): void {
-    const dataText = $event?.getAttribute('data-text');
+    const dataText = $event?.getAttribute("data-text");
     if (!dataText) return;
 
     this.form.controls.searchInputText.setValue(dataText);
@@ -242,7 +245,7 @@ export class SearchComponent {
     // to prevent the routerLink to be triggered when selecting an autocomplete item with the keyboard
     e.preventDefault();
     e.stopImmediatePropagation();
-    this.router.navigate(['/assistant'], { queryParams: { q: this.searchInputText(), f: this.filters() } });
+    this.router.navigate(["/assistant"], { queryParams: { q: this.searchInputText(), f: this.filters() } });
   }
 
   /**
@@ -260,7 +263,7 @@ export class SearchComponent {
 }
 
 @Directive({
-  selector: '.search-footer, search-footer, SearchFooter, searchfooter',
+  selector: ".search-footer, search-footer, SearchFooter, searchfooter",
   standalone: true
 })
 export class SearchFooter {}

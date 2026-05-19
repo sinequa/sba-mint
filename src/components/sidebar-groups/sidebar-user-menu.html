@@ -2,61 +2,92 @@
 
 @if (enabledUserProfile()) {
   <MenuItem (click)="onEventClick.emit('profile')">
-    <i class="fa-fw fal fa-user text-[16px]"></i>
+    <user-icon class="text-[16px]" />
     <span>{{ "userMenu.manageProfile" | transloco }}</span>
   </MenuItem>
   <Separator />
-} @else {
-  <!-- language selection -->
+
   <menu class="dropdown-content">
     <MenuItem>
-      <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
+      <palette-icon class="text-[16px]" />
+      <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
       <ChevronRight class="size-4" />
     </MenuItem>
 
     <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
-      @for (lang of AllLanguages; track lang.code) {
-        <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
-          <span>{{ lang.label }}</span>
+      @for (theme of AllThemes; track theme.name) {
+        <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
+          <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
           <div class="flex items-center gap-2">
-            @if (currentActiveLang() === lang.code) {
-              <i class="fa-fw fas fa-check text-sm"></i>
+            @if (currentTheme() === theme.name) {
+              <check-icon class="text-sm" />
             }
-            <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+            <ng-container *ngComponentOutlet="theme.icon" />
           </div>
         </MenuItem>
       }
     </MenuContent>
   </menu>
-}
-
-<!-- theme selection -->
-<menu class="dropdown-content">
-  <MenuItem>
-    <i class="fa-fw fal fa-palette text-[16px]"></i>
-    <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
-    <ChevronRight class="size-4" />
-  </MenuItem>
-
-  <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
-    @for (theme of AllThemes; track theme.name) {
-      <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
-        <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
-        <div class="flex items-center gap-2">
-          @if (currentTheme() === theme.name) {
-            <i class="fa-fw fas fa-check text-sm"></i>
-          }
-          <i class="{{ theme.icon }}"></i>
-        </div>
+} @else {
+  <!--
+    Wrapper <menu> is required when two sub-menus are siblings.
+    The <menu> component uses ContentChildren to discover and manage its nested <menu> children:
+    mutual close-on-open, shared positioning context, and keyboard navigation all depend on a
+    single parent owning both. Without this wrapper each sub-menu would be an orphan and their
+    interactions (e.g. opening one should close the other) would break.
+    In the @if branch above only one sub-menu exists, so no wrapper is needed.
+  -->
+  <menu>
+    <!-- language selection -->
+    <menu class="dropdown-content">
+      <MenuItem>
+        <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
+        <ChevronRight class="size-4" />
       </MenuItem>
-    }
-  </MenuContent>
-</menu>
+
+      <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+        @for (lang of AllLanguages; track lang.code) {
+          <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
+            <span>{{ lang.label }}</span>
+            <div class="flex items-center gap-2">
+              @if (currentActiveLang() === lang.code) {
+                <check-icon class="text-sm" />
+              }
+              <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+            </div>
+          </MenuItem>
+        }
+      </MenuContent>
+    </menu>
+
+    <menu class="dropdown-content">
+      <MenuItem>
+        <palette-icon class="text-[16px]" />
+        <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
+        <ChevronRight class="size-4" />
+      </MenuItem>
+
+      <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+        @for (theme of AllThemes; track theme.name) {
+          <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
+            <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
+            <div class="flex items-center gap-2">
+              @if (currentTheme() === theme.name) {
+                <check-icon class="text-sm" />
+              }
+              <ng-container *ngComponentOutlet="theme.icon" />
+            </div>
+          </MenuItem>
+        }
+      </MenuContent>
+    </menu>
+  </menu>
+}
 
 <Separator />
 
 <MenuItem variant="destructive" (click)="onEventClick.emit('reset-user-settings')">
-  <i class="fa-fw fal fa-trash text-[16px]"></i>
+  <trash-icon class="text-[16px]" />
   <span>{{ "userMenu.resetUserSettings" | transloco }}</span>
 </MenuItem>
 
@@ -66,12 +97,12 @@
 
 @if (allowUserOverride() && !isOverridingUser()) {
   <MenuItem (click)="onEventClick.emit('override-user')">
-    <i class="fa-fw fal fa-user-secret text-[16px]"></i>
+    <user-secret-icon class="text-[16px]" />
     <span>{{ "userMenu.overrideUser" | transloco }}</span>
   </MenuItem>
 } @else if (isOverridingUser()) {
   <MenuItem (click)="onEventClick.emit('revert-override-user')">
-    <i class="fa-fw fal fa-user text-[16px]"></i>
+    <user-icon class="text-[16px]" />
     <span>{{ "userMenu.revertOverride" | transloco }}</span>
   </MenuItem>
 }
@@ -90,17 +121,17 @@
 <MenuItem (click)="openSinequa()" class="justify-between">
   <img class="size-4" src="assets/logo/logo-small.svg" alt="sinequa logo" />
   <span class="grow">{{ "userMenu.aboutSinequa" | transloco }}</span>
-  <i class="fa-fw far fa-arrow-up-right-from-square text-[12px]"></i>
+  <arrow-up-right-from-square-icon class="text-[12px]" />
 </MenuItem>
 
 @if (allowChangePassword()) {
   <MenuItem (click)="onChangePassword()" class="justify-between">
-    <i class="fa-fw fal fa-key text-[16px]"></i>
+    <key-icon class="text-[16px]" />
     <span class="grow">{{ "userMenu.changePassword" | transloco }}</span>
   </MenuItem>
 }
 
 <MenuItem (click)="handleLogout()">
-  <i class="fa-fw fal fa-arrow-right-from-bracket text-[16px]"></i>
+  <arrow-right-from-bracket-icon class="text-[16px]" />
   <span class="grow">{{ "logout" | transloco }} {{ user.fullName || user.name }}</span>
 </MenuItem>

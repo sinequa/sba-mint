@@ -23,12 +23,16 @@
       <li>
         @if (menu.routerLink === router.url) {
           <button variant="ghost" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco" disabled>
-            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+            <ng-container *ngComponentOutlet="menu.icon" />
           </button>
         } @else if (menu.component) {
           <Popover class="rounded-lg border-neutral-300">
-            <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
-              <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+            <button
+              variant="ghost"
+              class="hover:text-foreground dark:hover:bg-background"
+              title="{{ menu.display | transloco }}"
+              [attr.aria-label]="menu.display | transloco">
+              <ng-container *ngComponentOutlet="menu.icon" />
             </button>
 
             <PopoverContent class="w-95 max-w-md min-w-sm" position="bottom-end">
@@ -36,8 +40,12 @@
             </PopoverContent>
           </Popover>
         } @else {
-          <button variant="ghost" size="icon" title="{{ menu.display | transloco }}" [attr.aria-label]="menu.display | transloco">
-            <i class="fa-fw {{ menu.iconClass }} " aria-hidden="true"></i>
+          <button
+            variant="ghost"
+            class="hover:text-foreground dark:hover:bg-background"
+            title="{{ menu.display | transloco }}"
+            [attr.aria-label]="menu.display | transloco">
+            <ng-container *ngComponentOutlet="menu.icon" />
           </button>
         }
       </li>

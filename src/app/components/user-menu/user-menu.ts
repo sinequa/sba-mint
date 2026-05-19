@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, inject, signal, viewChild, viewChildren, Type } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { bootstrapNewApp } from "@config/bootstrap-new-app";
@@ -15,17 +15,26 @@ import {
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import {
+  ArrowRightFromBracketIcon,
+  ArrowUpRightFromSquareIcon,
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  CheckIcon,
   ChevronRightIcon,
+  DesktopIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  KeyIcon,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  MoonIcon,
   Separator,
-  UserIcon
+  SunBrightIcon,
+  TrashIcon,
+  UserIcon,
+  UserSecretIcon
 } from "@sinequa/ui";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -51,7 +60,13 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     UserIcon,
+    UserSecretIcon,
     ChevronRightIcon,
+    CheckIcon,
+    TrashIcon,
+    KeyIcon,
+    ArrowUpRightFromSquareIcon,
+    ArrowRightFromBracketIcon,
     AvatarComponent,
     AvatarImageComponent,
     AvatarFallbackComponent,
@@ -63,10 +78,10 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
   providers: [provideTranslocoScope("user-menu")]
 })
 export class UserMenuComponent {
-  AllThemes: { name: Theme; icon: string }[] = [
-    { name: "light", icon: "fa-fw fal fa-sun-bright" },
-    { name: "dark", icon: "fa-fw fal fa-moon" },
-    { name: "system", icon: "fa-fw fal fa-desktop" }
+  AllThemes: { name: Theme; icon: Type<unknown> }[] = [
+    { name: "light", icon: SunBrightIcon },
+    { name: "dark", icon: MoonIcon },
+    { name: "system", icon: DesktopIcon }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
@@ -143,7 +158,13 @@ export class UserMenuComponent {
 
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
-    logout().then(() => this.router.navigate(["/logout"]));
+    logout().then(redirectUrl => {
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        this.router.navigate(['/logout']);
+      }
+    });
   }
 
   handleOverride() {

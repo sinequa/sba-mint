@@ -1,0 +1,397 @@
+---
+title: Via Sinequa Admin
+sidebar_position: 1
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+This document explains how to customize various aspects of the Mint application using the Sinequa Admin interface. Configuration is managed through JSON files in the "customization (JSON)" section of Sinequa Admin. Each configuration file controls a specific part of the Mint application.
+
+## Configuration Files Overview
+
+<img src={useBaseUrl('img/configurations/json.png')} alt='authentication' />
+
+### 1. [routes](routes)
+
+- **Purpose:** Defines the appearance and structure of the tabs in the "Search" section of the application. It also creates the associated routes used by the application.
+
+<details>
+<summary>Click to expand JSON example</summary>
+```json
+[
+    {
+        "path": "all",
+        "wsQueryTab": "all",
+        "icon": "fas fa-globe"
+    },
+    {
+        "path": "html",
+        "wsQueryTab": "html",
+        "icon": "fa-brands fa-html5"
+    },
+    {
+        "path": "pdf",
+        "wsQueryTab": "pdf",
+        "icon": "fas fa-file-pdf"
+    },
+    {
+        "path": "doc",
+        "wsQueryTab": "doc",
+        "icon": "fas fa-file-word"
+    },
+    {
+        "path": "xls",
+        "wsQueryTab": "xls",
+        "icon": "fas fa-file-excel"
+    },
+    {
+        "path": "ppt",
+        "wsQueryTab": "ppt",
+        "icon": "fas fa-file-powerpoint"
+    },
+    {
+        "path": "txt",
+        "wsQueryTab": "txt",
+        "icon": "fas fa-file-lines"
+    }
+]
+```
+</details>
+
+- **Angular Routes Description:**
+  - In Angular, routes are used to map URL paths to components. Each route defines a path and the component that should be displayed when the path is accessed. This enables navigation between different views or pages in a single-page application (SPA).
+  - In Mint, the `routes` configuration allows you to customize which tabs are visible in the search interface and how users navigate between them.
+
+### 2. [filters](filters)
+
+- **Purpose:** Configures the appearance and behavior of filters displayed in the filter bar of the "Search" section. This allows you to tailor the filtering options available to users, improving the search experience.
+
+<details>
+<summary>Click to expand JSON example</summary>
+```json
+[
+     {
+        "column": "authors",
+        "icon": "far fa-user",
+        "display": "column.authors"
+    },
+    {
+        "column": "company",
+        "icon": "far fa-buildings",
+        "display": "column.companies"
+    },
+    {
+        "column": "modified",
+        "icon": "far fa-calendar-day",
+        "display": "Date"
+    },
+    {
+        "column": "size",
+        "icon": "fa-regular fa-arrow-up-right-and-arrow-down-left-from-center",
+        "display": "column.sizes"
+    },
+    {
+        "column": "doctype",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "geo",
+        "icon": "far fa-location-dot",
+        "display": "column.geos"
+    },
+    {
+        "column": "documentlanguages",
+        "icon": "far fa-language",
+        "display": "column.documentlanguages"
+    },
+    {
+        "column": "concepts",
+        "icon": "fa-solid fa-lightbulb-on"
+    },
+    {
+        "column": "person",
+        "icon": "far fa-user",
+        "display": "column.persons"
+    },
+    {
+        "column": "docformat",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "treepath",
+        "icon": "far fa-code-fork"
+    }
+]
+```
+</details>
+
+### 3. sources
+
+- **Purpose:** Manages the icons associated with different sources of a record (document).
+You can assign specific icons to each source, making it easier for users to identify the origin of documents at a glance.
+
+<details>
+<summary>Click to expand JSON example</summary>
+```json
+{
+    "collection": {},
+    "source": {},
+    "connector": {
+        "activedirectory": {
+            "iconClass": "fa-kit fa-microsoft-entraid"
+        },
+        "atlassianbitbucket": {
+            "iconClass": "fa-brands fa-atlassian"
+        },
+        "atlassianjira": {
+            "iconClass": "fa-brands fa-jira"
+        },
+        "box.com": {
+            "iconClass": "fa-kit fa-box"
+        },
+        "confluence.v5.rest": {
+            "iconClass": "fa-brands fa-confluence"
+        },
+        "confluence.v6.rest": {
+            "iconClass": "fa-brands fa-confluence"
+        },
+        "confluence.v7.rest": {
+            "iconPath": "fa-brands fa-confluence"
+        },
+        "confluence.v8.rest": {
+            "iconClass": "fa-brands fa-confluence"
+        },
+        "crawler": {
+            "iconClass": "fa-brands fa-html5"
+        },
+        "crawler2": {
+            "iconClass": "fa-brands fa-html5"
+        },
+        "csv": {
+            "iconClass": "fa-regular fa-file-csv"
+        },
+        "custom.csv": {
+            "iconClass": "fa-regular fa-file-csv"
+        },
+        "custom.db": {
+            "iconClass": "fa-solid fa-database"
+        },
+        "custom.hive.jar": {
+            "iconClass": "fa-brands fa-hive"
+        },
+        "db": {
+            "iconClass": "fa-solid fa-database"
+        },
+        "db.jar": {
+            "iconClass": "fa-solid fa-database"
+        },
+        "dropbox": {
+            "iconClass": "fa-brands fa-dropbox"
+        },
+        "drupal": {
+            "iconClass": "fa-brands fa-drupal"
+        },
+        "drupaldb": {
+            "iconClass": "fa-brands fa-drupal"
+        },
+        "facebook": {
+            "iconClass": "fa-brands fa-facebook"
+        },
+        "facebook.workplace": {
+            "iconClass": "fa-brands fa-facebook"
+        },
+        "filesystem": {
+            "iconClass": "fa-solid fa-folder-tree"
+        },
+        "filesystem2": {
+            "iconClass": "fa-solid fa-folder-tree"
+        },
+        "googledrive.v3": {
+            "iconClass": "fa-brands fa-google-drive"
+        },
+        "hive.jar": {
+            "iconClass": "fa-brands fa-hive"
+        },
+        "hyperindex": {
+            "iconClass": "fa-kit fa-sinequa"
+        },
+        "mfiles": {
+            "iconClass": "fa-kit fa-mfiles"
+        },
+        "microsoft.dynamics": {
+            "iconClass": "fa-kit fa-microsoft-dynamics-365"
+        },
+        "microsoftgraph.exchange": {
+            "iconClass": "fa-kit fa-outlook"
+        },
+        "microsoftgraph.onedrive": {
+            "iconClass": "fa-kit fa-onedrive"
+        },
+        "microsoftgraph.onenote": {
+            "iconClass": "fa-kit fa-microsoft-onenote"
+        },
+        "microsoftgraph.sharepoint": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "microsoftgraph.sharepoint.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "microsoftgraph.teams": {
+            "iconClass": "fa-kit fa-teams"
+        },
+        "microsoftgraph.teams.v2": {
+            "iconClass": "fa-kit fa-teams"
+        },
+        "salesforce.v2": {
+            "iconClass": "fa-brands fa-salesforce"
+        },
+        "sharepoint.2003.ws": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.2007.ws": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.2010.ws.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.2013.ws.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.2016.ws.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.2019.ws.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "sharepoint.office365.v2": {
+            "iconClass": "fa-kit fa-sharepoint"
+        },
+        "teamcenter.v8": {
+            "iconClass": "fa-kit fa-siemens-teamcenter"
+        },
+        "teamcenter.v9": {
+            "iconClass": "fa-kit fa-siemens-teamcenter"
+        },
+        "teamcenter.v10": {
+            "iconClass": "fa-kit fa-siemens-teamcenter"
+        },
+        "teamcenter.v11": {
+            "iconClass": "fa-kit fa-siemens-teamcenter"
+        },
+        "teamcenter.v12": {
+            "iconClass": "fa-kit fa-siemens-teamcenter"
+        },
+        "twitter": {
+            "iconClass": "fa-brands fa-x-twitter"
+        },
+        "twitter.v2": {
+            "iconClass": "fa-brands fa-x-twitter"
+        },
+        "windchill.odata": {
+            "iconClass": "fa-kit fa-ptc-windchill"
+        },
+        "windchill.v12": {
+            "iconClass": "fa-kit fa-ptc-windchill"
+        },
+        "worksite.cloud": {
+            "iconClass": "fa-kit fa-imanage"
+        },
+        "worksite.v10": {
+            "iconClass": "fa-kit fa-imanage"
+        },
+        "worksite.v8": {
+            "iconClass": "fa-kit fa-imanage"
+        },
+        "yammer.v2": {
+            "iconClass": "fa-brands fa-yammer"
+        }
+    }
+}
+```
+</details>
+
+### 4. general
+
+- **Purpose:** Allows you to configure application logos without modifying CSS files. This simplifies branding and visual customization of the Mint application.
+
+Today, the general configuration is limited to the logo customization, but it may be extended in the future to include other general settings.
+
+<details>
+<summary>Click to expand JSON example</summary>
+```json
+{
+    "name": "Sinequa",
+    "logo": {
+        "light": {
+            "small": null,
+            "large": null
+        },
+        "dark": {
+            "small": null,
+            "large": null
+        }
+    }
+}
+```
+</details>
+
+### 5. assistants
+
+- **Purpose:** Contains the configuration for the assistant feature. This enables you to customize the behavior and appearance of the assistant within the application.
+For further explanations see the [Assistants Configuration](https://doc.sinequa.com/assistant/latest/index.html)
+
+## How to Use
+
+1. In Sinequa Admin, navigate to the "customization (JSON)" section.
+2. Select the configuration file you wish to edit (`routes`, `filters`, `sources`, `general`, or `assistants`).
+3. Modify the JSON as needed to customize the Mint application.
+4. Save your changes and refresh the Mint application to see the updates.
+
+---
+
+For more details on each configuration, refer to the Mint and Sinequa documentation or contact your administrator.
+
+### 6. features
+
+- **Purpose:** Allows you to enable specific features that are disabled by default.
+
+## Feature flags list
+
+- `allowChangePassword`: enables the password modification on the SignIn component.
+- `advancedSearch`: enables the advanced search option in the search bar autocomplete which opens a drawer with many ways of filtering.
+- `filterLinkChildren`: makes the filter items to be linked between parent and children (i.e. selecting a parent also selects the children, or unselecting a child of a selected parent unselects it).
+- `quickFilter`: allows direct clicking on any filter item to automatically apply it.
+- `expandPreview`: adds an "Expand" button in the preview drawer to open a preview in a fullscreen dialog to have a bigger preview but also with an assistant or the search on the side.
+- `editablepartition`: whether this is an editable partition.
+- `allowChatDrawer`: enables the chat in the drawer.
+- `showAggregationItemCount`: displays the item counts for aggregations.
+- `userProfile`: user profile configuration, contains `enabled` to enable the feature, `data` to choose which default parameters to show (all are visible if not defined), and `customData` for any custom data to have in the profile form.
+- `previewMultiConversion`: enables the multi conversion feature for the preview.
+
+## How to Use
+
+1. In Sinequa Admin, navigate to the "customization (JSON)" section.
+2. Select the `general` configuration file.
+3. Enable the desired features inside the `features` parameter.
+4. Save your changes and refresh the Mint application to see the updates.
+
+## Example
+
+```json
+{
+    "features": {
+        "allowChangePassword":true,
+        "advancedSearch": true,
+        "filterLinkChildren": true,
+        "quickFilter": true,
+        "expandPreview": true,
+        "userProfile": {
+            "enabled": true,
+            "data": ["mail", "fullName"],
+            "customData": ["phoneNumber"]
+        },
+        "previewMultiConversion": true
+    },
+    ...
+}
+```
+

@@ -4,7 +4,7 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, Query } from "@sinequa/atomic";
 import { AppStore, SelectionStore } from "@sinequa/atomic-angular";
-import { TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
+import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
@@ -27,30 +27,30 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 @Component({
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
-  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
+  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent, SpinnerIcon, SparklesIcon, CommentsIcon],
   template: `
     <Tabs class="contents">
       <!-- tabs list -->
       <TabsList class="w-full px-6" variant="ghost">
-        <Tab class="w-fit" shadow="none" value="preview" active>
+        <Tab variant="secondary" class="w-fit" value="preview" active>
           {{ 'preview.documentPreview' | transloco }}
         </Tab>
 
         @if (displaySummary() || displayChatWithDoc()) {
           @if (displaySummary()) {
-            <Tab class="w-fit" value="summary" (click)="setSummaryAssistant()">
+            <Tab variant="secondary" class="w-fit" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <spinner-icon class="animate-spin" />
               } @else {
-                <i class="fa-solid fa-sparkles"></i>
+                <sparkles-icon />
               }
               {{ 'preview.summarize' | transloco }}
             </Tab>
           }
 
           @if (displayChatWithDoc()) {
-            <Tab class="w-fit" value="discussion" (click)="setChatWithDocAssistant()">
-              <i class="fa-solid fa-comments"></i>
+            <Tab class="w-fit" variant="secondary" value="discussion" (click)="setChatWithDocAssistant()">
+              <comments-icon />
               {{ 'preview.discussion' | transloco }}
             </Tab>
           }

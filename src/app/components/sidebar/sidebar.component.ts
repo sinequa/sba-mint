@@ -6,7 +6,7 @@ import { getState } from '@ngrx/signals';
 
 import { CCApp, getHelpIndexUrl } from '@sinequa/atomic';
 import { AppStore, PrincipalStore, UserSettingsStore } from '@sinequa/atomic-angular';
-import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
+import { cn, CommentIcon, GearIcon, MagnifyingGlassIcon, QuestionCircleIcon, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
 
 /**
  * Sidebar component for the application.
@@ -14,7 +14,7 @@ import { cn, SidebarComponent, SidebarItemComponent } from '@sinequa/ui';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, SidebarComponent, SidebarItemComponent],
+  imports: [RouterLink, SidebarComponent, SidebarItemComponent, MagnifyingGlassIcon, CommentIcon, GearIcon, QuestionCircleIcon],
   templateUrl: './sidebar.component.html'
 })
 export class AppSidebarComponent {

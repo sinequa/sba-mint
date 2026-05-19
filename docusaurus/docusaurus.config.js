@@ -35,7 +35,21 @@ const config = {
     locales: ['en']
   },
 
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    require.resolve('docusaurus-lunr-search'),
+    function suppressVscodeLangserverWarning() {
+      return {
+        name: 'suppress-vscode-languageserver-warning',
+        configureWebpack() {
+          return {
+            module: {
+              noParse: [/vscode-languageserver-types[\\/]lib[\\/]umd[\\/]main\.js/]
+            }
+          };
+        }
+      };
+    }
+  ],
 
   presets: [
     [
@@ -44,6 +58,7 @@ const config = {
       ({
         docs: {
           routeBasePath: '/',
+          includeCurrentVersion: false,
           // path: 'docs',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -111,6 +126,10 @@ const config = {
             label: '🅰️ Atomic for Angular'
           },
           {
+            type: 'docsVersionDropdown',
+            position: 'right'
+          },
+          {
             href: 'https://github.com/sinequa/sba-mint',
             label: 'GitHub',
             position: 'right'
@@ -146,8 +165,8 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.oneDark,
+        darkTheme: prismThemes.oneDark,
         defaultLanguage: 'typescript',
         magicComments: [
           {

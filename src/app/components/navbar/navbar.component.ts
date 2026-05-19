@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { Component, computed, inject, input, signal, Type, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
@@ -18,8 +18,7 @@ import {
   SavedSearchesComponent,
   SearchItem
 } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, PopoverComponent, PopoverContentComponent } from '@sinequa/ui';
-import { notify } from '@sinequa/atomic';
+import { BellIcon, BookmarkIcon, ButtonComponent, cn, HistoryIcon, InboxIcon, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
 
 import { AutocompleteComponent } from '../search/autocomplete/autocomplete.component';
 import { SearchComponent } from '../search/search.component';
@@ -27,7 +26,7 @@ import { UserMenuComponent } from '../user-menu/user-menu';
 
 export type NavbarMenu = {
   display: string;
-  iconClass: string;
+  icon: Type<unknown>;
   routerLink?: string;
   keepOnMouseLeave?: boolean;
   component?: Type<unknown>;
@@ -46,6 +45,7 @@ export type NavbarMenu = {
   styleUrl: './navbar.component.scss',
   imports: [
     CommonModule,
+    NgComponentOutlet,
     RouterLink,
     TranslocoPipe,
     ButtonComponent,
@@ -80,11 +80,11 @@ export class NavbarComponent {
   readonly searchText = signal<string>('');
 
   protected readonly menus = signal<NavbarMenu[]>([
-    { display: 'searches.recent.label', iconClass: 'far fa-clock-rotate-left', routerLink: '/widgets/recent-searches', component: RecentSearchesComponent },
-    { display: 'bookmarks.label', iconClass: 'far fa-bookmark', routerLink: '/widgets/bookmarks', component: BookmarksComponent },
-    { display: 'collections.label', iconClass: 'far fa-inbox', routerLink: '/widgets/collections', component: CollectionsComponent },
-    { display: 'searches.saved.label', iconClass: 'far fa-star', routerLink: '/widgets/saved-searches', component: SavedSearchesComponent },
-    { display: 'alerts.label', iconClass: 'far fa-bell', component: AlertsComponent }
+    { display: 'searches.recent.label', icon: HistoryIcon, routerLink: '/widgets/recent-searches', component: RecentSearchesComponent },
+    { display: 'bookmarks.label', icon: BookmarkIcon, routerLink: '/widgets/bookmarks', component: BookmarksComponent },
+    { display: 'collections.label', icon: InboxIcon, routerLink: '/widgets/collections', component: CollectionsComponent },
+    { display: 'searches.saved.label', icon: StarIcon, routerLink: '/widgets/saved-searches', component: SavedSearchesComponent },
+    { display: 'alerts.label', icon: BellIcon, component: AlertsComponent }
   ]);
 
   private readonly transloco = inject(TranslocoService);

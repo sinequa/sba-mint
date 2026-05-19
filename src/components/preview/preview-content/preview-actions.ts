@@ -3,7 +3,18 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
 import { PreviewService, SelectionStore } from "@sinequa/atomic-angular";
-import { ButtonComponent } from "@sinequa/ui";
+import {
+  ArrowsMaximizeIcon,
+  ButtonComponent,
+  FlashlightIcon,
+  IconButtonComponent,
+  LightbulbIcon,
+  LightbulbSlashIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
+  SlashIcon,
+  SparklesIcon
+} from "@sinequa/ui";
 
 /**
  * Preview actions component
@@ -17,41 +28,52 @@ import { ButtonComponent } from "@sinequa/ui";
  */
 @Component({
   selector: "preview-actions",
-  imports: [TranslocoPipe, ButtonComponent],
+  imports: [
+    TranslocoPipe,
+    ButtonComponent,
+    ArrowsMaximizeIcon,
+    MagnifyingGlassPlusIcon,
+    MagnifyingGlassMinusIcon,
+    SparklesIcon,
+    SlashIcon,
+    FlashlightIcon,
+    LightbulbIcon,
+    LightbulbSlashIcon,
+    IconButtonComponent
+  ],
   template: `
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
-      <i class="fa-regular fa-arrows-maximize shrink-0"></i>
+    <button variant="none" icon-button   [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
+      <arrows-maximize-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
-      <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
+    <button variant="none" icon-button   [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
+      <magnifying-glass-plus-icon class="shrink-0" />
     </button>
 
-    <button variant="ghost" class="dark:text-white dark:hover:bg-background/10" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
-      <i class="fa-regular fa-magnifying-glass-minus shrink-0"></i>
+    <button variant="none" icon-button   [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
+      <magnifying-glass-minus-icon class="shrink-0" />
     </button>
 
     @if (isPrimary()) {
       @if (hasAIDescription()) {
         @if (showAIDescription()) {
           <button
-            variant="ghost"
-            class="dark:text-white dark:hover:bg-background/10"
-            size="icon"
+            variant="none" icon-button
+
             [attr.title]="'preview.toggleAIDescription' | transloco"
             (click)="toggleAIDescription()">
-            <i class="fa-regular fa-sparkles shrink-0"></i>
+            <sparkles-icon class="shrink-0" />
           </button>
         } @else {
           <button
-            variant="ghost"
-            size="icon"
-            class="dark:text-white dark:hover:bg-background/10"
+            variant="none" icon-button
+
+
             [attr.title]="'preview.toggleAIDescription' | transloco"
             (click)="toggleAIDescription()">
-            <span class="fa-stack shrink-0 items-center justify-center">
-              <i class="fa-regular fa-sparkles fa-stack-1x"></i>
-              <i class="fa-regular fa-slash fa-stack-1x"></i>
+            <span class="relative shrink-0 inline-flex items-center justify-center">
+              <sparkles-icon />
+              <slash-icon class="absolute" />
             </span>
           </button>
         }
@@ -59,44 +81,44 @@ import { ButtonComponent } from "@sinequa/ui";
 
       @if (extracts()) {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleExtracts' | transloco"
           (click)="toggleExtracts()">
-          <i class="fa-regular fa-flashlight shrink-0"></i>
+          <flashlight-icon class="shrink-0" />
         </button>
       } @else {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleExtracts' | transloco"
           (click)="toggleExtracts()">
-          <span class="fa-stack shrink-0 items-center justify-center">
-            <i class="fa-regular fa-flashlight fa-stack-1x"></i>
-            <i class="fa-regular fa-slash fa-stack-1x"></i>
+          <span class="relative shrink-0 inline-flex items-center justify-center">
+            <flashlight-icon />
+            <slash-icon class="absolute" />
           </span>
         </button>
       }
 
       @if (entities()) {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [title]="'preview.toggleEntities' | transloco"
           (click)="toggleEntities()">
-          <i class="fa-regular fa-lightbulb shrink-0"></i>
+          <lightbulb-icon class="shrink-0" />
         </button>
       } @else {
         <button
-          variant="ghost"
-          class="dark:text-white dark:hover:bg-background/10"
-          size="icon"
+          variant="none" icon-button
+
+
           [attr.title]="'preview.toggleEntities' | transloco"
           (click)="toggleEntities()">
-          <i class="fa-regular fa-lightbulb-slash shrink-0"></i>
+          <lightbulb-slash-icon class="shrink-0" />
         </button>
       }
     }

@@ -3,7 +3,19 @@ import { TranslocoPipe } from "@jsverse/transloco";
 
 import { Article as A, error } from "@sinequa/atomic";
 import { AppStore, CollectionsDialog, LabelsEditDialog, SelectionStore } from "@sinequa/atomic-angular";
-import { ButtonComponent, DialogEvent, DialogService, MenuComponent, MenuContentComponent, MenuItemComponent } from "@sinequa/ui";
+import {
+  ButtonComponent,
+  DialogEvent,
+  DialogService,
+  EllipsisVerticalIcon,
+  IconButtonComponent,
+  InboxIcon,
+  MenuComponent,
+  MenuContentComponent,
+  MenuItemComponent,
+  PaperclipIcon,
+  TagIcon
+} from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 
 type Article = A & {
@@ -13,24 +25,35 @@ type Article = A & {
 @Component({
   selector: "card-menu, CardMenu, cardmenu",
   standalone: true,
-  imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe], // Add necessary imports
+  imports: [
+    ButtonComponent,
+    MenuComponent,
+    MenuContentComponent,
+    MenuItemComponent,
+    TranslocoPipe,
+    EllipsisVerticalIcon,
+    TagIcon,
+    InboxIcon,
+    PaperclipIcon,
+    IconButtonComponent
+  ],
   template: `
     <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
-      <button variant="ghost" size="icon" [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
+      <button variant="none" icon-button [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
         <span class="sr-only">{{ "article.openMenu" | transloco }}</span>
-        <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+        <EllipsisVerticalIcon />
       </button>
 
       <MenuContent>
         @if (appStore.allowLabels()) {
-          <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <i class="fa-fw far fa-tag"></i> {{ "article.editLabels" | transloco }} </MenuItem>
+          <MenuItem class="whitespace-nowrap" (click)="editLabels()"> <TagIcon /> {{ "article.editLabels" | transloco }} </MenuItem>
         }
         <MenuItem class="whitespace-nowrap" (click)="addToCollection()">
-          <i class="fa-fw far fa-inbox"></i> {{ "article.addToCollection" | transloco }}
+          <InboxIcon /> {{ "article.addToCollection" | transloco }}
         </MenuItem>
         @if (allowAI()) {
           <MenuItem class="whitespace-nowrap" variant="ai" (click)="attachToAssistant()">
-            <i class="fa-fw fas fa-paperclip"></i> {{ "article.addToAIOverview" | transloco }}
+            <PaperclipIcon /> {{ "article.addToAIOverview" | transloco }}
           </MenuItem>
         }
       </MenuContent>
@@ -51,11 +74,11 @@ export class CardMenuComponent {
   editLabels(): void {
     this.dialogService
       .open<{ type: DialogEvent; article: Article }>(LabelsEditDialog, this.article())
-      .then(v => {
+      .then((v) => {
         // update the article with the new labels
         this.article.set({ ...v.article });
       })
-      .catch(e => error("LabelsEditDialog error", e));
+      .catch((e) => error("LabelsEditDialog error", e));
   }
 
   addToCollection(): void {
@@ -63,10 +86,10 @@ export class CardMenuComponent {
       .open(CollectionsDialog, this.article())
       .then((event: unknown) => {
         if (event === "dialog-confirm") {
-          this.queryClient.invalidateQueries().catch(e => error("Error invalidating queries", e));
+          this.queryClient.invalidateQueries().catch((e) => error("Error invalidating queries", e));
         }
       })
-      .catch(e => error("CollectionsDialog error", e));
+      .catch((e) => error("CollectionsDialog error", e));
   }
 
   attachToAssistant(): void {

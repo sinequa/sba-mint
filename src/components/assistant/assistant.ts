@@ -251,8 +251,8 @@ export class AssistantComponent {
   public newChat(): void {
     try {
       this.sqChat()?.newChat();
-    } catch (err) {
-      error("Error while starting a new chat", err);
+    } catch {
+      // error('Error while starting a new chat', err);
     }
   }
 
