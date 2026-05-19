@@ -1,7 +1,7 @@
 <div class="layout-search" [attr.drawer-opened]="drawerOpened()">
   <div class="col-span-2 col-start-2">
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <i class="fa-fw fas fa-star" aria-hidden></i>
+      <star-icon aria-hidden />
       {{ "mySavedSearches" | transloco }}
     </h1>
 
@@ -12,7 +12,7 @@
           role="link"
           (click)="onClick(savedSearch)"
           (keydown.enter)="onClick(savedSearch)">
-          <i class="fas fa-star ps-2"></i>
+          <star-icon class="ps-2" />
 
           <span class="ms-2">
             {{ savedSearch.display || savedSearch.label }}
@@ -35,7 +35,7 @@
             title="Remove saved search"
             class="invisible text-destructive group-hover:visible hover:scale-125 hover:cursor-pointer"
             (click)="onDelete($event, $index)">
-            <i class="fa-fw far fa-trash-can" aria-hidden></i>
+            <trash-can-icon aria-hidden />
           </button>
         </a>
       } @empty {

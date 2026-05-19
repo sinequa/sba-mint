@@ -1,4 +1,6 @@
-import { Component, computed, inject, linkedSignal, signal, viewChild } from "@angular/core";
+import { Component, computed, effect, inject, linkedSignal, signal, viewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { NavigationEnd, Router } from "@angular/router";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
@@ -17,8 +19,10 @@ import {
   AvatarComponent,
   AvatarFallbackComponent,
   AvatarImageComponent,
+  GearIcon,
   MenuComponent,
   MenuContentComponent,
+  QuestionCircleIcon,
   Sidebar,
   SidebarContentComponent,
   SidebarFooterComponent,
@@ -31,6 +35,7 @@ import {
   UserIcon,
   useSidebar
 } from "@sinequa/ui";
+import { filter } from "rxjs";
 
 @Component({
   selector: "app-sidebar",
@@ -56,7 +61,9 @@ import {
     OverrideUserDialogComponent,
     ResetUserSettingsDialogComponent,
     AvatarImageComponent,
-    UserIcon
+    UserIcon,
+    GearIcon,
+    QuestionCircleIcon
   ],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
@@ -64,7 +71,7 @@ import {
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div
             class="h-8 w-32 bg-contain bg-left bg-no-repeat group-data-[collapsible=icon]:hidden"
-            style="background-image: var(--logo-large-alt)"></div>
+            style="background-image: var(--logo-sidebar)"></div>
           <div
             class="logo-collapse-container relative hidden size-8 items-center justify-center group-data-[collapsible=icon]:flex">
             <div
@@ -97,31 +104,58 @@ import {
         <sidebar-menu>
           @if (isAdminOrDelegatedAdmin()) {
             <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
-              <sidebar-menu-button class="text-lg">
-                <i tooltip="Administration" tooltip-position="right" class="fa-fw far fa-gear" aria-hidden="true"></i>
+              <sidebar-menu-button class="text-lg" tooltip="Administration" tooltip-position="right" >
+                <gear-icon aria-hidden="true" />
                 <span class="text-sm" sr-only>Administration</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
           <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
-            <sidebar-menu-button class="text-lg">
-              <i tooltip="Help" tooltip-position="right" class="fa-fw far fa-question-circle" aria-hidden="true"></i>
+            <sidebar-menu-button class="text-lg" tooltip="Help" tooltip-position="right">
+              <question-circle-icon aria-hidden="true" />
               <span class="text-sm" sr-only>Help</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
         @if (isAdminOrDelegatedAdmin()) {
           <Menu>
+          <sidebar-menu-item>
+              <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg" class="group/avatar">
+                <Avatar class="size-8 dark:bg-sage-200 dark:text-sage-900 group-hover/avatar:bg-sage-300">
+                  <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                  <AvatarFallback>
+                    @if (initials()) {
+                      <span>{{ initials() }}</span>
+                    } @else {
+                      <UserIcon />
+                    }
+                  </AvatarFallback>
+                </Avatar>
+
+                <div class="grid flex-1 text-left text-sm leading-tight">
+                  <span class="truncate font-medium">{{ fullname() }}</span>
+                  <span class="truncate text-xs">{{ email() }}</span>
+                </div>
+              </sidebar-menu-button>
+
+              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
+                <!-- <Settings class="mt-auto" [debug]="true" /> -->
+                <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
+              </MenuContent>
+            </sidebar-menu-item>
+          </Menu>
+        } @else {
+          <sidebar-menu-item>
             <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
-              <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
-                <AvatarFallback>
-                  @if (initials()) {
-                    <span>{{ initials() }}</span>
-                  } @else {
-                    <UserIcon class="size-6 p-1" />
-                  }
-                </AvatarFallback>
+              <Avatar class="size-8">
+                  <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
+                  <AvatarFallback>
+                    @if (initials()) {
+                      <span>{{ initials() }}</span>
+                    } @else {
+                      <UserIcon />
+                    }
+                  </AvatarFallback>
               </Avatar>
 
               <div class="grid flex-1 text-left text-sm leading-tight">
@@ -129,30 +163,7 @@ import {
                 <span class="truncate text-xs">{{ email() }}</span>
               </div>
             </sidebar-menu-button>
-
-            <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
-              <!-- <Settings class="mt-auto" [debug]="true" /> -->
-              <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
-            </MenuContent>
-          </Menu>
-        } @else {
-          <sidebar-menu-button [tooltip]="isCollapsed() ? fullname() || email() : ''" tooltip-position="right" size="lg">
-            <Avatar class="bg-accent-alt text-accent-foreground font-semibold">
-                <AvatarImage [src]="profilePhoto()" width="44" height="44" alt="avatar" />
-                <AvatarFallback>
-                  @if (initials()) {
-                    <span>{{ initials() }}</span>
-                  } @else {
-                    <UserIcon class="size-6 p-1" />
-                  }
-                </AvatarFallback>
-            </Avatar>
-
-            <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ fullname() }}</span>
-              <span class="truncate text-xs">{{ email() }}</span>
-            </div>
-          </sidebar-menu-button>
+          </sidebar-menu-item>
         }
         </sidebar-menu>
       </sidebar-footer>
@@ -172,6 +183,16 @@ export class MainSidebarComponent {
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
   private readonly transloco = inject(TranslocoService);
   private readonly userProfileService = inject(UserProfileService);
+  private readonly navigationEnd = toSignal(inject(Router).events.pipe(filter(e => e instanceof NavigationEnd)));
+
+  constructor() {
+    effect(() => {
+      this.navigationEnd();
+      if (this.sidebar.isMobile()) {
+        this.sidebar.setOpenMobile(false);
+      }
+    });
+  }
 
   readonly principal = inject(PrincipalStore);
   readonly appStore = inject(AppStore);

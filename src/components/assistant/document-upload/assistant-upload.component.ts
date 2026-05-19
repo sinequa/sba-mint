@@ -2,18 +2,17 @@ import { Component, inject, input } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 
 import { DocumentOverviewComponent } from "@sinequa/assistant/chat";
-import { DialogService } from "@sinequa/ui";
+import { DialogService, FolderOpenIcon } from "@sinequa/ui";
 
 import { UploadDialog } from "./upload.dialog";
 
 @Component({
   selector: "assistant-upload, AssistantUpload",
-  imports: [TranslocoPipe, DocumentOverviewComponent],
+  imports: [TranslocoPipe, DocumentOverviewComponent, FolderOpenIcon],
   template: `
     <section class="p-4">
-      <div class="text-muted-foreground flex items-center justify-between">
+      <div class="text-muted-foreground flex items-center gap-2">        <FolderOpenIcon />
         <h3 class="pointer-events-none font-semibold">
-          <i class="far fa-folder-open me-1"></i>
           {{ 'assistant.my-documents' | transloco }}
         </h3>
       </div>

@@ -1,0 +1,89 @@
+/*
+  Galactik Design System — Badge color tokens
+  Semantic color variables dedicated to the Badge component.
+
+  Layered approach:
+    1. Base tokens (--badge-bg / --badge-fg / --badge-border) drive the default
+       rendering. Components read only these.
+    2. Scheme tokens (--badge-<scheme>-bg / -fg / -border) expose the full
+       palette of intents so the component can reassign the base tokens per
+       variant (e.g. via `[data-scheme="error"] { --badge-bg: var(--badge-error-bg); }`).
+
+  Consumes the global semantic layer from `galactik-tokens.css` — never the raw
+  ramps — so dark theme takes over automatically via `galactik-tokens.dark.css`.
+
+  Usage in the component stylesheet:
+
+      .badge {
+        background: var(--badge-bg);
+        color:      var(--badge-fg);
+        box-shadow: inset 0 0 0 1px var(--badge-border);
+      }
+      .badge[data-scheme="success"] {
+        --badge-bg:     var(--badge-success-bg);
+        --badge-fg:     var(--badge-success-fg);
+        --badge-border: var(--badge-success-border);
+      }
+*/
+
+:root {
+  --badge-sage: var(--sage-300);
+  --badge-sage-foreground: var(--sage-950);
+  --badge-sage-light: var(--sage-800);
+  --badge-sage-light-foreground: var(--sage-100);
+
+  --badge-almond: var(--almond-300);
+  --badge-almond-foreground: var(--almond-950);
+  --badge-almond-light: var(--almond-800);
+  --badge-almond-light-foreground: var(--almond-100);
+
+  --badge-pink: var(--pink-300);
+  --badge-pink-foreground: var(--pink-950);
+  --badge-pink-light: var(--pink-800);
+  --badge-pink-light-foreground: var(--pink-100);
+
+  --badge-grey: var(--grey-300);
+  --badge-grey-foreground: var(--grey-950);
+  --badge-grey-light: var(--grey-700);
+  --badge-grey-light-foreground: var(--grey-200);
+
+  --badge-cherry: var(--cherry-300);
+  --badge-cherry-foreground: var(--cherry-950);
+  --badge-cherry-light: var(--cherry-800);
+  --badge-cherry-light-foreground: var(--cherry-100);
+
+  --badge-indigo: var(--indigo-300);
+  --badge-indigo-foreground: var(--indigo-950);
+  --badge-indigo-light: var(--indigo-800);
+  --badge-indigo-light-foreground: var(--indigo-100);
+
+  --badge-yellow: var(--yellow-300);
+  --badge-yellow-foreground: var(--yellow-950);
+  --badge-yellow-light: var(--yellow-800);
+  --badge-yellow-light-foreground: var(--yellow-200);
+
+  --badge-cyan: var(--cyan-300);
+  --badge-cyan-foreground: var(--cyan-950);
+  --badge-cyan-light: var(--cyan-800);
+  --badge-cyan-light-foreground: var(--cyan-100);
+
+  --badge-success: var(--green-300);
+  --badge-success-foreground: var(--green-950);
+  --badge-success-light: var(--green-800);
+  --badge-success-light-foreground: var(--green-200);
+
+  --badge-warning: var(--orange-300);
+  --badge-warning-foreground: var(--orange-950);
+  --badge-warning-light: var(--orange-800);
+  --badge-warning-light-foreground: var(--orange-200);
+
+  --badge-info: var(--blue-300);
+  --badge-info-foreground: var(--blue-950);
+  --badge-info-light: var(--blue-800);
+  --badge-info-light-foreground: var(--blue-200);
+
+  --badge-error: var(--red-300);
+  --badge-error-foreground: var(--red-950);
+  --badge-error-light: var(--red-800);
+  --badge-error-light-foreground: var(--red-200);
+}

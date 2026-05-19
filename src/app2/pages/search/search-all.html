@@ -25,6 +25,8 @@
     }
 
     <feedback
+      variant="secondary"
+      [solid]="true"
       [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
@@ -37,48 +39,53 @@
 
 <!-- on mobile devices use sheet previewer -->
 @if (isMobile()) {
-  <div class="@container sticky top-17 z-5 mx-2 bg-background">
-    @if (isTabSearchActive()) {
-      <navbar-tabs class="**:[[role=tablist]]:justify-start lg:**:[[role=tablist]]:justify-center" />
-    }
+  <div class="flex h-dvh gap-2">
+    <div class="relative z-5 flex w-full flex-col bg-background p-4">
+      <search-with-autocomplete class="w-full" />
 
-    <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
+      @if (isTabSearchActive()) {
+        <navbar-tabs noTruncate="true" />
+      }
 
-    <app-search-actions
-      [class]="cn('@container sticky z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden', breakpointService.isMobile() ? 'top-28' : 'top-45')"
-      [result]="result()"
-      [selectedAll]="selectedAll()"
-      (selectAll)="selectAll()" />
+      <app-search-actions
+        [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
+        [result]="result()"
+        [selectedAll]="selectedAll()"
+        (selectAll)="selectAll()" />
+
+      <div class="min-h-0 flex-1 overflow-y-auto">
+        @if (allowAI() && hasRowCount()) {
+          <div class="mx-2.5 mt-2">
+            <app-search-overview class="block h-full w-full" />
+          </div>
+        }
+        <ng-container *ngTemplateOutlet="resultsList" />
+      </div>
+    </div>
   </div>
 
-  @if (allowAI() && hasRowCount()) {
-    <div class="mx-2.5 mt-2">
-      <app-search-overview class="block h-full w-full" />
-    </div>
-  }
-
-  <div class="mb-8 flex gap-2">
-    <!-- column 1 — main results -->
+  <!-- column 1 — main results -->
+  <!-- <div class="mb-8 flex gap-2">
     <div class="relative flex w-full grow flex-col px-2.5 sm:w-[30%]">
       <ng-container *ngTemplateOutlet="resultsList" />
     </div>
-  </div>
+  </div> -->
 
   <sheet-previewer class="hidden md:block" />
 }
 <!-- on desktop devices -->
 @else {
-  <div class="@container sticky top-17 z-5 mx-2 bg-background">
-    @if (isTabSearchActive()) {
-      <navbar-tabs class="**:[[role=tablist]]:justify-start lg:**:[[role=tablist]]:justify-center" />
-    }
-    <filters-bar class="hidden justify-start gap-1 pt-4 pb-4 lg:flex @lg:justify-center" />
-  </div>
-
   <div class="flex h-(--search-content-height) gap-2">
     <!-- column 2 — main results -->
     <div
       [class]="cn('relative flex w-full flex-col px-2.5', !allowAI() && !hasPreview() ? 'mx-auto sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl' : 'grow sm:w-[30%]')">
+      <search-with-autocomplete class="w-full py-4" />
+
+      @if (isTabSearchActive()) {
+        <navbar-tabs noTruncate="true" />
+      }
+      <filters-bar class="pt-4 pb-4" />
+
       <app-search-actions
         [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
         [result]="result()"
@@ -93,11 +100,15 @@
     <!-- column 3 -->
     @if (hasPreview() || (allowAI() && hasRowCount())) {
       <div
-        [class]="cn('mx-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
+        [class]="cn('m-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
         <div class="relative size-full">
           <preview
             [class]="
-              cn('absolute inset-0 size-full', hasPreview() && 'animate-slide-in-right', !hasPreview() && 'translate-x-full animate-slide-out-right opacity-0')
+              cn(
+                'absolute inset-0 size-full',
+                hasPreview() && 'z-0 animate-slide-in-right',
+                !hasPreview() && 'z-1 translate-x-full animate-slide-out-right opacity-0'
+              )
             " />
 
           <!-- if assistant is allowed -->
@@ -106,8 +117,8 @@
               [class]="
                 cn(
                   'absolute inset-0 hidden h-full w-full',
-                  !hasPreview() && 'animate-slide-in-right',
-                  hasPreview() && 'translate-x-full transform animate-slide-out-right opacity-0',
+                  !hasPreview() && 'z-0 animate-slide-in-right',
+                  hasPreview() && 'z-1 translate-x-full transform animate-slide-out-right opacity-0',
                   (currentKeys()?.text?.length || 0) > 0 && 'block'
                 )
               " />

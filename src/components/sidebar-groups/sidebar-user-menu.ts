@@ -1,27 +1,37 @@
 import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, effect, inject, model, output, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { Placement } from "@floating-ui/dom";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
-
 import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
 import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import {
+  ArrowRightFromBracketIcon,
+  ArrowUpRightFromSquareIcon,
   BreakpointObserverService,
+  CheckIcon,
   ChevronRightIcon,
   DebugIcon,
+  DesktopIcon,
   FlagEnglishIconComponent,
   FlagFrenchIconComponent,
+  KeyIcon,
   MenuComponent,
   MenuContentComponent,
   MenuItemComponent,
+  MoonIcon,
+  PaletteIcon,
   Separator,
-  SwitchComponent
+  SunBrightIcon,
+  SwitchComponent,
+  TrashIcon,
+  UserIcon,
+  UserSecretIcon
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
-import { Placement } from "@floating-ui/dom";
 
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
@@ -41,16 +51,24 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     Separator,
     NgComponentOutlet,
     DebugIcon,
-    SwitchComponent
+    SwitchComponent,
+    UserIcon,
+    ArrowUpRightFromSquareIcon,
+    KeyIcon,
+    ArrowRightFromBracketIcon,
+    UserSecretIcon,
+    CheckIcon,
+    PaletteIcon,
+    TrashIcon
   ],
   templateUrl: "./sidebar-user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
 })
 export class SidebarUserMenuComponent {
-  AllThemes: { name: Theme; icon: string }[] = [
-    { name: "light", icon: "fa-fw fal fa-sun-bright" },
-    { name: "dark", icon: "fa-fw fal fa-moon" },
-    { name: "system", icon: "fa-fw fal fa-desktop" }
+  AllThemes: { name: Theme; icon: Type<unknown> }[] = [
+    { name: "light", icon: SunBrightIcon },
+    { name: "dark", icon: MoonIcon },
+    { name: "system", icon: DesktopIcon }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
@@ -74,7 +92,6 @@ export class SidebarUserMenuComponent {
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
   agentInstanceId = inject(AGENT_INSTANCE_ID);
   allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
-  readonly debug = model<boolean>(false);
   /**
    * Determines whether password change functionality should be enabled for the current user.
    *
@@ -98,12 +115,19 @@ export class SidebarUserMenuComponent {
 
   readonly currentActiveLang = signal(this.transloco.getActiveLang());
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
+  readonly debug = model(this.userSettingsStore.isDebugMode());
 
-  readonly menuPosition = computed<Placement>(() => this.breakpointService.isMobile() ? "bottom-start" : "left-start");
+  readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
 
   constructor() {
     // enable agent's debug mode
-    effect(() => this.agentsStore.setDebugMessages(this.debug()));
+    effect(() => {
+      const debug = this.debug();
+      this.agentsStore.setDebugMessages(debug);
+      untracked(() => {
+        this.userSettingsStore.setDebugMode(debug).catch(err => error("set debug mode failed", err));
+      });
+    });
   }
 
   changeLanguage(lang: string) {

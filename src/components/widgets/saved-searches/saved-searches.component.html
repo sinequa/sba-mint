@@ -1,5 +1,5 @@
 <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-  <i class="fa-fw fas fa-star" aria-hidden></i>
+  <star-icon />
   {{ "mySavedSearches" | transloco }}
 </h1>
 
@@ -10,7 +10,7 @@
       role="link"
       (click)="onClick(savedSearch)"
       (keydown.enter)="onClick(savedSearch)">
-      <i class="fas fa-star ps-2"></i>
+      <star-icon class="ps-2" />
 
       <span class="ms-2">
         {{ savedSearch.display || savedSearch.label }}

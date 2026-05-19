@@ -1,5 +1,5 @@
 # Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Build the Mint documentation on Github.com
+name: Deploy Docs on Github.com
 
 on:
   # Runs on pushes targeting the default branch
@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
 
       - name: Install dependencies

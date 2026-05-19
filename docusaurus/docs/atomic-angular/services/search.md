@@ -3,6 +3,10 @@ title: Search
 sidebar_class_name: deprecated
 ---
 
+:::warning Deprecated
+`SearchService` is deprecated. Use `QueryService` for search operations instead.
+:::
+
 The `SearchService` is responsible for performing search operations and managing search navigation. It handles query parameters, navigation state, and audit trails.
 
 :::warning
