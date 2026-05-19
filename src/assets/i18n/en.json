@@ -144,5 +144,8 @@
   },
   "userMenu": {
     "tryNewLayout": "Try the new UI"
-  }
+  },
+  "closeSidebar": "Close sidebar",
+  "openSidebar": "Open sidebar",
+  "all": "all"
 }
