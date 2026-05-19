@@ -11,10 +11,11 @@ import { RobotIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMen
   template: `
   @if(allowAgent()) {
     <sidebar-menu>
-      <sidebar-menu-item aria-label="Agent">
-        <sidebar-menu-button [tooltip]="'agent' | transloco" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
+      @let agent = 'agent' | transloco;
+      <sidebar-menu-item aria-label="agent">
+        <sidebar-menu-button [tooltip]="agent" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
           <robot-icon aria-hidden="true" />
-          <span class="text-sm" sr-only>{{ 'agent' | transloco }}</span>
+          <span class="text-sm" sr-only>{{ agent }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>
     </sidebar-menu>

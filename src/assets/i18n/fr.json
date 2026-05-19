@@ -77,7 +77,7 @@
   "home": "Accueil",
   "chats": "Discussions",
   "agent": "Agent",
-  "seeMore": "Voir tout",
+  "seeMore": "Voir plus",
   "title": "Titre",
   "to": "Au",
   "type": "Type",
@@ -144,5 +144,8 @@
   },
   "userMenu": {
     "tryNewLayout": "Essayer la nouvelle UI"
-  }
+  },
+  "closeSidebar": "Fermer la barre latérale",
+  "openSidebar": "Ouvrir la barre latérale",
+  "all": "tous"
 }
