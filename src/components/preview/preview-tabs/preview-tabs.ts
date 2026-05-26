@@ -1,9 +1,12 @@
 import { Component, computed, DestroyRef, effect, inject, model, output, signal, viewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
 import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
 import {
+  CommentsIcon,
+  SparklesIcon,
   SpinnerIcon,
   TabComponent,
   TabContent,
@@ -33,6 +36,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
   imports: [
+    FormsModule,
     TranslocoPipe,
     TabsComponent,
     TabsListComponent,
@@ -40,7 +44,9 @@ export type PreviewTab = "summary" | "preview" | "discussion";
     TabContent,
     AssistantComponent,
     PreviewContentComponent,
-    SpinnerIcon
+    SpinnerIcon,
+    SparklesIcon,
+    CommentsIcon
   ],
   template: `
     <Tabs class="@container block h-full px-4">
