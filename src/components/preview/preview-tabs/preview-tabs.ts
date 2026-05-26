@@ -1,10 +1,15 @@
 import { Component, computed, DestroyRef, effect, inject, model, output, signal, viewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
 import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
-import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
+import {
+  SpinnerIcon,
+  TabComponent,
+  TabContent,
+  TabsComponent,
+  TabsListComponent
+} from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
@@ -27,7 +32,16 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 @Component({
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
-  imports: [FormsModule, TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent, SpinnerIcon, SparklesIcon, CommentsIcon],
+  imports: [
+    TranslocoPipe,
+    TabsComponent,
+    TabsListComponent,
+    TabComponent,
+    TabContent,
+    AssistantComponent,
+    PreviewContentComponent,
+    SpinnerIcon
+  ],
   template: `
     <Tabs class="@container block h-full px-4">
       <!-- tabs list -->
@@ -40,11 +54,11 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           @if (displaySummary()) {
             <Tab variant="secondary" shadow="none" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
-                <spinner-icon class="animate-spin" />
+                <SpinnerIcon class="size-4 animate-spin" />
               } @else {
                 <sparkles-icon />
               }
-              <span sr-only class="hidden @min-md:inline">{{ "preview.summarize" | transloco }}</span>
+              <span>{{ 'preview.summarize' | transloco }}</span>
             </Tab>
           }
 
@@ -165,13 +179,21 @@ export class PreviewTabsComponent {
     { name: "summary", enabled: false, visible: this.displaySummaryContent() },
     { name: "discussion", enabled: false, visible: this.displayChatWithDocContent() }
   ]);
-  showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "summary")?.enabled);
-  showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "discussion")?.enabled);
+  showSummarizeAssistant = computed(
+    () => this.showAssistants().find((assistant) => assistant.name === "summary")?.enabled
+  );
+  showChatWithDocAssistant = computed(
+    () => this.showAssistants().find((assistant) => assistant.name === "discussion")?.enabled
+  );
   previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
 
   protected readonly isStreaming = signal<boolean>(false);
-  displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === "summary" && assistant.visible));
-  displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === "discussion" && assistant.visible));
+  displaySummary = computed(() =>
+    this.showAssistants().some((assistant) => assistant.name === "summary" && assistant.visible)
+  );
+  displayChatWithDoc = computed(() =>
+    this.showAssistants().some((assistant) => assistant.name === "discussion" && assistant.visible)
+  );
 
   /** List of all available converters matching with previewData.conversions and the config defined general.converters */
   currentConversionIndex = model<number>(-1);
@@ -184,8 +206,11 @@ export class PreviewTabsComponent {
       : this.appStore
           .general()
           ?.converters?.filter(
-            converter =>
-              converter.display && this.previewData()?.conversions?.some(c => c.converterName === converter.converter && c.format === converter.format)
+            (converter) =>
+              converter.display &&
+              this.previewData()?.conversions?.some(
+                (c) => c.converterName === converter.converter && c.format === converter.format
+              )
           )
   );
 
@@ -196,13 +221,17 @@ export class PreviewTabsComponent {
 
     const converters = this.converters();
     if (converters) {
-      return converters
-        .map(converter => {
-          converter.conversion = this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format);
-          return converter;
-        })
-        // sort to have defaults first, then primaries, then others
-        .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1));
+      return (
+        converters
+          .map((converter) => {
+            converter.conversion = this.previewData()?.conversions?.find(
+              (c) => c.converterName === converter.converter && c.format === converter.format
+            );
+            return converter;
+          })
+          // sort to have defaults first, then primaries, then others
+          .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
+      );
     }
     return [];
   });
@@ -233,11 +262,11 @@ export class PreviewTabsComponent {
   }
 
   setSummaryAssistant() {
-    const assistants = this.showAssistants().filter(assistant => assistant.name !== "summary");
+    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "summary");
     this.showAssistants.set([...assistants, { name: "summary", enabled: true, visible: true }]);
   }
   setChatWithDocAssistant() {
-    const assistants = this.showAssistants().filter(assistant => assistant.name !== "discussion");
+    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "discussion");
     this.showAssistants.set([...assistants, { name: "discussion", enabled: true, visible: true }]);
   }
 
