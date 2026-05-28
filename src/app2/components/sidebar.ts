@@ -106,7 +106,7 @@ import { filter } from "rxjs";
           @if (isAdminOrDelegatedAdmin()) {
             @let administration = ('administration' | transloco);
             <sidebar-menu-item [attr.aria-label]="administration" (click)="openAdmin()">
-              <sidebar-menu-button class="text-lg" tooltip="administration" tooltip-position="right" >
+              <sidebar-menu-button class="text-lg" [tooltip]="administration" tooltip-position="right" >
                 <gear-icon aria-hidden="true" />
                 <span class="text-sm" sr-only>{{ administration }}</span>
               </sidebar-menu-button>
@@ -114,7 +114,7 @@ import { filter } from "rxjs";
           }
           @let help = ('help' | transloco);
           <sidebar-menu-item [attr.aria-label]="help" (click)="openHelp()">
-            <sidebar-menu-button class="text-lg" tooltip="help" tooltip-position="right">
+            <sidebar-menu-button class="text-lg" [tooltip]="help" tooltip-position="right">
               <question-circle-icon aria-hidden="true" />
               <span class="text-sm" sr-only>{{ help }}</span>
             </sidebar-menu-button>
