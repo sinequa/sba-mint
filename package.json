@@ -53,7 +53,7 @@
     "@sinequa/agent": "4.0.3",
     "@sinequa/assistant": "4.0.3",
     "@sinequa/atomic": "^1.1.1",
-    "@sinequa/atomic-angular": "^1.3.0",
+    "@sinequa/atomic-angular": "^1.4.1",
     "@sinequa/ui": "^1.3.0",
     "@tailwindcss/postcss": "^4.1.3",
     "@tanstack/angular-query-experimental": "^5.40.0",
