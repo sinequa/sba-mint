@@ -1,5 +1,6 @@
 ---
 title: ToastInterceptorFn
+sidebar_class_name: update
 ---
 
 Intercepts HTTP responses and displays toast notifications for specific error status codes (`400`, `403`, `500`, `503`). Requests to `api/v1/audit.notify` are passed through without modification.

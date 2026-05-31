@@ -1,5 +1,6 @@
 ---
 title: Aggregations
+sidebar_class_name: update
 ---
 
 The `AggregationsService` handles aggregation-related operations: loading more items in a flat aggregation or opening a node in a tree aggregation.

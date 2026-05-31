@@ -58,7 +58,16 @@ const config = {
       ({
         docs: {
           routeBasePath: '/',
-          includeCurrentVersion: false,
+          // Serve the unversioned `docs/` content as the "Next" (work-in-progress)
+          // version, while keeping the latest released version at the site root.
+          includeCurrentVersion: true,
+          lastVersion: '11.14.0',
+          versions: {
+            current: {
+              label: 'Next 🚧',
+              path: 'next'
+            }
+          },
           // path: 'docs',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
