@@ -58,12 +58,16 @@ export class SampleComponent {}
 
 ### Inputs
 
-| Name              | Type                        | Description                                                                 |
-|-------------------|-----------------------------|-----------------------------------------------------------------------------|
-| `direction`       | `horizontal \| vertical`    | Direction of the filter bar (default: `horizontal`)                         |
-| `position`        | `Placement`                 | Position of the dropdown filters (default: `bottom-start`)                  |
-| `excludeFilters`  | `string[]`                  | List of filter names to exclude from the bar (default: `[]`)                |
-| `filtersCount`    | `number`                    | Maximum number of filters to display before overflow (default: `5`)         |
+| Name                    | Type                         | Description                                                             |
+|-------------------------|------------------------------|-------------------------------------------------------------------------|
+| `direction`             | `horizontal` \| `vertical`   | Direction of the filter bar (default: `horizontal`).                    |
+| `position`              | `Placement`                  | Position of the dropdown filters (default: `bottom-start`).             |
+| `includeFilters`        | `string[]`                   | List of filter names that should only be displayed (default: `[]`).     |
+| `excludeFilters`        | `string[]`                   | List of filter names to exclude from the bar (default: `[]`).           |
+| `aggregations`          | `Aggregation[]`              | List of filter names to include in the bar (default: `undefined`).      |
+| `filtersCount`          | `number`                     | Maximum number of filters to display before overflow (default: `5`).    |
+| `showMoreFiltersButton` | `boolean`                    | Whether to show the "More Filters" button (default: `true`).            |
+| `homepage`              | `boolean`                    | When `true`, only displays filters flagged with `homepage: true` in the "filters" custom JSON; shows none if no filter is flagged (default: `false`). |
 
 `filtersCount` can be customized using the Angular Injection Token: `FILTERS_BREAKPOINT`.  
 This allows you to define how many filters should be displayed before the "More" button appears.
