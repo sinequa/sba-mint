@@ -1,7 +1,15 @@
-import { Component, DestroyRef, Injector, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
+import { Component, DestroyRef, Injector, afterNextRender, computed, effect, inject, runInInjectionContext, signal } from '@angular/core';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
-import { AggregationsStore, AppStore, ApplicationService, DrawerStackService, KeyboardNavigatorOptions, signIn } from '@sinequa/atomic-angular';
+import {
+  AggregationsStore,
+  AppStore,
+  ApplicationService,
+  DrawerStackService,
+  FiltersBarComponent,
+  KeyboardNavigatorOptions,
+  signIn
+} from '@sinequa/atomic-angular';
 
 import { error, fetchQuery } from '@sinequa/atomic';
 import { SidebarProviderComponent, SidebarTriggerComponent } from '@sinequa/ui';
@@ -12,7 +20,14 @@ import { WidgetsTabsComponent } from '@components/widgets/widgets-tabs';
 
 @Component({
   selector: 'app-home',
-  imports: [SidebarMainComponent, WidgetsTabsComponent, SearchWithAutocompleteComponent, SidebarTriggerComponent, SidebarProviderComponent],
+  imports: [
+    SidebarMainComponent,
+    WidgetsTabsComponent,
+    SearchWithAutocompleteComponent,
+    SidebarTriggerComponent,
+    SidebarProviderComponent,
+    FiltersBarComponent
+  ],
   templateUrl: './home.html',
   host: {
     '[attr.drawer-opened]': 'drawerOpened()'
@@ -53,8 +68,11 @@ export class HomeComponent {
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
 
-    // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery();
+    // this is needed to populate the aggregation with the sources as no query is sent to the server.
+    // Run it after the next render so the filters bar is already mounted when the aggregations
+    // land in the store — otherwise a fast response could resolve before the component is mounted
+    // and the filters would not show.
+    afterNextRender(() => this.getFirstPageQuery());
   }
 
   async getFirstPageQuery() {

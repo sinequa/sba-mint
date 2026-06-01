@@ -11,6 +11,7 @@ import {
   BookmarksComponent,
   CollectionsComponent,
   DrawerStackService,
+  FiltersBarComponent,
   KeyboardNavigatorOptions,
   QueryParamsStore,
   RecentSearchesComponent,
@@ -82,7 +83,8 @@ const homeFeatures: HomeTab[] = [
     TabContent,
     AppSidebarComponent,
     TabsListComponent,
-    Separator
+    Separator,
+    FiltersBarComponent
   ],
   templateUrl: './home.component.html',
   host: {
@@ -124,10 +126,6 @@ export class HomeComponent {
   };
 
   constructor(private destroyRef: DestroyRef) {
-    afterNextRender(() => {
-      this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined });
-    });
-
     // react to drawer state changes to update the application title when the drawer is closed
     effect(() => {
       if (!this.drawerOpened()) {
@@ -135,18 +133,14 @@ export class HomeComponent {
       }
     });
 
-    effect(() => {
-      const state = getState(this.queryParamsStore);
-      if (state.filters !== undefined && state.filters.length > 0) {
-        this.search(this.searchText());
-      }
-    });
-
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
 
-    // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery();
+    // this is needed to populate the aggregation with the sources as no query is sent to the server.
+    // Run it after the next render so the filters bar is already mounted when the aggregations
+    // land in the store — otherwise a fast response could resolve before the component is mounted
+    // and the filters would not show.
+    afterNextRender(() => this.getFirstPageQuery());
   }
 
   async getFirstPageQuery() {

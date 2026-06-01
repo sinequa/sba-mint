@@ -114,6 +114,8 @@
 
   --header: light-dark(var(--color-gray-50), var(--color-gray-800));
   --menu: var(--background);
+  --menu-bg: var(--background);
+  --menu-border: var(--border);
 
   --primary: light-dark(var(--color-blue-vivid-500), var(--color-red-vivid-500));
   --primary-foreground: light-dark(var(--background), var(--foreground));
