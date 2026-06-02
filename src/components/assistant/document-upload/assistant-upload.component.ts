@@ -10,7 +10,7 @@ import { UploadDialog } from "./upload.dialog";
   selector: "assistant-upload, AssistantUpload",
   imports: [TranslocoPipe, DocumentOverviewComponent, FolderOpenIcon],
   template: `
-    <section class="p-4">
+    <section class="border-foreground/10 rounded-2xl border p-4">
       <div class="text-muted-foreground flex items-center gap-2">        <FolderOpenIcon />
         <h3 class="pointer-events-none font-semibold">
           {{ 'assistant.my-documents' | transloco }}

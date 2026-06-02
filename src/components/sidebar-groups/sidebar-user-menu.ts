@@ -92,6 +92,7 @@ export class SidebarUserMenuComponent {
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
   agentInstanceId = inject(AGENT_INSTANCE_ID);
   allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
+
   /**
    * Determines whether password change functionality should be enabled for the current user.
    *
@@ -155,7 +156,13 @@ export class SidebarUserMenuComponent {
   handleLogout() {
     setGlobalConfig({ userOverrideActive: false, userOverride: undefined });
     logout()
-      .then(() => this.router.navigate(["/logout"]))
+      .then(redirectUrl => {
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        } else {
+          this.router.navigate(['/logout']);
+        }
+      })
       .catch(err => error("navigation to /logout failed", err));
   }
 
