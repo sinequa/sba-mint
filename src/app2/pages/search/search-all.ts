@@ -133,6 +133,10 @@ export class SearchAllComponent {
     return state.userOverrideActive;
   });
 
+  // Keys of the last search recorded as a recent search, so we only record on a
+  // genuine new search — not when the query re-fires (e.g. user override toggle). ES-32053.
+  private lastRecordedKeys: string | undefined;
+
   // Whether the feedback button is to hide
   hideFeedback = signal(false);
 
@@ -148,8 +152,11 @@ export class SearchAllComponent {
       const query = { ...q, page: pageParam, tab: this.t(), basket: this.currentKeys()?.basket, correctionMode: this.c() } as Query;
       this.assistantQuery = { ...this.assistantQuery, ...query };
 
-      // Add the current search to the user settings when the text is not empty
-      if (query.text && query.text !== '') {
+      // Record only on a genuine new search (params changed), first page, non-empty text.
+      // Prevents re-recording when the query re-fires purely due to a user-override toggle. ES-32053.
+      const keys = JSON.stringify(this.currentKeys());
+      if (pageParam === 1 && query.text && query.text !== '' && keys !== this.lastRecordedKeys) {
+        this.lastRecordedKeys = keys;
         this.userSettingsStore.addCurrentSearch(query as QueryParams);
       }
 
