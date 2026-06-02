@@ -1,6 +1,6 @@
 import { Data, Route } from '@angular/router';
 
-import { AuthGuard, ErrorComponent, LoadingComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
+import { AuthGuard, ErrorComponent, queryNameResolver, SignInComponent } from '@sinequa/atomic-angular';
 
 import { HomeComponent } from './pages/home/home.component';
 import { SearchAllComponent } from './pages/search/all/search-all.component';
@@ -66,7 +66,6 @@ export const routes: ExtendedRoutes = [
       }
     ]
   },
-  { path: 'loading', component: LoadingComponent },
   { path: 'error', component: ErrorComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
