@@ -12,6 +12,10 @@ const config: TranslocoGlobalConfig = {
     {
       src: '@sinequa/assistant',
       dist: ['src/assets/i18n']
+    },
+    {
+      src: '@sinequa/agent',
+      dist: ['src/assets/i18n']
     }
   ]
 };

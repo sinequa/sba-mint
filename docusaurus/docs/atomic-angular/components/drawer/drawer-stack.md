@@ -5,10 +5,6 @@ sidebar_class_name: deprecated
 
 The `DrawerStackComponent` is an Angular component that manages a stack of drawers. It allows opening, closing, and manipulating the drawers in the stack.
 
-:::warning
- The `DrawerStackComponent` is marked as deprecated and will be removed in future releases. It is recommended to use alternative drawer management solutions for new implementations.
-:::
-
 The constant `DRAWER_STACK_MAX_COUNT` defines the maximum number of **rendered** drawers, above that numbers a history will be kept, but the component will be destroyed to allow new ones on top of the pile. Once the top drawer gets closed, the drawer on top of the history pile will get instanciated back at the bottom of the stack. The history length is provided by the `SelectionHistoryService`.
 
 `DrawerStackComponent` has been designed to open drawers from the right to left, if you want to change this behavior you'll need to change at those rules for the stack:
