@@ -232,6 +232,8 @@
   --header-foreground: var(--color-sage-50);
 
   --menu: light-dark(var(--color-background), var(--color-sage-900));
+  --menu-bg: light-dark(var(--color-background), var(--color-sage-900));
+  --menu-border: light-dark(var(--color-border), var(--color-sage-700));
   --menu-foreground: light-dark(var(--color-foreground), var(--color-almond-200));
 
   --datepicker-today: var(--color-accent);

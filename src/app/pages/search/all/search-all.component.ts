@@ -1,6 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Placement } from '@floating-ui/dom';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
@@ -33,19 +32,10 @@ import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderCompone
 
 import { AssistantComponent } from '../../../components/assistant/assistant';
 import { CardSkeleton } from '../../../components/cards/record/skeleton';
+import { injectUrlQueryParamsSync } from '../../../../composables/url-query-params-sync';
 import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
 
 type Result = R & { nextPage?: number; previousPage?: number };
-type QueryParamsProps = {
-  f?: string; // filters list
-  p?: number; // page number
-  s?: string; // sort name
-  t?: string; // tab name
-  q?: string; // query text
-  b?: string; // basket,
-  n?: string; // query name
-  c?: SpellingCorrectionMode; // correction mode
-};
 
 /**
  * Component for displaying all search results with various features like sorting, filtering, infinite scrolling, and an assistant.
@@ -109,9 +99,6 @@ export class SearchAllComponent {
   protected readonly userSettingsStore = inject(UserSettingsStore);
   readonly selectionStore = inject(SelectionStore);
 
-  protected readonly router = inject(Router);
-  protected readonly route = inject(ActivatedRoute);
-
   // input url bindings
   protected readonly q = input<string>(); // text
   protected readonly t = input<string>(); // tab
@@ -119,8 +106,9 @@ export class SearchAllComponent {
   protected readonly s = input<string>(); // sort
   protected readonly f = input<string>(); // filters
   protected readonly n = input<string>(); // query param
-  protected readonly id = input<string>(); // record.id
   protected readonly c = input<SpellingCorrectionMode>(); // correction mode
+  protected readonly p = input<number>(); // page number
+  protected readonly id = input<string>(); // record.id
 
   // all signals used in the component
   protected readonly drawerOpened = computed(() => this.drawerStack.isOpened());
@@ -276,44 +264,17 @@ export class SearchAllComponent {
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
-    // Update the query params store with the filters from the URL query params
-    // This allows Browser back/forward to work correctly
-    effect(() => {
-      const filters = this.f() ? JSON.parse(this.f() ?? '') : []; // Parse the filters from the query params
-      this.queryParamsStore.patch({
-        text: this.q(),
-        tab: this.t(),
-        basket: this.b(),
-        sort: this.s(),
-        filters,
-        name: this.n(),
-        spellingCorrectionMode: this.c()
-      });
-    });
+    // Synchronize URL query params ↔ QueryParamsStore (bidirectional)
+    injectUrlQueryParamsSync({ q: this.q, t: this.t, b: this.b, s: this.s, f: this.f, n: this.n, c: this.c, p: this.p });
 
-    // Update the URL with the query params from the query params store
+    // Reset the feedback visibility on any store change
     effect(() => {
+      getState(this.queryParamsStore);
       this.hideFeedback.set(false);
-
-      const queryParams: QueryParamsProps = {};
-      const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(this.queryParamsStore);
-
-      queryParams.f = filters.length > 0 ? JSON.stringify(filters) : undefined;
-      queryParams.p = page;
-      queryParams.s = sort;
-      queryParams.t = tab;
-      queryParams.q = text;
-      queryParams.b = basket;
-      queryParams.n = name;
-      queryParams.c = spellingCorrectionMode;
-
-      this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', queryParams, state: {} });
     });
 
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
-      this.hideFeedback.set(false);
-
       const state = getState(this.queryParamsStore);
       const r = {
         tab: state.tab,

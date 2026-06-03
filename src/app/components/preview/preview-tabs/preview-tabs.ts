@@ -4,7 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { getState } from '@ngrx/signals';
 import { Article, CCApp, Query } from '@sinequa/atomic';
 import { AppStore, SelectionStore } from '@sinequa/atomic-angular';
-import { TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
+import { TabComponent, TabContent, TabsComponent, TabsListComponent, SpinnerIcon } from '@sinequa/ui';
 import { AssistantComponent } from '../../assistant/assistant';
 import { PreviewContentComponent } from '../preview-content/preview-content';
 
@@ -27,7 +27,7 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
 @Component({
   selector: 'preview-tabs, PreviewTabs, previewtabs',
   standalone: true,
-  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent],
+  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent, SpinnerIcon],
   template: `
     <Tabs class="contents">
       <!-- tabs list -->
@@ -40,11 +40,11 @@ export type PreviewTab = 'summary' | 'preview' | 'discussion';
           @if (displaySummary()) {
             <Tab class="w-fit" variant="ai" shadow="none" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <SpinnerIcon class="size-4 animate-spin" />
               } @else {
                 <i class="fa-solid fa-sparkles"></i>
               }
-              {{ 'preview.summarize' | transloco }}
+              <span>{{ 'preview.summarize' | transloco }}</span>
             </Tab>
           }
 
