@@ -5,7 +5,6 @@ import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 
 import {
   AggregationsStore,
-  ApplicationService,
   AppStore,
   ApplicationService,
   AutocompleteService,

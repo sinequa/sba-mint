@@ -5,7 +5,7 @@ import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-g
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoService, TranslocoPipe } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -63,8 +63,9 @@ import { filter } from "rxjs";
     AvatarImageComponent,
     UserIcon,
     GearIcon,
-    QuestionCircleIcon
-  ],
+    QuestionCircleIcon,
+    TranslocoPipe
+],
   template: `
     <sidebar collapsible="icon" class="border-none h-full">
       <sidebar-header class="px-3 pt-6">
@@ -77,10 +78,10 @@ import { filter } from "rxjs";
             <div
               class="logo-small size-8 bg-contain bg-center bg-no-repeat transition-opacity"
               style="background-image: var(--logo-small)"></div>
-            <sidebar-trigger tooltip="Open sidebar" tooltip-position="right" />
+            <sidebar-trigger [tooltip]="'openSidebar' | transloco" tooltip-position="right" />
           </div>
           <sidebar-trigger
-            tooltip="Close sidebar"
+            [tooltip]="'closeSidebar' | transloco"
             tooltip-position="right"
             class="size-8 group-data-[collapsible=icon]:hidden" />
         </div>
@@ -103,17 +104,19 @@ import { filter } from "rxjs";
       <sidebar-footer class="px-3 py-6">
         <sidebar-menu>
           @if (isAdminOrDelegatedAdmin()) {
-            <sidebar-menu-item [attr.aria-label]="'Administration'" (click)="openAdmin()">
-              <sidebar-menu-button class="text-lg" tooltip="Administration" tooltip-position="right" >
+            @let administration = ('administration' | transloco);
+            <sidebar-menu-item [attr.aria-label]="administration" (click)="openAdmin()">
+              <sidebar-menu-button class="text-lg" [tooltip]="administration" tooltip-position="right" >
                 <gear-icon aria-hidden="true" />
-                <span class="text-sm" sr-only>Administration</span>
+                <span class="text-sm" sr-only>{{ administration }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
-          <sidebar-menu-item [attr.aria-label]="'Help'" (click)="openHelp()">
-            <sidebar-menu-button class="text-lg" tooltip="Help" tooltip-position="right">
+          @let help = ('help' | transloco);
+          <sidebar-menu-item [attr.aria-label]="help" (click)="openHelp()">
+            <sidebar-menu-button class="text-lg" [tooltip]="help" tooltip-position="right">
               <question-circle-icon aria-hidden="true" />
-              <span class="text-sm" sr-only>Help</span>
+              <span class="text-sm" sr-only>{{ help }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
