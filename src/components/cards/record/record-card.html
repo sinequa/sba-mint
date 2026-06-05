@@ -26,6 +26,7 @@
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <a
+              [title]="article().displayTitle || article().title || article().id"
               (click)="openExternal($event)"
               class="truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>
@@ -47,11 +48,12 @@
           <div class="divide-x-slash divide-xs flex gap-1 divide-gray-200">
             @if ((article().authors || { authors: [""] }).length > 0) {
               <UserIcon class="mr-1" />
-              <span>{{ article().authors[0] }}</span>
+              <span class="max-w-48 truncate" [title]="article().authors[0]">{{ article().authors[0] }}</span>
             }
             @if (article().modified) {
+              @let modifiedDate = article()!.modified!.split(" ")[0] | translocoDate: "mediumDate";
               <CalendarDayIcon />
-              <span class="w-max">{{ article()!.modified!.split(" ")[0] | translocoDate: "mediumDate" }}</span>
+              <span class="w-max" [title]="modifiedDate">{{ modifiedDate }}</span>
             }
           </div>
         </section>

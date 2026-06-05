@@ -36,7 +36,7 @@ import { toast } from "ngx-sonner";
               {{ "in" | transloco }}
 
               <span class="font-semibold capitalize">
-                {{ search.queryParams?.tab ?? "all" }}
+                {{ search.queryParams?.tab ?? "all" | transloco}}
               </span>
 
               @if (search.filterCount) {

@@ -16,7 +16,6 @@ import {
 } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { NgComponentOutlet } from '@angular/common';
 
 import { error, Suggestion as S } from '@sinequa/atomic';
 import {
@@ -114,9 +113,7 @@ export class AutocompleteComponent {
 
   protected readonly overlayOpen = this.autocompleteService.opened;
 
-  autocomplete = computed(() => {
-    this.appStore.customizationJson()?.autocomplete;
-  });
+  autocomplete = computed(() => this.appStore.customizationJson()?.autocomplete);
   advancedSearch = computed(() => {
     const advancedSearch = this.appStore.general()?.features?.advancedSearch;
     return advancedSearch || false;
