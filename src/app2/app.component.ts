@@ -31,7 +31,8 @@ export class AppComponent {
   private readonly queryClient = inject(QueryClient);
 
   private readonly currentUrl = injectCurrentUrl();
-  protected readonly isAuthRoute = computed(() => /^\/(login|logout|auth)/.test(this.currentUrl() ?? ""));
+  // Routes that render without the application chrome (no sidebar): auth screens and the error page.
+  protected readonly isChromelessRoute = computed(() => /^\/(login|logout|auth|error)/.test(this.currentUrl() ?? ""));
 
   constructor() {
     this.setupApplicationLanguage();
