@@ -1,10 +1,10 @@
-import { Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
+import { afterNextRender, Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { WidgetsTabsComponent } from "@components/widgets/widgets-tabs";
 import { provideTranslocoScope } from "@jsverse/transloco";
 import { error, fetchQuery } from "@sinequa/atomic";
-import { AggregationsStore, ApplicationService, AppStore, SelectionStore, signIn } from "@sinequa/atomic-angular";
+import { AggregationsStore, ApplicationService, AppStore, FiltersBarComponent, SelectionStore, signIn } from "@sinequa/atomic-angular";
 import { KeyboardNavigatorOptions } from "@sinequa/ui";
 
 @Component({
@@ -16,14 +16,17 @@ import { KeyboardNavigatorOptions } from "@sinequa/ui";
     </header>
     <div class="md:m-auto md:w-[80%]">
       <div class="mx-2 flex flex-col gap-16">
-        <search-with-autocomplete />
+        <div class="flex flex-col gap-4">
+          <search-with-autocomplete />
+          <filters-bar class="gap-1" homepage />
+        </div>
         <widgets-tabs />
       </div>
     </div>
   </div>
   <sheet-previewer />
   `,
-  imports: [SearchWithAutocompleteComponent, WidgetsTabsComponent, SheetPreviewerComponent],
+  imports: [SearchWithAutocompleteComponent, WidgetsTabsComponent, SheetPreviewerComponent, FiltersBarComponent],
   providers: [provideTranslocoScope("bookmarks", "searches", "collections")],
   host: {
     class: "block mt-16"
@@ -69,6 +72,12 @@ export class HomeComponent {
         console.log(`HTTP error: ${err.status}`);
       }
     });
+
+    // this is needed to populate the aggregation with the sources as no query is sent to the server.
+    // Run it after the next render so the filters bar is already mounted when the aggregations
+    // land in the store — otherwise a fast response could resolve before the component is mounted
+    // and the filters would not show.
+    afterNextRender(() => this.getFirstPageQuery());
   }
 
   async getFirstPageQuery() {
