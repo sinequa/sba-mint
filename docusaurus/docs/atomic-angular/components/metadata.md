@@ -1,5 +1,6 @@
 ---
 title: Metadata
+sidebar_class_name: update
 ---
 
 The `Metadata` component offers several options for displaying dynamic information in your Angular applications.

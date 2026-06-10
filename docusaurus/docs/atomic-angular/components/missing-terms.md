@@ -1,5 +1,6 @@
 ---
 title: Missing Terms
+sidebar_class_name: update
 ---
 
 The `MissingTerms` component displays search terms that were not found in the current article and provides options to include them in a new search.

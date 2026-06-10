@@ -1,5 +1,6 @@
 ---
 title: Introduction
+sidebar_class_name: update
 ---
 
 # Atomic Angular Library

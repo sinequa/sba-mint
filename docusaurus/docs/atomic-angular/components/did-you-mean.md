@@ -1,5 +1,6 @@
 ---
 title: Did You Mean
+sidebar_class_name: update
 ---
 
 The `Did You Mean` feature facilitates the use of the `didYouMean` property for a result to propose some correction for it to easily apply to the query.

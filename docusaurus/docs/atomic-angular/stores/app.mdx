@@ -1,5 +1,6 @@
 ---
 title: App
+sidebar_class_name: update
 ---
 
 Contains all the `CCApp` informations
@@ -127,12 +128,12 @@ initializeWithAppName(appName: string): Promise<void>
 Updates the application state with the provided `CCApp` object.
   
   ```ts
-  update(app: CCApp): void
+  update(app: Partial<CCAppState>): void
   ```
   
-  | parameter | type  | description                          |
-  |-----------|-------|--------------------------------------|
-  | `app`       | `CCApp` | The new `CCApp` object to update the state with. |
+  | parameter | type                  | description                                             |
+  |-----------|-----------------------|---------------------------------------------------------|
+  | `app`     | `Partial<CCAppState>` | The partial application state to merge into the store.  |
   
 ### getColumn()
 
@@ -214,16 +215,16 @@ isTabSearch(queryName: string): boolean
 
 ### getAggregationCount()
 
-Retrieves the count of items in the specified aggregation.
+Retrieves the count of items in the specified aggregation. Defaults to `10` if not defined.
 
 ```ts
-getAggregationCount(queryName: string, aggregationName: string): number
+getAggregationCount(queryName: string | undefined, aggregationName: string): number
 ```
 
-| parameter  | type   | description |
-|------------|--------|-------------|
-| `queryName`  | `string` | The name of the query to retrieve the aggregation count for. |
-| `aggregationName`  | `string` | The name of the aggregation to retrieve the count for. |
+| parameter         | type                  | description                                                                                 |
+|-------------------|-----------------------|---------------------------------------------------------------------------------------------|
+| `queryName`       | `string \| undefined` | The name of the query to retrieve the aggregation count for. Returns `10` when `undefined`. |
+| `aggregationName` | `string`              | The name of the aggregation to retrieve the count for.                                      |
 
 ### getAuthorizedFilters()
 
@@ -242,7 +243,7 @@ const aggregations = inject(AppStore).getAuthorizedFilters();
 // Output: [{ column: "geo", icon: "fa-solid fa-earth-europe", hidden: false }]
 ```
 
-## getAuthorized()
+### getAuthorized()
 
 Returns the subset of authorized filters that match the provided filters.
 
@@ -266,11 +267,12 @@ const authorized = inject(AppStore).getAuthorized(filters);
 
 | Name               | Description                                                    |
 |--------------------|----------------------------------------------------------------|
-| `customizationJson`| Retrieves the customization JSON object from the store.         |
-| `sources`          | Returns the `sources` customization object.                     |
-| `filters`          | Returns the `filters` customization object.                     |
-| `general`          | Returns the `general` customization object.                     |
-| `assistants`       | Returns the `assistants` customization object.                  |
+| `customizationJson`| Retrieves the customization JSON object from the store.        |
+| `sources`          | Returns the `sources` customization object.                    |
+| `filters`          | Returns the `filters` customization object.                    |
+| `general`          | Returns the `general` customization object.                    |
+| `assistants`       | Returns the `assistants` customization object.                 |
+| `agents`           | Returns the `agents` customization object.                     |
 
 ### getNamedCustomizationJson()
 
@@ -459,6 +461,31 @@ export class SomeComponent {
 }
 ```
 
+### enableFieldedSearch()
+
+Retrieves the `enableFieldedSearch` flag for a specific query.
+
+Returns the `enableFieldedSearch` value for the specified query, or `false` if not found.
+
+```ts
+enableFieldedSearch(queryName: string): boolean
+```
+
+| parameter    | type     | description                                                                  |
+|--------------|----------|------------------------------------------------------------------------------|
+| `queryName`  | `string` | The name of the query for which to retrieve the enable fielded search flag.  |
+
+#### Usage
+
+```ts title="some-component.ts"
+@Component({ ... })
+export class SomeComponent {
+
+  enableFieldedSearch: boolean = inject(AppStore).enableFieldedSearch('_query');
+  // returns true or false depending the flag set in Sinequa Administration
+}
+```
+
 ## Aggregations features
 
 ### getAggregationIcon()
@@ -500,12 +527,13 @@ Retrieves the customization for a specific aggregation column.
 Returns The customization object for the specified column, or undefined if not found.
 
 ```ts
-getAggregationCustomization(column: string): Aggregation | undefined
+getAggregationCustomization(aggColumn: string, aggName?: string): CFilter | undefined
 ```
 
-| parameter  | type   | description |
-|------------|--------|-------------|
-| `column`  | `string` | The column name for which to retrieve the customization. |
+| parameter   | type     | description                                                                               |
+|-------------|----------|-------------------------------------------------------------------------------------------|
+| `aggColumn` | `string` | The column name (or alias) for which to retrieve the customization.                       |
+| `aggName`   | `string` | _(optional)_ The aggregation name — takes priority over column when both are provided.    |
 
 ```ts title="get-aggregation-customization"
 // json Aggregation configuration extract
@@ -579,4 +607,21 @@ isAssistantAllowed(assistantName: string): boolean
 ```ts title="check-assistant-allowed.ts"
 const isAllowed = inject(AppStore).isAssistantAllowed("summarization");
 // Output: true/false based on whether the assistant exists and has service_id configured
+```
+
+### isAgentAllowed()
+
+Determines whether a specific agent is allowed based on its presence and configuration in the store.
+
+```ts
+isAgentAllowed(agentName: string): boolean
+```
+
+| Parameter   | Type     | Description                      |
+|-------------|----------|----------------------------------|
+| `agentName` | `string` | The name of the agent to check.  |
+
+```ts title="check-agent-allowed.ts"
+const isAllowed = inject(AppStore).isAgentAllowed("myAgent");
+// Output: true/false based on whether the agent exists and has defaultAgent configured
 ```
