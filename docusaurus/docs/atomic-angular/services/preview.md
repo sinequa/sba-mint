@@ -1,5 +1,6 @@
 ---
 title: Preview
+sidebar_class_name: update
 ---
 
 The `PreviewService` manages document previews: fetching preview data, communicating with the preview iframe, and controlling highlight visibility.

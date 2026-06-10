@@ -1,5 +1,6 @@
 ---
 title: Navbar Tabs
+sidebar_class_name: update
 ---
 
 The `NavbarTabs` component provides a responsive navigation tab system that automatically handles overflow by moving extra tabs to a dropdown menu in your Angular applications.

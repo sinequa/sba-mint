@@ -1,5 +1,6 @@
 ---
 title: Sign In
+sidebar_class_name: update
 ---
 
 The `SignIn` component provides a user authentication interface for your Angular application. It manages user login, logout, and authentication state, and integrates with application services and stores for a seamless sign-in experience.

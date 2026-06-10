@@ -1,5 +1,6 @@
 ---
 title: Autocomplete
+sidebar_class_name: update
 ---
 
 The `AutocompleteService` provides methods to retrieve autocomplete suggestions for a given text, sourced from suggest queries or user settings.
