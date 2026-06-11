@@ -1,16 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc"
-  ],
+  "plugins": ["typescript", "unicorn", "oxc"],
   "categories": {
-    "correctness" : "warn"
+    "correctness": "warn"
   },
   "rules": {
     "typescript/no-floating-promises": "warn",
-    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-unsafe-assignment": "warn"
   },
   "settings": {
     "jsdoc": {
