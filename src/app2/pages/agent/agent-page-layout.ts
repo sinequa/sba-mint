@@ -164,10 +164,11 @@ type Panel = "chat" | "preview";
       }
 
       /* Reset the bullet list rendered inside the lib's inline-reference components.
-         Temporary client-side fix until @sinequa/agent applies it upstream. */
+         Temporary client-side fix until @sinequa/agent applies it upstream.
+         !important is required to beat the list styling the lib/markdown renderer applies. */
       :host ::ng-deep inline-reference ul {
-        list-style: none;
-        padding: 0;
+        list-style: none !important;
+        padding: 0 !important;
       }
     `
   ]
