@@ -5,11 +5,13 @@ import {
   AGENT_INSTANCE_ID,
   AgentGenerationDirective,
   AgentInjector,
+  AgentsStore,
   CopyToClipboardDirective,
   createAgentNewChatEvent,
   ErrorDirective,
   ExpandedSearchResultsComponent,
   FeedbackDirective,
+  type SavedChat,
   SavedChatComponent,
   SearchExpansionService
 } from "@sinequa/agent";
@@ -79,7 +81,11 @@ type Panel = "chat" | "search" | "preview";
               </div>
               <!-- content -->
               <div class="scrollbar-thin flex-1 overflow-y-auto">
-                <SavedChat class="gap-3 empty:hidden" />
+                <SavedChat
+                  class="gap-3 empty:hidden"
+                  [instanceId]="instanceId"
+                  [activeChatId]="chatId()"
+                  (chatSelected)="onChatSelected($event)" />
               </div>
             </div>
           </div>
@@ -147,8 +153,14 @@ export class AgentPageLayoutComponent {
   private readonly router = inject(Router);
   readonly breakpointService = inject(BreakpointObserverService);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly agentsStore = inject(AgentsStore);
   protected readonly searchExpansion = inject(SearchExpansionService);
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
+
+  /** True only when the machine is in the Idle operational sub-state — used to avoid interrupting an active generation. */
+  protected readonly isIdle = computed(
+    () => this.agentsStore.agents()[this.instanceId]?.machine.state === "Connected.Operational.Idle"
+  );
 
   readonly previewCollapsed = signal(true);
   readonly historyCollapsed = signal(true);
@@ -261,6 +273,16 @@ export class AgentPageLayoutComponent {
       this.closePreview();
     }
     this.historyCollapsed.set(!this.historyCollapsed());
+  }
+
+  /**
+   * Navigates to the selected saved chat so the agent loads it (chatId flows back in via the
+   * route param). Silently ignored when the machine is not idle so an active generation is
+   * never interrupted.
+   */
+  protected onChatSelected(chat: SavedChat): void {
+    if (!this.isIdle()) return;
+    this.router.navigate(["/chat", chat.id]).catch(err => error("navigation to saved chat failed!", err));
   }
 
   startNewChat() {
