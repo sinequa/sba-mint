@@ -162,6 +162,13 @@ type Panel = "chat" | "preview";
         margin-left: 0.25rem;
         opacity: 1;
       }
+
+      /* Reset the bullet list rendered inside the lib's inline-reference components.
+         Temporary client-side fix until @sinequa/agent applies it upstream. */
+      :host ::ng-deep inline-reference ul {
+        list-style: none;
+        padding: 0;
+      }
     `
   ]
 })
