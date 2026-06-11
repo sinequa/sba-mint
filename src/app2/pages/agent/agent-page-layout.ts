@@ -15,6 +15,7 @@ import {
 } from "@sinequa/agent";
 import { AgentDebugDirective } from "./directives/debug.directive";
 import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
+import { getState } from "@ngrx/signals";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
 import {
@@ -151,13 +152,14 @@ export class AgentPageLayoutComponent {
   constructor() {
     // Open the preview panel when a document is selected (mirrors the agent demo).
     effect(() => {
-      const id = this.selectionStore.id?.();
-      if (id && untracked(() => this.previewCollapsed())) {
+      const { id } = getState(this.selectionStore);
+      untracked(() => {
+        if (!id || !this.previewCollapsed()) return;
         this.previewCollapsed.set(false);
         queueMicrotask(() => {
           this.panelGroup()?.setLayout([60, 40]);
         });
-      }
+      });
     });
 
     // Reset selection and preview when navigating between chats (mirrors the agent demo).
