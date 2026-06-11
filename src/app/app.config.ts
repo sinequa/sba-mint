@@ -2,7 +2,7 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import { ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
+import { ApplicationConfig, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
 import { provideAssistant } from "@config/assistant.providers";
@@ -11,9 +11,7 @@ import { PREVIEW_HIGHLIGHTS } from "@config/highlight.config";
 import { TranslocoHttpLoader } from "@config/transloco-loader";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
-import { appInitializerFn } from "@sinequa/atomic";
 import {
-  ApplicationService,
   auditInterceptorFn,
   authInterceptorFn,
   BOOKMARKS_CONFIG,
@@ -34,7 +32,7 @@ import {
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
   toastInterceptorFn,
-  withBootstrapApp
+  bootstrapApp
 } from "@sinequa/atomic-angular";
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { SearchAllComponent } from "./pages/search/all/search-all.component";
@@ -56,11 +54,12 @@ export const appConfig: ApplicationConfig = {
     // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
     // With this provider, we can tell Angular to keep the component instance in memory and reuse it when navigating back to the route.
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    // this function is used to configure the application before it is loaded
-    provideAppInitializer(appInitializerFn),
 
-    // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
+    // Signs the user in and bootstraps the application. `bootstrapApp` injects ApplicationService
+    // itself AFTER resolving the auth mode (initializeAppConfig) and setting `backendUrl`, so the
+    // factory must NOT eagerly inject ApplicationService (that would construct dependent stores
+    // before `backendUrl` is set → `/undefined/api/v1/...`).
+    provideAppInitializer(() => bootstrapApp({ createRoutes: true })),
 
     provideAssistant(),
 

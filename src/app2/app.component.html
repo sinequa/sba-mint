@@ -1,6 +1,6 @@
 <!-- Main content goes here -->
 <sidebar-provider [style.--sidebar-width-icon]="'4rem'">
-  @if (!isAuthRoute()) {
+  @if (!isChromelessRoute()) {
     <app-sidebar />
   }
 

@@ -2,22 +2,14 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import {
-  ApplicationConfig,
-  inject,
-  LOCALE_ID,
-  provideAppInitializer,
-  provideZonelessChangeDetection
-} from "@angular/core";
+import { ApplicationConfig, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
 import { provideAgent } from "@config/agent.providers";
 import { provideAssistant } from "@config/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 import { provideTranslocoProviders } from "@config/transloco-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
-import { appInitializerFn } from "@sinequa/atomic";
 import {
-  ApplicationService,
   auditInterceptorFn,
   authInterceptorFn,
   BOOKMARKS_CONFIG,
@@ -36,7 +28,7 @@ import {
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
   toastInterceptorFn,
-  withBootstrapApp
+  bootstrapApp
 } from "@sinequa/atomic-angular";
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
@@ -65,11 +57,14 @@ export const appConfig: ApplicationConfig = {
     // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
     // With this provider, we can tell Angular to keep the component instance in memory and reuse it when navigating back to the route.
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    // this function is used to configure the application before it is loaded
-    provideAppInitializer(appInitializerFn),
 
-    // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
+    // Signs the user in and bootstraps the application. `bootstrapApp` injects ApplicationService
+    // itself AFTER resolving the auth mode (initializeAppConfig), so:
+    //  - detection runs before sign-in (no bootstrap race), and
+    //  - `backendUrl` is set before any service/store is constructed (no `/undefined/api/v1/...`).
+    // Note: we must NOT eagerly `inject(ApplicationService)` in this factory — that would construct
+    // it (and its dependent stores) before detection sets `backendUrl`.
+    provideAppInitializer(() => bootstrapApp({ createRoutes: true })),
 
     /* assistant's providers */
     provideAssistant(),
