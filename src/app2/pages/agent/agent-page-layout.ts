@@ -6,6 +6,7 @@ import {
   AGENT_INSTANCE_ID,
   AgentGenerationDirective,
   AgentInjector,
+  type AgentSavedChatEvent,
   AgentsStore,
   CopyToClipboardDirective,
   createAgentNewChatEvent,
@@ -128,7 +129,8 @@ type Panel = "chat" | "preview";
     AgentDebugDirective
   ],
   host: {
-    class: "flex h-screen text-foreground bg-background"
+    class: "flex h-screen text-foreground bg-background",
+    "(agent-saved-chat)": "onSavedChatEvent($event)"
   },
   // Mint-only tweak (we don't patch @sinequa/agent): collapse the agent-header (name) button
   // rendered by the lib to its robot icon, and reveal the full label + chevron on hover.
@@ -267,6 +269,17 @@ export class AgentPageLayoutComponent {
   protected onChatSelected(chat: SavedChat): void {
     if (!this.isIdle()) return;
     this.router.navigate(["/chat", chat.id]).catch(err => error("navigation to saved chat failed!", err));
+  }
+
+  /**
+   * When the currently-open saved chat is deleted from the history list, switch the agent to a
+   * fresh chat so the deleted id no longer lingers in the URL. Deleting any other chat is ignored.
+   */
+  protected onSavedChatEvent(event: Event): void {
+    const detail = (event as CustomEvent<AgentSavedChatEvent>).detail;
+    if (detail?.id === "SAVED_CHAT_DELETED" && detail.chatId && detail.chatId === this.chatId()) {
+      this.startNewChat();
+    }
   }
 
   startNewChat() {
