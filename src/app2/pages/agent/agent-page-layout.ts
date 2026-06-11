@@ -1,7 +1,8 @@
-import { Component, computed, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import {
   AdminDirective,
+  AGENT_INSTANCE_ID,
   AgentGenerationDirective,
   AgentInjector,
   CopyToClipboardDirective,
@@ -12,6 +13,8 @@ import {
   SavedChatComponent,
   SearchExpansionService
 } from "@sinequa/agent";
+import { AgentDebugDirective } from "./directives/debug.directive";
+import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
 import {
@@ -31,6 +34,7 @@ type Panel = "chat" | "search" | "preview";
 
 @Component({
   selector: "app-agent-page-layout",
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AgentInjector,
     ExpandedSearchResultsComponent,
@@ -128,14 +132,16 @@ type Panel = "chat" | "search" | "preview";
     CopyToClipboardDirective,
     FeedbackDirective,
     AdminDirective,
-    ErrorDirective
+    ErrorDirective,
+    AgentSavedChatDirective,
+    AgentDebugDirective
   ],
   host: {
     class: "flex h-screen text-foreground bg-background"
   }
 })
 export class AgentPageLayoutComponent {
-  readonly instanceId = "chatSearchInstance";
+  readonly instanceId = inject(AGENT_INSTANCE_ID);
   readonly chatId = input<string | undefined>();
 
   private readonly router = inject(Router);

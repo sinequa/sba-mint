@@ -1,11 +1,12 @@
-import { Component, DestroyRef, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
-import { AgentReconnectingDetail, NotificationsService } from "@sinequa/agent";
+import { AgentReconnectingDetail, NotificationsService, SIGNALR_RETRY_DELAYS, SIGNALR_RETRY_DELAYS_DEFAULT } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
 
 @Component({
   selector: "app-agent-layout",
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterModule],
   template: `
     <div class="relative grid">
@@ -18,7 +19,7 @@ import { notify } from "@sinequa/atomic";
 export class AgentLayoutComponent {
   destroyRef = inject(DestroyRef);
   notifications = inject(NotificationsService);
-  retryDelays = [0, 2000, 5000, 10000, 30000];
+  retryDelays = inject(SIGNALR_RETRY_DELAYS, { optional: true }) ?? SIGNALR_RETRY_DELAYS_DEFAULT;
 
   constructor() {
     // Connection lifecycle events bubbled from the Agent component — wire up toast notifications.
@@ -50,8 +51,12 @@ export class AgentLayoutComponent {
         notify.error("Could not connect to server. Please refresh the page to try again.", {
           action: { label: "Refresh", onClick: () => window.location.reload() },
           duration: Infinity,
-          closeButton: true
-        });
+          closeButton: true,
+          // `important` is forwarded as-is to ngx-sonner by the app-root notification listener,
+          // but @sinequa/atomic@1.1.1's NotificationsEventOptions type does not declare it yet.
+          // TODO: drop this cast once atomic (with `important` in NotificationsEventOptions) is bumped.
+          important: true
+        } as Parameters<typeof notify.error>[1] & { important: boolean });
       },
       { signal: controller.signal }
     );
