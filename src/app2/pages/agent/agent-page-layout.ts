@@ -60,11 +60,13 @@ type Panel = "chat" | "preview";
         </button>
       </div>
 
-      <!-- saved-chats — floating slide-in panel (non-modal: the chat stays interactive behind it) -->
+      <!-- saved-chats — floating slide-in panel (non-modal: the chat stays interactive behind it).
+           Auto-closes as soon as the pointer leaves it; stays open while hovered. -->
       <aside
         class="absolute left-0 top-0 z-30 h-full w-[20rem] p-3 pt-16 transition-transform duration-300 ease-out max-md:w-full md:pt-3"
         [class.-translate-x-full]="historyCollapsed()"
-        [inert]="historyCollapsed()">
+        [inert]="historyCollapsed()"
+        (mouseleave)="closeHistory()">
         <div class="flex h-full w-full flex-col gap-2 rounded-3xl border border-menu-border bg-background px-4 py-3 shadow-lg">
           <!-- header -->
           <div class="flex items-center justify-between">
@@ -183,6 +185,11 @@ export class AgentPageLayoutComponent {
 
   toggleHistory(): void {
     this.historyCollapsed.set(!this.historyCollapsed());
+  }
+
+  /** Auto-close the floating history panel when the pointer leaves it (better desktop UX). */
+  protected closeHistory(): void {
+    this.historyCollapsed.set(true);
   }
 
   /**
