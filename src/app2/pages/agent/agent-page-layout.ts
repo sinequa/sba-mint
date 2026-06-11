@@ -163,12 +163,27 @@ type Panel = "chat" | "preview";
         opacity: 1;
       }
 
+      /* ============================================================================
+         TEMPORARY client-side workarounds for styling issues in @sinequa/agent's
+         rendered output. These patch the library's DOM from the host app because we
+         don't fork the lib. REMOVE each rule once the corresponding fix ships in a
+         consumed @sinequa/agent version.
+         ============================================================================ */
+
       /* Reset the bullet list rendered inside the lib's inline-reference components.
-         Temporary client-side fix until @sinequa/agent applies it upstream.
          !important is required to beat the list styling the lib/markdown renderer applies. */
       :host ::ng-deep inline-reference ul {
         list-style: none !important;
         padding: 0 !important;
+      }
+
+      /* Truncate the span segments inside the lib's inline-document-card aside
+         (the last path segment isn't truncated upstream). */
+      :host ::ng-deep inline-document-card aside span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     `
   ]
