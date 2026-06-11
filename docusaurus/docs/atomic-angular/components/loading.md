@@ -1,5 +1,6 @@
 ---
 title: Loading
+sidebar_class_name: update
 ---
 
 The `Loading` component provides a visually appealing spinner that displays during application initialization or route transitions, with automatic timeout and error handling.

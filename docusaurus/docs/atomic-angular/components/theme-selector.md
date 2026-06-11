@@ -1,5 +1,6 @@
 ---
 title: ThemeSelector
+sidebar_class_name: update
 ---
 
 The `ThemeSelectorComponent` displays a list of available themes and lets users switch between them for a given scope.

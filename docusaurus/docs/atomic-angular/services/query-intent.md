@@ -1,5 +1,6 @@
 ---
 title: Query Intent
+sidebar_class_name: update
 ---
 
 The `QueryIntentService` analyzes queries to identify their intent. It maintains an internal cache to avoid analyzing the same query text multiple times.

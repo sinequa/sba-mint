@@ -1,5 +1,6 @@
 ---
 title: Error
+sidebar_class_name: update
 ---
 
 The `ErrorComponent` displays a stylized error page and allows the user to reload the application.

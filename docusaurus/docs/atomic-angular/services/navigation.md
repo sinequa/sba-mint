@@ -1,5 +1,6 @@
 ---
 title: Navigation
+sidebar_class_name: update
 ---
 
 The `NavigationService` exposes Angular router events as observables and provides helpers to extract route information from URLs.

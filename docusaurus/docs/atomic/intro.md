@@ -1,8 +1,13 @@
 ---
 title: Introduction
+sidebar_class_name: update
 ---
 
 This library is a comprehensive toolkit for building web applications integrated with Sinequa services. It provides modular, type-safe building blocks for authentication, API communication, configuration management, and a rich set of utilities.
+
+:::tip Looking for runnable examples?
+The [**Examples (JS & React)**](./examples/intro.md) section shows how to combine these functions into real features — authentication, search, facets, preview, autocomplete, and more — with both vanilla JavaScript and React snippets.
+:::
 
 ## Key Features
 

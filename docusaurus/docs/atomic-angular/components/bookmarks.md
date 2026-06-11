@@ -1,5 +1,6 @@
 ---
 title: Bookmarks
+sidebar_class_name: update
 ---
 
 The `Bookmarks` feature provides an user interface and logic for managing bookmarked articles or items within your Angular application. It allows users view and remove bookmarks, and integrates with stores and services for persistence and state management.
