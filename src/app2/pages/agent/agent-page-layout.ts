@@ -129,7 +129,41 @@ type Panel = "chat" | "preview";
   ],
   host: {
     class: "flex h-screen text-foreground bg-background"
-  }
+  },
+  // Mint-only tweak (we don't patch @sinequa/agent): collapse the agent-header (name) button
+  // rendered by the lib to its robot icon, and reveal the full label + chevron on hover.
+  // Scoped to this page and targeted at the trigger button that contains a <robot-icon>.
+  styles: [
+    `
+      :host ::ng-deep button:has(> robot-icon) {
+        gap: 0;
+      }
+      :host ::ng-deep button:has(> robot-icon) > span,
+      :host ::ng-deep button:has(> robot-icon) > chevron-down-icon {
+        display: inline-block;
+        max-width: 0;
+        margin-left: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+        opacity: 0;
+        transition:
+          max-width 200ms ease,
+          margin-left 200ms ease,
+          opacity 200ms ease;
+      }
+      :host ::ng-deep button:has(> robot-icon):hover > span {
+        max-width: 12rem;
+        margin-left: 0.5rem;
+        opacity: 1;
+      }
+      :host ::ng-deep button:has(> robot-icon):hover > chevron-down-icon {
+        max-width: 1rem;
+        margin-left: 0.25rem;
+        opacity: 1;
+      }
+    `
+  ]
 })
 export class AgentPageLayoutComponent {
   readonly instanceId = inject(AGENT_INSTANCE_ID);
