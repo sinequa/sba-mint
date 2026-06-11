@@ -26,7 +26,7 @@
   },
   "lint-staged": {
     "*.{js,ts}": "npm run lint",
-    "*.w{js,ts,scss,css,json}": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,ts,scss,css,json}": "oxfmt --no-error-on-unmatched-pattern",
     "*.html": "prettier --write"
   },
   "private": true,
