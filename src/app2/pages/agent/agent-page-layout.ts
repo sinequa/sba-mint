@@ -20,7 +20,6 @@ import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
 import {
-  BreakpointObserverService,
   ButtonComponent,
   HistoryIcon,
   IconButtonComponent,
@@ -52,7 +51,7 @@ type Panel = "chat" | "search" | "preview";
     IconButtonComponent
   ],
   template: `
-    <main class="flex flex-1">
+    <main class="relative flex flex-1">
       <!-- for mobile -> action buttons fixed to top-right -->
       <div class="fixed top-0 right-0 z-20 flex h-14 items-center gap-1 px-2 md:hidden">
         <button variant="none" icon-button (click)="toggleHistory()" title="History">
@@ -63,36 +62,31 @@ type Panel = "chat" | "search" | "preview";
         </button>
       </div>
 
-      <ResizablePanelGroup>
-        <!-- saved-chats -->
-        <ResizablePanel
-          [defaultSize]="0"
-          [minSize]="breakpointService.isMobile() ? 0 : 15"
-          [maxSize]="breakpointService.isMobile() ? 100 : 25"
-          [class]="!historyCollapsed() ? '' : 'max-md:hidden'">
-          <div class="flex h-full flex-1 p-3 pt-16 md:pt-3">
-            <div class="flex h-full w-full flex-col gap-2 rounded-3xl border border-menu-border px-4 py-3 shadow-lg">
-              <!-- header -->
-              <div class="flex items-center justify-between">
-                <span class="font-semibold">History</span>
-                <button variant="none" icon-button (click)="toggleHistory()" aria-label="Close history">
-                  <xmark-icon />
-                </button>
-              </div>
-              <!-- content -->
-              <div class="scrollbar-thin flex-1 overflow-y-auto">
-                <SavedChat
-                  class="gap-3 empty:hidden"
-                  [instanceId]="instanceId"
-                  [activeChatId]="chatId()"
-                  (chatSelected)="onChatSelected($event)" />
-              </div>
-            </div>
+      <!-- saved-chats — floating slide-in panel (non-modal: the chat stays interactive behind it) -->
+      <aside
+        class="absolute left-0 top-0 z-30 h-full w-[20rem] p-3 pt-16 transition-transform duration-300 ease-out max-md:w-full md:pt-3"
+        [class.-translate-x-full]="historyCollapsed()"
+        [inert]="historyCollapsed()">
+        <div class="flex h-full w-full flex-col gap-2 rounded-3xl border border-menu-border bg-background px-4 py-3 shadow-lg">
+          <!-- header -->
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">History</span>
+            <button variant="none" icon-button (click)="toggleHistory()" aria-label="Close history">
+              <xmark-icon />
+            </button>
           </div>
-        </ResizablePanel>
+          <!-- content -->
+          <div class="scrollbar-thin flex-1 overflow-y-auto">
+            <SavedChat
+              class="gap-3 empty:hidden"
+              [instanceId]="instanceId"
+              [activeChatId]="chatId()"
+              (chatSelected)="onChatSelected($event)" />
+          </div>
+        </div>
+      </aside>
 
-        <ResizableHandle [withHandle]="true" [class]="historyCollapsed() ? 'hidden' : 'max-md:hidden'" />
-
+      <ResizablePanelGroup>
         <ResizablePanel [defaultSize]="100" [minSize]="0">
           <div class="flex h-full flex-col">
             <!-- buttons -->
@@ -151,7 +145,6 @@ export class AgentPageLayoutComponent {
   readonly chatId = input<string | undefined>();
 
   private readonly router = inject(Router);
-  readonly breakpointService = inject(BreakpointObserverService);
   private readonly selectionStore = inject(SelectionStore);
   private readonly agentsStore = inject(AgentsStore);
   protected readonly searchExpansion = inject(SearchExpansionService);
@@ -174,15 +167,7 @@ export class AgentPageLayoutComponent {
   });
 
   constructor() {
-    effect(() => {
-      this.historyCollapsed();
-      queueMicrotask(() => {
-        this.previewCollapsed.set(true);
-        this.selectionStore.clear();
-        this.panelGroup()?.setLayout(this.computeLayout());
-      });
-    });
-
+    // Open the preview panel when a document is selected (mirrors the agent demo).
     effect(() => {
       const id = this.selectionStore.id?.();
       if (id && untracked(() => this.previewCollapsed())) {
@@ -193,64 +178,45 @@ export class AgentPageLayoutComponent {
       }
     });
 
-    // Resize panels when search expands
+    // Reset selection and preview when navigating between chats (mirrors the agent demo).
     effect(() => {
-      const isExpanded = this.searchExpansion.isExpanded();
-      if (isExpanded) {
-        queueMicrotask(() => {
-          this.panelGroup()?.setLayout(this.computeLayout());
-        });
-      }
+      this.chatId(); // track route navigation
+      this.selectionStore.clear();
+      untracked(() => {
+        this.previewCollapsed.set(true);
+        this.panelGroup()?.setLayout(this.computeLayout());
+      });
+    });
+
+    // Resize panels when the expanded-search panel toggles (Mint-specific feature).
+    effect(() => {
+      this.searchExpansion.isExpanded();
+      queueMicrotask(() => {
+        this.panelGroup()?.setLayout(this.computeLayout());
+      });
     });
   }
 
   /**
-   * Computes panel sizes [history, chat, search, preview] based on current state.
+   * Computes panel sizes [chat, search, preview]. History floats over the layout, so it is no
+   * longer a column. Mirrors the agent demo's simple preview split ([100, 0] / [60, 40]); the
+   * search column is Mint-specific.
    *
-   * Layout matrix (approximate percentages):
-   *
-   * | History        | Search | Preview | Layout               |
-   * |----------------|--------|---------|----------------------|
-   * | closed         | closed | closed  | [0,  100, 0,  0 ]    |
-   * | closed         | open   | closed  | [0,  55,  45, 0 ]    |
-   * | closed         | closed | open    | [0,  60,  0,  40]    |
-   * | closed         | open   | open    | [0,  40,  30, 30]    |
-   * | open (desktop) | closed | closed  | [25, 75,  0,  0 ]    |
-   * | open (desktop) | open   | closed  | [25, 41,  34, 0 ]    |
-   * | open (desktop) | closed | open    | [25, 45,  0,  30]    |
-   * | open (desktop) | open   | open    | [25, 30,  23, 22]    |
-   * | open (mobile)  | closed | —       | [100, 0,  0,  0 ]    |
-   * | open (mobile)  | open   | —       | [90,  0,  10, 0 ]    |
+   * | Search | Preview | Layout        |
+   * |--------|---------|---------------|
+   * | closed | closed  | [100, 0,  0 ] |
+   * | open   | closed  | [55,  45, 0 ] |
+   * | closed | open    | [60,  0,  40] |
+   * | open   | open    | [40,  30, 30] |
    */
   private computeLayout(): number[] {
-    const historyOpen = !this.historyCollapsed();
     const searchOpen = this.searchExpansion.isExpanded();
     const previewOpen = !this.previewCollapsed();
-    const mobile = this.breakpointService.isMobile();
 
-    // On mobile, history takes over the full screen
-    if (mobile && historyOpen) {
-      return searchOpen ? [90, 0, 10, 0] : [100, 0, 0, 0];
-    }
-
-    const h = historyOpen ? 25 : 0;
-    const rem = 100 - h;
-
-    if (!searchOpen && !previewOpen) {
-      return [h, rem, 0, 0];
-    }
-    if (searchOpen && !previewOpen) {
-      const chat = Math.round(rem * 0.55);
-      return [h, chat, rem - chat, 0];
-    }
-    if (!searchOpen && previewOpen) {
-      const chat = Math.round(rem * 0.6);
-      return [h, chat, 0, rem - chat];
-    }
-    // search + preview
-    const chat = Math.round(rem * 0.4);
-    const search = Math.round(rem * 0.3);
-    return [h, chat, search, rem - chat - search];
+    if (!searchOpen && !previewOpen) return [100, 0, 0];
+    if (searchOpen && !previewOpen) return [55, 45, 0];
+    if (!searchOpen && previewOpen) return [60, 0, 40];
+    return [40, 30, 30];
   }
 
   protected closeSearch(): void {
@@ -269,9 +235,6 @@ export class AgentPageLayoutComponent {
   }
 
   toggleHistory(): void {
-    if (this.historyCollapsed() && !this.previewCollapsed()) {
-      this.closePreview();
-    }
     this.historyCollapsed.set(!this.historyCollapsed());
   }
 
