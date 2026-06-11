@@ -9,11 +9,9 @@ import {
   CopyToClipboardDirective,
   createAgentNewChatEvent,
   ErrorDirective,
-  ExpandedSearchResultsComponent,
   FeedbackDirective,
   type SavedChat,
-  SavedChatComponent,
-  SearchExpansionService
+  SavedChatComponent
 } from "@sinequa/agent";
 import { AgentDebugDirective } from "./directives/debug.directive";
 import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
@@ -31,14 +29,13 @@ import {
 } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
 
-type Panel = "chat" | "search" | "preview";
+type Panel = "chat" | "preview";
 
 @Component({
   selector: "app-agent-page-layout",
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AgentInjector,
-    ExpandedSearchResultsComponent,
     ResizablePanelGroupComponent,
     ResizablePanelComponent,
     ResizableHandleComponent,
@@ -87,7 +84,7 @@ type Panel = "chat" | "search" | "preview";
       </aside>
 
       <ResizablePanelGroup>
-        <ResizablePanel [defaultSize]="100" [minSize]="0">
+        <ResizablePanel [defaultSize]="100" [minSize]="25" [class.max-md:hidden]="activeMobilePanel() !== 'chat'">
           <div class="flex h-full flex-col">
             <!-- buttons -->
             <div class="hidden shrink-0 items-center gap-2 bg-background px-2 pt-6 pb-2 md:flex">
@@ -106,18 +103,9 @@ type Panel = "chat" | "search" | "preview";
           </div>
         </ResizablePanel>
 
-        <!-- expanded search results -->
-        <ResizableHandle [withHandle]="true" [class.hidden]="!searchExpansion.isExpanded()" />
-        <ResizablePanel [defaultSize]="0" [minSize]="20" class="relative" [class.max-md:hidden]="activeMobilePanel() !== 'search'">
-          <div class="absolute inset-0 overflow-auto p-3 pt-14 md:p-5">
-            <ExpandedSearchResults class="h-full w-full" (close)="closeSearch()" />
-          </div>
-        </ResizablePanel>
-
-
         <!-- preview -->
-        <ResizableHandle [withHandle]="true" [class]="previewCollapsed() ? 'hidden' : ''" />
-        <ResizablePanel [defaultSize]="0" [minSize]="25">
+        <ResizableHandle [withHandle]="true" [class.hidden]="previewCollapsed()" />
+        <ResizablePanel [defaultSize]="0" [minSize]="25" [class.max-md:hidden]="activeMobilePanel() !== 'preview'">
           <div class="sticky top-14 h-full mx-4">
             <div class="relative h-full mx-4">
               <agent-preview class="absolute inset-4 w-full h-[calc(100%-2rem)] bg-tool-card-widget border-tool-card-border flex flex-col gap-2 rounded-2xl border" (onClose)="closePreview()" />
@@ -147,7 +135,6 @@ export class AgentPageLayoutComponent {
   private readonly router = inject(Router);
   private readonly selectionStore = inject(SelectionStore);
   private readonly agentsStore = inject(AgentsStore);
-  protected readonly searchExpansion = inject(SearchExpansionService);
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
 
   /** True only when the machine is in the Idle operational sub-state — used to avoid interrupting an active generation. */
@@ -159,12 +146,7 @@ export class AgentPageLayoutComponent {
   readonly historyCollapsed = signal(true);
 
   // On mobile, only one panel is visible at a time.
-  // Preview takes priority (clicking a doc from search → show preview).
-  protected readonly activeMobilePanel = computed<Panel>(() => {
-    if (!this.previewCollapsed()) return "preview";
-    else if (this.searchExpansion.isExpanded()) return "search";
-    else return "chat";
-  });
+  protected readonly activeMobilePanel = computed<Panel>(() => (this.previewCollapsed() ? "chat" : "preview"));
 
   constructor() {
     // Open the preview panel when a document is selected (mirrors the agent demo).
@@ -173,7 +155,7 @@ export class AgentPageLayoutComponent {
       if (id && untracked(() => this.previewCollapsed())) {
         this.previewCollapsed.set(false);
         queueMicrotask(() => {
-          this.panelGroup()?.setLayout(this.computeLayout());
+          this.panelGroup()?.setLayout([60, 40]);
         });
       }
     });
@@ -184,51 +166,14 @@ export class AgentPageLayoutComponent {
       this.selectionStore.clear();
       untracked(() => {
         this.previewCollapsed.set(true);
-        this.panelGroup()?.setLayout(this.computeLayout());
+        this.panelGroup()?.setLayout([100, 0]);
       });
-    });
-
-    // Resize panels when the expanded-search panel toggles (Mint-specific feature).
-    effect(() => {
-      this.searchExpansion.isExpanded();
-      queueMicrotask(() => {
-        this.panelGroup()?.setLayout(this.computeLayout());
-      });
-    });
-  }
-
-  /**
-   * Computes panel sizes [chat, search, preview]. History floats over the layout, so it is no
-   * longer a column. Mirrors the agent demo's simple preview split ([100, 0] / [60, 40]); the
-   * search column is Mint-specific.
-   *
-   * | Search | Preview | Layout        |
-   * |--------|---------|---------------|
-   * | closed | closed  | [100, 0,  0 ] |
-   * | open   | closed  | [55,  45, 0 ] |
-   * | closed | open    | [60,  0,  40] |
-   * | open   | open    | [40,  30, 30] |
-   */
-  private computeLayout(): number[] {
-    const searchOpen = this.searchExpansion.isExpanded();
-    const previewOpen = !this.previewCollapsed();
-
-    if (!searchOpen && !previewOpen) return [100, 0, 0];
-    if (searchOpen && !previewOpen) return [55, 45, 0];
-    if (!searchOpen && previewOpen) return [60, 0, 40];
-    return [40, 30, 30];
-  }
-
-  protected closeSearch(): void {
-    this.searchExpansion.collapse();
-    queueMicrotask(() => {
-      this.panelGroup()?.setLayout(this.computeLayout());
     });
   }
 
   closePreview(): void {
     this.previewCollapsed.set(true);
-    this.panelGroup()?.setLayout(this.computeLayout());
+    this.panelGroup()?.setLayout([100, 0]);
     // Clear selection so the effect can re-trigger if the user clicks
     // the same reference again after dismissing the panel.
     this.selectionStore.clear();
