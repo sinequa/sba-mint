@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
+import { getState } from "@ngrx/signals";
 import {
   AdminDirective,
   AGENT_INSTANCE_ID,
@@ -13,9 +14,6 @@ import {
   type SavedChat,
   SavedChatComponent
 } from "@sinequa/agent";
-import { AgentDebugDirective } from "./directives/debug.directive";
-import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
-import { getState } from "@ngrx/signals";
 import { error } from "@sinequa/atomic";
 import { SelectionStore } from "@sinequa/atomic-angular";
 import {
@@ -29,6 +27,8 @@ import {
   XMarkIcon
 } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
+import { AgentDebugDirective } from "./directives/debug.directive";
+import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
 
 type Panel = "chat" | "preview";
 
@@ -100,7 +100,7 @@ type Panel = "chat" | "preview";
             </div>
 
             <!-- agent -->
-            <div class="h-[calc(100dvh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
+            <div class="agent-scroll-area h-[calc(100dvh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
               <AgentInjector [chatId]="chatId()" [instanceId]="instanceId" />
             </div>
           </div>
@@ -109,8 +109,8 @@ type Panel = "chat" | "preview";
         <!-- preview -->
         <ResizableHandle [withHandle]="true" [class.hidden]="previewCollapsed()" />
         <ResizablePanel [defaultSize]="0" [minSize]="25" [class.max-md:hidden]="activeMobilePanel() !== 'preview'">
-          <div class="sticky top-14 h-full mx-4">
-            <div class="relative h-full mx-4">
+          <div class="sticky top-14 h-full me-8">
+            <div class="relative h-full">
               <agent-preview class="absolute inset-4 w-full h-[calc(100%-2rem)] bg-tool-card-widget border-tool-card-border flex flex-col gap-2 rounded-2xl border" (onClose)="closePreview()" />
             </div>
           </div>
@@ -163,6 +163,18 @@ type Panel = "chat" | "preview";
         opacity: 1;
       }
 
+      /* Hide the agent's vertical scrollbar (and the lib's inner scroll container) for a
+         cleaner look — scrolling still works. Scoped to the agent area so the history
+         panel's own scrollbar is unaffected. */
+      :host ::ng-deep .agent-scroll-area,
+      :host ::ng-deep .agent-scroll-area .overflow-y-auto {
+        scrollbar-width: none; /* Firefox */
+      }
+      :host ::ng-deep .agent-scroll-area::-webkit-scrollbar,
+      :host ::ng-deep .agent-scroll-area .overflow-y-auto::-webkit-scrollbar {
+        display: none; /* WebKit */
+      }
+
       /* ============================================================================
          TEMPORARY client-side workarounds for styling issues in @sinequa/agent's
          rendered output. These patch the library's DOM from the host app because we
@@ -179,7 +191,7 @@ type Panel = "chat" | "preview";
 
       /* Truncate the span segments inside the lib's inline-document-card aside
          (the last path segment isn't truncated upstream). */
-      :host ::ng-deep inline-document-card aside span {
+      :host ::ng-deep inlinedocumentcard aside span {
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -198,9 +210,7 @@ export class AgentPageLayoutComponent {
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
 
   /** True only when the machine is in the Idle operational sub-state — used to avoid interrupting an active generation. */
-  protected readonly isIdle = computed(
-    () => this.agentsStore.agents()[this.instanceId]?.machine.state === "Connected.Operational.Idle"
-  );
+  protected readonly isIdle = computed(() => this.agentsStore.agents()[this.instanceId]?.machine.state === "Connected.Operational.Idle");
 
   readonly previewCollapsed = signal(true);
   readonly historyCollapsed = signal(true);
@@ -262,6 +272,7 @@ export class AgentPageLayoutComponent {
   startNewChat() {
     const event = createAgentNewChatEvent(this.instanceId);
     document.dispatchEvent(event);
-    this.router.navigate(["/chat/new"]).catch((err) => error("navigation to chat/new failed!", err));
+    this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
   }
 }
+
