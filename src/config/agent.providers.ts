@@ -2,6 +2,7 @@ import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironm
 import {
   AGENT_INSTANCE_ID,
   LoggerService,
+  provideDefaultDebugPresentation,
   provideDefaultRendererPlugins,
   provideDefaultShikiHighlighterConfig,
   provideDefaultToolCardPlugins,
@@ -23,6 +24,9 @@ export function provideAgent(): EnvironmentProviders {
     provideDefaultShikiHighlighterConfig(),
 
     // Provide default tool card plugins (tool-card, tool-card-error, ...)
-    provideDefaultToolCardPlugins()
+    provideDefaultToolCardPlugins(),
+
+    // Provide default popup-window strategy for the debug panel
+    provideDefaultDebugPresentation()
   ]);
 }
