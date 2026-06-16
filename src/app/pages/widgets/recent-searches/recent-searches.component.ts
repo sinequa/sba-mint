@@ -14,7 +14,7 @@ import { ButtonComponent, HistoryIcon, ListItemComponent, TrashCanIcon } from '@
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2 overflow-hidden">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <HistoryIcon aria-hidden="true" />
+          <HistoryIcon />
           {{ 'history' | transloco }}
         </h1>
 
