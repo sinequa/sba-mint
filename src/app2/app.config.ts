@@ -10,15 +10,11 @@ import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 import { provideTranslocoProviders } from "@config/transloco-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import {
-  auditInterceptorFn,
-  authInterceptorFn,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
-  bodyInterceptorFn,
   COLLECTIONS_CONFIG,
   COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
-  errorInterceptorFn,
   FILTERS_BREAKPOINT,
   HIGHLIGHTS,
   PREVIEW_CONFIG,
@@ -27,9 +23,9 @@ import {
   ROUTE_COMPONENTS,
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
-  toastInterceptorFn,
   bootstrapApp
 } from "@sinequa/atomic-angular";
+import { appInterceptors } from "@config/http-interceptors";
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
 import { SearchLayoutComponent } from "./pages/search/search.layout";
@@ -43,15 +39,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
-    provideHttpClient(
-      withInterceptors([
-        bodyInterceptorFn,
-        authInterceptorFn,
-        auditInterceptorFn,
-        errorInterceptorFn,
-        toastInterceptorFn
-      ])
-    ),
+    provideHttpClient(withInterceptors(appInterceptors)),
 
     // This provider is used to configure the route reuse strategy of the application.
     // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.

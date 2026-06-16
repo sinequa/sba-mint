@@ -4,7 +4,10 @@
   "newProjectRoot": "projects",
   "cli": {
     "schematicCollections": ["@angular-eslint/schematics"],
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
   },
   "projects": {
     "sinequa-mint": {
@@ -106,6 +109,22 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "spfx": {
+              "tsConfig": "tsconfig.spfx.json",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/main.ts",
+                  "with": "src/main.spfx.ts"
+                },
+                {
+                  "replace": "src/config/http-interceptors.ts",
+                  "with": "src/config/http-interceptors.spfx.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -128,6 +147,11 @@
             },
             "development": {
               "buildTarget": "sinequa-mint:build:development",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.json"
+            },
+            "spfx": {
+              "buildTarget": "sinequa-mint:build:spfx",
               "ssl": true,
               "proxyConfig": "proxy.conf.json"
             }
