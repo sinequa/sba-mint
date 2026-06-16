@@ -34,13 +34,14 @@ export async function withReauth(call) {
   } catch (err) {
     if (!isUnauthorized(err)) throw err;
 
-    // 1) Try to re-validate an existing session (cookie/SSO). Does not redirect.
-    //    Trust the RETURNED token, not isAuthenticated() (which only tests presence).
+    // 1) Try to re-validate an existing session (cookie/SSO). Does not redirect. Returns the token,
+    //    or null if no session; throws only on transport failure. Trust the RETURNED token, not
+    //    isAuthenticated() (which only tests presence).
     let fresh = null;
     try {
       fresh = await getCsrfToken();
     } catch {
-      /* no ambient session */
+      /* transport failure — fall through to reset */
     }
     if (fresh) return await call(); // single retry
 
