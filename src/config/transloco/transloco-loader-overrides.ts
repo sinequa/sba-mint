@@ -3,7 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { Translation, TranslocoLoader } from "@jsverse/transloco";
 import { forkJoin, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
-import { deepmerge } from "../utils/deepmerge";
+import { deepmerge } from "../../utils/deepmerge";
 
 const OVERRIDDEN_SCOPES: string[] = []; // Scopes for which you want to apply overrides
 

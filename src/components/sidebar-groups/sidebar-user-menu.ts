@@ -124,7 +124,7 @@ export class SidebarUserMenuComponent {
     // enable agent's debug mode
     effect(() => {
       const debug = this.debug();
-      this.agentsStore.setDebugMessages(debug);
+      this.agentsStore.setDebugEnabled(debug);
       untracked(() => {
         this.userSettingsStore.setDebugMode(debug).catch(err => error("set debug mode failed", err));
       });
