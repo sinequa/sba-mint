@@ -5,10 +5,10 @@ import localeFr from "@angular/common/locales/fr";
 import { ApplicationConfig, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
-import { provideAssistant } from "@config/assistant.providers";
+import { provideAssistant } from "@config/providers/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 import { PREVIEW_HIGHLIGHTS } from "@config/highlight.config";
-import { TranslocoHttpLoader } from "@config/transloco-loader";
+import { TranslocoHttpLoader } from "@config/transloco/transloco-loader";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
 import {

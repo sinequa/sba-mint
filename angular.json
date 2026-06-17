@@ -121,8 +121,8 @@
                   "with": "src/main.spfx.ts"
                 },
                 {
-                  "replace": "src/config/http-interceptors.ts",
-                  "with": "src/config/http-interceptors.spfx.ts"
+                  "replace": "src/config/interceptors/http-interceptors.ts",
+                  "with": "src/config/spfx/http-interceptors.spfx.ts"
                 }
               ]
             },
@@ -150,8 +150,8 @@
                   "with": "src/main.spfx.ts"
                 },
                 {
-                  "replace": "src/config/http-interceptors.ts",
-                  "with": "src/config/http-interceptors.spfx.ts"
+                  "replace": "src/config/interceptors/http-interceptors.ts",
+                  "with": "src/config/spfx/http-interceptors.spfx.ts"
                 },
                 {
                   "replace": "src/environments/environment.ts",

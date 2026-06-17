@@ -16,8 +16,8 @@ import atomic from "../node_modules/@sinequa/atomic/package.json";
 import atomicAngular from "../node_modules/@sinequa/atomic-angular/package.json";
 import { AppComponent } from "./app2/app.component";
 import { appConfig } from "./app2/app.config";
-import { AAD_RESOURCE_URI, AAD_TOKEN_PROVIDER, type MintSpfxContext } from "./config/spfx-context";
-import { createMockSpfxContext } from "./config/spfx-context.mock";
+import { AAD_RESOURCE_URI, AAD_TOKEN_PROVIDER, type MintSpfxContext } from "./config/spfx/spfx-context";
+import { createMockSpfxContext } from "./config/spfx/spfx-context.mock";
 import { environment } from "./environments/environment";
 
 Object.assign(Datepicker.locales, fr, de);

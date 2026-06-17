@@ -4,10 +4,10 @@ import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
 import { ApplicationConfig, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
-import { provideAgent } from "@config/agent.providers";
-import { provideAssistant } from "@config/assistant.providers";
+import { provideAgent } from "@config/providers/agent.providers";
+import { provideAssistant } from "@config/providers/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
-import { provideTranslocoProviders } from "@config/transloco-providers";
+import { provideTranslocoProviders } from "@config/transloco/transloco-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import {
   BOOKMARKS_CONFIG,
@@ -25,7 +25,7 @@ import {
   SAVED_SEARCHES_OPTIONS,
   bootstrapApp
 } from "@sinequa/atomic-angular";
-import { appInterceptors } from "@config/http-interceptors";
+import { appInterceptors } from "@config/interceptors/http-interceptors";
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
 import { SearchLayoutComponent } from "./pages/search/search.layout";
