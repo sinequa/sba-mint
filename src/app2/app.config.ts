@@ -4,10 +4,10 @@ import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
 import { ApplicationConfig, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
-import { provideAgent } from "@config/agent.providers";
-import { provideAssistant } from "@config/assistant.providers";
+import { provideAgent } from "@config/providers/agent.providers";
+import { provideAssistant } from "@config/providers/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
-import { provideTranslocoProviders } from "@config/transloco-providers";
+import { provideTranslocoProviders } from "@config/transloco/transloco-providers";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import {
   auditInterceptorFn,

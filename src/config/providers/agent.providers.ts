@@ -2,10 +2,16 @@ import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironm
 import {
   AGENT_INSTANCE_ID,
   LoggerService,
+  provideDefaultAffordance,
+  provideDefaultAgentToolbarActions,
   provideDefaultDebugPresentation,
+  provideDefaultEmptyComponent,
+  provideDefaultErrorComponent,
   provideDefaultRendererPlugins,
   provideDefaultShikiHighlighterConfig,
   provideDefaultToolCardPlugins,
+  provideDefaultUserToolbarActions,
+  provideDefaultWelcomeComponent,
   RendererService,
   SavedChatsService
 } from "@sinequa/agent";
@@ -27,6 +33,13 @@ export function provideAgent(): EnvironmentProviders {
     provideDefaultToolCardPlugins(),
 
     // Provide default popup-window strategy for the debug panel
-    provideDefaultDebugPresentation()
+    provideDefaultDebugPresentation(),
+
+    provideDefaultAffordance(),
+    provideDefaultAgentToolbarActions(),
+    provideDefaultUserToolbarActions(),
+    provideDefaultWelcomeComponent(), // keep the animated-robot hero
+    provideDefaultEmptyComponent(), // null (hidden) — symmetric default
+    provideDefaultErrorComponent() // null (hidden) — symmetric default
   ]);
 }
