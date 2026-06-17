@@ -70,6 +70,26 @@ Copy into `src/webparts/mint/` of the SPFx solution (and wire up the web part ma
    `resourceUri` requested by the web part.
 4. **CORS**: the Sinequa server must allow the SharePoint origin (calls are **cross-origin**).
 
+## ⚠️ Node version — two separate build environments
+
+There are **two independent builds**, and Node's version only constrains one of them:
+
+| Build | Tool | Node | Where |
+|---|---|---|---|
+| **mint bundle** (`ng build … --configuration spfx-production`) | Angular CLI | **24 OK** (Angular 20/22 supports it) | this repo (`mint-internal`) |
+| **`.sppkg` packaging** (`gulp bundle --ship` + `gulp package-solution`) | SPFx toolchain (`@microsoft/sp-build-web`) | **Node 22 required** | the **separate** Yeoman SPFx solution |
+
+- **Production is Node-agnostic.** At runtime everything runs in the browser inside a SharePoint page; the
+  Node version plays no role. SPFx in production works fine.
+- **The mint bundle builds on Node 24.** The `@microsoft/sp-*` packages in mint are **dev-only type
+  providers** (`src/config/spfx-context.ts` uses `import type`; `MintWebPart.ts` lives outside `src/` and is
+  not compiled by `ng build`). They are never executed under Node, so the `EBADENGINE` warnings on
+  `npm install` in mint are cosmetic — ignore them. This matters because the Angular 22 branch *requires*
+  Node 24.
+- **Package the `.sppkg` on Node 22.** This is the one real requirement: the SPFx gulp toolchain genuinely
+  breaks on Node 24, so the separate SPFx solution must be built on Node 22.14+ (LTS). It is an independent
+  project from mint, so there is no conflict with mint's Node 24.
+
 ## Steps
 
 ### 1. Build the mint bundle (production `spfx` build)
