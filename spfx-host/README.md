@@ -34,6 +34,22 @@ The `spfx-production` build configuration handles this (see step 1).
 > Testing **locally against a real Sinequa backend** (without a SharePoint deployment) is a separate,
 > trickier case: it would require a real AAD token outside an SPFx host. Not covered here.
 
+> **No SPFx-only test environment.** Local SPFx development (`npm run start:spfx`, i.e.
+> `--configuration spfx`) runs only against the mocked AAD context (`spfx-context.mock.ts`) and the
+> Sinequa Auth Playground — a fake backend, not a real SharePoint host. There is no dedicated SPFx test
+> backend.
+>
+> As a result, keep `src/environments/environment.ts` at its standard dev values — do **not** commit
+> SPFx-test-specific tweaks there (e.g. hardcoding `app: "spfx"`). The `spfx` serve build does **not**
+> replace `environment.ts`, and the mocked context (`createMockSpfxContext()`) supplies **only** the AAD
+> auth (`aadTokenProvider`, `aadHttpClient`, `resourceUri`) — **not** `app` / `backendUrl`. So in DEV the
+> `app` is taken straight from `environment.ts` (via `setGlobalConfig(environment)` in `main.spfx.ts`);
+> a `app: "spfx"` tweak only changes which Sinequa app your local playground queries hit — a test-only
+> concern. In **prod** none of this applies: `environment.ts` is replaced by
+> `environment.spfx.production.ts` (`fileReplacements`) **and** the host web part injects
+> `backendUrl` / `app` at runtime. Either way, SPFx-test edits to `environment.ts` are local-only and
+> must be reverted before committing.
+
 ## Architecture
 
 ```

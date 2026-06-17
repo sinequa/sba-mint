@@ -2,8 +2,8 @@ import { Environment } from "./env.model";
 
 export const environment: Environment = {
   production: false,
-  app: "spfx"
+  app: "mint_rnd",
   // autoSAMLProvider: 'identity-dev',
-  // autoOAuthProvider: "identity-dev"
+  autoOAuthProvider: "identity-dev"
 };
 
