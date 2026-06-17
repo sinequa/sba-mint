@@ -3,6 +3,7 @@
   "version": "11.14.0",
   "scripts": {
     "build": "ng build",
+    "build:spfx": "ng build --configuration spfx-production",
     "docs:build": "cd docusaurus && npm run build",
     "docs:build-internal": "cd docusaurus && npm run build-internal",
     "docs:ci": "cd docusaurus && npm ci",
@@ -15,6 +16,7 @@
     "start": "ng serve",
     "start:docs": "cd docusaurus && npm start",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
+    "start:spfx": "ng serve --configuration spfx",
     "t:extract": "transloco-scoped-libs",
     "test": "ng test",
     "transloco:extract-scoped-libs": "npm run t:extract",
