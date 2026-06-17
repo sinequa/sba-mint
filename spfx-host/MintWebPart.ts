@@ -6,8 +6,8 @@ import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { loadMintAssets } from "./load-mint-assets";
 
 /**
- * Contrat injecté dans `window.__MINT_SPFX_CONTEXT__`, consommé par `src/main.spfx.ts` du bundle mint.
- * DOIT rester aligné avec `MintSpfxContext` (mint-internal/src/config/spfx-context.ts).
+ * Contract injected into `window.__MINT_SPFX_CONTEXT__`, consumed by `src/main.spfx.ts` of the mint bundle.
+ * MUST stay aligned with `MintSpfxContext` (mint-internal/src/config/spfx-context.ts).
  */
 interface MintSpfxContext {
   aadHttpClient: AadHttpClient;
@@ -18,27 +18,27 @@ interface MintSpfxContext {
 }
 
 export interface IMintWebPartProps {
-  /** AAD App ID / resource URI de l'API Sinequa (ex. "api://sinequa-search/.default" ou le client id). */
+  /** AAD App ID / resource URI of the Sinequa API (e.g. "api://sinequa-search/.default" or the client id). */
   resourceUri: string;
-  /** URL du serveur Sinequa (ex. "https://sinequa.contoso.com"). OBLIGATOIRE — cf. README. */
+  /** Sinequa server URL (e.g. "https://sinequa.contoso.com"). REQUIRED — see README. */
   backendUrl: string;
-  /** Nom de l'application Sinequa. */
+  /** Sinequa application name. */
   app: string;
-  /** URL de base publique où est hébergé le contenu de `dist/sinequa-mint` (CDN ou bibliothèque SP). */
+  /** Public base URL where the contents of `dist/sinequa-mint` are hosted (CDN or SP library). */
   assetsBaseUrl: string;
 }
 
 /**
- * Web part « glue » : il ne contient pas l'UI. Il
- *  1. récupère l'`AadHttpClient` + l'`AadTokenProvider` du contexte SPFx,
- *  2. les publie (avec backendUrl/app/resourceUri) dans `window.__MINT_SPFX_CONTEXT__`,
- *  3. charge le bundle Angular mint (build `spfx`), qui s'auto-bootstrappe sur `<app-root>`.
+ * "Glue" web part: it contains no UI. It
+ *  1. gets the `AadHttpClient` + `AadTokenProvider` from the SPFx context,
+ *  2. publishes them (with backendUrl/app/resourceUri) on `window.__MINT_SPFX_CONTEXT__`,
+ *  3. loads the mint Angular bundle (`spfx` build), which self-bootstraps on `<app-root>`.
  *
- * ⚠️ Une seule instance Angular par page : ne pas placer ce web part plusieurs fois sur la même page.
+ * ⚠️ One Angular instance per page: do not place this web part multiple times on the same page.
  */
 export default class MintWebPart extends BaseClientSideWebPart<IMintWebPartProps> {
   public async render(): Promise<void> {
-    // Élément hôte attendu par le bootstrap Angular (selector AppComponent = "app-root").
+    // Host element expected by the Angular bootstrap (AppComponent selector = "app-root").
     this.domElement.innerHTML = `<app-root></app-root>`;
 
     const [aadHttpClient, aadTokenProvider] = await Promise.all([
@@ -55,8 +55,8 @@ export default class MintWebPart extends BaseClientSideWebPart<IMintWebPartProps
     };
     (window as unknown as { __MINT_SPFX_CONTEXT__?: MintSpfxContext }).__MINT_SPFX_CONTEXT__ = ctx;
 
-    // Charge styles + scripts du bundle (idempotent). Les chunks lazy se résolvent ensuite
-    // relativement à main.js → assetsBaseUrl doit pointer là où dist/sinequa-mint est hébergé.
+    // Load the bundle's styles + scripts (idempotent). Lazy chunks then resolve
+    // relative to main.js → assetsBaseUrl must point to where dist/sinequa-mint is hosted.
     await loadMintAssets(this.properties.assetsBaseUrl);
   }
 
@@ -68,15 +68,15 @@ export default class MintWebPart extends BaseClientSideWebPart<IMintWebPartProps
     return {
       pages: [
         {
-          header: { description: "Configuration Sinequa Mint" },
+          header: { description: "Sinequa Mint configuration" },
           groups: [
             {
               groupName: "Sinequa",
               groupFields: [
-                PropertyPaneTextField("backendUrl", { label: "URL du serveur Sinequa" }),
-                PropertyPaneTextField("app", { label: "Application Sinequa" }),
+                PropertyPaneTextField("backendUrl", { label: "Sinequa server URL" }),
+                PropertyPaneTextField("app", { label: "Sinequa application" }),
                 PropertyPaneTextField("resourceUri", { label: "AAD resource URI / App ID" }),
-                PropertyPaneTextField("assetsBaseUrl", { label: "URL de base des assets mint" }),
+                PropertyPaneTextField("assetsBaseUrl", { label: "Mint assets base URL" }),
               ],
             },
           ],

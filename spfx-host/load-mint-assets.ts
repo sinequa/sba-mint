@@ -1,24 +1,24 @@
 /**
- * Charge UNE SEULE FOIS les assets du build `spfx` de mint (contenu de `dist/sinequa-mint`).
+ * Loads the mint `spfx` build assets (contents of `dist/sinequa-mint`) EXACTLY ONCE.
  *
- * `baseUrl` = URL publique où ce contenu est hébergé (CDN / bibliothèque SharePoint). Les chunks
- * lazy d'Angular se résolvent relativement à `main.js`, donc tant que `main.js` est chargé depuis
- * `baseUrl`, les chunks suivent automatiquement — pas besoin de les lister ici.
+ * `baseUrl` = public URL where that content is hosted (CDN / SharePoint library). Angular's lazy
+ * chunks resolve relative to `main.js`, so as long as `main.js` is loaded from `baseUrl`, the chunks
+ * follow automatically — no need to list them here.
  */
 let loaded = false;
 
 export async function loadMintAssets(baseUrl: string): Promise<void> {
-  if (loaded) return; // une seule app Angular par page
+  if (loaded) return; // one Angular app per page
   loaded = true;
 
   const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
 
-  // Styles globaux du bundle.
+  // Bundle global styles.
   injectLink(`${base}styles.css`);
-  // Si mint dépend de Font Awesome (cf. index.html), héberge aussi `assets/` et décommente :
+  // If mint depends on Font Awesome (see index.html), host `assets/` too and uncomment:
   // injectLink(`${base}assets/vendors/fontawesome-pro-6.5.1-web/css/all.css`);
 
-  // Scripts ESM : polyfills puis main. `main.js` auto-bootstrappe l'app sur <app-root>.
+  // ESM scripts: polyfills then main. `main.js` self-bootstraps the app on <app-root>.
   await injectModule(`${base}polyfills.js`);
   await injectModule(`${base}main.js`);
 }

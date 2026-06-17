@@ -3,11 +3,11 @@ import { auditInterceptorFn, authInterceptorFn, bodyInterceptorFn, errorIntercep
 import { aadAuthInterceptorFn } from "./aad-auth.interceptor";
 
 /**
- * Chaîne d'interceptors HTTP du build `spfx`.
+ * HTTP interceptor chain for the `spfx` build.
  *
- * Identique à `http-interceptors.ts`, avec `aadAuthInterceptorFn` intercalé APRÈS
- * `authInterceptorFn` : l'auth de la lib pose CSRF + cookies, puis l'AAD ajoute le bearer
- * Azure AD sur les appels backend directs.
+ * Identical to `http-interceptors.ts`, with `aadAuthInterceptorFn` inserted AFTER
+ * `authInterceptorFn`: the lib auth sets CSRF + cookies, then AAD adds the Azure AD
+ * bearer on direct backend calls.
  */
 export const appInterceptors: HttpInterceptorFn[] = [
   bodyInterceptorFn,

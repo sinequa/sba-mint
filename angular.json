@@ -125,6 +125,39 @@
                   "with": "src/config/http-interceptors.spfx.ts"
                 }
               ]
+            },
+            "spfx-production": {
+              "tsConfig": "tsconfig.spfx.json",
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "outputHashing": "none",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/main.ts",
+                  "with": "src/main.spfx.ts"
+                },
+                {
+                  "replace": "src/config/http-interceptors.ts",
+                  "with": "src/config/http-interceptors.spfx.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.spfx.production.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

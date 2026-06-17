@@ -5,15 +5,15 @@ import { from, switchMap } from "rxjs";
 import { AAD_RESOURCE_URI, AAD_TOKEN_PROVIDER } from "./spfx-context";
 
 /**
- * Interceptor Azure AD pour le canal `HttpClient` Angular (build `spfx` uniquement).
+ * Azure AD interceptor for the Angular `HttpClient` channel (`spfx` build only).
  *
- * Le web-api de `@sinequa/atomic` (build spfx) porte déjà l'auth AAD via `AadHttpClient`.
- * Mais les services qui appellent le backend Sinequa directement via le `HttpClient` Angular
+ * The `@sinequa/atomic` web-api (spfx build) already carries the AAD auth via `AadHttpClient`.
+ * But the services that call the Sinequa backend directly via the Angular `HttpClient`
  * (query, aggregations, preview, export, text-chunk, json-method-plugin, principal, app…)
- * contournent ce client : cet interceptor leur ajoute le bearer AAD.
+ * bypass that client: this interceptor adds the AAD bearer for them.
  *
- * Ne cible que les requêtes vers `globalConfig.backendUrl`. À enregistrer APRÈS
- * `authInterceptorFn` (qui gère CSRF + cookies) — les deux coexistent (headers distincts).
+ * Targets only requests to `globalConfig.backendUrl`. Register it AFTER
+ * `authInterceptorFn` (which handles CSRF + cookies) — both coexist (distinct headers).
  */
 export const aadAuthInterceptorFn: HttpInterceptorFn = (req, next) => {
   const backendUrl = globalConfig.backendUrl ?? "";

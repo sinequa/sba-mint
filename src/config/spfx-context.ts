@@ -2,19 +2,19 @@ import { InjectionToken } from "@angular/core";
 import type { AadHttpClient, AadTokenProvider } from "@microsoft/sp-http";
 
 /**
- * Contrat que le web part hôte SPFx doit fournir AVANT de charger le bundle mint
- * (build `spfx`), via `window.__MINT_SPFX_CONTEXT__`.
+ * Contract that the SPFx host web part must provide BEFORE loading the mint bundle
+ * (`spfx` build), via `window.__MINT_SPFX_CONTEXT__`.
  *
- * - `aadHttpClient`    : utilisé par le web-api de `@sinequa/atomic` (build spfx) — initialisé
- *                        une fois via `initializeAadHttpClient()` au démarrage (cf. main.spfx.ts).
- * - `aadTokenProvider` : utilisé par l'interceptor Angular `aadAuthInterceptorFn` pour porter le
- *                        bearer Azure AD sur les appels `HttpClient` directs (query, aggregations,
+ * - `aadHttpClient`    : used by the `@sinequa/atomic` web-api (spfx build) — initialized
+ *                        once via `initializeAadHttpClient()` at startup (see main.spfx.ts).
+ * - `aadTokenProvider` : used by the Angular interceptor `aadAuthInterceptorFn` to carry the
+ *                        Azure AD bearer on direct `HttpClient` calls (query, aggregations,
  *                        preview, export, text-chunk, plugin, principal, app…).
- * - `resourceUri`      : AAD App ID / resource URI de l'API Sinequa.
- * - `backendUrl`       : URL du serveur Sinequa. OBLIGATOIRE en prod : dans SharePoint,
- *                        `window.location.origin` est le site SP (pas Sinequa) et il n'y a pas de
- *                        proxy de dev — sans ça les `api/v1/*` partiraient vers SharePoint.
- * - `app`              : nom de l'application Sinequa (sinon repris de l'environnement).
+ * - `resourceUri`      : AAD App ID / resource URI of the Sinequa API.
+ * - `backendUrl`       : Sinequa server URL. REQUIRED in prod: in SharePoint,
+ *                        `window.location.origin` is the SP site (not Sinequa) and there is no
+ *                        dev proxy — without it the `api/v1/*` calls would go to SharePoint.
+ * - `app`              : Sinequa application name (otherwise taken from the environment).
  */
 export interface MintSpfxContext {
   aadHttpClient: AadHttpClient;
@@ -24,8 +24,8 @@ export interface MintSpfxContext {
   app?: string;
 }
 
-/** Token DI fournissant le `AadTokenProvider` issu du contexte SPFx hôte. */
+/** DI token providing the `AadTokenProvider` from the host SPFx context. */
 export const AAD_TOKEN_PROVIDER = new InjectionToken<AadTokenProvider>("AAD_TOKEN_PROVIDER");
 
-/** Token DI fournissant l'AAD App ID / resource URI ciblé par les requêtes backend. */
+/** DI token providing the AAD App ID / resource URI targeted by backend requests. */
 export const AAD_RESOURCE_URI = new InjectionToken<string>("AAD_RESOURCE_URI");

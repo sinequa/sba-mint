@@ -1,7 +1,8 @@
 import { inject, mergeApplicationConfig, runInInjectionContext } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { getState } from "@ngrx/signals";
-import { error, info, initializeAadHttpClient, setGlobalConfig, warn } from "@sinequa/atomic";
+import { error, info, setGlobalConfig, warn } from "@sinequa/atomic";
+import { initializeAadHttpClient } from "@sinequa/atomic/spfx";
 import { UserSettingsStore } from "@sinequa/atomic-angular";
 import { focusGroupKeyUX, hiddenKeyUX, hotkeyKeyUX, jumpKeyUX, pressKeyUX, startKeyUX } from "keyux";
 // datepicker i18n https://mymth.github.io/vanillajs-datepicker/#/i18n
@@ -28,24 +29,24 @@ setGlobalConfig(environment);
  */
 startKeyUX(window, [hotkeyKeyUX(), focusGroupKeyUX(), pressKeyUX("is-pressed"), jumpKeyUX(), hiddenKeyUX()]);
 
-// Le web part hôte SPFx doit renseigner ce contexte AVANT de charger le bundle (cf. spfx-context.ts).
+// The SPFx host web part must set this context BEFORE loading the bundle (see spfx-context.ts).
 let spfxContext = (globalThis as unknown as { __MINT_SPFX_CONTEXT__?: MintSpfxContext }).__MINT_SPFX_CONTEXT__;
 
-// DEV uniquement : sous `ng serve` (build spfx) sans hôte SharePoint, on fabrique un contexte mocké
-// pointant vers le mock backend du playground (cf. spfx-context.mock.ts). Jamais en production.
+// DEV only: under `ng serve` (spfx build) without a SharePoint host, fabricate a mocked context
+// pointing at the playground mock backend (see spfx-context.mock.ts). Never in production.
 if (!spfxContext && !environment.production) {
-  warn("[spfx] Aucun contexte hôte — utilisation d'un contexte SPFx mocké (DEV, playground).");
+  warn("[spfx] No host context — using a mocked SPFx context (DEV, playground).");
   spfxContext = createMockSpfxContext();
 }
 
 if (!spfxContext) {
-  error("[spfx] Contexte SPFx manquant : le web part hôte doit définir window.__MINT_SPFX_CONTEXT__ (AadHttpClient + AadTokenProvider + resourceUri) avant de charger ce bundle.");
+  error("[spfx] Missing SPFx context: the host web part must set window.__MINT_SPFX_CONTEXT__ (AadHttpClient + AadTokenProvider + resourceUri) before loading this bundle.");
   localStorage.setItem("errorMessage", JSON.stringify({ message: "Missing SPFx context (window.__MINT_SPFX_CONTEXT__)." }));
   window.location.href = "assets/error/500.html";
 } else {
-  // 0) Le web part hôte est la source de vérité pour backendUrl/app en prod (cf. spfx-context.ts).
-  //    Dans SharePoint, window.location.origin ≠ Sinequa et il n'y a pas de proxy → sans backendUrl
-  //    les api/v1/* partiraient vers le site SharePoint.
+  // 0) The host web part is the source of truth for backendUrl/app in prod (see spfx-context.ts).
+  //    In SharePoint, window.location.origin ≠ Sinequa and there is no proxy → without backendUrl
+  //    the api/v1/* calls would go to the SharePoint site.
   if (spfxContext.backendUrl || spfxContext.app) {
     setGlobalConfig({
       ...(spfxContext.backendUrl ? { backendUrl: spfxContext.backendUrl } : {}),
@@ -53,10 +54,10 @@ if (!spfxContext) {
     });
   }
 
-  // 1) Canal web-api de la librairie → AadHttpClient.
+  // 1) Library web-api channel → AadHttpClient.
   initializeAadHttpClient(spfxContext.aadHttpClient);
 
-  // 2) Canal HttpClient Angular → fourni à l'interceptor AAD via DI.
+  // 2) Angular HttpClient channel → provided to the AAD interceptor via DI.
   const spfxConfig = mergeApplicationConfig(appConfig, {
     providers: [
       { provide: AAD_TOKEN_PROVIDER, useValue: spfxContext.aadTokenProvider },

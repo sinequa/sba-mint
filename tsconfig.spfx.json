@@ -1,4 +1,4 @@
-/* Build variant SPFx : entrée main.spfx.ts (l'alias @sinequa/atomic -> atomic-spfx est au niveau npm, cf. package.json). */
+/* SPFx build variant: entry main.spfx.ts (the @sinequa/atomic -> atomic-spfx alias is at the npm level, see package.json). */
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {

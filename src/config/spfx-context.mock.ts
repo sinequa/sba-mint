@@ -1,18 +1,18 @@
 import type { MintSpfxContext } from "./spfx-context";
 
 /**
- * Contexte SPFx **mocké, DEV uniquement** — permet de faire tourner le build `spfx` sous `ng serve`
- * (sans web part hôte SharePoint) contre le mock backend du Sinequa Auth Playground.
- * N'est JAMAIS utilisé en production : cf. le garde `environment.production` dans `main.spfx.ts`.
+ * **Mocked, DEV-only** SPFx context — lets the `spfx` build run under `ng serve`
+ * (without a SharePoint host web part) against the Sinequa Auth Playground mock backend.
+ * NEVER used in production: see the `environment.production` guard in `main.spfx.ts`.
  *
- * - `aadTokenProvider.getToken()` récupère un jeton Azure AD depuis le faux endpoint AAD du playground
- *   (`/__mock/aad-token`, proxifié vers le playground — cf. proxy.conf.json), comme le ferait le vrai
- *   `AadTokenProvider` SPFx contre login.microsoftonline.com.
- * - `aadHttpClient` route les appels web-api de `@sinequa/atomic` (build spfx) en y attachant ce jeton
- *   en `Authorization: Bearer`.
+ * - `aadTokenProvider.getToken()` fetches an Azure AD token from the playground's fake AAD endpoint
+ *   (`/__mock/aad-token`, proxied to the playground — see proxy.conf.json), as the real SPFx
+ *   `AadTokenProvider` would do against login.microsoftonline.com.
+ * - `aadHttpClient` routes the `@sinequa/atomic` web-api calls (spfx build), attaching that token
+ *   as `Authorization: Bearer`.
  */
 
-/** AAD App ID / resource URI ciblé (identique au scénario `spfx` du playground). */
+/** Targeted AAD App ID / resource URI (same as the playground's `spfx` scenario). */
 const RESOURCE_URI = "api://sinequa-search/.default";
 
 type SendOptions = {
@@ -22,7 +22,7 @@ type SendOptions = {
   signal?: AbortSignal | null;
 };
 
-/** Mock `AadTokenProvider` : mint (et met en cache) un jeton via le faux endpoint AAD du playground. */
+/** Mock `AadTokenProvider`: mints (and caches) a token via the playground's fake AAD endpoint. */
 function makeTokenProvider() {
   let cached: Promise<string> | null = null;
   const fetchToken = async (): Promise<string> => {
@@ -39,8 +39,8 @@ function makeTokenProvider() {
 }
 
 /**
- * Mock `AadHttpClient`. La lib appelle `client.get/post(url, configurations.v1, …)` (et `client.fetch`
- * pour PUT/PATCH/DELETE) et lit `client.constructor.configurations.v1`, d'où le static `configurations`.
+ * Mock `AadHttpClient`. The lib calls `client.get/post(url, configurations.v1, …)` (and `client.fetch`
+ * for PUT/PATCH/DELETE) and reads `client.constructor.configurations.v1`, hence the static `configurations`.
  */
 function makeAadHttpClient(getToken: () => Promise<string>) {
   class MockAadHttpClient {
@@ -72,7 +72,7 @@ function makeAadHttpClient(getToken: () => Promise<string>) {
   return new MockAadHttpClient();
 }
 
-/** Construit un `MintSpfxContext` mocké pointant vers le playground. */
+/** Builds a mocked `MintSpfxContext` pointing at the playground. */
 export function createMockSpfxContext(): MintSpfxContext {
   const provider = makeTokenProvider();
   return {
