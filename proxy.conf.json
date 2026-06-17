@@ -2,7 +2,6 @@
   {
     "context": [
       "/api",
-      "/__mock",
       "/xdownload",
       "/auth/redirect",
       "/saml/redirect",
@@ -10,7 +9,7 @@
       "/endpoints",
       "/assets"
     ],
-    "target": "http://localhost:5173",
+    "target": "https://su-sba.demo.sinequa.com",
     "secure": false,
     "changeOrigin": true,
     "ws": true
