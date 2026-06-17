@@ -186,7 +186,7 @@
             "spfx": {
               "buildTarget": "sinequa-mint:build:spfx",
               "ssl": true,
-              "proxyConfig": "proxy.conf.json"
+              "proxyConfig": "proxy.conf.spfx.json"
             }
           },
           "defaultConfiguration": "development"

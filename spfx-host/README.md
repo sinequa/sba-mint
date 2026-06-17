@@ -22,7 +22,7 @@ auth playground.
 |---|---|---|
 | AAD context | `createMockSpfxContext()` → playground | `MintWebPart.render()` → real `window.__MINT_SPFX_CONTEXT__` |
 | Token | fake endpoint `/__mock/aad-token` | `login.microsoftonline.com` via the SPFx context |
-| `proxy.conf.json` | proxy → `http://localhost:5173` (route `/__mock`) | **unused** (no `ng serve`; real cross-origin calls) |
+| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — local, git-ignored (create your own, like `proxy.conf.insight.json`) | **unused** (no `ng serve`; real cross-origin calls) |
 | Backend | mock playground | real `backendUrl` (web part property pane) |
 | `@sinequa/atomic` | `file:../atomic` (local symlink) | published package (see *Packaging — production*) |
 | `environment.production` | `false` (mock guard active) | `true` (no context → 500 page, **no** mock) |

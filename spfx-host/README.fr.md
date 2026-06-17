@@ -23,7 +23,7 @@ d'auth Sinequa.
 |---|---|---|
 | Contexte AAD | `createMockSpfxContext()` → playground | `MintWebPart.render()` → vrai `window.__MINT_SPFX_CONTEXT__` |
 | Token | faux endpoint `/__mock/aad-token` | `login.microsoftonline.com` via le contexte SPFx |
-| `proxy.conf.json` | proxy → `http://localhost:5173` (route `/__mock`) | **inutile** (pas de `ng serve` ; appels cross-origin réels) |
+| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — local, git-ignored (à créer soi-même, comme `proxy.conf.insight.json`) | **inutile** (pas de `ng serve` ; appels cross-origin réels) |
 | Backend | mock playground | `backendUrl` réel (property pane du web part) |
 | `@sinequa/atomic` | `file:../atomic` (symlink local) | paquet publié sur le registre (cf. *Packaging — production*) |
 | `environment.production` | `false` (garde mock actif) | `true` (sans contexte → page 500, **pas** de mock) |
