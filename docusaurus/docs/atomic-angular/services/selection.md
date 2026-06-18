@@ -1,5 +1,6 @@
 ---
 title: Selection
+sidebar_class_name: update
 ---
 
 The `SelectionService` manages the current article selection and synchronizes it with the query parameters store.

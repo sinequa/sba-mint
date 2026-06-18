@@ -23,7 +23,7 @@ type Article = A & {
 
       <div class="@container relative flex h-full flex-col gap-0.5">
         @if (article()) {
-          <section class="relative hidden border-b border-muted-foreground/18 px-6 py-4 @min-lg:block">
+          <section class="relative hidden border-b border-muted-foreground/18 ps-6 pe-1 py-1 @min-md:block">
             <preview-header [article]="article()!" />
             <section class="absolute bottom-0 left-0 w-full overflow-hidden" [class.invisible]="!loading()">
               <div class="h-0.5 animate-progress bg-linear-to-r from-ai-from via-ai-via to-ai-to"></div>

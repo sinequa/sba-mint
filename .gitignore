@@ -86,3 +86,17 @@ proxy.conf.insight.json
 /src/assets/i18n/multi-selection-toolbar
 /src/assets/i18n/custom-elements
 /src/assets/i18n/user-profile
+
+# Agent (agt-*) translations copied from @sinequa/atomic-angular at install
+/src/assets/i18n/agt-agent
+/src/assets/i18n/agt-components
+/src/assets/i18n/agt-directives
+/src/assets/i18n/agt-feedback
+/src/assets/i18n/agt-input
+/src/assets/i18n/agt-messages-agent
+/src/assets/i18n/agt-messages-debug
+/src/assets/i18n/agt-messages-function
+/src/assets/i18n/agt-messages-user
+/src/assets/i18n/agt-saved-chats
+/src/assets/i18n/agt-search
+/src/assets/i18n/agt-settings
