@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked, viewChild } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, Type, untracked, viewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { getState } from "@ngrx/signals";
 import {
@@ -6,8 +6,10 @@ import {
   AGENT_INSTANCE_ID,
   AgentGenerationDirective,
   AgentInjector,
+  type AgentInjectorProvidersHook,
   type AgentSavedChatEvent,
   AgentsStore,
+  type AgentToolbarAction,
   CopyToClipboardDirective,
   createAgentNewChatEvent,
   ErrorDirective,
@@ -102,7 +104,12 @@ type Panel = "chat" | "preview";
 
             <!-- agent -->
             <div class="agent-scroll-area h-[calc(100dvh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
-              <AgentInjector [chatId]="chatId()" [instanceId]="instanceId" />
+              <AgentInjector [chatId]="chatId()" [instanceId]="instanceId" [welcomeComponent]="welcomeComponent()"
+                  [emptyComponent]="emptyComponent()"
+                  [errorComponent]="errorComponent()"
+                  [agentToolbarActions]="agentToolbarActions()"
+                  [userToolbarActions]="userToolbarActions()"
+                  [providersHook]="providersHook()" />
             </div>
           </div>
         </ResizablePanel>
@@ -205,6 +212,18 @@ type Panel = "chat" | "preview";
 export class AgentPageLayoutComponent {
   readonly instanceId = inject(AGENT_INSTANCE_ID);
   readonly chatId = input<string | undefined>();
+
+  /**
+   * Per-instance customization pass-through inputs. Each maps 1:1 to the matching
+   * `<AgentInjector>` typed input and is forwarded verbatim. Pages can pick any subset
+   * to override per-route; unbound inputs let the global provider scope (agent.providers.ts) apply.
+   */
+  readonly welcomeComponent = input<Type<unknown> | null>();
+  readonly emptyComponent = input<Type<unknown> | null>();
+  readonly errorComponent = input<Type<unknown> | null>();
+  readonly agentToolbarActions = input<AgentToolbarAction[]>();
+  readonly userToolbarActions = input<AgentToolbarAction[]>();
+  readonly providersHook = input<AgentInjectorProvidersHook>();
 
   private readonly router = inject(Router);
   private readonly selectionStore = inject(SelectionStore);
