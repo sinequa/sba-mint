@@ -97,7 +97,7 @@ By default, the override system is disabled for all scopes.
 
 To add a new scope (e.g. `savedSearches`):
 
-**1.** Open src/config/transloco-loader-overrides.ts and add the scope name to the list:
+**1.** Open src/config/transloco/transloco-loader-overrides.ts and add the scope name to the list:
 
 ```ts
 const OVERRIDDEN_SCOPES = ["savedSearches"];
