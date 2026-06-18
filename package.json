@@ -26,7 +26,7 @@
   },
   "lint-staged": {
     "*.{js,ts}": "npm run lint",
-    "*.w{js,ts,scss,css,json}": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,ts,scss,css,json}": "oxfmt --no-error-on-unmatched-pattern",
     "*.html": "prettier --write"
   },
   "private": true,
@@ -79,7 +79,11 @@
     "zone.js": "~0.15.0"
   },
   "overrides": {
-    "uuid": ">=14.0.0"
+    "ajv": "8.18.0",
+    "uuid": ">=14.0.0",
+    "vite": ">=7.3.5 <8",
+    "esbuild": ">=0.28.1 <0.29",
+    "@babel/core": ">=7.29.7 <8"
   },
   "devDependencies": {
     "@angular/build": "^20.3.13",
