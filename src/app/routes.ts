@@ -1,10 +1,10 @@
-import { Data, Route } from '@angular/router';
+import { Data, Route } from "@angular/router";
 
-import { AuthGuard, AuthPageComponent, ErrorComponent, LoadingComponent, queryNameResolver } from '@sinequa/atomic-angular';
+import { AuthGuard, AuthPageComponent, ErrorComponent, queryNameResolver } from "@sinequa/atomic-angular";
 
-import { HomeComponent } from './pages/home/home.component';
-import { SearchAllComponent } from './pages/search/all/search-all.component';
-import { SearchLayoutComponent } from './pages/search/layout';
+import { HomeComponent } from "./pages/home/home.component";
+import { SearchAllComponent } from "./pages/search/all/search-all.component";
+import { SearchLayoutComponent } from "./pages/search/layout";
 
 // Extended types to add custom properties to routes
 type ExtendedData = Data & {
@@ -21,53 +21,52 @@ type ExtendedRoute = Route & {
 type ExtendedRoutes = ExtendedRoute[];
 
 export const routes: ExtendedRoutes = [
-  { path: 'login', component: AuthPageComponent },
-  { path: 'logout', component: AuthPageComponent },
-  { path: 'auth/:mode', component: AuthPageComponent },
+  { path: "login", component: AuthPageComponent },
+  { path: "logout", component: AuthPageComponent },
+  { path: "auth/:mode", component: AuthPageComponent },
   {
-    path: 'assistant',
-    loadComponent: () => import('./pages/assistant/assistant.layout').then(m => m.AssistantLayoutComponent),
+    path: "assistant",
+    loadComponent: () => import("./pages/assistant/assistant.layout").then(m => m.AssistantLayoutComponent),
     canActivate: [AuthGuard()],
     resolve: { queryName: queryNameResolver },
     data: { reuse: true } // This route will be "frozen" when we navigate away from it, and "thawed" when we come back to it
   },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
+  { path: "home", component: HomeComponent, canActivate: [AuthGuard()], resolve: { queryName: queryNameResolver } },
   {
-    path: 'widgets',
-    loadComponent: () => import('./pages/widgets/layout').then(m => m.WidgetsLayoutComponent),
+    path: "widgets",
+    loadComponent: () => import("./pages/widgets/layout").then(m => m.WidgetsLayoutComponent),
     canActivate: [AuthGuard()],
     children: [
       {
-        path: 'recent-searches',
-        loadComponent: () => import('./pages/widgets/recent-searches/recent-searches.component').then(m => m.RecentSearchesComponent)
+        path: "recent-searches",
+        loadComponent: () => import("./pages/widgets/recent-searches/recent-searches.component").then(m => m.RecentSearchesComponent)
       },
       {
-        path: 'bookmarks',
-        loadComponent: () => import('./pages/widgets/bookmarks/bookmarks.component').then(m => m.BookmarksComponent)
+        path: "bookmarks",
+        loadComponent: () => import("./pages/widgets/bookmarks/bookmarks.component").then(m => m.BookmarksComponent)
       },
       {
-        path: 'saved-searches',
-        loadComponent: () => import('./pages/widgets/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent)
+        path: "saved-searches",
+        loadComponent: () => import("./pages/widgets/saved-searches/saved-searches.component").then(m => m.SavedSearchesComponent)
       },
       {
-        path: 'collections',
-        loadComponent: () => import('./pages/widgets/collections/collections.component').then(m => m.CollectionsComponent)
+        path: "collections",
+        loadComponent: () => import("./pages/widgets/collections/collections.component").then(m => m.CollectionsComponent)
       }
     ]
   },
   {
-    path: 'search',
+    path: "search",
     component: SearchLayoutComponent,
     canActivate: [AuthGuard()],
     children: [
       {
-        path: '**',
+        path: "**",
         component: SearchAllComponent,
         resolve: { queryName: queryNameResolver }
       }
     ]
   },
-  { path: 'loading', component: LoadingComponent },
-  { path: 'error', component: ErrorComponent },
-  { path: '**', redirectTo: 'home', pathMatch: 'full' }
+  { path: "error", component: ErrorComponent },
+  { path: "**", redirectTo: "home", pathMatch: "full" }
 ];
