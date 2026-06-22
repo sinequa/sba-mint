@@ -18,7 +18,7 @@ import {
   SavedChatComponent
 } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
-import { SelectionStore } from "@sinequa/atomic-angular";
+import { debouncedSignal, SelectionStore } from "@sinequa/atomic-angular";
 import {
   ButtonComponent,
   HistoryIcon,
@@ -30,6 +30,7 @@ import {
   XMarkIcon
 } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
+import { SearchInputComponent } from "../../../components/search-input";
 import { AgentDebugDirective } from "./directives/debug.directive";
 import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
 
@@ -49,7 +50,8 @@ type Panel = "chat" | "preview";
     SavedChatComponent,
     XMarkIcon,
     ButtonComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    SearchInputComponent
   ],
   template: `
     <main class="relative flex flex-1">
@@ -79,10 +81,12 @@ type Panel = "chat" | "preview";
             </button>
           </div>
           <!-- content -->
-          <div class="scrollbar-thin flex-1 overflow-y-auto">
+          <div class="scrollbar-thin flex-1 flex flex-col gap-2 overflow-y-auto">
+            <search-input [(value)]="searchText" />
             <SavedChat
               class="gap-3 empty:hidden"
               [instanceId]="instanceId"
+              [searchText]="debouncedSearchText()"
               [activeChatId]="chatId()"
               (chatSelected)="onChatSelected($event)" />
           </div>
@@ -235,6 +239,8 @@ export class AgentPageLayoutComponent {
 
   readonly previewCollapsed = signal(true);
   readonly historyCollapsed = signal(true);
+  readonly searchText = signal("");
+  protected readonly debouncedSearchText = debouncedSignal(this.searchText, 300);
 
   // On mobile, only one panel is visible at a time.
   protected readonly activeMobilePanel = computed<Panel>(() => (this.previewCollapsed() ? "chat" : "preview"));
@@ -307,4 +313,3 @@ export class AgentPageLayoutComponent {
     this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
   }
 }
-
