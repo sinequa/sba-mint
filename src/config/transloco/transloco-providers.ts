@@ -1,5 +1,5 @@
 import { EnvironmentProviders, isDevMode, makeEnvironmentProviders } from "@angular/core";
-import { TranslocoHttpLoaderOverrides } from "@config/transloco-loader-overrides";
+import { TranslocoHttpLoaderOverrides } from "@config/transloco/transloco-loader-overrides";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
 

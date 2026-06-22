@@ -4,7 +4,15 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, Query } from "@sinequa/atomic";
 import { AppStore, SelectionStore } from "@sinequa/atomic-angular";
-import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
+import {
+  CommentsIcon,
+  SparklesIcon,
+  SpinnerIcon,
+  TabComponent,
+  TabContent,
+  TabsComponent,
+  TabsListComponent
+} from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
@@ -27,7 +35,18 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 @Component({
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
-  imports: [TranslocoPipe, TabsComponent, TabsListComponent, TabComponent, TabContent, AssistantComponent, PreviewContentComponent, SpinnerIcon, SparklesIcon, CommentsIcon],
+  imports: [
+    TranslocoPipe,
+    TabsComponent,
+    TabsListComponent,
+    TabComponent,
+    TabContent,
+    AssistantComponent,
+    PreviewContentComponent,
+    SpinnerIcon,
+    SparklesIcon,
+    CommentsIcon
+  ],
   template: `
     <Tabs class="contents">
       <!-- tabs list -->
@@ -40,11 +59,11 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           @if (displaySummary()) {
             <Tab variant="secondary" class="w-fit" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
-                <spinner-icon class="animate-spin" />
+                <SpinnerIcon class="size-4 animate-spin" />
               } @else {
                 <sparkles-icon />
               }
-              {{ 'preview.summarize' | transloco }}
+              <span>{{ 'preview.summarize' | transloco }}</span>
             </Tab>
           }
 
@@ -151,12 +170,20 @@ export class PreviewTabsComponent {
     { name: "summary", enabled: false, visible: this.displaySummaryContent() },
     { name: "discussion", enabled: false, visible: this.displayChatWithDocContent() }
   ]);
-  showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "summary")?.enabled);
-  showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "discussion")?.enabled);
+  showSummarizeAssistant = computed(
+    () => this.showAssistants().find((assistant) => assistant.name === "summary")?.enabled
+  );
+  showChatWithDocAssistant = computed(
+    () => this.showAssistants().find((assistant) => assistant.name === "discussion")?.enabled
+  );
 
   protected readonly isStreaming = signal<boolean>(false);
-  displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === "summary" && assistant.visible));
-  displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === "discussion" && assistant.visible));
+  displaySummary = computed(() =>
+    this.showAssistants().some((assistant) => assistant.name === "summary" && assistant.visible)
+  );
+  displayChatWithDoc = computed(() =>
+    this.showAssistants().some((assistant) => assistant.name === "discussion" && assistant.visible)
+  );
 
   constructor() {
     effect(() => {
@@ -170,11 +197,11 @@ export class PreviewTabsComponent {
   }
 
   setSummaryAssistant() {
-    const assistants = this.showAssistants().filter(assistant => assistant.name !== "summary");
+    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "summary");
     this.showAssistants.set([...assistants, { name: "summary", enabled: true, visible: true }]);
   }
   setChatWithDocAssistant() {
-    const assistants = this.showAssistants().filter(assistant => assistant.name !== "discussion");
+    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "discussion");
     this.showAssistants.set([...assistants, { name: "discussion", enabled: true, visible: true }]);
   }
 

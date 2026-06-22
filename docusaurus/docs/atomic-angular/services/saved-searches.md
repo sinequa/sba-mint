@@ -1,5 +1,6 @@
 ---
 title: Saved Searches
+sidebar_class_name: update
 ---
 
 The `SavedSearchesService` manages saved searches: retrieving, saving, updating, and deleting them.

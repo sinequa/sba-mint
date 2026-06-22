@@ -1,5 +1,6 @@
 ---
 title: Theme
+sidebar_class_name: update
 ---
 
 The `ThemeStore` loads and manages themes, handles scope-based theme assignment, and applies CSS variables to the DOM.

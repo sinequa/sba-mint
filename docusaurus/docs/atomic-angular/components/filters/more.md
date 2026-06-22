@@ -1,5 +1,6 @@
 ---
 title: MoreButtonComponent
+sidebar_class_name: new
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
