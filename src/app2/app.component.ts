@@ -2,8 +2,8 @@ import { Component, DestroyRef, computed, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import { LoggerService } from "@sinequa/agent";
-import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
-import { SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
+import { ApplicationStore, FeatureFlagsDialogComponent, MultiSelectionToolbarComponent, UserSettingsStore } from "@sinequa/atomic-angular";
+import { DialogService, SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
 import { MainSidebarComponent } from "./components/sidebar";
@@ -29,6 +29,7 @@ export class AppComponent {
   private readonly applicationStore = inject(ApplicationStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly queryClient = inject(QueryClient);
+  private readonly dialogService = inject(DialogService);
 
   private readonly currentUrl = injectCurrentUrl();
   // Routes that render without the application chrome (no sidebar): auth screens and the error page.
@@ -59,6 +60,21 @@ export class AppComponent {
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
       document.documentElement.classList.toggle("dark", matches);
     });
+
+    // Ctrl+Shift+F opens the feature-flags dialog. Chosen to avoid browser/OS conflicts: not bound by
+    // Chrome/Firefox/Edge (unlike Ctrl+Shift+K = Firefox console), no AltGr (Ctrl+Alt) clash on AZERTY,
+    // and not Alt+Shift (Windows keyboard-layout switch). The dialog gates its own content to admins,
+    // so the shortcut stays unconditional here — non-admins just see the "admin only" notice.
+    addEventListener(
+      "keydown",
+      (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.shiftKey && !event.altKey && event.key.toLowerCase() === "f") {
+          event.preventDefault();
+          void this.dialogService.open(FeatureFlagsDialogComponent);
+        }
+      },
+      { signal: controller.signal }
+    );
 
     this.destroyRef.onDestroy(() => controller.abort());
   }
