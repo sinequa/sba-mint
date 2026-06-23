@@ -99,7 +99,7 @@ export type NavbarMenu = {
                   </DropdownContent>
                 </Dropdown>
                 <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
-                  <arrow-up-right-from-square-icon aria-hidden="true" />
+                  <arrow-up-right-from-square-icon />
                   <span class="sr-only">Move to {{ menu.display | transloco }}</span>
                 </sidebar-menu-action>
               }

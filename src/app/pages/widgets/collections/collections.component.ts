@@ -15,7 +15,7 @@ import { BarsIcon, ButtonComponent, InboxIcon, InputComponent, ListItemComponent
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <InboxIcon aria-hidden="true" />
+          <InboxIcon />
           {{ 'myCollections' | transloco }}
         </h1>
 

@@ -11,7 +11,7 @@ import { toast } from "ngx-sonner";
   imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, TrashIcon, HistoryIcon],
   template: `
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-      <HistoryIcon aria-hidden="true" />
+      <HistoryIcon />
       {{ "history" | transloco }}
     </h1>
 
