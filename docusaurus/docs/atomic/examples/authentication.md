@@ -13,12 +13,12 @@ If there is no session **and** an SSO provider is configured, `login()` **immedi
 
 ## 1. Bootstrap the library
 
-At startup you typically: set the app name, run `appInitializerFn()` (reads `backendUrl` + SSO providers from the server's pre-login config), then probe for an existing session with `getCsrfToken()`.
+At startup you typically: set the app name, run `initializeAppConfig()` (reads `backendUrl` + SSO providers from the server's pre-login config), then probe for an existing session with `getCsrfToken()`.
 
 ```js title="bootstrap.js"
 import {
   setGlobalConfig,
-  appInitializerFn,
+  initializeAppConfig,
   getCsrfToken,
   isAuthenticated,
   globalConfig,
@@ -30,16 +30,17 @@ export async function bootstrap() {
 
   try {
     // 2. Populates backendUrl + auto OAuth/SAML providers from the server.
-    await appInitializerFn();
+    await initializeAppConfig();
   } catch {
     // Pre-login may fail (e.g. app name not set); credential login still works.
   }
 
+  // 3. Silently picks up an existing cookie / SSO-redirect session. Does NOT redirect. Returns the
+  //    token, or null when there's no ambient session; throws only on a transport failure.
   try {
-    // 3. Silently picks up an existing cookie / SSO-redirect session. Does NOT redirect.
     await getCsrfToken();
   } catch {
-    // No ambient session — the user will authenticate explicitly.
+    // Probe failed (transport) — proceed unauthenticated; the user will authenticate explicitly.
   }
 
   return {
@@ -135,7 +136,7 @@ import {
   useState,
 } from 'react';
 import {
-  appInitializerFn,
+  initializeAppConfig,
   emitAuthenticatedEvent,
   fetchPrincipal,
   getCsrfToken,
@@ -174,14 +175,14 @@ export function AuthProvider({ children }) {
       setGlobalConfig({ app: import.meta.env.VITE_SINEQUA_APP });
 
       try {
-        await appInitializerFn();
+        await initializeAppConfig();
       } catch {
         /* pre-login optional */
       }
       try {
-        await getCsrfToken(); // silent session detection, no redirect
+        await getCsrfToken(); // silent session detection, no redirect; null if no session
       } catch {
-        /* no ambient session */
+        /* transport failure — proceed unauthenticated */
       }
 
       if (cancelled) return;

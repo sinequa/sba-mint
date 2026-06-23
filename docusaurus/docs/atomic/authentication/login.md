@@ -1,5 +1,6 @@
 ---
 title: login
+sidebar_class_name: update
 ---
 
 Logs in the user. If credentials are provided, authenticates using a JWT token request. If no credentials are given, attempts SSO, then OAuth/SAML if configured.
@@ -49,9 +50,17 @@ flowchart TD
     C -->|No token| E{OAuth/SAML configured?}
     E -->|OAuth| F[tryOAuthAuthentication]
     E -->|SAML| G[trySAMLAuthentication]
-    E -->|Neither| H[Fallback to SSO or Credentials]
+    E -->|Neither| I[tryAutoAuthentication - OIDC]
+    I -->|200| D
+    I -->|no| H[Fallback to Credentials form]
     B --> D
     F --> D
     G --> D
     H --> D
 ```
+
+## See also
+
+- [**Authentication flows**](./auth-flows.md) — every mode end to end, incl. the OIDC
+  auto-authentication probe and token-expiry re-authentication.
+- [`tryAutoAuthentication`](./tryAutoAuthentication.md) — the `unknown`-mode auto-auth probe (OIDC).

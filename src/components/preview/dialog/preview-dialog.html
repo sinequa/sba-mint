@@ -17,9 +17,9 @@
               [attr.aria-label]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
               (click)="sidebarExpanded.set(!sidebarExpanded())">
               @if (sidebarExpanded()) {
-                <ChevronRight aria-hidden="true" />
+                <ChevronRight />
               } @else {
-                <ChevronLeft aria-hidden="true" />
+                <ChevronLeft />
               }
             </button>
             @if (sidebarExpanded()) {
@@ -35,7 +35,7 @@
                     value="previewDialog-chat"
                     [active]="activeTab() === 'chat'"
                     (click)="activeTab.set('chat')">
-                    {{ 'previewDialog.chat' | transloco }}
+                    {{ "previewDialog.chat" | transloco }}
                   </Tab>
                 }
                 @if (displaySummaryContent()) {
@@ -46,7 +46,7 @@
                     value="previewDialog-summary"
                     [active]="activeTab() === 'summary'"
                     (click)="activeTab.set('summary')">
-                    {{ 'previewDialog.summary' | transloco }}
+                    {{ "previewDialog.summary" | transloco }}
                   </Tab>
                 }
                 <Tab
@@ -56,7 +56,7 @@
                   value="previewDialog-find"
                   [active]="activeTab() === 'find'"
                   (click)="activeTab.set('find')">
-                  {{ 'previewDialog.find' | transloco }}
+                  {{ "previewDialog.find" | transloco }}
                 </Tab>
               </TabsList>
             </Tabs>

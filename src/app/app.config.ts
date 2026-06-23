@@ -2,12 +2,13 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
+
 import { ApplicationConfig, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
-import { provideAssistant } from "@config/providers/assistant.providers";
 import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 import { PREVIEW_HIGHLIGHTS } from "@config/highlight.config";
+import { provideAssistant } from "@config/providers/assistant.providers";
 import { TranslocoHttpLoader } from "@config/transloco/transloco-loader";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
@@ -17,6 +18,7 @@ import {
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
   bodyInterceptorFn,
+  bootstrapApp,
   COLLECTIONS_CONFIG,
   COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
@@ -31,10 +33,11 @@ import {
   ROUTE_COMPONENTS,
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
-  toastInterceptorFn,
-  bootstrapApp
+  toastInterceptorFn
 } from "@sinequa/atomic-angular";
+
 import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
+
 import { SearchAllComponent } from "./pages/search/all/search-all.component";
 import { SearchLayoutComponent } from "./pages/search/layout";
 import { getComponentsForDocumentType } from "./registry/document-type-registry";
@@ -80,22 +83,10 @@ export const appConfig: ApplicationConfig = {
     // by default, the routerLink is "/xxx", where xxx is the name of the widget
     // if you want to change the path of the widget, you can use the routerLink property
     // showLoadMore is used to show the "Load more" button in the widgets, by default it is set to true, so here we set it to false
-    {
-      provide: RECENT_SEARCHES_CONFIG,
-      useValue: { ...RECENT_SEARCHES_OPTIONS, routerLink: "/widgets/recent-searches", showLoadMore: false }
-    },
-    {
-      provide: SAVED_SEARCHES_CONFIG,
-      useValue: { ...SAVED_SEARCHES_OPTIONS, routerLink: "/widgets/saved-searches", showLoadMore: false }
-    },
-    {
-      provide: BOOKMARKS_CONFIG,
-      useValue: { ...BOOKMARKS_OPTIONS, routerLink: "/widgets/bookmarks", showLoadMore: false }
-    },
-    {
-      provide: COLLECTIONS_CONFIG,
-      useValue: { ...COLLECTIONS_OPTIONS, routerLink: "/widgets/collections", showLoadMore: false }
-    },
+    { provide: RECENT_SEARCHES_CONFIG, useValue: { ...RECENT_SEARCHES_OPTIONS, routerLink: "/widgets/recent-searches", showLoadMore: false } },
+    { provide: SAVED_SEARCHES_CONFIG, useValue: { ...SAVED_SEARCHES_OPTIONS, routerLink: "/widgets/saved-searches", showLoadMore: false } },
+    { provide: BOOKMARKS_CONFIG, useValue: { ...BOOKMARKS_OPTIONS, routerLink: "/widgets/bookmarks", showLoadMore: false } },
+    { provide: COLLECTIONS_CONFIG, useValue: { ...COLLECTIONS_OPTIONS, routerLink: "/widgets/collections", showLoadMore: false } },
     // this token is used to configure how the extracts will be retrieved
     // if worker is allowed by your Security Policy, the extracts will be retrieved using a web worker
     // if not, comment the line below or set it to false
