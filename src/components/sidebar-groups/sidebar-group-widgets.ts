@@ -169,14 +169,16 @@ export class WidgetsSidebarGroupComponent {
 
   constructor() {
     // Close the sidebar in mobile after navigation
-    this.router.events.pipe(
-      filter(e => e.type === EventType.NavigationEnd),
-      takeUntilDestroyed()
-    ).subscribe(() => {
-      if (this.breakpointService.isMobile()) {
-        this.sidebarService.setOpenMobile(false);
-      }
-    });
+    this.router.events
+      .pipe(
+        filter(e => e.type === EventType.NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        if (this.breakpointService.isMobile()) {
+          this.sidebarService.setOpenMobile(false);
+        }
+      });
   }
 
   private readonly currentUrl = toSignal(

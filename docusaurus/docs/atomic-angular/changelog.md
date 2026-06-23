@@ -6,6 +6,8 @@ The documentation is updated regularly to include the latest features, bug fixes
 
 ### 🚀 New Features
 
+* [feature-flags](components/feature-flags): Added a dialog to toggle feature flags live at runtime, gated to administrators.
+* [navbar-tabs](components/navbar-tabs): Persist active filters when switching between tabs. (ES-29749)
 * [filters](components/filters):
   * Added support for vertical rendering.
   * Added `aggregations` input to allow specifying which filters to display in the bar.
@@ -14,6 +16,11 @@ handling of lists that exceed the visible area in a vertical layout.
 
 ### ✨ Updates
 
+* [Auth guard](guards/auth.md) / [Auth interceptor](interceptors/auth.md):
+  * Show a signed-out view on `/logout` instead of the re-authentication loader.
+  * Hardened cookie/proxy SSO — send credentials and re-probe the session before reloading.
+  * Documented OIDC auto-authentication and token-expiry re-authentication.
+* [Search service](services/search.md): Prefix the static index fetch with the configured `basePath`.
 * [preview](services/preview.md): Enhanced the preview service to support custom highlights and improved interaction with the preview iframe.
 * [Aggregations service](services/aggregations.md): Updated to include methods for loading more aggregation items and opening aggregation nodes.  
 * [App store](stores/app):

@@ -10,7 +10,20 @@ import { BarsIcon, ButtonComponent, InboxIcon, InputComponent, ListItemComponent
 
 @Component({
   selector: "Collections",
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent, InboxIcon, PenToSquareIcon, TrashIcon, BarsIcon],
+  imports: [
+    RouterModule,
+    FormsModule,
+    TranslocoPipe,
+    DragDropModule,
+    DeleteCollectionDialog,
+    ButtonComponent,
+    InputComponent,
+    ListItemComponent,
+    InboxIcon,
+    PenToSquareIcon,
+    TrashIcon,
+    BarsIcon
+  ],
   template: `
     <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
       <InboxIcon />

@@ -10,7 +10,20 @@ import { BarsIcon, ButtonComponent, InboxIcon, InputComponent, ListItemComponent
 
 @Component({
   selector: "Collections",
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent, InboxIcon, PenToSquareIcon, TrashIcon, BarsIcon],
+  imports: [
+    RouterModule,
+    FormsModule,
+    TranslocoPipe,
+    DragDropModule,
+    DeleteCollectionDialog,
+    ButtonComponent,
+    InputComponent,
+    ListItemComponent,
+    InboxIcon,
+    PenToSquareIcon,
+    TrashIcon,
+    BarsIcon
+  ],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
