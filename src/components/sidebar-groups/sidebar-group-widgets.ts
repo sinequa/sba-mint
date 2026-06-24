@@ -99,7 +99,7 @@ export type NavbarMenu = {
                   </DropdownContent>
                 </Dropdown>
                 <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
-                  <arrow-up-right-from-square-icon aria-hidden="true" />
+                  <arrow-up-right-from-square-icon />
                   <span class="sr-only">Move to {{ menu.display | transloco }}</span>
                 </sidebar-menu-action>
               }
@@ -169,14 +169,16 @@ export class WidgetsSidebarGroupComponent {
 
   constructor() {
     // Close the sidebar in mobile after navigation
-    this.router.events.pipe(
-      filter(e => e.type === EventType.NavigationEnd),
-      takeUntilDestroyed()
-    ).subscribe(() => {
-      if (this.breakpointService.isMobile()) {
-        this.sidebarService.setOpenMobile(false);
-      }
-    });
+    this.router.events
+      .pipe(
+        filter(e => e.type === EventType.NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        if (this.breakpointService.isMobile()) {
+          this.sidebarService.setOpenMobile(false);
+        }
+      });
   }
 
   private readonly currentUrl = toSignal(

@@ -31,7 +31,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
               routerLinkActive="active"
               #rlaHome="routerLinkActive"
               [attr.data-active]="rlaHome.isActive || null">
-              <home-icon aria-hidden="true" />
+              <home-icon />
               <span class="text-sm" sr-only>{{ 'home' | transloco }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
@@ -45,7 +45,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
                 routerLinkActive="active"
                 #rlaSearch="routerLinkActive"
                 [attr.data-active]="rlaSearch.isActive || null">
-                <magnifying-glass-icon aria-hidden="true" />
+                <magnifying-glass-icon />
                 <span class="text-sm" sr-only>{{ 'search' | transloco }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>

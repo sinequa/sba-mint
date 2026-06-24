@@ -1,5 +1,6 @@
 ---
 title: InfiniteScroll
+sidebar_class_name: update
 ---
 
 The `InfiniteScrollDirective` enables infinite scrolling on any element. It uses `IntersectionObserver` to detect when the element enters the viewport and emits a `onScroll` event.

@@ -1,5 +1,6 @@
 ---
 title: SponsoredResults
+sidebar_class_name: update
 ---
 
 The `SponsoredResultsComponent` displays a list of sponsored links (promoted results) relevant to the current search query. It fetches and shows up to three sponsored results, each with a title, link, and a "PROMOTED" badge.

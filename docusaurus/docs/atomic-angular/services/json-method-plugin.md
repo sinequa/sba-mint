@@ -1,5 +1,6 @@
 ---
 title: JSON Method Plugin
+sidebar_class_name: update
 ---
 
 The `JsonMethodPluginService` provides methods to call Sinequa JSON plugins via HTTP GET and POST requests.
