@@ -14,7 +14,7 @@ import { RobotIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarMen
       @let agent = 'agent' | transloco;
       <sidebar-menu-item aria-label="agent">
         <sidebar-menu-button [tooltip]="agent" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
-          <robot-icon aria-hidden="true" />
+          <robot-icon />
           <span class="text-sm" sr-only>{{ agent }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>

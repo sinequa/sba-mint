@@ -1,20 +1,20 @@
-import { afterNextRender, Component, effect, inject, signal, untracked } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
+import { afterNextRender, Component, effect, inject, signal, untracked } from "@angular/core";
+import { Router, RouterModule } from "@angular/router";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { toast } from "ngx-sonner";
 
-import { getRelativeDate } from '@sinequa/atomic';
-import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, HistoryIcon, ListItemComponent, TrashCanIcon } from '@sinequa/ui';
+import { getRelativeDate } from "@sinequa/atomic";
+import { ApplicationService, SearchItem, TranslocoDateImpurePipe, UserSettingsStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, HistoryIcon, ListItemComponent, TrashCanIcon } from "@sinequa/ui";
 
 @Component({
-  selector: 'app-recent-searches',
+  selector: "app-recent-searches",
   imports: [RouterModule, TranslocoPipe, ButtonComponent, ListItemComponent, HistoryIcon, TrashCanIcon],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2 overflow-hidden">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <HistoryIcon aria-hidden="true" />
+          <HistoryIcon />
           {{ 'history' | transloco }}
         </h1>
 
@@ -63,7 +63,7 @@ import { ButtonComponent, HistoryIcon, ListItemComponent, TrashCanIcon } from '@
     </div>
   `,
   host: {
-    class: 'flex flex-col h-full w-full'
+    class: "flex flex-col h-full w-full"
   },
   providers: [TranslocoDateImpurePipe]
 })
@@ -86,7 +86,7 @@ export class RecentSearchesComponent {
       untracked(() => {
         const groupedByDay = recentSearches.reduce(
           (acc, search) => {
-            const date = new Date(search.date).toISOString().split('T')[0];
+            const date = new Date(search.date).toISOString().split("T")[0];
 
             if (!acc[date]) acc[date] = [];
 
@@ -112,7 +112,7 @@ export class RecentSearchesComponent {
     const index = this.userSettingsStore.recentSearches().findIndex(s => s === search);
     await this.userSettingsStore.deleteRecentSearch(index);
 
-    toast.success('Recent search deleted');
+    toast.success("Recent search deleted");
   }
 
   getQueryParams(search: SearchItem): Record<string, string> {
@@ -126,11 +126,11 @@ export class RecentSearchesComponent {
   }
 
   getDate(date: string): string {
-    const d = getRelativeDate('en', date);
-    const formattedDate = this.datePipe.transform(date, 'fullDate');
+    const d = getRelativeDate("en", date);
+    const formattedDate = this.datePipe.transform(date, "fullDate");
 
     // if today, add "Today - " in front of the formatted date
-    if (d.toLocaleLowerCase() === 'today') {
+    if (d.toLocaleLowerCase() === "today") {
       const langDate = getRelativeDate(this.transloco.getActiveLang(), date);
       return `${langDate} - ${formattedDate}`;
     }
@@ -145,7 +145,7 @@ export class RecentSearchesComponent {
    * @private
    */
   private setTitle() {
-    const title = this.transloco.translate('history');
+    const title = this.transloco.translate("history");
     this.applicationService.setTitle(title);
   }
 }

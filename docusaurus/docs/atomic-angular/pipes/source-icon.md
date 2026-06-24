@@ -27,12 +27,13 @@ transform(collection: string[]): string
 
 ```typescript
 import { SourceIconPipe } from '@sinequa/atomic-angular';
+import { FAIcon } from '@sinequa/ui';
 
 @Component({
-  selector: 'app-document-icon',
-  imports: [SourceIconPipe],
+  selector: 'document-icon',
+  imports: [FAIcon, SourceIconPipe],
   template: `
-    <i [class]="source | sourceIcon"></i>
+    <FaIcon [faClass]="source | sourceIcon"></i>
   `
 })
 export class DocumentIconComponent {

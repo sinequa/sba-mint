@@ -3,11 +3,7 @@
   "embeddedLanguageFormatting": "off",
   "experimentalTailwindcss": {
     "attributes": ["class"],
-    "functions": [
-      "tv",
-      "cva",
-      "cn"
-    ],
+    "functions": ["tv", "cva", "cn"],
     "preserveWhitespace": true
   },
   "tabWidth": 2,
@@ -21,8 +17,5 @@
   "printWidth": 160,
   "endOfLine": "crlf",
   "experimentalSortPackageJson": false,
-  "ignorePatterns": [
-    "src/assets/vendors/**/*",
-    "*.html"
-  ]
+  "ignorePatterns": ["src/assets/vendors/**/*", "*.html"]
 }

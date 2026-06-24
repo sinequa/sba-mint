@@ -1,25 +1,25 @@
-import { themes as prismThemes } from 'prism-react-renderer';
+import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Sinequa',
-  tagline: 'Connect your modern workplace and drive innovation from the inside out',
-  favicon: 'img/favicon.png',
-  staticDirectories: ['static'],
+  title: "Sinequa",
+  tagline: "Connect your modern workplace and drive innovation from the inside out",
+  favicon: "img/favicon.png",
+  staticDirectories: ["static"],
 
   // Set the production url of your site here
-  url: 'https://github.sinequa.com/',
+  url: "https://github.sinequa.com/",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/pages/Product/sba-mint/',
+  baseUrl: "/pages/Product/sba-mint/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'sinequa', // Usually your GitHub org/user name.
-  projectName: 'sba-mint', // Usually your repo name.
-  deploymentBranch: 'gh-pages',
+  organizationName: "sinequa", // Usually your GitHub org/user name.
+  projectName: "sba-mint", // Usually your repo name.
+  deploymentBranch: "gh-pages",
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: "throw",
 
   trailingSlash: false,
 
@@ -27,15 +27,15 @@ const config = {
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en']
+    defaultLocale: "en",
+    locales: ["en"]
   },
 
   plugins: [
-    require.resolve('docusaurus-lunr-search'),
+    require.resolve("docusaurus-lunr-search"),
     function suppressVscodeLangserverWarning() {
       return {
-        name: 'suppress-vscode-languageserver-warning',
+        name: "suppress-vscode-languageserver-warning",
         configureWebpack() {
           return {
             module: {
@@ -49,25 +49,34 @@ const config = {
 
   presets: [
     [
-      'classic',
+      "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          routeBasePath: '/',
-          includeCurrentVersion: false,
+          routeBasePath: "/",
+          // Serve the unversioned `docs/` content as the "Next" (work-in-progress)
+          // version, while keeping the latest released version at the site root.
+          includeCurrentVersion: true,
+          lastVersion: "11.14.0",
+          versions: {
+            current: {
+              label: "Next 🚧",
+              path: "next"
+            }
+          },
           // path: 'docs',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
           //   'https://github.com/sinequa/sba-angular/tree/main/',
-          sidebarPath: './sidebars.js',
+          sidebarPath: "./sidebars.js",
           sidebarItemsGenerator: async function ({ defaultSidebarItemsGenerator, ...args }) {
             // Use the default sidebar items generator to generate the sidebar items
             const sidebarItems = await defaultSidebarItemsGenerator(args);
             // Customize the folder names here
             return sidebarItems.map(item => {
               // Capitalize the first letter of the label for category items
-              if (item.type === 'category') {
+              if (item.type === "category") {
                 return {
                   ...item,
                   label: item.label.charAt(0).toUpperCase() + item.label.slice(1)
@@ -79,7 +88,7 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css'
+          customCss: "./src/css/custom.css"
         }
       })
     ]
@@ -89,7 +98,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: "img/docusaurus-social-card.jpg",
       docs: {
         sidebar: {
           hideable: true,
@@ -97,57 +106,57 @@ const config = {
         }
       },
       navbar: {
-        title: '🍵 Mint',
+        title: "🍵 Mint",
         logo: {
-          alt: 'Sinequa Logo',
-          src: 'img/Logo_SINEQUA_RVB-170.png'
+          alt: "Sinequa Logo",
+          src: "img/Logo_SINEQUA_RVB-170.png"
         },
         items: [
           {
-            type: 'docSidebar',
-            position: 'left',
-            sidebarId: 'atomic',
-            label: '⚛️ Atomic'
+            type: "docSidebar",
+            position: "left",
+            sidebarId: "atomic",
+            label: "⚛️ Atomic"
           },
           {
-            type: 'docSidebar',
-            position: 'left',
-            sidebarId: 'atomicAngular',
-            label: '🅰️ Atomic for Angular'
+            type: "docSidebar",
+            position: "left",
+            sidebarId: "atomicAngular",
+            label: "🅰️ Atomic for Angular"
           },
           {
-            type: 'docsVersionDropdown',
-            position: 'right'
+            type: "docsVersionDropdown",
+            position: "right"
           },
           {
-            href: 'https://github.com/sinequa/sba-mint',
-            label: 'GitHub',
-            position: 'right'
+            href: "https://github.com/sinequa/sba-mint",
+            label: "GitHub",
+            position: "right"
           }
         ]
       },
       footer: {
-        style: 'dark',
+        style: "dark",
         links: [
           {
-            title: 'Community',
+            title: "Community",
             items: [
               {
-                label: 'Twitter',
-                href: 'https://x.com/sinequa'
+                label: "Twitter",
+                href: "https://x.com/sinequa"
               }
             ]
           },
           {
-            title: 'More',
+            title: "More",
             items: [
               {
-                label: 'Website',
-                href: 'https://sinequa.com'
+                label: "Website",
+                href: "https://sinequa.com"
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/sinequa/sba-mint'
+                label: "GitHub",
+                href: "https://github.com/sinequa/sba-mint"
               }
             ]
           }
@@ -157,33 +166,33 @@ const config = {
       prism: {
         theme: prismThemes.oneDark,
         darkTheme: prismThemes.oneDark,
-        defaultLanguage: 'typescript',
+        defaultLanguage: "typescript",
         magicComments: [
           {
-            className: 'code-block-error-line',
-            line: 'error',
-            block: { start: 'error-start', end: 'error-end' }
+            className: "code-block-error-line",
+            line: "error",
+            block: { start: "error-start", end: "error-end" }
           },
           {
-            className: 'code-block-add-line',
-            line: 'add',
-            block: { start: 'add-start', end: 'add-end' }
+            className: "code-block-add-line",
+            line: "add",
+            block: { start: "add-start", end: "add-end" }
           },
           {
-            className: 'code-block-remove-line',
-            line: 'remove',
-            block: { start: 'remove-start', end: 'remove-end' }
+            className: "code-block-remove-line",
+            line: "remove",
+            block: { start: "remove-start", end: "remove-end" }
           }
         ]
       }
     }),
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: ["@docusaurus/theme-mermaid"],
   // In order for Mermaid code blocks in Markdown to work,
   // you also need to enable the Remark plugin with this option
   markdown: {
     mermaid: true,
     hooks: {
-      onBrokenMarkdownLinks: 'warn'
+      onBrokenMarkdownLinks: "warn"
     }
   }
 };

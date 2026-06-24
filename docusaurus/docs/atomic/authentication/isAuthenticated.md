@@ -1,5 +1,6 @@
 ---
 title: isAuthenticated
+sidebar_class_name: update
 ---
 
 Checks whether the current user is authenticated by verifying the presence of a CSRF token in session storage.

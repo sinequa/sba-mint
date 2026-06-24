@@ -1,6 +1,6 @@
 import { Data, Route } from "@angular/router";
 
-import { AuthGuard, AuthPageComponent, ErrorComponent, LoadingComponent, queryNameResolver } from "@sinequa/atomic-angular";
+import { AuthGuard, AuthPageComponent, ErrorComponent, queryNameResolver } from "@sinequa/atomic-angular";
 import { AgentLayoutComponent } from "./pages/agent/agent.layout";
 import { HomeComponent } from "./pages/home/home";
 import { SearchLayoutComponent } from "./pages/search/search.layout";
@@ -83,7 +83,6 @@ export const routes: ExtendedRoutes = [
       }
     ]
   },
-  { path: "loading", component: LoadingComponent },
   { path: "error", component: ErrorComponent },
   { path: "**", redirectTo: "home", pathMatch: "full" }
 ];
