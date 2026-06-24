@@ -1,5 +1,6 @@
 ---
 title: Backdrop
+sidebar_class_name: update
 ---
 
 The `BackdropComponent` renders a full-screen dark overlay that appears behind the `DrawerComponent` when it is opened. It is automatically controlled by the drawer — no manual management is required.

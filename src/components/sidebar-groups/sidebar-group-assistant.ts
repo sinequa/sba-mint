@@ -17,7 +17,7 @@ import { CommentIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarM
           routerLinkActive="active"
           #rlaAssistant="routerLinkActive"
           [attr.data-active]="rlaAssistant.isActive || null">
-          <comment-icon aria-hidden="true" />
+          <comment-icon />
           <span class="text-sm" sr-only>{{ 'chats' | transloco }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>

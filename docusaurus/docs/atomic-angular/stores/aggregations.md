@@ -1,5 +1,6 @@
 ---
 title: Aggregations
+sidebar_class_name: update
 ---
 
 Each time a search is performed, the result's aggregations are stored in this store. This makes it easier to access aggregation data directly rather than from the `Result` object.

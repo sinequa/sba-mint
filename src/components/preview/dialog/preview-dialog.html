@@ -17,9 +17,9 @@
               [attr.aria-label]="(sidebarExpanded() ? 'previewDialog.collapseSidebar' : 'previewDialog.expandSidebar') | transloco"
               (click)="sidebarExpanded.set(!sidebarExpanded())">
               @if (sidebarExpanded()) {
-                <ChevronRight aria-hidden="true" />
+                <ChevronRight />
               } @else {
-                <ChevronLeft aria-hidden="true" />
+                <ChevronLeft />
               }
             </button>
             @if (sidebarExpanded()) {

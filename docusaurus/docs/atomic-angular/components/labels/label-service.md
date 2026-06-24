@@ -1,5 +1,6 @@
 ---
 title: LabelService
+sidebar_class_name: update
 ---
 
 The `LabelService` provides methods for managing labels, including fetching label suggestions, checking user rights, and persisting label changes. It acts as the main interface between label UI components and the backend label service.

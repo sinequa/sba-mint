@@ -10,12 +10,25 @@ import { BarsIcon, ButtonComponent, InboxIcon, InputComponent, ListItemComponent
 
 @Component({
   selector: "Collections",
-  imports: [RouterModule, FormsModule, TranslocoPipe, DragDropModule, DeleteCollectionDialog, ButtonComponent, InputComponent, ListItemComponent, InboxIcon, PenToSquareIcon, TrashIcon, BarsIcon],
+  imports: [
+    RouterModule,
+    FormsModule,
+    TranslocoPipe,
+    DragDropModule,
+    DeleteCollectionDialog,
+    ButtonComponent,
+    InputComponent,
+    ListItemComponent,
+    InboxIcon,
+    PenToSquareIcon,
+    TrashIcon,
+    BarsIcon
+  ],
   template: `
     <div class="layout-search overflow-auto">
       <div class="col-span-2 col-start-2">
         <h1 class="mt-6 mb-4 flex items-center gap-2 text-2xl font-semibold">
-          <InboxIcon aria-hidden="true" />
+          <InboxIcon />
           {{ 'myCollections' | transloco }}
         </h1>
 

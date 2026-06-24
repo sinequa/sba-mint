@@ -1,5 +1,6 @@
 ---
 title: Text Chunk
+sidebar_class_name: update
 ---
 
 The `TextChunkService` retrieves text chunks from the Sinequa backend for a given document and set of highlight locations.

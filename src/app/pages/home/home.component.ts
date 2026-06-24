@@ -1,12 +1,13 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, Injector, Type, afterNextRender, computed, effect, inject, runInInjectionContext, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
-
+import { NgComponentOutlet } from "@angular/common";
+import { afterNextRender, Component, computed, DestroyRef, effect, Injector, inject, runInInjectionContext, signal, Type, viewChild } from "@angular/core";
+import { Router } from "@angular/router";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { error, fetchQuery } from "@sinequa/atomic";
 import {
   AggregationsStore,
-  AppStore,
   ApplicationService,
+  AppStore,
   AutocompleteService,
   BookmarksComponent,
   CollectionsComponent,
@@ -17,15 +18,12 @@ import {
   RecentSearchesComponent,
   SavedSearchesComponent,
   signIn
-} from '@sinequa/atomic-angular';
-import { BookmarkIcon, HistoryIcon, InboxIcon, Separator, StarIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from '@sinequa/ui';
-
-import { getState } from '@ngrx/signals';
-import { error, fetchQuery } from '@sinequa/atomic';
-import { AutocompleteComponent } from '../../components/search/autocomplete/autocomplete.component';
-import { SearchComponent, SearchFooter } from '../../components/search/search.component';
-import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { UserMenuComponent } from '../../components/user-menu/user-menu';
+} from "@sinequa/atomic-angular";
+import { BookmarkIcon, HistoryIcon, InboxIcon, Separator, StarIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
+import { AutocompleteComponent } from "../../components/search/autocomplete/autocomplete.component";
+import { SearchComponent } from "../../components/search/search.component";
+import { AppSidebarComponent } from "../../components/sidebar/sidebar.component";
+import { UserMenuComponent } from "../../components/user-menu/user-menu";
 
 type HomeTab = {
   name: string;
@@ -38,30 +36,30 @@ type HomeTab = {
 
 const homeFeatures: HomeTab[] = [
   {
-    name: 'recentSearches',
+    name: "recentSearches",
     icon: HistoryIcon,
-    label: 'searches.recent.label',
+    label: "searches.recent.label",
     inputs: { options: { itemsPerPage: 5 } },
     component: RecentSearchesComponent
   },
   {
-    name: 'savedSearches',
+    name: "savedSearches",
     icon: StarIcon,
-    label: 'searches.saved.label',
+    label: "searches.saved.label",
     inputs: { options: { itemsPerPage: 5 } },
     component: SavedSearchesComponent
   },
   {
-    name: 'bookmarks',
+    name: "bookmarks",
     icon: BookmarkIcon,
-    label: 'bookmarks.label',
+    label: "bookmarks.label",
     inputs: { options: { itemsPerPage: 5 } },
     component: BookmarksComponent
   },
   {
-    name: 'baskets',
+    name: "baskets",
     icon: InboxIcon,
-    label: 'collections.label',
+    label: "collections.label",
     component: CollectionsComponent
   }
 ];
@@ -71,7 +69,7 @@ const homeFeatures: HomeTab[] = [
  * @deprecated This component is deprecated and will be removed in future versions.
  */
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   imports: [
     NgComponentOutlet,
     TranslocoPipe,
@@ -82,24 +80,23 @@ const homeFeatures: HomeTab[] = [
     TabComponent,
     TabContent,
     AppSidebarComponent,
-    SearchFooter,
     FiltersBarComponent,
     TabsListComponent,
     Separator
   ],
-  templateUrl: './home.component.html',
+  templateUrl: "./home.component.html",
   host: {
-    class: 'layout-search h-screen',
-    '[attr.drawer-opened]': 'drawerOpened'
+    class: "layout-search h-screen",
+    "[attr.drawer-opened]": "drawerOpened"
   },
-  providers: [provideTranslocoScope('bookmarks', 'searches', 'collections')]
+  providers: [provideTranslocoScope("bookmarks", "searches", "collections")]
 })
 export class HomeComponent {
   public drawerOpened = computed(() => this.drawerStack.isOpened());
 
-  readonly autocomplete = viewChild<AutocompleteComponent>('autocomplete');
+  readonly autocomplete = viewChild<AutocompleteComponent>("autocomplete");
 
-  readonly searchText = signal<string>('');
+  readonly searchText = signal<string>("");
 
   readonly tabs = signal(homeFeatures);
 
@@ -125,9 +122,9 @@ export class HomeComponent {
   });
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
-    name: 'tabsNavigator',
+    name: "tabsNavigator",
     optionSelector: '[role="tab"]:not([aria-disabled="true"])',
-    direction: 'horizontal',
+    direction: "horizontal",
     selectOnFocus: true,
     resetSelectionOnBlur: true
   });
@@ -146,35 +143,31 @@ export class HomeComponent {
     // react to drawer state changes to update the application title when the drawer is closed
     effect(() => {
       if (!this.drawerOpened()) {
-        this.applicationService.setTitle('Home');
-      }
-    });
-
-    effect(() => {
-      const state = getState(this.queryParamsStore);
-      if (state.filters !== undefined && state.filters.length > 0) {
-        this.search(this.searchText());
+        this.applicationService.setTitle("Home");
       }
     });
 
     // when the component is destroyed, close all drawers
     this.destroyRef.onDestroy(() => this.drawerStack.closeAll());
 
-    // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery();
+    // this is needed to populate the aggregation with the sources as no query is sent to the server.
+    // Run it after the next render so the filters bar is already mounted when the aggregations
+    // land in the store — otherwise a fast response could resolve before the component is mounted
+    // and the filters would not show.
+    afterNextRender(() => this.getFirstPageQuery());
   }
 
   async getFirstPageQuery() {
     try {
-      const query = this.appStore.getDefaultQuery() || { name: '_default' };
+      const query = this.appStore.getDefaultQuery() || { name: "_default" };
       const response = await fetchQuery({ isFirstPage: true, name: query.name });
       this.aggregationStore.update(response.aggregations);
     } catch (err: any) {
       if (err.status === 401) {
-        error('Unauthorized access - please check your credentials:', err);
+        error("Unauthorized access - please check your credentials:", err);
         runInInjectionContext(this.injector, () => signIn());
       } else if (err.status === 404) {
-        console.log('404 Not Found!');
+        console.log("404 Not Found!");
       } else {
         console.log(`HTTP error: ${err.status}`);
       }
@@ -183,10 +176,10 @@ export class HomeComponent {
 
   public search(text: string): void {
     const { filters } = getState(this.queryParamsStore);
-    this.router.navigate(['/search'], { queryParams: { q: text, f: JSON.stringify(filters) } });
+    this.router.navigate(["/search"], { queryParams: { q: text, f: JSON.stringify(filters) } });
   }
 
   selected(element: HTMLElement | null): void {
-    this.search(element?.getAttribute('data-text') || this.searchText());
+    this.search(element?.getAttribute("data-text") || this.searchText());
   }
 }

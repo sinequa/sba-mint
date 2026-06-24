@@ -2,6 +2,7 @@
 title: debouncedSignal()
 sidebar_label: Debounced Signal
 description: Create a debounced signal that updates its value after a specified timeout.
+sidebar_class_name: update
 ---
 
 The `debouncedSignal` function creates a debounced signal that updates its value after a specified timeout.
