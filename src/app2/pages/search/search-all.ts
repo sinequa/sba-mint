@@ -1,16 +1,5 @@
 import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
-import {
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  Injector,
-  inject,
-  input,
-  signal,
-  Type,
-  untracked
-} from "@angular/core";
+import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
 import { SearchOverviewComponent } from "@components/assistant-overview";
 import { CardSkeleton } from "@components/cards/record/skeleton";
 import { PreviewComponent } from "@components/preview/preview";
@@ -20,21 +9,11 @@ import { fetchServerPage } from "@config/fetch-server-page";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { MessageHandler } from "@sinequa/assistant/chat";
-import {
-  Aggregation,
-  Article,
-  bisect,
-  CCApp,
-  debug,
-  isNotInputEvent,
-  Query,
-  QueryParams,
-  Result as R,
-  SpellingCorrectionMode
-} from "@sinequa/atomic";
+import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from "@sinequa/atomic";
 import {
   AggregationsStore,
   AppStore,
+  AsideFiltersComponent,
   FiltersBarComponent,
   InfinityScrollDirective,
   NavbarTabsComponent,
@@ -47,7 +26,7 @@ import {
   SelectionStore,
   UserSettingsStore
 } from "@sinequa/atomic-angular";
-import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { BreakpointObserverService, ButtonComponent, cn, FilterIcon, IconButtonComponent, XMarkIcon } from "@sinequa/ui";
 import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
 import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
@@ -64,6 +43,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
     NoResultComponent,
     SearchFeedbackComponent,
     FiltersBarComponent,
+    AsideFiltersComponent,
     NavbarTabsComponent,
     CardSkeleton,
     SearchFeedbackComponent,
@@ -71,7 +51,11 @@ type Result = R & { nextPage?: number; previousPage?: number };
     PreviewComponent,
     SheetPreviewerComponent,
     SearchActionsComponent,
-    SearchWithAutocompleteComponent
+    SearchWithAutocompleteComponent,
+    ButtonComponent,
+    IconButtonComponent,
+    FilterIcon,
+    XMarkIcon
   ],
   templateUrl: "./search-all.html",
   styles: [
@@ -154,7 +138,7 @@ export class SearchAllComponent {
   hideFeedback = signal(false);
 
   // all rows from all pages to display in the UI, computed from the query result
-  allRows = computed(() => this.query.data()?.pages?.flatMap((page) => page.records) ?? []);
+  allRows = computed(() => this.query.data()?.pages?.flatMap(page => page.records) ?? []);
 
   // tanstack query (infinite) to fetch the search results
   query = injectInfiniteQuery<Result>(() => ({
@@ -169,8 +153,8 @@ export class SearchAllComponent {
         spellingCorrectionMode: this.c()
       }),
     initialPageParam: this.p(),
-    getPreviousPageParam: (firstPage) => firstPage.previousPage ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined
+    getPreviousPageParam: firstPage => firstPage.previousPage ?? undefined,
+    getNextPageParam: lastPage => lastPage.nextPage ?? undefined
   }));
 
   // standard injectQuery without infinite loading
@@ -251,16 +235,26 @@ export class SearchAllComponent {
   // allowAI is true if we are not in a basket search and the assistant is allowed for the current instance id
   // if the current search is a basket search, we don't want to show the assistant even if it's allowed, because the assistant is not designed to handle basket searches and it could lead to a bad user experience
   // and search with empty text should not show assistant as well, as it would not provide any value and could lead to a bad user experience
-  readonly allowAI = computed(
-    () =>
-      !this.b() && this.appStore.isAssistantAllowed(this.instanceId()) && (this.currentKeys()?.text?.length || 0) > 0
-  );
-  readonly enabledUserInput = computed(
-    () => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true
-  );
+  readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()) && (this.currentKeys()?.text?.length || 0) > 0);
+  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.modeSettings?.enabledUserInput === true);
   // assistantQuery: Query = { name: 'assistant' };
 
   readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
+
+  /**
+   * Left filters drawer (mirrors the agent page saved-chats drawer): a floating, non-modal panel
+   * that slides in from the left. Collapsed by default; auto-closes when the pointer leaves it.
+   */
+  readonly filtersCollapsed = signal(true);
+
+  /**
+   * Whether any authorized filter is configured to appear in the left drawer
+   * (`position: 'left' | 'both'`). Gates both the toggle button and the drawer.
+   */
+  protected readonly hasAsideFilters = computed(() => {
+    const asideFilters = this.appStore.filters().filter(f => f.position === "left" || f.position === "both");
+    return this.appStore.getAuthorized(asideFilters).length > 0;
+  });
 
   conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
@@ -326,9 +320,9 @@ export class SearchAllComponent {
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
       debug("effect - 5. update selectedAll signal based on the selection store and current pages");
-      const articles = this.query.data()?.pages.flatMap((page) => page.records.map((x) => x.id)) || [];
-      const selection = this.selectionStore.multiSelection().map((x) => x.id);
-      const b = bisect(articles, (x) => selection.includes(x));
+      const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
+      const selection = this.selectionStore.multiSelection().map(x => x.id);
+      const b = bisect(articles, x => selection.includes(x));
 
       if (b.true.length === 0) this.selectedAll.set("none");
       else if (b.false.length === 0) this.selectedAll.set("all");
@@ -355,7 +349,7 @@ export class SearchAllComponent {
     });
 
     this.conditionalMessageHandler.set("SkillsTester", {
-      handler: (message) => this.handleConditionalDisplayMessage(message),
+      handler: message => this.handleConditionalDisplayMessage(message),
       isGlobalHandler: false
     });
 
@@ -370,8 +364,8 @@ export class SearchAllComponent {
       return;
     }
 
-    this.query.data()?.pages?.forEach((page) => {
-      page.records.forEach((record) => {
+    this.query.data()?.pages?.forEach(page => {
+      page.records.forEach(record => {
         record.$selected = true;
         this.selectionStore.addArticleToMultiSelection(record as Article);
       });
@@ -379,8 +373,8 @@ export class SearchAllComponent {
   }
 
   unselectAll() {
-    this.query.data()?.pages?.forEach((page) => {
-      page.records.forEach((record) => {
+    this.query.data()?.pages?.forEach(page => {
+      page.records.forEach(record => {
         record.$selected = false;
         this.selectionStore.removeArticleFromMultiSelection(record as Article);
       });
@@ -400,6 +394,15 @@ export class SearchAllComponent {
   onDrawerOpenedChange(opened: boolean): void {
     // Your function logic here
     debug(`Drawer opened state changed to: ${opened}`);
+  }
+
+  toggleFilters(): void {
+    this.filtersCollapsed.set(!this.filtersCollapsed());
+  }
+
+  /** Auto-close the floating left filters drawer when the pointer leaves it (better desktop UX). */
+  protected closeFilters(): void {
+    this.filtersCollapsed.set(true);
   }
 
   getArticleType(docType?: string): Type<unknown> {
