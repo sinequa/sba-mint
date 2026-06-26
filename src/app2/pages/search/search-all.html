@@ -52,8 +52,10 @@
           <xmark-icon />
         </button>
       </div>
+      <!-- single outer scroll lives here (scrollbar-thin); neutralize aside-filters' own
+           overflow so it isn't a second, default-styled scroll container -->
       <div class="flex flex-1 scrollbar-thin flex-col gap-2 overflow-y-auto">
-        <aside-filters />
+        <aside-filters class="overflow-visible" />
       </div>
     </div>
   </aside>
