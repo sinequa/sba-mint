@@ -1,6 +1,7 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironmentInitializer } from "@angular/core";
 import {
   AGENT_INSTANCE_ID,
+  AGENT_JSON_NAME,
   LoggerService,
   provideDefaultAffordance,
   provideDefaultAgentToolbarActions,
@@ -18,6 +19,7 @@ import {
 
 export function provideAgent(): EnvironmentProviders {
   return makeEnvironmentProviders([
+    { provide: AGENT_JSON_NAME, useValue: "agents" },
     { provide: AGENT_INSTANCE_ID, useValue: "chatSearchInstance" },
     LoggerService,
     SavedChatsService,
