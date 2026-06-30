@@ -9,10 +9,13 @@
   </header>
 
   <main class="flex h-[50vh] flex-col gap-16">
-    <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
-      <app-autocomplete [text]="searchText()" />
-    </app-search>
+    <div class="flex flex-col gap-4">
+      <app-search (debounced)="searchText.set($event)" (validated)="search($event)" (selected)="selected($event)">
+        <app-autocomplete [text]="searchText()" />
+      </app-search>
 
+      <filters-bar class="gap-1" homepage />
+    </div>
     <Tabs class="flex max-h-full grow flex-col">
       <TabsList class="flex w-full font-semibold" role="tablist" aria-label="widgets tabs">
         @for (tab of tabs(); track tab.label) {
@@ -23,7 +26,7 @@
         }
       </TabsList>
 
-      <div class="scrollbar-thin my-2 overflow-y-auto">
+      <div class="my-2 scrollbar-thin overflow-y-auto">
         @for (tab of tabs(); track tab.label) {
           <TabContent [value]="tab.label">
             <ng-container *ngComponentOutlet="tab.component; inputs: tab.inputs" />

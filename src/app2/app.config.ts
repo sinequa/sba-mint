@@ -1,18 +1,18 @@
-import { registerLocaleData } from '@angular/common';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import localeDe from '@angular/common/locales/de';
-import localeFr from '@angular/common/locales/fr';
-import { APP_INITIALIZER, type ApplicationConfig, inject, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from '@angular/router';
-import { CustomReuseStrategy } from '@config/custom-reuse-strategy';
-import { TranslocoHttpLoader } from '@config/transloco-loader';
+import { registerLocaleData } from "@angular/common";
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
+import localeDe from "@angular/common/locales/de";
+import localeFr from "@angular/common/locales/fr";
+import { APP_INITIALIZER, ApplicationConfig, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
+import { provideNoopAnimations } from "@angular/platform-browser/animations";
+import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
+import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
+import { TranslocoHttpLoader } from "@config/transloco-loader";
 // @ts-expect-error
-import Flow from '@flowjs/flow.js';
-import { FlowInjectionToken } from '@flowjs/ngx-flow';
-import { provideTransloco } from '@jsverse/transloco';
-import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
-import { getComponentsForDocumentType } from '@registry/document-type-registry';
+import Flow from "@flowjs/flow.js";
+import { FlowInjectionToken } from "@flowjs/ngx-flow";
+import { provideTransloco } from "@jsverse/transloco";
+import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
+import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import {
   ASSISTANT_CUSTOM_ELEMENTS,
   ASSISTANT_MARKDOWN_IT_PLUGINS,
@@ -29,15 +29,14 @@ import {
   markdownItTableToolsPlugin,
   PageReferenceComponent,
   TableToolsComponent
-} from '@sinequa/assistant/chat';
-import { appInitializerFn } from '@sinequa/atomic';
+} from "@sinequa/assistant/chat";
 import {
-  ApplicationService,
   auditInterceptorFn,
   authInterceptorFn,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
   bodyInterceptorFn,
+  bootstrapApp,
   COLLECTIONS_CONFIG,
   COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
@@ -50,14 +49,13 @@ import {
   ROUTE_COMPONENTS,
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
-  toastInterceptorFn,
-  withBootstrapApp
-} from '@sinequa/atomic-angular';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { PREVIEW_HIGHLIGHTS } from '../config/highlight.config';
-import { SearchAllComponent } from './pages/search/search-all';
-import { SearchLayoutComponent } from './pages/search/search-layout';
-import { routes } from './routes';
+  toastInterceptorFn
+} from "@sinequa/atomic-angular";
+import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
+import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
+import { SearchAllComponent } from "./pages/search/search-all";
+import { SearchLayoutComponent } from "./pages/search/search-layout";
+import { routes } from "./routes";
 
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);
@@ -73,11 +71,14 @@ export const appConfig: ApplicationConfig = {
     // By default, Angular destroys a component when navigating away from its route and re-creates it when navigating back to that route.
     // With this provider, we can tell Angular to keep the component instance in memory and reuse it when navigating back to the route.
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    // this function is used to configure the application before it is loaded
-    provideAppInitializer(appInitializerFn),
 
-    // this function is used to sign in the user and bootstrap the application
-    provideAppInitializer(() => withBootstrapApp(inject(ApplicationService), { createRoutes: true })),
+    // Signs the user in and bootstraps the application. `bootstrapApp` injects ApplicationService
+    // itself AFTER resolving the auth mode (initializeAppConfig), so:
+    //  - detection runs before sign-in (no bootstrap race), and
+    //  - `backendUrl` is set before any service/store is constructed (no `/undefined/api/v1/...`).
+    // Note: we must NOT eagerly `inject(ApplicationService)` in this factory — that would construct
+    // it (and its dependent stores) before detection sets `backendUrl`.
+    provideAppInitializer(() => bootstrapApp({ createRoutes: true })),
 
     // Provides an APP_INITIALIZER which will initialize the custom elements defined in the @sinequa/assistant/chat
     // library. This is required to be able to use the custom elements in Angular components templates.
@@ -92,11 +93,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ASSISTANT_CUSTOM_ELEMENTS,
       useValue: {
-        'document-reference': DocumentReferenceComponent,
-        'page-reference': PageReferenceComponent,
-        'image-reference': ImageReferenceComponent,
-        'code-block': CodeBlockComponent,
-        'table-tools': TableToolsComponent
+        "document-reference": DocumentReferenceComponent,
+        "page-reference": PageReferenceComponent,
+        "image-reference": ImageReferenceComponent,
+        "code-block": CodeBlockComponent,
+        "table-tools": TableToolsComponent
       }
     },
     {
@@ -111,7 +112,7 @@ export const appConfig: ApplicationConfig = {
       ]
     },
 
-    { provide: LOCALE_ID, useValue: 'fr-FR' },
+    { provide: LOCALE_ID, useValue: "fr-FR" },
 
     // this token is used to configure the CSS class to use in the preview with the highlights
     // for each highlight, a CSS class will be created with the name of the highlight
@@ -119,47 +120,16 @@ export const appConfig: ApplicationConfig = {
 
     // this token is used to configure the function who returns the component to use for the preview
     // the function should return a DocumentTypeMap object
-    {
-      provide: COMPONENTS_FOR_DOCUMENT_TYPE,
-      useValue: getComponentsForDocumentType
-    },
+    { provide: COMPONENTS_FOR_DOCUMENT_TYPE, useValue: getComponentsForDocumentType },
 
     // those tokens are used to configure the path of the widgets
     // by default, the routerLink is "/xxx", where xxx is the name of the widget
     // if you want to change the path of the widget, you can use the routerLink property
     // showLoadMore is used to show the "Load more" button in the widgets, by default it is set to true, so here we set it to false
-    {
-      provide: RECENT_SEARCHES_CONFIG,
-      useValue: {
-        ...RECENT_SEARCHES_OPTIONS,
-        routerLink: '/widgets/recent-searches',
-        showLoadMore: false
-      }
-    },
-    {
-      provide: SAVED_SEARCHES_CONFIG,
-      useValue: {
-        ...SAVED_SEARCHES_OPTIONS,
-        routerLink: '/widgets/saved-searches',
-        showLoadMore: false
-      }
-    },
-    {
-      provide: BOOKMARKS_CONFIG,
-      useValue: {
-        ...BOOKMARKS_OPTIONS,
-        routerLink: '/widgets/bookmarks',
-        showLoadMore: false
-      }
-    },
-    {
-      provide: COLLECTIONS_CONFIG,
-      useValue: {
-        ...COLLECTIONS_OPTIONS,
-        routerLink: '/widgets/collections',
-        showLoadMore: false
-      }
-    },
+    { provide: RECENT_SEARCHES_CONFIG, useValue: { ...RECENT_SEARCHES_OPTIONS, routerLink: "/widgets/recent-searches", showLoadMore: false } },
+    { provide: SAVED_SEARCHES_CONFIG, useValue: { ...SAVED_SEARCHES_OPTIONS, routerLink: "/widgets/saved-searches", showLoadMore: false } },
+    { provide: BOOKMARKS_CONFIG, useValue: { ...BOOKMARKS_OPTIONS, routerLink: "/widgets/bookmarks", showLoadMore: false } },
+    { provide: COLLECTIONS_CONFIG, useValue: { ...COLLECTIONS_OPTIONS, routerLink: "/widgets/collections", showLoadMore: false } },
     // this token is used to configure how the extracts will be retrieved
     // if worker is allowed by your Security Policy, the extracts will be retrieved using a web worker
     // if not, comment the line below or set it to false
@@ -171,12 +141,12 @@ export const appConfig: ApplicationConfig = {
       provide: ROUTE_COMPONENTS,
       useValue: [
         {
-          path: 'search',
+          path: "search",
           component: SearchLayoutComponent,
           isRoot: true
         },
         {
-          path: 'all',
+          path: "all",
           component: SearchAllComponent
         }
       ]
@@ -210,12 +180,12 @@ export const appConfig: ApplicationConfig = {
     ),
     provideTransloco({
       config: {
-        availableLangs: ['en', 'fr', 'de'],
-        defaultLang: 'en',
+        availableLangs: ["en", "fr", "de"],
+        defaultLang: "en",
         // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
-        fallbackLang: 'en',
+        fallbackLang: "en",
         missingHandler: {
           logMissingKey: true,
           useFallbackTranslation: true
