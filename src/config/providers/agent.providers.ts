@@ -8,6 +8,7 @@ import {
   provideDefaultDebugPresentation,
   provideDefaultEmptyComponent,
   provideDefaultErrorComponent,
+  provideDefaultInputFilters,
   provideDefaultRendererPlugins,
   provideDefaultShikiHighlighterConfig,
   provideDefaultToolCardPlugins,
@@ -42,6 +43,7 @@ export function provideAgent(): EnvironmentProviders {
     provideDefaultUserToolbarActions(),
     provideDefaultWelcomeComponent(), // keep the animated-robot hero
     provideDefaultEmptyComponent(), // null (hidden) — symmetric default
-    provideDefaultErrorComponent() // null (hidden) — symmetric default
+    provideDefaultErrorComponent(), // null (hidden) — symmetric default
+    provideDefaultInputFilters()
   ]);
 }
