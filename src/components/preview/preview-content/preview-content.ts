@@ -1,29 +1,9 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  ElementRef,
-  effect,
-  inject,
-  input,
-  output,
-  resource,
-  signal,
-  viewChild
-} from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, effect, inject, input, output, resource, signal, viewChild } from "@angular/core";
 import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import {
-  AppStore,
-  CConverter,
-  PreviewHighlights,
-  PreviewNavigator,
-  PreviewService,
-  QueryService,
-  SelectionStore
-} from "@sinequa/atomic-angular";
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
@@ -110,18 +90,11 @@ export class PreviewContentComponent {
   protected passagePageNumber = signal<number | undefined>(undefined);
   protected currentPage = signal<string | undefined>(undefined); // used to go back to the last visited page when changing of conversion for a document
   protected scrollPage = computed(() =>
-    this.currentPage() !== undefined
-      ? this.currentPage()
-      : this.passagePageNumber() !== undefined
-        ? `sq-page-start-${this.passagePageNumber()}`
-        : undefined
+    this.currentPage() !== undefined ? this.currentPage() : this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined
   );
 
   /* resources */
-  public readonly previewDataResource = rxResource<
-    PreviewData | undefined,
-    { id: string; text: string; previewHighlights: CustomHighlights[] }
-  >({
+  public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
       const id = this.id() || this.selectionStore.id?.() || "";
       const queryText = this.selectionStore.queryText?.() || "";
@@ -173,9 +146,7 @@ export class PreviewContentComponent {
     }
   });
 
-  readonly isSecondary = computed(
-    () => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false
-  );
+  readonly isSecondary = computed(() => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false);
 
   /**
    * A resource that validates the preview content by checking if the cached document URL is accessible.
@@ -265,13 +236,18 @@ export class PreviewContentComponent {
    * Handles the event when the preview component is loaded.
    *
    * This method retrieves the `previewHighlights` from the selection store state.
-   * If `previewHighlights` contains a `snippetId`, it constructs a message with
+   * If the user has since manually scrolled to a different page (`currentPage`), that page wins
+   * over re-selecting the original passage snippet, since the passage reference is no longer
+   * the relevant location once the user navigated away from it.
+   * Otherwise, if `previewHighlights` contains a `snippetId`, it constructs a message with
    * the action 'select', the snippet ID, and a flag to use the passage highlighter.
    * The message is then sent to the preview service.
    */
   onLoaded() {
     const previewHighlights = this.selectionStore.previewHighlights?.();
-    if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
+    if (this.currentPage() !== undefined) {
+      this.scrollToPage();
+    } else if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     } else if (this.isSecondary() && this.scrollPage() !== undefined) {
