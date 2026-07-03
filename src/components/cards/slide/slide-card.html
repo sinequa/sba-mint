@@ -6,15 +6,15 @@
   tabindex="0"
   (keydown.control.enter)="onCtrlEnter()"
   role="option">
-  <div class="relative shrink-0">
+  <div class="relative max-w-40 min-w-32 shrink-0">
     @if (article().thumbnailUrl && !thumbnailFailed()) {
       <img
-        class="ratio-video h-full rounded-s-lg object-cover"
+        class="ratio-video h-full w-full rounded-s-lg object-cover"
         [src]="article().thumbnailUrl"
         (error)="thumbnailFailed.set(true)"
         alt="{{ article().title || 'Thumbnail image for the article' }}" />
     } @else {
-      <div class="flex size-full min-w-10 items-center justify-center rounded-s-lg bg-muted text-primary">
+      <div class="flex size-full items-center justify-center rounded-s-lg bg-muted text-primary">
         <source [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
