@@ -74,7 +74,6 @@ export class CardMenuComponent {
       .open(CollectionsDialog, this.article())
       .then((event: unknown) => {
         if (event === "dialog-yes" || event === "dialog-no") {
-          console.log("CollectionsDialog closed with event:", event);
           this.queryClient.invalidateQueries().catch(e => error("Error invalidating queries", e));
         }
       })
