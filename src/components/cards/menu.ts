@@ -8,7 +8,6 @@ import {
   DialogEvent,
   DialogService,
   EllipsisVerticalIcon,
-  IconButtonComponent,
   InboxIcon,
   MenuComponent,
   MenuContentComponent,
@@ -25,18 +24,7 @@ type Article = A & {
 @Component({
   selector: "card-menu, CardMenu, cardmenu",
   standalone: true,
-  imports: [
-    ButtonComponent,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
-    TranslocoPipe,
-    EllipsisVerticalIcon,
-    TagIcon,
-    InboxIcon,
-    PaperclipIcon,
-    IconButtonComponent
-  ],
+  imports: [ButtonComponent, MenuComponent, MenuContentComponent, MenuItemComponent, TranslocoPipe, EllipsisVerticalIcon, TagIcon, InboxIcon, PaperclipIcon],
   template: `
     <menu class="invisible ml-auto group-hover:visible" (click)="$event.stopImmediatePropagation()">
       <button variant="none" icon-button [title]="'article.openMenu' | transloco" [attr.aria-label]="'article.openMenu' | transloco">
@@ -74,22 +62,22 @@ export class CardMenuComponent {
   editLabels(): void {
     this.dialogService
       .open<{ type: DialogEvent; article: Article }>(LabelsEditDialog, this.article())
-      .then((v) => {
+      .then(v => {
         // update the article with the new labels
         this.article.set({ ...v.article });
       })
-      .catch((e) => error("LabelsEditDialog error", e));
+      .catch(e => error("LabelsEditDialog error", e));
   }
 
   addToCollection(): void {
     this.dialogService
       .open(CollectionsDialog, this.article())
       .then((event: unknown) => {
-        if (event === "dialog-confirm") {
-          this.queryClient.invalidateQueries().catch((e) => error("Error invalidating queries", e));
+        if (event === "dialog-yes" || event === "dialog-no") {
+          this.queryClient.invalidateQueries().catch(e => error("Error invalidating queries", e));
         }
       })
-      .catch((e) => error("CollectionsDialog error", e));
+      .catch(e => error("CollectionsDialog error", e));
   }
 
   attachToAssistant(): void {
