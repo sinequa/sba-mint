@@ -1,14 +1,14 @@
-import { Component, computed, signal } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { Component, computed, signal } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
 
-import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, SourceComponent, TranslocoDateImpurePipe } from '@sinequa/atomic-angular';
-import { BadgeComponent, CalendarDayIcon, CardComponent, CardContentComponent, SquareCheckIcon, SquareIcon, UserIcon } from '@sinequa/ui';
+import { BookmarkButtonComponent, MetadataComponent, MissingTermsComponent, SourceComponent, TranslocoDateImpurePipe } from "@sinequa/atomic-angular";
+import { BadgeComponent, CalendarDayIcon, CardComponent, CardContentComponent, SquareCheckBigIcon, SquareIcon, UserIcon } from "@sinequa/ui";
 
-import { CardMenuComponent } from '../menu';
-import { RecordCard } from '../record/record-card';
+import { CardMenuComponent } from "../menu";
+import { RecordCard } from "../record/record-card";
 
 @Component({
-  selector: 'slide-card, slidecard, SlideCard',
+  selector: "slide-card, slidecard, SlideCard",
   imports: [
     BookmarkButtonComponent,
     TranslocoDateImpurePipe,
@@ -20,20 +20,20 @@ import { RecordCard } from '../record/record-card';
     BadgeComponent,
     CardMenuComponent,
     SourceComponent,
-    SquareCheckIcon,
+    SquareCheckBigIcon,
     SquareIcon,
     UserIcon,
     CalendarDayIcon
   ],
-  templateUrl: './slide-card.html',
+  templateUrl: "./slide-card.html",
   host: {
-    '(document:keydown.shift.t)': 'isLineClamped.set(!isLineClamped())'
+    "(document:keydown.shift.t)": "isLineClamped.set(!isLineClamped())"
   }
 })
 export class SlideCard extends RecordCard {
   thumbnailFailed = signal(false);
 
   protected override docformatMetadata = computed(() => {
-    return this.article().docformat ? { field: 'docformat', value: this.article().docformat! } : { field: 'doctype', value: this.article().doctype! };
+    return this.article().docformat ? { field: "docformat", value: this.article().docformat! } : { field: "doctype", value: this.article().doctype! };
   });
 }

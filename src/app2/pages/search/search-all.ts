@@ -28,7 +28,7 @@ import {
   UserSettingsStore
 } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, ButtonComponent, cn, FilterIcon, IconButtonComponent, XMarkIcon } from "@sinequa/ui";
-import { injectInfiniteQuery, provideQueryClient, QueryClient } from "@tanstack/angular-query-experimental";
+import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
 import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
 
@@ -81,8 +81,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
   host: {
     "(keydown.enter)": "handleKeydownEnter($event)",
     "(window:resize)": "onResize($event)"
-  },
-  providers: [provideQueryClient(new QueryClient())]
+  }
 })
 export class SearchAllComponent {
   cn = cn;

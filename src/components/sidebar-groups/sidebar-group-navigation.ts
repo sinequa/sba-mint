@@ -44,6 +44,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
                 routerLink="/search"
                 routerLinkActive="active"
                 #rlaSearch="routerLinkActive"
+                queryParamsHandling="preserve"
                 [attr.data-active]="rlaSearch.isActive || null">
                 <magnifying-glass-icon />
                 <span class="text-sm" sr-only>{{ 'search' | transloco }}</span>
