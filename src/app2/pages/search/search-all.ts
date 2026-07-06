@@ -6,6 +6,7 @@ import { PreviewComponent } from "@components/preview/preview";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { fetchServerPage } from "@config/fetch-server-page";
+import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { MessageHandler } from "@sinequa/assistant/chat";
@@ -13,6 +14,7 @@ import { Aggregation, Article, bisect, CCApp, debug, isNotInputEvent, Query, Que
 import {
   AggregationsStore,
   AppStore,
+  AsideFiltersComponent,
   FiltersBarComponent,
   InfinityScrollDirective,
   NavbarTabsComponent,
@@ -25,7 +27,7 @@ import {
   SelectionStore,
   UserSettingsStore
 } from "@sinequa/atomic-angular";
-import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { BreakpointObserverService, ButtonComponent, cn, FilterIcon, IconButtonComponent, XMarkIcon } from "@sinequa/ui";
 import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
 import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
@@ -42,6 +44,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
     NoResultComponent,
     SearchFeedbackComponent,
     FiltersBarComponent,
+    AsideFiltersComponent,
     NavbarTabsComponent,
     CardSkeleton,
     SearchFeedbackComponent,
@@ -49,7 +52,12 @@ type Result = R & { nextPage?: number; previousPage?: number };
     PreviewComponent,
     SheetPreviewerComponent,
     SearchActionsComponent,
-    SearchWithAutocompleteComponent
+    SearchWithAutocompleteComponent,
+    ButtonComponent,
+    IconButtonComponent,
+    FilterIcon,
+    XMarkIcon,
+    TranslocoPipe
   ],
   templateUrl: "./search-all.html",
   styles: [
@@ -234,6 +242,21 @@ export class SearchAllComponent {
 
   readonly hasPreview = computed(() => this.selectionStore.id?.() !== undefined);
 
+  /**
+   * Left filters drawer (mirrors the agent page saved-chats drawer): a floating, non-modal panel
+   * that slides in from the left. Collapsed by default; auto-closes when the pointer leaves it.
+   */
+  readonly filtersCollapsed = signal(true);
+
+  /**
+   * Whether any authorized filter is configured to appear in the left drawer
+   * (`position: 'left' | 'both'`). Gates both the toggle button and the drawer.
+   */
+  protected readonly hasAsideFilters = computed(() => {
+    const asideFilters = this.appStore.filters().filter(f => f.position === "left" || f.position === "both");
+    return this.appStore.getAuthorized(asideFilters).length > 0;
+  });
+
   conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
   constructor(destroyRef: DestroyRef) {
@@ -372,6 +395,15 @@ export class SearchAllComponent {
   onDrawerOpenedChange(opened: boolean): void {
     // Your function logic here
     debug(`Drawer opened state changed to: ${opened}`);
+  }
+
+  toggleFilters(): void {
+    this.filtersCollapsed.set(!this.filtersCollapsed());
+  }
+
+  /** Auto-close the floating left filters drawer when the pointer leaves it (better desktop UX). */
+  protected closeFilters(): void {
+    this.filtersCollapsed.set(true);
   }
 
   getArticleType(docType?: string): Type<unknown> {
