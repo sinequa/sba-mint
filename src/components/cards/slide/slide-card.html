@@ -6,26 +6,16 @@
   tabindex="0"
   (keydown.control.enter)="onCtrlEnter()"
   role="option">
-  <div class="relative shrink-0">
+  <div class="relative max-w-40 min-w-32 shrink-0">
     @if (article().thumbnailUrl && !thumbnailFailed()) {
       <img
-        class="ratio-video h-full rounded-s-lg object-cover"
+        class="ratio-video h-full w-full rounded-s-lg object-cover"
         [src]="article().thumbnailUrl"
         (error)="thumbnailFailed.set(true)"
         alt="{{ article().title || 'Thumbnail image for the article' }}" />
-      <div
-        class="absolute top-0 flex size-10 min-w-10 items-center justify-center rounded-full text-primary group-hover/article:bg-muted/50"
-        (click)="onMultiSelectToggle($event)">
-        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
-        <square-check-icon class="hidden text-lg peer-checked/checkbox:block" />
-        <square-icon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
-      </div>
     } @else {
-      <div class="flex size-10 min-w-10 items-center justify-center rounded-full bg-muted text-primary" (click)="onMultiSelectToggle($event)">
-        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
-        <square-check-icon class="hidden text-lg peer-checked/checkbox:block" />
-        <square-icon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
-        <source class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
+      <div class="flex size-full items-center justify-center rounded-s-lg bg-muted text-primary">
+        <source [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
   </div>
@@ -33,6 +23,19 @@
   <CardContent class="grow overflow-x-auto p-3 pt-2">
     <!-- Cascading overflow-auto to the title so it gets truncated -->
     <header class="flex grow items-center gap-3 overflow-auto">
+      <div class="flex size-10 min-w-10 items-center justify-center rounded-full bg-muted" (click)="onMultiSelectToggle($event)">
+        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
+        @if (checked()) {
+          <SquareCheckBig class="text-lg" />
+        } @else {
+          <SquareIcon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
+          <source
+            class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden"
+            [collection]="article().collection"
+            [connector]="article().connector" />
+        }
+      </div>
+
       <!-- the overflow-hidden here constraints the flex to be inside it's parent -->
       <div class="flex grow flex-col overflow-hidden">
         <section class="flex items-baseline justify-between gap-2">
@@ -53,7 +56,7 @@
 
         <section class="flex items-center gap-2 text-xs">
           @if (docformatMetadata()) {
-            <Badge size="xs" (click)="setFilter(docformatMetadata()!.field, docformatMetadata()!.value, $event)">
+            <Badge size="xs" variant="outline" (click)="setFilter(docformatMetadata()!.field, docformatMetadata()!.value, $event)">
               {{ docformatMetadata()!.value }}
             </Badge>
           }
