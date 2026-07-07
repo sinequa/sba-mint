@@ -31,11 +31,23 @@ import { PreviewActionsComponent } from "./preview-actions";
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
+        <!-- Overlay shown while the (new) iframe content loads and is scrolled to the right page,
+             so the user never sees the intermediate scroll jump. -->
+        @if (!contentReady()) {
+          <div class="absolute inset-0 z-20 flex items-center justify-center rounded-sm bg-background">
+            <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+          </div>
+        }
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
           [isPrimary]="!conversion() || conversion()!.primary === true"
           [class]="cn('absolute right-4 inline-flex justify-end rounded-md dark:text-background dark:[&_button]:hover:text-foreground dark:bg-muted/10 bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
-        <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#fff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
+        <iframe
+          #preview
+          frameborder="0"
+          [class]="cn('h-full grow rounded-sm bg-[#fff] shadow-xs transition-opacity', contentReady() ? 'opacity-100' : 'opacity-0')"
+          [src]="previewUrl()"
+          (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
@@ -89,6 +101,7 @@ export class PreviewContentComponent {
   protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
   protected passagePageNumber = signal<number | undefined>(undefined);
   protected currentPage = signal<string | undefined>(undefined); // used to go back to the last visited page when changing of conversion for a document
+  protected contentReady = signal(false); // false while the iframe loads + scrolls, gating the spinner overlay
   protected scrollPage = computed(() =>
     this.currentPage() !== undefined ? this.currentPage() : this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined
   );
@@ -200,13 +213,10 @@ export class PreviewContentComponent {
     });
 
     effect(() => {
-      if (this.scrollPage() !== undefined) {
-        // if already a page to scroll to, trigger scrolling
-        this.scrollToPage();
-      } else if (this.previewUrl() && this.isSecondary()) {
-        // if secondary document, scroll to clicked passage if any (checked in method)
-        this.getPassagePage();
-      }
+      // A new conversion / preview URL is loading: hide the content behind the spinner
+      // overlay until the fresh iframe has loaded and been scrolled to the right page.
+      this.previewUrl();
+      this.contentReady.set(false);
     });
 
     const controller = new AbortController();
@@ -217,6 +227,10 @@ export class PreviewContentComponent {
         const message = event.data;
         if (message.type === "current-page") {
           this.currentPage.set(message.data);
+        } else if (message.type === "ready") {
+          // The iframe has finished its layout (zoom-fit, sizing). Now it is safe to
+          // scroll to the target page and then reveal the content.
+          this.onPreviewReady();
         }
       },
       { signal: controller.signal }
@@ -233,28 +247,55 @@ export class PreviewContentComponent {
   }
 
   /**
-   * Handles the event when the preview component is loaded.
+   * Handles the iframe `load` event.
    *
-   * This method retrieves the `previewHighlights` from the selection store state.
-   * If the user has since manually scrolled to a different page (`currentPage`), that page wins
-   * over re-selecting the original passage snippet, since the passage reference is no longer
-   * the relevant location once the user navigated away from it.
-   * Otherwise, if `previewHighlights` contains a `snippetId`, it constructs a message with
-   * the action 'select', the snippet ID, and a flag to use the passage highlighter.
-   * The message is then sent to the preview service.
+   * The scrolling itself is driven by the iframe's `ready` message (see {@link onPreviewReady}),
+   * which fires only once the iframe has finished laying out its content. This handler is only a
+   * safety net: if the loaded content is not the instrumented preview (so it never emits `ready`),
+   * reveal it anyway after a short delay so the spinner overlay cannot stay stuck.
    */
   onLoaded() {
+    setTimeout(() => this.contentReady.set(true), 1500);
+  }
+
+  /**
+   * Handles the iframe `ready` message, emitted once the iframe content is fully laid out.
+   *
+   * Scrolls to the relevant location, then reveals the content:
+   * - If the user has since manually scrolled to a different page (`currentPage`), that page wins
+   *   over re-selecting the original passage snippet, since the passage reference is no longer the
+   *   relevant location once the user navigated away from it.
+   * - Otherwise, if a `snippetId` is available on a primary conversion, select that snippet.
+   * - On a secondary conversion, scroll to the cached page or resolve the selected passage's page.
+   * - Otherwise there is nothing to scroll to, so reveal immediately.
+   */
+  private onPreviewReady() {
     const previewHighlights = this.selectionStore.previewHighlights?.();
     if (this.currentPage() !== undefined) {
       this.scrollToPage();
+      this.revealContent();
     } else if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
+      this.revealContent();
     } else if (this.isSecondary() && this.scrollPage() !== undefined) {
       this.scrollToPage();
+      this.revealContent();
+    } else if (this.isSecondary()) {
+      // The passage's page is not known yet: resolve it, then scroll and reveal (in the callback).
+      this.getPassagePage();
+    } else {
+      // Nothing to scroll to (e.g. a fresh primary document): show the content right away.
+      this.contentReady.set(true);
     }
+  }
 
-    // this.previewService.getPageInfo();
+  /**
+   * Reveals the iframe content shortly after a scroll has been requested, giving the iframe a
+   * moment to apply the scroll so the reposition happens behind the spinner overlay.
+   */
+  private revealContent(): void {
+    setTimeout(() => this.contentReady.set(true), 150);
   }
 
   /**
@@ -262,7 +303,11 @@ export class PreviewContentComponent {
    */
   getPassagePage(): void {
     const { id, offset, length } = this.previewService.passageOffset() || {};
-    if (id === undefined || offset === undefined || length === undefined) return;
+    if (id === undefined || offset === undefined || length === undefined) {
+      // No passage to scroll to: reveal the content as-is.
+      this.contentReady.set(true);
+      return;
+    }
 
     this.queryService
       .getDocPage(id, offset, length)
@@ -270,6 +315,7 @@ export class PreviewContentComponent {
       .subscribe((pageNumber: number) => {
         this.passagePageNumber.set(pageNumber);
         this.scrollToPage();
+        this.revealContent();
       });
   }
 
