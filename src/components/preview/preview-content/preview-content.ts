@@ -8,6 +8,16 @@ import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/
 import { catchError, of } from "rxjs";
 import { PreviewActionsComponent } from "./preview-actions";
 
+// Delay before revealing the iframe once a scroll has been requested: lets the iframe apply and
+// paint the scroll behind the overlay so the reposition is never visible. Kept below preview.js's
+// ~400ms passage-highlight delay so the scroll lands first.
+const REVEAL_AFTER_SCROLL_MS = 150;
+
+// Safety-net delay used on the iframe `load` event: if the loaded content is not the instrumented
+// preview (so it never emits a `ready` message), reveal it anyway so the spinner overlay cannot
+// stay stuck.
+const LOAD_SAFETY_NET_MS = 1500;
+
 /**
  * Preview content component
  *
@@ -73,6 +83,9 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly queryService = inject(QueryService);
   private readonly destroyRef = inject(DestroyRef);
+  // Pending timer that flips `contentReady` to true; tracked so it can be cancelled when a new URL
+  // starts loading or the component is destroyed, preventing a stale reveal of the wrong content.
+  private revealTimer?: ReturnType<typeof setTimeout>;
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
@@ -213,10 +226,12 @@ export class PreviewContentComponent {
     });
 
     effect(() => {
-      // A new conversion / preview URL is loading: hide the content behind the spinner
-      // overlay until the fresh iframe has loaded and been scrolled to the right page.
+      // A new conversion / preview URL is loading: hide the content behind the spinner overlay
+      // until the fresh iframe has loaded and been scrolled to the right page. Cancelling any
+      // pending reveal here prevents a stale timer from the previous URL revealing the new,
+      // not-yet-scrolled content too early.
       this.previewUrl();
-      this.contentReady.set(false);
+      this.hideContent();
     });
 
     const controller = new AbortController();
@@ -224,6 +239,12 @@ export class PreviewContentComponent {
     window.addEventListener(
       "message",
       (event: MessageEvent) => {
+        // Only react to messages emitted by this component's own iframe. Several preview-content
+        // instances (and other iframes) can share this window; without this guard another iframe's
+        // `ready`/`current-page` message would reveal or scroll the wrong preview.
+        const iframeWindow = this.iframe()?.nativeElement.contentWindow;
+        if (!iframeWindow || event.source !== iframeWindow) return;
+
         const message = event.data;
         if (message.type === "current-page") {
           this.currentPage.set(message.data);
@@ -238,6 +259,7 @@ export class PreviewContentComponent {
 
     this.destroyRef.onDestroy(() => {
       controller.abort();
+      clearTimeout(this.revealTimer);
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
@@ -255,7 +277,7 @@ export class PreviewContentComponent {
    * reveal it anyway after a short delay so the spinner overlay cannot stay stuck.
    */
   onLoaded() {
-    setTimeout(() => this.contentReady.set(true), 1500);
+    this.revealContent(LOAD_SAFETY_NET_MS);
   }
 
   /**
@@ -286,16 +308,33 @@ export class PreviewContentComponent {
       this.getPassagePage();
     } else {
       // Nothing to scroll to (e.g. a fresh primary document): show the content right away.
-      this.contentReady.set(true);
+      this.revealContent(0);
     }
   }
 
   /**
-   * Reveals the iframe content shortly after a scroll has been requested, giving the iframe a
-   * moment to apply the scroll so the reposition happens behind the spinner overlay.
+   * Reveals the iframe content, cancelling any pending reveal first so a stale timer from a
+   * previous load cannot reveal the next document before it has been scrolled.
+   *
+   * @param delayMs delay before revealing. A small delay lets the iframe apply a just-requested
+   *   scroll behind the overlay; `0` reveals synchronously (nothing to wait for).
    */
-  private revealContent(): void {
-    setTimeout(() => this.contentReady.set(true), 150);
+  private revealContent(delayMs: number = REVEAL_AFTER_SCROLL_MS): void {
+    clearTimeout(this.revealTimer);
+    if (delayMs <= 0) {
+      this.contentReady.set(true);
+      return;
+    }
+    this.revealTimer = setTimeout(() => this.contentReady.set(true), delayMs);
+  }
+
+  /**
+   * Hides the iframe content behind the spinner overlay and cancels any pending reveal, so a new
+   * document / conversion always starts hidden until it has been scrolled into position.
+   */
+  private hideContent(): void {
+    clearTimeout(this.revealTimer);
+    this.contentReady.set(false);
   }
 
   /**
@@ -305,7 +344,7 @@ export class PreviewContentComponent {
     const { id, offset, length } = this.previewService.passageOffset() || {};
     if (id === undefined || offset === undefined || length === undefined) {
       // No passage to scroll to: reveal the content as-is.
-      this.contentReady.set(true);
+      this.revealContent(0);
       return;
     }
 
