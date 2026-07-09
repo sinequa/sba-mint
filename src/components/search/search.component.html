@@ -36,8 +36,8 @@
         class="transition-transform duration-200 ease-in-out hover:scale-110"
         [title]="searchLabel"
         [attr.aria-label]="searchLabel"
-        [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
-        [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+        [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText().trim() === ''"
+        [disabled]="!allowEmptySearch() && this.searchInputText().trim() === ''"
         (keydown.enter)="onSearch($event)"
         (click)="onSearch($event)">
         <SendHorizontalIcon />
