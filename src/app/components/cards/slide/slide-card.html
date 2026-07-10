@@ -1,6 +1,5 @@
 <Card
-  variant="primary"
-  class="group/article group cursor-pointer flex-row gap-0 p-0 dark:bg-muted"
+  class="group/article group cursor-pointer flex-row gap-0 p-0 text-card-foreground"
   [class.selected]="selected()"
   [attr.aria-selected]="selected()"
   tabindex="0"
@@ -18,31 +17,30 @@
         <source [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
+
+    <div
+      class="absolute top-1 left-4 z-10 flex size-10 min-w-10 items-center justify-center rounded-full bg-muted group-hover/article:bg-muted/50"
+      (click)="onMultiSelectToggle($event)">
+      <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
+      @if (checked()) {
+        <SquareCheckBig class="text-lg" />
+      } @else {
+        <SquareIcon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
+        <source class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
+      }
+    </div>
   </div>
 
-  <CardContent class="grow overflow-x-auto p-3 pt-2">
+  <CardContent class="flex grow flex-col gap-2 overflow-x-auto p-3 pt-4">
     <!-- Cascading overflow-auto to the title so it gets truncated -->
     <header class="flex grow items-center gap-3 overflow-auto">
-      <div class="flex size-10 min-w-10 items-center justify-center rounded-full bg-muted" (click)="onMultiSelectToggle($event)">
-        <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
-        @if (checked()) {
-          <SquareCheckBig class="text-lg" />
-        } @else {
-          <SquareIcon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
-          <source
-            class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden"
-            [collection]="article().collection"
-            [connector]="article().connector" />
-        }
-      </div>
-
       <!-- the overflow-hidden here constraints the flex to be inside it's parent -->
       <div class="flex grow flex-col overflow-hidden">
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <a
               (click)="openExternal($event)"
-              class="text-primary truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
+              class="truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>
 
             @if (showBookmark()) {
