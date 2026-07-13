@@ -62,17 +62,6 @@ export class HomeComponent {
       }
     });
 
-    // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery().catch(err => {
-      if (err.status === 401) {
-        console.error("Unauthorized access - please check your credentials:", err);
-      } else if (err.status === 404) {
-        console.log("404 Not Found!");
-      } else {
-        console.log(`HTTP error: ${err.status}`);
-      }
-    });
-
     // this is needed to populate the aggregation with the sources as no query is sent to the server.
     // Run it after the next render so the filters bar is already mounted when the aggregations
     // land in the store — otherwise a fast response could resolve before the component is mounted
