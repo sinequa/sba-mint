@@ -200,17 +200,17 @@ export class SearchComponent {
 
   protected emitText(e: Event): void {
     e.stopImmediatePropagation();
-    if (this.allowAdvancedFilters() && this.searchInputText() === "") {
+    const text = this.searchInputText()?.trim() ?? "";
+    if (this.allowAdvancedFilters() && text === "") {
       return;
     }
-    if (this.allowEmptySearch() === false && this.searchInputText()?.length === 0) {
+    if (this.allowEmptySearch() === false && text.length === 0) {
       const message = this.translocoService.translate("searchInput.allowEmptySearch");
       console.warn(message);
       toast.info(message);
       return;
     }
 
-    const text = this.searchInputText()?.trim();
     if (this.allowEmptySearch() || !!text) {
       this.validated.emit(text);
       this.dropdownComponent().close();
