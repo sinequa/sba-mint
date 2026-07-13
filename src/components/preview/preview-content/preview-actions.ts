@@ -215,7 +215,7 @@ export class PreviewActionsComponent {
         this.previewService.sendMessage({ action: "unselect" });
       } else {
         const selectedId = this.previewService.selectedHighlightId();
-        if (selectedId !== undefined) {
+        if (selectedId !== null) {
           this.previewService.sendMessage({ action: "select", id: selectedId, usePassageHighlighter: true });
         }
       }
