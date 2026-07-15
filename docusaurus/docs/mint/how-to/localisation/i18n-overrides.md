@@ -120,7 +120,7 @@ Even if they are empty (`{}`), the files must exist (an HTTP 404 is silently ign
 | File | Role |
 |------|------|
 | transloco-loader-overrides.ts | Custom loader — fetches base + override, merges them |
-| transcolo-providers.ts | Registers the loader in the Angular app |
+| transloco/transloco-providers.ts | Registers the loader in the Angular app |
 | deepmerge.ts | Deep-merges the two JSON objects (nested keys work too) |
 | `assets/i18n/<scope>/<lang>.json` | Base translations from the library |
 | `assets/i18n/overrides/<scope>/<lang>.json` | **Your** custom overrides |

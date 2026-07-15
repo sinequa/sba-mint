@@ -18,7 +18,7 @@ import {
   SavedChatComponent
 } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
-import { debouncedSignal, SelectionStore } from "@sinequa/atomic-angular";
+import { debouncedSignal, PrincipalStore, SelectionStore } from "@sinequa/atomic-angular";
 import {
   ButtonComponent,
   HistoryIcon,
@@ -231,6 +231,7 @@ export class AgentPageLayoutComponent {
 
   private readonly router = inject(Router);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly principalStore = inject(PrincipalStore);
   private readonly agentsStore = inject(AgentsStore);
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
 
@@ -265,6 +266,23 @@ export class AgentPageLayoutComponent {
       untracked(() => {
         this.previewCollapsed.set(true);
         this.panelGroup()?.setLayout([100, 0]);
+      });
+    });
+
+    // Start a fresh conversation whenever the effective user identity changes — i.e. an admin
+    // overrides a user, switches to a different one, or reverts the override. The override dialog
+    // only re-initializes the stores (re-fetching the principal), so without this the old chat id
+    // lingers in the URL. startNewChat() both resets the agent and routes to /chat/new. The first
+    // load is skipped so a deep-linked /chat/:id is preserved on refresh.
+    let previousUserId: string | undefined;
+    effect(() => {
+      const userId = this.principalStore.userId();
+      if (this.principalStore.state() !== "loaded" || !userId) return;
+      untracked(() => {
+        const isInitialLoad = previousUserId === undefined;
+        const identityChanged = !isInitialLoad && userId !== previousUserId;
+        previousUserId = userId;
+        if (identityChanged) this.startNewChat();
       });
     });
   }
