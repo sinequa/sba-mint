@@ -4,7 +4,10 @@
   "newProjectRoot": "projects",
   "cli": {
     "schematicCollections": ["@angular-eslint/schematics"],
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
   },
   "projects": {
     "sinequa-mint": {
@@ -106,6 +109,55 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "spfx": {
+              "tsConfig": "tsconfig.spfx.json",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/main.ts",
+                  "with": "src/main.spfx.ts"
+                },
+                {
+                  "replace": "src/config/interceptors/http-interceptors.ts",
+                  "with": "src/config/spfx/http-interceptors.spfx.ts"
+                }
+              ]
+            },
+            "spfx-production": {
+              "tsConfig": "tsconfig.spfx.json",
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "outputHashing": "none",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/main.ts",
+                  "with": "src/main.spfx.ts"
+                },
+                {
+                  "replace": "src/config/interceptors/http-interceptors.ts",
+                  "with": "src/config/spfx/http-interceptors.spfx.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.spfx.production.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -130,6 +182,11 @@
               "buildTarget": "sinequa-mint:build:development",
               "ssl": true,
               "proxyConfig": "proxy.conf.json"
+            },
+            "spfx": {
+              "buildTarget": "sinequa-mint:build:spfx",
+              "ssl": true,
+              "proxyConfig": "proxy.conf.spfx.json"
             }
           },
           "defaultConfiguration": "development"
