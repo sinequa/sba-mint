@@ -1,11 +1,11 @@
-import { Component, computed, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { notify } from '@sinequa/atomic';
-import { SavedSearchesService, type SearchItem, UserSettingsStore } from '@sinequa/atomic-angular';
-import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from '@sinequa/ui';
+import { Component, computed, ElementRef, inject, input, output, signal, viewChild } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { notify } from "@sinequa/atomic";
+import { QueryParamsStore, SavedSearchesService, type SearchItem, UserSettingsStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, PopoverContentComponent, StarIcon } from "@sinequa/ui";
 
 @Component({
-  selector: 'saved-search-popover, SavedSearchPopover, savedsearchpopover',
+  selector: "saved-search-popover, SavedSearchPopover, savedsearchpopover",
   imports: [TranslocoPipe, ButtonComponent, PopoverComponent, PopoverContentComponent, InputComponent, StarIcon],
   template: `
     @if (!savedSearch()) {
@@ -61,7 +61,7 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
     }
   `,
   host: {
-    "class": "flex"
+    class: "flex"
   }
 })
 export class SavedSearchPopover {
@@ -69,21 +69,35 @@ export class SavedSearchPopover {
   protected readonly popoverComponent = viewChild.required(PopoverComponent);
   // autocomplete dropdown reference
   protected readonly dropdownComponent = inject(DropdownComponent);
-  protected readonly savedNameInputRef = viewChild<ElementRef<HTMLInputElement>>('savedNameInput');
+  protected readonly savedNameInputRef = viewChild<ElementRef<HTMLInputElement>>("savedNameInput");
 
   protected readonly userSettingsStore = inject(UserSettingsStore);
   protected readonly savedSearchesService = inject(SavedSearchesService);
+  protected readonly queryParamsStore = inject(QueryParamsStore);
   protected readonly transloco = inject(TranslocoService);
 
-  queryText = input<string>('');
+  queryText = input<string>("");
 
   onSavedSearch = output<SearchItem | undefined>();
 
   // used by saved search
-  protected readonly savedName = signal<string>('');
+  protected readonly savedName = signal<string>("");
 
-  /** Returns true if the current search (current input() + filters) is in the saved searches */
-  protected readonly savedSearch = computed(() => this.userSettingsStore.getSavedSearch(this.queryText()));
+  protected readonly currentTab = computed(() => {
+    return this.queryParamsStore.tab?.()?.trim() || "all";
+  });
+
+  protected readonly savedSearch = computed(() => {
+    const queryText = this.queryText().trim();
+
+    if (!queryText) {
+      return undefined;
+    }
+
+    this.userSettingsStore.savedSearches();
+
+    return this.userSettingsStore.getSavedSearch(queryText, this.currentTab());
+  });
 
   openSavedSearch(e: Event): void {
     // stop propagation to avoid the parent to manage the click event
@@ -109,8 +123,8 @@ export class SavedSearchPopover {
       // no animation when unsaving
       this.onSavedSearch.emit(this.savedSearch());
     } else {
-      this.savedSearchesService.saveSearch(savedName ?? this.savedName().trim());
-      notify.success(this.transloco.translate('searches.saved.saved'), { duration: 2000 });
+      this.savedSearchesService.saveSearch(this.savedName().trim(), this.currentTab());
+      notify.success(this.transloco.translate("searches.saved.saved"), { duration: 2000 });
       this.popoverComponent().close();
     }
   }
