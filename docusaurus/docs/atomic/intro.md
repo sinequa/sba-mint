@@ -28,6 +28,8 @@ The [**Examples (JS & React)**](./examples/intro.md) section shows how to combin
 
 - **Web API Helpers** — Low-level HTTP utilities (GET, POST, PUT, PATCH, DELETE), structured error classes (`ApiError`, `UnauthorizedError`, `TimeoutError`, `ServerError`), retry logic, and timeout controllers.
 
+- **SharePoint Framework (SPFx)** — Drop-in support for SPFx web parts via the `@sinequa/atomic/spfx` subpath export. Call `initializeAadHttpClient(client)` once in `onInit()` and every subsequent API call routes through the Azure AD-authenticated `AadHttpClient` automatically — no call-site changes needed.
+
 - **Utilities** — A rich set of helpers:
   - **Date** — Localized relative date strings (`getRelativeDate`)
   - **Concepts** — Parse and rewrite advanced search query patterns
