@@ -56,11 +56,25 @@ sq-chat-v3 {
       transform: scale(1.25);
     }
   }
+
+  @media (max-width: 48rem) {
+    .user-input {
+      margin-bottom: 1.6875rem;
+    }
+
+    .issue-report {
+      margin-bottom: 1.6875rem;
+    }
+
+    .reference-tooltip {
+      width: 100vw;
+    }
+  }
 }
 
 /* when the assistant is in a Card with variant="ai" */
 /* set the ai-foreground color appropriately */
-card[variant='ai'] {
+card[variant="ai"] {
   sq-chat-message {
     summary.text-muted,
     summary.text-muted + ul {
@@ -141,6 +155,6 @@ code-block-reference {
   }
 }
 
-pre[class*='language-'] {
+pre[class*="language-"] {
   width: 100%;
 }
