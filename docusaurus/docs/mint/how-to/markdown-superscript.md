@@ -29,16 +29,8 @@ Once registered on the shared instance, every consumer of the `markdown` pipe (e
 ## Step 1 — Install the plugin
 
 ```bash
-npm install markdown-it-sup --no-save
+npm install markdown-it-sup
 ```
-
-:::caution `--no-save` does not persist the dependency
-`--no-save` installs the package locally but **does not** add it to `package.json`. It will be missing after a fresh `npm install` and on other machines / CI. For a permanent addition, either install it without `--no-save`, or add it to the `postinstall` script the way the Sinequa packages are handled:
-
-```json title="package.json"
-"postinstall": "npm add markdown-it-sup --no-save && npm run transloco:extract-scoped-libs"
-```
-:::
 
 ---
 
