@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
+import { TranslocoService } from "@jsverse/transloco";
 import { AgentReconnectingDetail, NotificationsService, SIGNALR_RETRY_DELAYS, SIGNALR_RETRY_DELAYS_DEFAULT } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
+import { ApplicationService } from "@sinequa/atomic-angular";
 
 @Component({
   selector: "app-agent-layout",
@@ -20,8 +22,20 @@ export class AgentLayoutComponent {
   destroyRef = inject(DestroyRef);
   notifications = inject(NotificationsService);
   retryDelays = inject(SIGNALR_RETRY_DELAYS, { optional: true }) ?? SIGNALR_RETRY_DELAYS_DEFAULT;
+  private readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
+  // Emits the translated title once the (async) translation file is loaded, and again on each
+  // language change. Using selectTranslate (not translate) avoids showing the raw key on first load.
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.agent"));
 
   constructor() {
+    effect(() => {
+      const title = this.pageTitle();
+      if (title) {
+        this.applicationService.setTitle(title);
+      }
+    });
+
     // Connection lifecycle events bubbled from the Agent component — wire up toast notifications.
     const controller = new AbortController();
 
