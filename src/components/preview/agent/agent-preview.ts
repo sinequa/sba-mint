@@ -72,6 +72,8 @@ export class AgentPreview {
 
       if (events === "loading") {
         this.article.set(undefined);
+        this.previewData.set(undefined);
+        this.conversion.set(undefined);
       }
 
       if (events === "loaded") {

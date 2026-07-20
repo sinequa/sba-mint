@@ -73,21 +73,18 @@ export class ConverterSelectComponent {
   /** All options for the converters dropdown */
   converterOptions = computed(() => {
     // return [] if the feature is disabled or there are no available conversions
-    if (!this.previewMultiConversion() || !this.converters()?.length) return [];
-
     const converters = this.converters();
-    if (converters) {
-      return (
-        converters
-          .map(converter => {
-            converter.conversion = this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format);
-            return converter;
-          })
-          // sort to have defaults first, then primaries, then others
-          .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
-      );
-    }
-    return [];
+    if (!this.previewMultiConversion() || !converters?.length) return [];
+
+    return (
+      converters
+        .map(converter => ({
+          ...converter,
+          conversion: this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format)
+        }))
+        // sort to have defaults first, then primaries, then others
+        .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
+    );
   });
 
   constructor() {
