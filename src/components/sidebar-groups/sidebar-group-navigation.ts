@@ -1,7 +1,6 @@
 import { Component, computed, inject } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { AppStore, QueryParamsStore } from "@sinequa/atomic-angular";
 import {
   HomeIcon,
   MagnifyingGlassIcon,
