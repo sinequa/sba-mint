@@ -36,7 +36,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-          @if (allowEmptySearch() ||isSearchRoute()) {
+          @if (isSearchRoute()) {
             <sidebar-menu-item aria-label="Search">
               <sidebar-menu-button
                 [tooltip]="'search' | transloco" tooltip-position="right"
@@ -83,11 +83,6 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
   }
 })
 export class SidebarGroupNavigationComponent {
-  private readonly appStore = inject(AppStore);
-  private readonly queryParamsStore = inject(QueryParamsStore);
-
-  allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ""));
-
   private readonly currentUrl = injectCurrentUrl();
 
   readonly isSearchRoute = computed(() => this.currentUrl()?.startsWith("/search") ?? false);
