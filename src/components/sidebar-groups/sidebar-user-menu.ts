@@ -122,6 +122,25 @@ export class SidebarUserMenuComponent {
 
   readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
 
+  /** On mobile the theme/language options expand inline underneath their item instead of a flyout submenu. */
+  readonly isMobile = computed(() => this.breakpointService.isMobile());
+  readonly themeExpanded = signal(false);
+  readonly languageExpanded = signal(false);
+
+  toggleThemeExpanded(event: Event) {
+    // Stop the click from bubbling to the root <Menu>, which would close the whole user menu.
+    event.stopPropagation();
+    this.themeExpanded.update(expanded => !expanded);
+    // Mutually exclusive: opening one section collapses the other (mirrors the desktop flyout).
+    this.languageExpanded.set(false);
+  }
+
+  toggleLanguageExpanded(event: Event) {
+    event.stopPropagation();
+    this.languageExpanded.update(expanded => !expanded);
+    this.themeExpanded.set(false);
+  }
+
   constructor() {
     // enable agent's debug mode
     effect(() => {
@@ -133,7 +152,9 @@ export class SidebarUserMenuComponent {
     });
   }
 
-  changeLanguage(lang: string) {
+  changeLanguage(lang: string, event?: Event) {
+    // Inline (mobile) options live in the root menu; keep it open on selection.
+    event?.stopPropagation();
     this.userSettingsStore.updateLanguage(lang).catch(err => error("update langugage failed", err));
 
     if (this.transloco.getActiveLang() !== lang) {
@@ -142,7 +163,9 @@ export class SidebarUserMenuComponent {
     }
   }
 
-  switchTheme(mode: Theme) {
+  switchTheme(mode: Theme, event?: Event) {
+    // Inline (mobile) options live in the root menu; keep it open on selection.
+    event?.stopPropagation();
     const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed", err));
