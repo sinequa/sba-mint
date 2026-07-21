@@ -1,0 +1,51 @@
+<!-- Trigger content shared by the mobile row and the desktop flyout trigger. -->
+<ng-template #triggerContent>
+  @if (icon(); as leadingIcon) {
+    <span class="text-[16px]"><ng-container *ngComponentOutlet="leadingIcon" /></span>
+  }
+  <span class="grow">{{ labelKey() | transloco }}</span>
+</ng-template>
+
+<!-- A single option row, shared by the mobile inline list and the desktop flyout. -->
+<ng-template #optionRow let-option>
+  <span>{{ translateLabels() ? (option.label | transloco) : option.label }}</span>
+  <div class="flex items-center gap-2">
+    @if (active() === option.value) {
+      <check-icon class="text-sm" />
+    }
+    <ng-container *ngComponentOutlet="option.icon" />
+  </div>
+</ng-template>
+
+@if (isMobile()) {
+  <!-- Mobile: options expand inline underneath the row (no flyout, no dialog) -->
+  <MenuItem (click)="onToggle($event)" [attr.aria-expanded]="expanded()">
+    <ng-container [ngTemplateOutlet]="triggerContent" />
+    <span class="inline-flex transition-transform duration-200 ease-in-out motion-reduce:transition-none" [class.rotate-90]="expanded()">
+      <ChevronRight class="size-4" />
+    </span>
+  </MenuItem>
+  @if (expanded()) {
+    @for (option of options(); track option.value) {
+      <MenuItem (click)="onSelect(option.value, $event)" class="justify-between pl-9">
+        <ng-container [ngTemplateOutlet]="optionRow" [ngTemplateOutletContext]="{ $implicit: option }" />
+      </MenuItem>
+    }
+  }
+} @else {
+  <!-- Desktop: flyout submenu -->
+  <menu class="dropdown-content">
+    <MenuItem (click)="onFlyoutTrigger()">
+      <ng-container [ngTemplateOutlet]="triggerContent" />
+      <ChevronRight class="size-4" />
+    </MenuItem>
+
+    <MenuContent position="left-start" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+      @for (option of options(); track option.value) {
+        <MenuItem (click)="onSelect(option.value, $event)" class="justify-between">
+          <ng-container [ngTemplateOutlet]="optionRow" [ngTemplateOutletContext]="{ $implicit: option }" />
+        </MenuItem>
+      }
+    </MenuContent>
+  </menu>
+}

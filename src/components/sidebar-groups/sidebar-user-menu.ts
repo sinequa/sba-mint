@@ -1,8 +1,6 @@
-import { NgComponentOutlet } from "@angular/common";
-import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild, viewChildren } from "@angular/core";
+import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { Placement } from "@floating-ui/dom";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
@@ -11,17 +9,12 @@ import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSetting
 import {
   ArrowRightFromBracketIcon,
   ArrowUpRightFromSquareIcon,
-  BreakpointObserverService,
-  CheckIcon,
-  ChevronRightIcon,
   DebugIcon,
   DesktopIcon,
   FlagEnglishIcon,
   FlagFrenchIcon,
   FlagGermanIcon,
   KeyIcon,
-  MenuComponent,
-  MenuContentComponent,
   MenuItemComponent,
   MoonIcon,
   PaletteIcon,
@@ -33,6 +26,7 @@ import {
   UserSecretIcon
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
+import { ExpandableSelectComponent, ExpandableSelectOption } from "./expandable-select";
 
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
@@ -44,13 +38,8 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
   selector: "sidebar-user-menu-content",
   imports: [
     FormsModule,
-    MenuComponent,
-    MenuContentComponent,
-    MenuItemComponent,
     TranslocoPipe,
-    ChevronRightIcon,
     Separator,
-    NgComponentOutlet,
     DebugIcon,
     SwitchComponent,
     UserIcon,
@@ -58,9 +47,9 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     KeyIcon,
     ArrowRightFromBracketIcon,
     UserSecretIcon,
-    CheckIcon,
-    PaletteIcon,
-    TrashIcon
+    TrashIcon,
+    MenuItemComponent,
+    ExpandableSelectComponent
   ],
   templateUrl: "./sidebar-user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
@@ -78,7 +67,24 @@ export class SidebarUserMenuComponent {
     { code: "de", label: "Deutsch", icon: FlagGermanIcon }
   ] as const;
 
-  readonly menus = viewChildren(MenuComponent);
+  /** Leading icon for the theme selector, passed to <expandable-select>. */
+  protected readonly PaletteIcon = PaletteIcon;
+
+  /** Options fed to the reusable <expandable-select> for theme and language. */
+  readonly themeOptions: ExpandableSelectOption[] = this.AllThemes.map(theme => ({
+    value: theme.name,
+    label: `userMenu.${theme.name}Mode`,
+    icon: theme.icon
+  }));
+  readonly languageOptions: ExpandableSelectOption[] = this.AllLanguages.map(lang => ({
+    value: lang.code,
+    label: lang.label,
+    icon: lang.icon
+  }));
+
+  /** Which selector is expanded inline on mobile — keeps theme/language mutually exclusive. */
+  readonly openSection = signal<"theme" | "language" | null>(null);
+
   readonly overrideUserDialog = viewChild(OverrideUserDialogComponent);
   readonly resetUserSettingsDialog = viewChild(ResetUserSettingsDialogComponent);
 
@@ -88,7 +94,6 @@ export class SidebarUserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly breakpointService = inject(BreakpointObserverService);
 
   private readonly currentUrl = injectCurrentUrl();
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
@@ -120,27 +125,6 @@ export class SidebarUserMenuComponent {
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
   readonly debug = model(this.userSettingsStore.isDebugMode());
 
-  readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
-
-  /** On mobile the theme/language options expand inline underneath their item instead of a flyout submenu. */
-  readonly isMobile = computed(() => this.breakpointService.isMobile());
-  readonly themeExpanded = signal(false);
-  readonly languageExpanded = signal(false);
-
-  toggleThemeExpanded(event: Event) {
-    // Stop the click from bubbling to the root <Menu>, which would close the whole user menu.
-    event.stopPropagation();
-    this.themeExpanded.update(expanded => !expanded);
-    // Mutually exclusive: opening one section collapses the other (mirrors the desktop flyout).
-    this.languageExpanded.set(false);
-  }
-
-  toggleLanguageExpanded(event: Event) {
-    event.stopPropagation();
-    this.languageExpanded.update(expanded => !expanded);
-    this.themeExpanded.set(false);
-  }
-
   constructor() {
     // enable agent's debug mode
     effect(() => {
@@ -152,9 +136,12 @@ export class SidebarUserMenuComponent {
     });
   }
 
-  changeLanguage(lang: string, event?: Event) {
-    // Inline (mobile) options live in the root menu; keep it open on selection.
-    event?.stopPropagation();
+  /** Toggle a mobile inline section, collapsing the other so only one is open at a time. */
+  toggleSection(section: "theme" | "language") {
+    this.openSection.update(current => (current === section ? null : section));
+  }
+
+  changeLanguage(lang: string) {
     this.userSettingsStore.updateLanguage(lang).catch(err => error("update langugage failed", err));
 
     if (this.transloco.getActiveLang() !== lang) {
@@ -163,18 +150,17 @@ export class SidebarUserMenuComponent {
     }
   }
 
-  switchTheme(mode: Theme, event?: Event) {
-    // Inline (mobile) options live in the root menu; keep it open on selection.
-    event?.stopPropagation();
+  onThemeSelect(value: string) {
+    this.switchTheme(value as Theme);
+  }
+
+  switchTheme(mode: Theme) {
     const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode).catch(err => error("set user theme failed", err));
   }
 
   onChangePassword() {
-    this.menus()?.forEach(m => {
-      m?.close?.();
-    });
     this.router.navigate(["/auth", "changepassword"]).catch(err => error("navigation to /auth failed", err));
   }
 

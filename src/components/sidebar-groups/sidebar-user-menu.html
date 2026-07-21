@@ -7,149 +7,37 @@
   </MenuItem>
   <Separator />
 
-  @if (isMobile()) {
-    <!-- Mobile: theme options expand inline underneath the item (no flyout, no dialog) -->
-    <MenuItem (click)="toggleThemeExpanded($event)">
-      <palette-icon class="text-[16px]" />
-      <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
-      <span class="inline-flex transition-transform duration-200 ease-in-out motion-reduce:transition-none" [class.rotate-90]="themeExpanded()">
-        <ChevronRight class="size-4" />
-      </span>
-    </MenuItem>
-    @if (themeExpanded()) {
-      @for (theme of AllThemes; track theme.name) {
-        <MenuItem (click)="switchTheme(theme.name, $event)" class="justify-between pl-9">
-          <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
-          <div class="flex items-center gap-2">
-            @if (currentTheme() === theme.name) {
-              <check-icon class="text-sm" />
-            }
-            <ng-container *ngComponentOutlet="theme.icon" />
-          </div>
-        </MenuItem>
-      }
-    }
-  } @else {
-    <menu class="dropdown-content">
-      <MenuItem>
-        <palette-icon class="text-[16px]" />
-        <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
-        <ChevronRight class="size-4" />
-      </MenuItem>
-
-      <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
-        @for (theme of AllThemes; track theme.name) {
-          <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
-            <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
-            <div class="flex items-center gap-2">
-              @if (currentTheme() === theme.name) {
-                <check-icon class="text-sm" />
-              }
-              <ng-container *ngComponentOutlet="theme.icon" />
-            </div>
-          </MenuItem>
-        }
-      </MenuContent>
-    </menu>
-  }
+  <expandable-select
+    labelKey="userMenu.selectTheme"
+    [icon]="PaletteIcon"
+    [options]="themeOptions"
+    [active]="currentTheme() ?? ''"
+    [translateLabels]="true"
+    [expanded]="openSection() === 'theme'"
+    (toggleExpand)="toggleSection('theme')"
+    (selected)="onThemeSelect($event)" />
 } @else {
-  @if (isMobile()) {
-    <!-- Mobile: language + theme options expand inline underneath their items (no flyout, no dialog) -->
-    <MenuItem (click)="toggleLanguageExpanded($event)">
-      <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
-      <span class="inline-flex transition-transform duration-200 ease-in-out motion-reduce:transition-none" [class.rotate-90]="languageExpanded()">
-        <ChevronRight class="size-4" />
-      </span>
-    </MenuItem>
-    @if (languageExpanded()) {
-      @for (lang of AllLanguages; track lang.code) {
-        <MenuItem (click)="changeLanguage(lang.code, $event)" class="justify-between pl-9">
-          <span>{{ lang.label }}</span>
-          <div class="flex items-center gap-2">
-            @if (currentActiveLang() === lang.code) {
-              <check-icon class="text-sm" />
-            }
-            <ng-container *ngComponentOutlet="lang.icon"></ng-container>
-          </div>
-        </MenuItem>
-      }
-    }
+  <expandable-select
+    #languageSelect
+    labelKey="userMenu.selectLanguage"
+    [options]="languageOptions"
+    [active]="currentActiveLang()"
+    [expanded]="openSection() === 'language'"
+    (toggleExpand)="toggleSection('language')"
+    (flyoutTriggered)="themeSelect.closeFlyout()"
+    (selected)="changeLanguage($event)" />
 
-    <MenuItem (click)="toggleThemeExpanded($event)">
-      <palette-icon class="text-[16px]" />
-      <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
-      <span class="inline-flex transition-transform duration-200 ease-in-out motion-reduce:transition-none" [class.rotate-90]="themeExpanded()">
-        <ChevronRight class="size-4" />
-      </span>
-    </MenuItem>
-    @if (themeExpanded()) {
-      @for (theme of AllThemes; track theme.name) {
-        <MenuItem (click)="switchTheme(theme.name, $event)" class="justify-between pl-9">
-          <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
-          <div class="flex items-center gap-2">
-            @if (currentTheme() === theme.name) {
-              <check-icon class="text-sm" />
-            }
-            <ng-container *ngComponentOutlet="theme.icon" />
-          </div>
-        </MenuItem>
-      }
-    }
-  } @else {
-    <!--
-      Wrapper <menu> is required when two sub-menus are siblings.
-      The <menu> component uses ContentChildren to discover and manage its nested <menu> children:
-      mutual close-on-open, shared positioning context, and keyboard navigation all depend on a
-      single parent owning both. Without this wrapper each sub-menu would be an orphan and their
-      interactions (e.g. opening one should close the other) would break.
-      In the @if branch above only one sub-menu exists, so no wrapper is needed.
-    -->
-    <menu>
-      <!-- language selection -->
-      <menu class="dropdown-content">
-        <MenuItem>
-          <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
-          <ChevronRight class="size-4" />
-        </MenuItem>
-
-        <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
-          @for (lang of AllLanguages; track lang.code) {
-            <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
-              <span>{{ lang.label }}</span>
-              <div class="flex items-center gap-2">
-                @if (currentActiveLang() === lang.code) {
-                  <check-icon class="text-sm" />
-                }
-                <ng-container *ngComponentOutlet="lang.icon"></ng-container>
-              </div>
-            </MenuItem>
-          }
-        </MenuContent>
-      </menu>
-
-      <menu class="dropdown-content">
-        <MenuItem>
-          <palette-icon class="text-[16px]" />
-          <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
-          <ChevronRight class="size-4" />
-        </MenuItem>
-
-        <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
-          @for (theme of AllThemes; track theme.name) {
-            <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
-              <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
-              <div class="flex items-center gap-2">
-                @if (currentTheme() === theme.name) {
-                  <check-icon class="text-sm" />
-                }
-                <ng-container *ngComponentOutlet="theme.icon" />
-              </div>
-            </MenuItem>
-          }
-        </MenuContent>
-      </menu>
-    </menu>
-  }
+  <expandable-select
+    #themeSelect
+    labelKey="userMenu.selectTheme"
+    [icon]="PaletteIcon"
+    [options]="themeOptions"
+    [active]="currentTheme() ?? ''"
+    [translateLabels]="true"
+    [expanded]="openSection() === 'theme'"
+    (toggleExpand)="toggleSection('theme')"
+    (flyoutTriggered)="languageSelect.closeFlyout()"
+    (selected)="onThemeSelect($event)" />
 }
 
 <Separator />
