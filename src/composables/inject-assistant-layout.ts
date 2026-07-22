@@ -1,15 +1,15 @@
-import { ChangeDetectorRef, DestroyRef, Signal, computed, effect, inject, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ChangeDetectorRef, computed, DestroyRef, effect, inject, Signal, signal } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import type { AssistantComponent } from "@components/assistant/assistant";
+import { TranslocoService } from "@jsverse/transloco";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
-import { translateSignal } from "@jsverse/transloco";
 import { SavedChat } from "@sinequa/assistant/chat";
-import type { AssistantComponent } from "@components/assistant/assistant";
 import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/atomic";
 import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
-import { filter, firstValueFrom, skip, take } from "rxjs";
 import { injectCurrentUrl } from "@utils/routing";
-import { UrlQueryParamInputs, injectUrlQueryParamsSync } from "./url-query-params-sync";
+import { filter, firstValueFrom, skip, take } from "rxjs";
+import { injectUrlQueryParamsSync, UrlQueryParamInputs } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
 type AssistantRef = Pick<AssistantComponent, "newChat" | "askAI" | "sqChat">;
@@ -33,10 +33,12 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   const cdr = inject(ChangeDetectorRef);
   const destroyRef = inject(DestroyRef);
   const principalStore = inject(PrincipalStore);
+  const transloco = inject(TranslocoService);
   const currentUrl = injectCurrentUrl();
-  // Reactive translated tab title ('' until the async file loads, then re-emitted on each language
-  // change). translateSignal wraps selectTranslate, so no raw key flashes on first load.
-  const pageTitle = translateSignal("pageTitle.assistant");
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects this component's provideTranslocoScope ("filters") and would resolve the key in the
+  // wrong namespace. selectTranslate waits for the async file (no raw-key flash) + re-emits on lang change.
+  const pageTitle = toSignal(transloco.selectTranslate("pageTitle.assistant"));
 
   const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;

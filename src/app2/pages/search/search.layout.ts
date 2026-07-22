@@ -1,6 +1,7 @@
 import { Component, DestroyRef, effect, inject } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
-import { translateSignal } from "@jsverse/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { ApplicationService, SelectionStore } from "@sinequa/atomic-angular";
 
 @Component({
@@ -14,10 +15,11 @@ export class SearchLayoutComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly selectionStore = inject(SelectionStore);
   private readonly applicationService = inject(ApplicationService);
-  // Reactive translated title: empty string until the async translation file loads,
-  // then re-emitted on every language change. translateSignal wraps selectTranslate,
-  // so the raw key never flashes on first load.
-  private readonly pageTitle = translateSignal("pageTitle.search");
+  private readonly transloco = inject(TranslocoService);
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects any active provideTranslocoScope and would resolve the key in the wrong namespace.
+  // selectTranslate waits for the async file (no raw-key flash) and re-emits on language change.
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.search"));
 
   constructor() {
     effect(() => {

@@ -1,8 +1,9 @@
 import { afterNextRender, Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { WidgetsTabsComponent } from "@components/widgets/widgets-tabs";
-import { provideTranslocoScope, translateSignal } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { error, fetchQuery } from "@sinequa/atomic";
 import { AggregationsStore, ApplicationService, AppStore, FiltersBarComponent, SelectionStore, signIn } from "@sinequa/atomic-angular";
 import { KeyboardNavigatorOptions } from "@sinequa/ui";
@@ -38,10 +39,11 @@ export class HomeComponent {
   readonly applicationService = inject(ApplicationService);
   readonly aggregationStore = inject(AggregationsStore);
   readonly selectionStore = inject(SelectionStore);
-  // Reactive translated title: empty string until the async translation file loads,
-  // then re-emitted on every language change. translateSignal wraps selectTranslate,
-  // so the raw key never flashes on first load.
-  private readonly pageTitle = translateSignal("pageTitle.home");
+  private readonly transloco = inject(TranslocoService);
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects any active provideTranslocoScope and would resolve the key in the wrong namespace.
+  // selectTranslate waits for the async file (no raw-key flash) and re-emits on language change.
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.home"));
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: "tabsNavigator",

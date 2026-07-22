@@ -1,7 +1,8 @@
 import { NgComponentOutlet } from "@angular/common";
 import { afterNextRender, Component, computed, DestroyRef, effect, Injector, inject, runInInjectionContext, signal, Type, viewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
-import { provideTranslocoScope, translateSignal, TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { error, fetchQuery } from "@sinequa/atomic";
 import {
@@ -109,11 +110,12 @@ export class HomeComponent {
   readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
   readonly applicationService = inject(ApplicationService);
-  // Reactive translated title: empty string until the async translation file loads,
-  // then re-emitted on every language change. translateSignal wraps selectTranslate,
-  // so the raw key never flashes on first load. (Home route is not reused, so a reactive
-  // effect is safe here.)
-  private readonly pageTitle = translateSignal("pageTitle.home");
+  private readonly transloco = inject(TranslocoService);
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects this component's provideTranslocoScope and would resolve the key in the wrong
+  // namespace. selectTranslate waits for the async file (no raw-key flash) and re-emits on language
+  // change. (Home route is not reused, so a reactive effect is safe here.)
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.home"));
 
   readonly aggregations = computed(() => {
     const filters = this.appStore.filters().filter(f => f.homepage === true);
