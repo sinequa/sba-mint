@@ -54,7 +54,7 @@
       </div>
       <!-- single outer scroll lives here (scrollbar-thin); neutralize aside-filters' own
            overflow so it isn't a second, default-styled scroll container -->
-      <div class="scrollbar-thin flex flex-1 flex-col gap-2 overflow-y-auto">
+      <div class="flex flex-1 scrollbar-thin flex-col gap-2 overflow-y-auto">
         <aside-filters class="overflow-visible" />
       </div>
     </div>
@@ -74,7 +74,7 @@
         <navbar-tabs noTruncate="true" />
       }
 
-      @if (hasAsideFilters()) {
+      @if (hasAsideFilters() && !isMobile()) {
         <button
           variant="none"
           icon-button
