@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject } from "@angular/core";
-import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
-import { TranslocoService } from "@jsverse/transloco";
+import { translateSignal } from "@jsverse/transloco";
 import { AgentReconnectingDetail, NotificationsService, SIGNALR_RETRY_DELAYS, SIGNALR_RETRY_DELAYS_DEFAULT } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
 import { ApplicationService } from "@sinequa/atomic-angular";
@@ -23,10 +23,10 @@ export class AgentLayoutComponent {
   notifications = inject(NotificationsService);
   retryDelays = inject(SIGNALR_RETRY_DELAYS, { optional: true }) ?? SIGNALR_RETRY_DELAYS_DEFAULT;
   private readonly applicationService = inject(ApplicationService);
-  private readonly transloco = inject(TranslocoService);
-  // Emits the translated title once the (async) translation file is loaded, and again on each
-  // language change. Using selectTranslate (not translate) avoids showing the raw key on first load.
-  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.agent"));
+  // Reactive translated title: empty string until the async translation file loads,
+  // then re-emitted on every language change. translateSignal wraps selectTranslate,
+  // so the raw key never flashes on first load.
+  private readonly pageTitle = translateSignal("pageTitle.agent");
 
   constructor() {
     effect(() => {

@@ -1,9 +1,8 @@
 import { afterNextRender, Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { WidgetsTabsComponent } from "@components/widgets/widgets-tabs";
-import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
+import { provideTranslocoScope, translateSignal } from "@jsverse/transloco";
 import { error, fetchQuery } from "@sinequa/atomic";
 import { AggregationsStore, ApplicationService, AppStore, FiltersBarComponent, SelectionStore, signIn } from "@sinequa/atomic-angular";
 import { KeyboardNavigatorOptions } from "@sinequa/ui";
@@ -39,10 +38,10 @@ export class HomeComponent {
   readonly applicationService = inject(ApplicationService);
   readonly aggregationStore = inject(AggregationsStore);
   readonly selectionStore = inject(SelectionStore);
-  private readonly transloco = inject(TranslocoService);
-  // Emits the translated title once the (async) translation file is loaded, and again on each
-  // language change. Using selectTranslate (not translate) avoids showing the raw key on first load.
-  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.home"));
+  // Reactive translated title: empty string until the async translation file loads,
+  // then re-emitted on every language change. translateSignal wraps selectTranslate,
+  // so the raw key never flashes on first load.
+  private readonly pageTitle = translateSignal("pageTitle.home");
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: "tabsNavigator",
@@ -59,8 +58,8 @@ export class HomeComponent {
   };
 
   constructor() {
-    // Set the page title to "Home" if no preview is open (i.e., no selection in the selection store).
-    // Reading activeLang() re-runs this on language change so the title stays translated.
+    // Set the page title if no preview is open (i.e., no selection in the selection store).
+    // Reading pageTitle() (a translated signal) re-runs this on language change so the title stays translated.
     effect(() => {
       const id = this.selectionStore.id?.();
       const title = this.pageTitle();
