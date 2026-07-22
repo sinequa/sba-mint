@@ -1,5 +1,48 @@
 @let user = principalStore.principal();
 
+<!-- themes templates -->
+<ng-template #themesTrigger>
+  <MenuItem>
+    <palette-icon class="text-[16px]" />
+    <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
+    <ChevronRight class="size-4" />
+  </MenuItem>
+</ng-template>
+<ng-template #themesContent>
+  @for (theme of AllThemes; track theme.name) {
+    <MenuItem (click)="switchTheme(theme.name)" class="justify-between">
+      <span>{{ `userMenu.${theme.name}Mode` | transloco }}</span>
+      <div class="flex items-center gap-2">
+        @if (currentTheme() === theme.name) {
+          <check-icon class="text-sm" />
+        }
+        <ng-container *ngComponentOutlet="theme.icon" />
+      </div>
+    </MenuItem>
+  }
+</ng-template>
+
+<!-- languages templates -->
+<ng-template #languesTrigger>
+  <MenuItem>
+    <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
+    <ChevronRight class="size-4" />
+  </MenuItem>
+</ng-template>
+<ng-template #languesContent>
+  @for (lang of AllLanguages; track lang.code) {
+    <MenuItem (click)="changeLanguage(lang.code)" class="justify-between">
+      <span>{{ lang.label }}</span>
+      <div class="flex items-center gap-2">
+        @if (currentActiveLang() === lang.code) {
+          <check-icon class="text-sm" />
+        }
+        <ng-container *ngComponentOutlet="lang.icon"></ng-container>
+      </div>
+    </MenuItem>
+  }
+</ng-template>
+
 @if (enabledUserProfile()) {
   <MenuItem (click)="onEventClick.emit('profile')">
     <user-icon class="text-[16px]" />
@@ -7,37 +50,77 @@
   </MenuItem>
   <Separator />
 
-  <expandable-select
-    labelKey="userMenu.selectTheme"
-    [icon]="PaletteIcon"
-    [options]="themeOptions"
-    [active]="currentTheme() ?? ''"
-    [translateLabels]="true"
-    [expanded]="openSection() === 'theme'"
-    (toggleExpand)="toggleSection('theme')"
-    (selected)="onThemeSelect($event)" />
-} @else {
-  <expandable-select
-    #languageSelect
-    labelKey="userMenu.selectLanguage"
-    [options]="languageOptions"
-    [active]="currentActiveLang()"
-    [expanded]="openSection() === 'language'"
-    (toggleExpand)="toggleSection('language')"
-    (flyoutTriggered)="themeSelect.closeFlyout()"
-    (selected)="changeLanguage($event)" />
+  <!-- themes selection -->
+  @if (isMobile()) {
+    <details name="user-menu-accordion" class="group">
+      <summary (click)="$event.stopPropagation()" class="list-none">
+        <MenuItem>
+          <palette-icon class="text-[16px]" />
+          <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
+          <ChevronRight class="size-4 transition-transform duration-200 ease-in-out group-open:rotate-90 motion-reduce:transition-none" />
+        </MenuItem>
+      </summary>
+      <ng-container [ngTemplateOutlet]="themesContent" />
+    </details>
+  } @else {
+    <menu class="dropdown-content">
+      <ng-container [ngTemplateOutlet]="themesTrigger" />
 
-  <expandable-select
-    #themeSelect
-    labelKey="userMenu.selectTheme"
-    [icon]="PaletteIcon"
-    [options]="themeOptions"
-    [active]="currentTheme() ?? ''"
-    [translateLabels]="true"
-    [expanded]="openSection() === 'theme'"
-    (toggleExpand)="toggleSection('theme')"
-    (flyoutTriggered)="languageSelect.closeFlyout()"
-    (selected)="onThemeSelect($event)" />
+      <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+        <ng-container [ngTemplateOutlet]="themesContent" />
+      </MenuContent>
+    </menu>
+  }
+} @else {
+  <!--
+    Wrapper <menu> is required when two sub-menus are siblings.
+    The <menu> component uses ContentChildren to discover and manage its nested <menu> children:
+    mutual close-on-open, shared positioning context, and keyboard navigation all depend on a
+    single parent owning both. Without this wrapper each sub-menu would be an orphan and their
+    interactions (e.g. opening one should close the other) would break.
+    In the @if branch above only one sub-menu exists, so no wrapper is needed.
+  -->
+  @if (isMobile()) {
+    <details name="user-menu-accordion" class="group">
+      <summary (click)="$event.stopPropagation()" class="list-none">
+        <MenuItem>
+          <span class="grow">{{ "userMenu.selectLanguage" | transloco }}</span>
+          <ChevronRight class="size-4 transition-transform duration-200 ease-in-out group-open:rotate-90 motion-reduce:transition-none" />
+        </MenuItem>
+      </summary>
+      <ng-container [ngTemplateOutlet]="languesContent" />
+    </details>
+
+    <details name="user-menu-accordion" class="group">
+      <summary (click)="$event.stopPropagation()" class="list-none">
+        <MenuItem>
+          <palette-icon class="text-[16px]" />
+          <span class="grow">{{ "userMenu.selectTheme" | transloco }}</span>
+          <ChevronRight class="size-4 transition-transform duration-200 ease-in-out group-open:rotate-90 motion-reduce:transition-none" />
+        </MenuItem>
+      </summary>
+      <ng-container [ngTemplateOutlet]="themesContent" />
+    </details>
+  } @else {
+    <menu>
+      <!-- language selection -->
+      <menu class="dropdown-content">
+        <ng-container [ngTemplateOutlet]="languesTrigger" />
+
+        <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+          <ng-container [ngTemplateOutlet]="languesContent" />
+        </MenuContent>
+      </menu>
+
+      <menu class="dropdown-content">
+        <ng-container [ngTemplateOutlet]="themesTrigger" />
+
+        <MenuContent [position]="menuPosition()" class="max-w-fit min-w-40 rounded-3xl border border-menu-border bg-menu-bg p-3 shadow-lg">
+          <ng-container [ngTemplateOutlet]="themesContent" />
+        </MenuContent>
+      </menu>
+    </menu>
+  }
 }
 
 <Separator />
