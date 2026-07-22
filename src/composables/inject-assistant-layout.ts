@@ -2,12 +2,13 @@ import { ChangeDetectorRef, DestroyRef, Signal, computed, effect, inject, signal
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
-import { TranslocoService } from "@jsverse/transloco";
+import { translateSignal } from "@jsverse/transloco";
 import { SavedChat } from "@sinequa/assistant/chat";
 import type { AssistantComponent } from "@components/assistant/assistant";
 import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/atomic";
 import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 import { filter, firstValueFrom, skip, take } from "rxjs";
+import { injectCurrentUrl } from "@utils/routing";
 import { UrlQueryParamInputs, injectUrlQueryParamsSync } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
@@ -32,7 +33,10 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   const cdr = inject(ChangeDetectorRef);
   const destroyRef = inject(DestroyRef);
   const principalStore = inject(PrincipalStore);
-  const transloco = inject(TranslocoService);
+  const currentUrl = injectCurrentUrl();
+  // Reactive translated tab title ('' until the async file loads, then re-emitted on each language
+  // change). translateSignal wraps selectTranslate, so no raw key flashes on first load.
+  const pageTitle = translateSignal("pageTitle.assistant");
 
   const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;
@@ -62,6 +66,19 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   });
 
   // ── Effects ──────────────────────────────────────────────────────────────
+
+  // Keep the tab title translated for the active language — but only while the assistant is the
+  // visible route. This route is reused (reuse: true): its effects keep running while the component
+  // is detached, so a language change on another page updates pageTitle() and must NOT call setTitle
+  // here (it would clobber the active page's title). The URL guard scopes the write to /assistant;
+  // the selection guard leaves an open document preview's title untouched (mirrors home/search).
+  effect(() => {
+    const title = pageTitle();
+    const path = currentUrl()?.split(/[?#]/)[0];
+    if (title && !selectionStore.id?.() && path === "/assistant") {
+      applicationService.setTitle(title);
+    }
+  });
 
   // Recreate the assistant component when an admin switches the impersonated user
   effect(() => {
@@ -95,15 +112,8 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Methods ──────────────────────────────────────────────────────────────
 
   function initialize() {
-    // Runs on load and on every route re-attach (onRouteAttached), so the title is
-    // (re-)translated for the active language each time the assistant becomes active.
-    // selectTranslate waits for the async translation file (avoids the raw key on first load);
-    // take(1) sets it once per attach so a later language change — while this reused component
-    // is detached — can't clobber the active page's title.
-    transloco
-      .selectTranslate("pageTitle.assistant")
-      .pipe(take(1), takeUntilDestroyed(destroyRef))
-      .subscribe(title => applicationService.setTitle(title));
+    // The tab title is handled reactively by the pageTitle effect above (route-guarded so it stays
+    // correct even though this component is reused). Here we only reset per-attach state.
     selectionStore.clear();
     getFirstPageQuery();
   }
