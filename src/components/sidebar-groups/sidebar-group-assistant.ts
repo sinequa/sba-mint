@@ -9,16 +9,16 @@ import { CommentIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarM
   template: `
     @if(allowAI()) {
     <sidebar-menu>
-      <sidebar-menu-item aria-label="Chats">
+      <sidebar-menu-item aria-label="Chats" class="group-data-[collapsible=icon]:items-center">
         <sidebar-menu-button
-          [tooltip]="'chats' | transloco" tooltip-position="right"
+          [tooltip]="isCollapsed() ? ('chats' | transloco) : ''" tooltip-position="right"
           class="text-lg"
           routerLink="/assistant"
           routerLinkActive="active"
           #rlaAssistant="routerLinkActive"
           [attr.data-active]="rlaAssistant.isActive || null">
           <comment-icon />
-          <span class="text-sm" sr-only>{{ 'chats' | transloco }}</span>
+          <span class="text-sm">{{ 'chats' | transloco }}</span>
         </sidebar-menu-button>
       </sidebar-menu-item>
     </sidebar-menu>
