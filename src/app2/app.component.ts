@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject } from "@angular/core";
+import { Component, DestroyRef, computed, effect, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import { LoggerService } from "@sinequa/agent";
@@ -57,9 +57,29 @@ export class AppComponent {
       { signal: controller.signal }
     );
 
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
-      document.documentElement.classList.toggle("dark", matches);
+    // Keep the `dark` class in sync with the persisted theme preference (ES-32024).
+    //
+    // The class must be applied REACTIVELY, not only once at bootstrap. On a credentials
+    // logout → login the stores are re-initialized via `ApplicationService.initialize()` WITHOUT a
+    // full page reload (logout does `router.navigate(['/logout'])`, not `location.href`), so the
+    // one-shot toggle in `main.ts` never re-runs. Binding to `isDarkMode()` — which tracks the
+    // persisted `userTheme` — guarantees the checked mode is always the applied one, on first
+    // login, after re-login and after a user override.
+    effect(() => {
+      document.documentElement.classList.toggle("dark", this.userSettingsStore.isDarkMode());
     });
+
+    // React to OS scheme changes only when the user defers to the system ("system" mode). In
+    // explicit "dark"/"light" mode the user's choice wins and must not be overridden by the OS.
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener(
+      "change",
+      ({ matches }) => {
+        if (this.userSettingsStore.userTheme?.() === "system") {
+          document.documentElement.classList.toggle("dark", matches);
+        }
+      },
+      { signal: controller.signal }
+    );
 
     // Ctrl+Shift+F opens the feature-flags dialog. Chosen to avoid browser/OS conflicts: not bound by
     // Chrome/Firefox/Edge (unlike Ctrl+Shift+K = Firefox console), no AltGr (Ctrl+Alt) clash on AZERTY,
