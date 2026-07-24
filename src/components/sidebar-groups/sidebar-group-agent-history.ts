@@ -69,8 +69,9 @@ export class SidebarGroupAgentHistoryComponent {
   /** Per-instance UI visibility flag for the saved-chats history (backend-driven), as in the demo. */
   protected readonly showSavedChats = computed(() => this.agentsStore.isSavedChatsVisible(this.instanceId));
 
-  /** True only when the machine is Idle — used to avoid interrupting an active generation. */
-  private readonly isIdle = computed(() => this.agentsStore.agents()[this.instanceId]?.machine.state === "Connected.Operational.Idle");
+  /** True when loading another chat is safe — `AgentsStore.canLoadChat` is the library's single
+   * source of truth (allows Idle/WaitingForApproval/Editing…, blocks while busy), as in the demo. */
+  private readonly canNavigate = computed(() => this.agentsStore.canLoadChat(this.instanceId));
 
   /** Derives the active chat id from the URL (`/chat/:uuid`) to highlight it in the history list. */
   protected readonly activeChatId = computed(() => {
@@ -81,7 +82,7 @@ export class SidebarGroupAgentHistoryComponent {
 
   /** Navigates to the selected saved chat (chatId flows back in via the route). Ignored while busy. */
   protected onChatSelected(chat: SavedChat): void {
-    if (!this.isIdle()) return;
+    if (!this.canNavigate()) return;
     this.router.navigate(["/chat", chat.id]).catch(err => error("navigation to saved chat failed!", err));
   }
 }

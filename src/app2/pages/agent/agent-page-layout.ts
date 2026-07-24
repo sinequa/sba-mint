@@ -8,11 +8,13 @@ import {
   AgentInjector,
   type AgentInjectorProvidersHook,
   type AgentSavedChatEvent,
+  AgentsStore,
   type AgentToolbarAction,
   CopyToClipboardDirective,
   createAgentNewChatEvent,
   ErrorDirective,
-  FeedbackDirective
+  FeedbackDirective,
+  type InputFilterEntry
 } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
 import { PrincipalStore, SelectionStore } from "@sinequa/atomic-angular";
@@ -39,7 +41,8 @@ type Panel = "chat" | "preview";
                   [errorComponent]="errorComponent()"
                   [agentToolbarActions]="agentToolbarActions()"
                   [userToolbarActions]="userToolbarActions()"
-                  [providersHook]="providersHook()" />
+                  [providersHook]="providersHook()"
+                  [inputFilters]="inputFilters()" />
             </div>
           </div>
         </ResizablePanel>
@@ -85,11 +88,17 @@ export class AgentPageLayoutComponent {
   readonly agentToolbarActions = input<AgentToolbarAction[]>();
   readonly userToolbarActions = input<AgentToolbarAction[]>();
   readonly providersHook = input<AgentInjectorProvidersHook>();
+  readonly inputFilters = input<InputFilterEntry[]>();
 
   private readonly router = inject(Router);
   private readonly selectionStore = inject(SelectionStore);
   private readonly principalStore = inject(PrincipalStore);
+  private readonly agentsStore = inject(AgentsStore);
   private readonly panelGroup = viewChild(ResizablePanelGroupComponent);
+
+  /** True when loading/starting another chat is safe — `AgentsStore.canLoadChat` is the library's
+   * source of truth (allows Idle/WaitingForApproval/Editing…, blocks while busy), as in the demo. */
+  private readonly canNavigate = computed(() => this.agentsStore.canLoadChat(this.instanceId));
 
   readonly previewCollapsed = signal(true);
 
@@ -146,14 +155,17 @@ export class AgentPageLayoutComponent {
   }
 
   /**
-   * When the currently-open saved chat is deleted from the history list, switch the agent to a
-   * fresh chat so the deleted id no longer lingers in the URL. Deleting any other chat is ignored.
+   * When the currently-open saved chat is deleted from the history list, realign the route to a
+   * fresh chat so the deleted id no longer lingers in the URL. The library already resets the
+   * machine on deletion (guarded), so we only navigate — no createAgentNewChatEvent dispatch, which
+   * would risk cancelling an in-flight turn in the delete-after-new-turn race. Mirrors the demo.
+   * Ignored for other chats/instances, or when loading isn't safe.
    */
   protected onSavedChatEvent(event: Event): void {
     const detail = (event as CustomEvent<AgentSavedChatEvent>).detail;
-    if (detail?.id === "SAVED_CHAT_DELETED" && detail.chatId && detail.chatId === this.chatId()) {
-      this.startNewChat();
-    }
+    if (detail?.id !== "SAVED_CHAT_DELETED" || detail.instanceId !== this.instanceId || detail.chatId !== this.chatId()) return;
+    if (!this.canNavigate()) return;
+    this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
   }
 
   startNewChat() {

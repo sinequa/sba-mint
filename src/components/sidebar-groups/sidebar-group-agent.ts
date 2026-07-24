@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { AGENT_INSTANCE_ID, AgentsStore, createAgentNewChatEvent, SavedChatsDialogComponent } from "@sinequa/agent";
+import { AGENT_INSTANCE_ID, AgentsStore, createAgentNewChatEvent, type SavedChat, SavedChatsDialogComponent } from "@sinequa/agent";
 import { error } from "@sinequa/atomic";
 import { AppStore } from "@sinequa/atomic-angular";
 import {
@@ -39,9 +39,9 @@ import { injectCurrentUrl } from "../../utils/routing";
         <sidebar-menu-item
           class="group-data-[collapsible=icon]:items-center"
           [attr.aria-label]="newChat"
-          [class.cursor-pointer]="isIdle()"
-          [class.cursor-not-allowed]="!isIdle()"
-          [class.pointer-events-none]="!isIdle()"
+          [class.cursor-pointer]="canNavigate()"
+          [class.cursor-not-allowed]="!canNavigate()"
+          [class.pointer-events-none]="!canNavigate()"
           (click)="onNewChat()">
           <sidebar-menu-button [tooltip]="isCollapsed() ? newChat : ''" tooltip-position="right" class="text-lg">
             <new-chat-icon />
@@ -59,9 +59,9 @@ import { injectCurrentUrl } from "../../utils/routing";
       }
     </sidebar-menu>
 
-    <!-- "Search chats" opens the library dialog. Selecting a chat only closes it for now; loading the
-         picked chat needs @sinequa/agent to expose a chatSelected output (pending lib change, ES-32885). -->
-    <SavedChatsDialog #savedChatsDialog [instanceId]="instanceId" />
+    <!-- "Search chats" opens the library dialog; binding (chatSelected) loads the picked chat and the
+         dialog closes itself — same wiring as the agent demo's app-sidebar. -->
+    <SavedChatsDialog #savedChatsDialog [instanceId]="instanceId" (chatSelected)="onChatSelected($event)" />
   }
   `,
   imports: [
@@ -96,8 +96,9 @@ export class SidebarGroupAgentComponent {
   /** True while on the agent feature (route prefix `/chat`) — gates the sub-entries. */
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
 
-  /** True only when the machine is Idle — used to avoid interrupting an active generation. */
-  protected readonly isIdle = computed(() => this.agentsStore.agents()[this.instanceId]?.machine.state === "Connected.Operational.Idle");
+  /** True when loading/starting another chat is safe — `AgentsStore.canLoadChat` is the library's
+   * single source of truth (allows Idle/WaitingForApproval/Editing…, blocks while busy), as in the demo. */
+  protected readonly canNavigate = computed(() => this.agentsStore.canLoadChat(this.instanceId));
 
   /**
    * Starts a new chat. Single-trigger strategy depending on the current route:
@@ -107,11 +108,20 @@ export class SidebarGroupAgentComponent {
    *   chatId to `undefined` and the agent resets. Dispatching here too would double-reset.
    */
   protected onNewChat(): void {
+    // Defense in depth behind the pointer-events gating: keyboard activation bypasses it, and a
+    // reset fired while loading is unsafe would cancel the in-flight turn (mirrors the demo).
+    if (!this.canNavigate()) return;
     const path = this.router.url.split(/[?;#]/, 1)[0];
     if (path === "/chat/new") {
       document.dispatchEvent(createAgentNewChatEvent(this.instanceId));
     } else {
       this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
     }
+  }
+
+  /** Loads the chat picked in the search dialog (chatId flows back in via the route). Ignored while busy. */
+  protected onChatSelected(chat: SavedChat): void {
+    if (!this.canNavigate()) return;
+    this.router.navigate(["/chat", chat.id]).catch(err => error("navigation to saved chat failed!", err));
   }
 }
