@@ -1,19 +1,11 @@
-import { Component, computed, DestroyRef, effect, inject, model, output, signal, viewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, computed, DestroyRef, effect, inject, output, signal, viewChild } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
 import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
-import {
-  CommentsIcon,
-  SparklesIcon,
-  SpinnerIcon,
-  TabComponent,
-  TabContent,
-  TabsComponent,
-  TabsListComponent
-} from "@sinequa/ui";
+import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
+import { ConverterSelectComponent } from "../converter-select/converter-select";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
 export type PreviewTab = "summary" | "preview" | "discussion";
@@ -36,13 +28,13 @@ export type PreviewTab = "summary" | "preview" | "discussion";
   selector: "preview-tabs, PreviewTabs, previewtabs",
   standalone: true,
   imports: [
-    FormsModule,
     TranslocoPipe,
     TabsComponent,
     TabsListComponent,
     TabComponent,
     TabContent,
     AssistantComponent,
+    ConverterSelectComponent,
     PreviewContentComponent,
     SpinnerIcon,
     SparklesIcon,
@@ -77,16 +69,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
         }
 
         <!-- converter options -->
-        @if (converterOptions().length) {
-          <div class="grow"></div>
-          <select
-            class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
-            [(ngModel)]="currentConversionIndex">
-            @for (option of converterOptions(); track $index) {
-              <option [value]="$index">{{ option.name | transloco }}</option>
-            }
-          </select>
-        }
+        <converter-select class="ms-auto" [previewData]="previewData()" (onConversionSelect)="onConversionChange($event)" />
       </TabsList>
       <!-- tabs content -->
       <div class="relative h-full grow overflow-auto">
@@ -111,7 +94,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="h-[calc(100%-3rem)] pr-1" [conversion]="currentConversion()" (onLoadedData)="previewData.set($event)" />
+          <preview-content class="h-[calc(100%-3rem)] pr-1" [conversion]="conversion()" (onLoadedData)="previewData.set($event)" />
         </TabContent>
       </div>
     </Tabs>
@@ -185,82 +168,27 @@ export class PreviewTabsComponent {
     { name: "summary", enabled: false, visible: this.displaySummaryContent() },
     { name: "discussion", enabled: false, visible: this.displayChatWithDocContent() }
   ]);
-  showSummarizeAssistant = computed(
-    () => this.showAssistants().find((assistant) => assistant.name === "summary")?.enabled
-  );
-  showChatWithDocAssistant = computed(
-    () => this.showAssistants().find((assistant) => assistant.name === "discussion")?.enabled
-  );
-  previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
+  showSummarizeAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "summary")?.enabled);
+  showChatWithDocAssistant = computed(() => this.showAssistants().find(assistant => assistant.name === "discussion")?.enabled);
 
   protected readonly isStreaming = signal<boolean>(false);
-  displaySummary = computed(() =>
-    this.showAssistants().some((assistant) => assistant.name === "summary" && assistant.visible)
-  );
-  displayChatWithDoc = computed(() =>
-    this.showAssistants().some((assistant) => assistant.name === "discussion" && assistant.visible)
-  );
+  displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === "summary" && assistant.visible));
+  displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === "discussion" && assistant.visible));
 
-  /** List of all available converters matching with previewData.conversions and the config defined general.converters */
-  currentConversionIndex = model<number>(-1);
-  currentConversion = computed<CConverter | undefined>(() =>
-    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()[this.currentConversionIndex()]
-  );
-  converters = computed(() =>
-    !this.previewData()?.conversions?.length
-      ? undefined
-      : this.appStore
-          .general()
-          ?.converters?.filter(
-            (converter) =>
-              converter.display &&
-              this.previewData()?.conversions?.some(
-                (c) => c.converterName === converter.converter && c.format === converter.format
-              )
-          )
-  );
-
-  /** All options for the converters dropdown */
-  converterOptions = computed(() => {
-    // return undefined if the feature is disabled or that there are no available conversions
-    if (!this.previewMultiConversion() || !this.converters()?.length) return [];
-
-    const converters = this.converters();
-    if (converters) {
-      return (
-        converters
-          .map((converter) => {
-            converter.conversion = this.previewData()?.conversions?.find(
-              (c) => c.converterName === converter.converter && c.format === converter.format
-            );
-            return converter;
-          })
-          // sort to have defaults first, then primaries, then others
-          .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
-      );
-    }
-    return [];
-  });
+  /** The converter/format currently selected in the <converter-select> dropdown. */
+  readonly conversion = signal<CConverter | undefined>(undefined);
 
   constructor() {
     effect(() => {
       const article = this.selectionStore.article?.();
       this.article.set(article as Article);
     });
+  }
 
-    effect(() => {
-      // setting the current conversion to the first conversion
-      // (the conversions being sorted to be defaults then primaries first, the first element will always be the one to pick by default)
-      if (this.previewMultiConversion() && this.converterOptions()?.length) {
-        this.currentConversionIndex.set(0);
-      }
-    });
-
-    effect(() => {
-      if (this.previewMultiConversion()) {
-        this.onConversionSelect.emit(this.currentConversion());
-      }
-    });
+  /** Keep the selected conversion in sync and forward it to the parent. */
+  onConversionChange(conversion: CConverter | undefined) {
+    this.conversion.set(conversion);
+    this.onConversionSelect.emit(conversion);
   }
 
   setActiveTab(tab: PreviewTab) {
@@ -268,11 +196,11 @@ export class PreviewTabsComponent {
   }
 
   setSummaryAssistant() {
-    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "summary");
+    const assistants = this.showAssistants().filter(assistant => assistant.name !== "summary");
     this.showAssistants.set([...assistants, { name: "summary", enabled: true, visible: true }]);
   }
   setChatWithDocAssistant() {
-    const assistants = this.showAssistants().filter((assistant) => assistant.name !== "discussion");
+    const assistants = this.showAssistants().filter(assistant => assistant.name !== "discussion");
     this.showAssistants.set([...assistants, { name: "discussion", enabled: true, visible: true }]);
   }
 
