@@ -101,6 +101,12 @@
   "help": "Aide",
   "administration": "Administration",
   "askAI": "Demander à l'IA",
+  "pageTitle": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "assistant": "Assistant",
+    "agent": "Agent"
+  },
   "assistant": {
     "userPrompt": "Bonjour, je m'appelle [[principal.fullName]].",
     "connectionErrorMessage": "Erreur de connexion ! Veuillez vérifier votre connexion réseau et réessayer.",

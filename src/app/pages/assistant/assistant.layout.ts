@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, viewChild } from "@angular/core";
 import { OnRouteAttached } from "@config/custom-reuse-strategy";
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { SavedChatsComponent } from "@sinequa/assistant/chat";
 import { SpellingCorrectionMode } from "@sinequa/atomic";
 import { AggregationComponent, ApplicationService, DrawerStackService } from "@sinequa/atomic-angular";
@@ -113,6 +113,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   // kept for app-sidebar binding; no longer tracked reactively
   readonly backLevel = 0;
   private readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly q = input<string>();
   readonly t = input<string>();
@@ -133,10 +134,18 @@ export class AssistantLayoutComponent implements OnRouteAttached {
   });
 
   constructor() {
-    // Update the title when the drawer closes (app1-specific behaviour)
+    // Restore the (translated) page title when the drawer (preview) closes (app1-specific behaviour).
+    // This route is reused (reuse: true): injectAssistantLayout already sets the title once per
+    // attach via take(1). Here we read the current language synchronously with translate() — not a
+    // reactive signal — so a language change while this component is detached can't clobber the
+    // active page's title. Skip while the async translation is not yet loaded (translate() returns
+    // the raw key) so we never flash "pageTitle.assistant".
     effect(() => {
-      if (!this.drawerStackService.isOpened()) {
-        this.applicationService.setTitle("Assistant");
+      if (this.drawerStackService.isOpened()) return;
+      const key = "pageTitle.assistant";
+      const title = this.transloco.translate(key);
+      if (title && title !== key) {
+        this.applicationService.setTitle(title);
       }
     });
   }

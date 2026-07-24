@@ -6,6 +6,7 @@ import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
 import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
+import { MarkdownPipe } from "@pipes/markdown.pipe";
 import { PreviewActionsComponent } from "./preview-actions";
 
 // Delay before revealing the iframe once a scroll has been requested: lets the iframe apply and
@@ -33,9 +34,33 @@ const LOAD_SAFETY_NET_MS = 1500;
  */
 @Component({
   selector: "preview-content",
-  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon, MarkdownPipe],
   template: `
-    @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
+    @if (previewDataResource.isLoading()) {
+      <div class="flex h-full w-full items-center justify-center">
+        <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+      </div>
+    } @else if (isMarkdown()) {
+      <!-- Markdown conversion: fetch the raw markdown content and render it in a div using the
+           markdown pipe (markdown-it), styled via Tailwind Typography's prose, instead of
+           loading it into the iframe. -->
+      @if (markdownResource.isLoading()) {
+        <div class="flex h-full w-full items-center justify-center">
+          <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+        </div>
+      } @else if (markdownResource.hasValue() && markdownResource.value()) {
+        <div class="h-[calc(100%-0.5rem)] overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
+          <div class="prose max-w-none dark:prose-invert" [innerHTML]="markdownResource.value() | markdown"></div>
+        </div>
+      } @else {
+        <div class="flex h-full w-full items-center justify-center">
+          <p class="text-center text-xl">
+            <image-icon class="mb-6 text-6xl text-secondary" /><br />
+            {{ "previewUnavailable" | transloco }}
+          </p>
+        </div>
+      }
+    } @else if (previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
         <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
       </div>
@@ -173,6 +198,38 @@ export class PreviewContentComponent {
   });
 
   readonly isSecondary = computed(() => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false);
+
+  /**
+   * Whether the currently selected conversion is a Markdown conversion. Only relevant when the
+   * multi-conversion feature is enabled (that is the only path that exposes the converter dropdown).
+   */
+  readonly isMarkdown = computed(() => {
+    if (!this.previewMultiConversionFlag()) return false;
+    const format = this.conversion()?.format ?? this.conversion()?.conversion?.format;
+    return format?.toLowerCase() === "md" || format?.toLowerCase() === "markdown";
+  });
+
+  /** Same-origin URL of the raw markdown content to fetch, or undefined when not a Markdown conversion. */
+  private readonly markdownContentUrl = computed(() => {
+    if (!this.isMarkdown()) return undefined;
+    const url = this.conversion()?.conversion?.url;
+    return url ? window.location.origin + url : undefined;
+  });
+
+  /**
+   * Fetches the raw markdown text for a Markdown conversion so it can be rendered as HTML via the
+   * `markdown` pipe, rather than being displayed as unformatted text inside the iframe.
+   */
+  public readonly markdownResource = resource<string | undefined, { url: string | undefined }>({
+    params: () => ({ url: this.markdownContentUrl() }),
+    defaultValue: undefined,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.url) return undefined;
+      const response = await fetch(params.url, { signal: abortSignal });
+      if (!response.ok) throw new Error(`Failed to fetch markdown content (status ${response.status})`);
+      return await response.text();
+    }
+  });
 
   /**
    * A resource that validates the preview content by checking if the cached document URL is accessible.

@@ -1,7 +1,6 @@
-import { Component, computed, inject } from "@angular/core";
+import { Component, computed } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { AppStore, QueryParamsStore } from "@sinequa/atomic-angular";
 import {
   HomeIcon,
   MagnifyingGlassIcon,
@@ -37,7 +36,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-          @if (allowEmptySearch() ||isSearchRoute()) {
+          @if (!isSearchRoute()) {
             <sidebar-menu-item aria-label="Search" class="group-data-[collapsible=icon]:items-center">
               <sidebar-menu-button
                 [tooltip]="isCollapsed() ? ('search' | transloco) : ''" tooltip-position="right"
@@ -84,11 +83,6 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
   }
 })
 export class SidebarGroupNavigationComponent {
-  private readonly appStore = inject(AppStore);
-  private readonly queryParamsStore = inject(QueryParamsStore);
-
-  allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ""));
-
   private readonly sidebar = useSidebar();
   protected readonly isCollapsed = computed(() => this.sidebar.state() === "collapsed");
 
