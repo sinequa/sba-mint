@@ -1,7 +1,6 @@
 import { Component, computed, inject } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
-import { AppStore, QueryParamsStore } from "@sinequa/atomic-angular";
 import {
   HomeIcon,
   MagnifyingGlassIcon,
@@ -23,7 +22,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
       <sidebar-group-label>Navigation</sidebar-group-label>
       <sidebar-group-content>
         <sidebar-menu>
-          <sidebar-menu-item aria-label="Search">
+          <sidebar-menu-item aria-label="home">
             <sidebar-menu-button
               [tooltip]="'home' | transloco" tooltip-position="right"
               class="text-lg"
@@ -36,8 +35,8 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-          @if (allowEmptySearch() ||isSearchRoute()) {
-            <sidebar-menu-item aria-label="Search">
+          @if (!isSearchRoute()) {
+            <sidebar-menu-item aria-label="search">
               <sidebar-menu-button
                 [tooltip]="'search' | transloco" tooltip-position="right"
                 class="text-lg"
@@ -83,11 +82,6 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
   }
 })
 export class SidebarGroupNavigationComponent {
-  private readonly appStore = inject(AppStore);
-  private readonly queryParamsStore = inject(QueryParamsStore);
-
-  allowEmptySearch = computed(() => this.appStore.allowEmptySearch(this.queryParamsStore.getQuery()?.name ?? ""));
-
   private readonly currentUrl = injectCurrentUrl();
 
   readonly isSearchRoute = computed(() => this.currentUrl()?.startsWith("/search") ?? false);

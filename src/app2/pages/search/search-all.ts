@@ -321,7 +321,7 @@ export class SearchAllComponent {
     // Update selectedAll signal based on the selection store and current pages
     effect(() => {
       debug("effect - 5. update selectedAll signal based on the selection store and current pages");
-      const articles = this.query.data()?.pages.flatMap(page => page.records.map(x => x.id)) || [];
+      const articles = this.query.data()?.pages.flatMap(page => page?.records?.map(x => x.id)) || [];
       const selection = this.selectionStore.multiSelection().map(x => x.id);
       const b = bisect(articles, x => selection.includes(x));
 
