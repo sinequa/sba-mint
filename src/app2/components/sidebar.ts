@@ -141,7 +141,7 @@ import { filter } from "rxjs";
                 </div>
               </sidebar-menu-button>
 
-              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
+              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg w-64 max-w-[calc(100vw-2rem)] md:w-auto md:max-w-none md:min-w-max">
                 <!-- <Settings class="mt-auto" [debug]="true" /> -->
                 <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
               </MenuContent>
