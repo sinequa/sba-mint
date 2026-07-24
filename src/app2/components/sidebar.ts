@@ -5,7 +5,7 @@ import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-g
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService, TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -91,11 +91,11 @@ import { filter } from "rxjs";
         <!-- main navigation menu -->
         <app-sidebar-group-navigation>
 
-          <!-- assistant menu -->
-          <app-sidebar-group-assistant />
+        <!-- assistant menu -->
+        <app-sidebar-group-assistant />
 
-          <!-- agents and worksets menu -->
-          <app-sidebar-group-agent />
+        <!-- agents and worksets menu -->
+        <app-sidebar-group-agent />
 
         </app-sidebar-group-navigation>
 

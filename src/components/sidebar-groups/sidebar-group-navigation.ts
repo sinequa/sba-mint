@@ -22,7 +22,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
       <sidebar-group-label>Navigation</sidebar-group-label>
       <sidebar-group-content>
         <sidebar-menu>
-          <sidebar-menu-item aria-label="Search">
+          <sidebar-menu-item aria-label="home">
             <sidebar-menu-button
               [tooltip]="'home' | transloco" tooltip-position="right"
               class="text-lg"
@@ -35,8 +35,8 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
             </sidebar-menu-button>
           </sidebar-menu-item>
 
-          @if (isSearchRoute()) {
-            <sidebar-menu-item aria-label="Search">
+          @if (!isSearchRoute()) {
+            <sidebar-menu-item aria-label="search">
               <sidebar-menu-button
                 [tooltip]="'search' | transloco" tooltip-position="right"
                 class="text-lg"
