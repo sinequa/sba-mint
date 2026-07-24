@@ -29,8 +29,7 @@
         </button>
       }
       @let searchLabel = "search" | transloco;
-      @let searchText = searchInputText().trim();
-      @let isDisabled = !allowEmptySearch() && searchText === "";
+      @let isDisabled = !allowEmptySearch() && searchInputText().trim() === "";
       <button
         variant="icon"
         size="xs"
