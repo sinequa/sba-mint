@@ -114,9 +114,19 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Methods ──────────────────────────────────────────────────────────────
 
   function initialize() {
-    // The tab title is handled reactively by the pageTitle effect above (route-guarded so it stays
-    // correct even though this component is reused). Here we only reset per-attach state.
     selectionStore.clear();
+    // Set the tab title on every (re)attach. This route is reused (reuse: true) so the component is
+    // created once and thawed on return; relying solely on the route-guarded effect above is racy on
+    // thaw (its flush can run before currentUrl()/selection settle, so the title write is missed).
+    // initialize() is the deterministic attach hook (construction + onRouteAttached), so set the
+    // title here too. translate() is synchronous and, running on route attach (post-bootstrap), the
+    // root i18n file is loaded; guard against the raw key so we never flash "pageTitle.assistant".
+    // The effect still covers language changes made while the assistant is the visible route.
+    const key = "pageTitle.assistant";
+    const title = transloco.translate(key);
+    if (title && title !== key) {
+      applicationService.setTitle(title);
+    }
     getFirstPageQuery();
   }
 
