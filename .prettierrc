@@ -16,7 +16,7 @@
   "trailingComma": "none",
   "bracketSameLine": true,
   "printWidth": 160,
-  "endOfLine": "crlf",
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": ["*.html"],
