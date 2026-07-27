@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="../../src/assets/preview.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="_fixture.css" />
+    <script src="../../src/assets/preview.js"></script>
+  </head>
+  <body style="--factor: 0.9227736527524865">
+    <script src="_fixture.js"></script>
+    <!-- Same captured content as basic-website, distributed into `.stl_` page sheets.
+         The split happens at top-level boundaries only, so the real markup is never cut:
+         a passage split across two top-level spans -- which this dump does constantly,
+         since passages overlap and HTML cannot express overlapping ranges -- can then
+         straddle two sheets. Because the sheets are inline-block, they also line up side
+         by side once the layout is wide enough, which is the "flex" mode. -->
+    <script>
+      LAB.writeContent("_silicon-valley.html");
+      LAB.paginateBody({ pageHeight: 900 });
+
+      window.LAB_EXPECT = {
+        title: "Real Sinequa dump — distributed into page sheets",
+        passages: {
+          matchingpassages_1: { label: "2 fragments, head nested in previous passage" },
+          matchingpassages_5: { label: "2 fragments across a heading" },
+          matchingpassages_51: { label: "2 fragments, long paragraph" },
+          matchingpassages_55: { label: "3 fragments" }
+        }
+      };
+    </script>
+  </body>
+</html>

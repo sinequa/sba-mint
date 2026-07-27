@@ -285,6 +285,110 @@ window.LAB = (function () {
   }
 
   // ---------------------------------------------------------------------------
+  // Real captured preview, re-laid-out
+  //
+  // The Silicon Valley dump is stored once in _silicon-valley.html and shared by
+  // the basic-website* fixtures, which only differ by the layout they impose on
+  // it. Keeping a single copy means a re-captured dump updates all of them.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Injects a captured body fragment at the current parse position, surrounded by
+   * markers so the layout helpers below can find it again.
+   *
+   * The request is deliberately synchronous: the document has to be complete
+   * before preview.js's DOMContentLoaded handler runs, otherwise it would measure
+   * an empty body in zoomFit().
+   */
+  function writeContent(path) {
+    var request = new XMLHttpRequest();
+    request.open("GET", path, false);
+    request.send();
+    document.write('<span id="lab-content-start" hidden></span>');
+    document.write(request.responseText);
+    document.write('<span id="lab-content-end" hidden></span>');
+  }
+
+  function contentNodes() {
+    var start = document.getElementById("lab-content-start");
+    var end = document.getElementById("lab-content-end");
+    var nodes = [];
+    if (!start || !end) return nodes;
+    for (var node = start.nextSibling; node && node !== end; node = node.nextSibling) {
+      nodes.push(node);
+    }
+    return nodes;
+  }
+
+  /** Flows the captured content into CSS multi-column boxes. */
+  function columnize(options) {
+    var container = document.createElement("div");
+    container.className = "lab-columns";
+    container.style.columnCount = String((options && options.count) || 3);
+
+    contentNodes().forEach(function (node) {
+      container.appendChild(node);
+    });
+    document.body.insertBefore(container, document.getElementById("lab-content-end"));
+
+    pagination(1, 1);
+    return { title: options && options.title, container: container };
+  }
+
+  /**
+   * Distributes the captured content into page sheets, cutting at top-level
+   * boundaries only so the real markup -- passage spans included -- is never
+   * split. Page heights therefore vary, which does not matter here: what matters
+   * is that a passage can straddle two sheets, as in a real paginated conversion.
+   */
+  function paginateBody(options) {
+    var target = (options && options.pageHeight) || 900;
+    var end = document.getElementById("lab-content-end");
+    var nodes = contentNodes();
+    var pages = [];
+    var pageBody = null;
+
+    // Measuring inside a `content-visibility: auto` subtree is engine-dependent;
+    // turn the optimisation off while distributing, then hand it back.
+    document.body.classList.add("lab-paginating");
+
+    function startPage() {
+      var sheet = document.createElement("div");
+      sheet.className = "stl_ lab-page";
+
+      var anchor = document.createElement("a");
+      anchor.id = "sq-page-start-" + (pages.length + 1);
+      sheet.appendChild(anchor);
+
+      pageBody = document.createElement("div");
+      pageBody.className = "lab-page-body";
+      // Columns inside the sheet: the layout of an academic paper, and the one that
+      // makes a passage cross a column break within a page rather than by luck.
+      if (options && options.columns > 1) pageBody.style.columnCount = String(options.columns);
+      sheet.appendChild(pageBody);
+
+      document.body.insertBefore(sheet, end);
+      pages.push(sheet);
+    }
+
+    startPage();
+    nodes.forEach(function (node) {
+      pageBody.appendChild(node);
+      if (pageBody.getBoundingClientRect().height >= target) startPage();
+    });
+
+    // The last node may have filled the previous sheet exactly.
+    if (pages.length > 1 && !pageBody.childNodes.length) {
+      var trailing = pages.pop();
+      trailing.parentNode.removeChild(trailing);
+    }
+
+    document.body.classList.remove("lab-paginating");
+    pagination(pages.length, 1);
+    return pages.length;
+  }
+
+  // ---------------------------------------------------------------------------
   // Plain HTML flow (Word / HTML / Markdown-ish converters)
   // ---------------------------------------------------------------------------
 
@@ -343,6 +447,9 @@ window.LAB = (function () {
     pagination: pagination,
     buildPdfPages: buildPdfPages,
     buildFlow: buildFlow,
-    paragraph: paragraph
+    paragraph: paragraph,
+    writeContent: writeContent,
+    columnize: columnize,
+    paginateBody: paginateBody
   };
 })();

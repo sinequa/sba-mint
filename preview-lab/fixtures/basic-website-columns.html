@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="../../src/assets/preview.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="_fixture.css" />
+    <script src="../../src/assets/preview.js"></script>
+  </head>
+  <body style="--factor: 0.9227736527524865">
+    <script src="_fixture.js"></script>
+    <!-- Same captured content as basic-website, flowed into CSS multi-column boxes.
+         This is a layout mode the synthetic two-columns fixture cannot reproduce: there,
+         each line is an absolutely positioned div, so the columns are separate subtrees.
+         Here the browser breaks a single inline flow across columns, so the fragments of
+         a passage crossing a column break share the same body-level ancestor and only
+         the geometry -- the column gap -- can tell the columns apart. -->
+    <script>
+      LAB.writeContent("_silicon-valley.html");
+      LAB.columnize({ count: 3 });
+
+      window.LAB_EXPECT = {
+        title: "Real Sinequa dump — flowed into 3 CSS columns",
+        passages: {
+          matchingpassages_1: { label: "2 fragments, head nested in previous passage" },
+          matchingpassages_5: { label: "2 fragments across a heading" },
+          matchingpassages_51: { label: "2 fragments, long paragraph" },
+          matchingpassages_55: { label: "3 fragments" }
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -35,9 +35,12 @@
     { name: "svg-text", file: "fixtures/svg-text.html" },
     { name: "frameset", file: "fixtures/frameset.html" },
     { name: "image-pages", file: "fixtures/image-pages.html" },
-    // A real cached preview, captured from a Sinequa dev server: no pagination,
-    // and the body's direct children are the passage <span>s themselves.
-    { name: "basic-website", file: "fixtures/basic-website.html" }
+    // A real cached preview, captured from a Sinequa dev server. The three share the
+    // same captured content and differ only by the layout imposed on it.
+    { name: "basic-website", file: "fixtures/basic-website.html" },
+    { name: "basic-website-columns", file: "fixtures/basic-website-columns.html" },
+    { name: "basic-website-pages", file: "fixtures/basic-website-pages.html" },
+    { name: "basic-website-paged-columns", file: "fixtures/basic-website-paged-columns.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -354,11 +357,16 @@
       typeof measurement.preMeasured === "number"
         ? ", " + measurement.preMeasured + "/" + measurement.elements + " fragment(s) laid out before the scroll"
         : "";
+    // Distinct horizontal positions among the frames, bucketed to absorb indentation.
+    // Reported, not asserted: it is how one can tell whether a scenario actually
+    // exercised a column break rather than merely a set of stacked paragraphs.
+    const columnPositions = new Set(frames.map(frame => Math.round(frame.left / 8))).size;
+
     checks.push({
       id: "A1",
       label: "at least one frame",
       pass: frames.length > 0,
-      detail: frames.length + " frame(s)" + (measurement.backgroundOnly ? " — background-tint mode" : "") + prelude
+      detail: frames.length + " frame(s) at " + columnPositions + " x-position(s)" + (measurement.backgroundOnly ? " — background-tint mode" : "") + prelude
     });
 
     const blocks = expected && typeof expected.blocks === "number" ? expected.blocks : null;

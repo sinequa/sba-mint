@@ -66,6 +66,37 @@
   background: repeating-linear-gradient(45deg, #dfe6ef, #dfe6ef 12px, #eef2f7 12px, #eef2f7 24px);
 }
 
+/* Captured real content flowed into CSS multi-column boxes. A passage crossing a
+   column break lands in the same body-level ancestor as its start, so only the
+   geometry can tell the two columns apart -- the column gap is what does it. */
+.lab-columns {
+  column-gap: 48px;
+  column-rule: 1px solid #ddd;
+  margin: 24px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid lightgrey;
+}
+
+/* Captured real content distributed into page sheets. Unlike the synthetic pages,
+   the height is content-driven, because the split happens at top-level boundaries
+   and never inside the real markup. */
+.stl_.lab-page {
+  width: 816px;
+  height: auto;
+  min-height: 1056px;
+  contain-intrinsic-size: auto 816px auto 1056px;
+}
+
+.lab-page-body {
+  padding: 48px 60px;
+}
+
+/* Set while distributing the content, so heights can be measured reliably. */
+.lab-paginating .stl_ {
+  content-visibility: visible;
+}
+
 /* Plain HTML flow (Word / HTML converters): normal wrapping text. */
 .lab-flow {
   width: 700px;
