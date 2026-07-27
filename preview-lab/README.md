@@ -45,7 +45,7 @@ being verified. The bench never reimplements the logic under test.
 | A1    | at least one frame is drawn                                                    | frame silently missing           |
 | A2    | frame count == declared blocks                                                 | single oversized union rect      |
 | A3    | every measurable fragment is inside a frame (±2 px)                            | coordinate-space mismatch        |
-| A4    | total frame area ≤ 3.5 × text area                                             | frame spanning two pages/columns |
+| A4    | total frame area ≤ 4.5 × text area                                             | frame spanning two pages/columns |
 | A5    | no frame covers > 15 % of a `data-lab-decoy`                                   | frame over unrelated content     |
 | A6    | each frame extends ≤ 12 px beyond its own fragments, and encloses at least one | loose or spurious frame          |
 | A7    | frames are actually stroked (visible, non-transparent border)                  | frame present but invisible      |
@@ -57,6 +57,12 @@ a hard failure, never a skip. `A2` is skipped when only part of the passage is
 laid out, and says so. `A1`'s detail also states how many fragments were laid out
 _before_ the scroll, which is the measurement the shipped code relies on to
 decide whether to draw a frame at all.
+
+Thresholds are calibrated by measurement, not by feel. For `A4`: the legitimate
+maximum is a sparse passage merged into a single frame (3.4), while reintroducing the
+union-rect bug — `canMergeBlocks` returning `true` — scores 5.6 to 28.1 on
+`page-break` and up to 16.2 on `two-columns`. 4.5 sits between the two. A4 is also
+never the *sole* detector of that bug: all 24 union scenarios fail A2 and A5 as well.
 
 > Measured on Chrome 2026-07: `getBoundingClientRect()` inside a
 > `content-visibility: auto` skipped subtree **is** resolved on demand, so

@@ -66,11 +66,13 @@
   const FRAME_SELECTOR = "#sq-passage-layer > *, .sq-passage-box, #sq-passage-highlighter";
 
   const TOLERANCE_PX = 2; // coverage slack, in device-independent pixels
-  // Density: a frame enclosing far more empty space than text is a union rect
-  // spanning several blocks. The legitimate maximum is a short passage in a
-  // narrow column (measured ≈ 2.5), so 3.5 leaves headroom without being lax --
-  // a frame spanning a page break or two columns scores well above 8.
-  const MAX_AREA_RATIO = 3.5;
+  // Density: a frame enclosing far more empty space than text may be a union rect
+  // spanning several blocks. Calibrated by measurement, not by feel: the legitimate
+  // maximum is a sparse passage merged into one frame (3.4), while reintroducing the
+  // union bug scores 5.6 to 28.1 on page-break and up to 16.2 on two-columns. 4.5
+  // sits between the two. Note that A4 is never the *sole* detector of that bug --
+  // all 24 union scenarios also fail A2 and A5 -- so this threshold is a backstop.
+  const MAX_AREA_RATIO = 4.5;
   const MAX_OUTSET_PX = 12; // how far a frame may extend beyond its own fragments
   const MAX_DECOY_OVERLAP = 0.15; // share of a decoy a frame may cover
   // Two frames of the same passage overlapping means the block decomposition is

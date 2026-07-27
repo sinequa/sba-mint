@@ -455,7 +455,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var PASSAGE_PADDING = 4; // local px kept between a frame and the glyphs
   var SAME_LINE_GAP_RATIO = 1.5; // horizontal gap, in line heights, that splits columns
-  var SAME_BLOCK_GAP_RATIO = 0.8; // vertical gap, in line heights, that splits blocks
+  var TIGHT_BLOCK_GAP_RATIO = 0.8; // vertical gap, in line heights, of consecutive lines
+  var LOOSE_BLOCK_GAP_RATIO = 1.6; // ... and of lines separated by one blank line
+  // Above the tight gap the frame would swallow a blank line, which is only worth it
+  // while it stays mostly text: a stack of short lines (a run of one-line captions,
+  // say) must not collapse into one large, mostly empty box.
+  var MIN_MERGE_DENSITY = 0.6;
   var RENDER_ATTEMPTS = 5;
   var RENDER_RETRY_MS = 100;
 
@@ -579,7 +584,10 @@ document.addEventListener("DOMContentLoaded", function () {
         top: rect.top,
         right: rect.right,
         bottom: rect.bottom,
-        lineHeight: rect.lineHeight
+        lineHeight: rect.lineHeight,
+        // Area actually covered by glyphs, as opposed to the block's bounding box.
+        // Line fragments never overlap, so this simply accumulates on merge.
+        textArea: (rect.right - rect.left) * (rect.bottom - rect.top)
       };
     });
 
@@ -611,8 +619,26 @@ document.addEventListener("DOMContentLoaded", function () {
     // Same line: the column gutter is what makes this fail between two columns.
     if (verticalOverlap > 0.5 * lineHeight && -horizontalOverlap <= SAME_LINE_GAP_RATIO * lineHeight) return true;
 
+    if (horizontalOverlap <= 0) return false;
+    var gap = -verticalOverlap;
+
     // Consecutive lines of the same column.
-    return horizontalOverlap > 0 && -verticalOverlap <= SAME_BLOCK_GAP_RATIO * lineHeight;
+    if (gap <= TIGHT_BLOCK_GAP_RATIO * lineHeight) return true;
+
+    // A wider gap than that is a blank line, typically two paragraphs of the same
+    // passage. Merging them reads better than two frames -- but only while the
+    // result stays mostly text, otherwise a run of short lines ends up in one big
+    // empty box. Beyond one blank line it is a structural break: never merge.
+    if (gap > LOOSE_BLOCK_GAP_RATIO * lineHeight) return false;
+    return mergedDensity(a, b) >= MIN_MERGE_DENSITY;
+  }
+
+  /** Share of the box the two blocks would occupy that glyphs actually cover. */
+  function mergedDensity(a, b) {
+    var width = Math.max(a.right, b.right) - Math.min(a.left, b.left);
+    var height = Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top);
+    var box = width * height;
+    return box > 0 ? (a.textArea + b.textArea) / box : 0;
   }
 
   function mergeBlock(target, other) {
@@ -621,6 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
     target.right = Math.max(target.right, other.right);
     target.bottom = Math.max(target.bottom, other.bottom);
     target.lineHeight = Math.min(target.lineHeight, other.lineHeight);
+    target.textArea += other.textArea;
   }
 
   /**
