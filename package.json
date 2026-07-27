@@ -47,8 +47,8 @@
     "@floating-ui/dom": "^1.6.3",
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^0.6.0",
-    "@jsverse/transloco": "^7.6.1",
-    "@jsverse/transloco-messageformat": "^7.0.1",
+    "@jsverse/transloco": "^8.4.0",
+    "@jsverse/transloco-messageformat": "^8.4.0",
     "@microsoft/signalr": "^7.0.14",
     "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.1.0",
@@ -86,14 +86,19 @@
     "vite": ">=7.3.5 <8",
     "esbuild": ">=0.28.1 <0.29",
     "@babel/core": ">=7.29.7 <8",
-    "piscina": "5.2.0"
+    "piscina": "5.2.0",
+    "@hono/node-server": ">=2.0.5 <3",
+    "@jsverse/transloco": "^8.4.0",
+    "@jsverse/transloco-scoped-libs": {
+      "glob": "^13.0.6"
+    }
   },
   "devDependencies": {
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.15",
     "@biomejs/biome": "2.3.14",
-    "@jsverse/transloco-scoped-libs": "^7.0.1",
+    "@jsverse/transloco-scoped-libs": "^8.4.0",
     "@microsoft/sp-http": "^1.20.0",
     "@shikijs/markdown-it": "^3.22.0",
     "@statelyai/inspect": "^0.4.0",
