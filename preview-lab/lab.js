@@ -34,7 +34,10 @@
     { name: "multimodal", file: "fixtures/multimodal.html" },
     { name: "svg-text", file: "fixtures/svg-text.html" },
     { name: "frameset", file: "fixtures/frameset.html" },
-    { name: "image-pages", file: "fixtures/image-pages.html" }
+    { name: "image-pages", file: "fixtures/image-pages.html" },
+    // A real cached preview, captured from a Sinequa dev server: no pagination,
+    // and the body's direct children are the passage <span>s themselves.
+    { name: "basic-website", file: "fixtures/basic-website.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -67,6 +70,10 @@
   const MAX_AREA_RATIO = 3.5;
   const MAX_OUTSET_PX = 12; // how far a frame may extend beyond its own fragments
   const MAX_DECOY_OVERLAP = 0.15; // share of a decoy a frame may cover
+  // Two frames of the same passage overlapping means the block decomposition is
+  // wrong: they describe the same text twice. Only the padding of two abutting
+  // blocks may legitimately touch.
+  const MAX_FRAME_OVERLAP = 0.1;
 
   const params = new URLSearchParams(window.location.search);
 
@@ -418,6 +425,21 @@
       label: "frames are actually stroked",
       pass: !!stroke && stroke.minWidth >= 0.5 && !stroke.transparent,
       detail: stroke ? "thinnest border " + round(stroke.minWidth) + "px" + (stroke.transparent ? ", fully transparent" : "") : "no frame element"
+    });
+
+    let worstPair = 0;
+    for (let i = 0; i < frames.length; i++) {
+      for (let j = i + 1; j < frames.length; j++) {
+        const smallest = Math.min(area(frames[i]), area(frames[j]));
+        if (smallest <= 0) continue;
+        worstPair = Math.max(worstPair, intersectionArea(frames[i], frames[j]) / smallest);
+      }
+    }
+    checks.push({
+      id: "A8",
+      label: "frames do not overlap each other",
+      pass: worstPair <= MAX_FRAME_OVERLAP,
+      detail: frames.length < 2 ? "single frame" : "worst pair overlap " + Math.round(worstPair * 100) + "% (max " + Math.round(MAX_FRAME_OVERLAP * 100) + "%)"
     });
 
     let worstDecoy = 0;

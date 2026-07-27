@@ -543,13 +543,24 @@ document.addEventListener("DOMContentLoaded", function () {
    * for image pages). Fragments of two different sheets can never be merged,
    * which is what keeps a passage crossing a page break -- or two pages laid out
    * side by side -- from producing one frame spanning both.
+   *
+   * A page sheet is necessarily a block-ish box. An *inline* body-level ancestor
+   * is not a sheet: unpaginated conversions (web pages, plain HTML) put the
+   * passage <span>s directly under the body, and a single passage is split across
+   * several of them because passages overlap each other and HTML cannot express
+   * overlapping ranges. Keying on those would forbid merging fragments of the
+   * very same paragraph, producing overlapping frames.
    */
   function getPageIndex(element, body) {
     var node = element;
     while (node && node.parentNode && node.parentNode !== body) {
       node = node.parentNode;
     }
-    if (!node || node.parentNode !== body) return -1;
+    if (!node || node.parentNode !== body || node.nodeType !== 1) return 0;
+
+    var view = body.ownerDocument.defaultView || window;
+    if (view.getComputedStyle(node).display === "inline") return 0;
+
     return Array.prototype.indexOf.call(body.children, node);
   }
 
