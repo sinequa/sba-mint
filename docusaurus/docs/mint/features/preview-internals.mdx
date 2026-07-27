@@ -273,6 +273,28 @@ For **secondary conversions** (multi-conversion), passage highlighting is not po
 2. `queryService.getDocPage(id, offset, length)` resolves the page number for that offset
 3. `previewService.sendMessage({ action: "select", id: "sq-page-start-N" })` scrolls to the page
 
+### Passage frames (the blue box)
+
+`usePassageHighlighter: true` makes `preview.js` draw a blue frame around the passage. The frame is **not** a single rectangle: one frame is drawn per contiguous block of the passage, so a passage that crosses a page break or a column break gets one frame per page / per column instead of one box spanning everything in between.
+
+The implementation lives in `src/assets/preview.js`:
+
+1. `getClientRects()` on every element carrying the passage id yields **one rect per line fragment** — that is what makes wrapping, columns and page breaks visible to the algorithm.
+2. Each rect is converted to the preview body's **local** coordinate space with `(rect - bodyRect) / factor`. This matters because `preview.css` puts `transform: scale(var(--factor))` on the body: the transform makes the body the containing block of its absolutely positioned descendants, so the overlay is positioned in pre-scale coordinates while `getBoundingClientRect()` reports post-scale viewport coordinates. The single division handles both the scroll offset and the scale.
+3. Rects are grouped into blocks: never across two page sheets (the body-level ancestor is the page), then by line (vertical overlap, small horizontal gap — the column gutter is what separates two columns) and by consecutive lines of the same column.
+4. One `.sq-passage-box` per block is appended to `#sq-passage-layer`, a zero-sized anchor pinned to the body origin.
+
+Because the overlay lives inside the scaled body, the frames follow scroll and zoom for free. They are still recomputed on zoom, resize, scroll, description toggling and via a `ResizeObserver`, because changing `--factor` also changes the body's *layout* width (`width: calc(99% / var(--factor))`) and therefore reflows the content.
+
+Two special cases:
+
+- **AI page descriptions.** Multimodal conversions emit their generated full text in `.pn_page_visual_description` blocks, which are hidden by default (`--desc-display: none`). When the cited passage lives there, `preview.js` reveals the block, then frames the passage, and notifies the parent with a `description-visible` message so that the *sparkles* toggle in `<preview-actions>` reflects the new state.
+- **Nothing measurable.** If no geometry can be obtained after a short retry loop (image-only conversion, for instance), the passage text is tinted with `.sq-highlighted` as a last resort.
+
+:::tip
+`preview-lab/` at the repository root is a dependency-free test bench for this feature: it loads the real `preview.js` / `preview.css`, drives them over `postMessage` like `PreviewService` does, and asserts the frame geometry across a matrix of widths and zoom levels. Run `node preview-lab/run-ci.mjs`.
+:::
+
 ## Responsive Summary
 
 | Screen size | Preview presentation | Opened by |

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture — two-column pages</title>
+    <link rel="stylesheet" href="../../src/assets/preview.css" />
+    <link rel="stylesheet" href="_fixture.css" />
+  </head>
+  <body>
+    <script src="_fixture.js"></script>
+    <script>
+      // rowsPerColumn = 20, so slots 0..19 are column 1 and slots 20..39 are
+      // column 2. A passage listed as [17,18,19,20,21,22] therefore ends at the
+      // bottom of column 1 and resumes at the top of column 2.
+      window.LAB_EXPECT = LAB.buildPdfPages({
+        title: "Two columns, passage across the column break",
+        pages: 2,
+        columns: 2,
+        rowsPerColumn: 20,
+        snippets: [
+          {
+            id: "snippet_1",
+            label: "bottom of col 1 + top of col 2",
+            placements: [{ page: 1, slots: [17, 18, 19, 20, 21, 22] }]
+          },
+          { id: "snippet_2", label: "col 2 only, page 2", placements: [{ page: 2, slots: [24, 25, 26] }] }
+        ]
+      });
+    </script>
+    <script src="../../src/assets/preview.js"></script>
+  </body>
+</html>

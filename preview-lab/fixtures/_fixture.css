@@ -1,0 +1,110 @@
+/*
+ * Styles that, in production, come from the Sinequa converter's own generated CSS
+ * (and therefore are NOT in src/assets/preview.css).
+ *
+ * The goal is to reproduce the layout characteristics that break the passage
+ * highlighter:
+ *  - page sheets sized like a real page, laid out inline-block (several pages per
+ *    row when the layout width allows it) -> "flex" mode,
+ *  - `content-visibility: auto` on page sheets (comes from preview.css via .stl_),
+ *    so off-screen pages are layout-skipped and their descendants measure 0x0,
+ *  - one absolutely positioned <div> per text line, `white-space: nowrap`, which is
+ *    how the PDF-to-HTML family of converters emits text.
+ */
+
+/* Page sheet. `display: inline-block`, `margin`, `border`, `background` and
+   `content-visibility: auto` are inherited from `.stl_` in preview.css. */
+.stl_ {
+  position: relative;
+  width: 816px;
+  height: 1056px;
+  /* Required so a layout-skipped page still reserves its space. */
+  contain-intrinsic-size: 816px 1056px;
+  vertical-align: top;
+  /* NOTE: deliberately no `overflow: hidden` here, although some real converters
+     clip their page sheets. `overflow: hidden` makes the sheet a scroll
+     container, and preview.js scrolls with `scrollIntoView({ container: "nearest" })`
+     -- the sheet would then absorb the scroll instead of the document, which
+     would make the lab test a different problem than the one under study. */
+}
+
+/* A text line, absolutely positioned inside its page. */
+.stl_ .t {
+  position: absolute;
+  white-space: nowrap;
+  font:
+    13px / 16px "Times New Roman",
+    Times,
+    serif;
+  color: #111;
+}
+
+.stl_ .pageno {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font:
+    11px / 14px Arial,
+    sans-serif;
+  color: #666;
+}
+
+/* Page anchors are invisible markers in the real output too. */
+.stl_ > a[id^="sq-page-start"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Image-based page (scanned PDF): body.bd > div > img, styled by preview.css. */
+.lab-image-page img {
+  display: block;
+  width: 816px;
+  height: 420px;
+  background: repeating-linear-gradient(45deg, #dfe6ef, #dfe6ef 12px, #eef2f7 12px, #eef2f7 24px);
+}
+
+/* Plain HTML flow (Word / HTML converters): normal wrapping text. */
+.lab-flow {
+  width: 700px;
+  margin: 24px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid lightgrey;
+  font:
+    14px / 22px Arial,
+    sans-serif;
+  color: #111;
+}
+
+.lab-flow p {
+  margin: 0 0 14px;
+}
+
+/* Debug helper injected by the lab: ground-truth rectangles, drawn independently
+   of the code under test. Lives in the same local coordinate space as the
+   passage overlay so that both can be compared visually. */
+#lab-truth-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+#lab-truth-layer .lab-truth-rect {
+  position: absolute;
+  pointer-events: none;
+  outline: 1px dashed rgba(220, 20, 60, 0.9);
+  background: rgba(220, 20, 60, 0.08);
+}
+
+#lab-truth-layer .lab-truth-decoy {
+  position: absolute;
+  pointer-events: none;
+  outline: 1px dotted rgba(255, 140, 0, 0.8);
+}

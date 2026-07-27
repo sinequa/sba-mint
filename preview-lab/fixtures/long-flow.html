@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture — wrapping text flow</title>
+    <link rel="stylesheet" href="../../src/assets/preview.css" />
+    <link rel="stylesheet" href="_fixture.css" />
+  </head>
+  <body>
+    <script src="_fixture.js"></script>
+    <script>
+      // A single long span wrapping over ~10 line boxes: getClientRects() returns
+      // one rect per line, and they must collapse into a single frame.
+      window.LAB_EXPECT = LAB.buildFlow({
+        title: "Wrapping flow (Word / HTML converter), long passage",
+        id: "snippet_1",
+        passageWords: 110
+      });
+    </script>
+    <script src="../../src/assets/preview.js"></script>
+  </body>
+</html>

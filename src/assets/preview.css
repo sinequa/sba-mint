@@ -2,8 +2,11 @@
   font-family: 'Arial Narrow'!important;
 } */
 
+/* Last-resort marker for a passage whose geometry cannot be measured at all
+   (image-only conversion, subtree that stays hidden). Kept light on purpose: it
+   must not bury the text nor the yellow extract highlights it may overlap. */
 .sq-highlighted {
-  --color-highlighted: rgba(11, 117, 255, 0.5);
+  --color-highlighted: rgba(11, 117, 255, 0.15);
   background-color: var(--color-highlighted) !important;
 }
 .sq-current {
@@ -33,12 +36,30 @@ line.sq-svg {
   stroke-width: 2;
   stroke-dasharray: 2, 2;
 }
-#sq-passage-highlighter {
+/* Passage frames. The layer is a zero-sized anchor pinned to the body origin, so
+   its children are positioned in the body's local (pre-scale) coordinate space;
+   they then follow the zoom transform for free. Border and radius are divided by
+   the zoom factor to keep a constant thickness on screen. */
+#sq-passage-layer {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
   pointer-events: none;
-  border: 3px solid rgba(11, 117, 255, 0.5);
+  z-index: 2;
+}
+
+.sq-passage-box {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  /* The shorthand first, so a border stays visible even if the calc below ends up
+     invalid at computed-value time. */
+  border: 2px solid rgba(11, 117, 255, 0.5);
+  border-width: calc(2px / var(--factor, 1));
+  border-radius: calc(5px / var(--factor, 1));
   box-shadow: 0 0 1rem #0b75ff33;
-  border-radius: 5px;
 }
 .stl_ {
   content-visibility: auto;

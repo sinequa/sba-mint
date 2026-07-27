@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture — image-only pages (scanned PDF)</title>
+    <link rel="stylesheet" href="../../src/assets/preview.css" />
+    <link rel="stylesheet" href="_fixture.css" />
+  </head>
+  <!-- `bd` is the class the image-page converter emits; preview.css styles
+       `body.bd > div > img` accordingly. -->
+  <body class="bd">
+    <script src="_fixture.js"></script>
+    <script>
+      // No text at all: there is nothing to frame. What must be verified here is
+      // that the page-scroll path (`select` with usePassageHighlighter: false,
+      // used by secondary conversions) still works and that nothing throws.
+      (function () {
+        for (var page = 1; page <= 5; page++) {
+          var wrapper = document.createElement("div");
+          wrapper.className = "lab-image-page";
+
+          var anchor = document.createElement("a");
+          anchor.id = "sq-page-start-" + page;
+          wrapper.appendChild(anchor);
+          wrapper.appendChild(document.createElement("img"));
+
+          document.body.appendChild(wrapper);
+        }
+        LAB.pagination(5, 1);
+
+        window.LAB_EXPECT = {
+          title: "Image-only pages (no text to frame)",
+          passages: {},
+          pageProbe: "sq-page-start-3"
+        };
+      })();
+    </script>
+    <script src="../../src/assets/preview.js"></script>
+  </body>
+</html>

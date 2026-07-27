@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>preview-lab — passage highlighter test bench (ES-29767)</title>
+    <link rel="stylesheet" href="lab.css" />
+  </head>
+  <body>
+    <header>
+      <h1>preview-lab <small>ES-29767 · passage highlighter</small></h1>
+
+      <div class="group">
+        <button id="run-all" class="primary" type="button">Run all</button>
+        <button id="run-quick" type="button">Quick run</button>
+        <span id="status">idle</span>
+      </div>
+
+      <div class="group">
+        <select id="fixture-select" title="Fixture"></select>
+        <select id="width-select" title="iframe width — decides how many pages fit per row"></select>
+      </div>
+
+      <div class="group">
+        <select id="passage-select" title="Passage"></select>
+        <button data-action="select" type="button">Select</button>
+        <button data-action="unselect" type="button">Unselect</button>
+      </div>
+
+      <div class="group">
+        <button data-action="zoom-fit" type="button">fit</button>
+        <button data-action="zoom-out" type="button">−</button>
+        <button data-action="zoom-in" type="button">+</button>
+      </div>
+
+      <div class="group">
+        <button data-action="prev-page" type="button">◂</button>
+        <button data-action="next-page" type="button">▸</button>
+        <button data-action="toggle-description" type="button" title="Sends toggle-description (show: undefined → hides)">desc</button>
+      </div>
+
+      <label class="check"><input id="show-truth" type="checkbox" /> ground truth</label>
+
+      <span id="summary" class="summary"></span>
+    </header>
+
+    <main>
+      <section class="pane">
+        <h2>Preview under test</h2>
+        <div class="viewport"><iframe id="preview" title="preview under test"></iframe></div>
+        <pre id="log"></pre>
+      </section>
+
+      <section class="pane">
+        <h2>Results</h2>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Fixture</th>
+                <th>Width</th>
+                <th>Zoom</th>
+                <th>Passage</th>
+                <th>Checks</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="results"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="lab.js"></script>
+  </body>
+</html>

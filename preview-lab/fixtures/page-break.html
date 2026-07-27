@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture — passage across a page break</title>
+    <link rel="stylesheet" href="../../src/assets/preview.css" />
+    <link rel="stylesheet" href="_fixture.css" />
+  </head>
+  <body>
+    <script src="_fixture.js"></script>
+    <script>
+      window.LAB_EXPECT = LAB.buildPdfPages({
+        title: "Passage across a page break (p2 → p3)",
+        pages: 4,
+        columns: 1,
+        rowsPerColumn: 34,
+        snippets: [
+          {
+            id: "snippet_1",
+            label: "end of p2 + start of p3",
+            placements: [
+              { page: 2, slots: [31, 32, 33] },
+              { page: 3, slots: [0, 1, 2] }
+            ]
+          }
+        ]
+      });
+    </script>
+    <script src="../../src/assets/preview.js"></script>
+  </body>
+</html>

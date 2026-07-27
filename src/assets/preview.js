@@ -3,14 +3,16 @@ document.addEventListener("DOMContentLoaded", function () {
   var parentOrigin = "*";
   var styleElement;
   var fitFactor = null;
-  var passageHighlighter;
+
+  // ---- passage highlighter state ----
+  // Overlay holding one frame per contiguous block of the selected passage, plus
+  // the id currently displayed so it can be recomputed on any layout change.
+  var passageLayer;
+  var currentPassageId = null;
+  var repositionHandle = null;
+  var listenersBound = false;
 
   window.addEventListener("message", receiveMessage);
-
-  var bodyElement = document.body;
-  if (bodyElement === null || bodyElement.tagName == "FRAMESET") {
-    bodyElement = document.querySelector("frameset>frame").contentDocument.body;
-  }
 
   zoomFit();
 
@@ -41,6 +43,38 @@ document.addEventListener("DOMContentLoaded", function () {
   var isWorkerSupported = false;
 
   // ----------------------
+  // Preview body helpers
+  // ----------------------
+
+  /**
+   * The body that actually holds the previewed content. Some conversions wrap it
+   * in a frameset, in which case everything -- zoom factor, highlight styles and
+   * the passage overlay -- belongs to the nested frame's document, not to this
+   * one. Returns null while that frame is still loading.
+   */
+  function getPreviewBody() {
+    var body = document.body;
+    if (body === null || body.tagName == "FRAMESET") {
+      var frame = document.querySelector("frameset>frame");
+      var frameBody = frame && frame.contentDocument ? frame.contentDocument.body : null;
+      return frameBody || null;
+    }
+    return body;
+  }
+
+  /**
+   * Current zoom factor, read from the --factor custom property that zoom()
+   * writes on the preview body and that preview.css turns into a scale()
+   * transform.
+   */
+  function getZoomFactor(body) {
+    if (!body) return 1;
+    var view = body.ownerDocument.defaultView || window;
+    var value = parseFloat(view.getComputedStyle(body).getPropertyValue("--factor"));
+    return isNaN(value) || value <= 0 ? 1 : value;
+  }
+
+  // ----------------------
   // Zoom helpers
   // ----------------------
   function zoomFit() {
@@ -49,10 +83,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    let body = document.body;
-    if (body === null || body.tagName == "FRAMESET") {
-      body = document.querySelector("frameset>frame").contentDocument.body;
-    }
+    const body = getPreviewBody();
+    if (!body) return;
     const width = body.getBoundingClientRect().width;
 
     // select only span if div, img or table are not present
@@ -155,24 +187,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // ---- zoom ----
       case "zoom-in": {
-        bodyElement = document.body;
-        if (bodyElement === null || bodyElement.tagName == "FRAMESET") {
-          bodyElement = document.querySelector("frameset>frame").contentDocument.body;
-        }
-        var factor = parseFloat(bodyElement.style.getPropertyValue("--factor") || 1);
-        var max = Math.min(3, factor + 0.2);
-        zoom(max);
+        let factor = getZoomFactor(getPreviewBody());
+        zoom(Math.min(3, factor + 0.2));
         break;
       }
 
       case "zoom-out": {
-        bodyElement = document.body;
-        if (bodyElement === null || bodyElement.tagName == "FRAMESET") {
-          bodyElement = document.querySelector("frameset>frame").contentDocument.body;
-        }
-        var factor = parseFloat(bodyElement.style.getPropertyValue("--factor") || 1);
-        var min = Math.max(0.2, factor - 0.2);
-        zoom(min);
+        let factor = getZoomFactor(getPreviewBody());
+        zoom(Math.max(0.2, factor - 0.2));
         break;
       }
 
@@ -181,9 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "toggle-description":
-        // if data.show is true, show the description
-        // just set a new value to the css variable --desc-display
-        document.documentElement.style.setProperty("--desc-display", data.show ? "inline-block" : "none");
+        setDescriptionDisplay(!!data.show);
         break;
 
       // ---- pagination ----
@@ -218,11 +238,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function zoom(value) {
-    let bodyElement = document.body;
-    if (bodyElement === null || bodyElement.tagName == "FRAMESET") {
-      bodyElement = document.querySelector("frameset>frame").contentDocument.body;
+    const body = getPreviewBody();
+    if (!body) return;
+    body.style.setProperty("--factor", value);
+    // The body is sized `width: calc(99% / var(--factor))`, so zooming changes the
+    // *layout* width and reflows the content (text re-wraps, page sheets change
+    // rows). Any displayed passage frame has to be measured again.
+    scheduleRepositionPassage();
+  }
+
+  /**
+   * Shows or hides the AI-generated page descriptions (multimodal conversions).
+   * The custom property lives on :root of the document that holds the content,
+   * which is the nested frame's document for a frameset.
+   */
+  function setDescriptionDisplay(show) {
+    const value = show ? "inline-block" : "none";
+    document.documentElement.style.setProperty("--desc-display", value);
+    const body = getPreviewBody();
+    if (body && body.ownerDocument !== document) {
+      body.ownerDocument.documentElement.style.setProperty("--desc-display", value);
     }
-    bodyElement.style.setProperty("--factor", value);
+    // Showing or hiding a description shifts everything below it.
+    scheduleRepositionPassage();
   }
 
   function returnMessage(type, data) {
@@ -233,11 +271,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function init(origin, highlights) {
     parentOrigin = origin;
-    passageHighlighter = document.createElement("div");
-    passageHighlighter.id = "sq-passage-highlighter";
-    passageHighlighter.style.position = "absolute";
-    passageHighlighter.style.display = "none";
-    document.body.appendChild(passageHighlighter);
+
+    // `returnMessage` posts to both `parent` and `parent.parent`, so the host
+    // receives 'ready' twice and replies with 'init' twice. Only the listeners
+    // must be guarded: re-applying the highlights on a second call is harmless.
+    if (!listenersBound) {
+      listenersBound = true;
+      bindListeners();
+    }
+
+    if (highlights) {
+      highlight(highlights);
+    }
+  }
+
+  function bindListeners() {
+    getPassageLayer();
     document.addEventListener("mouseup", function () {
       return setTimeout(function () {
         return onMouseUp();
@@ -255,25 +304,36 @@ document.addEventListener("DOMContentLoaded", function () {
         parentElement.classList.toggle("screenshot-extended");
       }
     });
-    var pages = document.querySelectorAll('[id^="sq-page-start"]');
-    window.addEventListener("scroll", function () {
+    var contentBody = getPreviewBody();
+    var contentDocument = contentBody ? contentBody.ownerDocument : document;
+    var contentView = contentDocument.defaultView || window;
+    var pages = contentDocument.querySelectorAll('[id^="sq-page-start"]');
+
+    function onScroll() {
       if (pages?.length) {
-        let index = 0;
         let found = false;
         pages.forEach(page => {
-          if (!found) {
-            if (isElementInViewport(page)) {
-              found = true;
-              returnMessage("current-page", page.id);
-            }
-            index++;
+          if (!found && isElementInViewport(page)) {
+            found = true;
+            returnMessage("current-page", page.id);
           }
         });
       }
-      return returnMessage("scroll", { x: window.scrollX, y: window.scrollY });
-    });
-    if (highlights) {
-      highlight(highlights);
+      // Fragments revealed by `content-visibility` while scrolling can complete
+      // the frame of a passage that was only partly laid out.
+      scheduleRepositionPassage();
+      return returnMessage("scroll", { x: contentView.scrollX, y: contentView.scrollY });
+    }
+
+    contentView.addEventListener("scroll", onScroll);
+    if (contentView !== window) window.addEventListener("scroll", onScroll);
+
+    // The preview panel is resizable, and a resize reflows the content.
+    window.addEventListener("resize", scheduleRepositionPassage);
+    if (contentBody && typeof ResizeObserver !== "undefined") {
+      // Safety net for every other reflow: late fonts and images, injection of
+      // the highlight <style>, toggling of extracts or descriptions.
+      new ResizeObserver(scheduleRepositionPassage).observe(contentBody);
     }
   }
 
@@ -290,15 +350,10 @@ document.addEventListener("DOMContentLoaded", function () {
       styleElement.parentNode.removeChild(styleElement);
     }
 
-    const bodyElement = document.body;
-    if (bodyElement === null || bodyElement.tagName == "FRAMESET") {
-      const frameDocument = document.querySelector("frameset>frame").contentDocument;
-      styleElement = frameDocument.createElement("style");
-      frameDocument.head.appendChild(styleElement);
-    } else {
-      styleElement = document.createElement("style");
-      document.head.appendChild(styleElement);
-    }
+    const body = getPreviewBody();
+    const contentDocument = body ? body.ownerDocument : document;
+    styleElement = contentDocument.createElement("style");
+    contentDocument.head.appendChild(styleElement);
 
     styleElement.textContent = highlights
       .map(function (highlight) {
@@ -324,65 +379,271 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     unselect();
     var elements = Array.from(getElementsById(id));
-    var visibleElements = elements.filter(function (el) {
-      var box = el.getBoundingClientRect();
-      return box.width && box.height;
+    if (!elements.length) return;
+
+    // A citation can point at a subtree that is hidden by default -- the
+    // AI-generated description of a multimodal conversion. Reveal it first:
+    // otherwise there is nothing to scroll to and nothing to measure.
+    if (usePassageHighlighter && !elements.some(isMeasurable)) {
+      revealHiddenDescription(elements);
+    }
+
+    var anchor = elements.find(isMeasurable) || elements[0];
+    // container: 'nearest' stops scroll propagation to it's nearest parent.
+    // This will stop the application body page from automatically scrolling
+    // back to the top after you have navigated through the preview.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#container
+    anchor.scrollIntoView({
+      block: "center",
+      behavior: "instant",
+      container: "nearest"
     });
 
-    const el = elements.length > 0 ? visibleElements[0] || elements[0] : null;
-    if (el) {
-      // container: 'nearest' stops scroll propagation to it's nearest parent.
-      // This will stop the application body page from automatically scrolling
-      // back to the top after you have navigated through the preview.
-      // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#container
-      el.scrollIntoView({
-        block: "center",
-        behavior: "instant",
-        container: "nearest"
-      });
-
-      setTimeout(() => {
-        if (usePassageHighlighter && visibleElements.length > 0) {
-          selectPassage(visibleElements);
-        } else if (elements.length > 0) {
-          selectHighlight(elements);
-        }
+    if (usePassageHighlighter) {
+      currentPassageId = id;
+      attemptRenderPassage(id, RENDER_ATTEMPTS);
+    } else {
+      // Extract and entity navigation keeps the historical dashed outline.
+      setTimeout(function () {
+        selectHighlight(elements);
       }, 400);
     }
-    if (visibleElements.length > 0) {
-      returnMessage("selected-position", getVerticalPositions(visibleElements)[0]);
-    }
+
+    // Emitted after the scroll, so the positions are measured on elements that
+    // are actually laid out.
+    requestAnimationFrame(function () {
+      var visibleElements = elements.filter(isMeasurable);
+      if (visibleElements.length > 0) {
+        returnMessage("selected-position", getVerticalPositions(visibleElements)[0]);
+      }
+    });
   }
 
-  function selectPassage(elements) {
-    if (!passageHighlighter) {
-      passageHighlighter = document.getElementById("sq-passage-highlighter");
-      if (!passageHighlighter) {
-        passageHighlighter = document.createElement("div");
-        passageHighlighter.id = "sq-passage-highlighter";
-        passageHighlighter.style.position = "absolute";
-        passageHighlighter.style.display = "none";
-        document.body.appendChild(passageHighlighter);
+  function isMeasurable(element) {
+    var box = element.getBoundingClientRect();
+    return box.width > 0.5 && box.height > 0.5;
+  }
+
+  /**
+   * Reveals the AI page description holding the passage, when it is the reason
+   * why nothing is measurable. The parent is notified so that its own toggle
+   * button stays in sync.
+   */
+  function revealHiddenDescription(elements) {
+    var hidden = elements.some(function (element) {
+      var block = element.closest ? element.closest(".pn_page_visual_description") : null;
+      if (!block) return false;
+      var view = block.ownerDocument.defaultView || window;
+      return view.getComputedStyle(block).display === "none";
+    });
+    if (!hidden) return;
+    setDescriptionDisplay(true);
+    returnMessage("description-visible", true);
+  }
+
+  // ----------------------
+  // Passage highlighter
+  //
+  // The overlay lives inside the preview body, which carries the
+  // `transform: scale(var(--factor))` of preview.css. A transform makes that body
+  // the containing block of its absolutely positioned descendants, so the frames
+  // are positioned in the body's LOCAL, pre-scale coordinate space -- while
+  // getBoundingClientRect() reports post-scale viewport coordinates. Converting
+  // with `(rect - bodyRect) / factor` handles the scroll offset and the scale in
+  // one step, and needs no assumption about transform-origin.
+  // ----------------------
+
+  var PASSAGE_PADDING = 4; // local px kept between a frame and the glyphs
+  var SAME_LINE_GAP_RATIO = 1.5; // horizontal gap, in line heights, that splits columns
+  var SAME_BLOCK_GAP_RATIO = 0.8; // vertical gap, in line heights, that splits blocks
+  var RENDER_ATTEMPTS = 5;
+  var RENDER_RETRY_MS = 100;
+
+  function getPassageLayer() {
+    var body = getPreviewBody();
+    if (!body) return null;
+    var contentDocument = body.ownerDocument;
+    if (passageLayer && passageLayer.ownerDocument === contentDocument && passageLayer.isConnected) {
+      return passageLayer;
+    }
+    passageLayer = contentDocument.getElementById("sq-passage-layer");
+    if (!passageLayer) {
+      passageLayer = contentDocument.createElement("div");
+      passageLayer.id = "sq-passage-layer";
+      body.appendChild(passageLayer);
+    }
+    return passageLayer;
+  }
+
+  /**
+   * Renders the frames of a passage. Returns false when nothing could be
+   * measured, so the caller can retry.
+   */
+  function renderPassage(id) {
+    var body = getPreviewBody();
+    var layer = getPassageLayer();
+    if (!body || !layer) return false;
+
+    var elements = Array.from(getElementsById(id));
+    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body)) : [];
+    if (!blocks.length) {
+      layer.replaceChildren();
+      return false;
+    }
+
+    var contentDocument = body.ownerDocument;
+    var boxes = blocks.map(function (block) {
+      var box = contentDocument.createElement("div");
+      box.className = "sq-passage-box";
+      box.style.left = block.left - PASSAGE_PADDING + "px";
+      box.style.top = block.top - PASSAGE_PADDING + "px";
+      box.style.width = block.right - block.left + 2 * PASSAGE_PADDING + "px";
+      box.style.height = block.bottom - block.top + 2 * PASSAGE_PADDING + "px";
+      return box;
+    });
+    layer.replaceChildren.apply(layer, boxes);
+    return true;
+  }
+
+  /**
+   * One entry per line fragment, in the preview body's local coordinate space.
+   * getClientRects() -- not getBoundingClientRect() -- is what splits a wrapped
+   * span into one rect per line, which is the raw material of the grouping below.
+   */
+  function collectPassageRects(elements, body) {
+    var bodyRect = body.getBoundingClientRect();
+    var factor = getZoomFactor(body);
+    var rects = [];
+
+    elements.forEach(function (element) {
+      var clientRects = element.getClientRects();
+      // SVG text reports no client rects in some engines: fall back to its box.
+      var list = clientRects.length ? Array.from(clientRects) : [element.getBoundingClientRect()];
+      var page = getPageIndex(element, body);
+
+      list.forEach(function (rect) {
+        if (rect.width < 0.5 || rect.height < 0.5) return;
+        rects.push({
+          page: page,
+          left: (rect.left - bodyRect.left) / factor,
+          top: (rect.top - bodyRect.top) / factor,
+          right: (rect.right - bodyRect.left) / factor,
+          bottom: (rect.bottom - bodyRect.top) / factor,
+          lineHeight: (rect.bottom - rect.top) / factor
+        });
+      });
+    });
+
+    return rects;
+  }
+
+  /**
+   * Index of the page sheet an element belongs to, i.e. of the body-level
+   * ancestor containing it (`.stl_` for the PDF-to-HTML converters, `body.bd > div`
+   * for image pages). Fragments of two different sheets can never be merged,
+   * which is what keeps a passage crossing a page break -- or two pages laid out
+   * side by side -- from producing one frame spanning both.
+   */
+  function getPageIndex(element, body) {
+    var node = element;
+    while (node && node.parentNode && node.parentNode !== body) {
+      node = node.parentNode;
+    }
+    if (!node || node.parentNode !== body) return -1;
+    return Array.prototype.indexOf.call(body.children, node);
+  }
+
+  /**
+   * Merges fragments into visual blocks: one per paragraph, per column and per
+   * page. Fragments join the same block when they sit on the same line (vertical
+   * overlap, small horizontal gap) or on consecutive lines of the same column
+   * (horizontal overlap, small vertical gap). Both thresholds are expressed in
+   * line heights, so they hold at any zoom level.
+   */
+  function groupPassageRects(rects) {
+    var blocks = rects.map(function (rect) {
+      return {
+        page: rect.page,
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        lineHeight: rect.lineHeight
+      };
+    });
+
+    var merged = true;
+    while (merged) {
+      merged = false;
+      for (var i = 0; i < blocks.length && !merged; i++) {
+        for (var j = i + 1; j < blocks.length; j++) {
+          if (!canMergeBlocks(blocks[i], blocks[j])) continue;
+          mergeBlock(blocks[i], blocks[j]);
+          blocks.splice(j, 1);
+          merged = true;
+          break;
+        }
       }
     }
-    passageHighlighter.style.display = "none";
-    for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
-      var el = elements_1[_i];
-      el.classList.add("sq-highlighted");
-    }
+
+    return blocks.sort(function (a, b) {
+      return a.page - b.page || a.top - b.top || a.left - b.left;
+    });
   }
 
-  function selectPassage2(elements) {
-    passageHighlighter.style.display = "none";
-    elements[0].style.position = "relative";
-    elements[0].style.display = "inline-block";
-    elements[0].append(passageHighlighter);
-    passageHighlighter.style.top = 0;
-    passageHighlighter.style.left = 0;
-    passageHighlighter.style.width = "100%";
-    passageHighlighter.style.height = "100%";
-    passageHighlighter.style.zIndex = "1";
-    passageHighlighter.style.display = "block"; // var box = getBoundingBox(elements);
+  function canMergeBlocks(a, b) {
+    if (a.page !== b.page) return false;
+    var lineHeight = Math.min(a.lineHeight, b.lineHeight);
+    var verticalOverlap = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+    var horizontalOverlap = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+
+    // Same line: the column gutter is what makes this fail between two columns.
+    if (verticalOverlap > 0.5 * lineHeight && -horizontalOverlap <= SAME_LINE_GAP_RATIO * lineHeight) return true;
+
+    // Consecutive lines of the same column.
+    return horizontalOverlap > 0 && -verticalOverlap <= SAME_BLOCK_GAP_RATIO * lineHeight;
+  }
+
+  function mergeBlock(target, other) {
+    target.left = Math.min(target.left, other.left);
+    target.top = Math.min(target.top, other.top);
+    target.right = Math.max(target.right, other.right);
+    target.bottom = Math.max(target.bottom, other.bottom);
+    target.lineHeight = Math.min(target.lineHeight, other.lineHeight);
+  }
+
+  /**
+   * Draws the frames once the layout has settled. `scrollIntoView` is synchronous
+   * with `behavior: "instant"`, but fonts, images and lazily rendered pages can
+   * still shift things, hence a short retry loop rather than a fixed delay.
+   */
+  function attemptRenderPassage(id, attempts) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (currentPassageId !== id) return;
+        if (renderPassage(id)) return;
+        if (attempts > 1) {
+          setTimeout(function () {
+            attemptRenderPassage(id, attempts - 1);
+          }, RENDER_RETRY_MS);
+          return;
+        }
+        // Nothing is measurable at all: image-only conversion, or a subtree that
+        // stayed hidden. Tint the text so the citation remains identifiable.
+        Array.from(getElementsById(id)).forEach(function (element) {
+          element.classList.add("sq-highlighted");
+        });
+      });
+    });
+  }
+
+  /** Recomputes the displayed passage after a layout change, at most once per frame. */
+  function scheduleRepositionPassage() {
+    if (!currentPassageId || repositionHandle !== null) return;
+    repositionHandle = requestAnimationFrame(function () {
+      repositionHandle = null;
+      if (currentPassageId) renderPassage(currentPassageId);
+    });
   }
 
   function selectHighlight(elements) {
@@ -400,14 +661,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function unselect() {
+    currentPassageId = null;
+    if (repositionHandle !== null) {
+      cancelAnimationFrame(repositionHandle);
+      repositionHandle = null;
+    }
+    // Do not create the layer just to empty it.
+    if (passageLayer) passageLayer.replaceChildren();
+
     removeAllClasses("sq-highlighted");
     removeAllClasses("sq-current");
     removeAllClasses("sq-first");
     removeAllClasses("sq-last");
     removeAllElements("svg line.sq-svg");
-    if (passageHighlighter) {
-      passageHighlighter.style.display = "none";
-    }
   }
 
   function getHtml(ids) {
@@ -639,25 +905,30 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function removeAllClasses(classname) {
-    var selected = bodyElement.querySelectorAll(".".concat(classname));
-    selected.forEach(function (el) {
+    var body = getPreviewBody();
+    if (!body) return;
+    body.querySelectorAll(".".concat(classname)).forEach(function (el) {
       return el.classList.remove(classname);
     });
   }
 
   function removeAllElements(selector) {
-    bodyElement.querySelectorAll(selector).forEach(function (e) {
+    var body = getPreviewBody();
+    if (!body) return;
+    body.querySelectorAll(selector).forEach(function (e) {
       return e.remove();
     });
   }
 
   function isElementInViewport(el) {
+    var ownerDocument = el.ownerDocument;
+    var view = ownerDocument.defaultView || window;
     var rect = el.getBoundingClientRect();
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */ &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+      rect.bottom <= (view.innerHeight || ownerDocument.documentElement.clientHeight) &&
+      rect.right <= (view.innerWidth || ownerDocument.documentElement.clientWidth)
     );
   }
 });
