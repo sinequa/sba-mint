@@ -45,7 +45,11 @@
                            node -- changing the layout width moves the sheets but resizes
                            nothing, so the reflow *should* stay cheap;
            ?mode=flow      one flowing paragraph per node -- changing the layout width
-                           re-wraps every line, so the reflow is O(DOM) for real.
+                           re-wraps every line, so the reflow is O(DOM) for real;
+           ?mode=svg       one highlighted SVG text run per node, each with a background
+                           rect, which is what setSvgBackgroundPositionAndSize() has to
+                           measure and resize before `ready`. svg-text.html has seven
+                           runs, far too few for that cost to show.
 
          ?nodes=<n> sets the node count (default 20000). ?nodes=130000 in absolute mode is
          the size at which zoomFit()'s `Math.max(...spread)` reaches the V8 argument limit.
@@ -54,11 +58,32 @@
       (function () {
         var params = new URLSearchParams(window.location.search);
         var nodes = Math.max(1, Math.min(400000, Number(params.get("nodes")) || 20000));
-        var mode = params.get("mode") === "flow" ? "flow" : "absolute";
+        var requested = params.get("mode");
+        var mode = requested === "flow" || requested === "svg" ? requested : "absolute";
         var ROWS = 34;
         var html = [];
 
-        if (mode === "flow") {
+        if (mode === "svg") {
+          // One highlighted text run per node, each with the background rect that
+          // setSvgBackgroundPositionAndSize() has to measure and resize at startup.
+          // `nodes` counts runs here, not elements.
+          html.push('<svg width="816" height="' + (nodes * 24 + 120) + '" style="background:#fff;margin:24px"><g>');
+          for (var run = 0; run < nodes; run++) {
+            html.push('<rect id="bg_' + run + '" class="sinequaSVGBg"></rect>');
+            html.push(
+              '<text x="60" y="' +
+                (40 + run * 24) +
+                '" font-size="13" font-family="Times New Roman, serif"><tspan id="entity_' +
+                run +
+                '" data-entity-background="bg_' +
+                run +
+                '" data-entity-display="Entity">Run ' +
+                run +
+                " — the quick brown fox jumps over the lazy dog.</tspan></text>"
+            );
+          }
+          html.push("</g></svg>");
+        } else if (mode === "flow") {
           html.push('<div class="stress-flow">');
           for (var i = 0; i < nodes; i++) {
             html.push(

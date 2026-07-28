@@ -260,6 +260,21 @@ The highlights configuration is consumed by `PreviewService` and `PreviewNavigat
 1. CSS rules are injected into the iframe to colorize each entity class
 2. The `<preview-navigator>` overlay (displayed above the iframe) lists entity categories and allows jumping between occurrences
 
+## Opening a preview
+
+`preview.js` posts `ready` when the content is laid out, and the host keeps its spinner up until then (`PreviewContentComponent.onPreviewReady()`), so anything on that path is spinner time and nothing else.
+
+Two things used to sit on it:
+
+- **A flat `setTimeout(…, 500)`.** It delayed *every* preview by half a second, whatever its size and however fast it was actually ready. It is now a condition rather than a delay: two frames to get past first paint, then `document.fonts.ready` — late webfonts are what actually move text around — capped by a timeout so the promise cannot fail to settle. Measured on the bench: ~500 ms off every fixture, and `pdf-pages` went from 562 ms to 34 ms.
+- **`setSvgBackgroundPositionAndSize()` alternated reads and writes.** Per highlighted SVG text run it did four measurements that force style and layout (`getBoundingClientRect`, `getBBox`, `getExtentOfChar`, `getComputedTextLength`) and then four `setAttribute` calls that invalidate it — so every run paid for a fresh layout. It now measures everything first and writes everything afterwards, which is safe because SVG has no layout flow: moving a background rect cannot move the text a later measurement reads.
+
+  The cost was quadratic, and much larger than it looks: at 2 000 highlighted runs the preview took 1.3 s to become ready, at 5 000 it took **6.5 s**. Two passes make it linear — 185 ms and 381 ms.
+
+:::warning
+Both of those were measured with `fixtures/zoom-stress.html?mode=svg`. The assertion fixture `svg-text.html` has seven runs, which is far too few for either cost to appear — a reminder that a fixture built to check *correctness* will not necessarily expose a cost.
+:::
+
 ## Zoom
 
 The zoom is applied to the preview body, and it does two things that cost wildly different amounts:

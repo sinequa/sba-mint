@@ -26,15 +26,23 @@ document.addEventListener("DOMContentLoaded", function () {
   // Deadline until which a reflow is still allowed to re-centre the passage.
   var passageSettleUntil = 0;
 
+  // Upper bound on how long `ready` waits for webfonts. A cap, not a delay: it only
+  // applies if document.fonts never settles. Declared here rather than further down
+  // because the boot sequence below runs before a later `var` is assigned.
+  var READY_FONT_TIMEOUT_MS = 500;
+
   window.addEventListener("message", receiveMessage);
 
   zoomFit();
 
-  // Wait for paint
+  // `ready` releases the host's spinner and triggers its scroll to the citation, so it
+  // must not fire before the layout is usable. Two frames get us past first paint;
+  // document.fonts.ready then covers late webfonts, which are what actually move text
+  // around afterwards. This replaces a flat setTimeout(500), which delayed *every*
+  // preview by half a second whatever its size and however fast it was really ready.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      // DOM is painted now
-      setTimeout(() => {
+      whenFontsReady(() => {
         setSvgBackgroundPositionAndSize();
         returnMessage("ready");
 
@@ -48,9 +56,30 @@ document.addEventListener("DOMContentLoaded", function () {
           const current = window.defPage;
           returnMessage("page-info", { total, current });
         }
-      }, 500);
+      });
     });
   });
+
+  /**
+   * Runs `done` once the document's fonts have settled, or after
+   * READY_FONT_TIMEOUT_MS, whichever comes first -- and synchronously when there is
+   * nothing pending, which is the common case.
+   */
+  function whenFontsReady(done) {
+    var fonts = document.fonts;
+    if (!fonts || !fonts.ready || fonts.status === "loaded") {
+      done();
+      return;
+    }
+    var settled = false;
+    var finish = function () {
+      if (settled) return;
+      settled = true;
+      done();
+    };
+    fonts.ready.then(finish, finish);
+    setTimeout(finish, READY_FONT_TIMEOUT_MS);
+  }
 
   // will contain the worker instance if it is supported
   var worker;
@@ -1029,41 +1058,63 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  /**
+   * Sizes the background rect behind every highlighted SVG text run.
+   *
+   * Strictly two passes: every measurement first, every write afterwards. Each
+   * measurement (getBoundingClientRect, getBBox, getExtentOfChar,
+   * getComputedTextLength) forces style and layout, and each write invalidates it, so
+   * interleaving them -- as this did -- made every tspan pay for a fresh layout. On an
+   * SVG conversion with thousands of runs that is thousands of forced layouts, and it
+   * happens before `ready`, i.e. entirely inside the host's spinner.
+   *
+   * Batching is safe here because SVG has no layout flow: moving a background rect
+   * cannot move the text a later measurement reads.
+   */
   function setSvgBackgroundPositionAndSize() {
-    document.querySelectorAll("svg").forEach(function (svg) {
-      svg.querySelectorAll("tspan").forEach(function (tspan) {
-        var bgId = tspan.getAttribute("data-entity-background");
-        if (bgId) {
-          var rect = document.getElementById(bgId);
-          if (rect) {
-            resizeSvgBackground(rect, tspan);
-          }
-        }
-      });
+    // An attribute selector, so the engine filters instead of us calling getAttribute
+    // on every tspan in the document.
+    var runs = document.querySelectorAll("svg tspan[data-entity-background]");
+    if (!runs.length) return;
+
+    var updates = [];
+    runs.forEach(function (tspan) {
+      var rect = document.getElementById(tspan.getAttribute("data-entity-background"));
+      if (!rect) return;
+      var update = measureSvgBackground(rect, tspan);
+      if (update) updates.push(update);
+    });
+
+    updates.forEach(function (update) {
+      update.rect.setAttribute("x", String(update.x));
+      update.rect.setAttribute("y", String(update.y));
+      update.rect.setAttribute("width", String(update.width));
+      update.rect.setAttribute("height", String(update.height));
+      if (update.transform) update.rect.setAttribute("transform", update.transform);
     });
   }
 
-  function resizeSvgBackground(rect, tspan) {
-    var text = tspan;
-    var textBoxPixel = text.getBoundingClientRect();
-    var textBoxSVG = text.getBBox();
+  /** Read-only half of setSvgBackgroundPositionAndSize(). */
+  function measureSvgBackground(rect, tspan) {
+    var textBoxPixel = tspan.getBoundingClientRect();
+    if (textBoxPixel.height === 0 || textBoxPixel.width === 0) return null;
 
-    if (textBoxPixel.height === 0 || textBoxPixel.width === 0) return;
-
-    var scaleX = textBoxSVG.width / textBoxPixel.width;
-    var scaleY = textBoxSVG.height / textBoxPixel.height;
-    var deltaX = 2 * scaleX;
-    var deltaY = 2 * scaleY;
+    var textBoxSVG = tspan.getBBox();
+    // The padding is expressed in screen pixels, so it has to be converted into the
+    // SVG's own units before it can be added to SVG coordinates.
+    var deltaX = 2 * (textBoxSVG.width / textBoxPixel.width);
+    var deltaY = 2 * (textBoxSVG.height / textBoxPixel.height);
     var firstCharRect = tspan.getExtentOfChar(0);
     var tspanWidth = tspan.getComputedTextLength();
 
-    rect.setAttribute("x", String(firstCharRect.x - deltaX));
-    rect.setAttribute("y", String(firstCharRect.y - deltaY));
-    rect.setAttribute("width", String(tspanWidth + 2 * deltaX));
-    rect.setAttribute("height", String(textBoxSVG.height + 2 * deltaY));
-
-    var valueTransform = text.getAttribute("transform");
-    if (valueTransform) rect.setAttribute("transform", valueTransform);
+    return {
+      rect: rect,
+      x: firstCharRect.x - deltaX,
+      y: firstCharRect.y - deltaY,
+      width: tspanWidth + 2 * deltaX,
+      height: textBoxSVG.height + 2 * deltaY,
+      transform: tspan.getAttribute("transform")
+    };
   }
 
   function selectHighlightSVG(elt, isFirst, isLast) {

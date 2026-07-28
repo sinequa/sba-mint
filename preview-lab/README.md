@@ -153,6 +153,18 @@ layout regimes that must not be assumed equivalent:
 - `absolute` — fixed-size page sheets, one absolutely positioned line per node. A
   layout-width change moves the sheets but resizes nothing.
 - `flow` — one flowing paragraph per node. A layout-width change re-wraps everything.
+- `svg` — one highlighted SVG text run per node, each with the background rect that
+  `setSvgBackgroundPositionAndSize()` measures and resizes before `ready`. The assertion
+  fixture `svg-text.html` has seven runs, far too few for that cost to appear: it took
+  this mode to show that the startup pass was quadratic (1.3 s at 2 000 runs, 6.5 s at
+  5 000).
+
+A caution learned the hard way with that last one: the mode was added to the fixture but
+the query-string parsing still mapped everything that was not `flow` to `absolute`, so
+two profiling targets silently measured the wrong document and the first conclusion drawn
+from them ("no measurable gain") was worthless. When a target is added, check that it
+really builds what its name says — the probe that caught it simply counted the `tspan`
+elements.
 
 Timings are machine-specific, so `.last-profile.json` and `.baseline-profile.json` are
 gitignored. Keep a baseline before a change and pass `--baseline` after it; the report

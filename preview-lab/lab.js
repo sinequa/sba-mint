@@ -80,7 +80,10 @@
     { name: "stress-abs-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=absolute" },
     { name: "stress-abs-60k", file: "fixtures/zoom-stress.html?nodes=60000&mode=absolute" },
     { name: "stress-flow-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=flow" },
-    { name: "stress-flow-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=flow" }
+    { name: "stress-flow-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=flow" },
+    // Highlighted SVG text runs, to expose what the startup background pass costs.
+    { name: "stress-svg-2k", file: "fixtures/zoom-stress.html?nodes=2000&mode=svg" },
+    { name: "stress-svg-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=svg" }
   ];
 
   const PROFILE_WIDTH = 900;
