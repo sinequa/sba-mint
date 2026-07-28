@@ -468,6 +468,25 @@ preview iframe as well as the host:
 - a `message` listener logging `{action, ids.length}` — the logpoint on `receiveMessage`,
   without touching `preview.js`.
 
+`--cpu` adds a sampling profiler, started and stopped around **each phase** — load, zoom,
+scroll, seek — so the report says which function was executing, not merely when the thread
+was unavailable. One session covers every same-process frame. A phase aggregate matters:
+a single profile over three minutes cannot say whether `commitZoomLayout` spent its 1.4 s at
+load or while scrolling, and that was the question.
+
+`--window=900,1200` sets the viewport, `--scroll-steps` / `--scroll-delta` the wheel sweep.
+Both are variables of the result, not cosmetics — see the width finding below.
+
+Two traps this tool fell into, now fixed, worth knowing if you extend it:
+
+- **it profiled itself.** The 10-second snapshot read an `innerText`, which on a 15 MB
+  document forces layout and builds a 15 MB string: a 200 ms block every 10 s, in the data.
+  Reads on the hot path have to be cheap or guarded (they now are, by element count).
+- **it drove the wrong browser.** `--keep-open` leaves the browser alive, so a fixed
+  debugging port meant the next run attached to the *previous* browser and reported the old
+  document's timings. Each run now takes its own port, and prints which binary it launched —
+  which mattered, because Chrome and Edge do not behave the same here.
+
 What it established that the fixtures could not, on a 199 507-element PDF:
 
 | | |
@@ -485,6 +504,43 @@ curve is real, but only a live run says where on it a given deployment sits.
 For attributing a cost to a function, wrap it in a temporary timer that pushes into
 `window.__marks` and read that back — `preview.js` is served unminified from `src/assets`,
 so an edit takes effect on the next iframe load. Uncommitted, and removed afterwards.
+
+### The 15 MB document that makes the browser stop responding
+
+A 444 494-element, 15 MB HTML converter output, 6 093 056 px tall once laid out at panel
+width. Reported as: the browser goes *not responding* for minutes, and scrolling freezes
+everything. Four runs, same document, same Chrome:
+
+| condition | worst freeze | `(program)` | GC | `preview.js` |
+| --- | --- | --- | --- | --- |
+| in the app, preview panel | 21 891 ms | 16 099 | 50 | 1 788 |
+| **alone**, no app, no iframe, 900 px | 21 375 ms | 16 752 | 2 566 | 2 016 |
+| alone, no app, no iframe, 1900 px | **2 320 ms** | 3 530 | 1 475 | 167 |
+| in the app, Edge instead of Chrome | 22 525 ms | 16 903 | 47 | 1 718 |
+
+`(program)` is engine time outside JS — parsing, style, layout, paint.
+
+Four conclusions, none of which was the expected one:
+
+1. **Neither the iframe nor Angular is involved.** The same document alone in a 900 px window
+   freezes for the same 21 s. The suspicion was reasonable — a same-origin iframe shares the
+   renderer process, so a freeze in the preview *does* freeze the whole app — but it adds
+   nothing measurable here.
+2. **The width is the whole story.** Double the viewport and the freeze drops 9×, because a
+   text document at half the width wraps twice as much. This is the one big lever, and the
+   product owns it: the preview panel is narrow by design.
+3. **`preview.js` is 7–9 % of it**, all in the one-off `commitZoomLayout`, and only when the
+   content overflows: at 1900 px the fit factor is 1, no commit happens, and our share falls
+   to 167 ms. A zoom *gesture* after load costs ~1 ms of JS.
+4. **Scrolling is not what freezes.** A wheel sweep blocks 115 ms at worst, and jumping to
+   25/50/75/99 % of the document blocks 3–11 ms — except for one seek that blocked 3 009 ms,
+   of which 2 105 ms was **garbage collection**. With 444 k DOM nodes traced by the unified
+   heap, a major GC costs seconds and lands wherever it lands. On Chrome it landed on a
+   scroll; on Edge, right after load (5 880 ms in one run). That is the Edge/Chrome
+   difference users report — *when* the pause falls, not how much the load costs.
+
+So the fix for this document is not in `preview.js`: it is to stop laying out 444 k elements
+at once (converter-side splitting, or `content-visibility` — attempted, see below).
 
 ## Validating against a real document
 
