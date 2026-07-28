@@ -249,6 +249,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         worker.onerror = function (error) {
           console.error("Error from worker:", error);
+          // `new Worker()` does not throw when the script cannot be fetched -- a 404, a
+          // wrong appname, a CSP rule -- it fails here, asynchronously. Leaving the flag
+          // set meant every later request was posted to a dead worker and the answer
+          // simply never came back, silently, even though the direct path below works.
+          isWorkerSupported = false;
         };
 
         console.log("Web Worker is supported");
@@ -1225,17 +1230,74 @@ document.addEventListener("DOMContentLoaded", function () {
     removeAllElements("svg line.sq-svg");
   }
 
+  /**
+   * Groups the elements carrying any of these ids, in document order, in **one** pass.
+   *
+   * The point is what it replaces: one `querySelectorAll("#" + id)` per id, each of which
+   * walks the whole document. An id selector cannot use the browser's id table here,
+   * because the converters emit the same id on several elements and the query has to return
+   * all of them -- so it is a full tree walk every time. Measured on a 447 919-element
+   * capture: 11 ms per id, so 2 201 ms for the 200 ids of a single extracts request, all of
+   * it blocking the main thread. Note that the ids come from the server's highlight data
+   * rather than from the document, so most of them may match nothing and still cost a walk.
+   *
+   * This also runs before anything is handed to the web worker, which is why the worker
+   * does not help: it only ever receives strings that are already built.
+   */
+  function collectElementsByIds(ids) {
+    var wanted = new Set(ids);
+    var grouped = new Map();
+
+    var scan = function (source) {
+      var candidates = source.querySelectorAll("[id]");
+      for (var i = 0; i < candidates.length; i++) {
+        var element = candidates[i];
+        if (!wanted.has(element.id)) continue;
+        var bucket = grouped.get(element.id);
+        if (!bucket) {
+          bucket = [];
+          grouped.set(element.id, bucket);
+        }
+        bucket.push(element);
+      }
+    };
+
+    scan(document);
+    // Same fallback as getElementsById(): a frameset keeps the content one level down.
+    if (grouped.size === 0 && frames.length > 0) {
+      try {
+        scan(frames[0].document);
+      } catch (e) {
+        // Ignore cross-origin frame access errors
+      }
+    }
+    return grouped;
+  }
+
   function getHtml(ids) {
-    if (!ids) return [];
-    var data = ids.map(function (id) {
-      return getHighlightHtmlById(id);
+    if (!ids || !ids.length) return [];
+    var grouped = collectElementsByIds(ids);
+    return ids.map(function (id) {
+      var html = "";
+      (grouped.get(id) || []).forEach(function (n) {
+        html += n.innerHTML + " ";
+      });
+      return html;
     });
-    return data;
   }
 
   function getText(ids) {
+    if (!ids || !ids.length) {
+      returnMessage("get-text-results", []);
+      return;
+    }
+    var grouped = collectElementsByIds(ids);
     var data = ids.map(function (id) {
-      return getHighlightTextById(id);
+      var text = "";
+      (grouped.get(id) || []).forEach(function (n) {
+        text += n.textContent + " ";
+      });
+      return text;
     });
     returnMessage("get-text-results", data);
   }
@@ -1396,22 +1458,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
     return elements;
-  }
-
-  function getHighlightTextById(id) {
-    var text = "";
-    getElementsById(id).forEach(function (n) {
-      return (text += n.textContent + " ");
-    });
-    return text;
-  }
-
-  function getHighlightHtmlById(id) {
-    var html = "";
-    getElementsById(id).forEach(function (n) {
-      return (html += n.innerHTML + " ");
-    });
-    return html;
   }
 
   function getVerticalPositions(elements) {

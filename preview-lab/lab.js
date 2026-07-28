@@ -49,6 +49,8 @@
     // A fourth: a genuine frameset, where the content lives in another document and
     // preview.js runs in five instances at once.
     { name: "basic-excel-jap", file: "fixtures/basic-excel-jap.html" }
+    // basic-huge is deliberately NOT here -- see "A defect this bench found and did not
+    // fix" in the README. It stays a profiling target.
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -146,6 +148,7 @@
     lastOpenMs: 0,
     currentPage: null,
     currentPageCount: 0,
+    htmlPending: null,
     rows: []
   };
 
@@ -184,10 +187,41 @@
       return;
     }
 
+    // The extracts round trip, which A11 checks against ground truth.
+    if (message.type === "get-html-results" || message.type === "get-html-results-webworker") {
+      const resolve = state.htmlPending;
+      if (resolve) {
+        state.htmlPending = null;
+        resolve({ via: message.type, data: message.data });
+      }
+      return;
+    }
+
     if (message.type === "selected-position" || message.type === "page-info") {
       trace(message.type + " " + JSON.stringify(message.data));
     }
   });
+
+  /**
+   * Issues the extracts request the way PreviewService does and waits for the answer.
+   * Note that the ids come from the server's highlight data, not from the document, so
+   * they are not guaranteed to match anything -- which is itself a case worth asserting.
+   */
+  function requestHtml(action, ids, timeoutMs) {
+    return new Promise(resolve => {
+      const timer = setTimeout(() => {
+        if (state.htmlPending) {
+          state.htmlPending = null;
+          resolve(null);
+        }
+      }, timeoutMs || 15000);
+      state.htmlPending = answer => {
+        clearTimeout(timer);
+        resolve(answer);
+      };
+      send({ action: action, ids: ids, id: "lab", previewData: {} });
+    });
+  }
 
   function send(message) {
     const target = dom.iframe.contentWindow;
@@ -756,6 +790,16 @@
       if (checks.some(check => !check.pass && !check.skipped)) failed++;
     }
 
+    // The extracts round trip, on a modest document and on the largest one -- the cost of
+    // that path is proportional to the document size times the number of ids requested.
+    for (const fixture of ["basic-pdf", "basic-huge"]) {
+      await load("fixtures/" + fixture + ".html", 900);
+      const check = await probeGetHtml(expectation());
+      addRow({ fixture: fixture, width: 900, zoom: "fit", factor: readFactor(), passage: "extracts request", checks: [check] });
+      total++;
+      if (!check.pass && !check.skipped) failed++;
+    }
+
     // Page tracking, on the two paginated shapes: the synthetic sheets and a real
     // capture distributed into sheets. Not folded into the per-passage loops because it
     // owns the scroll position, which those deliberately reset.
@@ -1123,6 +1167,56 @@
           : mismatches.length
             ? mismatches.join("; ")
             : checked + " position(s) correct, " + state.currentPageCount + " message(s)"
+    };
+  }
+
+  /**
+   * A11 — the extracts request returns the right HTML.
+   *
+   * `get-html` is how the host retrieves the markup of every highlight of a category, and
+   * it had no coverage. The ground truth is recomputed here from the same rule the shipped
+   * code follows -- every element carrying the id, in document order, `innerHTML` joined --
+   * so the comparison does not depend on how it is implemented. A deliberately absent id
+   * is included: those are common, because the ids come from the server's highlight data
+   * rather than from the document, and each one still costs a lookup.
+   */
+  async function probeGetHtml(expect) {
+    const doc = contentDoc();
+    const declared = passagesOf(expect);
+    if (!doc || !declared.length) {
+      return { id: "A11", label: "extracts request returns the right HTML", pass: true, skipped: true, detail: "no declared passage to request" };
+    }
+
+    const ids = declared.slice(0, 3).concat(["lab_absent_id_0"]);
+    const truth = ids.map(id => {
+      let html = "";
+      doc.querySelectorAll('[id="' + id + '"]').forEach(node => {
+        html += node.innerHTML + " ";
+      });
+      return html;
+    });
+
+    const answer = await requestHtml("get-html", ids);
+    if (!answer) return { id: "A11", label: "extracts request returns the right HTML", pass: false, detail: "no answer within 15 s" };
+    const got = answer.data;
+    if (!Array.isArray(got) || got.length !== ids.length) {
+      return {
+        id: "A11",
+        label: "extracts request returns the right HTML",
+        pass: false,
+        detail: "expected " + ids.length + " entries, got " + (Array.isArray(got) ? got.length : typeof got)
+      };
+    }
+
+    const wrong = ids.filter((id, index) => got[index] !== truth[index]);
+    const absent = got[ids.length - 1];
+    return {
+      id: "A11",
+      label: "extracts request returns the right HTML",
+      pass: wrong.length === 0 && absent === "",
+      detail: wrong.length
+        ? wrong.length + "/" + ids.length + " mismatched: " + wrong.join(", ")
+        : ids.length - 1 + " id(s) matched, absent id returned " + JSON.stringify(absent)
     };
   }
 

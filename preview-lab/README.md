@@ -341,6 +341,48 @@ about the viewport and could never have been caught by a geometric one.
   `/app/preview-lab/assets/worker.js` is logged. It is caught by `createWorker()`
   and has no effect on the bench.
 
+## A defect this bench found and did not fix
+
+`basic-huge.html` has 100 passages, so it can be an assertion fixture — and it is
+**deliberately not registered as one**, because two of its scenarios fail and the cause
+is not understood. Registering it would leave the matrix red, which would cost the bench
+its only real property: that a failure means something.
+
+Exact reproduction, which is why this is written down rather than forgotten:
+
+```js
+// in lab.js FIXTURES
+{ name: "basic-huge", file: "fixtures/basic-huge.html" }
+// in the fixture, declare:
+matchingpassages_84: { label: "densest passage, 32 fragments" }
+matchingpassages_99: { label: "19 fragments, end of document" }
+```
+
+Both fail at **520 px, `fit +2` only** (factor 1.1), and nowhere else:
+
+```
+A3  17/70 fragment(s) outside any frame        A6  a frame encloses no fragment
+A3   5/86 fragment(s) outside any frame        A6  worst outset 26.8px (max 12)
+```
+
+What has been ruled out:
+
+- **not a timing problem.** Sampled every few hundred ms out to 6 s: the fragments stop
+  moving at 400 ms, the frames at 600 ms, and both are stable from then on. They are
+  stable *and* they disagree. Spending the whole retry budget on verification passes
+  instead of stopping at the first success changes nothing, so that was reverted rather
+  than kept as dead cost.
+- **not a stale overlay.** The frames are recomputed and settle; they simply do not match.
+
+What is suspicious, and where to look next: at 520 px with factor 1.1 the layout width is
+about 468 local px, so the 4 607 tables wrap hard and the 32 elements of that passage
+produce **70 line rects** across many cells. The block grouping has never been exercised
+on that shape — fragments scattered across table cells, separated by cell padding and
+borders rather than by line gaps — and its thresholds are expressed in line heights. The
+first thing to dump is the per-block membership: a block union always contains its own
+members, so fragments landing outside every frame means the two sides are not looking at
+the same set of rects.
+
 ## Skipping off-screen pages: attempted, reverted
 
 Worth recording so nobody spends the afternoon on it twice.
