@@ -273,6 +273,17 @@ The width is divided by the factor so that the body still fills the panel once s
 
 So `preview.js` splits them. A zoom step writes only the transform; the width is committed once the zoom settles (`ZOOM_SETTLE_MS`), which coalesces a burst of clicks into a single reflow. A `zoom-fit`, or a `select` about to locate a citation, commits immediately — the citation must be placed on the final layout.
 
+### Fitting
+
+`zoom-fit` derives its factor from the document's own overflow — `scrollWidth` against the panel width — rather than by measuring elements. `scrollWidth` has one trap that has to be handled: for an element it is a local, **pre-transform** metric, but on the `body` **in quirks mode** it is special-cased to the document's scroll width, which lives in viewport space and therefore already includes the transform. The converters emit no doctype, so quirks is the common case here, and the factor has to be divided out. When nothing overflows, `scrollWidth` merely reports the viewport back, which is the signal that the factor is 1.
+
+This replaced an implementation that measured every `div, img, table` in the document, and it fixed two real defects rather than only being faster:
+
+- it **mixed coordinate spaces** — the widest width was measured after the transform but used as an absolute factor, so the result was only correct when the current factor happened to be 1. Since the server writes a factor inline and this runs at `DOMContentLoaded`, "fit" routinely left the content overflowing: on a double-page PDF it produced 0.79 where 0.34 was needed, i.e. a horizontal scrollbar at *fit*.
+- `Math.max(...array)` over ~113 000 arguments **throws** `RangeError: Maximum call stack size exceeded`. Because `zoomFit()` runs before the `requestAnimationFrame` chain that posts `ready`, the throw took `ready` with it: measured on the bench, a 137 657-element document never became ready at all, leaving the host's spinner up until its safety net. The same document is ready in 3.8 s now, and a 63 539-element one gained 0.9 s.
+
+The cached factor is dropped on a panel resize, so a later `zoom-fit` is computed for the new width. The current zoom is deliberately left alone — re-fitting on resize would undo a zoom the reader chose.
+
 Two consequences worth knowing:
 
 - **The zoom is applied as an inline `transform`, not by updating `--factor`.** A custom property inherits, so changing it invalidates style for every element in the subtree. Measured on the bench: ~65 ms per step on a 63 000-element document through `--factor`, against ~1 ms as an inline transform. `--factor` therefore keeps whatever the server wrote inline — `preview.css` uses it for the *initial* scale only — and anything that needs the live factor reads it from JS (or, from outside, from the resolved transform matrix). `renderPassage()` sets each frame's `border-width` inline for the same reason.

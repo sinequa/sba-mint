@@ -105,34 +105,53 @@ document.addEventListener("DOMContentLoaded", function () {
   // Zoom helpers
   // ----------------------
   function zoomFit() {
-    if (fitFactor) {
-      zoom(fitFactor, true);
-      return;
-    }
-
     const body = getPreviewBody();
     if (!body) return;
-    const width = body.getBoundingClientRect().width;
-
-    // select only span if div, img or table are not present
-    let elements = body.querySelectorAll("div, img, table");
-    if (!elements.length) {
-      elements = body.querySelectorAll("span");
-    }
-    if (!elements.length) {
-      fitFactor = 1;
-      zoom(fitFactor, true);
-      return;
-    }
-
-    const higherWidth = Math.max(...Array.from(elements).map(x => x.getBoundingClientRect().width));
-    const margin = 24;
-    fitFactor = width / (higherWidth + margin * 2);
-
-    // prevent too low or too high values
-    fitFactor = Math.min(1, Math.max(0.2, fitFactor));
-
+    if (fitFactor === null) fitFactor = computeFitFactor(body);
     zoom(fitFactor, true);
+  }
+
+  /**
+   * The factor at which the widest content fits the panel.
+   *
+   * Derived from the document's own overflow rather than by enumerating elements. The
+   * previous implementation measured every `div, img, table` in the document, which was
+   * O(DOM) on the load path -- ~113 000 getBoundingClientRect() calls on a thousand-page
+   * PDF, plus a `Math.max(...spread)` that throws past roughly 125 000 arguments -- and
+   * it mixed coordinate spaces: the widest width was measured *after* the transform but
+   * used as an absolute factor, so the result was only right when the current factor
+   * happened to be 1. Since the server writes a factor inline and this runs at
+   * DOMContentLoaded, "fit" routinely left the content overflowing: on a double-page PDF
+   * it produced 0.79 where 0.34 was needed, hence a horizontal scrollbar at fit.
+   *
+   * scrollWidth is the whole trick, and its one trap is that it means two different
+   * things: for an element it is a local, pre-transform metric, but on the *body in
+   * quirks mode* it is special-cased to the document's scroll width, which lives in
+   * viewport space and therefore includes the transform. The converters emit no doctype,
+   * so quirks is the common case here, not the exotic one.
+   */
+  function computeFitFactor(body) {
+    // Declared here, not at module level: zoomFit() runs synchronously at
+    // DOMContentLoaded, before a `var` further down the file has been assigned.
+    const margin = 24; // local px of breathing room kept on each side
+    const contentDocument = body.ownerDocument;
+    const view = contentDocument.defaultView || window;
+    const scroller = contentDocument.scrollingElement || contentDocument.documentElement;
+    const panel = (scroller && scroller.clientWidth) || view.innerWidth;
+    if (!panel) return 1;
+
+    const quirks = contentDocument.compatMode !== "CSS1Compat";
+    const overflow = body.scrollWidth;
+    // What the overflow is measured against, in the same space as the overflow itself.
+    const visible = quirks ? panel : body.clientWidth;
+    // Nothing sticks out: there is nothing to shrink, and scrollWidth would only be
+    // reporting the viewport back at us.
+    if (!overflow || overflow <= visible + 1) return 1;
+
+    const content = quirks ? overflow / currentZoomFactor(body) : overflow;
+    const factor = panel / (content + 2 * margin);
+    // prevent too low or too high values
+    return Math.min(1, Math.max(0.2, factor));
   }
 
   function createWorker(appname) {
@@ -403,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (contentView !== window) window.addEventListener("scroll", onScroll);
 
     // The preview panel is resizable, and a resize reflows the content.
-    window.addEventListener("resize", scheduleRepositionPassage);
+    window.addEventListener("resize", onPanelResize);
     if (contentBody && typeof ResizeObserver !== "undefined") {
       // Catches a change of the body box itself, i.e. a zoom or a panel resize.
       // NOT a growing content: preview.css gives the body an explicit width and
@@ -460,6 +479,16 @@ document.addEventListener("DOMContentLoaded", function () {
   /** Never scroll under a reader who has started navigating on their own. */
   function endPassageSettling() {
     passageSettleUntil = 0;
+  }
+
+  /**
+   * A narrower or wider panel means a different fit, so the cached factor is dropped --
+   * the next explicit zoom-fit recomputes it. The current zoom is deliberately left
+   * alone: re-fitting here would undo a zoom the reader chose.
+   */
+  function onPanelResize() {
+    fitFactor = null;
+    scheduleRepositionPassage();
   }
 
   /**
