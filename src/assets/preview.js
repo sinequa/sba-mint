@@ -442,13 +442,14 @@ document.addEventListener("DOMContentLoaded", function () {
       return onMouseMove(e);
     });
     document.addEventListener("click", function (e) {
-      // add a click listener to toggle the class "screenshot-extended" for "sq-mediav2-screenshot"
-      // if we click on a screenshot for a converted video preview
-      e.stopImmediatePropagation();
+      // Expands the screenshot of a converted video preview when it is clicked.
       var parentElement = e.target?.parentElement;
-      if (!!parentElement && parentElement.classList?.contains("sq-mediav2-screenshot")) {
-        parentElement.classList.toggle("screenshot-extended");
-      }
+      if (!parentElement || !parentElement.classList?.contains("sq-mediav2-screenshot")) return;
+      // Swallow only the click that is actually handled here. This used to run for
+      // *every* click anywhere in the preview, which cancelled any other click listener
+      // on the content document and any propagation to its window.
+      e.stopImmediatePropagation();
+      parentElement.classList.toggle("screenshot-extended");
     });
     var contentBody = getPreviewBody();
     var contentDocument = contentBody ? contentBody.ownerDocument : document;
