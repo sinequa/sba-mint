@@ -290,7 +290,13 @@ So `preview.js` splits them. A zoom step writes only the transform; the width is
 
 **And on some documents that single reflow is still not worth its result.** Measured: 55 ms on a 34 000-element PDF, and **2 343 ms** on a 447 919-element document of 4 607 tables, where it froze the window on every zoom gesture. So the commit times itself, and once it has proved prohibitive (`LAYOUT_COMMIT_BUDGET_MS`) it stops happening: the zoom stays a pure scale for the rest of that document's life. The only thing lost is that zooming out no longer widens the layout to fill the panel; what is gained is a window that answers. That document now blocks the thread for 13 ms per gesture instead of 2 343.
 
-The decision is the *measured* cost, never an element count: what dominates is the layout regime, and a count cannot tell a grid of tables from a stack of fixed-size sheets — a 20 000-element flowing document blocks for 216 ms while a 63 000-element paginated one blocks for 81. The document does pay it once, on the first gesture, because nothing predicts it: the commit at load costs 125 ms there against 101 ms on the PDF, far too close to separate.
+The decision is the *measured* cost, and it has to be — nothing available beforehand predicts it:
+
+- **not the element count.** The layout regime dominates: a 20 000-element *flowing* document commits in 159 ms, a 63 000-element paginated one in 47 ms.
+- **not the panel width**, though the cost depends on it strongly — the same document commits in 3 701 ms at 900 px and in a few hundred at 2 130 px, because narrower means more wrapping.
+- **not the cost of `computeFitFactor()`**, which was the tempting candidate: it reads `body.scrollWidth`, so it looks like a forced full layout and therefore a proxy for how expensive layouts are on this document. Measured across nine documents, it is **1 ms on the one whose commit is 3 701 ms**. What it reflects is whether a layout happened to be pending at that instant, not any property of the document.
+
+So the document pays it exactly once, on the first commit, and never again.
 
 ### Fitting
 

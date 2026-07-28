@@ -443,6 +443,49 @@ skipping while a citation is located, then restoring it — the frames are in lo
 coordinates and do not need recomputation afterwards. That is a different design, and
 it needs its own measurements: a citation click would pay a full reflow.
 
+## Investigating the running application
+
+Some things the bench cannot reach by construction: a different origin, a real server, real
+highlight data, a login. `investigate-app.mjs` drives the application over the Chrome
+DevTools Protocol for those — with no dependency, since Node 24 has a built-in `WebSocket`
+(no Playwright, no browser download).
+
+```bash
+node preview-lab/investigate-app.mjs "https://localhost:4200/#/search?q=…&id=…" \
+  --seconds=60 --user=admin --password=…          # logs in, then observes
+node preview-lab/investigate-app.mjs "<url>" --attach   # observes a browser you started
+                                                        # with --remote-debugging-port=9222
+```
+
+Credentials are command-line arguments and are never stored in the file. `--attach` exists
+so an already-authenticated session can be observed without handling any.
+
+Two probes are installed in **every frame** before any page script runs, so they cover the
+preview iframe as well as the host:
+
+- the same main-thread blocking watcher as `block` above, recording every gap over 200 ms
+  with its timestamp;
+- a `message` listener logging `{action, ids.length}` — the logpoint on `receiveMessage`,
+  without touching `preview.js`.
+
+What it established that the fixtures could not, on a 199 507-element PDF:
+
+| | |
+| --- | --- |
+| browser parse and layout | ~2 650 ms, before any of our code |
+| `computeFitFactor` | 650 ms — the first layout, which the browser owed anyway |
+| `commitZoomLayout` at load | 740 ms — genuinely additional |
+| a zoom *gesture* afterwards | **0 ms**, the budget having tripped on the load commit |
+| `getHtml`, **100** ids | 26 ms |
+
+That last row is why this tool matters: the extracts request carries 100 ids on the real
+document, not the thousands the id-count curve was extrapolated to. The fix is real and the
+curve is real, but only a live run says where on it a given deployment sits.
+
+For attributing a cost to a function, wrap it in a temporary timer that pushes into
+`window.__marks` and read that back — `preview.js` is served unminified from `src/assets`,
+so an edit takes effect on the next iframe load. Uncommitted, and removed afterwards.
+
 ## Validating against a real document
 
 ```

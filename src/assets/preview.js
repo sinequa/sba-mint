@@ -470,10 +470,22 @@ document.addEventListener("DOMContentLoaded", function () {
    * happening: the zoom stays a pure scale for the rest of that document's life, and the
    * only cost is that zooming out no longer widens the layout to fill the panel.
    *
-   * The decision is the measured cost, not an element count: what dominates is the layout
-   * regime, and a count cannot tell a grid of tables from a stack of fixed-size sheets.
-   * The document does pay it once, on the first gesture, because nothing predicts it -- the
-   * commit at load costs 125 ms there against 101 ms on the PDF, far too close to separate.
+   * The decision is the measured cost, and it has to be: nothing available beforehand
+   * predicts it.
+   *
+   * - Not the element count. What dominates is the layout regime, and a count cannot tell a
+   *   grid of tables from a stack of fixed-size sheets: a 20 000-element *flowing* document
+   *   commits in 159 ms while a 63 000-element paginated one commits in 47 ms.
+   * - Not the panel width, though the cost depends on it strongly -- the same document
+   *   commits in 3 701 ms at 900 px and in a few hundred at 2 130 px, because narrower means
+   *   more wrapping.
+   * - Not the cost of computeFitFactor either, which was the tempting one: it reads
+   *   `body.scrollWidth`, so it looked like a forced full layout and therefore a proxy.
+   *   Measured, it is 1 ms on the document whose commit is 3 701 ms. Its cost reflects
+   *   whether a layout happened to be pending at that instant, not any property of the
+   *   document.
+   *
+   * So the document pays it exactly once, on the first commit, and never again.
    */
   function commitZoomLayout() {
     if (zoomSettleHandle !== null) {

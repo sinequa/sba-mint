@@ -4,3 +4,6 @@
 .last-run.json
 .last-profile.json
 .baseline-profile.json
+# Result of the last investigate-app.mjs run: it captures URLs and timings from a live
+# application, so it belongs to the machine it was taken on.
+.last-cdp.json
