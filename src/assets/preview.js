@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var currentPassageId = null;
   var repositionHandle = null;
   var listenersBound = false;
+  // Deadline until which a reflow is still allowed to re-centre the passage.
+  var passageSettleUntil = 0;
 
   window.addEventListener("message", receiveMessage);
 
@@ -331,10 +333,61 @@ document.addEventListener("DOMContentLoaded", function () {
     // The preview panel is resizable, and a resize reflows the content.
     window.addEventListener("resize", scheduleRepositionPassage);
     if (contentBody && typeof ResizeObserver !== "undefined") {
-      // Safety net for every other reflow: late fonts and images, injection of
-      // the highlight <style>, toggling of extracts or descriptions.
+      // Catches a change of the body box itself, i.e. a zoom or a panel resize.
+      // NOT a growing content: preview.css gives the body an explicit width and
+      // height, so its box does not follow the content -- hence the reflow
+      // listeners below.
       new ResizeObserver(scheduleRepositionPassage).observe(contentBody);
     }
+
+    // Late resources reflow the document under a frame that has already been drawn.
+    // Neither `load` nor `error` bubbles, hence the capture phase; between them they
+    // cover images, iframes and stylesheets, which is where the reflow comes from in
+    // practice. `error` matters too: an image that fails collapses to its broken-icon
+    // size, which moves the content just as much as one that succeeds.
+    ["load", "error"].forEach(function (type) {
+      contentDocument.addEventListener(type, onContentReflow, true);
+      if (contentDocument !== document) document.addEventListener(type, onContentReflow, true);
+    });
+    if (contentDocument.fonts) {
+      contentDocument.fonts.ready.then(onContentReflow, function () {});
+    }
+
+    // The settling window belongs to the app only until the reader takes over.
+    // These three are unambiguously user-initiated, unlike a scroll event.
+    ["wheel", "touchstart", "keydown"].forEach(function (type) {
+      contentDocument.addEventListener(type, endPassageSettling, { passive: true, capture: true });
+      if (contentDocument !== document) document.addEventListener(type, endPassageSettling, { passive: true, capture: true });
+    });
+  }
+
+  /**
+   * A reflow moved the content, so both the frames and the scroll position may be
+   * stale. The frames are always recomputed; the scroll only during the settling
+   * window that follows a select.
+   *
+   * This is what makes a citation survive a document that is still loading. The
+   * PptxToHtml conversion emits `<img loading="lazy">` with no width or height
+   * attribute, so the intrinsic size of every slide image *is* the layout: each one
+   * that arrives after the scroll pushes the text further down -- hundreds of
+   * pixels over a deck. The frames used to follow while the scroll position did
+   * not, so the passage drifted out of view, and selecting it a second time looked
+   * like it fixed itself because the images were cached by then.
+   */
+  function onContentReflow() {
+    if (Date.now() < passageSettleUntil) reanchorPassage();
+    scheduleRepositionPassage();
+  }
+
+  function reanchorPassage() {
+    if (!currentPassageId) return;
+    var anchor = Array.from(getElementsById(currentPassageId)).find(isMeasurable);
+    if (anchor) scrollAnchorIntoView(anchor);
+  }
+
+  /** Never scroll under a reader who has started navigating on their own. */
+  function endPassageSettling() {
+    passageSettleUntil = 0;
   }
 
   /**
@@ -393,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (usePassageHighlighter) {
       currentPassageId = id;
+      passageSettleUntil = Date.now() + PASSAGE_SETTLE_MS;
       attemptRenderPassage(id, RENDER_ATTEMPTS);
     } else {
       // Extract and entity navigation keeps the historical dashed outline.
@@ -540,6 +594,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var MIN_MERGE_DENSITY = 0.6;
   var RENDER_ATTEMPTS = 5;
   var RENDER_RETRY_MS = 100;
+  // How long after a select a reflow may still re-centre the passage. Long enough
+  // for lazily loaded slide images to arrive, short enough that an image landing
+  // minutes later cannot yank a reader back to the citation. Any wheel, touch or
+  // key event ends it early.
+  var PASSAGE_SETTLE_MS = 3000;
 
   function getPassageLayer() {
     var body = getPreviewBody();
@@ -549,7 +608,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return passageLayer;
     }
     passageLayer = contentDocument.getElementById("sq-passage-layer");
-    if (!passageLayer) {
+    if (passageLayer) {
+      // Adopting a layer we did not create in this session: whatever frames it
+      // holds describe some other document state. Start from an empty overlay
+      // rather than leaving stale boxes on screen until the first select.
+      passageLayer.replaceChildren();
+    } else {
       passageLayer = contentDocument.createElement("div");
       passageLayer.id = "sq-passage-layer";
       body.appendChild(passageLayer);
@@ -782,6 +846,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function unselect() {
     currentPassageId = null;
+    passageSettleUntil = 0;
     if (repositionHandle !== null) {
       cancelAnimationFrame(repositionHandle);
       repositionHandle = null;
