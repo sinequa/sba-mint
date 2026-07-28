@@ -217,6 +217,20 @@ show what scale alone costs. What it establishes:
   (paginate) or to the host (decline to inline it).
 - scrolling costs 113.9 ms per frame, about nine frames a second, with no long
   *JavaScript* task at all: that is the rendering of 289 824 table cells.
+- and it is where the extracts request was found to cost **minutes**. `getHtml` used one
+  full tree walk per requested id, and the ids come one per highlight *location* returned
+  by the server, so the freeze is proportional to how much the server found:
+
+  | ids | before | after |
+  | --- | ------ | ----- |
+  | 200 | 2 927 ms | 24 ms |
+  | 1 000 | 12 708 ms | 20 ms |
+  | 5 000 | 62 550 ms | 23 ms |
+  | 20 000 | **224 313 ms** (3 min 44 s) | 33 ms |
+
+  Perfectly linear at ~11 ms per id. `PreviewService.retrieveHtmlContent()` is called once
+  per highlight category, and there are seven, which is why the reported symptom was the
+  window freezing, releasing, and freezing again rather than hanging once.
 - a zoom step on it cost **530 ms** before the transform was split from the layout (peak
   696 ms), and costs **0.1 ms** now. That single measurement justifies the whole zoom
   rework better than any of the smaller fixtures: 34 154 elements → 42.6 ms,
