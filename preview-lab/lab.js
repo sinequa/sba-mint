@@ -951,6 +951,29 @@
     return { dispatch: writtenAt - start, forced: forced, width: width };
   }
 
+  /**
+   * Watches how long the preview's main thread is unavailable.
+   *
+   * This is the metric that was missing, and its absence hid a 2.3-second freeze. The
+   * forced-read column can only see work that a read of ours makes synchronous; anything
+   * running in its own task -- the layout commit, deferred past ZOOM_SETTLE_MS -- happens
+   * between two measurements and is attributed to nothing. A timer that reschedules itself
+   * cannot miss it: whatever blocks the thread also delays the next tick, and the largest
+   * gap between ticks is exactly what a reader experiences as a freeze.
+   */
+  function watchBlocking(view) {
+    const watcher = { worst: 0, stopped: false, last: view.performance.now() };
+    const tick = () => {
+      if (watcher.stopped) return;
+      const now = view.performance.now();
+      watcher.worst = Math.max(watcher.worst, now - watcher.last);
+      watcher.last = now;
+      view.setTimeout(tick, 0);
+    };
+    view.setTimeout(tick, 0);
+    return watcher;
+  }
+
   /** One frame of the *iframe's* clock. `nextFrame()` waits two, which is enough to swamp what is being measured here. */
   function nextFrameIn(view) {
     return new Promise(resolve => view.requestAnimationFrame(() => resolve()));
@@ -1012,10 +1035,16 @@
 
       const steps = [];
       if (tracker) tracker.label = "zoom-in";
+      // Watch the thread across the whole gesture, including past the settle delay, so the
+      // deferred layout commit falls inside the window rather than between measurements.
+      const blocking = watchBlocking(view);
       for (let step = 0; step < PROFILE_ZOOM_STEPS; step++) {
         const measurement = await measureZoomStep("zoom-in");
         if (measurement) steps.push(measurement);
       }
+      await delay(600);
+      blocking.stopped = true;
+      row.zoomBlockMs = Math.round(blocking.worst);
 
       // Measured here, between the two batches, and not after them: `zoomFit()` reuses
       // its cached factor, so writing the *same* value the body already carries may not

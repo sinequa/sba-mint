@@ -288,6 +288,10 @@ The width is divided by the factor so that the body still fills the panel once s
 
 So `preview.js` splits them. A zoom step writes only the transform; the width is committed once the zoom settles (`ZOOM_SETTLE_MS`), which coalesces a burst of clicks into a single reflow. A `zoom-fit`, or a `select` about to locate a citation, commits immediately — the citation must be placed on the final layout.
 
+**And on some documents that single reflow is still not worth its result.** Measured: 55 ms on a 34 000-element PDF, and **2 343 ms** on a 447 919-element document of 4 607 tables, where it froze the window on every zoom gesture. So the commit times itself, and once it has proved prohibitive (`LAYOUT_COMMIT_BUDGET_MS`) it stops happening: the zoom stays a pure scale for the rest of that document's life. The only thing lost is that zooming out no longer widens the layout to fill the panel; what is gained is a window that answers. That document now blocks the thread for 13 ms per gesture instead of 2 343.
+
+The decision is the *measured* cost, never an element count: what dominates is the layout regime, and a count cannot tell a grid of tables from a stack of fixed-size sheets — a 20 000-element flowing document blocks for 216 ms while a 63 000-element paginated one blocks for 81. The document does pay it once, on the first gesture, because nothing predicts it: the commit at load costs 125 ms there against 101 ms on the PDF, far too close to separate.
+
 ### Fitting
 
 `zoom-fit` derives its factor from the document's own overflow — `scrollWidth` against the panel width — rather than by measuring elements. `scrollWidth` has one trap that has to be handled: for an element it is a local, **pre-transform** metric, but on the `body` **in quirks mode** it is special-cased to the document's scroll width, which lives in viewport space and therefore already includes the transform. The converters emit no doctype, so quirks is the common case here, and the factor has to be divided out. When nothing overflows, `scrollWidth` merely reports the viewport back, which is the signal that the factor is 1.

@@ -147,6 +147,7 @@ What each column means, and how much to trust it:
 | column | how it is obtained | trust |
 | ------ | ------------------ | ----- |
 | `zoom avg` / `zoom max` | forced `offsetWidth` read immediately after the factor write | **high**, but only *together with* `zoomDispatchAvg` in the JSON: code that forces layout itself (a `scrollTo`, say) moves the cost out of this column and into the dispatch, leaving this one at zero while nothing improved. Read the sum |
+| `block` | largest gap between consecutive self-rescheduling timer ticks, across a whole zoom gesture including the settle delay | **high, and the one to trust first.** It cannot miss work the way the columns above can, and it is the closest thing here to what a reader actually feels |
 | `open` | iframe `src` set → `ready` message | high, but lumps together parsing, `zoomFit()`, the SVG pass and the fixed 500 ms wait |
 | `fit` | same as a zoom step, measured **between** the zoom-in and zoom-out batches | high. It has to be measured there: `zoomFit()` reuses its cached factor, and writing the value the body already carries may not touch the attribute at all, leaving nothing to observe |
 | `anchors` | count of `[id^="sq-page-start"]` | exact |
@@ -243,6 +244,18 @@ a bug in the code under test.
 Timings are machine-specific, so `.last-profile.json` and `.baseline-profile.json` are
 gitignored. Keep a baseline before a change and pass `--baseline` after it; the report
 prints the delta per target.
+
+A blind spot worth understanding, because it hid a 2.3-second freeze for a whole day of
+this work. The forced-read columns measure what a read *of ours* makes synchronous. The
+layout commit is deliberately deferred past `ZOOM_SETTLE_MS`, so it runs in its own task,
+between two measurements, attributed to nothing — and `fit` read 0.1 ms on the very
+document where a zoom gesture froze the window for 2 343 ms, because the first `zoom-fit`
+finds the layout already committed and returns early. Every column here was reporting
+honestly and the conclusion drawn from them ("a zoom step is 0.1 ms, independent of DOM
+size") was true and *incomplete*: the step was free, the gesture was not.
+
+That is what `block` is for, and why it is listed as the column to trust first. A metric
+that measures the absence of a symptom is worth less than one that measures the symptom.
 
 One caveat worth knowing before you trust a delta: **the numbers drift between runs, by
 much more than they vary within one.** Two consecutive runs of the same code agreed to

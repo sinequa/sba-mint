@@ -15,6 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
   var zoomSettleHandle = null;
   // Long enough that a burst of clicks reflows once, short enough not to feel lagged.
   var ZOOM_SETTLE_MS = 180;
+  // What the layout commit is allowed to cost before it stops being worth its result.
+  // Measured rather than guessed from an element count, because the cost depends far more
+  // on the layout regime than on the size: 55 ms on a 34 000-element PDF against 2 343 ms
+  // on a 447 919-element document of 4 607 tables.
+  var LAYOUT_COMMIT_BUDGET_MS = 150;
+  var layoutCommitTooSlow = false;
 
   // ---- passage highlighter state ----
   // Overlay holding one frame per contiguous block of the selected passage, plus
@@ -451,10 +457,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Reflows the document for the current factor: the one expensive part of a zoom,
-   * paid once per gesture. Written as inline lengths rather than through a custom
-   * property, so the cost is the reflow itself and not also a style invalidation of
-   * every element in the document.
+   * Reflows the document for the current factor: the one expensive part of a zoom, paid
+   * once per gesture rather than once per click. Written as inline lengths rather than
+   * through a custom property, so the cost is the reflow itself and not also a style
+   * invalidation of every element in the document.
+   *
+   * On some documents that reflow is not worth its result. Dividing the width by the
+   * factor is what makes the body fill the panel and what lets page sheets flow side by
+   * side when zoomed out -- worth 55 ms on a 34 000-element PDF, not worth **2 343 ms** on
+   * a 447 919-element document of 4 607 tables, where it froze the window on every zoom
+   * gesture. So the commit times itself, and once it has proved prohibitive it stops
+   * happening: the zoom stays a pure scale for the rest of that document's life, and the
+   * only cost is that zooming out no longer widens the layout to fill the panel.
+   *
+   * The decision is the measured cost, not an element count: what dominates is the layout
+   * regime, and a count cannot tell a grid of tables from a stack of fixed-size sheets.
+   * The document does pay it once, on the first gesture, because nothing predicts it -- the
+   * commit at load costs 125 ms there against 101 ms on the PDF, far too close to separate.
    */
   function commitZoomLayout() {
     if (zoomSettleHandle !== null) {
@@ -463,6 +482,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const body = getPreviewBody();
     if (!body || currentFactor === null || layoutFactor === currentFactor) return;
+    if (layoutCommitTooSlow) return;
+
+    const started = performance.now();
 
     // The reflow re-wraps text and rearranges page sheets, so where a given piece of
     // content ends up cannot be predicted arithmetically -- unlike a pure scale. The
@@ -487,7 +509,14 @@ document.addEventListener("DOMContentLoaded", function () {
           behavior: "instant"
         });
       }
+    } else {
+      // No element to anchor on, so nothing above forced the reflow -- and the cost has to
+      // be observed to be judged. The browser owes this layout before the next paint
+      // anyway; reading it here only decides when it is paid.
+      void body.offsetWidth;
     }
+
+    if (performance.now() - started > LAYOUT_COMMIT_BUDGET_MS) layoutCommitTooSlow = true;
 
     // A displayed frame has to be measured again -- here, once, rather than per step.
     scheduleRepositionPassage();
