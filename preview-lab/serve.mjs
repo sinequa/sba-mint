@@ -33,6 +33,7 @@ const MIME = {
 };
 
 const RESULTS_PATH = "/_lab-results";
+const PROFILE_PATH = "/_lab-profile";
 const IMAGE_PATH = "/_lab-image";
 
 // --- generated images -------------------------------------------------------
@@ -114,13 +115,18 @@ function serveImage(request, response) {
 /**
  * @param {object} options
  * @param {string} options.root  document root
- * @param {(results: unknown) => void} [options.onResults] called when the lab POSTs its run
+ * @param {(results: unknown) => void} [options.onResults] called when the lab POSTs its assertion run
+ * @param {(profile: unknown) => void} [options.onProfile] called when the lab POSTs a profiling run
  */
-export function createServer({ root, onResults }) {
+export function createServer({ root, onResults, onProfile }) {
   const documentRoot = resolve(root);
 
   return createHttpServer((request, response) => {
-    if (request.method === "POST" && request.url.split("?")[0] === RESULTS_PATH) {
+    // Two separate paths, so an assertion run and a profiling run can never be
+    // mistaken for one another by whichever runner is listening.
+    const posted = request.method === "POST" ? request.url.split("?")[0] : null;
+    if (posted === RESULTS_PATH || posted === PROFILE_PATH) {
+      const isProfile = posted === PROFILE_PATH;
       readBody(request)
         .then(body => {
           let results = null;
@@ -130,8 +136,9 @@ export function createServer({ root, onResults }) {
             results = { error: "invalid JSON", raw: body.slice(0, 500) };
           }
           response.writeHead(204).end();
-          if (onResults) onResults(results);
-          else void writeFile(join(documentRoot, "preview-lab", ".last-run.json"), JSON.stringify(results, null, 2));
+          const handler = isProfile ? onProfile : onResults;
+          if (handler) handler(results);
+          else void writeFile(join(documentRoot, "preview-lab", isProfile ? ".last-profile.json" : ".last-run.json"), JSON.stringify(results, null, 2));
         })
         .catch(() => response.writeHead(400).end());
       return;

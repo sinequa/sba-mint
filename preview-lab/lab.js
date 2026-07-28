@@ -64,6 +64,29 @@
   const QUICK_WIDTHS = [900];
   const QUICK_ZOOMS = [ZOOMS[0], ZOOMS[2]];
 
+  // Profiling targets. Deliberately a separate list from FIXTURES: the point here is
+  // cost as a function of DOM size and layout regime, not correctness, and the stress
+  // fixture is far too slow to belong in the assertion matrix.
+  const PROFILE_TARGETS = [
+    { name: "basic-pdf", file: "fixtures/basic-pdf.html" },
+    { name: "basic-pptx", file: "fixtures/basic-pptx.html" },
+    { name: "basic-website", file: "fixtures/basic-website.html" },
+    { name: "pdf-pages", file: "fixtures/pdf-pages.html" },
+    // Same node count, two layout regimes: fixed-size sheets with absolutely
+    // positioned lines (a width change moves sheets but resizes nothing) versus a
+    // flowing document (a width change re-wraps everything). Section B of the plan
+    // says these must not be assumed equivalent, so they are measured separately.
+    { name: "stress-abs-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=absolute" },
+    { name: "stress-abs-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=absolute" },
+    { name: "stress-abs-60k", file: "fixtures/zoom-stress.html?nodes=60000&mode=absolute" },
+    { name: "stress-flow-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=flow" },
+    { name: "stress-flow-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=flow" }
+  ];
+
+  const PROFILE_WIDTH = 900;
+  const PROFILE_ZOOM_STEPS = 4;
+  const PROFILE_SCROLL_STEPS = 20;
+
   /** Number of full reloads used by the stability scenario. */
   const REPEAT_RUNS = 10;
 
@@ -110,6 +133,7 @@
     lastReadyToken: 0,
     descriptionVisible: false,
     currentFile: null,
+    lastOpenMs: 0,
     rows: []
   };
 
@@ -568,9 +592,15 @@
     });
 
     // Cache-busting so every run starts from a pristine layout (preview.js
-    // caches its zoom-fit factor for the lifetime of the document).
-    dom.iframe.src = file + "?t=" + state.lastReadyToken++;
+    // caches its zoom-fit factor for the lifetime of the document). Fixtures may
+    // already carry their own query string, hence the separator.
+    const openedAt = performance.now();
+    dom.iframe.src = file + (file.includes("?") ? "&t=" : "?t=") + state.lastReadyToken++;
     await ready;
+    // Time to `ready` is the metric that covers everything preview.js does before the
+    // host is allowed to drop its spinner: zoomFit()'s enumeration, the SVG background
+    // pass, and the fixed 500 ms wait.
+    state.lastOpenMs = performance.now() - openedAt;
     await nextFrame();
   }
 
@@ -721,6 +751,215 @@
     }).catch(() => {
       /* running without the lab server: the on-page table is the only output */
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Profiling (?profile=1)
+  //
+  // No instrumentation is added to preview.js. Everything is measured from here,
+  // which is possible because the lab and the fixture are same-origin: the runner
+  // can register a PerformanceObserver *inside* the iframe's window, and it can
+  // read the iframe's inline style attribute to know exactly when preview.js has
+  // written the zoom factor -- without forcing a style recalc, which would
+  // pollute the very number being measured.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Long Animation Frames report per-frame blocking time and, per script, the time
+   * spent in *forced* style and layout -- exactly the reflow this profiling exists
+   * to quantify. Only frames longer than 50 ms are reported, so the totals are a
+   * lower bound; `longtask` is the fallback on engines without LoAF.
+   */
+  function startFrameObserver(view) {
+    const Observer = view.PerformanceObserver;
+    if (!Observer) return null;
+    const supported = Observer.supportedEntryTypes || [];
+    const type = supported.includes("long-animation-frame") ? "long-animation-frame" : "longtask";
+    const tracker = { type: type, label: null, entries: [] };
+    try {
+      tracker.observer = new Observer(list => {
+        for (const entry of list.getEntries()) {
+          const scripts = entry.scripts || [];
+          tracker.entries.push({
+            label: tracker.label,
+            duration: Math.round(entry.duration),
+            blocking: Math.round(entry.blockingDuration || 0),
+            forced: Math.round(scripts.reduce((total, script) => total + (script.forcedStyleAndLayoutDuration || 0), 0))
+          });
+        }
+      });
+      tracker.observer.observe({ type: type });
+    } catch {
+      return null;
+    }
+    return tracker;
+  }
+
+  function summariseFrames(tracker, label) {
+    const rows = tracker ? tracker.entries.filter(entry => entry.label === label) : [];
+    return {
+      frames: rows.length,
+      blocking: rows.reduce((total, row) => total + row.blocking, 0),
+      forced: rows.reduce((total, row) => total + row.forced, 0),
+      worst: rows.reduce((worst, row) => Math.max(worst, row.duration), 0)
+    };
+  }
+
+  /**
+   * Resolves when preview.js writes `--factor` on the body, with the iframe's own
+   * clock. A MutationObserver fires as a microtask right after the write, so the
+   * pending invalidation is still pending when it resolves -- which is what makes
+   * the forced read that follows measure precisely that invalidation.
+   */
+  function waitForFactorWrite(doc, timeoutMs) {
+    return new Promise(resolve => {
+      const view = doc.defaultView;
+      const observer = new view.MutationObserver(() => {
+        observer.disconnect();
+        clearTimeout(timer);
+        resolve(view.performance.now());
+      });
+      observer.observe(doc.body, { attributes: true, attributeFilter: ["style"] });
+      const timer = setTimeout(() => {
+        observer.disconnect();
+        resolve(null);
+      }, timeoutMs);
+    });
+  }
+
+  async function measureZoomStep(action) {
+    const doc = contentDoc();
+    if (!doc || !doc.body) return null;
+    const view = doc.defaultView;
+
+    const written = waitForFactorWrite(doc, 3000);
+    const start = view.performance.now();
+    send({ action: action });
+    const writtenAt = await written;
+    // No write means the factor was already clamped at a bound: not a measurement.
+    if (writtenAt === null) return null;
+
+    const beforeForced = view.performance.now();
+    const width = doc.body.offsetWidth;
+    const forced = view.performance.now() - beforeForced;
+
+    await nextFrame();
+    return { dispatch: writtenAt - start, forced: forced, width: width };
+  }
+
+  /** One frame of the *iframe's* clock. `nextFrame()` waits two, which is enough to swamp what is being measured here. */
+  function nextFrameIn(view) {
+    return new Promise(resolve => view.requestAnimationFrame(() => resolve()));
+  }
+
+  async function measureScrollSweep(steps) {
+    const doc = contentDoc();
+    if (!doc) return null;
+    const view = doc.defaultView;
+    const scroller = doc.scrollingElement || doc.documentElement;
+    const distance = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    const anchors = doc.querySelectorAll('[id^="sq-page-start"]').length;
+
+    const start = view.performance.now();
+    for (let step = 1; step <= steps; step++) {
+      view.scrollTo({ top: (distance * step) / steps, left: 0, behavior: "instant" });
+      await nextFrameIn(view);
+    }
+    const total = view.performance.now() - start;
+    view.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    await nextFrameIn(view);
+
+    // Paced by one rAF per step, so ~16.7 ms per frame is the floor at 60 Hz. Only the
+    // excess over that floor can be attributed to the scroll handler, and even then it
+    // is an upper bound -- frame pacing is not perfectly regular.
+    const floor = 1000 / 60;
+    return {
+      total: total,
+      steps: steps,
+      anchors: anchors,
+      perFrame: total / steps,
+      excessPerFrame: Math.max(0, total / steps - floor)
+    };
+  }
+
+  async function runProfile() {
+    state.running = true;
+    setStatus("profiling…");
+    const rows = [];
+
+    for (const target of PROFILE_TARGETS) {
+      try {
+        await load(target.file, PROFILE_WIDTH);
+      } catch (error) {
+        rows.push({ target: target.name, error: String(error.message || error) });
+        continue;
+      }
+
+      const doc = contentDoc();
+      const view = doc && doc.defaultView;
+      if (!view) {
+        rows.push({ target: target.name, error: "no content document" });
+        continue;
+      }
+
+      const nodes = doc.getElementsByTagName("*").length;
+      const tracker = startFrameObserver(view);
+      const row = { target: target.name, nodes: nodes, open: Math.round(state.lastOpenMs), observer: tracker ? tracker.type : "none" };
+
+      const steps = [];
+      if (tracker) tracker.label = "zoom-in";
+      for (let step = 0; step < PROFILE_ZOOM_STEPS; step++) {
+        const measurement = await measureZoomStep("zoom-in");
+        if (measurement) steps.push(measurement);
+      }
+
+      // Measured here, between the two batches, and not after them: `zoomFit()` reuses
+      // its cached factor, so writing the *same* value the body already carries may not
+      // touch the style attribute at all -- and then there is no mutation to observe.
+      // Coming back to the fit factor from a zoomed-in state guarantees a real write.
+      if (tracker) tracker.label = "zoom-fit";
+      const fit = await measureZoomStep("zoom-fit");
+      row.fitForced = fit ? round(fit.forced) : null;
+      row.fitDispatch = fit ? round(fit.dispatch) : null;
+
+      if (tracker) tracker.label = "zoom-out";
+      for (let step = 0; step < PROFILE_ZOOM_STEPS; step++) {
+        const measurement = await measureZoomStep("zoom-out");
+        if (measurement) steps.push(measurement);
+      }
+
+      row.zoomSteps = steps.length;
+      row.zoomForcedMax = round(steps.reduce((worst, item) => Math.max(worst, item.forced), 0));
+      row.zoomForcedAvg = round(steps.length ? steps.reduce((total, item) => total + item.forced, 0) / steps.length : 0);
+      row.zoomDispatchAvg = round(steps.length ? steps.reduce((total, item) => total + item.dispatch, 0) / steps.length : 0);
+      row.zoomFrames = summariseFrames(tracker, "zoom-in");
+
+      if (tracker) tracker.label = "scroll";
+      const sweep = await measureScrollSweep(PROFILE_SCROLL_STEPS);
+      row.scrollTotal = sweep ? Math.round(sweep.total) : null;
+      row.scrollPerFrame = sweep ? round(sweep.perFrame) : null;
+      row.scrollExcess = sweep ? round(sweep.excessPerFrame) : null;
+      row.pageAnchors = sweep ? sweep.anchors : null;
+      row.scrollFrames = summariseFrames(tracker, "scroll");
+
+      if (tracker && tracker.observer) tracker.observer.disconnect();
+      rows.push(row);
+      setStatus("profiled " + target.name);
+    }
+
+    state.running = false;
+    setStatus("done (profiling)");
+    dom.summary.textContent = rows.length + " target(s) profiled — see the console or .last-profile.json";
+    window.__LAB_PROFILE__ = { rows: rows };
+    if (params.get("ci")) {
+      await fetch("/_lab-profile", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ rows: rows })
+      }).catch(() => {
+        /* running without the lab server: __LAB_PROFILE__ is the only output */
+      });
+    }
   }
 
   /**
@@ -947,7 +1186,9 @@
   bindControls();
 
   const realUrl = params.get("url");
-  if (realUrl) {
+  if (params.get("profile")) {
+    void runProfile();
+  } else if (realUrl) {
     runRealDocument(realUrl, params.get("snippet"));
   } else {
     manualLoad().then(() => {

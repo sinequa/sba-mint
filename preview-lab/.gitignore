@@ -1,2 +1,6 @@
-# Result of the last `?ci=1` run, written by serve.mjs when it runs standalone.
+# Results of the last runs, written by serve.mjs / run-ci.mjs / run-profile.mjs.
+# Profiling timings are machine-specific: never commit them, compare them locally
+# with `run-profile.mjs --baseline preview-lab/.baseline-profile.json`.
 .last-run.json
+.last-profile.json
+.baseline-profile.json

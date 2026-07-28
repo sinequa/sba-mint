@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="../../src/assets/preview.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="_fixture.css" />
+    <script src="../../src/assets/preview.js"></script>
+    <style>
+      /* Page sheet sized like the converters do, so its box never depends on its
+         content -- the condition under which content-visibility is safe. */
+      .stl_.stress {
+        position: relative;
+        width: 816px;
+        height: 1056px;
+        contain-intrinsic-size: 816px 1056px;
+        vertical-align: top;
+      }
+      .stl_.stress .t {
+        position: absolute;
+        white-space: nowrap;
+        font:
+          13px / 16px "Times New Roman",
+          Times,
+          serif;
+      }
+      /* Flowing variant: the same number of nodes, but every one of them re-wraps
+         when the layout width changes. */
+      .stress-flow {
+        margin: 24px;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid lightgrey;
+        font:
+          14px / 22px Arial,
+          sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bd" style="--factor: 1">
+    <!-- Load fixture, not an assertion fixture: it declares no passage and is excluded
+         from the LAB matrix. Its only job is to make the cost of a zoom step measurable
+         as a function of DOM size, and to separate the two layout regimes that section B
+         of the plan says must not be assumed equivalent:
+
+           ?mode=absolute  page sheets of fixed size, one absolutely positioned line per
+                           node -- changing the layout width moves the sheets but resizes
+                           nothing, so the reflow *should* stay cheap;
+           ?mode=flow      one flowing paragraph per node -- changing the layout width
+                           re-wraps every line, so the reflow is O(DOM) for real.
+
+         ?nodes=<n> sets the node count (default 20000). ?nodes=130000 in absolute mode is
+         the size at which zoomFit()'s `Math.max(...spread)` reaches the V8 argument limit.
+    -->
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var nodes = Math.max(1, Math.min(400000, Number(params.get("nodes")) || 20000));
+        var mode = params.get("mode") === "flow" ? "flow" : "absolute";
+        var ROWS = 34;
+        var html = [];
+
+        if (mode === "flow") {
+          html.push('<div class="stress-flow">');
+          for (var i = 0; i < nodes; i++) {
+            html.push(
+              "<p>Node " +
+                i +
+                " — the quick brown fox jumps over the lazy dog, repeatedly and at length, so that this paragraph wraps across several lines at any plausible layout width.</p>"
+            );
+          }
+          html.push("</div>");
+        } else {
+          var pages = Math.max(1, Math.ceil(nodes / ROWS));
+          var written = 0;
+          for (var page = 1; page <= pages; page++) {
+            html.push('<div class="stl_ stress"><a id="sq-page-start-' + page + '"></a>');
+            for (var row = 0; row < ROWS && written < nodes; row++, written++) {
+              html.push(
+                '<div class="t" style="top:' + (64 + row * 24) + "px;left:60px" + '">Line ' + written + " — the quick brown fox jumps over the lazy dog.</div>"
+              );
+            }
+            html.push("</div>");
+          }
+          window.lastPage = pages;
+          window.defPage = 1;
+        }
+
+        document.body.insertAdjacentHTML("afterbegin", html.join(""));
+
+        window.LAB_STRESS = { nodes: nodes, mode: mode };
+      })();
+    </script>
+  </body>
+</html>
