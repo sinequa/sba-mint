@@ -158,6 +158,18 @@ Timings are machine-specific, so `.last-profile.json` and `.baseline-profile.jso
 gitignored. Keep a baseline before a change and pass `--baseline` after it; the report
 prints the delta per target.
 
+One caveat worth knowing before you trust a delta: **the numbers drift between runs, by
+much more than they vary within one.** Two consecutive runs of the same code agreed to
+±2–3 ms on `zoom avg`, but a baseline taken an hour earlier read 62 ms on a target that
+measured 72 ms when the *same unchanged code* was re-run later — the machine had simply
+got slower. So:
+
+- re-measure the baseline in the same session as the comparison (`git stash` the change,
+  run, `git stash pop`, run again);
+- trust order-of-magnitude changes and same-run comparisons between targets;
+- do not chase a delta of a few percent, and do not chase `open` at all — it is
+  dominated by parsing and by the fixed 500 ms wait before `ready`.
+
 ## Fixtures
 
 | Fixture                       | What it covers                                                    |

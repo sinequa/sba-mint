@@ -984,11 +984,18 @@
     };
   }
 
+  /**
+   * The scale actually applied to the body, read from the resolved transform matrix.
+   * Not from `--factor`: preview.js applies the zoom as an inline transform and leaves
+   * that custom property at whatever the server wrote, because writing it would
+   * invalidate style for the whole document.
+   */
   function readFactor() {
     const body = contentBody();
     if (!body) return null;
-    const raw = getComputedStyle(body).getPropertyValue("--factor");
-    const value = parseFloat(raw);
+    const transform = getComputedStyle(body).transform;
+    const matrix = /^matrix\(([^,]+),/.exec(transform);
+    const value = matrix ? parseFloat(matrix[1]) : parseFloat(getComputedStyle(body).getPropertyValue("--factor"));
     return isNaN(value) ? 1 : round(value);
   }
 

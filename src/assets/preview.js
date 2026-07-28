@@ -4,6 +4,18 @@ document.addEventListener("DOMContentLoaded", function () {
   var styleElement;
   var fitFactor = null;
 
+  // ---- zoom state ----
+  // `currentFactor` is the applied visual scale and the single source of truth, so a
+  // zoom step needs no getComputedStyle. `layoutFactor` is the factor the layout is
+  // currently computed for; it lags behind on purpose (see zoom()). Both start null,
+  // meaning "whatever the server wrote inline", which is what preview.css applies until
+  // the first zoom.
+  var currentFactor = null;
+  var layoutFactor = null;
+  var zoomSettleHandle = null;
+  // Long enough that a burst of clicks reflows once, short enough not to feel lagged.
+  var ZOOM_SETTLE_MS = 180;
+
   // ---- passage highlighter state ----
   // Overlay holding one frame per contiguous block of the selected passage, plus
   // the id currently displayed so it can be recomputed on any layout change.
@@ -65,9 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Current zoom factor, read from the --factor custom property that zoom()
-   * writes on the preview body and that preview.css turns into a scale()
-   * transform.
+   * Reads the --factor custom property the server writes inline on the body, which
+   * preview.css turns into the initial scale() transform. Only used to seed
+   * currentZoomFactor(): from the first zoom on, the applied scale is an inline
+   * transform and the JS value is the source of truth.
    */
   function getZoomFactor(body) {
     if (!body) return 1;
@@ -76,12 +89,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return isNaN(value) || value <= 0 ? 1 : value;
   }
 
+  /**
+   * The applied visual scale. Cached, so the common paths -- a zoom step, a frame
+   * recomputation -- never pay for a getComputedStyle. The cache is seeded once from
+   * the computed value, which is how the factor the server wrote inline is picked up.
+   */
+  function currentZoomFactor(body) {
+    if (currentFactor !== null) return currentFactor;
+    if (!body) return 1;
+    currentFactor = getZoomFactor(body);
+    return currentFactor;
+  }
+
   // ----------------------
   // Zoom helpers
   // ----------------------
   function zoomFit() {
     if (fitFactor) {
-      zoom(fitFactor);
+      zoom(fitFactor, true);
       return;
     }
 
@@ -96,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (!elements.length) {
       fitFactor = 1;
-      zoom(fitFactor);
+      zoom(fitFactor, true);
       return;
     }
 
@@ -107,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // prevent too low or too high values
     fitFactor = Math.min(1, Math.max(0.2, fitFactor));
 
-    zoom(fitFactor);
+    zoom(fitFactor, true);
   }
 
   function createWorker(appname) {
@@ -189,13 +214,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // ---- zoom ----
       case "zoom-in": {
-        let factor = getZoomFactor(getPreviewBody());
+        let factor = currentZoomFactor(getPreviewBody());
         zoom(Math.min(3, factor + 0.2));
         break;
       }
 
       case "zoom-out": {
-        let factor = getZoomFactor(getPreviewBody());
+        let factor = currentZoomFactor(getPreviewBody());
         zoom(Math.max(0.2, factor - 0.2));
         break;
       }
@@ -239,13 +264,60 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function zoom(value) {
+  /**
+   * Applies a zoom factor.
+   *
+   * A zoom step writes the transform, and nothing else. That is a compositor
+   * operation: measured at ~1 ms on a 63 000-element document, against ~65 ms when the
+   * same value went through the `--factor` custom property -- because a custom
+   * property inherits, so changing it invalidates style for the whole subtree.
+   *
+   * The layout width is a separate matter. `width: calc(99% / factor)` is what makes
+   * the body fill the panel once scaled, and what lets page sheets flow side by side
+   * when zoomed out, but it reflows the document -- O(DOM), and up to 90 ms on a large
+   * one. It is therefore committed only once the zoom settles, so a burst of clicks
+   * reflows once instead of once per click.
+   *
+   * Nothing repositions the passage frames in between, and nothing needs to: their
+   * coordinates are local to the body, the layout has not moved, and the transform
+   * scales them along with the text.
+   *
+   * @param {number} value new visual scale
+   * @param {boolean} [commitNow] apply the layout immediately, for a deliberate
+   *   one-off action (a zoom-fit, or a citation about to be located)
+   */
+  function zoom(value, commitNow) {
     const body = getPreviewBody();
     if (!body) return;
-    body.style.setProperty("--factor", value);
-    // The body is sized `width: calc(99% / var(--factor))`, so zooming changes the
-    // *layout* width and reflows the content (text re-wraps, page sheets change
-    // rows). Any displayed passage frame has to be measured again.
+    currentFactor = value;
+    body.style.transform = "scale(" + value + ")";
+
+    if (commitNow) {
+      commitZoomLayout();
+      return;
+    }
+    if (zoomSettleHandle !== null) clearTimeout(zoomSettleHandle);
+    zoomSettleHandle = setTimeout(commitZoomLayout, ZOOM_SETTLE_MS);
+  }
+
+  /**
+   * Reflows the document for the current factor: the one expensive part of a zoom,
+   * paid once per gesture. Written as inline lengths rather than through a custom
+   * property, so the cost is the reflow itself and not also a style invalidation of
+   * every element in the document.
+   */
+  function commitZoomLayout() {
+    if (zoomSettleHandle !== null) {
+      clearTimeout(zoomSettleHandle);
+      zoomSettleHandle = null;
+    }
+    const body = getPreviewBody();
+    if (!body || currentFactor === null || layoutFactor === currentFactor) return;
+    layoutFactor = currentFactor;
+    body.style.width = "calc(99% / " + currentFactor + ")";
+    body.style.height = "calc(98% / " + currentFactor + ")";
+    // The reflow re-wraps text and changes how many page sheets fit per row, so a
+    // displayed frame has to be measured again -- here, once, rather than per step.
     scheduleRepositionPassage();
   }
 
@@ -431,6 +503,9 @@ document.addEventListener("DOMContentLoaded", function () {
       usePassageHighlighter = false;
     }
     unselect();
+    // Locate the citation on the final layout, not on a zoom still settling: the
+    // frames would otherwise be drawn twice and the scroll aimed at a stale position.
+    commitZoomLayout();
     var elements = Array.from(getElementsById(id));
     if (!elements.length) return;
 
@@ -630,12 +705,20 @@ document.addEventListener("DOMContentLoaded", function () {
     var layer = getPassageLayer();
     if (!body || !layer) return false;
 
+    var factor = currentZoomFactor(body);
     var elements = Array.from(getElementsById(id));
-    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body, layer)) : [];
+    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body, layer, factor)) : [];
     if (!blocks.length) {
       layer.replaceChildren();
       return false;
     }
+
+    // Stroke and radius are divided by the factor so they stay constant on screen
+    // through the body's scale. Set here rather than left to the `calc(2px /
+    // var(--factor))` in preview.css, because preview.js no longer updates that
+    // custom property -- writing it would invalidate style for the whole document.
+    var borderWidth = 2 / factor + "px";
+    var borderRadius = 5 / factor + "px";
 
     var contentDocument = body.ownerDocument;
     var boxes = blocks.map(function (block) {
@@ -645,6 +728,8 @@ document.addEventListener("DOMContentLoaded", function () {
       box.style.top = block.top - PASSAGE_PADDING + "px";
       box.style.width = block.right - block.left + 2 * PASSAGE_PADDING + "px";
       box.style.height = block.bottom - block.top + 2 * PASSAGE_PADDING + "px";
+      box.style.borderWidth = borderWidth;
+      box.style.borderRadius = borderRadius;
       return box;
     });
     layer.replaceChildren.apply(layer, boxes);
@@ -655,15 +740,17 @@ document.addEventListener("DOMContentLoaded", function () {
    * One entry per line fragment, in the preview body's local coordinate space.
    * getClientRects() -- not getBoundingClientRect() -- is what splits a wrapped
    * span into one rect per line, which is the raw material of the grouping below.
+   *
+   * `factor` is the *visual* scale, which is what getBoundingClientRect() reports
+   * through -- correct whether or not the layout has caught up with it yet.
    */
-  function collectPassageRects(elements, body, layer) {
+  function collectPassageRects(elements, body, layer, factor) {
     // Origin of the overlay itself, not of the body: the frames are positioned
     // against the layer's padding box, and the layer is a <div> that converter or
     // preview styles can offset (see #sq-passage-layer in preview.css). Measuring
     // from the layer makes the conversion self-referential, so such an offset
     // cancels out instead of shifting every frame.
     var origin = layer.getBoundingClientRect();
-    var factor = getZoomFactor(body);
     var rects = [];
 
     elements.forEach(function (element) {

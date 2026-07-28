@@ -260,6 +260,28 @@ The highlights configuration is consumed by `PreviewService` and `PreviewNavigat
 1. CSS rules are injected into the iframe to colorize each entity class
 2. The `<preview-navigator>` overlay (displayed above the iframe) lists entity categories and allows jumping between occurrences
 
+## Zoom
+
+The zoom is applied to the preview body, and it does two things that cost wildly different amounts:
+
+| what | cost |
+| --- | --- |
+| `transform: scale(f)` | compositor, independent of document size |
+| `width: calc(99% / f)` | **reflows the whole document** — O(DOM) |
+
+The width is divided by the factor so that the body still fills the panel once scaled. That is also what makes page sheets flow side by side when zoomed out (`.stl_` is `display: inline-block`, so a wider *layout* fits more per row) and what re-wraps text in unpaginated conversions. It is wanted behaviour, but it must not be paid on every step.
+
+So `preview.js` splits them. A zoom step writes only the transform; the width is committed once the zoom settles (`ZOOM_SETTLE_MS`), which coalesces a burst of clicks into a single reflow. A `zoom-fit`, or a `select` about to locate a citation, commits immediately — the citation must be placed on the final layout.
+
+Two consequences worth knowing:
+
+- **The zoom is applied as an inline `transform`, not by updating `--factor`.** A custom property inherits, so changing it invalidates style for every element in the subtree. Measured on the bench: ~65 ms per step on a 63 000-element document through `--factor`, against ~1 ms as an inline transform. `--factor` therefore keeps whatever the server wrote inline — `preview.css` uses it for the *initial* scale only — and anything that needs the live factor reads it from JS (or, from outside, from the resolved transform matrix). `renderPassage()` sets each frame's `border-width` inline for the same reason.
+- **Between a step and the commit, the body's visual width is no longer exactly the panel width**, so a slight re-settling is visible when the layout catches up. That is the deliberate trade: instant feedback on every step, one reflow per gesture.
+
+:::tip
+`node preview-lab/run-profile.mjs` measures all of this without instrumenting `preview.js`. The column to watch is `zoom avg` — the style and layout a single step forces — which should stay flat as DOM size grows.
+:::
+
 ## Passage Navigation
 
 When a search result with a selected passage is opened, `PreviewContentComponent` scrolls the iframe to the relevant passage:
@@ -285,7 +307,7 @@ The implementation lives in `src/assets/preview.js`:
 4. Two paragraphs of the same passage separated by a blank line are merged too, but only while the result stays mostly text (`MIN_MERGE_DENSITY`): one frame around two paragraphs reads better than two, whereas a run of one-line captions must not collapse into a single, mostly empty box. Beyond one blank line the gap is a structural break and is never crossed.
 5. One `.sq-passage-box` per block is appended to `#sq-passage-layer`, a zero-sized anchor pinned to the body origin.
 
-Because the overlay lives inside the scaled body, the frames follow scroll and zoom for free. They are still recomputed on zoom, resize, scroll, description toggling, on any `load` event inside the content document and once `document.fonts` is ready, because changing `--factor` also changes the body's *layout* width (`width: calc(99% / var(--factor))`) and therefore reflows the content.
+Because the overlay lives inside the scaled body, the frames follow scroll and zoom for free — a zoom step scales them along with the text, so nothing has to be recomputed while the zoom is still moving. They are recomputed once the zoom *settles* (the layout width changes then, which re-wraps text and changes how many sheets fit per row), and on resize, scroll, description toggling, any `load` event inside the content document, and once `document.fonts` is ready.
 
 The `ResizeObserver` on the preview body is **not** the safety net it looks like: `preview.css` gives that body an explicit width and height, so its box never changes when the content grows. It reports a zoom or a panel resize, nothing else. Anything that reflows the content — a late image, a late font — has to be observed at its source, which is what the `load` and `fonts.ready` hooks are for.
 

@@ -66,7 +66,9 @@ line.sq-svg {
   margin: 0;
   padding: 0;
   /* The shorthand first, so a border stays visible even if the calc below ends up
-     invalid at computed-value time. */
+     invalid at computed-value time. renderPassage() then sets the width and radius
+     inline from the applied factor -- `--factor` is only the initial value here, since
+     preview.js stops updating it (see the body rule below). */
   border: 2px solid rgba(11, 117, 255, 0.5);
   border-width: calc(2px / var(--factor, 1));
   border-radius: calc(5px / var(--factor, 1));
@@ -105,6 +107,18 @@ body.bd > div:not(.ph, .phe) > img {
   margin-right: 16px;
 }
 
+/* These three declarations are the *initial* state only: they honour the `--factor`
+   the server writes inline on the body, so the preview is correctly scaled before any
+   script runs. From then on preview.js sets `transform`, `width` and `height` inline
+   and they take over.
+
+   The reason it does not simply keep updating `--factor` is measured, not theoretical:
+   a custom property inherits, so changing it invalidates style for the entire subtree.
+   On a 63 000-element document that alone costs ~65 ms per zoom step, against ~1 ms
+   for an inline transform. Splitting them also lets the transform (compositor, O(1))
+   be applied on every step while the width -- which reflows the document, and is what
+   makes sheets flow side by side when zoomed out -- is only committed once the zoom
+   settles. */
 body {
   --factor: 1;
   position: absolute;
