@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var fitFactor = null;
 
   // ---- zoom state ----
-  // `currentFactor` is the applied visual scale and the single source of truth, so a
-  // zoom step needs no getComputedStyle. `layoutFactor` is the factor the layout is
-  // currently computed for; it lags behind on purpose (see zoom()). Both start null,
-  // meaning "whatever the server wrote inline", which is what preview.css applies until
-  // the first zoom.
+  // `currentFactor` is bookkeeping for the deferred commit, not a source of truth: the
+  // authority on the applied scale is the resolved transform itself (appliedZoomFactor).
+  // `layoutFactor` is the factor the layout is currently computed for; it lags behind on
+  // purpose (see zoom()). Both start null, meaning "whatever the server wrote inline",
+  // which is what preview.css applies until the first zoom.
   var currentFactor = null;
   var layoutFactor = null;
   var zoomSettleHandle = null;
@@ -124,9 +124,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /**
    * Reads the --factor custom property the server writes inline on the body, which
-   * preview.css turns into the initial scale() transform. Only used to seed
-   * currentZoomFactor(): from the first zoom on, the applied scale is an inline
-   * transform and the JS value is the source of truth.
+   * preview.css turns into the initial scale() transform. Only a fallback for
+   * appliedZoomFactor(), for the case where no transform resolves.
    */
   function getZoomFactor(body) {
     if (!body) return 1;
@@ -136,14 +135,39 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * The applied visual scale. Cached, so the common paths -- a zoom step, a frame
-   * recomputation -- never pay for a getComputedStyle. The cache is seeded once from
-   * the computed value, which is how the factor the server wrote inline is picked up.
+   * The scale actually applied to the body, read from its resolved transform.
+   *
+   * Deliberately not a cached JS value. getBoundingClientRect() reports positions through
+   * whatever transform is really in effect, so any conversion between viewport and local
+   * coordinates has to use that same number -- and a cached one is an invariant somebody
+   * has to keep true. It only takes a stylesheet on the content side, or a path that
+   * writes the transform without going through zoom(), for the two to diverge; the frames
+   * would then be drawn at the wrong scale until the next zoom click happened to
+   * resynchronise them, which is a genuinely puzzling symptom to debug.
+   *
+   * Reading it costs one getComputedStyle per render -- renders happen once per gesture,
+   * not once per frame, so it does not sit on a hot path.
+   */
+  function appliedZoomFactor(body) {
+    if (!body) return 1;
+    var view = body.ownerDocument.defaultView || window;
+    var transform = view.getComputedStyle(body).transform;
+    var matrix = /^matrix\(\s*([^,]+)/.exec(transform);
+    if (matrix) {
+      var scale = parseFloat(matrix[1]);
+      if (!isNaN(scale) && scale > 0) return scale;
+    }
+    // No transform resolved (`none`, or a 3D matrix): fall back to the custom property
+    // the server writes and preview.css turns into the initial scale.
+    return getZoomFactor(body);
+  }
+
+  /**
+   * The factor a zoom step starts from. Reads the applied scale, so a step can never
+   * compound on a stale value either.
    */
   function currentZoomFactor(body) {
-    if (currentFactor !== null) return currentFactor;
-    if (!body) return 1;
-    currentFactor = getZoomFactor(body);
+    currentFactor = appliedZoomFactor(body);
     return currentFactor;
   }
 
@@ -927,7 +951,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var layer = getPassageLayer();
     if (!body || !layer) return false;
 
-    var factor = currentZoomFactor(body);
+    // The scale in effect right now, whatever put it there -- see appliedZoomFactor().
+    var factor = appliedZoomFactor(body);
     var elements = Array.from(getElementsById(id));
     var measurement = collectPassageRects(elements, body, layer, factor);
     // Once every fragment has been measured, scrolling can no longer reveal more of the

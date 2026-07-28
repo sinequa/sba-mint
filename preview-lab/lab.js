@@ -721,6 +721,31 @@
       }
     }
 
+    // The host's real sequence, which nothing above covers: it never sends zoom-fit, it
+    // relies on the automatic one done at DOMContentLoaded and selects the citation as
+    // soon as `ready` arrives. Every scenario above sends an explicit zoom-fit first, so
+    // a factor that was only correct *because* of that message would have gone unnoticed.
+    for (const fixture of ["basic-pdf", "basic-pptx", "basic-website", "pdf-pages"]) {
+      await load("fixtures/" + fixture + ".html", 900);
+      const expect = expectation();
+      const ids = passagesOf(expect);
+      if (!ids.length) continue;
+      const measurement = await selectPassage(ids[0]);
+      const checks = measurement
+        ? assess(measurement, expect.passages[ids[0]])
+        : [{ id: "measure", label: "measurable", pass: false, detail: "no content document" }];
+      addRow({
+        fixture: fixture,
+        width: 900,
+        zoom: "auto-fit only",
+        factor: readFactor(),
+        passage: (expect.passages[ids[0]] && expect.passages[ids[0]].label) || ids[0],
+        checks: checks
+      });
+      total++;
+      if (checks.some(check => !check.pass && !check.skipped)) failed++;
+    }
+
     // Page tracking, on the two paginated shapes: the synthetic sheets and a real
     // capture distributed into sheets. Not folded into the per-passage loops because it
     // owns the scroll position, which those deliberately reset.
