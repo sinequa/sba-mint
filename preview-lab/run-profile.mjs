@@ -69,11 +69,11 @@ function report(profile, baseline) {
   process.stdout.write("\nTimes in ms. `zoom avg` is the style+layout a single zoom step forces — the\n");
   process.stdout.write("number that should become independent of DOM size. `scroll+` is the excess over\n");
   process.stdout.write("the 16.7 ms frame budget during a scroll sweep, i.e. an upper bound on what the\n");
-  process.stdout.write("scroll handler costs per frame.\n\n");
+  process.stdout.write("scroll handler costs per frame; `sel+` is the same sweep with a citation displayed.\n\n");
   process.stdout.write(
-    `${pad("target", width.target)}  ${padStart("nodes", 7)}  ${padStart("open", 7)}  ${padStart("zoom avg", 9)}  ${padStart("zoom max", 9)}  ${padStart("fit", 7)}  ${padStart("anchors", 8)}  ${padStart("scroll+", 8)}  ${padStart("blocked", 8)}\n`
+    `${pad("target", width.target)}  ${padStart("nodes", 7)}  ${padStart("open", 7)}  ${padStart("zoom avg", 9)}  ${padStart("zoom max", 9)}  ${padStart("fit", 7)}  ${padStart("anchors", 8)}  ${padStart("scroll+", 8)}  ${padStart("sel+", 8)}  ${padStart("blocked", 8)}\n`
   );
-  process.stdout.write(`${"-".repeat(width.target + 78)}\n`);
+  process.stdout.write(`${"-".repeat(width.target + 88)}\n`);
 
   for (const row of rows) {
     if (row.error) {
@@ -86,7 +86,8 @@ function report(profile, baseline) {
       `${pad(row.target, width.target)}  ${padStart(row.nodes, 7)}  ${padStart(row.open, 7)}${delta(row.open, previous?.open)}  ` +
         `${padStart(row.zoomForcedAvg, 9)}${delta(row.zoomForcedAvg, previous?.zoomForcedAvg)}  ` +
         `${padStart(row.zoomForcedMax, 9)}  ${padStart(row.fitForced ?? "—", 7)}  ` +
-        `${padStart(row.pageAnchors ?? "—", 8)}  ${padStart(row.scrollExcess ?? "—", 8)}  ${padStart(blocked, 8)}\n`
+        `${padStart(row.pageAnchors ?? "—", 8)}  ${padStart(row.scrollExcess ?? "—", 8)}  ` +
+        `${padStart(row.scrollSelectedExcess ?? "—", 8)}${delta(row.scrollSelectedExcess, previous?.scrollSelectedExcess)}  ${padStart(blocked, 8)}\n`
     );
   }
 

@@ -63,6 +63,7 @@ being verified. The bench never reimplements the logic under test.
 | A7    | frames are actually stroked (visible, non-transparent border)                  | frame present but invisible      |
 | A8    | no two frames of the same passage overlap                                      | wrong block decomposition        |
 | A9    | the anchor ends up ≥ 50 % inside the preview viewport                          | frames drawn where nobody looks  |
+| A10   | `current-page` matches the first page anchor fully in view, while scrolling     | page indicator stops following   |
 
 `A0` replaces the whole set when no fragment of the passage is measurable at all
 (hidden subtree, unknown id) — that is the "no blue box at all" symptom, so it is
@@ -79,6 +80,12 @@ the document itself had settled, and the assertions compared frames and text at 
 moment when both still agreed. A late-loading image sailed straight through. The
 rule is that stability has to mean "nothing is moving any more", not "the thing
 under test is not moving".
+
+`A10` is a scenario of its own rather than a per-passage check, because it owns the
+scroll position. It exists because `current-page` is consumed by `preview-content.ts` —
+it is what makes the page indicator follow the scroll — and had no coverage at all, which
+is an uncomfortable place to start changing its implementation from. It was written and
+verified green against the *old* implementation first, then used to check the new one.
 
 `A9` is about the other half of a citation: correct frames the reader never sees.
 Every scenario starts by scrolling the content document back to the top — the

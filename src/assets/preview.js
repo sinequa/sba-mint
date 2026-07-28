@@ -25,6 +25,21 @@ document.addEventListener("DOMContentLoaded", function () {
   var listenersBound = false;
   // Deadline until which a reflow is still allowed to re-centre the passage.
   var passageSettleUntil = 0;
+  // Whether the last render measured *every* fragment of the passage. While it did not,
+  // scrolling may reveal more of them and the frame is worth recomputing.
+  var passageComplete = false;
+
+  // ---- scroll / page tracking state ----
+  var scrollHandle = null;
+  var pageObserver = null;
+  var visiblePageAnchors = new Set();
+  var pageAnchorsSeeded = false;
+  var reportedPageId = null;
+
+  // ---- hover state ----
+  var hoverHandle = null;
+  var hoveredEntity = null;
+  var reportedHoverId;
 
   // Upper bound on how long `ready` waits for webfonts. A cap, not a delay: it only
   // applies if document.fonts never settles. Declared here rather than further down
@@ -386,9 +401,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function returnMessage(type, data) {
-    parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
-    // in case of nested iframes (frameset)
-    parent?.parent.postMessage({ type: type, data: data, url: window.location.href }, parentOrigin);
+    var message = { type: type, data: data, url: window.location.href };
+    parent.postMessage(message, parentOrigin);
+    // Nested iframes (frameset): the app sits one level further up, so it has to be
+    // reached explicitly. When the app *is* `parent` -- the ordinary case -- the two are
+    // the same window, and posting twice merely made every listener on the host run
+    // twice for every message. Cheap to avoid, and it removes a real trap: a duplicate
+    // `ready` from a previous document can resolve the wait for the next one.
+    if (parent && parent.parent && parent.parent !== parent) {
+      parent.parent.postMessage(message, parentOrigin);
+    }
   }
 
   function init(origin, highlights) {
@@ -429,22 +451,24 @@ document.addEventListener("DOMContentLoaded", function () {
     var contentBody = getPreviewBody();
     var contentDocument = contentBody ? contentBody.ownerDocument : document;
     var contentView = contentDocument.defaultView || window;
-    var pages = contentDocument.querySelectorAll('[id^="sq-page-start"]');
+    var pages = Array.prototype.slice.call(contentDocument.querySelectorAll('[id^="sq-page-start"]'));
+    observePageAnchors(contentView, pages);
 
     function onScroll() {
-      if (pages?.length) {
-        let found = false;
-        pages.forEach(page => {
-          if (!found && isElementInViewport(page)) {
-            found = true;
-            returnMessage("current-page", page.id);
-          }
-        });
-      }
-      // Fragments revealed by `content-visibility` while scrolling can complete
-      // the frame of a passage that was only partly laid out.
-      scheduleRepositionPassage();
-      return returnMessage("scroll", { x: contentView.scrollX, y: contentView.scrollY });
+      // Scroll events can fire several times per frame; nothing here needs to run more
+      // often than the browser paints.
+      if (scrollHandle !== null) return;
+      scrollHandle = contentView.requestAnimationFrame(function () {
+        scrollHandle = null;
+        // Only when an IntersectionObserver could not be used: it reports page changes
+        // on its own, without measuring every anchor on every frame.
+        if (!pageObserver) reportCurrentPage(pages);
+        // Fragments revealed by `content-visibility` while scrolling can complete the
+        // frame of a passage that was only partly laid out. Once every fragment has been
+        // measured there is nothing left to complete, so this stops costing anything.
+        if (!passageComplete) scheduleRepositionPassage();
+        returnMessage("scroll", { x: contentView.scrollX, y: contentView.scrollY });
+      });
     }
 
     contentView.addEventListener("scroll", onScroll);
@@ -508,6 +532,65 @@ document.addEventListener("DOMContentLoaded", function () {
   /** Never scroll under a reader who has started navigating on their own. */
   function endPassageSettling() {
     passageSettleUntil = 0;
+  }
+
+  // ----------------------
+  // Page tracking
+  // ----------------------
+
+  /**
+   * Watches the page anchors so that `current-page` no longer costs a pass over all of
+   * them on every scroll event -- on a long document that was one getBoundingClientRect()
+   * per anchor per frame, and the loop could not even stop early because it used forEach.
+   *
+   * The observer is used as a *filter*, not as the decision: `isElementInViewport()`
+   * still picks the reported page. The two agree for the zero-area markers the converters
+   * emit (verified on the bench), but `isIntersecting` means *partly* visible while the
+   * rule here is *entirely* visible, so a sized anchor would differ. Narrowing the
+   * candidates and keeping the original predicate is exact either way.
+   */
+  function observePageAnchors(contentView, pages) {
+    if (!pages.length || typeof contentView.IntersectionObserver !== "function") return;
+
+    pageObserver = new contentView.IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) visiblePageAnchors.add(entry.target);
+          else visiblePageAnchors.delete(entry.target);
+        });
+        // The first callback is the observer telling us what is already on screen, not a
+        // page change. Emitting there would be actively harmful: the host treats a known
+        // `current-page` as "the reader navigated away" and scrolls to that page
+        // *instead of* selecting the cited passage.
+        if (!pageAnchorsSeeded) {
+          pageAnchorsSeeded = true;
+          reportCurrentPage(pages, true);
+          return;
+        }
+        reportCurrentPage(pages);
+      },
+      { threshold: 0 }
+    );
+    pages.forEach(function (page) {
+      pageObserver.observe(page);
+    });
+  }
+
+  /**
+   * Emits `current-page` for the first anchor entirely in view, and only when it changes
+   * -- the previous code re-sent the same id on every scroll event.
+   */
+  function reportCurrentPage(pages, silent) {
+    for (var i = 0; i < pages.length; i++) {
+      var page = pages[i];
+      if (pageObserver && !visiblePageAnchors.has(page)) continue;
+      if (!isElementInViewport(page)) continue;
+      if (page.id !== reportedPageId) {
+        reportedPageId = page.id;
+        if (!silent) returnMessage("current-page", page.id);
+      }
+      return;
+    }
   }
 
   /**
@@ -765,7 +848,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var factor = currentZoomFactor(body);
     var elements = Array.from(getElementsById(id));
-    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body, layer, factor)) : [];
+    var measurement = collectPassageRects(elements, body, layer, factor);
+    // Once every fragment has been measured, scrolling can no longer reveal more of the
+    // passage, so the frame does not need recomputing on scroll any more.
+    passageComplete = elements.length > 0 && measurement.measuredElements === elements.length;
+    var blocks = elements.length ? groupPassageRects(measurement.rects) : [];
     if (!blocks.length) {
       layer.replaceChildren();
       return false;
@@ -810,12 +897,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // cancels out instead of shifting every frame.
     var origin = layer.getBoundingClientRect();
     var rects = [];
+    var measuredElements = 0;
 
     elements.forEach(function (element) {
       var clientRects = element.getClientRects();
       // SVG text reports no client rects in some engines: fall back to its box.
       var list = clientRects.length ? Array.from(clientRects) : [element.getBoundingClientRect()];
       var page = getPageIndex(element, body);
+      var before = rects.length;
 
       list.forEach(function (rect) {
         if (rect.width < 0.5 || rect.height < 0.5) return;
@@ -828,9 +917,11 @@ document.addEventListener("DOMContentLoaded", function () {
           lineHeight: (rect.bottom - rect.top) / factor
         });
       });
+
+      if (rects.length > before) measuredElements++;
     });
 
-    return rects;
+    return { rects: rects, measuredElements: measuredElements };
   }
 
   /**
@@ -992,6 +1083,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function unselect() {
     currentPassageId = null;
     passageSettleUntil = 0;
+    passageComplete = false;
     if (repositionHandle !== null) {
       cancelAnimationFrame(repositionHandle);
       repositionHandle = null;
@@ -1042,18 +1134,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  var currentId;
-
+  /**
+   * Records which entity is under the pointer. Emitting is deferred to the next frame:
+   * on a document where every word is an entity span, a single sweep of the mouse walks
+   * through a burst of them, and each transition used to cost a getBoundingClientRect()
+   * plus a postMessage.
+   *
+   * `highlight-hover` is consumed by another application, so the throttle may only reduce
+   * volume, never change what is observed: the last state always wins (trailing edge),
+   * enter and leave keep their order, and the position is measured at emission time -- a
+   * rect captured a frame earlier can already be stale.
+   */
   function onMouseMove(event) {
     var el = event.target;
-    if (el.attributes["data-entity-display"] && el.id !== currentId) {
-      currentId = el.id;
-      returnMessage("highlight-hover", {
-        id: el.id,
-        position: el.getBoundingClientRect()
-      });
-    } else if (currentId && el.id !== currentId) {
-      currentId = undefined;
+    var entity = el && el.hasAttribute && el.hasAttribute("data-entity-display") ? el : null;
+    hoveredEntity = entity;
+    if (hoverHandle !== null) return;
+    // Nothing pending and nothing to say: do not even schedule a frame.
+    if ((entity ? entity.id : undefined) === reportedHoverId) return;
+    hoverHandle = requestAnimationFrame(flushHover);
+  }
+
+  function flushHover() {
+    hoverHandle = null;
+    var entity = hoveredEntity;
+    var id = entity ? entity.id : undefined;
+    if (id === reportedHoverId) return;
+    reportedHoverId = id;
+    if (entity) {
+      returnMessage("highlight-hover", { id: id, position: entity.getBoundingClientRect() });
+    } else {
       returnMessage("highlight-hover");
     }
   }

@@ -137,6 +137,8 @@
     descriptionVisible: false,
     currentFile: null,
     lastOpenMs: 0,
+    currentPage: null,
+    currentPageCount: 0,
     rows: []
   };
 
@@ -164,6 +166,14 @@
     if (message.type === "description-visible") {
       state.descriptionVisible = true;
       trace("description-visible");
+      return;
+    }
+
+    // Consumed by preview-content.ts, and the only way the page indicator follows the
+    // scroll. Recorded so A10 can check it against ground truth.
+    if (message.type === "current-page") {
+      state.currentPage = message.data;
+      state.currentPageCount++;
       return;
     }
 
@@ -711,6 +721,18 @@
       }
     }
 
+    // Page tracking, on the two paginated shapes: the synthetic sheets and a real
+    // capture distributed into sheets. Not folded into the per-passage loops because it
+    // owns the scroll position, which those deliberately reset.
+    for (const fixture of ["pdf-pages", "basic-website-pages"]) {
+      await load("fixtures/" + fixture + ".html", 900);
+      await applyZoom([]);
+      const check = await probePageTracking();
+      addRow({ fixture: fixture, width: 900, zoom: "fit", factor: readFactor(), passage: "page tracking", checks: [check] });
+      total++;
+      if (!check.pass && !check.skipped) failed++;
+    }
+
     // Stability across reloads: the passage on the last page of a long document,
     // with a full reload each time. Guards against a timing-dependent result --
     // the frame must not depend on how much of the document happened to be laid
@@ -945,6 +967,24 @@
       row.pageAnchors = sweep ? sweep.anchors : null;
       row.scrollFrames = summariseFrames(tracker, "scroll");
 
+      // The same sweep with a citation displayed. This is the expensive scroll in
+      // practice -- the frame may be recomputed on every frame -- and it is the only
+      // way to see what renderPassage() costs, since the sweep above selects nothing.
+      const ids = passagesOf(expectation());
+      if (ids.length) {
+        if (tracker) tracker.label = "scroll-selected";
+        send({ action: "select", id: ids[0], usePassageHighlighter: true });
+        await delay(500);
+        const selectedSweep = await measureScrollSweep(PROFILE_SCROLL_STEPS);
+        row.scrollSelectedExcess = selectedSweep ? round(selectedSweep.excessPerFrame) : null;
+        row.passageFragments = contentDoc() ? contentDoc().querySelectorAll('[id="' + ids[0] + '"]').length : null;
+        send({ action: "unselect" });
+        await nextFrame();
+      } else {
+        row.scrollSelectedExcess = null;
+        row.passageFragments = null;
+      }
+
       if (tracker && tracker.observer) tracker.observer.disconnect();
       rows.push(row);
       setStatus("profiled " + target.name);
@@ -993,6 +1033,64 @@
    * that custom property at whatever the server wrote, because writing it would
    * invalidate style for the whole document.
    */
+  /**
+   * A10 — the page indicator follows the scroll.
+   *
+   * `current-page` is consumed by `preview-content.ts` and had no coverage at all, which
+   * is uncomfortable for a message whose implementation is being changed. The ground
+   * truth is recomputed here, independently: the first page anchor in document order
+   * that is entirely inside the viewport, which is exactly the rule preview.js applies.
+   *
+   * The reported value is compared *without* resetting it between scrolls, because the
+   * message is only sent when the page changes -- an unchanged page correctly produces
+   * no message, and the last value still holds.
+   */
+  async function probePageTracking() {
+    const doc = contentDoc();
+    if (!doc) return { id: "A10", label: "current page follows the scroll", pass: false, detail: "no content document" };
+    const view = doc.defaultView;
+    const anchors = Array.from(doc.querySelectorAll('[id^="sq-page-start"]'));
+    if (!anchors.length) {
+      return { id: "A10", label: "current page follows the scroll", pass: true, skipped: true, detail: "no page anchors in this conversion" };
+    }
+
+    const height = () => doc.documentElement.clientHeight || view.innerHeight;
+    const width = () => doc.documentElement.clientWidth || view.innerWidth;
+    const fullyInside = element => {
+      const rect = element.getBoundingClientRect();
+      return rect.top >= 0 && rect.left >= 0 && rect.bottom <= height() && rect.right <= width();
+    };
+
+    const scroller = doc.scrollingElement || doc.documentElement;
+    const distance = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    const mismatches = [];
+    let checked = 0;
+
+    for (const fraction of [0.2, 0.45, 0.7, 0.95]) {
+      view.scrollTo({ top: distance * fraction, left: 0, behavior: "instant" });
+      await delay(220);
+      const expected = anchors.find(fullyInside);
+      if (!expected) continue; // no anchor entirely in view: nothing is expected
+      checked++;
+      if (state.currentPage !== expected.id) {
+        mismatches.push("at " + Math.round(distance * fraction) + "px: got " + state.currentPage + ", expected " + expected.id);
+      }
+    }
+
+    view.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    return {
+      id: "A10",
+      label: "current page follows the scroll",
+      pass: mismatches.length === 0 && checked > 0,
+      detail:
+        checked === 0
+          ? "no scroll position had an anchor fully in view"
+          : mismatches.length
+            ? mismatches.join("; ")
+            : checked + " position(s) correct, " + state.currentPageCount + " message(s)"
+    };
+  }
+
   function readFactor() {
     const body = contentBody();
     if (!body) return null;
