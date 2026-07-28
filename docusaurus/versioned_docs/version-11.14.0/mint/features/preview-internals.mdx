@@ -299,6 +299,19 @@ This replaced an implementation that measured every `div, img, table` in the doc
 
 The cached factor is dropped on a panel resize, so a later `zoom-fit` is computed for the new width. The current zoom is deliberately left alone — re-fitting on resize would undo a zoom the reader chose.
 
+### Keeping the reading position
+
+A zoom preserves whatever sits under the middle of the viewport. Without that, it throws the reader across the document: the scroll offset stays constant in absolute pixels while every content position is multiplied by the change in scale, so the anchored content moves by `(scroll + half a viewport) × (ratio − 1)` — proportional to **how far down the reader already is**, not to the size of the viewport. Measured on the captured 34 000-element PDF, two zoom-in steps from the middle of the document moved the element under the cursor **6 653 px** away, entirely off screen.
+
+The two phases need different treatment:
+
+- for a **zoom step** it is exact arithmetic — `scroll₁ = (scroll₀ + c) × ratio − c` per axis, with `c` half the viewport — and the scroll is read *before* the transform is written, while the layout is still clean;
+- for the **layout commit** arithmetic does not apply, since a re-wrap moves content unpredictably. The element under the viewport centre is remembered instead, and put back where it was once the new layout is in place. That read is what forces the reflow, which the commit pays for anyway.
+
+At the very top nothing is anchored: there is no reading position to preserve, and centring would push the document down — which also keeps a freshly opened preview at the top, since `zoomFit()` goes through the same path.
+
+Cost: none worth measuring. `scrollTo` forces the layout inside the handler rather than at the next read, so the cost moves between the profiler's two columns without the total changing (9.2 → 9.7 ms on the captured PDF, 1.2 → 1.4 ms on a 63 000-element document).
+
 Two consequences worth knowing:
 
 - **The zoom is applied as an inline `transform`, not by updating `--factor`.** A custom property inherits, so changing it invalidates style for every element in the subtree. Measured on the bench: ~65 ms per step on a 63 000-element document through `--factor`, against ~1 ms as an inline transform. `--factor` therefore keeps whatever the server wrote inline — `preview.css` uses it for the *initial* scale only — and anything that needs the live factor reads it from JS (or, from outside, from the resolved transform matrix). `renderPassage()` sets each frame's `border-width` inline for the same reason.

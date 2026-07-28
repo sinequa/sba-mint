@@ -142,7 +142,7 @@ What each column means, and how much to trust it:
 
 | column | how it is obtained | trust |
 | ------ | ------------------ | ----- |
-| `zoom avg` / `zoom max` | forced `offsetWidth` read immediately after the factor write | **high** — synchronous, no frame pacing involved |
+| `zoom avg` / `zoom max` | forced `offsetWidth` read immediately after the factor write | **high**, but only *together with* `zoomDispatchAvg` in the JSON: code that forces layout itself (a `scrollTo`, say) moves the cost out of this column and into the dispatch, leaving this one at zero while nothing improved. Read the sum |
 | `open` | iframe `src` set → `ready` message | high, but lumps together parsing, `zoomFit()`, the SVG pass and the fixed 500 ms wait |
 | `fit` | same as a zoom step, measured **between** the zoom-in and zoom-out batches | high. It has to be measured there: `zoomFit()` reuses its cached factor, and writing the value the body already carries may not touch the attribute at all, leaving nothing to observe |
 | `anchors` | count of `[id^="sq-page-start"]` | exact |

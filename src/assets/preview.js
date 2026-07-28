@@ -354,8 +354,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function zoom(value, commitNow) {
     const body = getPreviewBody();
     if (!body) return;
+    const previous = currentZoomFactor(body);
+    // Read the scroll *before* invalidating anything, so these reads are free. No element
+    // is needed on this path: a pure scale is exact arithmetic, and elementFromPoint is a
+    // hit test that would force layout on every step.
+    const anchor = readViewportAnchor(body, false);
+
     currentFactor = value;
     body.style.transform = "scale(" + value + ")";
+    restoreViewportAnchor(body, anchor, value / previous);
 
     if (commitNow) {
       commitZoomLayout();
@@ -363,6 +370,55 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (zoomSettleHandle !== null) clearTimeout(zoomSettleHandle);
     zoomSettleHandle = setTimeout(commitZoomLayout, ZOOM_SETTLE_MS);
+  }
+
+  /**
+   * Where the reader is looking, and what is under that point.
+   *
+   * Without this, zooming throws them across the document. The scroll position stays
+   * constant in absolute pixels while every content position is multiplied by the change
+   * in scale, so whatever was in the middle of the viewport moves by
+   * `(scroll + half a viewport) x (ratio - 1)` -- proportional to how far down the reader
+   * already is, not to the size of the viewport. Measured on the captured PDF: two
+   * zoom-in steps from the middle of the document moved the element under the cursor
+   * 6 653 px away, completely off screen.
+   */
+  function readViewportAnchor(body, needElement) {
+    const contentDocument = body.ownerDocument;
+    const view = contentDocument.defaultView || window;
+    const scroller = contentDocument.scrollingElement || contentDocument.documentElement;
+    if (!scroller) return null;
+    const width = scroller.clientWidth || view.innerWidth;
+    const height = scroller.clientHeight || view.innerHeight;
+    const centreX = width / 2;
+    const centreY = height / 2;
+    // Only the reflow case needs the element (see commitZoomLayout): after a re-wrap,
+    // arithmetic on the scroll offset no longer maps back to the same content.
+    // `pointer-events: none` keeps the passage overlay out of the hit test.
+    const element = needElement && contentDocument.elementFromPoint ? contentDocument.elementFromPoint(centreX, centreY) : null;
+    return {
+      scroller: scroller,
+      view: view,
+      left: scroller.scrollLeft,
+      top: scroller.scrollTop,
+      centreX: centreX,
+      centreY: centreY,
+      element: element && element !== body ? element : null
+    };
+  }
+
+  /** Puts the anchored point back under the middle of the viewport, by arithmetic. */
+  function restoreViewportAnchor(body, anchor, ratio) {
+    if (!anchor || !isFinite(ratio) || ratio <= 0 || ratio === 1) return;
+    // At the very top there is no reading position to preserve, and anchoring the centre
+    // would push the document down instead. This also keeps a freshly opened preview at
+    // the top, since zoomFit() goes through here too.
+    if (!anchor.left && !anchor.top) return;
+    anchor.view.scrollTo({
+      left: (anchor.left + anchor.centreX) * ratio - anchor.centreX,
+      top: (anchor.top + anchor.centreY) * ratio - anchor.centreY,
+      behavior: "instant"
+    });
   }
 
   /**
@@ -378,11 +434,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const body = getPreviewBody();
     if (!body || currentFactor === null || layoutFactor === currentFactor) return;
+
+    // The reflow re-wraps text and rearranges page sheets, so where a given piece of
+    // content ends up cannot be predicted arithmetically -- unlike a pure scale. The
+    // element under the middle of the viewport is therefore remembered and put back
+    // where it was afterwards, which is the only way the commit does not jump.
+    const anchor = readViewportAnchor(body, true);
+    const before = anchor && anchor.element ? anchor.element.getBoundingClientRect() : null;
+
     layoutFactor = currentFactor;
     body.style.width = "calc(99% / " + currentFactor + ")";
     body.style.height = "calc(98% / " + currentFactor + ")";
-    // The reflow re-wraps text and changes how many page sheets fit per row, so a
-    // displayed frame has to be measured again -- here, once, rather than per step.
+
+    if (before) {
+      // Reading here is what forces the reflow, which this commit is paying for anyway.
+      const after = anchor.element.getBoundingClientRect();
+      const shiftX = after.left - before.left;
+      const shiftY = after.top - before.top;
+      if (shiftX || shiftY) {
+        anchor.view.scrollTo({
+          left: anchor.scroller.scrollLeft + shiftX,
+          top: anchor.scroller.scrollTop + shiftY,
+          behavior: "instant"
+        });
+      }
+    }
+
+    // A displayed frame has to be measured again -- here, once, rather than per step.
     scheduleRepositionPassage();
   }
 
