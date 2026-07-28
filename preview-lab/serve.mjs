@@ -19,6 +19,9 @@ import { deflateSync } from "node:zlib";
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
+  // Office exports use .htm, and serving those as octet-stream means the frame never
+  // parses as HTML -- the document loads, has a body, and contains nothing.
+  ".htm": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".mjs": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",

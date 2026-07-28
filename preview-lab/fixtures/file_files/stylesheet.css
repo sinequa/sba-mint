@@ -1,0 +1,660 @@
+tr
+ {mso-height-source:auto;
+ mso-ruby-visibility:none;}
+col
+ {mso-width-source:auto;
+ mso-ruby-visibility:none;}
+br
+ {mso-data-placement:same-cell;}
+ruby
+ {ruby-align:start;}
+.style0
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ mso-style-name:Normal;
+ mso-style-id:0;}
+td
+ {mso-style-parent:style0;
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ mso-ignore:padding;
+ }
+.x15
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x22
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x23
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x24
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:700;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',monospace;
+ mso-protection:locked visible;
+ }
+.x25
+ {
+ mso-number-format:General;
+ text-align:center;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x26
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x27
+ {
+ mso-number-format:General;
+ text-align:center;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x28
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x29
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x30
+ {
+ mso-number-format:General;
+ text-align:center;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x31
+ {
+ mso-number-format:'\#\,\#\#0\;\[Red\]-\#\,\#\#0';
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x32
+ {
+ mso-number-format:General;
+ text-align:center;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x33
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x34
+ {
+ mso-number-format:General;
+ text-align:center;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x35
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x36
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:center;
+ vertical-align:middle;
+ white-space:normal;word-wrap:break-word;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x37
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x38
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x39
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x40
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x41
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x42
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:1px solid windowtext;
+ border-right:none;
+ border-bottom:4px double windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x43
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x44
+ {
+ mso-number-format:'\#\,\#\#0\;\\△\#\,\#\#0';
+ text-align:center;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x45
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:1px solid windowtext;
+ border-right:none;
+ border-bottom:4px double windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x46
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x47
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x48
+ {
+ mso-number-format:General;
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x49
+ {
+ mso-number-format:General;
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x50
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x51
+ {
+ mso-number-format:'\#\,\#\#0\;\[Red\]-\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x52
+ {
+ mso-number-format:'\#\,\#\#0\;\[Red\]-\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:none;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x53
+ {
+ mso-number-format:'\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:1px solid windowtext;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x54
+ {
+ mso-number-format:'\#\,\#\#0\;\[Red\]-\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ border-top:1px solid windowtext;
+ border-right:none;
+ border-bottom:1px solid windowtext;
+ border-left:none;
+ mso-diagonal-down:none;
+ mso-diagonal-up:none;
+ mso-protection:locked visible;
+ }
+.x55
+ {
+ mso-number-format:'\#\,\#\#0\;\0022△ \0022\#\,\#\#0';
+ text-align:general;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }
+.x56
+ {
+ mso-number-format:General;
+ text-align:right;
+ vertical-align:middle;
+ white-space:nowrap;
+ background:auto;
+ mso-pattern:auto;
+ color:#000000;
+ font-size:11pt;
+ font-weight:400;
+ font-style:normal;
+ font-family:'ＭＳ Ｐゴシック',sans-serif;
+ mso-protection:locked visible;
+ }

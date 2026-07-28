@@ -45,7 +45,10 @@
     // rendered as page images with an absolutely positioned text layer.
     { name: "basic-pdf", file: "fixtures/basic-pdf.html" },
     // A third one, whose slide images have no intrinsic size and load late.
-    { name: "basic-pptx", file: "fixtures/basic-pptx.html" }
+    { name: "basic-pptx", file: "fixtures/basic-pptx.html" },
+    // A fourth: a genuine frameset, where the content lives in another document and
+    // preview.js runs in five instances at once.
+    { name: "basic-excel-jap", file: "fixtures/basic-excel-jap.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -725,7 +728,7 @@
     // relies on the automatic one done at DOMContentLoaded and selects the citation as
     // soon as `ready` arrives. Every scenario above sends an explicit zoom-fit first, so
     // a factor that was only correct *because* of that message would have gone unnoticed.
-    for (const fixture of ["basic-pdf", "basic-pptx", "basic-website", "pdf-pages"]) {
+    for (const fixture of ["basic-pdf", "basic-pptx", "basic-website", "basic-excel-jap", "pdf-pages"]) {
       await load("fixtures/" + fixture + ".html", 900);
       const expect = expectation();
       const ids = passagesOf(expect);

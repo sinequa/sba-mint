@@ -1,2 +1,8 @@
 # Ignore vendored files
 src/assets/vendors/**/*
+
+# Verbatim converter output, captured for preview-lab. Reformatting a capture defeats its
+# purpose, and prettier cannot parse this one anyway: its HTML parser rejects a legacy
+# <frameset> that contains <noframes><body>, believing the body closed the frameset.
+preview-lab/fixtures/basic-excel-jap.html
+preview-lab/fixtures/file_files/**
