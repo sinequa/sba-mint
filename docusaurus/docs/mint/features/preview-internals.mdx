@@ -319,6 +319,16 @@ Cost: none worth measuring. `scrollTo` forces the layout inside the handler rath
 Two consequences worth knowing:
 
 - **The zoom is applied as an inline `transform`, not by updating `--factor`.** A custom property inherits, so changing it invalidates style for every element in the subtree. Measured on the bench: ~65 ms per step on a 63 000-element document through `--factor`, against ~1 ms as an inline transform. `--factor` therefore keeps whatever the server wrote inline — `preview.css` uses it for the *initial* scale only — and `renderPassage()` sets each frame's `border-width` inline for the same reason.
+- **Not the CSS `zoom` property, and this was measured rather than assumed.** `zoom` is tempting: it would remove the `width: calc(99% / factor)` hack entirely, since percentages resolve inside the zoomed space, and it lays text out at the target size instead of scaling glyph positions computed at another one. But it is *by definition* a layout-affecting property, so every change reflows the subtree — and that is precisely what the split above exists to avoid. Measured per zoom step, same documents, same session:
+
+  | document | elements | `transform` | `zoom` |
+  | --- | --- | --- | --- |
+  | captured PDF | 34 154 | 0.1 ms | **396 ms** |
+  | flowing | 20 012 | 0.1 ms | **414 ms** |
+  | paginated | 63 541 | 0.9 ms | **937 ms** |
+  | tables | 447 920 | 0.1 ms | **6 614 ms** |
+
+  Worse even than driving the zoom through `--factor` (530 ms on the last one), because a custom property invalidates *style* over the subtree while `zoom` invalidates style **and** layout. The decisive point is not the raw cost though: `zoom` makes the visual change and the layout inseparable, so neither the deferral nor the budget above would be possible at all.
 - **The applied scale is read back from the resolved transform, never from a cached value.** `getBoundingClientRect()` reports positions through whatever transform is really in effect, so every conversion between viewport and local coordinates must use that same number. A cached factor is an invariant somebody has to keep true, and it only takes a stylesheet on the content side, or a path that writes the transform without going through `zoom()`, for the two to drift — after which the frames are drawn at the wrong scale until a zoom click happens to resynchronise them. That is a memorable symptom to debug and an easy one to avoid: `appliedZoomFactor()` parses the matrix, and costs 0.1–0.3 ms per render, on a path that runs once per gesture.
 - **Between a step and the commit, the body's visual width is no longer exactly the panel width**, so a slight re-settling is visible when the layout catches up. That is the deliberate trade: instant feedback on every step, one reflow per gesture.
 
