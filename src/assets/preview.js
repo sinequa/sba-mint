@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Whether the last render measured *every* fragment of the passage. While it did not,
   // scrolling may reveal more of them and the frame is worth recomputing.
   var passageComplete = false;
+  // Geometry currently drawn in the overlay, so an unchanged reposition writes nothing.
+  var renderedSignature = null;
 
   // ---- scroll / page tracking state ----
   var scrollHandle = null;
@@ -855,8 +857,18 @@ document.addEventListener("DOMContentLoaded", function () {
     var blocks = elements.length ? groupPassageRects(measurement.rects) : [];
     if (!blocks.length) {
       layer.replaceChildren();
+      renderedSignature = null;
       return false;
     }
+
+    // Replacing the overlay's children is far from free: the boxes carry a blurred
+    // box-shadow, so every write makes the browser re-rasterise them over whatever they
+    // sit on -- and on a large document that dwarfs the cost of computing them. Skip the
+    // write entirely when it would produce the same geometry, which is the common case
+    // for a reposition triggered by something that did not actually move the passage.
+    var signature = describeBlocks(blocks, factor);
+    if (signature === renderedSignature && layer.childElementCount === blocks.length) return true;
+    renderedSignature = signature;
 
     // Stroke and radius are divided by the factor so they stay constant on screen
     // through the body's scale. Set here rather than left to the `calc(2px /
@@ -879,6 +891,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     layer.replaceChildren.apply(layer, boxes);
     return true;
+  }
+
+  /** Rounded geometry of the blocks, to tell "same frames" from "moved frames". */
+  function describeBlocks(blocks, factor) {
+    var parts = blocks.map(function (block) {
+      return Math.round(block.left) + "," + Math.round(block.top) + "," + Math.round(block.right) + "," + Math.round(block.bottom);
+    });
+    // The factor belongs in the key: identical geometry at a different scale still needs
+    // the border width rewritten.
+    return parts.join("|") + "@" + factor;
   }
 
   /**
@@ -1084,6 +1106,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentPassageId = null;
     passageSettleUntil = 0;
     passageComplete = false;
+    renderedSignature = null;
     if (repositionHandle !== null) {
       cancelAnimationFrame(repositionHandle);
       repositionHandle = null;
