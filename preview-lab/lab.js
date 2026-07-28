@@ -40,7 +40,10 @@
     { name: "basic-website", file: "fixtures/basic-website.html" },
     { name: "basic-website-columns", file: "fixtures/basic-website-columns.html" },
     { name: "basic-website-pages", file: "fixtures/basic-website-pages.html" },
-    { name: "basic-website-paged-columns", file: "fixtures/basic-website-paged-columns.html" }
+    { name: "basic-website-paged-columns", file: "fixtures/basic-website-paged-columns.html" },
+    // A second real capture, from the other end of the converter family: a PDF
+    // rendered as page images with an absolutely positioned text layer.
+    { name: "basic-pdf", file: "fixtures/basic-pdf.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -79,6 +82,9 @@
   // wrong: they describe the same text twice. Only the padding of two abutting
   // blocks may legitimately touch.
   const MAX_FRAME_OVERLAP = 0.1;
+  // Share of the anchor that must end up inside the preview viewport. A frame can
+  // be perfectly placed and still be useless if the document never scrolled to it.
+  const MIN_ANCHOR_VISIBILITY = 0.5;
 
   const params = new URLSearchParams(window.location.search);
 
@@ -162,6 +168,24 @@
   function contentBody() {
     const doc = contentDoc();
     return doc ? doc.body : null;
+  }
+
+  /**
+   * Size of the preview viewport. The converters emit no doctype, so the content
+   * document is in quirks mode and its scrolling element is `body`, not
+   * `documentElement` — reading the wrong one reports the height of an ordinary
+   * box instead of the viewport.
+   */
+  function contentViewport() {
+    const doc = contentDoc();
+    const scroller = doc && (doc.scrollingElement || doc.documentElement);
+    if (!scroller) return null;
+    const view = doc.defaultView || window;
+    return {
+      width: scroller.clientWidth || view.innerWidth,
+      height: scroller.clientHeight || view.innerHeight,
+      scrollTop: scroller.scrollTop
+    };
   }
 
   function expectation() {
@@ -279,9 +303,15 @@
     const stroke = frameStroke(doc);
     const decoys = Array.from(doc.querySelectorAll("[data-lab-decoy]")).flatMap(element => rectsOf(element));
 
+    // The element preview.js scrolls to, picked the same way it picks it: the first
+    // measurable fragment, or the first one when none is measurable.
+    const anchorElement = elements.find(element => rectsOf(element).length > 0) || elements[0] || null;
+
     return {
       elements: elements.length,
       measuredElements: measuredElements,
+      anchor: anchorElement ? anchorElement.getBoundingClientRect() : null,
+      viewport: contentViewport(),
       complete: elements.length > 0 && measuredElements === elements.length,
       truth: truth,
       frames: frames,
@@ -467,6 +497,37 @@
       detail: "worst decoy overlap " + Math.round(worstDecoy * 100) + "% (max " + Math.round(MAX_DECOY_OVERLAP * 100) + "%)"
     });
 
+    // Frames drawn at the right place are worthless if the document never scrolled
+    // to them. Every scenario starts from the top of the document, so this really
+    // measures the scroll performed by the select.
+    const anchor = measurement.anchor;
+    const viewport = measurement.viewport;
+    if (!anchor || !viewport) {
+      checks.push({ id: "A9", label: "passage scrolled into view", pass: true, skipped: true, detail: "no anchor to scroll to" });
+    } else {
+      const visible = { left: 0, top: 0, right: viewport.width, bottom: viewport.height };
+      const overlapY = Math.min(anchor.bottom, visible.bottom) - Math.max(anchor.top, visible.top);
+      const overlapX = Math.min(anchor.right, visible.right) - Math.max(anchor.left, visible.left);
+      const shareY = Math.max(0, overlapY) / Math.max(1, Math.min(anchor.height, viewport.height));
+      const shareX = Math.max(0, overlapX) / Math.max(1, Math.min(anchor.width, viewport.width));
+      checks.push({
+        id: "A9",
+        label: "passage scrolled into view",
+        pass: shareY >= MIN_ANCHOR_VISIBILITY && shareX >= MIN_ANCHOR_VISIBILITY,
+        detail:
+          "anchor " +
+          Math.round(shareX * 100) +
+          "% × " +
+          Math.round(shareY * 100) +
+          "% inside the " +
+          viewport.width +
+          "×" +
+          viewport.height +
+          " viewport at top=" +
+          round(anchor.top)
+      });
+    }
+
     return checks;
   }
 
@@ -507,6 +568,13 @@
 
   async function selectPassage(id, options) {
     send({ action: "unselect" });
+    await nextFrame();
+
+    // Back to the top of the document, the state a freshly opened preview is in.
+    // Without this, a scenario could inherit the scroll position of the previous
+    // one and A9 would pass on a passage that was already visible.
+    const view = contentDoc() && contentDoc().defaultView;
+    if (view) view.scrollTo({ top: 0, left: 0, behavior: "instant" });
     await nextFrame();
 
     // Snapshot taken BEFORE the select, i.e. before preview.js scrolls: this is

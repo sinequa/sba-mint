@@ -21,11 +21,10 @@
   /* Required so a layout-skipped page still reserves its space. */
   contain-intrinsic-size: 816px 1056px;
   vertical-align: top;
-  /* NOTE: deliberately no `overflow: hidden` here, although some real converters
-     clip their page sheets. `overflow: hidden` makes the sheet a scroll
-     container, and preview.js scrolls with `scrollIntoView({ container: "nearest" })`
-     -- the sheet would then absorb the scroll instead of the document, which
-     would make the lab test a different problem than the one under study. */
+  /* NOTE: deliberately no `overflow: hidden` here, so that this fixture keeps
+     testing the geometry alone. Scroll absorption by a clipping ancestor is a real
+     failure mode -- see basic-pdf.html, where the converter puts
+     `overflow: hidden` on every word -- and it is covered there instead. */
 }
 
 /* A text line, absolutely positioned inside its page. */
