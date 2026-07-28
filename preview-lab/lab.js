@@ -43,7 +43,9 @@
     { name: "basic-website-paged-columns", file: "fixtures/basic-website-paged-columns.html" },
     // A second real capture, from the other end of the converter family: a PDF
     // rendered as page images with an absolutely positioned text layer.
-    { name: "basic-pdf", file: "fixtures/basic-pdf.html" }
+    { name: "basic-pdf", file: "fixtures/basic-pdf.html" },
+    // A third one, whose slide images have no intrinsic size and load late.
+    { name: "basic-pptx", file: "fixtures/basic-pptx.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -323,16 +325,31 @@
     };
   }
 
-  function signature(measurement) {
-    return measurement.frames.map(rect => [round(rect.left), round(rect.top), round(rect.right), round(rect.bottom)].join(",")).join("|");
+  function digest(rects) {
+    return rects.map(rect => [round(rect.left), round(rect.top), round(rect.right), round(rect.bottom)].join(",")).join("|");
   }
 
   /**
-   * Waits until the frame geometry stops changing, so that the assertions never
-   * race the retry / reposition logic of preview.js.
+   * Both sides of the comparison, deliberately. Waiting for the *frames* to stop
+   * moving is not enough: a frame that is never repositioned is stable from the
+   * first sample, so the wait would end before the document itself has settled and
+   * the assertions would compare frames and text captured while both still agreed.
+   * That is exactly how a late-loading image slips through — the text moves after
+   * the check. Stability has to mean "nothing is moving any more".
+   */
+  function signature(measurement) {
+    return digest(measurement.frames) + " :: " + digest(measurement.truth);
+  }
+
+  /**
+   * Waits until the geometry stops changing, so that the assertions never race the
+   * retry / reposition logic of preview.js, nor a reflow still under way.
    */
   async function waitStable(id, options) {
-    const deadline = Date.now() + ((options && options.timeout) || 2500);
+    // Generous, because it costs nothing on a settled layout: the loop returns as
+    // soon as two consecutive samples agree. The budget only matters for fixtures
+    // whose resources arrive late, and there it must exceed the slowest of them.
+    const deadline = Date.now() + ((options && options.timeout) || 4000);
     let previous = null;
     let stableCount = 0;
 

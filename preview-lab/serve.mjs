@@ -15,6 +15,7 @@ import { createServer as createHttpServer } from "node:http";
 import { createReadStream } from "node:fs";
 import { stat, writeFile } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
+import { deflateSync } from "node:zlib";
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -32,6 +33,83 @@ const MIME = {
 };
 
 const RESULTS_PATH = "/_lab-results";
+const IMAGE_PATH = "/_lab-image";
+
+// --- generated images -------------------------------------------------------
+
+const CRC_TABLE = Array.from({ length: 256 }, (_, index) => {
+  let value = index;
+  for (let bit = 0; bit < 8; bit++) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+  return value >>> 0;
+});
+
+function crc32(buffer) {
+  let crc = 0xffffffff;
+  for (const byte of buffer) crc = CRC_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function chunk(type, data) {
+  const head = Buffer.alloc(8);
+  head.writeUInt32BE(data.length, 0);
+  head.write(type, 4, "ascii");
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(Buffer.concat([Buffer.from(type, "ascii"), data])), 0);
+  return Buffer.concat([head, data, crc]);
+}
+
+/**
+ * A solid-colour PNG of the requested size, built with nothing but zlib.
+ *
+ * Fixtures captured from converters that emit `<img>` without width/height
+ * attributes need a real bitmap: the intrinsic size *is* the layout. Serving it
+ * with a delay reproduces, deterministically, the late reflow such a preview goes
+ * through — which is what the passage frames have to survive.
+ */
+function png(width, height, shade) {
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8; // bit depth
+  header[9] = 2; // colour type: truecolour
+  const stride = width * 3 + 1;
+  const raw = Buffer.alloc(stride * height);
+  for (let y = 0; y < height; y++) {
+    const row = y * stride;
+    raw[row] = 0; // filter: none
+    for (let x = 0; x < width; x++) {
+      // A faint checkerboard, so a shifted image is visible to the naked eye too.
+      const tint = ((x >> 5) + (y >> 5)) % 2 ? 8 : 0;
+      raw[row + 1 + x * 3] = shade - tint;
+      raw[row + 2 + x * 3] = shade - tint;
+      raw[row + 3 + x * 3] = shade;
+    }
+  }
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", header),
+    chunk("IDAT", deflateSync(raw)),
+    chunk("IEND", Buffer.alloc(0))
+  ]);
+}
+
+function serveImage(request, response) {
+  const query = new URLSearchParams(request.url.split("?")[1] || "");
+  const width = Math.min(4000, Math.max(1, Number(query.get("w")) || 960));
+  const height = Math.min(4000, Math.max(1, Number(query.get("h")) || 540));
+  const delay = Math.min(5000, Math.max(0, Number(query.get("ms")) || 0));
+  const shade = Math.min(255, Math.max(0, Number(query.get("shade")) || 232));
+  const body = png(width, height, shade);
+  setTimeout(() => {
+    response
+      .writeHead(200, {
+        "content-type": "image/png",
+        "content-length": body.length,
+        "cache-control": "no-store"
+      })
+      .end(body);
+  }, delay);
+}
 
 /**
  * @param {object} options
@@ -56,6 +134,11 @@ export function createServer({ root, onResults }) {
           else void writeFile(join(documentRoot, "preview-lab", ".last-run.json"), JSON.stringify(results, null, 2));
         })
         .catch(() => response.writeHead(400).end());
+      return;
+    }
+
+    if (request.url.split("?")[0] === IMAGE_PATH) {
+      serveImage(request, response);
       return;
     }
 
