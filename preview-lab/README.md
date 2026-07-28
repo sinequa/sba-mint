@@ -204,15 +204,19 @@ really builds what its name says — the probe that caught it simply counted the
 elements.
 
 `fixtures/basic-huge.html` is the ceiling: a real capture of **444 502 elements**
-(289 824 `<td>` in 4 607 tables, 16 MB), reported as crashing the browser in the app. It
-has no passage, no extract and no entity id, so it cannot be an assertion fixture and
-nothing in the per-highlight paths applies to it — its only job is to show what scale
-alone costs. What it establishes:
+(289 824 `<td>` in 4 607 tables, 16 MB). In the app it makes the browser window go *not
+responding* — which is the useful precision: not a crash, not memory exhaustion, but the
+main thread blocked in one long task, and every measurement below is a main-thread task
+long enough to do it. It has no passage, no extract and no entity id, so it cannot be an
+assertion fixture and nothing in the per-highlight paths applies to it — its only job is to
+show what scale alone costs. What it establishes:
 
-- the browser needs **11 s** just to parse and lay it out. `preview.js` adds 234 ms on top
-  of that, i.e. 2 %. The crash is the document, not the code, and no amount of work here
-  will fix a 16 MB preview — that belongs to the converter (paginate) or to the host
-  (refuse to inline it).
+- the browser needs **11 s** just to parse and lay it out, all of it blocking.
+  `preview.js` adds 234 ms on top, i.e. 2 %. That share is the document's, not the code's,
+  and no amount of work here will fix a 16 MB preview — it belongs to the converter
+  (paginate) or to the host (decline to inline it).
+- scrolling costs 113.9 ms per frame, about nine frames a second, with no long
+  *JavaScript* task at all: that is the rendering of 289 824 table cells.
 - a zoom step on it cost **530 ms** before the transform was split from the layout (peak
   696 ms), and costs **0.1 ms** now. That single measurement justifies the whole zoom
   rework better than any of the smaller fixtures: 34 154 elements → 42.6 ms,
