@@ -104,6 +104,10 @@ never the *sole* detector of that bug: all 24 union scenarios fail A2 and A5 as 
 > off-screen pages do _not_ report zero-sized rects (a `display: none` subtree
 > does). The pre-scroll measurement is therefore fragile by design rather than
 > broken in practice on current Chrome.
+>
+> That holds where the skipped container's size is exact — the synthetic sheets are
+> a fixed 816 × 1056 with a matching `contain-intrinsic-size`. It does **not** hold
+> well enough to build on: see "Skipping off-screen pages" below.
 
 `data-lab-decoy` marks content no frame may ever touch: other pages, the other
 column, the page footer, the surrounding paragraphs. Adjacent lines are
@@ -313,6 +317,39 @@ about the viewport and could never have been caught by a geometric one.
 - `preview.js` derives its web-worker URL from `window.origin`, so a 404 on
   `/app/preview-lab/assets/worker.js` is logged. It is caught by `createWorker()`
   and has no effect on the bench.
+
+## Skipping off-screen pages: attempted, reverted
+
+Worth recording so nobody spends the afternoon on it twice.
+
+`preview.css` sets `content-visibility: visible` on the page containers of
+image-based conversions (`body.bd > div`), which explicitly disables the browser's
+ability to skip the layout and paint of off-screen pages. Removing that looked like
+the largest remaining win, and on the measurement it was: with each page given its
+own *measured* size as `contain-intrinsic-size` — so the scroll height was identical
+to the pixel, 11 359 px either way — scrolling the captured 34 000-element PDF went
+from 19 to 3 ms per frame idle, and from 32.6 to 2.7 with a citation displayed.
+
+It was reverted because the bench refused it: **14 scenarios failed**, all on
+`basic-pdf`, and all on the passages that live deep in the document.
+
+```
+FAIL basic-pdf  900px  fit     pages 14-15                   A3✗ A6✗
+FAIL basic-pdf  900px  fit     pages 18-19, end of document  A3✗ A6✗
+FAIL basic-pdf  520px  fit +2  pages 14-15                   A9✗
+```
+
+The frames land in the wrong place (`A3`), some enclose nothing at all (`A6`), and
+the passage stops being scrolled into view (`A9`). The passage on pages 1–2 is fine,
+which is what made a first hand-rolled probe report success: it sat near the top of
+the document, where nothing is skipped. Geometry resolved on demand inside a skipped
+subtree is evidently good enough for a container whose intrinsic size is exact and
+shallow, and not good enough for a citation nineteen pages down.
+
+If someone wants to try again, the shape that might work is temporarily lifting the
+skipping while a citation is located, then restoring it — the frames are in local
+coordinates and do not need recomputation afterwards. That is a different design, and
+it needs its own measurements: a citation click would pay a full reflow.
 
 ## Validating against a real document
 
