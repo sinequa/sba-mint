@@ -389,15 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var anchor = elements.find(isMeasurable) || elements[0];
-    // container: 'nearest' stops scroll propagation to it's nearest parent.
-    // This will stop the application body page from automatically scrolling
-    // back to the top after you have navigated through the preview.
-    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#container
-    anchor.scrollIntoView({
-      block: "center",
-      behavior: "instant",
-      container: "nearest"
-    });
+    scrollAnchorIntoView(anchor);
 
     if (usePassageHighlighter) {
       currentPassageId = id;
@@ -422,6 +414,91 @@ document.addEventListener("DOMContentLoaded", function () {
   function isMeasurable(element) {
     var box = element.getBoundingClientRect();
     return box.width > 0.5 && box.height > 0.5;
+  }
+
+  /**
+   * Brings the anchor into view without ever scrolling anything outside the
+   * preview document.
+   *
+   * `scrollIntoView` cannot do this. With `container: "all"` it walks past the
+   * iframe and scrolls the host application back to the top (ES-31592); with
+   * `container: "nearest"` it stops at the nearest scroll container -- and
+   * `overflow: hidden` is enough to make one. The PdfToHtml family emits
+   * `.t { position: absolute; overflow: hidden }` on every single word, so the
+   * nearest scroll container of a citation is the word itself: it cannot scroll,
+   * it absorbs the request, and the document never moves.
+   *
+   * Scrolling the ancestors ourselves, innermost first, keeps the useful cases
+   * (a plain-text pane with `overflow-y: auto`) while skipping the ones that only
+   * clip. The preview viewport comes last, once the ancestors have settled and
+   * the anchor rect is final.
+   */
+  function scrollAnchorIntoView(anchor) {
+    // No layout box means no position to scroll to, and computing a delta from an
+    // all-zero rect would jump to the top of a document the user was reading.
+    // Staying put is also what scrollIntoView did on a hidden element.
+    if (!hasLayoutBox(anchor)) return;
+
+    var contentDocument = anchor.ownerDocument;
+    var view = contentDocument.defaultView || window;
+
+    for (var node = anchor.parentElement; node; node = node.parentElement) {
+      if (isScrollable(node, view)) scrollElementToAnchor(node, anchor);
+    }
+
+    // Quirks mode -- which is what the converters emit, no doctype -- makes
+    // `body` the scrolling element and `documentElement` an ordinary box, hence
+    // scrollingElement rather than documentElement.
+    var scroller = contentDocument.scrollingElement || contentDocument.documentElement;
+    var height = (scroller && scroller.clientHeight) || view.innerHeight;
+    var width = (scroller && scroller.clientWidth) || view.innerWidth;
+    var box = anchor.getBoundingClientRect();
+    view.scrollBy({
+      top: centerDelta(box.top, box.height, height),
+      left: nearestDelta(box.left, box.right, width),
+      behavior: "instant"
+    });
+  }
+
+  /**
+   * Whether the element occupies a place in the layout, which is a weaker
+   * condition than isMeasurable(): the `sq-page-start-N` page anchors used by
+   * secondary conversions are 0x0 markers, yet scrolling to them is the only
+   * localisation those previews have. An element inside a `display: none` subtree,
+   * on the other hand, reports an all-zero rect and no client rect at all.
+   */
+  function hasLayoutBox(element) {
+    if (element.getClientRects().length > 0) return true;
+    var box = element.getBoundingClientRect();
+    return box.width > 0 || box.height > 0 || box.top !== 0 || box.left !== 0;
+  }
+
+  function isScrollable(element, view) {
+    var style = view.getComputedStyle(element);
+    var scrollableY = /^(auto|scroll|overlay)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 1;
+    var scrollableX = /^(auto|scroll|overlay)$/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 1;
+    return scrollableY || scrollableX;
+  }
+
+  function scrollElementToAnchor(element, anchor) {
+    // getBoundingClientRect() gives the border box, clientHeight/Width the padding
+    // box, hence clientTop/clientLeft (the border widths) to line the two up.
+    var host = element.getBoundingClientRect();
+    var box = anchor.getBoundingClientRect();
+    element.scrollTop += centerDelta(box.top - host.top - element.clientTop, box.height, element.clientHeight);
+    element.scrollLeft += nearestDelta(box.left - host.left - element.clientLeft, box.right - host.left - element.clientLeft, element.clientWidth);
+  }
+
+  /** Scroll delta that centres the target, matching `block: "center"`. */
+  function centerDelta(top, targetHeight, viewportHeight) {
+    return top - (viewportHeight - Math.min(targetHeight, viewportHeight)) / 2;
+  }
+
+  /** Minimal scroll delta that reveals the target, matching `inline: "nearest"`. */
+  function nearestDelta(left, right, viewportWidth) {
+    if (left < 0) return left;
+    if (right > viewportWidth) return Math.min(right - viewportWidth, left);
+    return 0;
   }
 
   /**
@@ -490,7 +567,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!body || !layer) return false;
 
     var elements = Array.from(getElementsById(id));
-    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body)) : [];
+    var blocks = elements.length ? groupPassageRects(collectPassageRects(elements, body, layer)) : [];
     if (!blocks.length) {
       layer.replaceChildren();
       return false;
@@ -515,8 +592,13 @@ document.addEventListener("DOMContentLoaded", function () {
    * getClientRects() -- not getBoundingClientRect() -- is what splits a wrapped
    * span into one rect per line, which is the raw material of the grouping below.
    */
-  function collectPassageRects(elements, body) {
-    var bodyRect = body.getBoundingClientRect();
+  function collectPassageRects(elements, body, layer) {
+    // Origin of the overlay itself, not of the body: the frames are positioned
+    // against the layer's padding box, and the layer is a <div> that converter or
+    // preview styles can offset (see #sq-passage-layer in preview.css). Measuring
+    // from the layer makes the conversion self-referential, so such an offset
+    // cancels out instead of shifting every frame.
+    var origin = layer.getBoundingClientRect();
     var factor = getZoomFactor(body);
     var rects = [];
 
@@ -530,10 +612,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (rect.width < 0.5 || rect.height < 0.5) return;
         rects.push({
           page: page,
-          left: (rect.left - bodyRect.left) / factor,
-          top: (rect.top - bodyRect.top) / factor,
-          right: (rect.right - bodyRect.left) / factor,
-          bottom: (rect.bottom - bodyRect.top) / factor,
+          left: (rect.left - origin.left) / factor,
+          top: (rect.top - origin.top) / factor,
+          right: (rect.right - origin.left) / factor,
+          bottom: (rect.bottom - origin.top) / factor,
           lineHeight: (rect.bottom - rect.top) / factor
         });
       });

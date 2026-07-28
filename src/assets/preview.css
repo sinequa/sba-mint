@@ -48,12 +48,23 @@ line.sq-svg {
   height: 0;
   pointer-events: none;
   z-index: 2;
+  /* The layer is a plain <div> child of the preview body, so rules meant for page
+     sheets reach it too -- `body.bd > div:not(.ph, .phe) { margin: 24px }` below is
+     more specific than a class selector and used to shift the whole overlay by
+     24px on every PdfToHtml conversion. Its box is therefore pinned explicitly,
+     and preview.js measures from the layer's own origin so that any offset a
+     converter stylesheet still manages to apply cancels out. */
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.sq-passage-box {
+#sq-passage-layer .sq-passage-box {
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
+  margin: 0;
+  padding: 0;
   /* The shorthand first, so a border stays visible even if the calc below ends up
      invalid at computed-value time. */
   border: 2px solid rgba(11, 117, 255, 0.5);
@@ -80,7 +91,7 @@ body.bd > div.ph {
     0 4px 8px #0003,
     0 6px 20px #00000030;
 }
-body.bd > div:not(.ph, .phe) {
+body.bd > div:not(.ph, .phe, #sq-passage-layer) {
   margin: 24px;
   content-visibility: visible;
 }
