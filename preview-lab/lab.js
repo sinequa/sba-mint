@@ -84,6 +84,10 @@
     { name: "stress-abs-60k", file: "fixtures/zoom-stress.html?nodes=60000&mode=absolute" },
     { name: "stress-flow-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=flow" },
     { name: "stress-flow-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=flow" },
+    // A real capture with no passage at all, so it cannot be an assertion fixture: 444 503
+    // tags, of which 289 824 <td> in 4 607 tables. Reported as crashing the browser in the
+    // app, which is the one thing the assertion matrix can never tell us.
+    { name: "basic-huge", file: "fixtures/basic-huge.html" },
     // Highlighted SVG text runs, to expose what the startup background pass costs.
     { name: "stress-svg-2k", file: "fixtures/zoom-stress.html?nodes=2000&mode=svg" },
     { name: "stress-svg-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=svg" }
@@ -604,7 +608,10 @@
           state.readyPending = null;
           reject(new Error("timeout waiting for the iframe `ready` message"));
         }
-      }, 8000);
+        // Generous, because being slow is not the same as being broken: a 16 MB capture
+        // needs 11 s in the browser before preview.js gets to run at all, and an 8 s
+        // budget reported that as an error, which reads like a bug in the code under test.
+      }, 30000);
     });
 
     // Cache-busting so every run starts from a pristine layout (preview.js

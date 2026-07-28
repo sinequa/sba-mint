@@ -203,6 +203,25 @@ from them ("no measurable gain") was worthless. When a target is added, check th
 really builds what its name says — the probe that caught it simply counted the `tspan`
 elements.
 
+`fixtures/basic-huge.html` is the ceiling: a real capture of **444 502 elements**
+(289 824 `<td>` in 4 607 tables, 16 MB), reported as crashing the browser in the app. It
+has no passage, no extract and no entity id, so it cannot be an assertion fixture and
+nothing in the per-highlight paths applies to it — its only job is to show what scale
+alone costs. What it establishes:
+
+- the browser needs **11 s** just to parse and lay it out. `preview.js` adds 234 ms on top
+  of that, i.e. 2 %. The crash is the document, not the code, and no amount of work here
+  will fix a 16 MB preview — that belongs to the converter (paginate) or to the host
+  (refuse to inline it).
+- a zoom step on it cost **530 ms** before the transform was split from the layout (peak
+  696 ms), and costs **0.1 ms** now. That single measurement justifies the whole zoom
+  rework better than any of the smaller fixtures: 34 154 elements → 42.6 ms,
+  63 541 → 77.3 ms, 444 504 → 529.8 ms, a straight line at ~1.2 ms per thousand elements.
+
+It is also what raised the `ready` timeout from 8 s to 30 s: being slow is not the same as
+being broken, and the shorter budget reported this document as an error, which reads like
+a bug in the code under test.
+
 Timings are machine-specific, so `.last-profile.json` and `.baseline-profile.json` are
 gitignored. Keep a baseline before a change and pass `--baseline` after it; the report
 prints the delta per target.

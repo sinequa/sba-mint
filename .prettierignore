@@ -6,3 +6,6 @@ src/assets/vendors/**/*
 # <frameset> that contains <noframes><body>, believing the body closed the frameset.
 preview-lab/fixtures/basic-excel-jap.html
 preview-lab/fixtures/file_files/**
+
+# 16 MB capture: a verbatim converter dump, profiling-only.
+preview-lab/fixtures/basic-huge.html
