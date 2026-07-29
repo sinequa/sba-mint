@@ -4,7 +4,13 @@
     <app-sidebar />
   }
 
-  <sidebar-inset class="w-95 overflow-hidden">
+  <!-- `overflow-clip`, not `overflow-hidden`: both clip identically, but `hidden` is a *scrollable*
+       value, so the inset is a scroll container that can be moved programmatically — with no
+       scrollbar to move it back. A `scrollIntoView` walks up every ancestor scroll container, and
+       the preview iframe is same-origin, so a fragment navigation inside it (the converter's
+       `location.href = "#page"`, our next-page action) scrolled the whole application by 186px with
+       no way to recover. `clip` forbids scrolling entirely (ES-31592 is the same mechanism). -->
+  <sidebar-inset class="w-95 overflow-clip">
     <div>
       <header class="fixed top-0 z-10 flex h-(--mobile-header-height) w-full shrink-0 items-center gap-2 border-b border-gray-200 bg-background px-4 md:hidden">
         <sidebar-trigger
