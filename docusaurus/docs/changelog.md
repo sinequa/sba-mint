@@ -7,6 +7,112 @@ slug: /changelog
 
 All notable changes to the SBA Mint project for release 11.13.0.
 
+## [Release 11.13.0] - 2026-07-29
+
+### Added
+
+#### Document Preview
+
+- `src/assets/preview.js` and `src/assets/preview.css` are taken over wholesale from the 11.14.0 line, because the passage-frame fix below is built on top of it. Three behaviours arrive with them that this release did not have:
+  - styling for previews of converted videos (`.sq-mediav2-*`, the MediaToHtml v2 converter), including the click that enlarges a screenshot;
+  - a `current-page` outbound message, emitted while scrolling a paginated document;
+  - `description-visible`, which the fix itself needs (see below).
+
+  All three are inert without the matching converter or consumer. Extracting them was not an option: the fix calls into them.
+- The AI-description toggle now follows the iframe. When a cited passage lives inside a hidden AI page description, the preview reveals that block on its own and says so, and the toggle button reflects it instead of claiming the description is hidden.
+
+### Changed
+
+#### Document Preview
+
+- **Advanced search is a floating panel** instead of a second column. It used to be part of the preview's grid, so opening it narrowed the iframe from the full width to two thirds — a resize of the previewed document, and therefore a reflow of it. On a large conversion that reflow costs seconds, so the panel opening alone could freeze the UI. It now slides in over the document, which keeps the iframe at its size and lays nothing out again. Same pattern as the search page's left filters drawer.
+  - **Escape closes the panel** and leaves the preview open. Bound on `keydown` rather than `keyup`, so `preventDefault()` still cancels the default action — Escape inside the panel's search field would otherwise clear the field instead of closing the panel.
+  - The collapsed panel is `inert`: out of the tab order and hidden from assistive technology, rather than merely translated off screen.
+- Every change in this release is applied to **both** preview components it ships — `src/app/components/preview/` (the one the application bootstraps) and `src/components/preview/` — so the two stay in sync.
+
+### Fixed
+
+#### Document Preview
+
+- **Passage frames (the blue box)**: repaired rather than removed. Six root causes, each found against a real captured document: coordinate spaces mixed between the overlay and the measurements, a single union rectangle spanning page and column breaks, citations pointing into hidden subtrees, a scroll request absorbed by the per-word `overflow: hidden` of PdfToHtml conversions, phantom frames from the previously selected passage, and fragments merged across a dense frame.
+- **Large documents no longer freeze the browser**: a 15 MB conversion (447 920 tags) opened in 12.2 s and reported *not responding*; it now opens in under a second. A zoom step at that size went from 530 ms to 0.1 ms, a whole gesture from 2 343 ms to 13 ms, an extracts request of 20 000 ids from 3 min 44 s to 33 ms. Every preview also opens about half a second sooner, and `zoom-fit` no longer throws a `RangeError` on very large documents.
+
+### Breaking Changes
+
+#### The preview component
+
+- **The preview host no longer switches column templates.** Its class was
+  `cn("grow w-full h-full overflow-hidden grid …", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")`
+  and is now a static `grid grow h-full w-full overflow-hidden`; `<advanced-search>` moved from a
+  sibling of the document into the floating `<aside>`. Custom CSS that targeted either the two-column
+  layout or `advanced-search` as a direct child of the preview no longer matches.
+- **The preview navbar's "search in document" no longer widens the drawer.** `toggle()` used to call
+  `DrawerStackService.extend()` when the preview was rendered inside a drawer — that widening was the
+  resize this change removes. It now toggles the floating panel in every context, and the unused
+  `isExtended` computed was dropped from `PreviewNavbarComponent`.
+- **Watch out for `overflow` on the iframe's ancestor chain.** Any `overflow` value there makes the
+  element a scroll container, and the converter's fragment navigation inside the preview
+  (`location.href = "#page"`, which is also how the next-page action works) scrolls it — a scroll that
+  propagates out of the iframe and moves the host window, with no scrollbar to bring it back. The box
+  that hides the collapsed panel is therefore deliberately a *sibling* of the document and uses
+  `overflow-clip`, which forbids scrolling outright. The `overflow-hidden` already carried by the
+  preview host and its root div predates this change and is left untouched.
+
+:::danger Applies to anyone maintaining their own `src/assets/preview.js` or `src/assets/preview.css`
+Both files were substantially rewritten. If you ship a modified copy, or style the preview from
+your own stylesheet, read this list — several of these fail **silently**.
+:::
+
+#### `preview.css`
+
+- **`#sq-passage-highlighter` is renamed `#sq-passage-layer`.** Custom styling attached to the old id no longer applies to anything.
+- **The preview body's `transform`, `width` and `height` are now written inline by `preview.js`.** The declarations in `preview.css` are the *initial* state only, honouring the `--factor` the server writes inline so the document is scaled correctly at first paint. CSS you add for those three properties is overridden as soon as a zoom happens.
+- **`--factor` is no longer updated after the first zoom.** It deliberately stays at the server's initial value: it is a custom property, so writing it invalidates style for the whole subtree — about 65 ms per zoom step on a 63 000-element document, against 1 ms for an inline transform. Any `calc(… / var(--factor))` in a custom rule now resolves against a **stale** factor, silently. Read the applied scale from the body's resolved `transform` instead.
+- **`body.bd > div:not(.ph, .phe)` became `body.bd > div:not(.ph, .phe, #sq-passage-layer)`.** A rule copied from the old selector applies its `margin` to the passage overlay and shifts every frame by that amount — which is exactly the bug this exclusion fixes.
+- **Off-screen content may now be skipped** (`content-visibility: auto` with `contain-intrinsic-height`), on the page sheets of image-based conversions and, through a new rule, on the top two levels of flowing conversions. Consequence for any custom script: a skipped subtree **has no layout**, so `getBoundingClientRect()` on it returns collapsed boxes and `body.scrollWidth` does not report the real content width. Measuring code must either work on rendered content or suspend the skipping first — `preview.js` does the latter in `withSkippingSuspended()`.
+
+#### `preview.js` — the scale of it first
+
+Nothing stops you from having modified any function in this file, so here is the honest
+measure. Of the **29 functions that existed**, one survives byte-for-byte (`getBoundingBox`).
+The rest: **5 removed, 23 rewritten**, and 44 new ones.
+
+- **Rewritten** — grep your patch for these, a three-way merge will not land cleanly on any of them: `addSvgLine`, `createWorker`, `getElementsById`, `getHtml`, `getPositions`, `getText`, `getVerticalPositions`, `highlight`, `init`, `isElementInViewport`, `onMouseMove`, `onMouseUp`, `receiveMessage`, `removeAllClasses`, `removeAllElements`, `returnMessage`, `select`, `selectHighlight`, `selectHighlightSVG`, `setSvgBackgroundPositionAndSize`, `unselect`, `zoom`, `zoomFit`.
+- **Removed, but not lost.** All five have a successor — no functionality was dropped, so if your patch sits on one of these, here is where its body went:
+
+| Removed | Where its body went | What changed |
+| --- | --- | --- |
+| `resizeSvgBackground(rect, tspan)` | `measureSvgBackground(rect, tspan)`, plus the write loop in `setSvgBackgroundPositionAndSize()` | **Same arithmetic** — same `getBBox()`, `getExtentOfChar(0)` and `getComputedTextLength()`, same deltas, same four attributes, same `transform` copy. Only the writes moved out, so that reads and writes stop alternating per `tspan`: that interleaving was quadratic, 6 483 → 381 ms at 5 000 highlighted runs. It is renamed because it no longer resizes anything — it measures. |
+| `selectPassage(elements)` | `getPassageLayer()`, `collectPassageRects()`, `groupPassageRects()`, `renderPassage()` | Rewritten. The old one created `#sq-passage-highlighter` and drew **one** union rectangle; the new path draws one frame per contiguous block. |
+| `selectPassage2(elements)` | — (deliberately none) | It attached the overlay *inside* `elements[0]` with `position: relative`, which is exactly the coordinate-space mixing this ticket fixes. |
+| `getHighlightTextById(id)` | `getText()`, through `collectElementsByIds()` | Folded into its caller: one document pass for all requested ids instead of one walk per id — 224 313 → 33 ms at 20 000 ids. |
+| `getHighlightHtmlById(id)` | `getHtml()`, through `collectElementsByIds()` | Same. |
+
+Some of those rewrites change behaviour a caller can observe, not just the implementation:
+
+- `getHtml` / `getText` / `getPositions` collect their elements in **one** pass over the document instead of one walk per requested id. Same result, but the ids are no longer processed in request order internally.
+- `getElementsById` no longer uses `querySelectorAll("#id")`, which could not use the browser's id table anyway since the converters emit duplicate ids.
+- `unselect`, `removeAllClasses` and `removeAllElements` are called on paths that did not call them before, because a select now clears the previous passage's overlay.
+- `onMouseMove` no longer emits `highlight-hover` synchronously: it coalesces to one emission per frame, trailing edge, with `position` measured at emission time. Enter/leave ordering is preserved.
+- `createWorker` now clears `isWorkerSupported` from `worker.onerror`. A worker that 404s used to swallow every extracts request silently, because `new Worker()` does not throw on a missing script.
+- **`ready` is a condition, not a delay.** It used to be emitted after a flat `setTimeout(…, 500)`; it now waits for two frames and `document.fonts.ready`, capped by a safety timeout. Code that relied on roughly half a second of slack after load may now race.
+- **Messages are posted once.** `returnMessage()` used to post to both `parent` and `parent.parent`, so a top-level application received every message **twice**; it now posts to `parent.parent` only when that is a different window. A consumer that deduplicated by accident, or counted messages, will see half the traffic.
+- **`zoom-fit` returns a different factor**, because the old computation mixed coordinate spaces and could leave the content overflowing at *fit* (0.79 where 0.34 was needed on a double-page PDF). Any workaround compensating for the old value will now over- or under-correct.
+- **`stopImmediatePropagation()` is no longer called for every click** in the preview, only for a click on a video screenshot. Other click listeners registered on the preview document now actually run.
+
+#### What did *not* change
+
+The postMessage contract is backwards compatible: **no inbound action and no outbound message type was removed.** The inbound actions this release already handled are handled identically. Three outbound types are added: `description-visible`, `get-html-results-webworker`, and `current-page`.
+
+### Migration Notes
+
+- If you only *use* the preview, nothing to do.
+- If you style it, search your stylesheets for `sq-passage-highlighter`, for `--factor`, for rules on the preview body's `transform`/`width`/`height`, and for anything targeting the preview's two-column layout or `advanced-search` as its direct child.
+- If you script against the preview document, search for geometry read on content that may be off screen.
+- If you maintain a modified `preview.js`, treat this as a rewrite rather than a merge: the zoom path, the passage overlay, the scroll handler and the extracts path all changed shape.
+
+---
+
 ## [Release 11.13.0] - 2026-01-23
 
 ### Added
