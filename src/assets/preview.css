@@ -65,13 +65,16 @@ line.sq-svg {
   pointer-events: none;
   margin: 0;
   padding: 0;
-  /* The shorthand first, so a border stays visible even if the calc below ends up
-     invalid at computed-value time. renderPassage() then sets the width and radius
-     inline from the applied factor -- `--factor` is only the initial value here, since
-     preview.js stops updating it (see the body rule below). */
+  /* Stroke and radius are divided by the applied scale so they stay 2px and 5px on
+     screen through the body's transform, and renderPassage() writes both inline before
+     the box enters the DOM -- so these two values are only ever the state of a box that
+     does not exist yet. They are deliberately *not* expressed as `calc(2px /
+     var(--factor))`: preview.js stops updating that custom property after the first
+     zoom (see the body rule below), so such a calc would look live while quietly
+     resolving against a stale factor -- and would send anyone who removed the inline
+     write chasing borders of the wrong thickness. */
   border: 2px solid rgba(11, 117, 255, 0.5);
-  border-width: calc(2px / var(--factor, 1));
-  border-radius: calc(5px / var(--factor, 1));
+  border-radius: 5px;
   box-shadow: 0 0 1rem #0b75ff33;
 }
 .stl_ {
