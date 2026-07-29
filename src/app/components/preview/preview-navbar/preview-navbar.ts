@@ -1,22 +1,14 @@
-import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, DestroyRef, Input, computed, inject, input, model, signal, viewChild } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
+import { Location, NgTemplateOutlet } from "@angular/common";
+import { Component, DestroyRef, Input, computed, inject, input, model, signal, viewChild } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { toast } from "ngx-sonner";
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Event, NavigationEnd, Router } from '@angular/router';
-import { Article } from '@sinequa/atomic';
-import {
-  AppStore,
-  BookmarkButtonComponent,
-  DrawerNavbarComponent,
-  DrawerPreviewComponent,
-  DrawerService,
-  DrawerStackService,
-  PreviewService
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from '@sinequa/ui';
-import { PreviewDialogComponent } from '../dialog/preview-dialog';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Event, NavigationEnd, Router } from "@angular/router";
+import { Article } from "@sinequa/atomic";
+import { AppStore, BookmarkButtonComponent, DrawerNavbarComponent, DrawerPreviewComponent, DrawerService, PreviewService } from "@sinequa/atomic-angular";
+import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from "@sinequa/ui";
+import { PreviewDialogComponent } from "../dialog/preview-dialog";
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -33,7 +25,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
  * @deprecated This component will be removed in future releases.
  */
 @Component({
-  selector: 'preview-navbar, PreviewNavbar, previewnavbar',
+  selector: "preview-navbar, PreviewNavbar, previewnavbar",
   imports: [
     NgTemplateOutlet,
     BookmarkButtonComponent,
@@ -45,15 +37,14 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     PreviewDialogComponent,
     Separator
   ],
-  templateUrl: './preview-navbar.html',
+  templateUrl: "./preview-navbar.html",
   providers: [DrawerService]
 })
 export class PreviewNavbarComponent {
   cn = cn;
 
-  /* drawer related services and references */
+  /* drawer related references — only tells the template which navbar shell to render */
   protected drawerPreviewRef = inject(DrawerPreviewComponent, { skipSelf: true, optional: true });
-  protected readonly drawerStack = inject(DrawerStackService, { optional: true });
 
   protected readonly previewService = inject(PreviewService);
   protected readonly location = inject(Location);
@@ -68,7 +59,7 @@ export class PreviewNavbarComponent {
     this.navConfig = { ...DEFAULT_CONFIG, ...config };
   }
 
-  /* used to toggle the extended view when not displayed inside the drawer */
+  /* opens the preview's floating advanced-search panel, overlaid on top of the document */
   public readonly extended = model(false);
 
   public readonly article = input<Partial<Article> | undefined>();
@@ -78,20 +69,11 @@ export class PreviewNavbarComponent {
 
     try {
       const url = new URL(this.article()?.url1!);
-      return url.protocol === 'http:' || url.protocol === 'https:';
+      return url.protocol === "http:" || url.protocol === "https:";
     } catch (e) {
       return false;
     }
   });
-
-  /**
-   * Computed property that determines whether the navigation bar is in an extended state.
-   * It returns `true` if either the drawer referenced by `drawerPreviewRef` is extended,
-   * or if the local `extended` state is true.
-   *
-   * @returns {boolean} `true` if the navigation bar should be extended; otherwise, `false`.
-   */
-  public isExtended = computed(() => this.drawerPreviewRef?.drawer.isExtended() || this.extended());
 
   expandPreview = computed(() => true); //this.appStore.general()?.features?.expandPreview);
 
@@ -126,22 +108,18 @@ export class PreviewNavbarComponent {
         this.copied.set(false);
       }, 2000);
 
-      toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
+      toast.success(this.transloco.translate("preview.linkCopiedToClipboard"), { duration: 2000 });
     }
   }
 
   /**
-   * Toggles the state of the navigation bar.
+   * Toggles the preview's floating advanced-search panel.
    *
-   * If a drawer preview reference exists, it attempts to extend the drawer stack.
-   * Otherwise, it toggles the `extended` state between true and false.
+   * Inside a drawer this used to widen the drawer stack instead — which is precisely the resize the
+   * floating panel removes: the panel now overlays the document in both cases.
    */
   toggle(): void {
-    if (this.drawerPreviewRef) {
-      this.drawerStack?.extend();
-    } else {
-      this.extended.set(!this.extended());
-    }
+    this.extended.set(!this.extended());
   }
 
   onExpand(): void {
