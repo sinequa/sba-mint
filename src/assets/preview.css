@@ -93,9 +93,26 @@ body.bd > div.ph {
     0 4px 8px #0003,
     0 6px 20px #00000030;
 }
+/* Page sheets of an image-based conversion. These used to be pinned to
+   `content-visibility: visible`, which explicitly forbade the browser from skipping the
+   off-screen ones -- on a 19-page PDF that meant laying out and painting 34 154 tags of
+   absolutely positioned text whatever was on screen. Measured, letting them be skipped:
+   opening 971 -> 258 ms, a scrolled frame 256 -> 30 ms, selecting a citation 228 -> 14 ms,
+   and on a sheet-based conversion opening 1 488 -> 87 ms.
+
+   It was pinned for a reason, and the reason expired. Skipping here was tried once before
+   and reverted: 14 scenarios failed, all on citations deep in the document, because a
+   fragment inside a skipped subtree has no layout and the frames landed nowhere near the
+   text. What fixes that is not in this file -- preview.js lifts the skip on the containers
+   holding the passage (liftSkipAroundPassage) and watches the containers for the moment an
+   estimated height becomes a real one (observeSkippedContainers). Both arrived with the
+   flowing-document rule below, and with them the same matrix is green. */
 body.bd > div:not(.ph, .phe, #sq-passage-layer) {
   margin: 24px;
-  content-visibility: visible;
+  content-visibility: auto;
+  /* `auto` keeps the height last rendered, so the scroll geometry stops drifting once a
+     sheet has been on screen; the fallback only covers a sheet never yet laid out. */
+  contain-intrinsic-height: auto 1000px;
 }
 
 /* Off-screen skipping for the *flowing* conversions -- the ones with no page sheets, whose

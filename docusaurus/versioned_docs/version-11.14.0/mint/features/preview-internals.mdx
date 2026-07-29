@@ -366,7 +366,7 @@ Each part of that selector is a measured decision, and every one of them was lea
 - **`contain-intrinsic-height: auto`.** `auto` means "remember the height last rendered", so a block that has been on screen once keeps its real height and the geometry stops drifting. The `1200px` is only the first guess for a block never yet laid out.
 - **`#sq-passage-layer` excluded.** The overlay is a plain `<div>` child of the body, so a rule about the body's children reaches it: skipping it left every frame unrendered, which the bench reported as *23 of 23 fragments outside any frame* — a geometry failure that was nothing of the kind.
 - **Documents with `sq-page-start` anchors excluded.** The page indicator follows the scroll by finding the first anchor entirely in the viewport; an anchor inside a container the browser has only estimated cannot be found there, and the indicator stops following. Those documents are paginated by definition and have least to gain — their sheets already skip through `.stl_`.
-- **`body.bd` excluded.** The PdfToHtml family positions every *word* absolutely inside its sheet.
+- **`body.bd` handled by its own rule.** The PdfToHtml family positions every *word* absolutely inside its sheet, so its page containers get the same treatment through the rule above them rather than this one — see below.
 
 Two things in `preview.js` make it safe:
 
@@ -376,6 +376,20 @@ Two things in `preview.js` make it safe:
 The price, measured on the same document: scrolling **with a citation displayed** goes from 5.5 to 42.2 ms per frame, and selecting a citation from 2.8 to 75.6 ms, because blocks rendering during the scroll each trigger a re-anchor. Nothing is paid when no citation is displayed. The scroll height is also an estimate until the document has been scrolled through, so the scrollbar adjusts as you go.
 
 ## Passage Navigation
+
+### Page sheets, on the third attempt
+
+The same idea applies to image-based conversions, whose page containers `preview.css` used to pin to `content-visibility: visible` — explicitly forbidding the browser from skipping the off-screen ones. On a 19-page PDF that meant laying out and painting 34 154 tags of absolutely positioned text whatever was on screen.
+
+| | open | scrolled frame | selecting a citation |
+| --- | --- | --- | --- |
+| a 19-page PDF, before | 971 ms | 256 ms | 228 ms |
+| after | **258 ms** | **30 ms** | **14 ms** |
+| a sheet-based conversion, before | 1 488 ms | — | — |
+| after | **87 ms** | — | — |
+
+It had been tried twice and reverted both times: 14 scenarios failed, all on citations deep in the document, because a fragment inside a skipped subtree has no layout and the frames landed nowhere near the text. Neither attempt had `liftSkipAroundPassage()` nor the container `ResizeObserver` — both written for the flowing documents above. With them, the same matrix is green.
+
 
 When a search result with a selected passage is opened, `PreviewContentComponent` scrolls the iframe to the relevant passage:
 
