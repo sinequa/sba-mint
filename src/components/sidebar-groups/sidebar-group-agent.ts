@@ -25,10 +25,11 @@ import { injectCurrentUrl } from "../../utils/routing";
       @let agent = 'agent' | transloco;
       <!-- Agent parent entry (mirrors the Search parent entry). -->
       <sidebar-menu-item aria-label="agent" class="group-data-[collapsible=icon]:items-center">
-        <sidebar-menu-button [tooltip]="isCollapsed() ? agent : ''" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
+        <sidebar-menu-button aria-hidden [tooltip]="isCollapsed() ? agent : ''" tooltip-position="right" class="text-lg" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">
           <robot-icon />
           <span class="text-sm">{{ agent }}</span>
         </sidebar-menu-button>
+        <a class="sr-only" [attr.aria-label]="agent" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">{{ agent }}></a>
       </sidebar-menu-item>
 
       <!-- Sub-entries, only while on the agent route (mirrors the Search widgets pattern).
@@ -43,18 +44,20 @@ import { injectCurrentUrl } from "../../utils/routing";
           [class.cursor-not-allowed]="!canNavigate()"
           [class.pointer-events-none]="!canNavigate()"
           (click)="onNewChat()">
-          <sidebar-menu-button [tooltip]="isCollapsed() ? newChat : ''" tooltip-position="right" class="text-lg">
+          <sidebar-menu-button aria-hidden [tooltip]="isCollapsed() ? newChat : ''" tooltip-position="right" class="text-lg">
             <new-chat-icon />
             <span class="text-sm">{{ newChat }}</span>
           </sidebar-menu-button>
+          <a class="sr-only text-lg" [attr.aria-label]="newChat">{{ newChat }}</a>
         </sidebar-menu-item>
 
         @let searchChats = 'searchChats' | transloco;
         <sidebar-menu-item [attr.aria-label]="searchChats" class="group-data-[collapsible=icon]:items-center">
-          <sidebar-menu-button [tooltip]="isCollapsed() ? searchChats : ''" tooltip-position="right" class="text-lg" (click)="savedChatsDialog.open()">
+          <sidebar-menu-button aria-hidden [tooltip]="isCollapsed() ? searchChats : ''" tooltip-position="right" class="text-lg" (click)="savedChatsDialog.open()">
             <magnifying-glass-icon />
             <span class="text-sm">{{ searchChats }}</span>
           </sidebar-menu-button>
+         <a class="sr-only text-lg" [attr.aria-label]="searchChats" (click)="savedChatsDialog.open()">{{ searchChats }}</a>
         </sidebar-menu-item>
       }
     </sidebar-menu>

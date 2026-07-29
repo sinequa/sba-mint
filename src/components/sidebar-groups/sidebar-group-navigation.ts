@@ -23,8 +23,9 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
       <sidebar-group-label>Navigation</sidebar-group-label>
       <sidebar-group-content>
         <sidebar-menu>
-          <sidebar-menu-item aria-label="Home" class="group-data-[collapsible=icon]:items-center">
+          <sidebar-menu-item class="group-data-[collapsible=icon]:items-center">
             <sidebar-menu-button
+              aria-hidden
               [tooltip]="isCollapsed() ? ('home' | transloco) : ''" tooltip-position="right"
               class="text-lg"
               routerLink="/home"
@@ -34,11 +35,21 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
               <home-icon />
               <span class="text-sm">{{ 'home' | transloco }}</span>
             </sidebar-menu-button>
+            <a 
+              class="text-lg sr-only"
+              routerLink="/home"
+              routerLinkActive="active"
+              #rlaHome="routerLinkActive"
+              [attr.data-active]="rlaHome.isActive || null"
+              [attr.aria-label]="'home' | transloco">
+              {{ 'home' | transloco }}
+            </a>
           </sidebar-menu-item>
 
           @if (!isSearchRoute()) {
-            <sidebar-menu-item aria-label="Search" class="group-data-[collapsible=icon]:items-center">
+            <sidebar-menu-item class="group-data-[collapsible=icon]:items-center">
               <sidebar-menu-button
+                aria-hidden
                 [tooltip]="isCollapsed() ? ('search' | transloco) : ''" tooltip-position="right"
                 class="text-lg"
                 routerLink="/search"
@@ -49,6 +60,16 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
                 <magnifying-glass-icon />
                 <span class="text-sm">{{ 'search' | transloco }}</span>
               </sidebar-menu-button>
+              <a 
+                class="text-lg sr-only"
+                routerLink="/search"
+                routerLinkActive="active"
+                #rlaSearch="routerLinkActive"
+                queryParamsHandling="preserve"
+                [attr.data-active]="rlaSearch.isActive || null"
+                [attr.aria-label]="'search' | transloco">
+                {{ 'search' | transloco }}
+              </a>
             </sidebar-menu-item>
           }
 
