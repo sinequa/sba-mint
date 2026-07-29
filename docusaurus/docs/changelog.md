@@ -5,7 +5,65 @@ slug: /changelog
 
 ## Changelog
 
-All notable changes to the SBA Mint project for release 11.13.0.
+All notable changes to the SBA Mint project.
+
+## [Release 11.14.0] - 2026-07-29
+
+### Fixed
+
+#### Document Preview
+
+- **Passage frames (the blue box)**: repaired rather than removed. Six root causes, each found against a real captured document: coordinate spaces mixed between the overlay and the measurements, a single union rectangle spanning page and column breaks, citations pointing into hidden subtrees, a scroll request absorbed by the per-word `overflow: hidden` of PdfToHtml conversions, phantom frames from the previously selected passage, and fragments merged across a dense frame.
+- **Large documents no longer freeze the browser**: a 15 MB conversion (447 920 tags) opened in 12.2 s and reported *not responding*; it now opens in under a second. A zoom step at that size went from 530 ms to 0.1 ms, a whole gesture from 2 343 ms to 13 ms, an extracts request of 20 000 ids from 3 min 44 s to 33 ms. Every preview also opens about half a second sooner, and `zoom-fit` no longer throws a `RangeError` on very large documents.
+
+### Breaking Changes
+
+:::danger Applies to anyone maintaining their own `src/assets/preview.js` or `src/assets/preview.css`
+Both files were substantially rewritten. If you ship a modified copy, or style the preview from
+your own stylesheet, read this list — several of these fail **silently**.
+:::
+
+#### `preview.css`
+
+- **`#sq-passage-highlighter` is renamed `#sq-passage-layer`.** Custom styling attached to the old id no longer applies to anything.
+- **The preview body's `transform`, `width` and `height` are now written inline by `preview.js`.** The declarations in `preview.css` are the *initial* state only, honouring the `--factor` the server writes inline so the document is scaled correctly at first paint. CSS you add for those three properties is overridden as soon as a zoom happens.
+- **`--factor` is no longer updated after the first zoom.** It deliberately stays at the server's initial value: it is a custom property, so writing it invalidates style for the whole subtree — about 65 ms per zoom step on a 63 000-element document, against 1 ms for an inline transform. Any `calc(… / var(--factor))` in a custom rule now resolves against a **stale** factor, silently. Read the applied scale from the body's resolved `transform` instead.
+- **`body.bd > div:not(.ph, .phe)` became `body.bd > div:not(.ph, .phe, #sq-passage-layer)`.** A rule copied from the old selector applies its `margin` to the passage overlay and shifts every frame by that amount — which is exactly the bug this exclusion fixes.
+- **Off-screen content may now be skipped** (`content-visibility: auto` with `contain-intrinsic-height`), on the page sheets of image-based conversions and, through a new rule, on the top two levels of flowing conversions. Consequence for any custom script: a skipped subtree **has no layout**, so `getBoundingClientRect()` on it returns collapsed boxes and `body.scrollWidth` does not report the real content width. Measuring code must either work on rendered content or suspend the skipping first — `preview.js` does the latter in `withSkippingSuspended()`.
+
+#### `preview.js` — the scale of it first
+
+Nothing stops you from having modified any function in this file, so here is the honest
+measure. Of the **29 functions that existed**, one survives byte-for-byte (`getBoundingBox`).
+The rest: **5 removed, 23 rewritten**, and 44 new ones.
+
+- **Removed**: `selectPassage`, `selectPassage2`, `getHighlightHtmlById`, `getHighlightTextById`, `resizeSvgBackground`.
+- **Rewritten** — grep your patch for these, a three-way merge will not land cleanly on any of them: `addSvgLine`, `createWorker`, `getElementsById`, `getHtml`, `getPositions`, `getText`, `getVerticalPositions`, `highlight`, `init`, `isElementInViewport`, `onMouseMove`, `onMouseUp`, `receiveMessage`, `removeAllClasses`, `removeAllElements`, `returnMessage`, `select`, `selectHighlight`, `selectHighlightSVG`, `setSvgBackgroundPositionAndSize`, `unselect`, `zoom`, `zoomFit`.
+
+Some of those rewrites change behaviour a caller can observe, not just the implementation:
+
+- `getHtml` / `getText` / `getPositions` collect their elements in **one** pass over the document instead of one walk per requested id. Same result, but the ids are no longer processed in request order internally.
+- `getElementsById` no longer uses `querySelectorAll("#id")`, which could not use the browser's id table anyway since the converters emit duplicate ids.
+- `unselect`, `removeAllClasses` and `removeAllElements` are called on paths that did not call them before, because a select now clears the previous passage's overlay.
+- `onMouseMove` no longer emits `highlight-hover` synchronously: it coalesces to one emission per frame, trailing edge, with `position` measured at emission time. Enter/leave ordering is preserved.
+- `createWorker` now clears `isWorkerSupported` from `worker.onerror`. A worker that 404s used to swallow every extracts request silently, because `new Worker()` does not throw on a missing script.
+- **`ready` is a condition, not a delay.** It used to be emitted after a flat `setTimeout(…, 500)`; it now waits for two frames and `document.fonts.ready`, capped by a safety timeout. Code that relied on roughly half a second of slack after load may now race.
+- **Messages are posted once.** `returnMessage()` used to post to both `parent` and `parent.parent`, so a top-level application received every message **twice**; it now posts to `parent.parent` only when that is a different window. A consumer that deduplicated by accident, or counted messages, will see half the traffic.
+- **`zoom-fit` returns a different factor**, because the old computation mixed coordinate spaces and could leave the content overflowing at *fit* (0.79 where 0.34 was needed on a double-page PDF). Any workaround compensating for the old value will now over- or under-correct.
+- **`stopImmediatePropagation()` is no longer called for every click** in the preview, only for a click on a video screenshot. Other click listeners registered on the preview document now actually run.
+
+#### What did *not* change
+
+The postMessage contract is backwards compatible: **no inbound action and no outbound message type was removed.** Two outbound types were added, `description-visible` and `get-html-results-webworker`.
+
+### Migration Notes
+
+- If you only *use* the preview, nothing to do.
+- If you style it, search your stylesheets for `sq-passage-highlighter`, for `--factor`, and for rules on the preview body's `transform`/`width`/`height`.
+- If you script against the preview document, search for geometry read on content that may be off screen.
+- If you maintain a modified `preview.js`, treat this as a rewrite rather than a merge: the zoom path, the passage overlay, the scroll handler and the extracts path all changed shape.
+
+---
 
 ## [Release 11.13.0] - 2026-01-23
 
