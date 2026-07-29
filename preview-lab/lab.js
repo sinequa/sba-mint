@@ -1014,7 +1014,13 @@
     setStatus("profiling…");
     const rows = [];
 
-    for (const target of PROFILE_TARGETS) {
+    // `?only=` narrows the profiling matrix too. An A/B on one document should not have to
+    // pay for the other eleven -- and since these numbers drift between runs, a variant is
+    // only worth comparing against a baseline measured minutes earlier, not hours.
+    const onlyProfile = params.get("only");
+    const targets = onlyProfile ? PROFILE_TARGETS.filter(target => onlyProfile.split(",").includes(target.name)) : PROFILE_TARGETS;
+
+    for (const target of targets) {
       try {
         await load(target.file, PROFILE_WIDTH);
       } catch (error) {
@@ -1174,9 +1180,22 @@
     const mismatches = [];
     let checked = 0;
 
+    // The target is computed from scrollHeight, which on a document with skipped off-screen
+    // blocks is an *estimate*: landing there makes those blocks render, their real heights
+    // replace the guess, and the content moves under the viewport. Ground truth measured in
+    // that state is not ground truth -- it reported "no anchor fully in view" at all four
+    // positions. So wait for the height to stop moving, then measure.
+    const settle = async () => {
+      let previous = -1;
+      for (let attempt = 0; attempt < 12 && previous !== scroller.scrollHeight; attempt++) {
+        previous = scroller.scrollHeight;
+        await delay(120);
+      }
+    };
+
     for (const fraction of [0.2, 0.45, 0.7, 0.95]) {
       view.scrollTo({ top: distance * fraction, left: 0, behavior: "instant" });
-      await delay(220);
+      await settle();
       const expected = anchors.find(fullyInside);
       if (!expected) continue; // no anchor entirely in view: nothing is expected
       checked++;

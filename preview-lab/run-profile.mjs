@@ -10,6 +10,7 @@
  *
  *   node preview-lab/run-profile.mjs [--browser <path>] [--port 4320] [--keep-open]
  *                                    [--baseline preview-lab/.baseline-profile.json]
+ *                                    [--only basic-huge,basic-pdf]
  *
  * `--baseline` compares against a previous run and prints the delta, which is how
  * each optimisation step is expected to justify itself.
@@ -32,13 +33,14 @@ const BROWSER_CANDIDATES = [
 ].filter(Boolean);
 
 function parseArgs(argv) {
-  const options = { port: 4320, browser: null, keepOpen: false, timeout: 900_000, baseline: null };
+  const options = { port: 4320, browser: null, keepOpen: false, timeout: 900_000, baseline: null, only: null };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--port") options.port = Number(argv[++i]);
     else if (arg === "--browser") options.browser = argv[++i];
     else if (arg === "--timeout") options.timeout = Number(argv[++i]);
     else if (arg === "--baseline") options.baseline = argv[++i];
+    else if (arg === "--only") options.only = argv[++i];
     else if (arg === "--keep-open") options.keepOpen = true;
   }
   return options;
@@ -127,7 +129,7 @@ async function main() {
       "--disable-backgrounding-occluded-windows",
       "--window-size=1980,1200",
       `--user-data-dir=${profileDir}`,
-      `http://localhost:${options.port}/preview-lab/?profile=1&ci=1`
+      `http://localhost:${options.port}/preview-lab/?profile=1&ci=1${options.only ? "&only=" + encodeURIComponent(options.only) : ""}`
     ],
     { stdio: "ignore" }
   );

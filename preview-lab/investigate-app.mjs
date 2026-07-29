@@ -14,7 +14,7 @@
  *                                          [--user=… --password=…]
  */
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -49,11 +49,16 @@ const PROBE = `
 (() => {
   if (window.__probeInstalled) return;
   window.__probeInstalled = true;
-  window.__block = { worst: 0, last: performance.now(), events: [] };
+  window.__block = { worst: 0, total: 0, last: performance.now(), events: [] };
   const tick = () => {
     const now = performance.now();
     const gap = now - window.__block.last;
     if (gap > window.__block.worst) window.__block.worst = gap;
+    // Total blocking time, the same idea as the Lighthouse metric: everything a task holds
+    // the thread beyond 50 ms, summed. The *worst* gap turned out to swing 4 120 to 22 288 ms
+    // across identical runs of the same document -- one coalesced timer decides it -- so a
+    // maximum cannot compare two configurations. A sum can.
+    if (gap > 50) window.__block.total += gap - 50;
     if (gap > 200 && window.__block.events.length < 400) window.__block.events.push({ at: Math.round(now), gap: Math.round(gap) });
     window.__block.last = now;
     setTimeout(tick, 0);
@@ -69,6 +74,30 @@ const PROBE = `
 })();
 `;
 
+// --inject-css=<file> puts a stylesheet into every document *before* its body is parsed.
+// That is how to price a CSS idea against a real document -- content-visibility, containment,
+// a different width -- without touching the product first, and it answers the question the
+// phase profiler cannot: whether the engine time is layout (which a rule can remove) or
+// parsing (which nothing in CSS can).
+const cssFile = (process.argv.find(a => a.startsWith("--inject-css=")) || "").split("=")[1];
+const INJECT = cssFile
+  ? `
+(() => {
+  const css = ${JSON.stringify(readFileSync(cssFile, "utf8"))};
+  const apply = () => {
+    const style = document.createElement("style");
+    style.setAttribute("data-injected", "investigate-app");
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+  };
+  if (document.head) apply();
+  // childList on documentElement only. Observing the subtree would deliver a record for
+  // every one of the 444 000 nodes being parsed -- the tool paying, again, for its own probe.
+  else new MutationObserver((_, obs) => { if (document.head) { apply(); obs.disconnect(); } }).observe(document.documentElement, { childList: true });
+})();
+`
+  : "";
+
 // Read every 10 s, so it must cost nothing: on the document this tool exists to investigate,
 // an innerText read forces layout and builds a 15 MB string, which showed up as a 200 ms
 // block every 10 s -- the probe measuring itself. Hence the element-count guard.
@@ -79,6 +108,7 @@ return JSON.stringify({
   url: location.href.slice(0, 2000),
   elements: count,
   worstBlockMs: window.__block ? Math.round(window.__block.worst) : null,
+  totalBlockedMs: window.__block ? Math.round(window.__block.total) : null,
   // The biggest gaps, not the most recent ones: the interesting freeze is at load.
   blockEvents: window.__block ? [...window.__block.events].sort((a, b) => b.gap - a.gap).slice(0, 12) : [],
   messages: window.__msgs ? window.__msgs.slice(0, 60) : [],
@@ -89,6 +119,19 @@ return JSON.stringify({
   iframes: [...document.querySelectorAll("iframe")].map(f => (f.src || "(no src)").slice(0, 2000)),
   text: count < 5000 && document.body ? (document.body.innerText || "").replace(/\\s+/g, " ").slice(0, 300) : null,
   transform: document.body ? getComputedStyle(document.body).transform.slice(0, 40) : null,
+  // Splits the engine time the profiler reports as one "(program)" blob: everything up to
+  // domInteractive is turning bytes into nodes, which no stylesheet can make cheaper; what
+  // follows is style, layout and paint, which containment can.
+  nav: (() => {
+    const n = performance.getEntriesByType("navigation")[0];
+    if (!n) return null;
+    return {
+      parseMs: Math.round(n.domInteractive - n.responseEnd),
+      afterParseMs: n.loadEventEnd ? Math.round(n.loadEventEnd - n.domInteractive) : null,
+      responseEnd: Math.round(n.responseEnd),
+      loadEnd: Math.round(n.loadEventEnd)
+    };
+  })(),
   passageBoxes: document.getElementById("sq-passage-layer") ? document.getElementById("sq-passage-layer").childElementCount : null
 });
 })()
@@ -226,7 +269,10 @@ await cdp.send("Page.enable", {}, sessionId);
 await cdp.send("Runtime.enable", {}, sessionId);
 await cdp.send("Log.enable", {}, sessionId);
 // Installed for the *next* document, so the probes are in place before any page script.
-await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: PROBE }, sessionId);
+await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: PROBE + INJECT }, sessionId);
+if (cssFile)
+  process.stdout.write(`injecting ${cssFile} into every document before its body is parsed
+`);
 
 const evaluate = async expression => {
   const { result } = await cdp.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true }, sessionId);
@@ -241,7 +287,14 @@ const password = (process.argv.find(a => a.startsWith("--password=")) || "").spl
 if (user && password) {
   const origin = new URL(url).origin;
   await cdp.send("Page.navigate", { url: origin + "/" }, sessionId);
-  await new Promise(r => setTimeout(r, 3000));
+  // Wait for the field to exist rather than for a fixed delay. A run whose login silently
+  // missed still produces a full report -- one such series reported a 17 ms "freeze" on the
+  // document that freezes for twenty seconds, because the server had answered
+  // CredentialsDenied and nobody checked.
+  for (let attempt = 0; attempt < 40; attempt++) {
+    await new Promise(r => setTimeout(r, 500));
+    if (await evaluate('!!document.querySelector("#username")')) break;
+  }
 
   // Angular does not see a direct `.value` assignment, hence the input events.
   // Typed through the Input domain rather than assigned. Setting `.value` and dispatching
@@ -344,6 +397,27 @@ const startedAt = Date.now();
 await cdp.send("Page.navigate", { url }, sessionId);
 process.stdout.write(`navigating to the application, observing for ${seconds} s\n`);
 
+// A run that measured a document the server refused to send is worse than no run: it reports
+// a fast, quiet main thread and looks like a result. Refuse it instead.
+{
+  let served = false;
+  for (let attempt = 0; attempt < 24 && !served; attempt++) {
+    await new Promise(r => setTimeout(r, 500));
+    const verdict = await evaluate(`(() => {
+      const count = document.getElementsByTagName("*").length;
+      const text = document.body ? (document.body.innerText || "").slice(0, 120) : "";
+      if (/http status|CredentialsDenied|Unauthorized/i.test(text)) return "refused: " + text.replace(/\\s+/g, " ").trim();
+      return count > 40 ? "ok" : "";
+    })()`);
+    if (typeof verdict === "string" && verdict.startsWith("refused")) {
+      process.stderr.write(`\nthe server did not serve the document -- ${verdict}\nNothing was measured. Check the credentials or the session.\n`);
+      if (child && !keepOpen) child.kill();
+      process.exit(3);
+    }
+    served = verdict === "ok";
+  }
+}
+
 let loadAt = null;
 cdp.on(message => {
   if (message.method === "Page.loadEventFired" && loadAt === null) loadAt = Date.now() - startedAt;
@@ -370,7 +444,8 @@ const resetWatchers = async () => {
       await cdp.send(
         "Runtime.evaluate",
         {
-          expression: "window.__block && (window.__block.worst = 0, window.__block.events = [], window.__block.last = performance.now())",
+          expression:
+            "window.__block && (window.__block.worst = 0, window.__block.total = 0, window.__block.events = [], window.__block.last = performance.now())",
           contextId: ctx.id,
           returnByValue: true
         },
@@ -390,7 +465,7 @@ const readWatchers = async () => {
       const { result } = await cdp.send(
         "Runtime.evaluate",
         {
-          expression: `JSON.stringify({ where: location.href.includes("xdownload") ? "preview" : "host", worst: window.__block ? Math.round(window.__block.worst) : null, over200: window.__block ? window.__block.events.length : null })`,
+          expression: `JSON.stringify({ where: location.href.includes("xdownload") ? "preview" : "host", worst: window.__block ? Math.round(window.__block.worst) : null, total: window.__block ? Math.round(window.__block.total) : null, over200: window.__block ? window.__block.events.length : null })`,
           contextId: ctx.id,
           returnByValue: true
         },
@@ -460,7 +535,7 @@ const seekSweep = async () => {
     await new Promise(r => setTimeout(r, 2500));
     const rows = await readWatchers();
     const preview = rows.find(r => r.where === "preview") || rows[0] || {};
-    process.stdout.write(`  seek: to ${Math.round(fraction * 100)}% (scrollTop ${at}) blocked up to ${preview.worst} ms\n`);
+    process.stdout.write(`  seek: to ${Math.round(fraction * 100)}% (scrollTop ${at}) blocked ${preview.total} ms in total, worst gap ${preview.worst} ms\n`);
   }
   return "done";
 };
@@ -477,20 +552,20 @@ for (let elapsed = 0; elapsed < seconds; elapsed += 10) {
     );
     if (ready) {
       await cpuStop("load");
-      for (const row of await readWatchers()) process.stdout.write(`  load: ${row.where} blocked up to ${row.worst} ms (${row.over200} gaps over 200 ms)\n`);
+      for (const row of await readWatchers()) process.stdout.write(`  load: ${row.where} blocked ${row.total} ms in total, worst gap ${row.worst} ms\n`);
 
       await resetWatchers();
       await cpuStart();
       process.stdout.write(`  drive: ${await drive()}\n`);
       await new Promise(r => setTimeout(r, 4000));
       await cpuStop("zoom");
-      for (const row of await readWatchers()) process.stdout.write(`  zoom: ${row.where} blocked up to ${row.worst} ms (${row.over200} gaps over 200 ms)\n`);
+      for (const row of await readWatchers()) process.stdout.write(`  zoom: ${row.where} blocked ${row.total} ms in total, worst gap ${row.worst} ms\n`);
 
       await resetWatchers();
       await cpuStart();
       process.stdout.write(`  scroll: ${await scrollSweep()}\n`);
       await cpuStop("scroll");
-      for (const row of await readWatchers()) process.stdout.write(`  scroll: ${row.where} blocked up to ${row.worst} ms (${row.over200} gaps over 200 ms)\n`);
+      for (const row of await readWatchers()) process.stdout.write(`  scroll: ${row.where} blocked ${row.total} ms in total, worst gap ${row.worst} ms\n`);
 
       await cpuStart();
       process.stdout.write(`  seek: ${await seekSweep()}\n`);
@@ -519,7 +594,26 @@ for (let elapsed = 0; elapsed < seconds; elapsed += 10) {
 // inside a function is charged to that function -- which is the attribution we are after.
 await cpuStop("rest");
 
-const report = { url, loadEventMs: loadAt, snapshots, cpu: cpuWindows, logs: logs.slice(0, 40) };
+// --eval=<file> asks the real document a question at the end of the run, in every frame.
+// The file's last expression is what gets printed. This is the alternative to writing a
+// throwaway probe script for every "what does this document actually look like" question --
+// and structure is exactly what decides whether a CSS idea can work at all.
+const evalFile = (process.argv.find(a => a.startsWith("--eval=")) || "").split("=")[1];
+const evalResults = [];
+if (evalFile) {
+  const source = readFileSync(evalFile, "utf8");
+  for (const ctx of contexts.values()) {
+    if (!ctx.isDefault) continue;
+    try {
+      const { result } = await cdp.send("Runtime.evaluate", { expression: source, contextId: ctx.id, returnByValue: true, awaitPromise: true }, sessionId);
+      if (result && result.value !== undefined) evalResults.push(result.value);
+    } catch (error) {
+      evalResults.push("evaluate failed: " + error.message.slice(0, 200));
+    }
+  }
+}
+
+const report = { url, loadEventMs: loadAt, snapshots, cpu: cpuWindows, eval: evalResults, logs: logs.slice(0, 40) };
 const path = join(import.meta.dirname, ".last-cdp.json");
 writeFileSync(path, JSON.stringify(report, null, 2));
 
@@ -528,11 +622,14 @@ process.stdout.write(`\nload event at ${loadAt} ms\n`);
 for (const frame of last ? last.frames : []) {
   process.stdout.write(`\n--- ${frame.url}\n`);
   process.stdout.write(`    elements ${frame.elements}, body <${frame.bodyTag}>, transform ${frame.transform}, passage boxes ${frame.passageBoxes}\n`);
-  process.stdout.write(`    worst main-thread block: ${frame.worstBlockMs} ms\n`);
+  process.stdout.write(`    main thread: ${frame.totalBlockedMs} ms blocked in total, worst single gap ${frame.worstBlockMs} ms\n`);
   if (frame.iframes && frame.iframes.length) {
     for (const src of frame.iframes) process.stdout.write(`    iframe ${src}\n`);
   }
   if (frame.text) process.stdout.write(`    on screen: ${frame.text.slice(0, 200)}\n`);
+  if (frame.nav) {
+    process.stdout.write(`    bytes to nodes (parse): ${frame.nav.parseMs} ms, then style/layout/paint to load: ${frame.nav.afterParseMs} ms\n`);
+  }
   for (const e of frame.blockEvents) process.stdout.write(`      blocked ${e.gap} ms at t+${e.at} ms\n`);
   for (const m of frame.messages) {
     process.stdout.write(`      msg ${m.action || m.type}${m.ids !== undefined ? " ids=" + m.ids : ""} at t+${m.at} ms${m.keys ? "  {" + m.keys + "}" : ""}\n`);
@@ -544,6 +641,9 @@ for (const window of cpuWindows) {
     if (row.fn.startsWith("(idle)")) continue;
     process.stdout.write(`  ${String(row.ms).padStart(6)} ms  ${row.fn}\n`);
   }
+}
+for (const value of evalResults) {
+  process.stdout.write(`\n--eval ${evalFile}:\n${typeof value === "string" ? value : JSON.stringify(value, null, 2)}\n`);
 }
 if (logs.length) {
   process.stdout.write(`\nconsole:\n`);

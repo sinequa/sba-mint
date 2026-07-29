@@ -97,6 +97,38 @@ body.bd > div:not(.ph, .phe, #sq-passage-layer) {
   margin: 24px;
   content-visibility: visible;
 }
+
+/* Off-screen skipping for the *flowing* conversions -- the ones with no page sheets, whose
+   whole content is one long stream. On a 15 MB HTML capture (447 920 tags, 4 607 tables) it
+   takes the preview from 10 885 ms to 662 ms to open, because the browser stops laying out
+   six million pixels it cannot show. Two levels, because one top-level section of that
+   document is a million pixels tall on its own: skipping only the top level saved nothing.
+
+   `auto` in contain-intrinsic-height means "remember the size last rendered", so a block that
+   has been on screen once keeps its real height and the scroll geometry stops drifting; the
+   1200px is only the first guess for blocks never yet laid out.
+
+   Deliberately not applied to `body.bd`: the PdfToHtml family positions every *word*
+   absolutely inside its page sheet, and its sheets already carry `content-visibility: auto`
+   through `.stl_`. preview.js lifts the skip on the containers holding a cited passage -- see
+   liftSkipAroundPassage(), without which the frames are measured inside a subtree that has no
+   layout and land nowhere near the text.
+
+   `#sq-passage-layer` is excluded for the same reason it is excluded from the rule above: it
+   is a plain <div> child of the body, so a rule about the body's children reaches the overlay
+   itself. Skipping it left every frame unrendered -- 23 of 23 fragments outside any frame on
+   the bench, which reads exactly like a geometry bug and is not one.
+
+   A document carrying `sq-page-start` anchors is excluded as well. The page indicator follows
+   the scroll by measuring those anchors, and an anchor whose container the browser has only
+   estimated cannot be found in the viewport -- the indicator then stops following at all.
+   Those documents are paginated by definition, so they are also the ones with least to gain:
+   their sheets are laid out one per page and already skip through `.stl_`. */
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer),
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer) > div {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 1200px;
+}
 body.bd > div:not(.ph, .phe) > img {
   background-color: #fff;
   border: 1px solid lightgrey;

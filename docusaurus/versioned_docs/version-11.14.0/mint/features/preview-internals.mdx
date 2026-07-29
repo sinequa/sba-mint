@@ -342,6 +342,37 @@ Two consequences worth knowing:
 `node preview-lab/run-profile.mjs` measures all of this without instrumenting `preview.js`. The column to watch is `zoom avg` — the style and layout a single step forces — which should stay flat as DOM size grows.
 :::
 
+## Skipping what is off screen
+
+A converter can emit a single flowing document of 15 MB — 447 920 tags, 4 607 tables, six million pixels tall once laid out at panel width. It used to take **12 185 ms** to open, during which the browser reports *not responding*, and because the preview iframe is same-origin it shares the renderer's main thread with the application: the whole app freezes with it.
+
+`preview.css` now lets the browser skip the blocks it cannot show:
+
+```css
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer),
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer) > div {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 1200px;
+}
+```
+
+**12 185 ms → 892 ms** on that document, measured against a baseline re-run minutes earlier in the same session. Every other fixture stays where it was.
+
+Each part of that selector is a measured decision, and every one of them was learnt by breaking the passage frames first:
+
+- **Two levels, not one.** One top-level section of that document is 1 017 233 px tall on its own, so skipping only the body's children saved 13% — inside the noise. Descending one level does the work. Going further (containment on *every* `div`) is slower again.
+- **`contain-intrinsic-height: auto`.** `auto` means "remember the height last rendered", so a block that has been on screen once keeps its real height and the geometry stops drifting. The `1200px` is only the first guess for a block never yet laid out.
+- **`#sq-passage-layer` excluded.** The overlay is a plain `<div>` child of the body, so a rule about the body's children reaches it: skipping it left every frame unrendered, which the bench reported as *23 of 23 fragments outside any frame* — a geometry failure that was nothing of the kind.
+- **Documents with `sq-page-start` anchors excluded.** The page indicator follows the scroll by finding the first anchor entirely in the viewport; an anchor inside a container the browser has only estimated cannot be found there, and the indicator stops following. Those documents are paginated by definition and have least to gain — their sheets already skip through `.stl_`.
+- **`body.bd` excluded.** The PdfToHtml family positions every *word* absolutely inside its sheet.
+
+Two things in `preview.js` make it safe:
+
+- **`liftSkipAroundPassage()`** puts the containers holding a cited passage back on the layout path, and only those. A skipped subtree has no layout, so `getBoundingClientRect()` on a fragment inside it does not say where the text is. Lifting *everything* would re-layout six million pixels — the cost we came to remove — so only the ancestors of the fragments are lifted, and the lift is held until `unselect()` because every reposition re-measures them. The frames stay correct because the overlay and the text are then measured in the same layout; the blocks above may still be estimated, which makes the absolute scroll offset provisional.
+- **A `ResizeObserver` on the containers**, which is what makes that provisional offset converge. When an estimated block takes its real height, everything below it shifts, and *none* of the existing reflow watchers sees it: it is not a load, not a font, not a style change on the body, and the body's own box is fixed by `preview.js`, so the `ResizeObserver` already watching the body stays silent. Without this, the frames simply stayed where the estimate had put them. This was the missing piece in two earlier attempts at `content-visibility`, both of which were reverted for what looked like a geometry bug.
+
+The price, measured on the same document: scrolling **with a citation displayed** goes from 5.5 to 42.2 ms per frame, and selecting a citation from 2.8 to 75.6 ms, because blocks rendering during the scroll each trigger a re-anchor. Nothing is paid when no citation is displayed. The scroll height is also an estimate until the document has been scrolled through, so the scrollbar adjusts as you go.
+
 ## Passage Navigation
 
 When a search result with a selected passage is opened, `PreviewContentComponent` scrolls the iframe to the relevant passage:

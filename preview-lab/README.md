@@ -412,7 +412,12 @@ the same set of rects.
 
 ## Skipping off-screen pages: attempted, reverted
 
-Worth recording so nobody spends the afternoon on it twice.
+Worth recording so nobody spends the afternoon on it twice. This is about the **paginated**
+conversions, and it is still reverted. The *flowing* ones do skip now, and how that was made
+to work is under "Skipping off-screen blocks: what it took" further down — the difference is
+not the idea, it is that the frames there are lifted back onto the layout path and a
+`ResizeObserver` catches the moment an estimated height becomes a real one. Neither existed
+when this attempt was made.
 
 `preview.css` sets `content-visibility: visible` on the page containers of
 image-based conversions (`body.bd > div`), which explicitly disables the browser's
@@ -475,13 +480,21 @@ a single profile over three minutes cannot say whether `commitZoomLayout` spent 
 load or while scrolling, and that was the question.
 
 `--window=900,1200` sets the viewport, `--scroll-steps` / `--scroll-delta` the wheel sweep.
-Both are variables of the result, not cosmetics — see the width finding below.
+`--inject-css=<file>` puts a stylesheet into every document *before* its body is parsed, which
+prices a CSS idea against a real document without touching the product first — it is what
+justified the containment work below, by showing the engine time was layout and not parsing.
+`--eval=<file>` asks the real document a question at the end of a run (structure, computed
+styles) instead of writing yet another probe script.
 
 Two traps this tool fell into, now fixed, worth knowing if you extend it:
 
 - **it profiled itself.** The 10-second snapshot read an `innerText`, which on a 15 MB
   document forces layout and builds a 15 MB string: a 200 ms block every 10 s, in the data.
   Reads on the hot path have to be cheap or guarded (they now are, by element count).
+- **it reported a document the server never sent.** Six runs in a row measured a login that
+  had silently failed: `CredentialsDenied`, four elements, and a cheerful "17 ms" on the
+  document that freezes for twenty seconds. It now waits for the login field instead of a
+  fixed delay, and refuses to produce a report at all when the document is not there.
 - **it drove the wrong browser.** `--keep-open` leaves the browser alive, so a fixed
   debugging port meant the next run attached to the *previous* browser and reported the old
   document's timings. Each run now takes its own port, and prints which binary it launched —
@@ -520,6 +533,20 @@ everything. Four runs, same document, same Chrome:
 
 `(program)` is engine time outside JS — parsing, style, layout, paint.
 
+:::warning
+**Those are single runs, and single runs of this document mean very little.** Repeating the
+same configuration eight times gave worst-freeze values from **4 120 to 22 288 ms** — a 5×
+spread with nothing changed. The stable figure across all eight was `domInteractive → load`,
+between 2 949 and 4 615 ms. Two claims made from the table above did not survive the
+repetition: that the viewport width was worth a 9× difference, and that containment gained
+71%. Neither is supported. What the table *does* establish is the first row against the
+second — the same document, alone, freezing for the same twenty seconds.
+
+The lesson is in the tool now: `worstBlockMs` is reported next to `totalBlockedMs`, and the
+latter is the one to compare. A maximum is decided by a single coalesced timer; a sum is not.
+And the place to compare *configurations* is the bench below, not the application.
+:::
+
 Four conclusions, none of which was the expected one:
 
 1. **Neither the iframe nor Angular is involved.** The same document alone in a 900 px window
@@ -539,8 +566,51 @@ Four conclusions, none of which was the expected one:
    scroll; on Edge, right after load (5 880 ms in one run). That is the Edge/Chrome
    difference users report — *when* the pause falls, not how much the load costs.
 
-So the fix for this document is not in `preview.js`: it is to stop laying out 444 k elements
-at once (converter-side splitting, or `content-visibility` — attempted, see below).
+So the fix for this document is to stop laying out 444 k elements at once — which is what
+`content-visibility` now does, and the section below is how that was finally made to work
+after two failed attempts.
+
+### Skipping off-screen blocks: what it took
+
+Priced first, on the *bench*, because that is where a configuration can be compared. Same
+session, HEAD re-measured minutes before:
+
+| `basic-huge` (447 920 nodes) | open | scroll+ | sel+ |
+| --- | --- | --- | --- |
+| HEAD | 12 185 ms | 5.5 | 2.8 |
+| with the rule | **892 ms** | 42.2 | 75.6 |
+
+Every other target moved only within the drift. Two experiments along the way that a reader
+of the numbers should know about:
+
+- **`--inject-css` on the real document said the prize existed** before a line of product code
+  was written: the engine time was layout, not parsing — `domInteractive` is reached in
+  ~2.9 s of a 20 s freeze. That is what justified continuing after the width claim collapsed.
+- **Removing the width commit** (a temporary `return` at the top of `commitZoomLayout`) took the
+  open from 16 336 to 9 346 ms, which is how the double layout was found: the document is laid
+  out once at its natural width and again at `99% / factor`. Worth knowing, but it stopped
+  mattering — with containment in place, disabling the commit changes the open by 1 ms.
+
+The four attempts, and why each failed, because the failure mode is the same every time and
+reads like a geometry bug:
+
+| attempt | bench | what was wrong |
+| --- | --- | --- |
+| rule alone | 75/115 | the overlay is a body child, so it was skipped too |
+| + overlay excluded | 366/406 | estimated heights change and nothing notices |
+| + `ResizeObserver` on the containers | 114/115 | page anchors inside estimated containers are never "in view" |
+| + paginated documents excluded | **115/115, 406/406** | — |
+
+Isolating which half of the rule broke things was worth the two runs it cost: with
+`contain-intrinsic-height` removed the bench went straight back to 114/115, which said the
+fallback height — not `content-visibility` itself — was what moved the geometry. It also
+explains why it *had* to stay: without a fallback, unrendered blocks contribute no height, the
+document collapses, everything counts as on-screen, and the gain disappears with the bug.
+
+One bench fix belongs to this, and it is not cosmetic: A10 computed its ground truth 220 ms
+after a `scrollTo` whose target came from an estimated `scrollHeight`. It now waits for the
+height to stop moving. Ground truth measured in a layout that is still converging is not
+ground truth.
 
 ## Validating against a real document
 

@@ -36,6 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var passageComplete = false;
   // Geometry currently drawn in the overlay, so an unchanged reposition writes nothing.
   var renderedSignature = null;
+  // Containers whose off-screen skipping we suspended to be able to measure a passage inside
+  // them -- see liftSkipAroundPassage().
+  var liftedSkips = [];
 
   // ---- scroll / page tracking state ----
   var scrollHandle = null;
@@ -633,6 +636,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // height, so its box does not follow the content -- hence the reflow
       // listeners below.
       new ResizeObserver(scheduleRepositionPassage).observe(contentBody);
+      observeSkippedContainers(contentBody);
     }
 
     // Late resources reflow the document under a frame that has already been drawn.
@@ -800,6 +804,10 @@ document.addEventListener("DOMContentLoaded", function () {
     commitZoomLayout();
     var elements = Array.from(getElementsById(id));
     if (!elements.length) return;
+
+    // Before anything is measured or scrolled to: a fragment inside a skipped subtree has no
+    // layout, so both the scroll target and the frames would be computed from nothing.
+    liftSkipAroundPassage(elements);
 
     // A citation can point at a subtree that is hidden by default -- the
     // AI-generated description of a multimodal conversion. Reveal it first:
@@ -1252,7 +1260,83 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /**
+   * Puts the containers holding a cited passage back on the layout path.
+   *
+   * `preview.css` lets the browser skip off-screen blocks of a flowing document, which is
+   * what makes a 15 MB capture open in under a second instead of eleven. The cost is that a
+   * skipped subtree has no layout: `getBoundingClientRect()` on a fragment inside it does not
+   * report where the text is, so the frames land nowhere near it -- 23 of 23 fragments outside
+   * any frame on the bench, which is exactly how the first attempt at this failed.
+   *
+   * Only the ancestors of the fragments are lifted, never the whole document. That is what
+   * keeps the gain: lifting everything would re-layout six million pixels, which is the cost
+   * we came here to remove. The frames stay right because the overlay and the text are then
+   * measured in the *same* layout -- the blocks above may still be estimated at their fallback
+   * height, so the absolute scroll offset is provisional, and that is precisely what
+   * onContentReflow() re-anchors as the real heights arrive.
+   *
+   * The lift is held for as long as the passage is selected, because every reposition
+   * re-measures those fragments; dropping it early would make the frames jump on the next
+   * scroll.
+   */
+  function liftSkipAroundPassage(elements) {
+    var body = getPreviewBody();
+    if (!body) return;
+    var contentView = body.ownerDocument.defaultView || window;
+    for (var i = 0; i < elements.length; i++) {
+      for (var node = elements[i]; node && node !== body; node = node.parentElement) {
+        if (!node.style || liftedSkips.indexOf(node) !== -1) continue;
+        // Asking the computed style, not our own selector: whatever put the skip there --
+        // this stylesheet, a converter's, a future rule -- this finds it.
+        if (contentView.getComputedStyle(node).contentVisibility !== "auto") continue;
+        node.style.contentVisibility = "visible";
+        liftedSkips.push(node);
+      }
+    }
+  }
+
+  /**
+   * Re-anchors and redraws when a block the browser had only *estimated* takes its real size.
+   *
+   * `preview.css` lets off-screen blocks of a flowing document be skipped, with
+   * `contain-intrinsic-height: auto 1200px` standing in for a height nobody has measured yet.
+   * The estimate is wrong by construction, and it corrects itself the moment the block is
+   * rendered -- which shifts everything below it. Not one of the existing reflow watchers sees
+   * that: it is not a load, not a font, not a style change on the body, and the body's own box
+   * is fixed by us, so the ResizeObserver above stays silent. The frames therefore stayed
+   * where the estimate had put them, which on the bench read as 23 of 23 fragments outside any
+   * frame -- a geometry bug that was really a missing notification.
+   *
+   * Observing the containers rather than the body is what makes it fire: their boxes are
+   * exactly what changes. One observer, a few dozen targets.
+   */
+  function observeSkippedContainers(contentBody) {
+    var seeded = false;
+    var observer = new ResizeObserver(function () {
+      // ResizeObserver delivers an initial callback for every target it is given; that is the
+      // layout we just measured, not a change to react to.
+      if (!seeded) {
+        seeded = true;
+        return;
+      }
+      onContentReflow();
+    });
+    var children = contentBody.children;
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      if (child.id === "sq-passage-layer") continue;
+      observer.observe(child);
+    }
+  }
+
+  function restoreSkips() {
+    for (var i = 0; i < liftedSkips.length; i++) liftedSkips[i].style.contentVisibility = "";
+    liftedSkips.length = 0;
+  }
+
   function unselect() {
+    restoreSkips();
     currentPassageId = null;
     passageSettleUntil = 0;
     passageComplete = false;
