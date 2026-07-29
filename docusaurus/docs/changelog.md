@@ -5,7 +5,34 @@ slug: /changelog
 
 ## Changelog
 
-All notable changes to the SBA Mint project for release 11.13.0.
+All notable changes to the SBA Mint project.
+
+## [Release 11.14.0] - 2026-07-29
+
+### Changed
+
+#### Document Preview
+
+- **Advanced search is a floating panel** instead of a second column. It used to be part of the preview's grid, so opening it narrowed the iframe from the full width to two thirds — a resize of the previewed document, and therefore a reflow of it. On a large conversion that reflow costs seconds, so the panel opening alone could freeze the UI. It now slides in over the document, which keeps the iframe at its size and lays nothing out again. Same pattern as the search page's left filters drawer.
+  - **Escape closes the panel first** and leaves the preview open; it closes the preview only once the panel is already closed. Bound on `keydown` rather than `keyup`, so `preventDefault()` still cancels the default action — Escape inside the panel's search field would otherwise clear the field instead of closing the panel.
+  - The collapsed panel is `inert`: out of the tab order and hidden from assistive technology, rather than merely translated off screen.
+
+### Breaking Changes
+
+- **The preview host no longer switches column templates.** Its class was
+  `cn("w-full h-full grid …", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")`
+  and is now a static `grid h-full w-full`; `<advanced-search>` moved from a sibling of the
+  document into the floating `<aside>`. Custom CSS that targeted either the two-column layout
+  or `advanced-search` as a direct child of the preview no longer matches.
+- **Nothing on the iframe's ancestor chain may carry an `overflow`.** That is a constraint
+  rather than a change, but it is easy to break by accident: any `overflow` value there makes
+  the element a scroll container, and the converter's fragment navigation inside the preview
+  (`location.href = "#page"`, which is also how the next-page action works) scrolls it — a
+  scroll that propagates out of the iframe and moves the host window, with no scrollbar to
+  bring it back. The box that hides the collapsed panel is deliberately a *sibling* of the
+  document and uses `overflow-clip`, which forbids scrolling outright.
+
+---
 
 ## [Release 11.13.0] - 2026-01-23
 
