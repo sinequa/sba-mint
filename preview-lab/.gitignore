@@ -1,9 +1,0 @@
-# Results of the last runs, written by serve.mjs / run-ci.mjs / run-profile.mjs.
-# Profiling timings are machine-specific: never commit them, compare them locally
-# with `run-profile.mjs --baseline preview-lab/.baseline-profile.json`.
-.last-run.json
-.last-profile.json
-.baseline-profile.json
-# Result of the last investigate-app.mjs run: it captures URLs and timings from a live
-# application, so it belongs to the machine it was taken on.
-.last-cdp.json

@@ -339,7 +339,7 @@ Two consequences worth knowing:
 - **Between a step and the commit, the body's visual width is no longer exactly the panel width**, so a slight re-settling is visible when the layout catches up. That is the deliberate trade: instant feedback on every step, one reflow per gesture.
 
 :::tip
-`node preview-lab/run-profile.mjs` measures all of this without instrumenting `preview.js`. The column to watch is `zoom avg` — the style and layout a single step forces — which should stay flat as DOM size grows.
+The figures above come from an instrumented harness that drives the real `preview.js` in an iframe and measures from the outside — no instrumentation is added to the file itself. The quantity to watch is the style and layout a single zoom step forces: it should stay flat as DOM size grows, and a number that grows with the element count means the step has started doing layout again.
 :::
 
 ## Skipping what is off screen
@@ -424,7 +424,13 @@ Two special cases:
 - **Nothing measurable.** If no geometry can be obtained after a short retry loop (image-only conversion, for instance), the passage text is tinted with `.sq-highlighted` as a last resort.
 
 :::tip
-`preview-lab/` at the repository root is a dependency-free test bench for this feature: it loads the real `preview.js` / `preview.css`, drives them over `postMessage` like `PreviewService` does, and asserts the frame geometry across a matrix of widths and zoom levels. Run `node preview-lab/run-ci.mjs`.
+This feature is covered by a dedicated test bench, kept outside this repository: it loads
+`preview.js` and `preview.css` unmodified, drives them over `postMessage` exactly like
+`PreviewService` does, and asserts the frame geometry against ground truth it recomputes
+itself, across a matrix of panel widths, zoom levels and captured documents. Every figure
+quoted on this page was measured there. Ask the preview maintainers for access before
+changing anything in `preview.js`: the geometry has six root causes behind it and none of
+them is obvious from reading the code.
 :::
 
 ## Responsive Summary
