@@ -358,6 +358,8 @@ body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer) > di
 
 **12 185 ms → 892 ms** on that document, measured against a baseline re-run minutes earlier in the same session. Every other fixture stays where it was.
 
+Confirmed against the running application on the same document: the main thread is now unavailable for **397 ms in total, worst single gap 301 ms**, where it used to freeze for twenty seconds. A side effect worth knowing: the fit factor now comes out at exactly 1 there, because `computeFitFactor()` reads `body.scrollWidth` and skipped blocks contribute no width — so no layout commit happens at all. On that document it is the *better* answer (measured: the widest table is 858 px in an 867 px panel, so nothing ever overflowed and the old factor of 0.902 was shrinking a document that already fitted). The limitation is real in principle though: on a flowing document whose widest content is off screen *and* genuinely wider than the panel, "fit" now fits what has been laid out rather than the whole document, and a horizontal scrollbar can appear when the reader gets there.
+
 Each part of that selector is a measured decision, and every one of them was learnt by breaking the passage frames first:
 
 - **Two levels, not one.** One top-level section of that document is 1 017 233 px tall on its own, so skipping only the body's children saved 13% — inside the noise. Descending one level does the work. Going further (containment on *every* `div`) is slower again.

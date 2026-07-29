@@ -553,12 +553,20 @@ Four conclusions, none of which was the expected one:
    freezes for the same 21 s. The suspicion was reasonable — a same-origin iframe shares the
    renderer process, so a freeze in the preview *does* freeze the whole app — but it adds
    nothing measurable here.
-2. **The width is the whole story.** Double the viewport and the freeze drops 9×, because a
-   text document at half the width wraps twice as much. This is the one big lever, and the
-   product owns it: the preview panel is narrow by design.
-3. **`preview.js` is 7–9 % of it**, all in the one-off `commitZoomLayout`, and only when the
-   content overflows: at 1900 px the fit factor is 1, no commit happens, and our share falls
-   to 167 ms. A zoom *gesture* after load costs ~1 ms of JS.
+2. **The width matters, but not for the reason it first looked.** At 1900 px the freeze was
+   2 320 ms and at 900 px it was 21 375 — except that identical runs of the *same*
+   configuration span 4 120 to 22 288 ms, so that pair proves nothing on its own. What the
+   bench then established is the mechanism: a wider panel makes `computeFitFactor()` return
+   exactly 1, no layout commit happens, and the document is laid out **once** instead of twice
+   — at its natural width and again at `99% / factor`. Removing the commit took the bench open
+   from 16 336 to 9 346 ms. So the width is a proxy for "does the commit run", not a cost in
+   itself.
+3. **`preview.js` is 7–9 % of the sampled CPU**, all in the one-off `commitZoomLayout`, and
+   only when the content overflows: at 1900 px the fit factor is 1, no commit happens, and our
+   share falls to 167 ms. That share understates it, though — the *layout* the commit provokes
+   lands in the next frame and is charged to `(program)`, which is why the bench, where it can
+   be switched off, put the real figure at 7 s of a 16 s open. A zoom *gesture* after load
+   costs ~1 ms of JS.
 4. **Scrolling is not what freezes.** A wheel sweep blocks 115 ms at worst, and jumping to
    25/50/75/99 % of the document blocks 3–11 ms — except for one seek that blocked 3 009 ms,
    of which 2 105 ms was **garbage collection**. With 444 k DOM nodes traced by the unified
@@ -580,8 +588,19 @@ session, HEAD re-measured minutes before:
 | HEAD | 12 185 ms | 5.5 | 2.8 |
 | with the rule | **892 ms** | 42.2 | 75.6 |
 
-Every other target moved only within the drift. Two experiments along the way that a reader
-of the numbers should know about:
+Every other target moved only within the drift. Checked afterwards against the running
+application on the same document: **397 ms blocked in total, worst gap 301 ms**, for 766 ms of
+CPU over a 31-second observation — against a twenty-second freeze before.
+
+That run also surfaced a side effect, which `--eval` then settled: the fit factor comes out at
+exactly 1, because `computeFitFactor()` reads `body.scrollWidth` and skipped blocks contribute
+no width, so no layout commit happens. On that document it is the better answer — the widest
+table is 858 px in an 867 px panel, no position overflows, and the old factor of 0.902 was
+shrinking a document that already fitted. In principle, though, a flowing document whose
+widest content is off screen *and* genuinely wider than the panel will now fit what has been
+laid out rather than the whole document.
+
+Two experiments along the way that a reader of the numbers should know about:
 
 - **`--inject-css` on the real document said the prize existed** before a line of product code
   was written: the engine time was layout, not parsing — `domInteractive` is reached in
