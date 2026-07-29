@@ -3,7 +3,16 @@ import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
+import {
+  AppStore,
+  CConverter,
+  PreviewHighlights,
+  PreviewNavigator,
+  PreviewService,
+  QueryParamsStore,
+  QueryService,
+  SelectionStore
+} from "@sinequa/atomic-angular";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { MarkdownPipe } from "@pipes/markdown.pipe";
@@ -105,6 +114,7 @@ export class PreviewContentComponent {
   protected readonly appStore = inject(AppStore);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly previewService = inject(PreviewService);
   private readonly queryService = inject(QueryService);
   private readonly destroyRef = inject(DestroyRef);
@@ -112,7 +122,31 @@ export class PreviewContentComponent {
   // starts loading or the component is destroyed, preventing a stale reveal of the wrong content.
   private revealTimer?: ReturnType<typeof setTimeout>;
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
+  /**
+   * The query the preview has to be resolved against, which is not always the default one.
+   *
+   * `?n=` points a tab at another web service than the default query — `createRoutes()` writes it
+   * into the URL for every tab whose route carries a `wsName` — and the preview has to follow it.
+   * Asking the default query for a document only the tab's query can see fails, and the failure is
+   * invisible: the error interceptor deliberately skips the toast for `api/v1/preview`, and the
+   * caller in `previewDataResource` swallows the error to release the spinner. The symptom is a
+   * preview that never arrives, with nothing in the UI to say why.
+   *
+   * `QueryParamsStore.getQuery()` already resolves the whole chain — the `?n=` parameter first,
+   * then the route data, then the default query — so the only thing to do is stop overriding it.
+   * The default query stays here as a second line of defence: the library reads the route data at
+   * one hard-coded position (`firstChild.children[0].data`), and a route shape it does not expect
+   * would simply miss it. What does *not* stay is a fallback to `_query`: no current app defines a
+   * web service under that name, so it could only turn "this application has no query configured"
+   * into a request for something that does not exist — the same silent failure, one step further
+   * from its cause.
+   *
+   * Read per call rather than once at construction, which also means it is read after the app
+   * store has loaded rather than before.
+   */
+  private currentQueryName(): string | undefined {
+    return this.queryParamsStore.getQuery().name || this.appStore.getDefaultQuery()?.name;
+  }
 
   conversion = input<CConverter | undefined>(undefined);
   onLoadedData = output<PreviewData | undefined>();
@@ -155,7 +189,7 @@ export class PreviewContentComponent {
     defaultValue: undefined,
     stream: ({ params: { id, text, previewHighlights } }) => {
       if (id) {
-        return this.previewService.preview(id, { name: this.queryName, text }, previewHighlights).pipe(
+        return this.previewService.preview(id, { name: this.currentQueryName(), text }, previewHighlights).pipe(
           catchError(() => {
             this.previewService.DOMContentLoaded.set(true);
             return of(undefined);
@@ -320,7 +354,7 @@ export class PreviewContentComponent {
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
-        this.previewService.close(id, { name: this.queryName });
+        this.previewService.close(id, { name: this.currentQueryName() });
       }
     });
   }

@@ -41,7 +41,7 @@ export class BookmarksComponent {
   private readonly drawerStack = inject(DrawerStackService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name);
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
   readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 

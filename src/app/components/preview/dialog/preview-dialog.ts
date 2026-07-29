@@ -65,8 +65,6 @@ export class PreviewDialogComponent {
 
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
-
   chatWithDocQuery: Query = {} as Query;
   miniPreviewQuery: Query = {} as Query;
 
@@ -106,12 +104,12 @@ export class PreviewDialogComponent {
   open(article: Article) {
     this.article.set(article);
     this.chatWithDocQuery = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name || "",
       text: article.title,
       filters: { field: "id", value: article.id, operator: "eq" }
     };
     this.miniPreviewQuery = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name || "",
       text: article.title,
       filters: { field: "id", value: article.id, operator: "eq" }
     };
