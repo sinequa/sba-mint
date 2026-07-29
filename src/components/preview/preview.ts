@@ -1,6 +1,6 @@
 import { afterNextRender, Component, computed, DOCUMENT, ElementRef, effect, inject, output, signal, viewChild } from "@angular/core";
 import { EventManager } from "@angular/platform-browser";
-import { provideTranslocoScope } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { Article as A } from "@sinequa/atomic";
 import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 import { cn, SheetService } from "@sinequa/ui";
@@ -43,6 +43,7 @@ export class PreviewComponent {
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
   protected readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
 
   onClose = output();
 
@@ -55,7 +56,10 @@ export class PreviewComponent {
   protected readonly article = computed(() => {
     const article = this.selectionStore.article?.();
     if (article) {
-      this.applicationService.setTitle(article.title || "Preview");
+      // Fallback for untitled documents — translated so the tab title never stays English in a
+      // French/German interface (RGAA 8.6). The service call (not `translateSignal`) resolves the
+      // key in the root namespace instead of this component's "preview" scope.
+      this.applicationService.setTitle(article.title || this.transloco.translate("pageTitle.preview"));
     }
     return article as Article;
   });

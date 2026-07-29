@@ -1,4 +1,5 @@
 import { Component, DestroyRef, computed, effect, inject } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import { LoggerService } from "@sinequa/agent";
@@ -32,6 +33,11 @@ export class AppComponent {
   private readonly dialogService = inject(DialogService);
 
   private readonly currentUrl = injectCurrentUrl();
+  // Active interface language. Every entry point that changes it (the two user menus and the
+  // user-profile form in atomic-angular) goes through `TranslocoService.setActiveLang`, so
+  // `langChanges$` is the single source of truth. `langChanges$` replays the current value on
+  // subscription, so the initialValue is only a typing formality.
+  private readonly activeLang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
   // Routes that render without the application chrome (no sidebar): auth screens and the error page.
   protected readonly isChromelessRoute = computed(() => /^\/(login|logout|auth|error)/.test(this.currentUrl() ?? ""));
 
@@ -67,6 +73,17 @@ export class AppComponent {
     // login, after re-login and after a user override.
     effect(() => {
       document.documentElement.classList.toggle("dark", this.userSettingsStore.isDarkMode());
+    });
+
+    // Keep `<html lang>` in sync with the interface language (RGAA 8.4, ES-32640).
+    //
+    // `index.html` ships a static `lang="en"` that only covers the bootstrap phase; it must not
+    // stay "en" once the user picks another language, otherwise screen readers keep applying
+    // English pronunciation rules to a French (or German) interface. The language can change
+    // without a page reload — and, like the `dark` class above, it is also re-applied after a
+    // credentials logout → login, which re-initializes the stores without reloading the page.
+    effect(() => {
+      document.documentElement.lang = this.activeLang();
     });
 
     // React to OS scheme changes only when the user defers to the system ("system" mode). In

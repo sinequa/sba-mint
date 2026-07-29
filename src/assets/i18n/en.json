@@ -105,7 +105,8 @@
     "home": "Home",
     "search": "Search",
     "assistant": "Assistant",
-    "agent": "Agent"
+    "agent": "Agent",
+    "preview": "Preview"
   },
   "assistant": {
     "userPrompt": "Hi, my name is [[principal.fullName]].",
