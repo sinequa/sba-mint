@@ -37,8 +37,16 @@ Nothing stops you from having modified any function in this file, so here is the
 measure. Of the **29 functions that existed**, one survives byte-for-byte (`getBoundingBox`).
 The rest: **5 removed, 23 rewritten**, and 44 new ones.
 
-- **Removed**: `selectPassage`, `selectPassage2`, `getHighlightHtmlById`, `getHighlightTextById`, `resizeSvgBackground`.
 - **Rewritten** — grep your patch for these, a three-way merge will not land cleanly on any of them: `addSvgLine`, `createWorker`, `getElementsById`, `getHtml`, `getPositions`, `getText`, `getVerticalPositions`, `highlight`, `init`, `isElementInViewport`, `onMouseMove`, `onMouseUp`, `receiveMessage`, `removeAllClasses`, `removeAllElements`, `returnMessage`, `select`, `selectHighlight`, `selectHighlightSVG`, `setSvgBackgroundPositionAndSize`, `unselect`, `zoom`, `zoomFit`.
+- **Removed, but not lost.** All five have a successor — no functionality was dropped, so if your patch sits on one of these, here is where its body went:
+
+| Removed | Where its body went | What changed |
+| --- | --- | --- |
+| `resizeSvgBackground(rect, tspan)` | `measureSvgBackground(rect, tspan)`, plus the write loop in `setSvgBackgroundPositionAndSize()` | **Same arithmetic** — same `getBBox()`, `getExtentOfChar(0)` and `getComputedTextLength()`, same deltas, same four attributes, same `transform` copy. Only the writes moved out, so that reads and writes stop alternating per `tspan`: that interleaving was quadratic, 6 483 → 381 ms at 5 000 highlighted runs. It is renamed because it no longer resizes anything — it measures. |
+| `selectPassage(elements)` | `getPassageLayer()`, `collectPassageRects()`, `groupPassageRects()`, `renderPassage()` | Rewritten. The old one created `#sq-passage-highlighter` and drew **one** union rectangle; the new path draws one frame per contiguous block. |
+| `selectPassage2(elements)` | — (deliberately none) | It attached the overlay *inside* `elements[0]` with `position: relative`, which is exactly the coordinate-space mixing this ticket fixes. |
+| `getHighlightTextById(id)` | `getText()`, through `collectElementsByIds()` | Folded into its caller: one document pass for all requested ids instead of one walk per id — 224 313 → 33 ms at 20 000 ids. |
+| `getHighlightHtmlById(id)` | `getHtml()`, through `collectElementsByIds()` | Same. |
 
 Some of those rewrites change behaviour a caller can observe, not just the implementation:
 
