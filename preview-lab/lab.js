@@ -48,9 +48,14 @@
     { name: "basic-pptx", file: "fixtures/basic-pptx.html" },
     // A fourth: a genuine frameset, where the content lives in another document and
     // preview.js runs in five instances at once.
-    { name: "basic-excel-jap", file: "fixtures/basic-excel-jap.html" }
-    // basic-huge is deliberately NOT here -- see "A defect this bench found and did not
-    // fix" in the README. It stays a profiling target.
+    { name: "basic-excel-jap", file: "fixtures/basic-excel-jap.html" },
+    // A fifth: 447 919 tags and 4 607 tables, one flowing stream. It was a profiling
+    // target only, because two of its scenarios failed for reasons nobody understood.
+    // They pass since off-screen skipping landed -- measured both ways, see the README --
+    // so it is now an assertion fixture, and one whose 24 scenarios go red if that rule
+    // ever stops applying. Affordable at last, too: it used to take 12 s to load, and
+    // takes 0.9 s now.
+    { name: "basic-huge", file: "fixtures/basic-huge.html" }
   ];
 
   // The iframe width decides how many page sheets fit per row, i.e. whether the
@@ -86,7 +91,8 @@
     { name: "stress-abs-60k", file: "fixtures/zoom-stress.html?nodes=60000&mode=absolute" },
     { name: "stress-flow-5k", file: "fixtures/zoom-stress.html?nodes=5000&mode=flow" },
     { name: "stress-flow-20k", file: "fixtures/zoom-stress.html?nodes=20000&mode=flow" },
-    // A real capture with no passage at all, so it cannot be an assertion fixture: 444 503
+    // Also an assertion fixture now (see FIXTURES); profiled as well, because it is the one
+    // capture where cost and correctness are both interesting: 444 503
     // tags, of which 289 824 <td> in 4 607 tables. Reported as crashing the browser in the
     // app, which is the one thing the assertion matrix can never tell us.
     { name: "basic-huge", file: "fixtures/basic-huge.html" },

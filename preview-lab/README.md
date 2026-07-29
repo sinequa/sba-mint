@@ -368,22 +368,42 @@ about the viewport and could never have been caught by a geometric one.
   `/app/preview-lab/assets/worker.js` is logged. It is caught by `createWorker()`
   and has no effect on the bench.
 
-## A defect this bench found and did not fix
+## A defect this bench found, and how it went away
 
-`basic-huge.html` has 100 passages, so it can be an assertion fixture — and it is
-**deliberately not registered as one**, because two of its scenarios fail and the cause
-is not understood. Registering it would leave the matrix red, which would cost the bench
-its only real property: that a failure means something.
+`basic-huge.html` **is** an assertion fixture now — 24 scenarios, all green. It was not, for
+a while: two of its scenarios failed and the cause was not understood, and registering it
+would have left the matrix permanently red, which would cost the bench its only real
+property, that a failure means something.
 
-Exact reproduction, which is why this is written down rather than forgotten:
+What resolved it was **off-screen skipping**, as a side effect. Measured both ways, on the
+same fixture in the same session:
 
-```js
-// in lab.js FIXTURES
-{ name: "basic-huge", file: "fixtures/basic-huge.html" }
-// in the fixture, declare:
-matchingpassages_84: { label: "densest passage, 32 fragments" }
-matchingpassages_99: { label: "19 fragments, end of document" }
+| `src/assets/preview.{js,css}` | `basic-huge` |
+| --- | --- |
+| pre-containment (`5a176faf`) | **41/43** — both known failures, exactly as described below |
+| with containment | 43/43 |
+| with containment, `ResizeObserver` disabled | 43/43 |
+
+So it is the CSS rule, not the observer, that does it. Read the honest way round: at 520 px
+and factor 1.1 the layout regime that produced the failure no longer arises on this document,
+because the blocks around the passage are not laid out at all. **The block grouping was never
+shown to be correct on that shape — the shape stopped occurring.** The description below is
+kept for that reason: if the grouping is ever exercised on fragments scattered across table
+cells again, this is the ground already covered.
+
+Exact reproduction, still valid against `5a176faf`:
+
+```bash
+# the fixture and its two declared passages are in the repository; take the product files
+# back to before the containment rule and the failure returns
+git show 5a176faf:src/assets/preview.css > src/assets/preview.css
+git show 5a176faf:src/assets/preview.js  > src/assets/preview.js
+node preview-lab/run-ci.mjs --only basic-huge
 ```
+
+Note `git show` rather than `git stash`: stashing a path that is already committed saves
+nothing and exits 0, so the "before" run silently measures the *after* code. That mistake was
+made twice in this work before being noticed.
 
 Both fail at **520 px, `fit +2` only** (factor 1.1), and nowhere else:
 
@@ -619,6 +639,10 @@ reads like a geometry bug:
 | + overlay excluded | 366/406 | estimated heights change and nothing notices |
 | + `ResizeObserver` on the containers | 114/115 | page anchors inside estimated containers are never "in view" |
 | + paginated documents excluded | **115/115, 406/406** | — |
+
+The matrix is 430 scenarios now, not 406: `basic-huge` became affordable enough to register
+as an assertion fixture, and the whole run takes 3 min 55 s — less than it did with 24 fewer
+scenarios, because the fixtures it skips through are cheaper to lay out.
 
 Isolating which half of the rule broke things was worth the two runs it cost: with
 `contain-intrinsic-height` removed the bench went straight back to 114/115, which said the
