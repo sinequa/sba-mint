@@ -209,6 +209,50 @@ document.addEventListener("DOMContentLoaded", function () {
    * viewport space and therefore includes the transform. The converters emit no doctype,
    * so quirks is the common case here, not the exotic one.
    */
+  /**
+   * Runs `measure` with the body's children momentarily excluded from off-screen skipping.
+   *
+   * This exists because size containment and this measurement are in direct conflict. A
+   * skipped page is *size-contained*: its box collapses to the width its parent offers
+   * instead of the width its content needs, so `body.scrollWidth` reports no overflow at
+   * all. Measured on a 19-page PDF at a 606 px panel: pages 2 566 px wide read as 552, the
+   * fit factor came out at 1 instead of 0.23, and the document opened four times too large
+   * with no horizontal scrollbar to escape with. Nothing in the assertion matrix noticed --
+   * every check there is scale-invariant by design.
+   *
+   * The cost is one full layout, once per fit, and it is not avoidable: the width of a page
+   * is not knowable without laying it out, and no cheaper proxy survives contact with a
+   * converter that positions text absolutely. What it buys back is that the pages now carry
+   * a *remembered* size, so every later read -- a resize, another zoom-fit -- is already
+   * correct and cheap.
+   */
+  function withSkippingSuspended(body, view, measure) {
+    // Only the conversions built out of page sheets. There, the sheets have a fixed
+    // intrinsic width the panel cannot change, so the fit *must* shrink them and the only
+    // way to learn that width is to lay one out. A flowing document is the opposite case:
+    // its text already reflows to the panel, so suspending buys a correct answer that was
+    // going to be 1 anyway -- and it costs the full layout of the document, measured at
+    // 892 -> 3 729 ms to open the 15 MB capture. Whether a flowing document with an
+    // unbreakable 2 000 px table needs this after all is a question A12 of the bench is
+    // positioned to answer, on every fixture wide enough for it to mean something.
+    const paginated = body.classList.contains("bd") || body.querySelector(".stl_");
+    if (!paginated) return measure();
+
+    const suspended = [];
+    const children = body.children;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      if (!child.style || view.getComputedStyle(child).contentVisibility !== "auto") continue;
+      child.style.contentVisibility = "visible";
+      suspended.push(child);
+    }
+    try {
+      return measure();
+    } finally {
+      for (let i = 0; i < suspended.length; i++) suspended[i].style.contentVisibility = "";
+    }
+  }
+
   function computeFitFactor(body) {
     // Declared here, not at module level: zoomFit() runs synchronously at
     // DOMContentLoaded, before a `var` further down the file has been assigned.
@@ -220,7 +264,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!panel) return 1;
 
     const quirks = contentDocument.compatMode !== "CSS1Compat";
-    const overflow = body.scrollWidth;
+    const overflow = withSkippingSuspended(body, view, function () {
+      return body.scrollWidth;
+    });
     // What the overflow is measured against, in the same space as the overflow itself.
     const visible = quirks ? panel : body.clientWidth;
     // Nothing sticks out: there is nothing to shrink, and scrollWidth would only be

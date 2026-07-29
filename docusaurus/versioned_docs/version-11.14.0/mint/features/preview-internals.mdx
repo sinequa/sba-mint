@@ -358,7 +358,15 @@ body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer) > di
 
 **12 185 ms → 892 ms** on that document, measured against a baseline re-run minutes earlier in the same session. Every other fixture stays where it was.
 
-Confirmed against the running application on the same document: the main thread is now unavailable for **397 ms in total, worst single gap 301 ms**, where it used to freeze for twenty seconds. A side effect worth knowing: the fit factor now comes out at exactly 1 there, because `computeFitFactor()` reads `body.scrollWidth` and skipped blocks contribute no width — so no layout commit happens at all. On that document it is the *better* answer (measured: the widest table is 858 px in an 867 px panel, so nothing ever overflowed and the old factor of 0.902 was shrinking a document that already fitted). The limitation is real in principle though: on a flowing document whose widest content is off screen *and* genuinely wider than the panel, "fit" now fits what has been laid out rather than the whole document, and a horizontal scrollbar can appear when the reader gets there.
+Confirmed against the running application on the same document: the main thread is now unavailable for **397 ms in total, worst single gap 301 ms**, where it used to freeze for twenty seconds.
+
+:::warning
+Size containment and the fit measurement are in direct conflict, and it cost a regression to learn it. A skipped container is size-contained: its box collapses to the width its parent offers instead of the width its content needs, so `body.scrollWidth` reports no overflow and `computeFitFactor()` returns 1. On a 19-page PDF at a 606 px panel, pages 2 566 px wide read as 552 and the document opened four times too large.
+
+`computeFitFactor()` therefore suspends skipping for the duration of the read — but only on the conversions built out of page sheets (`body.bd`, or anything containing a `.stl_`). There the sheets have a fixed intrinsic width the panel cannot change, so the fit *must* shrink them, and the only way to learn that width is to lay one out: it costs the full layout once per fit, and buys back a *remembered* size, so every later read is correct and cheap.
+
+A flowing document is the opposite case — its text already reflows to the panel — so it is left alone: suspending there would cost the full layout of the document (measured: 892 → 3 729 ms to open the 15 MB capture) to compute an answer that was going to be 1. The residual limitation is stated plainly: a flowing document with an unbreakable element genuinely wider than the panel will not be fitted, and `A12` of the bench is positioned to catch it on any fixture where it happens.
+:::
 
 Each part of that selector is a measured decision, and every one of them was learnt by breaking the passage frames first:
 
