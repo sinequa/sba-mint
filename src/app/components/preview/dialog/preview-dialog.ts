@@ -1,8 +1,8 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { Article, CCApp, Query } from '@sinequa/atomic';
-import { AdvancedSearch, AppStore, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { Component, computed, effect, inject, signal, viewChild } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { Article, CCApp, Query } from "@sinequa/atomic";
+import { AdvancedSearch, AppStore, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 import {
   ButtonComponent,
   ChevronLeftIconComponent,
@@ -15,9 +15,9 @@ import {
   TabComponent,
   TabsComponent,
   TabsListComponent
-} from '@sinequa/ui';
-import { AssistantComponent } from '../../assistant/assistant';
-import { PreviewContentComponent } from '../preview-content/preview-content';
+} from "@sinequa/ui";
+import { AssistantComponent } from "../../assistant/assistant";
+import { PreviewContentComponent } from "../preview-content/preview-content";
 
 /**
  * Preview dialog component
@@ -32,7 +32,7 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
  *
  */
 @Component({
-  selector: 'preview-dialog, PreviewDialog, previewdialog',
+  selector: "preview-dialog, PreviewDialog, previewdialog",
   imports: [
     ButtonComponent,
     DialogComponent,
@@ -51,7 +51,7 @@ import { PreviewContentComponent } from '../preview-content/preview-content';
     Separator
   ],
   providers: [PreviewService],
-  templateUrl: './preview-dialog.html'
+  templateUrl: "./preview-dialog.html"
 })
 export class PreviewDialogComponent {
   protected readonly appStore = inject(AppStore);
@@ -60,12 +60,12 @@ export class PreviewDialogComponent {
   protected readonly appFeatures = this.appStore.general()?.features;
 
   public readonly article = signal<Article | undefined>(undefined);
-  public readonly activeTab = signal<'chat' | 'summary' | 'find'>('chat');
+  public readonly activeTab = signal<"chat" | "summary" | "find">("chat");
   public readonly sidebarExpanded = signal<boolean>(true);
 
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
+  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
   chatWithDocQuery: Query = {} as Query;
   miniPreviewQuery: Query = {} as Query;
@@ -76,7 +76,7 @@ export class PreviewDialogComponent {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-chatwithdoc-assistant`;
     } else {
-      return 'preview-chatwithdoc-assistant';
+      return "preview-chatwithdoc-assistant";
     }
   });
 
@@ -86,7 +86,7 @@ export class PreviewDialogComponent {
       const { name } = getState(this.appStore) as CCApp;
       return `${name}-preview-summarize-assistant`;
     } else {
-      return 'preview-summarize-assistant';
+      return "preview-summarize-assistant";
     }
   });
 
@@ -95,10 +95,10 @@ export class PreviewDialogComponent {
 
   constructor() {
     effect(() => {
-      if (this.activeTab() === 'chat' && !this.displayChatWithDocContent()) {
-        this.activeTab.set(this.displaySummaryContent() ? 'summary' : 'find');
-      } else if (this.activeTab() === 'summary' && !this.displaySummaryContent()) {
-        this.activeTab.set('find');
+      if (this.activeTab() === "chat" && !this.displayChatWithDocContent()) {
+        this.activeTab.set(this.displaySummaryContent() ? "summary" : "find");
+      } else if (this.activeTab() === "summary" && !this.displaySummaryContent()) {
+        this.activeTab.set("find");
       }
     });
   }
@@ -106,14 +106,14 @@ export class PreviewDialogComponent {
   open(article: Article) {
     this.article.set(article);
     this.chatWithDocQuery = {
-      name: this.appStore.getDefaultQuery()?.name || '_query',
+      name: this.appStore.getDefaultQuery()?.name || "_query",
       text: article.title,
-      filters: { field: 'id', value: article.id, operator: 'eq' }
+      filters: { field: "id", value: article.id, operator: "eq" }
     };
     this.miniPreviewQuery = {
-      name: this.appStore.getDefaultQuery()?.name || '_query',
+      name: this.appStore.getDefaultQuery()?.name || "_query",
       text: article.title,
-      filters: { field: 'id', value: article.id, operator: 'eq' }
+      filters: { field: "id", value: article.id, operator: "eq" }
     };
     this.dialog()!.showModal();
   }
