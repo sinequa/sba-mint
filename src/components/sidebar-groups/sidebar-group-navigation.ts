@@ -61,7 +61,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
                 <span class="text-sm">{{ 'search' | transloco }}</span>
               </sidebar-menu-button>
               <a 
-                class="text-lg sr-only"
+                class="sr-only"
                 routerLink="/search"
                 routerLinkActive="active"
                 #rlaSearch="routerLinkActive"
