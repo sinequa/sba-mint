@@ -22,7 +22,7 @@ import { CommentIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarM
           <span class="text-sm">{{ 'chats' | transloco }}</span>
         </sidebar-menu-button>
         <a
-          class="text-lg sr-only"
+          class="sr-only"
           routerLink="/assistant"
           routerLinkActive="active"
           #rlaAssistant="routerLinkActive"
