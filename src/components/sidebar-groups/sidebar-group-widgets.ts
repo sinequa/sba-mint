@@ -77,7 +77,7 @@ export type NavbarMenu = {
                     <span class="text-sm">{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                   <a 
-                    class="text-lg sr-only"
+                    class="sr-only"
                     [routerLink]="menu.routerLink"
                     routerLinkActive="active"
                     #rla="routerLinkActive"
