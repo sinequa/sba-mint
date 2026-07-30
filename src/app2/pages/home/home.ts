@@ -79,7 +79,8 @@ export class HomeComponent {
 
   async getFirstPageQuery() {
     try {
-      const query = this.appStore.getDefaultQuery() || { name: "_default" };
+      const query = this.appStore.getDefaultQuery();
+      if (!query) return;
       const response = await fetchQuery({ isFirstPage: true, name: query.name });
       this.aggregationStore.update(response.aggregations);
     } catch (err: any) {
