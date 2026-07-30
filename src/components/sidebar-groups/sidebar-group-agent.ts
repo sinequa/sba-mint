@@ -29,7 +29,7 @@ import { injectCurrentUrl } from "../../utils/routing";
           <robot-icon />
           <span class="text-sm">{{ agent }}</span>
         </sidebar-menu-button>
-        <a class="sr-only" [attr.aria-label]="agent" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">{{ agent }}></a>
+        <a class="sr-only" [attr.aria-label]="agent" routerLink="/chat/new" routerLinkActive="active" #rla2="routerLinkActive" [attr.data-active]="rla2.isActive || null">{{ agent }}</a>
       </sidebar-menu-item>
 
       <!-- Sub-entries, only while on the agent route (mirrors the Search widgets pattern).
