@@ -48,7 +48,7 @@ import { injectCurrentUrl } from "../../utils/routing";
             <new-chat-icon />
             <span class="text-sm">{{ newChat }}</span>
           </sidebar-menu-button>
-          <a class="sr-only text-lg" [attr.aria-label]="newChat">{{ newChat }}</a>
+          <a class="sr-only" [attr.aria-label]="newChat">{{ newChat }}</a>
         </sidebar-menu-item>
 
         @let searchChats = 'searchChats' | transloco;
