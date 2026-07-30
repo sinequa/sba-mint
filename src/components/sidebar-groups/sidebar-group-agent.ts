@@ -57,7 +57,7 @@ import { injectCurrentUrl } from "../../utils/routing";
             <magnifying-glass-icon />
             <span class="text-sm">{{ searchChats }}</span>
           </sidebar-menu-button>
-         <a class="sr-only text-lg" [attr.aria-label]="searchChats" (click)="savedChatsDialog.open()">{{ searchChats }}</a>
+         <a class="sr-only" [attr.aria-label]="searchChats" (click)="savedChatsDialog.open()">{{ searchChats }}</a>
         </sidebar-menu-item>
       }
     </sidebar-menu>
