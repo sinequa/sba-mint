@@ -110,7 +110,7 @@ export type NavbarMenu = {
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
                   </DropdownContent>
                 </Dropdown>
-                <sidebar-menu-action sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
+                <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
                   <arrow-up-right-from-square-icon />
                   <span class="sr-only">{{ 'moveTo' | transloco: { target: menu.display | transloco } }}</span>
                 </sidebar-menu-action>
