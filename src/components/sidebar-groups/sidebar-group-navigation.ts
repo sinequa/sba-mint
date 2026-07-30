@@ -36,7 +36,7 @@ import { WidgetsSidebarGroupComponent } from "./sidebar-group-widgets";
               <span class="text-sm">{{ 'home' | transloco }}</span>
             </sidebar-menu-button>
             <a 
-              class="text-lg sr-only"
+              class="sr-only"
               routerLink="/home"
               routerLinkActive="active"
               #rlaHome="routerLinkActive"
