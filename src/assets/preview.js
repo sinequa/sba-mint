@@ -822,10 +822,20 @@ document.addEventListener("DOMContentLoaded", function () {
     styleElement = contentDocument.createElement("style");
     contentDocument.head.appendChild(styleElement);
 
+    // `visibility: visible` is not redundant. The PdfToHtml family emits, over the scanned image
+    // of the page, an OCR text layer whose every word carries an inline `visibility: hidden`: the
+    // image is what the reader sees, the text is only there to be searched and selected. The
+    // highlight spans are nested *inside* those words, so they inherit the invisibility -- neither
+    // their background nor the `sq-current` frame is ever painted, which is why a highlight could
+    // be scrolled to and still show nothing. A declaration on the highlight itself wins over what
+    // it inherits, and it is scoped to the categories currently switched on: switching one off
+    // drops its rule, and the word goes back to hidden with it, so nothing of the text layer is
+    // revealed that the reader did not ask for.
     styleElement.textContent = highlights
       .map(function (highlight) {
         return `
           span.${highlight.name} {
+              visibility: visible;
               color: ${highlight.color || "black"};
               background-color: ${highlight.bgColor || "yellow"};
           }
@@ -865,12 +875,24 @@ document.addEventListener("DOMContentLoaded", function () {
     var anchor = elements.find(isMeasurable) || elements[0];
     scrollAnchorIntoView(anchor);
 
-    if (usePassageHighlighter) {
+    if (usePassageHighlighter || isMeasurable(anchor)) {
+      // Anything with a box of its own gets the frame, whoever asked for the selection. The
+      // dashed outline this replaces was set on the element itself, so on the OCR text layer of a
+      // PdfToHtml conversion it inherited the per-word `visibility: hidden` and was never seen:
+      // entity navigation scrolled to the right place and showed nothing there. The overlay is a
+      // sibling of the body, outside that hidden subtree, so it shows whatever the document does
+      // to its text -- and it is the frame extract navigation has always drawn, so entities now
+      // land on the same marker rather than a second one.
+      //
+      // `currentPassageId` and the settle deadline are what keep the frame on the text through a
+      // later scroll or zoom; without them an entity frame would be drawn once and then drift.
       currentPassageId = id;
       passageSettleUntil = Date.now() + PASSAGE_SETTLE_MS;
       attemptRenderPassage(id, RENDER_ATTEMPTS);
     } else {
-      // Extract and entity navigation keeps the historical dashed outline.
+      // No box to frame: a page anchor (`sq-page-start-N`) is an empty div, a pure scroll target.
+      // Framing it would draw nothing and still cost five render attempts and three seconds of
+      // repositioning on scroll, so it keeps the historical dashed outline instead.
       setTimeout(function () {
         selectHighlight(elements);
       }, 400);
