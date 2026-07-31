@@ -412,7 +412,7 @@ For **secondary conversions** (multi-conversion), passage highlighting is not po
 
 ### Passage frames (the blue box)
 
-`usePassageHighlighter: true` makes `preview.js` draw a blue frame around the passage. The frame is **not** a single rectangle: one frame is drawn per contiguous block of the passage, so a passage that crosses a page break or a column break gets one frame per page / per column instead of one box spanning everything in between.
+`preview.js` draws a blue frame around the selected target whenever that target has a box of its own — a cited passage, an extract, an entity. `usePassageHighlighter: true` asks for it explicitly and also reveals a hidden AI description when the citation points into one; a caller passing `false` gets the frame all the same, which is what makes an entity locatable on an OCR text layer whose every word is `visibility: hidden` (ES-28511). Only a target with no box to frame is left out, the `sq-page-start-N` page anchor being the one that matters. The frame is **not** a single rectangle: one frame is drawn per contiguous block of the passage, so a passage that crosses a page break or a column break gets one frame per page / per column instead of one box spanning everything in between.
 
 The implementation lives in `src/assets/preview.js`:
 
