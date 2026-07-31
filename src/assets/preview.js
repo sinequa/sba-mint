@@ -822,10 +822,20 @@ document.addEventListener("DOMContentLoaded", function () {
     styleElement = contentDocument.createElement("style");
     contentDocument.head.appendChild(styleElement);
 
+    // `visibility: visible` is not redundant. The PdfToHtml family emits, over the scanned image
+    // of the page, an OCR text layer whose every word carries an inline `visibility: hidden`: the
+    // image is what the reader sees, the text is only there to be searched and selected. The
+    // highlight spans are nested *inside* those words, so they inherit the invisibility -- neither
+    // their background nor the `sq-current` frame is ever painted, which is why a highlight could
+    // be scrolled to and still show nothing. A declaration on the highlight itself wins over what
+    // it inherits, and it is scoped to the categories currently switched on: switching one off
+    // drops its rule, and the word goes back to hidden with it, so nothing of the text layer is
+    // revealed that the reader did not ask for.
     styleElement.textContent = highlights
       .map(function (highlight) {
         return `
           span.${highlight.name} {
+              visibility: visible;
               color: ${highlight.color || "black"};
               background-color: ${highlight.bgColor || "yellow"};
           }
