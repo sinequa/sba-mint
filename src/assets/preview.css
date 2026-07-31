@@ -184,6 +184,23 @@ body {
   transform-origin: 0 0;
 }
 
+/* A preview is a viewer, not a navigable document.
+
+   The PdfToHtml family turns any e-mail address or URL it finds in the text into a link, and on an
+   OCR'd conversion those links are invisible yet clickable: the `visibility: hidden` it writes sits
+   on the word *inside* the anchor, and hidden keeps its geometry, so the anchor still takes the
+   click. Clicking what looks like blank space on the scanned image opened a mail client, with
+   nothing on screen to suggest a link was there. An `http` link would have been worse still,
+   replacing the preview with the external site inside the iframe.
+
+   This covers every conversion, including the ones whose links are visible: a page sheet is
+   something to read, and following a link out of it is not what the reader asked for. The page
+   navigator Aspose emits is unaffected -- it lives in `.ph`, hidden below, and `preview.js` drives
+   pagination by calling the document's own `GoN()` / `SetPage()` rather than by clicking it. */
+a {
+  pointer-events: none;
+}
+
 /*  hide multi-modal description */
 :root {
   --desc-display: none;
