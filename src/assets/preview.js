@@ -875,12 +875,24 @@ document.addEventListener("DOMContentLoaded", function () {
     var anchor = elements.find(isMeasurable) || elements[0];
     scrollAnchorIntoView(anchor);
 
-    if (usePassageHighlighter) {
+    if (usePassageHighlighter || isMeasurable(anchor)) {
+      // Anything with a box of its own gets the frame, whoever asked for the selection. The
+      // dashed outline this replaces was set on the element itself, so on the OCR text layer of a
+      // PdfToHtml conversion it inherited the per-word `visibility: hidden` and was never seen:
+      // entity navigation scrolled to the right place and showed nothing there. The overlay is a
+      // sibling of the body, outside that hidden subtree, so it shows whatever the document does
+      // to its text -- and it is the frame extract navigation has always drawn, so entities now
+      // land on the same marker rather than a second one.
+      //
+      // `currentPassageId` and the settle deadline are what keep the frame on the text through a
+      // later scroll or zoom; without them an entity frame would be drawn once and then drift.
       currentPassageId = id;
       passageSettleUntil = Date.now() + PASSAGE_SETTLE_MS;
       attemptRenderPassage(id, RENDER_ATTEMPTS);
     } else {
-      // Extract and entity navigation keeps the historical dashed outline.
+      // No box to frame: a page anchor (`sq-page-start-N`) is an empty div, a pure scroll target.
+      // Framing it would draw nothing and still cost five render attempts and three seconds of
+      // repositioning on scroll, so it keeps the historical dashed outline instead.
       setTimeout(function () {
         selectHighlight(elements);
       }, 400);
