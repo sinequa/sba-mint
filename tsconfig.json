@@ -25,7 +25,9 @@
     "paths": {
       "@components/*": ["./src/components/*"],
       "@config/*": ["./src/config/*"],
+      "@pipes/*": ["./src/pipes/*"],
       "@registry/*": ["./src/registry/*"],
+      "@services/*": ["./src/services/*"],
       "@utils/*": ["./src/utils/*"]
     }
   },

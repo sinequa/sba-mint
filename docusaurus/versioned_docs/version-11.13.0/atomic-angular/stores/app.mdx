@@ -232,36 +232,6 @@ Retrieves the sorted aggregations based on the query name included in the route 
 Returns an array of sorted aggregations.
 
 ```ts
-<<<<<<<< HEAD:docusaurus/versioned_docs/version-11.14.0/atomic-angular/stores/app.mdx
-getAuthorizedFilters(): Aggregation[]
-```
-
-#### Usage
-
-```ts
-const aggregations = inject(AppStore).getAuthorizedFilters();
-// Output: [{ column: "geo", icon: "fa-solid fa-earth-europe", hidden: false }]
-```
-
-## getAuthorized()
-
-Returns the subset of authorized filters that match the provided filters.
-
-```ts
-getAuthorized(filters: {name: string, column: string}[]): Aggregation[]
-```
-
-### Usage
-
-```ts
-const filters = [
-  { name: "geo", column: "geo" },
-  { name: "company", column: "company" }
-];
-const authorized = inject(AppStore).getAuthorized(filters);
-```
-
-========
 getAuthorizedFilters(route: ActivatedRoute): Aggregation[]
 ```
 
@@ -277,7 +247,6 @@ const aggregations = inject(AppStore).getAuthorizedFilters(route);
 // Output: [{ column: "geo", icon: "fa-solid fa-earth-europe", hidden: false }]
 ```
 
->>>>>>>> origin/release/11.14.0:docusaurus/versioned_docs/version-11.13.0/atomic-angular/stores/app.mdx
 ## Customization features
 
 ### Customization JSON files
@@ -434,11 +403,7 @@ getDefaultQuery(): CCQuery | undefined
 ```
 
 :::important
-<<<<<<<< HEAD:docusaurus/versioned_docs/version-11.14.0/atomic-angular/stores/app.mdx
-The default query is **always** the first query in the list of queries.
-========
 The default query is __always__ the first query in the list of queries.
->>>>>>>> origin/release/11.14.0:docusaurus/versioned_docs/version-11.13.0/atomic-angular/stores/app.mdx
 :::
 
 #### Usage

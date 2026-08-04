@@ -77,6 +77,8 @@
   "home": "Home",
   "chats": "Chats",
   "agent": "Agent",
+  "newChat": "New chat",
+  "searchChats": "Search chats",
   "seeMore": "See all",
   "title": "Title",
   "to": "To",
@@ -99,6 +101,12 @@
   "help": "Help",
   "administration": "Administration",
   "askAI": "Ask AI",
+  "pageTitle": {
+    "home": "Home",
+    "search": "Search",
+    "assistant": "Assistant",
+    "agent": "Agent"
+  },
   "assistant": {
     "userPrompt": "Hi, my name is [[principal.fullName]].",
     "connectionErrorMessage": "Connection lost! Please check your network connection and try again.",

@@ -1,12 +1,14 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironmentInitializer } from "@angular/core";
 import {
   AGENT_INSTANCE_ID,
+  AGENT_JSON_NAME,
   LoggerService,
   provideDefaultAffordance,
   provideDefaultAgentToolbarActions,
   provideDefaultDebugPresentation,
   provideDefaultEmptyComponent,
   provideDefaultErrorComponent,
+  provideDefaultInputFilters,
   provideDefaultRendererPlugins,
   provideDefaultShikiHighlighterConfig,
   provideDefaultToolCardPlugins,
@@ -18,6 +20,7 @@ import {
 
 export function provideAgent(): EnvironmentProviders {
   return makeEnvironmentProviders([
+    { provide: AGENT_JSON_NAME, useValue: "agents" },
     { provide: AGENT_INSTANCE_ID, useValue: "chatSearchInstance" },
     LoggerService,
     SavedChatsService,
@@ -40,6 +43,7 @@ export function provideAgent(): EnvironmentProviders {
     provideDefaultUserToolbarActions(),
     provideDefaultWelcomeComponent(), // keep the animated-robot hero
     provideDefaultEmptyComponent(), // null (hidden) — symmetric default
-    provideDefaultErrorComponent() // null (hidden) — symmetric default
+    provideDefaultErrorComponent(), // null (hidden) — symmetric default
+    provideDefaultInputFilters()
   ]);
 }

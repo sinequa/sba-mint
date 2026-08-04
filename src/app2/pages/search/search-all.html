@@ -35,14 +35,53 @@
   }
 </ng-template>
 
+<!-- left filters drawer — floating slide-in panel (non-modal), reused from the agent page pattern.
+     Hosts the `position: 'left' | 'both'` filters. Auto-closes when the pointer leaves it. -->
+<ng-template #filtersDrawer>
+  <aside
+    class="absolute top-0 left-0 z-30 h-full w-[20rem] p-3 transition-transform duration-300 ease-out max-md:w-full"
+    [class.-translate-x-full]="filtersCollapsed()"
+    [inert]="filtersCollapsed()"
+    (mouseleave)="closeFilters()">
+    <div class="flex h-full w-full flex-col gap-2 rounded-3xl border border-menu-border bg-background px-4 py-3 shadow-lg">
+      <div class="flex items-center justify-between">
+        <span class="font-semibold">{{ "filters" | transloco }}</span>
+        <button variant="none" icon-button (click)="toggleFilters()" [attr.aria-label]="'close' | transloco">
+          <xmark-icon />
+        </button>
+      </div>
+      <!-- single outer scroll lives here (scrollbar-thin); neutralize aside-filters' own
+           overflow so it isn't a second, default-styled scroll container -->
+      <div class="flex flex-1 scrollbar-thin flex-col gap-2 overflow-y-auto">
+        <aside-filters class="overflow-visible" />
+      </div>
+    </div>
+  </aside>
+</ng-template>
+
 <!-- on mobile devices use sheet previewer -->
 @if (isMobile()) {
-  <div class="flex h-dvh gap-2">
+  <div class="relative flex h-dvh gap-2">
+    @if (hasAsideFilters()) {
+      <ng-container *ngTemplateOutlet="filtersDrawer" />
+    }
     <div class="relative z-5 flex w-full flex-col bg-background p-4">
-      <search-with-autocomplete class="w-full" />
+      <search-with-autocomplete class="w-full pt-11 md:pt-0" />
 
       @if (isTabSearchActive()) {
         <navbar-tabs noTruncate="true" />
+      }
+
+      @if (hasAsideFilters() && !isMobile()) {
+        <button
+          variant="none"
+          icon-button
+          class="mt-2 self-start"
+          (click)="toggleFilters()"
+          [title]="'filters' | transloco"
+          [attr.aria-label]="'filters' | transloco">
+          <filter-icon />
+        </button>
       }
 
       <app-search-actions
@@ -73,7 +112,10 @@
 }
 <!-- on desktop devices -->
 @else {
-  <div class="flex h-(--search-content-height) gap-2">
+  <div class="relative flex h-(--search-content-height) gap-2">
+    @if (hasAsideFilters()) {
+      <ng-container *ngTemplateOutlet="filtersDrawer" />
+    }
     <!-- column 2 — main results -->
     <div
       [class]="cn('relative flex w-full flex-col px-2.5', !allowAI() && !hasPreview() ? 'mx-auto sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl' : 'grow sm:w-[30%]')">
@@ -82,7 +124,14 @@
       @if (isTabSearchActive()) {
         <navbar-tabs noTruncate="true" />
       }
-      <filters-bar class="pt-4 pb-4" />
+      <div class="flex items-center gap-2 pt-4 pb-4">
+        @if (hasAsideFilters()) {
+          <button variant="none" icon-button (click)="toggleFilters()" [title]="'filters' | transloco" [attr.aria-label]="'filters' | transloco">
+            <filter-icon />
+          </button>
+        }
+        <filters-bar class="min-w-0 flex-1" />
+      </div>
 
       <app-search-actions
         [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"

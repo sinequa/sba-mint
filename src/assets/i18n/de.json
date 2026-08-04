@@ -77,6 +77,8 @@
   "home": "Startseite",
   "chats": "Chats",
   "agent": "Agent",
+  "newChat": "Neuer Chat",
+  "searchChats": "Chats durchsuchen",
   "seeMore": "Alle anzeigen",
   "title": "Titel",
   "to": "Bis",
@@ -99,6 +101,12 @@
   "help": "Hilfe",
   "administration": "Verwaltung",
   "askAI": "KI fragen",
+  "pageTitle": {
+    "home": "Startseite",
+    "search": "Suche",
+    "assistant": "Assistent",
+    "agent": "Agent"
+  },
   "assistant": {
     "userPrompt": "Hallo, mein Name ist [[principal.fullName]].",
     "connectionErrorMessage": "Verbindung verloren! Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",

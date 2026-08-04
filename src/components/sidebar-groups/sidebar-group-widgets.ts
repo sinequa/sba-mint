@@ -24,7 +24,8 @@ import {
   SidebarMenuItemComponent,
   SidebarService,
   StarIcon,
-  TooltipDirective
+  TooltipDirective,
+  useSidebar
 } from "@sinequa/ui";
 import { filter, map, startWith } from "rxjs";
 
@@ -58,7 +59,7 @@ export type NavbarMenu = {
         <sidebar-menu>
           @for (menu of menus(); track menu.name) {
             @let isMobile = breakpointService.isMobile();
-            <sidebar-menu-item [attr.aria-label]="menu.display | transloco">
+            <sidebar-menu-item [attr.aria-label]="menu.display | transloco" class="group-data-[collapsible=icon]:items-center">
               @if (isMobile) {
                 <!-- On mobile, navigate to a dedicated route -->
                 @if (menu.name !== "alerts") {
@@ -68,19 +69,19 @@ export type NavbarMenu = {
                     routerLinkActive="active"
                     #rla="routerLinkActive"
                     [attr.data-active]="rla.isActive || null">
-                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                    <span [tooltip]="isCollapsed() ? (menu.display | transloco) : ''" tooltip-position="right" aria-hidden="true">
                       <ng-container *ngComponentOutlet="menu.icon" />
                     </span>
-                    <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
+                    <span class="text-sm">{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                 }
               } @else if (menu.name === "alerts") {
                 <Popover class="w-full rounded-lg border-neutral-300">
                   <sidebar-menu-button class="text-lg">
-                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                    <span [tooltip]="isCollapsed() ? (menu.display | transloco) : ''" tooltip-position="right" aria-hidden="true">
                       <ng-container *ngComponentOutlet="menu.icon" />
                     </span>
-                    <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
+                    <span class="text-sm">{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                   <PopoverContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
@@ -89,10 +90,10 @@ export type NavbarMenu = {
               } @else {
                 <Dropdown class="w-full rounded-lg border-neutral-300">
                   <sidebar-menu-button class="text-lg" [attr.data-active]="rla.isActive || null">
-                    <span [tooltip]="menu.display | transloco" tooltip-position="right" aria-hidden="true">
+                    <span [tooltip]="isCollapsed() ? (menu.display | transloco) : ''" tooltip-position="right" aria-hidden="true">
                       <ng-container *ngComponentOutlet="menu.icon" />
                     </span>
-                    <span class="text-sm" sr-only>{{ menu.display | transloco }}</span>
+                    <span class="text-sm">{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
                   <DropdownContent class="w-95 max-w-md min-w-sm" strategy="fixed" position="right-start">
                     <ng-container [ngComponentOutlet]="menu.component"></ng-container>
@@ -166,6 +167,8 @@ export class WidgetsSidebarGroupComponent {
   private readonly router = inject(Router);
   protected readonly breakpointService = inject(BreakpointObserverService);
   private readonly sidebarService = inject(SidebarService);
+  private readonly sidebar = useSidebar();
+  protected readonly isCollapsed = computed(() => this.sidebar.state() === "collapsed");
 
   constructor() {
     // Close the sidebar in mobile after navigation

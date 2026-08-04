@@ -27,27 +27,6 @@ sq-saved-chats-v3 {
   }
 }
 
-/* SavedChat component — item hover / active states */
-SavedChat span {
-  button:has(more-icon) {
-    color: var(--color-foreground) !important;
-  }
-  color: var(--color-foreground) !important;
-  &:hover {
-    background-color: var(--ast-saved-chat-hover-background) !important;
-  }
-  &:active {
-    background-color: var(--ast-saved-chat-active-background) !important;
-  }
-
-  &[data-active="true"] {
-    background-color: var(--ast-saved-chat-active-background) !important;
-  }
-}
-
-/* More icon — dark mode: match foreground text color */
-
-
 .dark {
   sq-saved-chats-v3 {
     dialog {
