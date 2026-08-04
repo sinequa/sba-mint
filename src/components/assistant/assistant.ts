@@ -242,7 +242,7 @@ export class AssistantComponent {
     this.selectionStore.update({ id: event.record.id, article: event.record as Article, previewHighlights });
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
-    if (partId) {
+    if (partId !== undefined) {
       this.previewService.events.set("scrollTo");
       this.previewService.sendMessage({ action: "select", id: `snippet_${partId}`, usePassageHighlighter: true });
     }

@@ -210,9 +210,15 @@ export class PreviewActionsComponent {
     // Notify the preview service of the updated states
     this.previewService.toggle(this.extracts(), this.entities());
 
-    // If extracts are being turned off, send an 'unselect' action to the preview service
-    if (type === "extracts" && value === false) {
+    if (type !== "extracts") return;
+
+    if (value === false) {
       this.previewService.sendMessage({ action: "unselect" });
+      return;
     }
+
+    const selectedId = this.previewService.selectedHighlightId();
+    if (selectedId === null) return;
+    this.previewService.sendMessage({ action: "select", id: selectedId, usePassageHighlighter: true });
   }
 }

@@ -1,4 +1,4 @@
-import { NgComponentOutlet } from "@angular/common";
+import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, effect, inject, model, output, signal, Type, untracked, viewChild, viewChildren } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -16,8 +16,9 @@ import {
   ChevronRightIcon,
   DebugIcon,
   DesktopIcon,
-  FlagEnglishIconComponent,
-  FlagFrenchIconComponent,
+  FlagEnglishIcon,
+  FlagFrenchIcon,
+  FlagGermanIcon,
   KeyIcon,
   MenuComponent,
   MenuContentComponent,
@@ -36,7 +37,7 @@ import { injectCurrentUrl } from "../../utils/routing";
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
 
-const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
+const SUPPORTED_LANGUAGES = ["en", "fr", "de"] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 @Component({
@@ -59,7 +60,8 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     UserSecretIcon,
     CheckIcon,
     PaletteIcon,
-    TrashIcon
+    TrashIcon,
+    NgTemplateOutlet
   ],
   templateUrl: "./sidebar-user-menu.html",
   providers: [provideTranslocoScope("user-menu")]
@@ -72,8 +74,9 @@ export class SidebarUserMenuComponent {
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
-    { code: "en", label: "English", icon: FlagEnglishIconComponent },
-    { code: "fr", label: "Français", icon: FlagFrenchIconComponent }
+    { code: "en", label: "English", icon: FlagEnglishIcon },
+    { code: "fr", label: "Français", icon: FlagFrenchIcon },
+    { code: "de", label: "Deutsch", icon: FlagGermanIcon }
   ] as const;
 
   readonly menus = viewChildren(MenuComponent);
@@ -86,7 +89,7 @@ export class SidebarUserMenuComponent {
   private readonly userSettingsStore = inject(UserSettingsStore);
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly breakpointService = inject(BreakpointObserverService);
+  protected readonly isMobile = inject(BreakpointObserverService).isMobile;
 
   private readonly currentUrl = injectCurrentUrl();
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
@@ -118,7 +121,7 @@ export class SidebarUserMenuComponent {
   readonly currentTheme = computed(() => this.userSettingsStore.userTheme());
   readonly debug = model(this.userSettingsStore.isDebugMode());
 
-  readonly menuPosition = computed<Placement>(() => (this.breakpointService.isMobile() ? "bottom-start" : "left-start"));
+  readonly menuPosition = computed<Placement>(() => (this.isMobile() ? "bottom-start" : "left-start"));
 
   constructor() {
     // enable agent's debug mode

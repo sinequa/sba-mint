@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { RouterModule } from "@angular/router";
+import { TranslocoService } from "@jsverse/transloco";
 import { AgentReconnectingDetail, NotificationsService, SIGNALR_RETRY_DELAYS, SIGNALR_RETRY_DELAYS_DEFAULT } from "@sinequa/agent";
 import { notify } from "@sinequa/atomic";
+import { ApplicationService } from "@sinequa/atomic-angular";
 
 @Component({
   selector: "app-agent-layout",
@@ -20,8 +22,19 @@ export class AgentLayoutComponent {
   destroyRef = inject(DestroyRef);
   notifications = inject(NotificationsService);
   retryDelays = inject(SIGNALR_RETRY_DELAYS, { optional: true }) ?? SIGNALR_RETRY_DELAYS_DEFAULT;
+  private readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
 
   constructor() {
+    // selectTranslate waits for the async translation file (no raw-key flash) and re-emits on
+    // language change. No preview/selection guard here, so a direct subscription is enough — no
+    // toSignal + effect needed. (Deliberately the service call, not the translateSignal helper,
+    // which would pick up any active provideTranslocoScope and resolve the key in the wrong scope.)
+    this.transloco
+      .selectTranslate("pageTitle.agent")
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(title => this.applicationService.setTitle(title));
+
     // Connection lifecycle events bubbled from the Agent component — wire up toast notifications.
     const controller = new AbortController();
 

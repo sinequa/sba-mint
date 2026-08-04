@@ -23,8 +23,9 @@ import {
   CheckIcon,
   ChevronRightIcon,
   DesktopIcon,
-  FlagEnglishIconComponent,
-  FlagFrenchIconComponent,
+  FlagEnglishIcon,
+  FlagFrenchIcon,
+  FlagGermanIcon,
   KeyIcon,
   MenuComponent,
   MenuContentComponent,
@@ -40,7 +41,7 @@ import {
 const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
 
-const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
+const SUPPORTED_LANGUAGES = ["en", "fr", "de"] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 /**
@@ -85,8 +86,9 @@ export class UserMenuComponent {
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
-    { code: "en", label: "English", icon: FlagEnglishIconComponent },
-    { code: "fr", label: "Français", icon: FlagFrenchIconComponent }
+    { code: "en", label: "English", icon: FlagEnglishIcon },
+    { code: "fr", label: "Français", icon: FlagFrenchIcon },
+    { code: "de", label: "Deutsch", icon: FlagGermanIcon }
   ] as const;
 
   readonly menus = viewChildren(MenuComponent);
@@ -162,7 +164,7 @@ export class UserMenuComponent {
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else {
-        this.router.navigate(['/logout']);
+        this.router.navigate(["/logout"]);
       }
     });
   }
