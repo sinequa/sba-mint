@@ -89,8 +89,14 @@ charge le bundle. Toute l'application reste dans mint.
 ## Étapes
 
 ### 1. Builder le bundle mint (build `spfx`)
+
+Les paquets `@microsoft/sp-*` ne sont **pas** installés par défaut : ce sont de simples fournisseurs de
+types (`import type`) et leur champ `engines` plafonne Node à 22, ce qui noie `npm install` sous des
+avertissements `EBADENGINE` cosmétiques. Le build Angular par défaut n'en a pas besoin ; il faut les
+installer à la demande pour la variante SPFx :
+
 ```bash
-cd mint-internal
+npm i -D @microsoft/sp-http --legacy-peer-deps
 ng build sinequa-mint --configuration spfx
 # → dist/sinequa-mint/ (styles.css, polyfills.js, main.js, chunk-*.js, assets/…)
 ```

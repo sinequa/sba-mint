@@ -97,11 +97,16 @@ There are **two independent builds**, and Node's version only constrains one of 
 
 - **Production is Node-agnostic.** At runtime everything runs in the browser inside a SharePoint page; the
   Node version plays no role. SPFx in production works fine.
-- **The mint bundle builds on Node 24.** The `@microsoft/sp-*` packages in mint are **dev-only type
-  providers** (`src/config/spfx-context.ts` uses `import type`; `MintWebPart.ts` lives outside `src/` and is
-  not compiled by `ng build`). They are never executed under Node, so the `EBADENGINE` warnings on
-  `npm install` in mint are cosmetic — ignore them. This matters because the Angular 22 branch *requires*
-  Node 24.
+- **The mint bundle builds on Node 24.** The `@microsoft/sp-*` packages are **dev-only type providers**
+  (`src/config/spfx/spfx-context.ts` uses `import type`; `MintWebPart.ts` lives outside `src/` and is not
+  compiled by `ng build`). They are never executed under Node, but their `engines` field caps Node at 22,
+  so installing them floods `npm install` with cosmetic `EBADENGINE` warnings. They are therefore **not
+  installed by default** — the default `ng build` does not need them. Install `@microsoft/sp-http` on
+  demand, only when you build the SPFx variant:
+  ```bash
+  npm i -D @microsoft/sp-http --legacy-peer-deps   # then: npm run build:spfx
+  ```
+  This matters because the Angular 22 branch *requires* Node 24.
 - **Package the `.sppkg` on Node 22.** This is the one real requirement: the SPFx gulp toolchain genuinely
   breaks on Node 24, so the separate SPFx solution must be built on Node 22.14+ (LTS). It is an independent
   project from mint, so there is no conflict with mint's Node 24.
