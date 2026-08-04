@@ -1,7 +1,8 @@
 import { NgComponentOutlet } from "@angular/common";
 import { afterNextRender, Component, computed, DestroyRef, effect, Injector, inject, runInInjectionContext, signal, Type, viewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { error, fetchQuery } from "@sinequa/atomic";
 import {
@@ -109,6 +110,12 @@ export class HomeComponent {
   readonly injector = inject(Injector);
   readonly queryParamsStore = inject(QueryParamsStore);
   readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects this component's provideTranslocoScope and would resolve the key in the wrong
+  // namespace. selectTranslate waits for the async file (no raw-key flash) and re-emits on language
+  // change. (Home route is not reused, so a reactive effect is safe here.)
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.home"));
 
   readonly aggregations = computed(() => {
     const filters = this.appStore.filters().filter(f => f.homepage === true);
@@ -140,10 +147,12 @@ export class HomeComponent {
       this.queryParamsStore.patch({ filters: [], text: undefined, tab: undefined, basket: undefined });
     });
 
-    // react to drawer state changes to update the application title when the drawer is closed
+    // react to drawer state changes to update the application title when the drawer is closed.
+    // Reading pageTitle() (a translated signal) also re-runs this on language change.
     effect(() => {
-      if (!this.drawerOpened()) {
-        this.applicationService.setTitle("Home");
+      const title = this.pageTitle();
+      if (!this.drawerOpened() && title) {
+        this.applicationService.setTitle(title);
       }
     });
 

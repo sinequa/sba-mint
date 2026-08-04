@@ -1,32 +1,23 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  ElementRef,
-  effect,
-  inject,
-  input,
-  output,
-  resource,
-  signal,
-  viewChild
-} from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, effect, inject, input, output, resource, signal, viewChild } from "@angular/core";
 import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import {
-  AppStore,
-  CConverter,
-  PreviewHighlights,
-  PreviewNavigator,
-  PreviewService,
-  QueryService,
-  SelectionStore
-} from "@sinequa/atomic-angular";
+import { AppStore, CConverter, PreviewHighlights, PreviewNavigator, PreviewService, QueryService, SelectionStore } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
+import { MarkdownPipe } from "@pipes/markdown.pipe";
 import { PreviewActionsComponent } from "./preview-actions";
+
+// Delay before revealing the iframe once a scroll has been requested: lets the iframe apply and
+// paint the scroll behind the overlay so the reposition is never visible. Kept below preview.js's
+// ~400ms passage-highlight delay so the scroll lands first.
+const REVEAL_AFTER_SCROLL_MS = 150;
+
+// Safety-net delay used on the iframe `load` event: if the loaded content is not the instrumented
+// preview (so it never emits a `ready` message), reveal it anyway so the spinner overlay cannot
+// stay stuck.
+const LOAD_SAFETY_NET_MS = 1500;
 
 /**
  * Preview content component
@@ -43,19 +34,55 @@ import { PreviewActionsComponent } from "./preview-actions";
  */
 @Component({
   selector: "preview-content",
-  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon],
+  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon, MarkdownPipe],
   template: `
-    @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
+    @if (previewDataResource.isLoading()) {
+      <div class="flex h-full w-full items-center justify-center">
+        <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+      </div>
+    } @else if (isMarkdown()) {
+      <!-- Markdown conversion: fetch the raw markdown content and render it in a div using the
+           markdown pipe (markdown-it), styled via Tailwind Typography's prose, instead of
+           loading it into the iframe. -->
+      @if (markdownResource.isLoading()) {
+        <div class="flex h-full w-full items-center justify-center">
+          <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+        </div>
+      } @else if (markdownResource.hasValue() && markdownResource.value()) {
+        <div class="h-[calc(100%-0.5rem)] overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
+          <div class="prose max-w-none dark:prose-invert" [innerHTML]="markdownResource.value() | markdown"></div>
+        </div>
+      } @else {
+        <div class="flex h-full w-full items-center justify-center">
+          <p class="text-center text-xl">
+            <image-icon class="mb-6 text-6xl text-secondary" /><br />
+            {{ "previewUnavailable" | transloco }}
+          </p>
+        </div>
+      }
+    } @else if (previewValidationResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
         <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
       </div>
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
+        <!-- Overlay shown while the (new) iframe content loads and is scrolled to the right page,
+             so the user never sees the intermediate scroll jump. -->
+        @if (!contentReady()) {
+          <div class="absolute inset-0 z-20 flex items-center justify-center rounded-sm bg-background">
+            <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
+          </div>
+        }
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
           [isPrimary]="!conversion() || conversion()!.primary === true"
           [class]="cn('absolute right-4 inline-flex justify-end rounded-md dark:text-background dark:[&_button]:hover:text-foreground dark:bg-muted/10 bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
-        <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#fff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
+        <iframe
+          #preview
+          frameborder="0"
+          [class]="cn('h-full grow rounded-sm bg-[#fff] shadow-xs transition-opacity', contentReady() ? 'opacity-100' : 'opacity-0')"
+          [src]="previewUrl()"
+          (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
       <div class="flex h-full w-full items-center justify-center">
@@ -81,6 +108,9 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly queryService = inject(QueryService);
   private readonly destroyRef = inject(DestroyRef);
+  // Pending timer that flips `contentReady` to true; tracked so it can be cancelled when a new URL
+  // starts loading or the component is destroyed, preventing a stale reveal of the wrong content.
+  private revealTimer?: ReturnType<typeof setTimeout>;
 
   protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
@@ -109,19 +139,13 @@ export class PreviewContentComponent {
   protected previewMultiConversionFlag = computed(() => this.appStore.general()?.features?.previewMultiConversion);
   protected passagePageNumber = signal<number | undefined>(undefined);
   protected currentPage = signal<string | undefined>(undefined); // used to go back to the last visited page when changing of conversion for a document
+  protected contentReady = signal(false); // false while the iframe loads + scrolls, gating the spinner overlay
   protected scrollPage = computed(() =>
-    this.currentPage() !== undefined
-      ? this.currentPage()
-      : this.passagePageNumber() !== undefined
-        ? `sq-page-start-${this.passagePageNumber()}`
-        : undefined
+    this.currentPage() !== undefined ? this.currentPage() : this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined
   );
 
   /* resources */
-  public readonly previewDataResource = rxResource<
-    PreviewData | undefined,
-    { id: string; text: string; previewHighlights: CustomHighlights[] }
-  >({
+  public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
       const id = this.id() || this.selectionStore.id?.() || "";
       const queryText = this.selectionStore.queryText?.() || "";
@@ -173,9 +197,39 @@ export class PreviewContentComponent {
     }
   });
 
-  readonly isSecondary = computed(
-    () => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false
-  );
+  readonly isSecondary = computed(() => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false);
+
+  /**
+   * Whether the currently selected conversion is a Markdown conversion. Only relevant when the
+   * multi-conversion feature is enabled (that is the only path that exposes the converter dropdown).
+   */
+  readonly isMarkdown = computed(() => {
+    if (!this.previewMultiConversionFlag()) return false;
+    const format = this.conversion()?.format ?? this.conversion()?.conversion?.format;
+    return format?.toLowerCase() === "md" || format?.toLowerCase() === "markdown";
+  });
+
+  /** Same-origin URL of the raw markdown content to fetch, or undefined when not a Markdown conversion. */
+  private readonly markdownContentUrl = computed(() => {
+    if (!this.isMarkdown()) return undefined;
+    const url = this.conversion()?.conversion?.url;
+    return url ? window.location.origin + url : undefined;
+  });
+
+  /**
+   * Fetches the raw markdown text for a Markdown conversion so it can be rendered as HTML via the
+   * `markdown` pipe, rather than being displayed as unformatted text inside the iframe.
+   */
+  public readonly markdownResource = resource<string | undefined, { url: string | undefined }>({
+    params: () => ({ url: this.markdownContentUrl() }),
+    defaultValue: undefined,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.url) return undefined;
+      const response = await fetch(params.url, { signal: abortSignal });
+      if (!response.ok) throw new Error(`Failed to fetch markdown content (status ${response.status})`);
+      return await response.text();
+    }
+  });
 
   /**
    * A resource that validates the preview content by checking if the cached document URL is accessible.
@@ -229,13 +283,12 @@ export class PreviewContentComponent {
     });
 
     effect(() => {
-      if (this.scrollPage() !== undefined) {
-        // if already a page to scroll to, trigger scrolling
-        this.scrollToPage();
-      } else if (this.previewUrl() && this.isSecondary()) {
-        // if secondary document, scroll to clicked passage if any (checked in method)
-        this.getPassagePage();
-      }
+      // A new conversion / preview URL is loading: hide the content behind the spinner overlay
+      // until the fresh iframe has loaded and been scrolled to the right page. Cancelling any
+      // pending reveal here prevents a stale timer from the previous URL revealing the new,
+      // not-yet-scrolled content too early.
+      this.previewUrl();
+      this.hideContent();
     });
 
     const controller = new AbortController();
@@ -243,9 +296,19 @@ export class PreviewContentComponent {
     window.addEventListener(
       "message",
       (event: MessageEvent) => {
+        // Only react to messages emitted by this component's own iframe. Several preview-content
+        // instances (and other iframes) can share this window; without this guard another iframe's
+        // `ready`/`current-page` message would reveal or scroll the wrong preview.
+        const iframeWindow = this.iframe()?.nativeElement.contentWindow;
+        if (!iframeWindow || event.source !== iframeWindow) return;
+
         const message = event.data;
         if (message.type === "current-page") {
           this.currentPage.set(message.data);
+        } else if (message.type === "ready") {
+          // The iframe has finished its layout (zoom-fit, sizing). Now it is safe to
+          // scroll to the target page and then reveal the content.
+          this.onPreviewReady();
         }
       },
       { signal: controller.signal }
@@ -253,6 +316,7 @@ export class PreviewContentComponent {
 
     this.destroyRef.onDestroy(() => {
       controller.abort();
+      clearTimeout(this.revealTimer);
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
@@ -262,23 +326,72 @@ export class PreviewContentComponent {
   }
 
   /**
-   * Handles the event when the preview component is loaded.
+   * Handles the iframe `load` event.
    *
-   * This method retrieves the `previewHighlights` from the selection store state.
-   * If `previewHighlights` contains a `snippetId`, it constructs a message with
-   * the action 'select', the snippet ID, and a flag to use the passage highlighter.
-   * The message is then sent to the preview service.
+   * The scrolling itself is driven by the iframe's `ready` message (see {@link onPreviewReady}),
+   * which fires only once the iframe has finished laying out its content. This handler is only a
+   * safety net: if the loaded content is not the instrumented preview (so it never emits `ready`),
+   * reveal it anyway after a short delay so the spinner overlay cannot stay stuck.
    */
   onLoaded() {
+    this.revealContent(LOAD_SAFETY_NET_MS);
+  }
+
+  /**
+   * Handles the iframe `ready` message, emitted once the iframe content is fully laid out.
+   *
+   * Scrolls to the relevant location, then reveals the content:
+   * - If the user has since manually scrolled to a different page (`currentPage`), that page wins
+   *   over re-selecting the original passage snippet, since the passage reference is no longer the
+   *   relevant location once the user navigated away from it.
+   * - Otherwise, if a `snippetId` is available on a primary conversion, select that snippet.
+   * - On a secondary conversion, scroll to the cached page or resolve the selected passage's page.
+   * - Otherwise there is nothing to scroll to, so reveal immediately.
+   */
+  private onPreviewReady() {
     const previewHighlights = this.selectionStore.previewHighlights?.();
-    if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
+    if (this.currentPage() !== undefined) {
+      this.scrollToPage();
+      this.revealContent();
+    } else if (previewHighlights?.snippetId !== undefined && !this.isSecondary()) {
       const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
+      this.revealContent();
     } else if (this.isSecondary() && this.scrollPage() !== undefined) {
       this.scrollToPage();
+      this.revealContent();
+    } else if (this.isSecondary()) {
+      // The passage's page is not known yet: resolve it, then scroll and reveal (in the callback).
+      this.getPassagePage();
+    } else {
+      // Nothing to scroll to (e.g. a fresh primary document): show the content right away.
+      this.revealContent(0);
     }
+  }
 
-    // this.previewService.getPageInfo();
+  /**
+   * Reveals the iframe content, cancelling any pending reveal first so a stale timer from a
+   * previous load cannot reveal the next document before it has been scrolled.
+   *
+   * @param delayMs delay before revealing. A small delay lets the iframe apply a just-requested
+   *   scroll behind the overlay; `0` reveals synchronously (nothing to wait for).
+   */
+  private revealContent(delayMs: number = REVEAL_AFTER_SCROLL_MS): void {
+    clearTimeout(this.revealTimer);
+    if (delayMs <= 0) {
+      this.contentReady.set(true);
+      return;
+    }
+    this.revealTimer = setTimeout(() => this.contentReady.set(true), delayMs);
+  }
+
+  /**
+   * Hides the iframe content behind the spinner overlay and cancels any pending reveal, so a new
+   * document / conversion always starts hidden until it has been scrolled into position.
+   */
+  private hideContent(): void {
+    clearTimeout(this.revealTimer);
+    this.contentReady.set(false);
   }
 
   /**
@@ -286,7 +399,11 @@ export class PreviewContentComponent {
    */
   getPassagePage(): void {
     const { id, offset, length } = this.previewService.passageOffset() || {};
-    if (id === undefined || offset === undefined || length === undefined) return;
+    if (id === undefined || offset === undefined || length === undefined) {
+      // No passage to scroll to: reveal the content as-is.
+      this.revealContent(0);
+      return;
+    }
 
     this.queryService
       .getDocPage(id, offset, length)
@@ -294,6 +411,7 @@ export class PreviewContentComponent {
       .subscribe((pageNumber: number) => {
         this.passagePageNumber.set(pageNumber);
         this.scrollToPage();
+        this.revealContent();
       });
   }
 

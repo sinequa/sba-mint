@@ -15,7 +15,7 @@
   "trailingComma": "none",
   "bracketSameLine": true,
   "printWidth": 160,
-  "endOfLine": "crlf",
+  "endOfLine": "lf",
   "experimentalSortPackageJson": false,
   "ignorePatterns": ["src/assets/vendors/**/*", "*.html"]
 }

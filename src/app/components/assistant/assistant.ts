@@ -1,16 +1,4 @@
-import {
-  afterNextRender,
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  ViewEncapsulation,
-  viewChild
-} from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, ViewEncapsulation, viewChild } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
@@ -129,7 +117,7 @@ export class AssistantComponent {
   assistantKey = signal(0);
   // Call this method when you need to recreate
   protected recreateAssistant() {
-    this.assistantKey.update((v) => v + 1);
+    this.assistantKey.update(v => v + 1);
   }
   /* End of assistant recreation code */
 
@@ -158,26 +146,26 @@ export class AssistantComponent {
       this.sqChat()
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError((err) => {
+          catchError(err => {
             error("Unhandled error in streaming", err);
             return [];
           })
         )
         .subscribe({
-          next: (streaming) => this.isStreaming.emit(streaming),
-          error: (err) => error("Error in streaming", err)
+          next: streaming => this.isStreaming.emit(streaming),
+          error: err => error("Error in streaming", err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
-          catchError((err) => {
+          catchError(err => {
             error("Unhandled error in init process", err);
             return of(false);
           })
         )
         .subscribe({
-          next: (value) => this.onReady.emit(value)
+          next: value => this.onReady.emit(value)
         });
     });
 
@@ -228,7 +216,7 @@ export class AssistantComponent {
     this.selectionStore.update({ previewHighlights });
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
-    if (partId) {
+    if (partId !== undefined) {
       this.previewService.events.set("scrollTo");
       this.previewService.sendMessage({ action: "select", id: `snippet_${partId}`, usePassageHighlighter: true });
     }

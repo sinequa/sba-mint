@@ -2,10 +2,11 @@ import { Component, computed, effect, inject, linkedSignal, signal, viewChild } 
 import { toSignal } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router } from "@angular/router";
 import { SidebarGroupAgentComponent } from "@components/sidebar-groups/sidebar-group-agent";
+import { SidebarGroupAgentHistoryComponent } from "@components/sidebar-groups/sidebar-group-agent-history";
 import { SidebarGroupAssistantComponent } from "@components/sidebar-groups/sidebar-group-assistant";
 import { SidebarGroupNavigationComponent } from "@components/sidebar-groups/sidebar-group-navigation";
 import { SidebarUserMenuComponent } from "@components/sidebar-groups/sidebar-user-menu";
-import { provideTranslocoScope, TranslocoService, TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getHelpIndexUrl } from "@sinequa/atomic";
 import {
   AppStore,
@@ -53,6 +54,7 @@ import { filter } from "rxjs";
     TooltipDirective,
     SidebarGroupNavigationComponent,
     SidebarGroupAgentComponent,
+    SidebarGroupAgentHistoryComponent,
     SidebarGroupAssistantComponent,
     SidebarMenuComponent,
     SidebarMenuItemComponent,
@@ -91,13 +93,17 @@ import { filter } from "rxjs";
         <!-- main navigation menu -->
         <app-sidebar-group-navigation>
 
-          <!-- assistant menu -->
-          <app-sidebar-group-assistant />
+        <!-- assistant menu -->
+        <app-sidebar-group-assistant />
 
-          <!-- agents and worksets menu -->
-          <app-sidebar-group-agent />
+        <!-- agents and worksets menu -->
+        <app-sidebar-group-agent />
 
         </app-sidebar-group-navigation>
+
+        <!-- Agent saved-chats history: its own scroll region below the fixed navigation
+             (only rendered on the agent route). -->
+        <app-sidebar-group-agent-history />
 
       </sidebar-content>
 
@@ -105,18 +111,18 @@ import { filter } from "rxjs";
         <sidebar-menu>
           @if (isAdminOrDelegatedAdmin()) {
             @let administration = ('administration' | transloco);
-            <sidebar-menu-item [attr.aria-label]="administration" (click)="openAdmin()">
-              <sidebar-menu-button class="text-lg" [tooltip]="administration" tooltip-position="right" >
+            <sidebar-menu-item [attr.aria-label]="administration" class="group-data-[collapsible=icon]:items-center" (click)="openAdmin()">
+              <sidebar-menu-button class="text-lg" [tooltip]="isCollapsed() ? administration : ''" tooltip-position="right" >
                 <gear-icon />
-                <span class="text-sm" sr-only>{{ administration }}</span>
+                <span class="text-sm">{{ administration }}</span>
               </sidebar-menu-button>
             </sidebar-menu-item>
           }
           @let help = ('help' | transloco);
-          <sidebar-menu-item [attr.aria-label]="help" (click)="openHelp()">
-            <sidebar-menu-button class="text-lg" [tooltip]="help" tooltip-position="right">
+          <sidebar-menu-item [attr.aria-label]="help" class="group-data-[collapsible=icon]:items-center" (click)="openHelp()">
+            <sidebar-menu-button class="text-lg" [tooltip]="isCollapsed() ? help : ''" tooltip-position="right">
               <question-circle-icon />
-              <span class="text-sm" sr-only>{{ help }}</span>
+              <span class="text-sm">{{ help }}</span>
             </sidebar-menu-button>
           </sidebar-menu-item>
 
@@ -141,7 +147,7 @@ import { filter } from "rxjs";
                 </div>
               </sidebar-menu-button>
 
-              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg min-w-max">
+              <MenuContent position="top-end" class="border-menu-border bg-menu-bg rounded-3xl border p-3 shadow-lg w-64 max-w-[calc(100vw-2rem)] md:w-auto md:max-w-none md:min-w-max">
                 <!-- <Settings class="mt-auto" [debug]="true" /> -->
                 <sidebar-user-menu-content (onEventClick)="handleClick($event)" />
               </MenuContent>

@@ -1,16 +1,18 @@
-import { ChangeDetectorRef, DestroyRef, Signal, computed, effect, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { SavedChat } from '@sinequa/assistant/chat';
-import type { AssistantComponent } from '@components/assistant/assistant';
-import { CCApp, error, fetchQuery, globalConfig, Query, warn } from '@sinequa/atomic';
-import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
-import { filter, firstValueFrom, skip, take } from 'rxjs';
-import { UrlQueryParamInputs, injectUrlQueryParamsSync } from './url-query-params-sync';
+import { ChangeDetectorRef, computed, DestroyRef, effect, inject, Signal, signal } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import type { AssistantComponent } from "@components/assistant/assistant";
+import { TranslocoService } from "@jsverse/transloco";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
+import { SavedChat } from "@sinequa/assistant/chat";
+import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/atomic";
+import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
+import { injectCurrentUrl } from "@utils/routing";
+import { filter, firstValueFrom, skip, take } from "rxjs";
+import { injectUrlQueryParamsSync, UrlQueryParamInputs } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
-type AssistantRef = Pick<AssistantComponent, 'newChat' | 'askAI' | 'sqChat'>;
+type AssistantRef = Pick<AssistantComponent, "newChat" | "askAI" | "sqChat">;
 
 /**
  * Composable that encapsulates the shared logic of AssistantLayoutComponent
@@ -31,8 +33,14 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   const cdr = inject(ChangeDetectorRef);
   const destroyRef = inject(DestroyRef);
   const principalStore = inject(PrincipalStore);
+  const transloco = inject(TranslocoService);
+  const currentUrl = injectCurrentUrl();
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects this component's provideTranslocoScope ("filters") and would resolve the key in the
+  // wrong namespace. selectTranslate waits for the async file (no raw-key flash) + re-emits on lang change.
+  const pageTitle = toSignal(transloco.selectTranslate("pageTitle.assistant"));
 
-  const STORAGE_KEY = 'assistant_current_chat_id';
+  const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;
 
   const query = signal<Query | undefined>(undefined);
@@ -46,20 +54,33 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
       const { name } = getState(appStore) as CCApp;
       return `${name}-standalone-assistant`;
     }
-    return 'standalone-assistant';
+    return "standalone-assistant";
   });
 
   const showSavedChats = computed(() => {
-    const allowSavedChats = Boolean(appStore.assistants()[instanceId()]?.['savedChatSettings']?.['display']);
+    const allowSavedChats = Boolean(appStore.assistants()[instanceId()]?.["savedChatSettings"]?.["display"]);
     return allowSavedChats && connectionEstablished() && isAssistantReady();
   });
 
   const showDocumentUploader = computed(() => {
-    const allowDocumentUploader = Boolean(appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']);
+    const allowDocumentUploader = Boolean(appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]);
     return allowDocumentUploader && connectionEstablished() && isAssistantReady();
   });
 
   // ── Effects ──────────────────────────────────────────────────────────────
+
+  // Keep the tab title translated for the active language — but only while the assistant is the
+  // visible route. This route is reused (reuse: true): its effects keep running while the component
+  // is detached, so a language change on another page updates pageTitle() and must NOT call setTitle
+  // here (it would clobber the active page's title). The URL guard scopes the write to /assistant;
+  // the selection guard leaves an open document preview's title untouched (mirrors home/search).
+  effect(() => {
+    const title = pageTitle();
+    const path = currentUrl()?.split(/[?#]/)[0];
+    if (title && !selectionStore.id?.() && path === "/assistant") {
+      applicationService.setTitle(title);
+    }
+  });
 
   // Recreate the assistant component when an admin switches the impersonated user
   effect(() => {
@@ -93,13 +114,24 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Methods ──────────────────────────────────────────────────────────────
 
   function initialize() {
-    applicationService.setTitle('Assistant');
     selectionStore.clear();
+    // Set the tab title on every (re)attach. This route is reused (reuse: true) so the component is
+    // created once and thawed on return; relying solely on the route-guarded effect above is racy on
+    // thaw (its flush can run before currentUrl()/selection settle, so the title write is missed).
+    // initialize() is the deterministic attach hook (construction + onRouteAttached), so set the
+    // title here too. translate() is synchronous and, running on route attach (post-bootstrap), the
+    // root i18n file is loaded; guard against the raw key so we never flash "pageTitle.assistant".
+    // The effect still covers language changes made while the assistant is the visible route.
+    const key = "pageTitle.assistant";
+    const title = transloco.translate(key);
+    if (title && title !== key) {
+      applicationService.setTitle(title);
+    }
     getFirstPageQuery();
   }
 
   async function getFirstPageQuery() {
-    const q = appStore.getDefaultQuery() || { name: '_default' };
+    const q = appStore.getDefaultQuery() || { name: "_default" };
     const response = await fetchQuery({ isFirstPage: true, name: q.name });
     aggregationStore.update(response.aggregations);
   }
@@ -115,7 +147,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   }
 
   function handleConnection(connection: HubConnection) {
-    if (connection.state === 'Connected') connectionEstablished.set(true);
+    if (connection.state === "Connected") connectionEstablished.set(true);
   }
 
   function handleReady(ready: boolean) {
@@ -141,7 +173,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
           startNewChat();
         }
       },
-      error: err => error('Error loading saved chats:', err)
+      error: err => error("Error loading saved chats:", err)
     });
   }
 
@@ -150,14 +182,14 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
     const assistantComponent = chat();
     if (!assistantComponent) {
-      warn('Assistant component not available');
+      warn("Assistant component not available");
       return;
     }
 
     const sqChat = assistantComponent.sqChat();
     const chatService = sqChat?.chatService;
     if (!chatService) {
-      warn('Chat service not available');
+      warn("Chat service not available");
       return;
     }
 
@@ -165,7 +197,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
     try {
       const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
-      const firstUserMessage = (response?.history || []).find(msg => msg.role === 'user' && msg.content);
+      const firstUserMessage = (response?.history || []).find(msg => msg.role === "user" && msg.content);
 
       if (firstUserMessage && sqChat) {
         // Subscribe before triggering the load so we don't miss the false emission.
@@ -186,7 +218,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
       cdr.detectChanges();
     } catch (err) {
-      error('Error loading saved chat:', err);
+      error("Error loading saved chat:", err);
     }
   }
 

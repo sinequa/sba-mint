@@ -1,8 +1,9 @@
 import { afterNextRender, Component, effect, Injector, inject, runInInjectionContext, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { WidgetsTabsComponent } from "@components/widgets/widgets-tabs";
-import { provideTranslocoScope } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoService } from "@jsverse/transloco";
 import { error, fetchQuery } from "@sinequa/atomic";
 import { AggregationsStore, ApplicationService, AppStore, FiltersBarComponent, SelectionStore, signIn } from "@sinequa/atomic-angular";
 import { KeyboardNavigatorOptions } from "@sinequa/ui";
@@ -38,6 +39,11 @@ export class HomeComponent {
   readonly applicationService = inject(ApplicationService);
   readonly aggregationStore = inject(AggregationsStore);
   readonly selectionStore = inject(SelectionStore);
+  private readonly transloco = inject(TranslocoService);
+  // Translated tab title via the service's selectTranslate — NOT the translateSignal helper, which
+  // auto-injects any active provideTranslocoScope and would resolve the key in the wrong namespace.
+  // selectTranslate waits for the async file (no raw-key flash) and re-emits on language change.
+  private readonly pageTitle = toSignal(this.transloco.selectTranslate("pageTitle.home"));
 
   navigatorOptions = signal<KeyboardNavigatorOptions>({
     name: "tabsNavigator",
@@ -54,22 +60,13 @@ export class HomeComponent {
   };
 
   constructor() {
-    // Set the page title to "Home" if no preview is open (i.e., no selection in the selection store)
+    // Set the page title if no preview is open (i.e., no selection in the selection store).
+    // Reading pageTitle() (a translated signal) re-runs this on language change so the title stays translated.
     effect(() => {
       const id = this.selectionStore.id?.();
-      if (!id) {
-        this.applicationService.setTitle("Home");
-      }
-    });
-
-    // this is needed to populate the aggregation with the sources as no query is sent to the server
-    this.getFirstPageQuery().catch(err => {
-      if (err.status === 401) {
-        console.error("Unauthorized access - please check your credentials:", err);
-      } else if (err.status === 404) {
-        console.log("404 Not Found!");
-      } else {
-        console.log(`HTTP error: ${err.status}`);
+      const title = this.pageTitle();
+      if (!id && title) {
+        this.applicationService.setTitle(title);
       }
     });
 
