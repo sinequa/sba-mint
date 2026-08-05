@@ -1,15 +1,15 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, signal, viewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { Article, CustomHighlights, PreviewData } from '@sinequa/atomic';
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from '@sinequa/atomic-angular';
+import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
+import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 
-import { rxResource } from '@angular/core/rxjs-interop';
-import { BreakpointObserverService, cn } from '@sinequa/ui';
-import { catchError, of } from 'rxjs';
-import { PreviewActionsComponent } from './preview-actions';
+import { rxResource } from "@angular/core/rxjs-interop";
+import { BreakpointObserverService, cn } from "@sinequa/ui";
+import { catchError, of } from "rxjs";
+import { PreviewActionsComponent } from "./preview-actions";
 
 /**
  * Preview content component
@@ -25,7 +25,7 @@ import { PreviewActionsComponent } from './preview-actions';
  * It also includes preview actions and navigation controls.
  */
 @Component({
-  selector: 'preview-content',
+  selector: "preview-content",
   imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator],
   template: `
     @if (previewDataResource.isLoading() || previewValidationResource.isLoading()) {
@@ -35,7 +35,9 @@ import { PreviewActionsComponent } from './preview-actions';
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%_-_0.5rem)] flex-col gap-4">
         <preview-navigator class="bg-muted/90 absolute top-4 left-8 inline-flex items-center rounded-md text-sm" />
-        <preview-actions [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <preview-actions
+          [aiDescriptionShown]="aiDescriptionShown()"
+          [class]="cn('bg-muted/90 absolute right-4 inline-flex justify-end rounded-md', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe #preview frameborder="0" class="h-full flex-grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
@@ -58,7 +60,7 @@ import { PreviewActionsComponent } from './preview-actions';
 })
 export class PreviewContentComponent {
   cn = cn;
-  iframe = viewChild<ElementRef<HTMLIFrameElement>>('preview');
+  iframe = viewChild<ElementRef<HTMLIFrameElement>>("preview");
 
   breakpointService = inject(BreakpointObserverService);
   protected readonly appStore = inject(AppStore);
@@ -67,7 +69,7 @@ export class PreviewContentComponent {
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || '_query';
+  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
 
   /**
    * The article to be previewed.
@@ -88,12 +90,18 @@ export class PreviewContentComponent {
     const { queryText } = getState(this.selectionStore);
     return queryText;
   });
+  /**
+   * Set when the iframe reveals an AI page description on its own, because the
+   * cited passage lives inside it (multimodal conversions hide those blocks by
+   * default). Forwarded to `<preview-actions>` so its toggle reflects the state.
+   */
+  protected aiDescriptionShown = signal(false);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
     params: () => {
-      const id = this.id() || getState(this.selectionStore).id || '';
-      const { queryText = '', previewHighlights = { highlights: [] } } = getState(this.selectionStore);
+      const id = this.id() || getState(this.selectionStore).id || "";
+      const { queryText = "", previewHighlights = { highlights: [] } } = getState(this.selectionStore);
       return { id: id, text: queryText, previewHighlights: previewHighlights?.highlights };
     },
     defaultValue: undefined,
@@ -147,10 +155,10 @@ export class PreviewContentComponent {
     loader: async ({ params }) => {
       try {
         if (!params.url || !params.previewData?.documentCachedContentUrl) {
-          throw new Error('Invalid parameters for preview validation');
+          throw new Error("Invalid parameters for preview validation");
         }
 
-        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: 'HEAD' });
+        const response = await fetch(window.location.origin + params.previewData.documentCachedContentUrl, { method: "HEAD" });
         return { isValid: response.status === 200 };
       } catch {
         // In case of an error during fetch, we consider the preview as invalid
@@ -171,7 +179,29 @@ export class PreviewContentComponent {
       this.previewService.setIframe(iframeElement.nativeElement.contentWindow);
     });
 
+    effect(() => {
+      // A fresh document starts with its AI descriptions hidden again.
+      this.previewUrl();
+      this.aiDescriptionShown.set(false);
+    });
+
+    const controller = new AbortController();
+
+    window.addEventListener(
+      "message",
+      (event: MessageEvent) => {
+        // The iframe reveals a hidden AI description by itself when the cited passage lives
+        // inside it, and says so, so that the actions toggle does not contradict the screen.
+        if (event.data?.type === "description-visible") {
+          this.aiDescriptionShown.set(true);
+        }
+      },
+      { signal: controller.signal }
+    );
+
     this.destroyRef.onDestroy(() => {
+      controller.abort();
+
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
@@ -191,7 +221,7 @@ export class PreviewContentComponent {
   onLoaded() {
     const { previewHighlights } = getState(this.selectionStore);
     if (previewHighlights?.snippetId !== undefined) {
-      const message = { action: 'select', id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
+      const message = { action: "select", id: `snippet_${previewHighlights.snippetId}`, usePassageHighlighter: true };
       this.previewService.sendMessage(message);
     }
 

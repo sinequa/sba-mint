@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, linkedSignal, signal } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
@@ -99,13 +99,20 @@ export class PreviewActionsComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly selectionStore = inject(SelectionStore);
 
+  /**
+   * True when the iframe revealed an AI page description by itself, because the
+   * cited passage lives inside it. Drives {@link showAIDescription} so the toggle
+   * does not claim the description is hidden while it is on screen.
+   */
+  readonly aiDescriptionShown = input<boolean>(false);
+
   protected readonly extracts = signal(true);
   protected readonly entities = signal(false);
   /**
-   * Signal to control the visibility of AI-generated descriptions.
-   * Initially set to false, indicating that the AI description is not shown.
+   * Visibility of the AI-generated descriptions. Follows `aiDescriptionShown`,
+   * and can still be toggled locally by the button.
    */
-  protected readonly showAIDescription = signal(false);
+  protected readonly showAIDescription = linkedSignal(() => this.aiDescriptionShown());
   /**
    * Computed signal that checks if the article has an AI-generated description.
    * It checks the flags of the article in the selection store to see if it includes 'ps'.

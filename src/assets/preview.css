@@ -2,8 +2,11 @@
   font-family: 'Arial Narrow'!important;
 } */
 
+/* Last-resort marker for a passage whose geometry cannot be measured at all
+   (image-only conversion, subtree that stays hidden). Kept light on purpose: it
+   must not bury the text nor the yellow extract highlights it may overlap. */
 .sq-highlighted {
-  --color-highlighted: rgba(11, 117, 255, 0.5);
+  --color-highlighted: rgba(11, 117, 255, 0.15);
   background-color: var(--color-highlighted) !important;
 }
 .sq-current {
@@ -33,12 +36,46 @@ line.sq-svg {
   stroke-width: 2;
   stroke-dasharray: 2, 2;
 }
-#sq-passage-highlighter {
+/* Passage frames. The layer is a zero-sized anchor pinned to the body origin, so
+   its children are positioned in the body's local (pre-scale) coordinate space;
+   they then follow the zoom transform for free. Border and radius are divided by
+   the zoom factor to keep a constant thickness on screen. */
+#sq-passage-layer {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
   pointer-events: none;
-  border: 3px solid rgba(11, 117, 255, 0.5);
-  box-shadow: 0 0 1rem #0b75ff33;
+  z-index: 2;
+  /* The layer is a plain <div> child of the preview body, so rules meant for page
+     sheets reach it too -- `body.bd > div:not(.ph, .phe) { margin: 24px }` below is
+     more specific than a class selector and used to shift the whole overlay by
+     24px on every PdfToHtml conversion. Its box is therefore pinned explicitly,
+     and preview.js measures from the layer's own origin so that any offset a
+     converter stylesheet still manages to apply cancels out. */
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+#sq-passage-layer .sq-passage-box {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  /* Stroke and radius are divided by the applied scale so they stay 2px and 5px on
+     screen through the body's transform, and renderPassage() writes both inline before
+     the box enters the DOM -- so these two values are only ever the state of a box that
+     does not exist yet. They are deliberately *not* expressed as `calc(2px /
+     var(--factor))`: preview.js stops updating that custom property after the first
+     zoom (see the body rule below), so such a calc would look live while quietly
+     resolving against a stale factor -- and would send anyone who removed the inline
+     write chasing borders of the wrong thickness. */
+  border: 2px solid rgba(11, 117, 255, 0.5);
   border-radius: 5px;
+  box-shadow: 0 0 1rem #0b75ff33;
 }
 .stl_ {
   content-visibility: auto;
@@ -59,9 +96,58 @@ body.bd > div.ph {
     0 4px 8px #0003,
     0 6px 20px #00000030;
 }
-body.bd > div:not(.ph, .phe) {
+/* Page sheets of an image-based conversion. These used to be pinned to
+   `content-visibility: visible`, which explicitly forbade the browser from skipping the
+   off-screen ones -- on a 19-page PDF that meant laying out and painting 34 154 tags of
+   absolutely positioned text whatever was on screen. Measured, letting them be skipped:
+   opening 971 -> 258 ms, a scrolled frame 256 -> 30 ms, selecting a citation 228 -> 14 ms,
+   and on a sheet-based conversion opening 1 488 -> 87 ms.
+
+   It was pinned for a reason, and the reason expired. Skipping here was tried once before
+   and reverted: 14 scenarios failed, all on citations deep in the document, because a
+   fragment inside a skipped subtree has no layout and the frames landed nowhere near the
+   text. What fixes that is not in this file -- preview.js lifts the skip on the containers
+   holding the passage (liftSkipAroundPassage) and watches the containers for the moment an
+   estimated height becomes a real one (observeSkippedContainers). Both arrived with the
+   flowing-document rule below, and with them the same matrix is green. */
+body.bd > div:not(.ph, .phe, #sq-passage-layer) {
   margin: 24px;
-  content-visibility: visible;
+  content-visibility: auto;
+  /* `auto` keeps the height last rendered, so the scroll geometry stops drifting once a
+     sheet has been on screen; the fallback only covers a sheet never yet laid out. */
+  contain-intrinsic-height: auto 1000px;
+}
+
+/* Off-screen skipping for the *flowing* conversions -- the ones with no page sheets, whose
+   whole content is one long stream. On a 15 MB HTML capture (447 920 tags, 4 607 tables) it
+   takes the preview from 10 885 ms to 662 ms to open, because the browser stops laying out
+   six million pixels it cannot show. Two levels, because one top-level section of that
+   document is a million pixels tall on its own: skipping only the top level saved nothing.
+
+   `auto` in contain-intrinsic-height means "remember the size last rendered", so a block that
+   has been on screen once keeps its real height and the scroll geometry stops drifting; the
+   1200px is only the first guess for blocks never yet laid out.
+
+   Deliberately not applied to `body.bd`: the PdfToHtml family positions every *word*
+   absolutely inside its page sheet, and its sheets already carry `content-visibility: auto`
+   through `.stl_`. preview.js lifts the skip on the containers holding a cited passage -- see
+   liftSkipAroundPassage(), without which the frames are measured inside a subtree that has no
+   layout and land nowhere near the text.
+
+   `#sq-passage-layer` is excluded for the same reason it is excluded from the rule above: it
+   is a plain <div> child of the body, so a rule about the body's children reaches the overlay
+   itself. Skipping it left every frame unrendered -- 23 of 23 fragments outside any frame on
+   the bench, which reads exactly like a geometry bug and is not one.
+
+   A document carrying `sq-page-start` anchors is excluded as well. The page indicator follows
+   the scroll by measuring those anchors, and an anchor whose container the browser has only
+   estimated cannot be found in the viewport -- the indicator then stops following at all.
+   Those documents are paginated by definition, so they are also the ones with least to gain:
+   their sheets are laid out one per page and already skip through `.stl_`. */
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer),
+body:not(.bd):not(:has([id^="sq-page-start"])) > div:not(#sq-passage-layer) > div {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 1200px;
 }
 body.bd > div:not(.ph, .phe) > img {
   background-color: #fff;
@@ -73,6 +159,18 @@ body.bd > div:not(.ph, .phe) > img {
   margin-right: 16px;
 }
 
+/* These three declarations are the *initial* state only: they honour the `--factor`
+   the server writes inline on the body, so the preview is correctly scaled before any
+   script runs. From then on preview.js sets `transform`, `width` and `height` inline
+   and they take over.
+
+   The reason it does not simply keep updating `--factor` is measured, not theoretical:
+   a custom property inherits, so changing it invalidates style for the entire subtree.
+   On a 63 000-element document that alone costs ~65 ms per zoom step, against ~1 ms
+   for an inline transform. Splitting them also lets the transform (compositor, O(1))
+   be applied on every step while the width -- which reflows the document, and is what
+   makes sheets flow side by side when zoomed out -- is only committed once the zoom
+   settles. */
 body {
   --factor: 1;
   position: absolute;
@@ -84,6 +182,23 @@ body {
   width: calc(99% / var(--factor));
   border: 0;
   transform-origin: 0 0;
+}
+
+/* A preview is a viewer, not a navigable document.
+
+   The PdfToHtml family turns any e-mail address or URL it finds in the text into a link, and on an
+   OCR'd conversion those links are invisible yet clickable: the `visibility: hidden` it writes sits
+   on the word *inside* the anchor, and hidden keeps its geometry, so the anchor still takes the
+   click. Clicking what looks like blank space on the scanned image opened a mail client, with
+   nothing on screen to suggest a link was there. An `http` link would have been worse still,
+   replacing the preview with the external site inside the iframe.
+
+   This covers every conversion, including the ones whose links are visible: a page sheet is
+   something to read, and following a link out of it is not what the reader asked for. The page
+   navigator Aspose emits is unaffected -- it lives in `.ph`, hidden below, and `preview.js` drives
+   pagination by calling the document's own `GoN()` / `SetPage()` rather than by clicking it. */
+a {
+  pointer-events: none;
 }
 
 /*  hide multi-modal description */
@@ -108,13 +223,13 @@ body {
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     Oxygen,
     Ubuntu,
     Cantarell,
-    'Open Sans',
-    'Helvetica Neue',
+    "Open Sans",
+    "Helvetica Neue",
     sans-serif;
   font-size: 12px;
   line-height: 1.5;
@@ -146,7 +261,7 @@ body {
     }
 
     &::after {
-      content: 'Generated by AI';
+      content: "Generated by AI";
       color: var(--color-assistant);
       position: absolute;
       top: 0;
@@ -172,4 +287,53 @@ body {
 .invisible .matchlocations {
   color: transparent;
   background-color: #ff0c !important;
+}
+
+/* Formatting of the video converted previews (MediaToHtml v2 converter) */
+.sq-mediav2-conversion {
+  --color-timestamp-border: rgba(11, 117, 255, 0.4);
+  --color-timestamp-background: rgba(11, 117, 255, 0.1);
+
+  hr {
+    display: none;
+  }
+  .sq-mediav2-disclaimer {
+    color: var(--color-assistant);
+    font-style: italic;
+  }
+  .sq-mediav2-page {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .sq-mediav2-timestamp {
+      width: 10%;
+      text-align: center;
+      padding: 5px;
+      border: 2px var(--color-timestamp-border) solid;
+      background-color: var(--color-timestamp-background);
+      border-radius: 15px;
+    }
+    .sq-mediav2-sentences {
+      width: 50%;
+      padding: 0.5rem 1rem;
+      align-self: center;
+      flex-grow: 1;
+    }
+    .sq-mediav2-screenshot {
+      width: 30%;
+      img {
+        width: 100%;
+      }
+      &.screenshot-extended {
+        position: absolute;
+        width: calc(100% - 8px);
+        left: 0;
+        z-index: 9;
+        border: 4px black solid;
+      }
+    }
+  }
 }
