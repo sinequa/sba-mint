@@ -49,53 +49,18 @@ Thumbs.db
 docusaurus/build/*
 docusaurus/node_modules/*
 
-
-/src/assets/i18n/recent-searches
-/src/assets/i18n/saved-searches
-/src/assets/i18n/bookmarks
-/src/assets/i18n/collections
-/src/assets/i18n/alerts
-/src/assets/i18n/did-you-mean
-/src/assets/i18n/export
-/src/assets/i18n/labels
-/src/assets/i18n/feedback
-/src/assets/i18n/sort-selector
-/src/assets/i18n/dialogs
-
-/src/assets/i18n/login
-/src/assets/i18n/multi-selection-toolbar
-/src/assets/i18n/no-result
-/src/assets/i18n/filters
-/src/assets/i18n/sources
-/src/assets/i18n/drawers
-/src/assets/i18n/chat
-/src/assets/i18n/chat-message
-/src/assets/i18n/chat-settings
-/src/assets/i18n/chat-reference
-/src/assets/i18n/chat-debug-message
-/src/assets/i18n/chat-dialogs
-/src/assets/i18n/chat-documents-upload
-/src/assets/i18n/saved-chats
-/src/assets/i18n/token-consumption
-/src/assets/i18n/searches
+# Scoped translations copied from @sinequa/atomic-angular and @sinequa/assistant
+# by `transloco-scoped-libs` (see transloco.config.ts), run from the npm postinstall.
+# Allow-list, not deny-list: everything under src/assets/i18n/ is generated EXCEPT the
+# app-owned scopes below, so a new scope published by a lib is ignored automatically.
+# Only add an exception here when the app itself owns the translation files.
+/src/assets/i18n/*
+!/src/assets/i18n/*.json
+!/src/assets/i18n/article/
+!/src/assets/i18n/preview/
+!/src/assets/i18n/search-input/
+!/src/assets/i18n/user-menu/
 
 # Insight configuration
 proxy.conf.insight.json
 /src/environments/environment.insight.ts
-/src/assets/i18n/multi-selection-toolbar
-/src/assets/i18n/custom-elements
-/src/assets/i18n/user-profile
-
-# Agent (agt-*) translations copied from @sinequa/atomic-angular at install
-/src/assets/i18n/agt-agent
-/src/assets/i18n/agt-components
-/src/assets/i18n/agt-directives
-/src/assets/i18n/agt-feedback
-/src/assets/i18n/agt-input
-/src/assets/i18n/agt-messages-agent
-/src/assets/i18n/agt-messages-debug
-/src/assets/i18n/agt-messages-function
-/src/assets/i18n/agt-messages-user
-/src/assets/i18n/agt-saved-chats
-/src/assets/i18n/agt-search
-/src/assets/i18n/agt-settings
