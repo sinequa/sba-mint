@@ -131,7 +131,8 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   }
 
   async function getFirstPageQuery() {
-    const q = appStore.getDefaultQuery() || { name: "_default" };
+    const q = appStore.getDefaultQuery();
+    if (!q) return;
     const response = await fetchQuery({ isFirstPage: true, name: q.name });
     aggregationStore.update(response.aggregations);
   }

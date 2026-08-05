@@ -4,7 +4,7 @@ import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
 import { Article, CustomHighlights, PreviewData } from "@sinequa/atomic";
-import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { AppStore, PreviewHighlights, PreviewNavigator, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 
 import { rxResource } from "@angular/core/rxjs-interop";
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
@@ -64,10 +64,19 @@ export class PreviewContentComponent {
   protected readonly appStore = inject(AppStore);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly selectionStore = inject(SelectionStore);
+  private readonly queryParamsStore = inject(QueryParamsStore);
   private readonly previewService = inject(PreviewService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
+  /**
+   * The query the preview has to be resolved against, which is not always the default one. Kept in
+   * step with the component of the same name under `src/components`, which is the one the
+   * application bootstraps; see it for why `?n=` has to be followed and why `_query` is not a
+   * fallback worth having.
+   */
+  private currentQueryName(): string | undefined {
+    return this.queryParamsStore.getQuery().name || this.appStore.getDefaultQuery()?.name;
+  }
 
   /**
    * The article to be previewed.
@@ -100,7 +109,7 @@ export class PreviewContentComponent {
     defaultValue: undefined,
     stream: ({ params: { id, text, previewHighlights } }) => {
       if (id) {
-        return this.previewService.preview(id, { name: this.queryName, text }, previewHighlights).pipe(
+        return this.previewService.preview(id, { name: this.currentQueryName(), text }, previewHighlights).pipe(
           catchError(() => {
             this.previewService.DOMContentLoaded.set(true);
             return of(undefined);
@@ -176,7 +185,7 @@ export class PreviewContentComponent {
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
-        this.previewService.close(id, { name: this.queryName });
+        this.previewService.close(id, { name: this.currentQueryName() });
       }
     });
   }

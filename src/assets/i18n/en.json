@@ -69,6 +69,8 @@
   },
   "nextPage": "Next page",
   "open": "Open",
+  "opensInNewWindow": "(opens in a new window)",
+  "moveTo": "Move to {target}",
   "people": "People",
   "previewUnavailable": "Sorry, preview is not available for this file.",
   "previousPage": "Previous page",

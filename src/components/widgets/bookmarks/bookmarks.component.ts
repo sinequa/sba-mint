@@ -29,7 +29,7 @@ export class BookmarksComponent {
   private readonly queryService = inject(QueryService);
 
   protected bookmarks = computed<Bookmark[]>(() => this.userSettingsStore.bookmarks());
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name);
   protected bookmarksArticle = signal<BookmarkArticle[]>([]);
 
   constructor() {
