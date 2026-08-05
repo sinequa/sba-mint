@@ -1,13 +1,10 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from '@angular/core';
-import { Placement } from '@floating-ui/dom';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom, map, tap } from 'rxjs';
-
-import { MessageHandler } from '@sinequa/assistant/chat';
-import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from '@sinequa/atomic';
+import { NgComponentOutlet } from "@angular/common";
+import { Component, computed, DestroyRef, effect, inject, input, signal, Type } from "@angular/core";
+import { Placement } from "@floating-ui/dom";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
+import { MessageHandler } from "@sinequa/assistant/chat";
+import { Aggregation, Article, bisect, CCApp, isNotInputEvent, Query, QueryParams, Result as R, SpellingCorrectionMode } from "@sinequa/atomic";
 import {
   AggregationsStore,
   AppStore,
@@ -27,13 +24,14 @@ import {
   SortSelectorComponent,
   SponsoredResultsComponent,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from '@sinequa/ui';
-
-import { AssistantComponent } from '../../../components/assistant/assistant';
-import { CardSkeleton } from '../../../components/cards/record/skeleton';
-import { injectUrlQueryParamsSync } from '../../../../composables/url-query-params-sync';
-import { getComponentsForDocumentType } from '../../../registry/document-type-registry';
+} from "@sinequa/atomic-angular";
+import { ButtonComponent, CardComponent, CardContentComponent, CardHeaderComponent, ChevronRightIcon, cn } from "@sinequa/ui";
+import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
+import { lastValueFrom, map, tap } from "rxjs";
+import { injectUrlQueryParamsSync } from "../../../../composables/url-query-params-sync";
+import { AssistantComponent } from "../../../components/assistant/assistant";
+import { CardSkeleton } from "../../../components/cards/record/skeleton";
+import { getComponentsForDocumentType } from "../../../registry/document-type-registry";
 
 type Result = R & { nextPage?: number; previousPage?: number };
 
@@ -42,7 +40,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
  * @deprecated This component is deprecated and will be removed in future versions.
  */
 @Component({
-  selector: 'app-search-all',
+  selector: "app-search-all",
   imports: [
     NgComponentOutlet,
     SortSelectorComponent,
@@ -62,7 +60,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
     TranslocoPipe,
     ChevronRightIcon
   ],
-  templateUrl: './search-all.component.html',
+  templateUrl: "./search-all.component.html",
   styles: [
     `
       app-overview-people:not(.hidden) + app-overview-slides {
@@ -77,10 +75,10 @@ type Result = R & { nextPage?: number; previousPage?: number };
     `
   ],
   host: {
-    class: 'layout-search',
-    'attr.drawer-opened': 'drawerStack.isOpened()',
-    '(keydown.enter)': 'handleKeydownEnter($event)',
-    '[attr.drawer-opened]': 'drawerOpened() || false'
+    class: "layout-search",
+    "attr.drawer-opened": "drawerStack.isOpened()",
+    "(keydown.enter)": "handleKeydownEnter($event)",
+    "[attr.drawer-opened]": "drawerOpened() || false"
   }
 })
 export class SearchAllComponent {
@@ -114,7 +112,7 @@ export class SearchAllComponent {
   protected readonly drawerOpened = computed(() => this.drawerStack.isOpened());
 
   protected readonly result = signal<Result | undefined>(undefined);
-  protected readonly queryText = signal<string>('');
+  protected readonly queryText = signal<string>("");
   protected readonly currentKeys = signal<QueryParams | undefined>(undefined);
 
   // the Assistant is expanded and visible by default
@@ -151,17 +149,17 @@ export class SearchAllComponent {
       // Record only on a genuine new search (params changed), first page, non-empty text.
       // Prevents re-recording when the query re-fires purely due to a user-override toggle. ES-32053.
       const keys = JSON.stringify(this.currentKeys());
-      if (pageParam === 1 && query.text && query.text !== '' && keys !== this.lastRecordedKeys) {
+      if (pageParam === 1 && query.text && query.text !== "" && keys !== this.lastRecordedKeys) {
         this.lastRecordedKeys = keys;
         this.userSettingsStore.addCurrentSearch(query as QueryParams);
       }
 
       return lastValueFrom(
         this.queryService.search(query).pipe(
-          tap(() => this.queryText.set(this.currentKeys()?.text ?? '')),
+          tap(() => this.queryText.set(this.currentKeys()?.text ?? "")),
           map(result => {
             result.records?.map((article: Article) => {
-              return { ...article, value: article.title, type: 'default' };
+              return { ...article, value: article.title, type: "default" };
             });
             return result;
           }),
@@ -226,12 +224,12 @@ export class SearchAllComponent {
    *
    * @returns The computed placement value of type `Placement`.
    */
-  position = computed<Placement>(() => (this.drawerOpened() ? 'bottom-end' : 'bottom-start'));
+  position = computed<Placement>(() => (this.drawerOpened() ? "bottom-end" : "bottom-start"));
 
   /**
    * Signal to track state of the selected all checkbox.
    */
-  selectedAll = signal<'all' | 'some' | 'none'>('none');
+  selectedAll = signal<"all" | "some" | "none">("none");
 
   /**
    * If query has rowCount greater than 0, we have results, otherwise no results found.
@@ -258,8 +256,8 @@ export class SearchAllComponent {
     return `search-results-assistant`;
   });
   readonly allowAI = computed(() => !this.b() && this.appStore.isAssistantAllowed(this.instanceId()));
-  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.['modeSettings']?.['enabledUserInput'] === true);
-  assistantQuery: Query = { name: 'assistant' };
+  readonly enabledUserInput = computed(() => this.appStore.assistants()[this.instanceId()]?.["modeSettings"]?.["enabledUserInput"] === true);
+  assistantQuery: Query = { name: "assistant" };
 
   conditionalMessageHandler: Map<string, MessageHandler<any>> = new Map();
 
@@ -316,9 +314,9 @@ export class SearchAllComponent {
       const selection = this.selectionStore.multiSelection().map(x => x.id);
       const b = bisect(articles, x => selection.includes(x));
 
-      if (b.true.length === 0) this.selectedAll.set('none');
-      else if (b.false.length === 0) this.selectedAll.set('all');
-      else this.selectedAll.set('some');
+      if (b.true.length === 0) this.selectedAll.set("none");
+      else if (b.false.length === 0) this.selectedAll.set("all");
+      else this.selectedAll.set("some");
     });
 
     effect(() => {
@@ -334,7 +332,7 @@ export class SearchAllComponent {
 
     effect(() => this.onDrawerOpenedChange(this.drawerOpened()));
 
-    this.conditionalMessageHandler.set('SkillsTester', { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
+    this.conditionalMessageHandler.set("SkillsTester", { handler: message => this.handleConditionalDisplayMessage(message), isGlobalHandler: false });
 
     // When the component is destroyed, clear the aggregations store
     // to avoid memory leaks and ensure that the aggregations are reset
@@ -342,7 +340,7 @@ export class SearchAllComponent {
   }
 
   selectAll() {
-    if (this.selectedAll() === 'all') {
+    if (this.selectedAll() === "all") {
       this.unselectAll();
       return;
     }
@@ -381,7 +379,7 @@ export class SearchAllComponent {
 
   onSort(sort: SortingChoice): void {
     const audit = {
-      type: 'Search_Sort',
+      type: "Search_Sort",
       detail: {
         sort: sort.name,
         orderByClause: sort.orderByClause
@@ -397,7 +395,7 @@ export class SearchAllComponent {
 
   handleConditionalDisplayMessage(message: any) {
     const { result } = message as { result: string };
-    if (result.toLocaleLowerCase().includes('show overview')) {
+    if (result.toLocaleLowerCase().includes("show overview")) {
       this.hideAssistant.set(false);
     } else {
       this.hideAssistant.set(true);

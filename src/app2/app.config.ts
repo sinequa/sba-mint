@@ -2,13 +2,17 @@ import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import localeDe from "@angular/common/locales/de";
 import localeFr from "@angular/common/locales/fr";
-import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, isDevMode, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
+import { APP_INITIALIZER, ApplicationConfig, isDevMode, LOCALE_ID, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withHashLocation } from "@angular/router";
+import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
+import { TranslocoHttpLoader } from "@config/transloco-loader";
+// @ts-expect-error
+import Flow from "@flowjs/flow.js";
+import { FlowInjectionToken } from "@flowjs/ngx-flow";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideTranslocoMessageformat } from "@jsverse/transloco-messageformat";
-import { QueryClient, provideTanStackQuery } from "@tanstack/angular-query-experimental";
-
+import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import {
   ASSISTANT_CUSTOM_ELEMENTS,
   ASSISTANT_MARKDOWN_IT_PLUGINS,
@@ -16,22 +20,27 @@ import {
   CustomElementsService,
   DocumentReferenceComponent,
   ImageReferenceComponent,
-  PageReferenceComponent,
-  TableToolsComponent,
   initializeCustomElements,
   markdownItCodeBlockPlugin,
   markdownItDocumentReferencePlugin,
   markdownItImageReferencePlugin,
   markdownItLinkPlugin,
   markdownItPageReferencePlugin,
-  markdownItTableToolsPlugin
+  markdownItTableToolsPlugin,
+  PageReferenceComponent,
+  TableToolsComponent
 } from "@sinequa/assistant/chat";
 import {
+  auditInterceptorFn,
+  authInterceptorFn,
   BOOKMARKS_CONFIG,
   BOOKMARKS_OPTIONS,
+  bodyInterceptorFn,
+  bootstrapApp,
   COLLECTIONS_CONFIG,
   COLLECTIONS_OPTIONS,
   COMPONENTS_FOR_DOCUMENT_TYPE,
+  errorInterceptorFn,
   FILTERS_BREAKPOINT,
   HIGHLIGHTS,
   PREVIEW_CONFIG,
@@ -40,26 +49,13 @@ import {
   ROUTE_COMPONENTS,
   SAVED_SEARCHES_CONFIG,
   SAVED_SEARCHES_OPTIONS,
-  auditInterceptorFn,
-  authInterceptorFn,
-  bodyInterceptorFn,
-  errorInterceptorFn,
-  toastInterceptorFn,
-  bootstrapApp
+  toastInterceptorFn
 } from "@sinequa/atomic-angular";
-
-import { TranslocoHttpLoader } from "@config/transloco-loader";
-import { getComponentsForDocumentType } from "@registry/document-type-registry";
-
+import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
 import { PREVIEW_HIGHLIGHTS } from "../config/highlight.config";
 import { SearchAllComponent } from "./pages/search/search-all";
 import { SearchLayoutComponent } from "./pages/search/search-layout";
 import { routes } from "./routes";
-
-// @ts-ignore
-import Flow from "@flowjs/flow.js";
-import { FlowInjectionToken } from "@flowjs/ngx-flow";
-import { CustomReuseStrategy } from "@config/custom-reuse-strategy";
 
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);

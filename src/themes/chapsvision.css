@@ -163,9 +163,9 @@
 :root {
   color-scheme: light;
 
-  --logo-small-url: url('../assets/logo/logo-small.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa.svg');
-  --logo-large-alt-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url("../assets/logo/logo-small.svg");
+  --logo-large-url: url("../assets/logo/logo-sinequa.svg");
+  --logo-large-alt-url: url("../assets/logo/logo-sinequa-blanc.svg");
   /*
     --logo-light-small and
     --logo-light-large
@@ -174,7 +174,7 @@
   --logo-small: var(--logo-light-small, var(--logo-small-url));
   --logo-large: var(--logo-light-large, var(--logo-large-url));
   --logo-large-alt: var(--logo-large-alt-url);
-  --logo-alt-text: 'Sinequa logo';
+  --logo-alt-text: "Sinequa logo";
 
   --radius: 0.65rem;
   --background: light-dark(oklch(1 0 0), var(--color-sage-975));
@@ -285,8 +285,8 @@
 
 .dark {
   color-scheme: dark;
-  --logo-small-url: url('../assets/logo/logo-small-blanc.svg');
-  --logo-large-url: url('../assets/logo/logo-sinequa-blanc.svg');
+  --logo-small-url: url("../assets/logo/logo-small-blanc.svg");
+  --logo-large-url: url("../assets/logo/logo-sinequa-blanc.svg");
   /*
     --logo-dark-small and
     --logo-dark-large

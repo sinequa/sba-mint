@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, viewChild } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { SavedChatsComponent } from '@sinequa/assistant/chat';
-import { SpellingCorrectionMode } from '@sinequa/atomic';
-import { AggregationComponent, ApplicationService, DrawerStackService } from '@sinequa/atomic-angular';
-import { ButtonComponent, cn, PageHeaderComponent } from '@sinequa/ui';
-import { AssistantComponent } from '../../components/assistant/assistant';
-import { AssistantUploadComponent } from '../../../components/assistant/document-upload/assistant-upload.component';
-import { OnRouteAttached } from '@config/custom-reuse-strategy';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { AppSidebarComponent } from '../../components/sidebar/sidebar.component';
-import { injectAssistantLayout } from '../../../composables/inject-assistant-layout';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, viewChild } from "@angular/core";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { SavedChatsComponent } from "@sinequa/assistant/chat";
+import { SpellingCorrectionMode } from "@sinequa/atomic";
+import { AggregationComponent, ApplicationService, DrawerStackService } from "@sinequa/atomic-angular";
+import { ButtonComponent, cn, PageHeaderComponent } from "@sinequa/ui";
+import { AssistantUploadComponent } from "../../../components/assistant/document-upload/assistant-upload.component";
+import { injectAssistantLayout } from "../../../composables/inject-assistant-layout";
+import { AssistantComponent } from "../../components/assistant/assistant";
+import { NavbarComponent } from "../../components/navbar/navbar.component";
+import { AppSidebarComponent } from "../../components/sidebar/sidebar.component";
 
 @Component({
-  selector: 'assistant-layout, AssistantLayout',
+  selector: "assistant-layout, AssistantLayout",
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslocoPipe,
@@ -25,7 +25,7 @@ import { injectAssistantLayout } from '../../../composables/inject-assistant-lay
     ButtonComponent,
     AppSidebarComponent
   ],
-  providers: [provideTranslocoScope('filters')],
+  providers: [provideTranslocoScope("filters")],
   template: `
     <PageHeader>
       <app-navbar [showInput]="false" [showMenu]="false" class="layout-search py-4" />
@@ -135,7 +135,7 @@ export class AssistantLayoutComponent implements OnRouteAttached {
     // Update the title when the drawer closes (app1-specific behaviour)
     effect(() => {
       if (!this.drawerStackService.isOpened()) {
-        this.applicationService.setTitle('Assistant');
+        this.applicationService.setTitle("Assistant");
       }
     });
   }

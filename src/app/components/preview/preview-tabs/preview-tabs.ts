@@ -57,7 +57,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
         }
       </TabsList>
       <!-- tabs content -->
-      <div class="relative h-full flex-grow overflow-auto">
+      <div class="relative h-full grow overflow-auto">
         <!-- tab contents -->
         <!-- Summary Tab Content -->
         @if (displaySummaryContent() && summarizeInstanceId()) {
@@ -67,14 +67,14 @@ export type PreviewTab = "summary" | "preview" | "discussion";
               [query]="miniPreviewQuery()"
               [showAssistant]="showSummarizeAssistant()"
               (isStreaming)="handleStreaming($event)"
-              class="flex-grow" />
+              class="grow" />
           </TabContent>
         }
 
         <!-- Chat with Doc Tab Content -->
         @if (displayChatWithDocContent() && chatWithDocIntanceId()) {
           <TabContent value="discussion" class="absolute inset-0">
-            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="flex-grow" />
+            <assistant [instanceId]="chatWithDocIntanceId()" [query]="chatWithDocQuery()" [showAssistant]="showChatWithDocAssistant()" class="grow" />
           </TabContent>
         }
 

@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, DestroyRef, Signal, computed, effect, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { SavedChat } from '@sinequa/assistant/chat';
-import type { AssistantComponent } from '@components/assistant/assistant';
-import { CCApp, error, fetchQuery, globalConfig, Query, warn } from '@sinequa/atomic';
-import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from '@sinequa/atomic-angular';
-import { filter, firstValueFrom, skip, take } from 'rxjs';
-import { UrlQueryParamInputs, injectUrlQueryParamsSync } from './url-query-params-sync';
+import { ChangeDetectorRef, DestroyRef, Signal, computed, effect, inject, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
+import { SavedChat } from "@sinequa/assistant/chat";
+import type { AssistantComponent } from "@components/assistant/assistant";
+import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/atomic";
+import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
+import { filter, firstValueFrom, skip, take } from "rxjs";
+import { UrlQueryParamInputs, injectUrlQueryParamsSync } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
-type AssistantRef = Pick<AssistantComponent, 'newChat' | 'askAI' | 'sqChat'>;
+type AssistantRef = Pick<AssistantComponent, "newChat" | "askAI" | "sqChat">;
 
 /**
  * Composable that encapsulates the shared logic of AssistantLayoutComponent
@@ -32,7 +32,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   const destroyRef = inject(DestroyRef);
   const principalStore = inject(PrincipalStore);
 
-  const STORAGE_KEY = 'assistant_current_chat_id';
+  const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;
 
   const query = signal<Query | undefined>(undefined);
@@ -46,16 +46,16 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
       const { name } = getState(appStore) as CCApp;
       return `${name}-standalone-assistant`;
     }
-    return 'standalone-assistant';
+    return "standalone-assistant";
   });
 
   const showSavedChats = computed(() => {
-    const allowSavedChats = Boolean(appStore.assistants()[instanceId()]?.['savedChatSettings']?.['display']);
+    const allowSavedChats = Boolean(appStore.assistants()[instanceId()]?.["savedChatSettings"]?.["display"]);
     return allowSavedChats && connectionEstablished() && isAssistantReady();
   });
 
   const showDocumentUploader = computed(() => {
-    const allowDocumentUploader = Boolean(appStore.customizationJson()?.['documentsUploadSettings']?.['enabled']);
+    const allowDocumentUploader = Boolean(appStore.customizationJson()?.["documentsUploadSettings"]?.["enabled"]);
     return allowDocumentUploader && connectionEstablished() && isAssistantReady();
   });
 
@@ -93,13 +93,13 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Methods ──────────────────────────────────────────────────────────────
 
   function initialize() {
-    applicationService.setTitle('Assistant');
+    applicationService.setTitle("Assistant");
     selectionStore.clear();
     getFirstPageQuery();
   }
 
   async function getFirstPageQuery() {
-    const q = appStore.getDefaultQuery() || { name: '_default' };
+    const q = appStore.getDefaultQuery() || { name: "_default" };
     const response = await fetchQuery({ isFirstPage: true, name: q.name });
     aggregationStore.update(response.aggregations);
   }
@@ -115,7 +115,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   }
 
   function handleConnection(connection: HubConnection) {
-    if (connection.state === 'Connected') connectionEstablished.set(true);
+    if (connection.state === "Connected") connectionEstablished.set(true);
   }
 
   function handleReady(ready: boolean) {
@@ -141,7 +141,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
           startNewChat();
         }
       },
-      error: err => error('Error loading saved chats:', err)
+      error: err => error("Error loading saved chats:", err)
     });
   }
 
@@ -150,14 +150,14 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
     const assistantComponent = chat();
     if (!assistantComponent) {
-      warn('Assistant component not available');
+      warn("Assistant component not available");
       return;
     }
 
     const sqChat = assistantComponent.sqChat();
     const chatService = sqChat?.chatService;
     if (!chatService) {
-      warn('Chat service not available');
+      warn("Chat service not available");
       return;
     }
 
@@ -165,7 +165,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
     try {
       const response = await firstValueFrom(chatService.getSavedChat(savedChat.id));
-      const firstUserMessage = (response?.history || []).find(msg => msg.role === 'user' && msg.content);
+      const firstUserMessage = (response?.history || []).find(msg => msg.role === "user" && msg.content);
 
       if (firstUserMessage && sqChat) {
         // Subscribe before triggering the load so we don't miss the false emission.
@@ -186,7 +186,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
       cdr.detectChanges();
     } catch (err) {
-      error('Error loading saved chat:', err);
+      error("Error loading saved chat:", err);
     }
   }
 

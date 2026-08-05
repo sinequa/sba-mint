@@ -1,12 +1,12 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, signal, Type, viewChild, viewChildren } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { NgComponentOutlet } from "@angular/common";
+import { Component, computed, inject, signal, Type, viewChild, viewChildren } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { logout, setGlobalConfig } from '@sinequa/atomic';
-import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from '@sinequa/atomic-angular';
+import { logout, setGlobalConfig } from "@sinequa/atomic";
+import { OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import {
   AvatarComponent,
   AvatarFallbackComponent,
@@ -19,12 +19,12 @@ import {
   MenuItemComponent,
   Separator,
   UserIcon
-} from '@sinequa/ui';
+} from "@sinequa/ui";
 
-const THEME = ['light', 'dark', 'system'] as const;
+const THEME = ["light", "dark", "system"] as const;
 type Theme = (typeof THEME)[number];
 
-const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 /**
@@ -37,7 +37,7 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
  * ```
  */
 @Component({
-  selector: 'user-menu',
+  selector: "user-menu",
   imports: [
     FormsModule,
     MenuComponent,
@@ -54,19 +54,19 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
     Separator,
     NgComponentOutlet
   ],
-  templateUrl: './user-menu.html',
-  providers: [provideTranslocoScope('user-menu')]
+  templateUrl: "./user-menu.html",
+  providers: [provideTranslocoScope("user-menu")]
 })
 export class UserMenuComponent {
   AllThemes: { name: Theme; icon: string }[] = [
-    { name: 'light', icon: 'fa-fw fal fa-sun-bright' },
-    { name: 'dark', icon: 'fa-fw fal fa-moon' },
-    { name: 'system', icon: 'fa-fw fal fa-desktop' }
+    { name: "light", icon: "fa-fw fal fa-sun-bright" },
+    { name: "dark", icon: "fa-fw fal fa-moon" },
+    { name: "system", icon: "fa-fw fal fa-desktop" }
   ] as const;
 
   AllLanguages: { code: SupportedLanguage; label: string; icon: Type<unknown> }[] = [
-    { code: 'en', label: 'English', icon: FlagEnglishIconComponent },
-    { code: 'fr', label: 'Français', icon: FlagFrenchIconComponent }
+    { code: "en", label: "English", icon: FlagEnglishIconComponent },
+    { code: "fr", label: "Français", icon: FlagFrenchIconComponent }
   ] as const;
 
   readonly menus = viewChildren(MenuComponent);
@@ -85,12 +85,12 @@ export class UserMenuComponent {
 
   readonly initials = computed(() => {
     const principal = this.user();
-    const separator = principal.fullName ? ' ' : '.';
-    return (principal.fullName || principal.name || '')
+    const separator = principal.fullName ? " " : ".";
+    return (principal.fullName || principal.name || "")
       .split(separator)
       .filter(word => word[0] && word[0] === word[0].toUpperCase())
       .map(word => word[0])
-      .join('')
+      .join("")
       .slice(0, 3);
   });
   readonly allowUserOverride = computed(() => this.principalStore.allowUserOverride());
@@ -109,8 +109,8 @@ export class UserMenuComponent {
   }
 
   switchTheme(mode: Theme) {
-    const userTheme = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark', userTheme);
+    const userTheme = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", userTheme);
     this.userSettingsStore.setUserTheme(mode);
   }
 
@@ -120,7 +120,7 @@ export class UserMenuComponent {
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else {
-        this.router.navigate(['/logout']);
+        this.router.navigate(["/logout"]);
       }
     });
   }
@@ -138,6 +138,6 @@ export class UserMenuComponent {
   }
 
   openSinequa() {
-    window.open('https://sinequa.com', '_blank', 'noopener');
+    window.open("https://sinequa.com", "_blank", "noopener");
   }
 }
