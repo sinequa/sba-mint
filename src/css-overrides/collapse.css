@@ -7,15 +7,15 @@
 }
 
 .collapse-title,
-.collapse > input[type='checkbox'],
-.collapse > input[type='radio'],
+.collapse > input[type="checkbox"],
+.collapse > input[type="radio"],
 .collapse-content {
   grid-column-start: 1;
   grid-row-start: 1;
 }
 
-.collapse > input[type='checkbox'],
-.collapse > input[type='radio'] {
+.collapse > input[type="checkbox"],
+.collapse > input[type="radio"] {
   cursor: pointer;
   appearance: none;
   opacity: 0;
@@ -35,16 +35,16 @@
   grid-template-rows: auto 1fr;
 }
 
-.collapse:not(.collapse-close):has(> input[type='checkbox']:checked),
-.collapse:not(.collapse-close):has(> input[type='radio']:checked) {
+.collapse:not(.collapse-close):has(> input[type="checkbox"]:checked),
+.collapse:not(.collapse-close):has(> input[type="radio"]:checked) {
   grid-template-rows: auto 1fr;
 }
 
 .collapse[open] > .collapse-content,
 .collapse-open > .collapse-content,
 .collapse:focus:not(.collapse-close) > .collapse-content,
-.collapse:not(.collapse-close) > input[type='checkbox']:checked ~ .collapse-content,
-.collapse:not(.collapse-close) > input[type='radio']:checked ~ .collapse-content {
+.collapse:not(.collapse-close) > input[type="checkbox"]:checked ~ .collapse-content,
+.collapse:not(.collapse-close) > input[type="radio"]:checked ~ .collapse-content {
   visibility: visible;
   min-height: fit-content;
 }

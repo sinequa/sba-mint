@@ -1,6 +1,6 @@
-import { Component, viewChild } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { DocumentListComponent, DocumentUploadComponent } from '@sinequa/assistant/chat';
+import { Component, viewChild } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { DocumentListComponent, DocumentUploadComponent } from "@sinequa/assistant/chat";
 import {
   ButtonComponent,
   DialogComponent,
@@ -9,10 +9,10 @@ import {
   DialogHeaderComponent,
   type DialogInterface,
   DialogTitleComponent
-} from '@sinequa/ui';
+} from "@sinequa/ui";
 
 @Component({
-  selector: 'upload-dialog',
+  selector: "upload-dialog",
   imports: [
     TranslocoPipe,
     DocumentUploadComponent,
@@ -62,7 +62,7 @@ import {
     </div>
   `,
   host: {
-    class: 'block fixed z-1000'
+    class: "block fixed z-1000"
   }
 })
 export class UploadDialog implements DialogInterface {

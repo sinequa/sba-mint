@@ -1,14 +1,14 @@
-import { Component, inject, input } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { Component, inject, input } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
 
-import type { Article } from '@sinequa/atomic';
-import { DrawerService, DrawerStackService } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import type { Article } from "@sinequa/atomic";
+import { DrawerService, DrawerStackService } from "@sinequa/atomic-angular";
+import { ButtonComponent } from "@sinequa/ui";
 
-import type { PreviewNavbarConfig } from './navbar';
+import type { PreviewNavbarConfig } from "./navbar";
 
 @Component({
-  selector: 'preview-navbar-extended, PreviewNavbarExtended, previewnavbarextended',
+  selector: "preview-navbar-extended, PreviewNavbarExtended, previewnavbarextended",
   imports: [TranslocoPipe, ButtonComponent],
   template: `
     @if (config().showSearchButton && article()) {
@@ -28,7 +28,7 @@ import type { PreviewNavbarConfig } from './navbar';
     }
   `,
   host: {
-    class: 'contents'
+    class: "contents"
   }
 })
 export class PreviewNavbarExtendedComponent {

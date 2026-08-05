@@ -8,7 +8,7 @@
       [attr.aria-label]="'searchInput.placeholder' | transloco"
       [control]="form.controls.searchInputText"
       (onSelected)="onSelected($event)">
-      @if (showSave() && (searchInputText() !== '' || hasFilters())) {
+      @if (showSave() && (searchInputText() !== "" || hasFilters())) {
         @if (!savedSearch()) {
           <Popover #popover class="rounded-lg border-neutral-300" (closed)="openedSavedSearch.set(false)">
             <button
@@ -23,7 +23,7 @@
             </button>
 
             <PopoverContent #popoverContent class="min-w-xs p-2" position="bottom-end">
-              <label class="text-xl font-bold">{{ 'searches.saved.saveYourSearch' | transloco }}</label>
+              <label class="text-xl font-bold">{{ "searches.saved.saveYourSearch" | transloco }}</label>
               <!-- <MenuSeparator /> -->
               <div class="py-4">
                 <input
@@ -39,10 +39,10 @@
 
               <div class="ml-auto flex justify-end gap-2">
                 <button variant="outline" (click)="popover.close()">
-                  {{ 'cancel' | transloco }}
+                  {{ "cancel" | transloco }}
                 </button>
                 <button (click)="saveQuery($event)" [disabled]="!trimmedSaveName()">
-                  {{ 'confirm' | transloco }}
+                  {{ "confirm" | transloco }}
                 </button>
               </div>
             </PopoverContent>

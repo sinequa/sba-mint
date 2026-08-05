@@ -1,6 +1,6 @@
-import { Component, effect, signal } from '@angular/core';
-import { FormControl, FormsModule } from '@angular/forms';
-import { SearchInputComponent } from '@sinequa/atomic-angular';
+import { Component, effect, signal } from "@angular/core";
+import { FormControl, FormsModule } from "@angular/forms";
+import { SearchInputComponent } from "@sinequa/atomic-angular";
 
 import {
   AvatarComponent,
@@ -47,10 +47,10 @@ import {
   TabVariants,
   UserIcon,
   VerticalDividerComponent
-} from '@sinequa/ui';
+} from "@sinequa/ui";
 
 @Component({
-  selector: 'app-debug',
+  selector: "app-debug",
   imports: [
     FormsModule,
     ButtonComponent,
@@ -1176,41 +1176,41 @@ import {
     }
   `,
   host: {
-    class: 'flex flex-col gap-8 py-5'
+    class: "flex flex-col gap-8 py-5"
   }
 })
 export class UITesterComponent {
   cn = cn;
 
-  readonly currentTab = signal<string>('buttons');
+  readonly currentTab = signal<string>("buttons");
 
-  readonly miscTab = signal<string>('default');
-  readonly tabDecoration = signal<TabVariants['decoration']>('underline');
+  readonly miscTab = signal<string>("default");
+  readonly tabDecoration = signal<TabVariants["decoration"]>("underline");
   readonly sidebarSelected = signal<boolean>(false);
   readonly toggled = signal<boolean>(false);
-  readonly buttonDecoration = signal<ButtonVariants['decoration']>('outline');
-  readonly searchbarDecoration = signal<SearchVariants['decoration']>('outline');
-  readonly menuDecoration = signal<ListItemVariants['decoration']>('outline');
-  readonly badgeDecoration = signal<BadgeVariants['decoration']>('none');
-  readonly badgeHover = signal<BadgeVariants['hover']>('no');
+  readonly buttonDecoration = signal<ButtonVariants["decoration"]>("outline");
+  readonly searchbarDecoration = signal<SearchVariants["decoration"]>("outline");
+  readonly menuDecoration = signal<ListItemVariants["decoration"]>("outline");
+  readonly badgeDecoration = signal<BadgeVariants["decoration"]>("none");
+  readonly badgeHover = signal<BadgeVariants["hover"]>("no");
   readonly selected = signal<boolean>(false);
-  readonly cardHover = signal<CardVariants['hover']>('no');
-  readonly searchValue = new FormControl('', { nonNullable: true });
-  readonly dialogVariant = signal<DialogVariants['variant']>('default');
+  readonly cardHover = signal<CardVariants["hover"]>("no");
+  readonly searchValue = new FormControl("", { nonNullable: true });
+  readonly dialogVariant = signal<DialogVariants["variant"]>("default");
   readonly pageHeaderToggle = signal<boolean>(false);
-  readonly pageHeaderStyle = signal<PageHeaderVariants['variant']>('default');
-  readonly inputText = signal<string>('');
-  readonly inputDecoration = signal<InputVariants['decoration']>('none');
+  readonly pageHeaderStyle = signal<PageHeaderVariants["variant"]>("default");
+  readonly inputText = signal<string>("");
+  readonly inputDecoration = signal<InputVariants["decoration"]>("none");
 
   constructor() {
     // Handle dark mode toggle
     effect(() => {
-      if (this.toggled()) document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
+      if (this.toggled()) document.documentElement.classList.add("dark");
+      else document.documentElement.classList.remove("dark");
     });
   }
 
   logDebugInfo() {
-    console.log('Debug information logged.');
+    console.log("Debug information logged.");
   }
 }

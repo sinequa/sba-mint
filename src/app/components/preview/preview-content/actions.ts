@@ -1,12 +1,12 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { getState } from '@ngrx/signals';
+import { Component, DestroyRef, effect, inject, signal } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { getState } from "@ngrx/signals";
 
-import { PreviewService, SelectionStore } from '@sinequa/atomic-angular';
-import { ButtonComponent } from '@sinequa/ui';
+import { PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { ButtonComponent } from "@sinequa/ui";
 
 @Component({
-  selector: 'preview-actions',
+  selector: "preview-actions",
   imports: [TranslocoPipe, ButtonComponent],
   template: `
     <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
@@ -112,20 +112,20 @@ export class PreviewActionsComponent {
     effect(() => {
       const { article } = getState(this.selectionStore);
       if (!article) return;
-      this.hasAIDescription.set(article.flags?.includes('ps') ?? false);
+      this.hasAIDescription.set(article.flags?.includes("ps") ?? false);
     });
 
     const controller = new AbortController();
 
     window.addEventListener(
-      'message',
+      "message",
       (event: MessageEvent) => {
         const message = event.data;
-        if (message.type === 'selected-position') {
+        if (message.type === "selected-position") {
           this.previewService.toggle(this.extracts(), this.entities());
         }
 
-        if (message.type === 'ready') {
+        if (message.type === "ready") {
           this.previewService.toggle(this.extracts(), this.entities());
         }
       },
@@ -153,11 +153,11 @@ export class PreviewActionsComponent {
   }
 
   toggleExtracts() {
-    this.toggle('extracts');
+    this.toggle("extracts");
   }
 
   toggleEntities() {
-    this.toggle('entities');
+    this.toggle("entities");
   }
 
   /**
@@ -165,9 +165,9 @@ export class PreviewActionsComponent {
    * If the specified type is already active, it will be deactivated.
    * @param type - The type to toggle ('extracts' or 'entities').
    */
-  private toggle(type: 'extracts' | 'entities') {
+  private toggle(type: "extracts" | "entities") {
     // Determine the current signal based on the type, and toggle its value
-    const currentSignal = type === 'extracts' ? this.extracts : this.entities;
+    const currentSignal = type === "extracts" ? this.extracts : this.entities;
     const value = !currentSignal();
     currentSignal.set(value);
 
@@ -175,8 +175,8 @@ export class PreviewActionsComponent {
     this.previewService.toggle(this.extracts(), this.entities());
 
     // If extracts are being turned off, send an 'unselect' action to the preview service
-    if (type === 'extracts' && value === false) {
-      this.previewService.sendMessage({ action: 'unselect' });
+    if (type === "extracts" && value === false) {
+      this.previewService.sendMessage({ action: "unselect" });
     }
   }
 }

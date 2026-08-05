@@ -1,13 +1,13 @@
-import { Component, inject, input } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { Component, inject, input } from "@angular/core";
+import { TranslocoPipe } from "@jsverse/transloco";
 
-import { DocumentOverviewComponent } from '@sinequa/assistant/chat';
-import { DialogService } from '@sinequa/ui';
+import { DocumentOverviewComponent } from "@sinequa/assistant/chat";
+import { DialogService } from "@sinequa/ui";
 
-import { UploadDialog } from './upload.dialog';
+import { UploadDialog } from "./upload.dialog";
 
 @Component({
-  selector: 'assistant-upload, AssistantUpload',
+  selector: "assistant-upload, AssistantUpload",
   imports: [TranslocoPipe, DocumentOverviewComponent],
   template: `
     <section class="dark:bg-menu mt-6 rounded-2xl border border-gray-200 p-4 shadow">

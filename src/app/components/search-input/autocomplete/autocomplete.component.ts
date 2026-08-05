@@ -1,10 +1,10 @@
-import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal, Type } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { EventManager } from '@angular/platform-browser';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
+import { Component, computed, effect, ElementRef, inject, InjectionToken, input, output, signal, Type } from "@angular/core";
+import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { EventManager } from "@angular/platform-browser";
+import { TranslocoPipe } from "@jsverse/transloco";
+import { catchError, combineLatest, map, of, switchMap, tap } from "rxjs";
 
-import { error, Suggestion as S } from '@sinequa/atomic';
+import { error, Suggestion as S } from "@sinequa/atomic";
 import {
   AppStore,
   AuditService,
@@ -13,7 +13,7 @@ import {
   DrawerStackService,
   HighlightWordPipe,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
+} from "@sinequa/atomic-angular";
 
 import {
   BookmarkIcon,
@@ -28,21 +28,21 @@ import {
   SearchIcon,
   StarIcon,
   UserIcon
-} from '@sinequa/ui';
+} from "@sinequa/ui";
 
-import { NgComponentOutlet } from '@angular/common';
-import { SearchInputComponent } from '../search-input.component';
+import { NgComponentOutlet } from "@angular/common";
+import { SearchInputComponent } from "../search-input.component";
 
 const AUTOCOMPLETE_CATEGORIES_SORT_PREFERENCES = new InjectionToken("Order by preference for suggestion's categories", {
-  factory: () => ['full-text', 'recent-search', 'saved-search', 'bookmark', 'title', 'concepts', 'people']
+  factory: () => ["full-text", "recent-search", "saved-search", "bookmark", "title", "concepts", "people"]
 });
 // Icons mapping for each category - returns SVG strings
-const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, Type<unknown>>>('Icons for each suggestion categories', {
+const AUTOCOMPLETE_CATEGORIES_ICONS = new InjectionToken<Record<string, Type<unknown>>>("Icons for each suggestion categories", {
   factory: () => ({
-    'recent-search': ClockIcon, // Clock icon
-    'saved-search': StarIcon, // Star icon
+    "recent-search": ClockIcon, // Clock icon
+    "saved-search": StarIcon, // Star icon
     bookmark: BookmarkIcon, // Bookmark icon
-    'full-text': SearchIcon, // Search icon
+    "full-text": SearchIcon, // Search icon
     title: FileIcon, // File icon
     concepts: LightbulbIcon, // Lightbulb icon
     people: UserIcon, // User icon
@@ -59,8 +59,8 @@ type Suggestion = Partial<S> & {
 export type ActiveSuggestion = { id: string; item: S } | undefined;
 
 @Component({
-  selector: 'app-autocomplete',
-  templateUrl: './autocomplete.component.html',
+  selector: "app-autocomplete",
+  templateUrl: "./autocomplete.component.html",
   imports: [NgComponentOutlet, HighlightWordPipe, TranslocoPipe, ListItemComponent, HorizontalDividerComponent, ButtonComponent],
   styles: [
     `
@@ -76,7 +76,7 @@ export type ActiveSuggestion = { id: string; item: S } | undefined;
   ]
 })
 export class AutocompleteComponent {
-  readonly text = input<string>('');
+  readonly text = input<string>("");
   readonly onClick = output<S>();
   readonly activeDescendant = output<ActiveSuggestion>();
 
@@ -116,7 +116,7 @@ export class AutocompleteComponent {
           fromUserSettings,
           this.autocompleteService.getFromSuggestQueriesForText(testText).pipe(
             catchError(err => {
-              error('Error getting suggestions from suggest queries', err);
+              error("Error getting suggestions from suggest queries", err);
               return of([]);
             })
           )
@@ -154,7 +154,7 @@ export class AutocompleteComponent {
     { el: { nativeElement } }: SearchInputComponent,
     private eventManager: EventManager
   ) {
-    this.eventManager.addEventListener(nativeElement, 'click', () => this.wasSearchClicked.set(true));
+    this.eventManager.addEventListener(nativeElement, "click", () => this.wasSearchClicked.set(true));
 
     effect(() => {
       if (!this.suggestions() || this.suggestions()!.length === 0) return;
@@ -176,7 +176,7 @@ export class AutocompleteComponent {
   }
 
   getIconForCategory(category: string | undefined): Type<unknown> {
-    return this.autocompleteIcons[category || ''] || SearchIcon; // Default search icon
+    return this.autocompleteIcons[category || ""] || SearchIcon; // Default search icon
   }
 
   // #region Keyboard navigation
@@ -197,7 +197,7 @@ export class AutocompleteComponent {
 
     this.currentSuggestIndex.set(index);
     this.elRef.nativeElement.querySelector(`#search-suggestion-${index}`)?.scrollIntoView({
-      block: 'nearest'
+      block: "nearest"
     });
   }
 

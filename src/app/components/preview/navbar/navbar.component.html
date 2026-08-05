@@ -2,7 +2,7 @@
   @if (navConfig.showOpenButton) {
     <button variant="ghost" [attr.title]="'open' | transloco" [disabled]="!hasExternalLink()" (click)="openClicked()">
       <i class="fa-fw far fa-arrow-up-right-from-square"></i>
-      {{ 'open' | transloco }}
+      {{ "open" | transloco }}
     </button>
 
     <VerticalDivider />
@@ -29,12 +29,12 @@
       @if (isExtended()) {
         <button variant="outline" (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye-slash"></i>
-          {{ 'preview.hideSearch' | transloco }}
+          {{ "preview.hideSearch" | transloco }}
         </button>
       } @else {
         <button (click)="drawerStack.extend()">
           <i class="fa-fw far fa-eye"></i>
-          {{ 'preview.searchInDocument' | transloco }}
+          {{ "preview.searchInDocument" | transloco }}
         </button>
       }
     </div>

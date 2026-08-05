@@ -104,7 +104,7 @@
 }
 
 @theme {
-  --font-display: 'Segoe UI', 'SF Pro Text', 'Aria', 'sans-serif';
+  --font-display: "Segoe UI", "SF Pro Text", "Aria", "sans-serif";
 
   --text-xxs: 0.625rem;
 
@@ -198,7 +198,7 @@
 
 @utility underline-ai {
   /* Adds an after element to simulate underline with gradient */
-  content: '';
+  content: "";
   position: absolute;
 
   left: 0;

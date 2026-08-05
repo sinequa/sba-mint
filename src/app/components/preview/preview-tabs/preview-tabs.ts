@@ -38,7 +38,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 
         @if (displaySummary() || displayChatWithDoc()) {
           @if (displaySummary()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="summary" (click)="setSummaryAssistant()">
+            <Tab class="w-fit" shadow="none" value="summary" (click)="setSummaryAssistant()">
               @if (isStreaming()) {
                 <SpinnerIcon class="size-4 animate-spin" />
               } @else {
@@ -49,7 +49,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
           }
 
           @if (displayChatWithDoc()) {
-            <Tab class="w-fit" variant="ai" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
+            <Tab class="w-fit" shadow="none" value="discussion" (click)="setChatWithDocAssistant()">
               <i class="fa-solid fa-comments"></i>
               {{ 'preview.discussion' | transloco }}
             </Tab>

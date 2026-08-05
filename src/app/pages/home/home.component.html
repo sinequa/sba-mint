@@ -26,7 +26,7 @@
         }
       </TabsList>
 
-      <div class="my-2 scrollbar-thin overflow-y-auto">
+      <div class="scrollbar-thin my-2 overflow-y-auto">
         @for (tab of tabs(); track tab.label) {
           <TabContent [value]="tab.label">
             <ng-container *ngComponentOutlet="tab.component; inputs: tab.inputs" />

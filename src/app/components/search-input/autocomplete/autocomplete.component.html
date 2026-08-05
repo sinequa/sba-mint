@@ -28,8 +28,8 @@
         </li>
       }
     } @empty {
-      <span class="text-muted-foreground px-2">
-        {{ 'searchInput.noSuggestions' | transloco }}
+      <span class="px-2 text-muted-foreground">
+        {{ "searchInput.noSuggestions" | transloco }}
       </span>
     }
   </ul>
@@ -38,6 +38,6 @@
   <MenuSeparator />
   <button variant="inverse" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
     <i class="fa-fw far fa-sliders"></i>
-    {{ 'searchInput.advancedSearch' | transloco }}
+    {{ "searchInput.advancedSearch" | transloco }}
   </button>
 }

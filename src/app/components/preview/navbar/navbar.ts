@@ -1,11 +1,11 @@
-import { Location, NgTemplateOutlet } from '@angular/common';
-import { Component, DestroyRef, Input, computed, inject, input, model, viewChild } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { toast } from 'ngx-sonner';
+import { Location, NgTemplateOutlet } from "@angular/common";
+import { Component, DestroyRef, Input, computed, inject, input, model, viewChild } from "@angular/core";
+import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
+import { toast } from "ngx-sonner";
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Event, NavigationEnd, Router } from '@angular/router';
-import { Article } from '@sinequa/atomic';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Event, NavigationEnd, Router } from "@angular/router";
+import { Article } from "@sinequa/atomic";
 import {
   AppStore,
   BookmarkButtonComponent,
@@ -14,9 +14,9 @@ import {
   DrawerService,
   DrawerStackService,
   PreviewService
-} from '@sinequa/atomic-angular';
-import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from '@sinequa/ui';
-import { PreviewDialogComponent } from '../dialog/preview-dialog';
+} from "@sinequa/atomic-angular";
+import { ButtonComponent, CircleCheckIconComponent, LinkIcon, Separator, cn } from "@sinequa/ui";
+import { PreviewDialogComponent } from "../dialog/preview-dialog";
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -29,7 +29,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
 };
 
 @Component({
-  selector: 'preview-navbar, PreviewNavbar, previewnavbar',
+  selector: "preview-navbar, PreviewNavbar, previewnavbar",
   imports: [
     NgTemplateOutlet,
     BookmarkButtonComponent,
@@ -41,7 +41,7 @@ const DEFAULT_CONFIG: PreviewNavbarConfig = {
     PreviewDialogComponent,
     Separator
   ],
-  templateUrl: './navbar.html',
+  templateUrl: "./navbar.html",
   providers: [DrawerService]
 })
 export class PreviewNavbarComponent {
@@ -75,7 +75,7 @@ export class PreviewNavbarComponent {
 
     try {
       const url = new URL(this.article()?.url1!);
-      return url.protocol === 'http:' || url.protocol === 'https:';
+      return url.protocol === "http:" || url.protocol === "https:";
     } catch (e) {
       return false;
     }
@@ -120,7 +120,7 @@ export class PreviewNavbarComponent {
         this.copied = false;
       }, 3000);
 
-      toast.success(this.transloco.translate('preview.linkCopiedToClipboard'), { duration: 2000 });
+      toast.success(this.transloco.translate("preview.linkCopiedToClipboard"), { duration: 2000 });
     }
   }
 
