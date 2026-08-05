@@ -102,7 +102,9 @@ export class AssistantComponent {
   queryParamsStore = inject(QueryParamsStore);
 
   // used to cronstruct a valid query object used by the sqChat component
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
+  // Empty rather than `_query`: `_query` below is bound to a `Query` input, whose `name` is a
+  // required string, and no app declares a web service called `_query` any more.
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 

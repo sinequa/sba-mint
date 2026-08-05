@@ -124,7 +124,7 @@ export class PreviewTabsComponent {
   readonly miniPreviewQuery = computed(() => {
     const article = this.article();
     const query = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name,
       text: article?.title,
       filters: { field: "id", value: article?.id, operator: "eq" }
     };
@@ -134,7 +134,7 @@ export class PreviewTabsComponent {
   readonly chatWithDocQuery = computed(() => {
     const article = this.article();
     const query = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name,
       text: article?.title,
       filters: { field: "id", value: article?.id, operator: "eq" }
     };

@@ -71,8 +71,6 @@ export class PreviewDialogComponent {
   // dialog reference for controlling the dialog's visibility and behavior
   readonly dialog = viewChild<DialogComponent>(DialogComponent);
 
-  protected readonly queryName = this.appStore.getDefaultQuery()?.name || "_query";
-
   chatWithDocQuery: Query = {} as Query;
   miniPreviewQuery: Query = {} as Query;
 
@@ -158,13 +156,17 @@ export class PreviewDialogComponent {
 
   open(article: Article) {
     this.article.set(article);
+    // `Query.name` is a required string, and these two are the only places here that force one.
+    // Empty rather than `_query` when the application declares no default query: no app defines a
+    // web service under that name any more, so it would only ask the server for something that
+    // cannot exist. Empty is what `QueryParamsStore.getQuery()` itself falls back to.
     this.chatWithDocQuery = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name || "",
       text: article.title,
       filters: { field: "id", value: article.id, operator: "eq" }
     };
     this.miniPreviewQuery = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name || "",
       text: article.title,
       filters: { field: "id", value: article.id, operator: "eq" }
     };
