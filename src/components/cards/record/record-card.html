@@ -26,7 +26,11 @@
         <section class="flex items-baseline justify-between gap-2">
           <span class="inline-flex grow items-baseline gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <a
-              [title]="article().displayTitle || article().title || article().id"
+              [title]="plainTitle()"
+              [attr.href]="documentUrl()"
+              [attr.target]="documentUrl() ? '_blank' : null"
+              [attr.rel]="documentUrl() ? 'noopener noreferrer' : null"
+              [attr.aria-label]="documentUrl() ? plainTitle() + ' ' + ('opensInNewWindow' | transloco) : null"
               (click)="openExternal($event)"
               class="truncate text-base font-bold empty:hidden {{ !!article().url1 ? 'hover:underline' : '' }}"
               [innerHTML]="title() || '...'"></a>

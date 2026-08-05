@@ -72,9 +72,9 @@ import { filter } from "rxjs";
     <sidebar collapsible="icon" class="border-none h-full">
       <sidebar-header class="px-3 pt-6">
         <div class="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
-          <div
-            class="h-8 w-32 bg-contain bg-left bg-no-repeat group-data-[collapsible=icon]:hidden"
-            style="background-image: var(--logo-sidebar)"></div>
+          <img
+            class="h-8 w-32 object-contain object-left group-data-[collapsible=icon]:hidden content-[var(--logo-sidebar)/var(--logo-alt-text)]"
+            alt="Logo Sinequa by ChapsVision" />
           <div
             class="logo-collapse-container relative hidden size-8 items-center justify-center group-data-[collapsible=icon]:flex">
             <div

@@ -7,6 +7,34 @@ with **Azure AD** authentication via `AadHttpClient` / `AadTokenProvider`.
 > generator). They are **not** compiled by mint's Angular build (they live outside `src/` and import the
 > `@microsoft/sp-*` packages).
 
+## SPFx mode (npm switch)
+
+`@microsoft/sp-http` is **not** a declared dependency of mint. It is needed only by the `spfx` /
+`spfx-production` builds, and only as a *type provider* (`import type` in
+`src/config/spfx/spfx-context.ts`). Declared, it dragged 24 `@microsoft/*` packages into the lockfile
+and made every `npm install` print `EBADENGINE` warnings under Node 24 — for every dev, including
+those who never touch SPFx. It is therefore provisioned **on demand**:
+
+| Script | Effect |
+|---|---|
+| `npm run spfx:enable` | installs `@microsoft/sp-http` with `--no-save` (node_modules only) + creates `proxy.conf.spfx.json` from `proxy.conf.spfx.template.json` when missing |
+| `npm run spfx:disable` | removes it from node_modules |
+| `npm run spfx:status` | reports the current mode — git cannot tell you, since nothing is committed |
+
+- `npm run start:spfx` and `npm run build:spfx` call `spfx:enable` themselves: in practice you never
+  have to think about it.
+- **Nothing is written to `package.json` / `package-lock.json`.** The mode lives in `node_modules`
+  only, and `scripts/spfx-mode.mjs` restores both files if npm rewrites them — so the mode can never
+  be committed by mistake.
+- A later `npm install` prunes the package again (extraneous by design) → re-run `spfx:enable`, or
+  just use `start:spfx` / `build:spfx`.
+- Without the mode enabled, an `spfx` build fails with
+  `TS2307: Cannot find module '@microsoft/sp-http'`. That is expected, not a regression.
+- `spfx:enable` replays, **in the same npm command**, the `@sinequa/agent` / `@sinequa/assistant`
+  override that `postinstall` applies (also `--no-save`): any other `npm install --no-save` re-reifies
+  the tree and would otherwise silently downgrade the agent lib to the version pinned in
+  `package.json`.
+
 ## Run modes: DEV (mock) vs PROD
 
 Key point: the real `AadHttpClient` / `AadTokenProvider` **only exist inside an actual SharePoint page**
@@ -22,9 +50,9 @@ auth playground.
 |---|---|---|
 | AAD context | `createMockSpfxContext()` → playground | `MintWebPart.render()` → real `window.__MINT_SPFX_CONTEXT__` |
 | Token | fake endpoint `/__mock/aad-token` | `login.microsoftonline.com` via the SPFx context |
-| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — local, git-ignored (create your own, like `proxy.conf.insight.json`) | **unused** (no `ng serve`; real cross-origin calls) |
+| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — git-ignored, generated from `proxy.conf.spfx.template.json` by `npm run spfx:enable` | **unused** (no `ng serve`; real cross-origin calls) |
 | Backend | mock playground | real `backendUrl` (web part property pane) |
-| `@sinequa/atomic` | `file:../atomic` (local symlink) | published package (see *Packaging — production*) |
+| `@sinequa/atomic` | published package + `/spfx` subpath | same (see *Packaging — production*) |
 | `environment.production` | `false` (mock guard active) | `true` (no context → 500 page, **no** mock) |
 
 ⚠️ For a PROD build, make sure the `environment` in use has `production: true` — otherwise the
@@ -97,11 +125,12 @@ There are **two independent builds**, and Node's version only constrains one of 
 
 - **Production is Node-agnostic.** At runtime everything runs in the browser inside a SharePoint page; the
   Node version plays no role. SPFx in production works fine.
-- **The mint bundle builds on Node 24.** The `@microsoft/sp-*` packages in mint are **dev-only type
-  providers** (`src/config/spfx-context.ts` uses `import type`; `MintWebPart.ts` lives outside `src/` and is
-  not compiled by `ng build`). They are never executed under Node, so the `EBADENGINE` warnings on
-  `npm install` in mint are cosmetic — ignore them. This matters because the Angular 22 branch *requires*
-  Node 24.
+- **The mint bundle builds on Node 24.** The `@microsoft/sp-*` packages are **dev-only type providers**
+  (`src/config/spfx/spfx-context.ts` uses `import type`; `MintWebPart.ts` lives outside `src/` and is
+  not compiled by `ng build`). They are never executed under Node, so their `EBADENGINE` warnings are
+  cosmetic — and since they are no longer declared dependencies, the warnings only show up when you
+  run `npm run spfx:enable` (see *SPFx mode*), never on a standard `npm install`. This matters because
+  the Angular 22 branch *requires* Node 24.
 - **Package the `.sppkg` on Node 22.** This is the one real requirement: the SPFx gulp toolchain genuinely
   breaks on Node 24, so the separate SPFx solution must be built on Node 22.14+ (LTS). It is an independent
   project from mint, so there is no conflict with mint's Node 24.
@@ -111,9 +140,10 @@ There are **two independent builds**, and Node's version only constrains one of 
 ### 1. Build the mint bundle (production `spfx` build)
 ```bash
 cd mint-internal
-ng build sinequa-mint --configuration spfx-production
+npm run build:spfx     # = spfx:enable + ng build --configuration spfx-production
 # → dist/sinequa-mint/ (styles.css, polyfills.js, main.js, chunk-*.js, assets/…)
 ```
+Use the npm script rather than a bare `ng build`: it provisions the SPFx types first (see *SPFx mode*).
 The `spfx-production` configuration enables optimization, sets `production: true`, and keeps
 `outputHashing: "none"` so the asset names stay fixed (`main.js` / `polyfills.js` / `styles.css`),
 which the host loader (`load-mint-assets.ts`) relies on. Use `--configuration spfx` only for the local
@@ -165,6 +195,8 @@ without a login form.
 
 ## Packaging — production
 
-Mint's `package.json` currently points `@sinequa/atomic` at a **local** build (`file:`). For
-production: **publish `@sinequa/atomic-spfx`** to the registry, then repoint the alias
-(`"@sinequa/atomic": "npm:@sinequa/atomic-spfx@^x.y.z"`).
+Nothing SPFx-specific to publish. `@sinequa/atomic` (≥ 2.1.0) already ships the `/spfx` subpath
+(`initializeAadHttpClient`, `AadHttpClientLike`) and declares `@microsoft/sp-http` as an **optional**
+peer dependency, never bundled. Mint consumes the regular published package: no
+`@sinequa/atomic-spfx` alias, no local `file:` build. The only prerequisite for a prod bundle is
+`npm run build:spfx`, which enables the SPFx mode itself.
