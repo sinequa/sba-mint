@@ -1,0 +1,447 @@
+/*
+  Galactik Design Tokens — browser-ready CSS variables
+  Source: galactik-design-react/css/galactik-default/galactik-token.css
+  Extracted from Vite bundle for direct use in preview HTML files.
+  No Tailwind directives — works in any browser without a build step.
+*/
+
+/* Cascade layer order (Tailwind v4 compatible).
+   Legacy component CSS files wrap themselves in @layer components, so Tailwind
+   utilities (last layer) always win when both are loaded together. */
+@layer theme, base, components, utilities;
+
+:root {
+  /* ── Primitive palette ─────────────────────────────────────────────────── */
+
+  --pink-950: #4a325b;
+  --pink-900: #6c467b;
+  --pink-800: #7f5a8b;
+  --pink-700: #926e9b;
+  --pink-600: #a582ab;
+  --pink-500: #b896bb;
+  --pink-400: #c9aacb;
+  --pink-300: #dbbade;
+  --pink-200: #efc9f3;
+  --pink-100: #faecfb;
+  --pink-50: #fcf7fd;
+
+  --grey-950: #1a1f23;
+  --grey-900: #272e35;
+  --grey-800: #343d46;
+  --grey-700: #434f5b;
+  --grey-600: #596978;
+  --grey-500: #6f8295;
+  --grey-400: #8a99a8;
+  --grey-300: #a4b0bc;
+  --grey-200: #bec7cf;
+  --grey-100: #e2e5e9;
+  --grey-50: #f9fafb;
+
+  --yellow-950: #30230a;
+  --yellow-900: #463411;
+  --yellow-800: #5b4519;
+  --yellow-700: #715621;
+  --yellow-600: #9d7930;
+  --yellow-500: #c89b40;
+  --yellow-400: #f6ca72;
+  --yellow-300: #f8d795;
+  --yellow-200: #fbe5b9;
+  --yellow-100: #fdf2dc;
+  --yellow-50: #fef8ed;
+
+  --orange-950: #592a0b;
+  --orange-900: #753a13;
+  --orange-800: #85461e;
+  --orange-700: #98552a;
+  --orange-600: #be703c;
+  --orange-500: #df884f;
+  --orange-400: #ffba8d;
+  --orange-300: #ffcba9;
+  --orange-200: #ffddc6;
+  --orange-100: #ffeee2;
+  --orange-50: #fff6f1;
+
+  --green-950: #101a0e;
+  --green-900: #172714;
+  --green-800: #1f341b;
+  --green-700: #2f4f29;
+  --green-600: #3e6936;
+  --green-500: #4e8344;
+  --green-400: #709b67;
+  --green-300: #91b38b;
+  --green-200: #c4d6c0;
+  --green-100: #e5eee3;
+  --green-50: #f6faf5;
+
+  --red-950: #47090a;
+  --red-900: #5c1214;
+  --red-800: #701c1d;
+  --red-700: #852527;
+  --red-600: #ad3739;
+  --red-500: #d64a4c;
+  --red-400: #ff7d7f;
+  --red-300: #ff9d9f;
+  --red-200: #ffbebf;
+  --red-100: #ffdedf;
+  --red-50: #ffefef;
+
+  --cherry-950: #120a0c;
+  --cherry-900: #251418;
+  --cherry-800: #371e23;
+  --cherry-700: #49282f;
+  --cherry-600: #6e3d47;
+  --cherry-500: #bb6779;
+  --cherry-400: #c58491;
+  --cherry-300: #d4a3ad;
+  --cherry-200: #e2c1c8;
+  --cherry-100: #f1e0e4;
+  --cherry-50: #f8f0f1;
+
+  --indigo-950: #171f3d;
+  --indigo-900: #222c4f;
+  --indigo-800: #2e3961;
+  --indigo-700: #394673;
+  --indigo-600: #505f97;
+  --indigo-500: #6779bb;
+  --indigo-400: #98a9e5;
+  --indigo-300: #b2beec;
+  --indigo-200: #cbd4f2;
+  --indigo-100: #e5e9f9;
+  --indigo-50: #f2f4fc;
+
+  --blue-950: #101920;
+  --blue-900: #1a2833;
+  --blue-800: #253846;
+  --blue-700: #2f4859;
+  --blue-600: #45677e;
+  --blue-500: #5a87a4;
+  --blue-400: #8cb8d5;
+  --blue-300: #a9cadf;
+  --blue-200: #c5dbea;
+  --blue-100: #e2edf4;
+  --blue-50: #f1f6fa;
+
+  --cyan-950: #070d0d;
+  --cyan-900: #0e1b1b;
+  --cyan-800: #152828;
+  --cyan-700: #1c3536;
+  --cyan-600: #2a5050;
+  --cyan-500: #468586;
+  --cyan-400: #6a9d9e;
+  --cyan-300: #8db4b5;
+  --cyan-200: #b1cccd;
+  --cyan-100: #d4e3e4;
+  --cyan-50: #e6eff0;
+
+  --sage-950: #2d393a;
+  --sage-900: #374648;
+  --sage-800: #445556;
+  --sage-700: #4f6162;
+  --sage-600: #5d7374;
+  --sage-500: #607c7f;
+  --sage-400: #7a9b95;
+  --sage-300: #a9c1b8;
+  --sage-200: #d1e1dd;
+  --sage-100: #e8f0ee;
+  --sage-50: #f5f8f7;
+
+  --almond-950: #0d211a;
+  --almond-900: #193b2e;
+  --almond-800: #1e4737;
+  --almond-700: #235944;
+  --almond-600: #2c6f52;
+  --almond-500: #3d8c69;
+  --almond-400: #5fa884;
+  --almond-300: #8ec7a9;
+  --almond-200: #bbdfca;
+  --almond-100: #dcefe3;
+  --almond-50: #f1f8f4;
+
+  --absolute-white: #f2f2f3;
+  --absolute-pure-white: #ffffff;
+  --absolute-black: #182021;
+  --absolute-transparent: #ffffff00;
+
+  /* ── Font semantic tokens ──────────────────────────────────────────────── */
+  --font-primary-dark: var(--sage-950);
+  --font-primary-base: var(--sage-800);
+  --font-primary-muted: var(--sage-600);
+  --font-primary-hovered: var(--sage-900);
+  --font-primary-pressed: var(--sage-950);
+  --font-primary-light: var(--sage-200);
+
+  --font-secondary-base: var(--almond-800);
+  --font-secondary-hovered: var(--almond-900);
+  --font-secondary-pressed: var(--almond-950);
+  --font-secondary-base-alt: var(--almond-600);
+
+  --font-accent-base: var(--pink-950);
+  --font-accent-pressed: var(--pink-50);
+  --font-accent-light: var(--pink-200);
+  --font-accent-muted: var(--pink-800);
+
+  --font-neutral-muted: var(--grey-600);
+  --font-neutral-disabled: var(--grey-400);
+  --font-neutral-white: var(--absolute-pure-white);
+  --font-neutral-black: var(--absolute-black);
+  --font-neutral-base: var(--grey-800);
+  --font-neutral-light: var(--grey-200);
+
+  --font-warning-base: var(--orange-800);
+  --font-warning-light: var(--orange-200);
+  --font-warning-muted: var(--orange-600);
+  --font-info-base: var(--blue-800);
+  --font-info-light: var(--blue-200);
+  --font-info-muted: var(--blue-600);
+  --font-error-base: var(--red-800);
+  --font-error-light: var(--red-200);
+  --font-error-muted: var(--red-600);
+  --font-success-base: var(--green-800);
+  --font-success-light: var(--green-200);
+  --font-success-muted: var(--green-600);
+  --font-cherry-base: var(--cherry-800);
+  --font-cherry-muted: var(--cherry-600);
+  --font-indigo-base: var(--indigo-800);
+  --font-indigo-muted: var(--indigo-600);
+  --font-yellow-base: var(--yellow-800);
+  --font-yellow-muted: var(--yellow-700);
+  --font-cyan-base: var(--cyan-800);
+  --font-cyan-muted: var(--cyan-600);
+
+  /* ── Background tokens ─────────────────────────────────────────────────── */
+  --bg-primary-base: var(--sage-800);
+  --bg-primary-hovered: var(--sage-950);
+  --bg-primary-pressed: var(--sage-300);
+  --bg-primary-light: var(--sage-200);
+  --bg-primary-lighter: var(--sage-100);
+  --bg-primary-lightest: var(--sage-50);
+
+  --bg-secondary-base: var(--almond-500);
+  --bg-secondary-base-alt: var(--almond-800);
+  --bg-secondary-active: var(--almond-300);
+  --bg-secondary-light: var(--almond-200);
+  --bg-secondary-lighter: var(--almond-100);
+  --bg-secondary-lightest: var(--almond-50);
+
+  --bg-accent-base: var(--pink-800);
+  --bg-accent-base-alt: var(--pink-200);
+  --bg-accent-hover: var(--pink-100);
+  --bg-accent-pressed: var(--pink-900);
+
+  --bg-neutral-base: var(--grey-100);
+  --bg-neutral-disabled: var(--grey-100);
+  --bg-neutral-hovered: var(--grey-200);
+  --bg-neutral-muted: var(--grey-500);
+  --bg-neutral-white: var(--absolute-pure-white);
+  --bg-neutral-base-alt: var(--grey-800);
+
+  --bg-warning-base: var(--orange-700);
+  --bg-warning-base-alt: var(--orange-200);
+  --bg-warning-lightest: var(--orange-50);
+
+  --bg-success-base: var(--green-600);
+  --bg-success-base-alt: var(--green-200);
+  --bg-success-lightest: var(--green-50);
+
+  --bg-info-base: var(--blue-600);
+  --bg-info-base-alt: var(--blue-200);
+  --bg-info-lightest: var(--blue-50);
+
+  --bg-error-base: var(--red-600);
+  --bg-error-base-alt: var(--red-200);
+  --bg-error-lightest: var(--red-50);
+
+  --bg-cherry-base: var(--cherry-600);
+  --bg-cherry-base-alt: var(--cherry-200);
+  --bg-indigo-base: var(--indigo-600);
+  --bg-indigo-base-alt: var(--indigo-200);
+  --bg-yellow-base: var(--yellow-700);
+  --bg-yellow-base-alt: var(--yellow-200);
+  --bg-cyan-base: var(--cyan-600);
+  --bg-cyan-base-alt: var(--cyan-200);
+
+  /* ── Stroke / border color tokens ──────────────────────────────────────── */
+  --stroke-focus: var(--pink-700);
+  --stroke-primary-base: var(--sage-800);
+  --stroke-primary-hovered: var(--sage-900);
+  --stroke-primary-pressed: var(--sage-950);
+  --stroke-primary-light: var(--sage-300);
+  --stroke-primary-lighter: var(--sage-200);
+  --stroke-primary-muted: var(--sage-700);
+  --stroke-secondary-base: var(--almond-700);
+  --stroke-secondary-muted: var(--almond-600);
+  --stroke-secondary-dark: var(--almond-800);
+  --stroke-accent-base: var(--pink-900);
+  --stroke-accent-muted: var(--pink-800);
+  --stroke-yellow-base: var(--yellow-800);
+  --stroke-yellow-muted: var(--yellow-700);
+  --stroke-cherry-base: var(--cherry-700);
+  --stroke-cherry-muted: var(--cherry-600);
+  --stroke-indigo-base: var(--indigo-700);
+  --stroke-indigo-muted: var(--indigo-600);
+  --stroke-cyan-base: var(--cyan-700);
+  --stroke-cyan-muted: var(--cyan-600);
+  --stroke-warning-base: var(--orange-700);
+  --stroke-warning-muted: var(--orange-600);
+  --stroke-info-base: var(--blue-700);
+  --stroke-info-muted: var(--blue-600);
+  --stroke-success-base: var(--green-700);
+  --stroke-success-muted: var(--green-600);
+  --stroke-error-base: var(--red-700);
+  --stroke-error-muted: var(--red-600);
+  --stroke-neutral-disabled: var(--grey-300);
+  --stroke-neutral-dark: var(--grey-800);
+  --stroke-neutral-black: var(--absolute-black);
+  --stroke-neutral-white: var(--absolute-white);
+
+  /* ── Spacing (source of truth: Galactik tokens.json › sizes › spacing) ── */
+  --spacing-3xs: 4px;
+  --spacing-2xs: 8px;
+  --spacing-xs: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 36px;
+  --spacing-4xl: 40px;
+  /* spec tokens from _font/spacing collection (paragraph/gap spacing) */
+  --spacing-none: 0px;
+  --spacing-4xs: 2px;
+  --spacing-sm: 10px;
+  --spacing-5xl: 32px;
+  --spacing-6xl: 36px;
+  --spacing-7xl: 40px;
+
+  /* ── Stroke widths ── */
+  --stroke-2xs: 0.5px;
+  --stroke-xs: 1px;
+  --stroke-sm: 2px;
+  --stroke-md: 4px;
+
+  /* ── Border radius ─────────────────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
+  --radius-4xl: 32px;
+  --radius-rounded: 9999px;
+  --radius-pill: 9999px;
+
+  /* ── Blur tokens ───────────────────────────────────────────────────────── */
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --size-xs: 11px;
+  --size-sm: 12px;
+  --size-base: 14px;
+  --size-lg: 16px;
+  --size-xl: 18px;
+  --size-2xl: 20px;
+  --size-3xl: 24px;
+
+  --family-base: "Hanken Grotesk";
+  --family-second: Arial;
+  --family-tertiary: Helvetica;
+
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --line-height-1: 14px;
+  --line-height-2: 16px;
+  --line-height-3: 18px;
+  --line-height-4: 22px;
+  --line-height-5: 26px;
+  --line-height-6: 31px;
+  --line-height-sm: var(--line-height-2); /* 16px — alias used by tag/breadcrumb */
+  --line-height-base: var(--line-height-3); /* 18px — alias used by tag medium */
+
+  /* ── Icon sizes ────────────────────────────────────────────────────────── */
+  --icon-xs: 12px;
+  --icon-sm: 14px;
+  --icon-md: 16px;
+  --icon-lg: 18px;
+  --icon-xl: 20px;
+  --icon-2xl: 24px;
+  --icon-3xl: 48px;
+
+  /* ── Row heights ───────────────────────────────────────────────────────── */
+  --row-height-xs: 18px;
+  --row-height-sm: 24px;
+  --row-height-md: 36px;
+  --row-height-lg: 44px;
+
+  /* ── Grid ──────────────────────────────────────────────────────────────── */
+  --grid-gutter-xs: 16px;
+  --grid-gutter-sm: 16px;
+  --grid-gutter-md: 16px;
+  --grid-gutter-lg: 24px;
+  --grid-gutter-xl: 32px;
+  --grid-column-xs: 2;
+  --grid-column-sm: 4;
+  --grid-column-md: 6;
+  --grid-column-lg: 8;
+  --grid-column-xl: 12;
+  --grid-margin-xs: 16px;
+  --grid-margin-sm: 16px;
+  --grid-margin-md: 16px;
+  --grid-margin-lg: 24px;
+  --grid-margin-xl: 32px;
+
+  /* ── Shadows ───────────────────────────────────────────────────────────── */
+  --shadow-1: 0px 4px 6px rgba(45, 57, 58, 0.1), 0px 2px 4px rgba(45, 57, 58, 0.06);
+  --shadow-2: 0px 10px 15px rgba(45, 57, 58, 0.1), 0px 4px 6px rgba(45, 57, 58, 0.05);
+  --shadow-3: 0px 20px 25px rgba(45, 57, 58, 0.1), 0px 10px 10px rgba(45, 57, 58, 0.04);
+  --shadow-4: 0px 25px 50px rgba(45, 57, 58, 0.25);
+  --shadow-inner: inset -1px -1px 6px rgba(45, 57, 58, 0.16), inset 1px 1px 6px rgba(45, 57, 58, 0.24);
+
+  /* ── Scrim / overlay ───────────────────────────────────────────────────── */
+  /* Backdrop behind modals, drawers and other overlays. Same base as shadows
+     (--sage-950 #2D393A = 45,57,58). --scrim-stronger is the no-blur fallback. */
+  --scrim-base: rgba(45, 57, 58, 0.32);
+  --scrim-stronger: rgba(45, 57, 58, 0.56);
+
+  /* ── Contextual layer tokens (light mode) ─────────────────────────────── */
+  --layer-100-layer: var(--grey-100);
+  --layer-100-on-layer: var(--grey-50);
+  --layer-100-font: var(--font-neutral-base);
+  --layer-100-edge: var(--grey-200);
+  --layer-100-separator: var(--grey-200);
+
+  --layer-200-layer: var(--grey-200);
+  --layer-200-on-layer: var(--grey-100);
+  --layer-200-font: var(--font-neutral-base);
+  --layer-200-edge: var(--grey-300);
+  --layer-200-separator: var(--grey-300);
+
+  --layer-contour-layer: var(--sage-50);
+  --layer-contour-on-layer: var(--sage-100);
+  --layer-contour-font: var(--font-neutral-base);
+  --layer-contour-edge: var(--sage-200);
+  --layer-contour-separator: var(--sage-300);
+
+  --layer-page-layer: var(--grey-50);
+  --layer-page-on-layer: var(--absolute-white);
+  --layer-page-font: var(--font-neutral-base);
+  --layer-page-edge: var(--grey-100);
+  --layer-page-separator: var(--grey-100);
+
+  --layer-brand-accent-layer: var(--sage-100);
+  --layer-brand-accent-on-layer: var(--sage-50);
+  --layer-brand-accent-font: var(--font-neutral-base);
+  --layer-brand-accent-edge: var(--sage-200);
+  --layer-brand-accent-separator: var(--sage-200);
+
+  /* ── Font style ────────────────────────────────────────────────────────── */
+  --style-normal: normal;
+  --style-italic: italic;
+}

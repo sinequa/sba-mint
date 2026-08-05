@@ -1,10 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
-@plugin "@tailwindcss/typography";
-
+@import "tailwindcss";
 /* Application specific styles */
-@import './theme.css';
-@import './themes/sinequa.css';
+@import "./theme.css";
+@import "./themes/sinequa.css";
+@import "./styles/galactik-tokens.css";
+@import "./styles/badge-tokens.css";
+
+@plugin "@tailwindcss/typography";
 
 /* Sinequa UI tailwindcss configuration */
 @source "../node_modules/@sinequa/ui";
@@ -30,6 +32,6 @@ html:has(.sheet-portal[open]) {
 }
 
 body {
-  font-family: 'Hanken Grotesk', sans-serif;
+  font-family: "Hanken Grotesk", sans-serif;
   position: relative;
 }
