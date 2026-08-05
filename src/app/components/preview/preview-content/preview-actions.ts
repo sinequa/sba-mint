@@ -19,15 +19,15 @@ import { ButtonComponent } from "@sinequa/ui";
   selector: "preview-actions",
   imports: [TranslocoPipe, ButtonComponent],
   template: `
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
+    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
       <i class="fa-regular fa-arrows-maximize shrink-0"></i>
     </button>
 
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
+    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
       <i class="fa-regular fa-magnifying-glass-plus shrink-0"></i>
     </button>
 
-    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" size="icon" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
+    <button variant="ghost" class="dark:hover:bg-background/10 dark:text-white" [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
       <i class="fa-regular fa-magnifying-glass-minus shrink-0"></i>
     </button>
 
@@ -36,7 +36,6 @@ import { ButtonComponent } from "@sinequa/ui";
         <button
           variant="ghost"
           class="dark:hover:bg-background/10 dark:text-white"
-          size="icon"
           [attr.title]="'preview.toggleAIDescription' | transloco"
           (click)="toggleAIDescription()">
           <i class="fa-regular fa-sparkles shrink-0"></i>
@@ -44,7 +43,6 @@ import { ButtonComponent } from "@sinequa/ui";
       } @else {
         <button
           variant="ghost"
-          size="icon"
           class="dark:hover:bg-background/10 dark:text-white"
           [attr.title]="'preview.toggleAIDescription' | transloco"
           (click)="toggleAIDescription()">
@@ -60,7 +58,6 @@ import { ButtonComponent } from "@sinequa/ui";
       <button
         variant="ghost"
         class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
         [attr.title]="'preview.toggleExtracts' | transloco"
         (click)="toggleExtracts()">
         <i class="fa-regular fa-flashlight shrink-0"></i>
@@ -69,7 +66,6 @@ import { ButtonComponent } from "@sinequa/ui";
       <button
         variant="ghost"
         class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
         [attr.title]="'preview.toggleExtracts' | transloco"
         (click)="toggleExtracts()">
         <span class="fa-stack shrink-0 items-center justify-center">
@@ -83,7 +79,6 @@ import { ButtonComponent } from "@sinequa/ui";
       <button
         variant="ghost"
         class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
         [title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb shrink-0"></i>
@@ -92,7 +87,6 @@ import { ButtonComponent } from "@sinequa/ui";
       <button
         variant="ghost"
         class="dark:hover:bg-background/10 dark:text-white"
-        size="icon"
         [attr.title]="'preview.toggleEntities' | transloco"
         (click)="toggleEntities()">
         <i class="fa-regular fa-lightbulb-slash shrink-0"></i>
