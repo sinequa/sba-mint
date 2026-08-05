@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, input, signal } from "@angular/core";
+import { TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article as A } from "@sinequa/atomic";
 import { ApplicationService, SelectionService, SelectionStore } from "@sinequa/atomic-angular";
@@ -71,6 +72,7 @@ export class SheetPreviewerComponent {
   selectionStore = inject(SelectionStore);
   selectionService = inject(SelectionService);
   sheetService = inject(SheetService);
+  private readonly transloco = inject(TranslocoService);
 
   position = input<"left" | "right">("right");
 
@@ -79,7 +81,9 @@ export class SheetPreviewerComponent {
   article = computed(() => {
     const article = this.selectionStore.article?.();
     if (article) {
-      this.applicationService.setTitle(article.title || "Preview");
+      // Fallback for untitled documents — translated so the tab title never stays English in a
+      // French/German interface (RGAA 8.6).
+      this.applicationService.setTitle(article.title || this.transloco.translate("pageTitle.preview"));
     }
     return article as Article;
   });

@@ -107,7 +107,8 @@
     "home": "Accueil",
     "search": "Recherche",
     "assistant": "Assistant",
-    "agent": "Agent"
+    "agent": "Agent",
+    "preview": "Aperçu"
   },
   "assistant": {
     "userPrompt": "Bonjour, je m'appelle [[principal.fullName]].",
