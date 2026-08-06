@@ -30,6 +30,7 @@ import { cn } from "@sinequa/ui";
         [query]="_query"
         [chat]="initChat"
         [instanceId]="instanceId()"
+        [focusAfterResponse]="true"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"
