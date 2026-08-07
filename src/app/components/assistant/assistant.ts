@@ -1,8 +1,8 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HubConnection } from '@microsoft/signalr';
-import { getState } from '@ngrx/signals';
-import { catchError, of } from 'rxjs';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { HubConnection } from "@microsoft/signalr";
+import { getState } from "@ngrx/signals";
+import { catchError, of } from "rxjs";
 
 import {
   ChatComponent,
@@ -13,9 +13,9 @@ import {
   MessageHandler,
   RawMessage,
   SuggestedAction
-} from '@sinequa/assistant/chat';
+} from "@sinequa/assistant/chat";
 
-import { Article, error, Query } from '@sinequa/atomic';
+import { Article, error, Query } from "@sinequa/atomic";
 import {
   AppStore,
   DrawerStackService,
@@ -25,11 +25,11 @@ import {
   QueryParamsStore,
   SelectionStore,
   UserSettingsStore
-} from '@sinequa/atomic-angular';
-import { cn } from '@sinequa/ui';
+} from "@sinequa/atomic-angular";
+import { cn } from "@sinequa/ui";
 
 @Component({
-  selector: 'assistant, Assistant',
+  selector: "assistant, Assistant",
   imports: [ChatComponent, ChatSettingsV3Component],
   template: `
     @if (isChatInitialized() || showAssistant()) {
@@ -40,6 +40,7 @@ import { cn } from '@sinequa/ui';
           [query]="_query"
           [chat]="initChat"
           [instanceId]="instanceId()"
+          [focusAfterResponse]="true"
           (openPreview)="handlePreview($event)"
           (openDocument)="handleRedirect($event)"
           (config)="getChatConfig($event)"
@@ -58,9 +59,9 @@ import { cn } from '@sinequa/ui';
       }
     }
   `,
-  styleUrl: './assistant.css',
+  styleUrl: "./assistant.css",
   host: {
-    '[attr.no-progress]': 'noProgress'
+    "[attr.no-progress]": "noProgress"
   },
   encapsulation: ViewEncapsulation.None
 })
@@ -75,7 +76,7 @@ export class AssistantComponent {
   selectionStore = inject(SelectionStore);
   protected readonly previewService = inject(PreviewService);
 
-  class = input<string>('');
+  class = input<string>("");
   // Used to initialize the chat unconditionally
   showAssistant = input<boolean | undefined>(false);
   instanceId = input.required<string>();
@@ -104,7 +105,7 @@ export class AssistantComponent {
   queryParamsStore = inject(QueryParamsStore);
 
   // used to cronstruct a valid query object used by the sqChat component
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || '_query');
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 
@@ -149,20 +150,20 @@ export class AssistantComponent {
         ?.chatService?.streaming$.pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError(err => {
-            error('Unhandled error in streaming', err);
+            error("Unhandled error in streaming", err);
             return [];
           })
         )
         .subscribe({
           next: streaming => this.isStreaming.emit(streaming),
-          error: err => error('Error in streaming', err)
+          error: err => error("Error in streaming", err)
         });
 
       this.sqChat()
         ?.chatService?.initProcess$.pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError(err => {
-            error('Unhandled error in init process', err);
+            error("Unhandled error in init process", err);
             return of(false);
           })
         )
@@ -207,7 +208,7 @@ export class AssistantComponent {
         ? {
             highlights: [
               {
-                category: 'snippet',
+                category: "snippet",
                 highlights: event.parts
               }
             ],
@@ -219,8 +220,8 @@ export class AssistantComponent {
 
     const partId = event.$partId !== undefined ? event.$partId! - 1 : undefined;
     if (partId) {
-      this.previewService.events.set('scrollTo');
-      this.previewService.sendMessage({ action: 'select', id: `snippet_${partId}`, usePassageHighlighter: true });
+      this.previewService.events.set("scrollTo");
+      this.previewService.sendMessage({ action: "select", id: `snippet_${partId}`, usePassageHighlighter: true });
     }
   }
 
@@ -234,10 +235,10 @@ export class AssistantComponent {
 
   handleSuggestAction(action: SuggestedAction) {
     switch (action.type) {
-      case 'Prefill':
+      case "Prefill":
         this.insertText(action.content);
         break;
-      case 'Submit':
+      case "Submit":
         this.submitQuestion(action.content);
         break;
       default:
@@ -248,8 +249,8 @@ export class AssistantComponent {
   handleRedirect($event: any) {
     const url = $event.url1;
 
-    if (url && typeof url === 'string' && url.trim() !== '') {
-      window.open(url, '_blank');
+    if (url && typeof url === "string" && url.trim() !== "") {
+      window.open(url, "_blank");
     }
   }
 
@@ -269,12 +270,12 @@ export class AssistantComponent {
     const config = this.appStore.assistants()[this.instanceId()!];
 
     if (question && config) {
-      const systemMsg = { role: 'system', content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
+      const systemMsg = { role: "system", content: config.defaultValues.systemPrompt, additionalProperties: { display: false } } as RawMessage;
       const messages: RawMessage[] = [
         systemMsg,
         {
-          role: 'user',
-          content: question || '',
+          role: "user",
+          content: question || "",
           additionalProperties: { display: true, isUserInput: true, additionalWorkflowProperties: config.additionalWorkflowProperties }
         }
       ];
@@ -311,7 +312,7 @@ export class AssistantComponent {
     if (sqChatInstance) {
       sqChatInstance.attachToChat(ids);
     } else {
-      error('sqChat instance is not defined');
+      error("sqChat instance is not defined");
     }
   }
 
