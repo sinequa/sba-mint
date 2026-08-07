@@ -55,6 +55,7 @@ import { catchError, of } from "rxjs";
         [chat]="initChat"
         [userMessageIcon]="profilePhoto() ? 'user-avatar' : ''"
         [instanceId]="instanceId()"
+        [focusAfterResponse]="true"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"

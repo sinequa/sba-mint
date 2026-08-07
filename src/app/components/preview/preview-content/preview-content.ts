@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, viewChild } from "@angular/core";
+import { Component, computed, DestroyRef, effect, ElementRef, inject, input, resource, signal, viewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
@@ -35,7 +35,9 @@ import { PreviewActionsComponent } from "./preview-actions";
     } @else if (previewValidationResource.hasValue() && previewUrl()) {
       <div class="relative flex h-[calc(100%-0.5rem)] flex-col gap-4">
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
-        <preview-actions [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+        <preview-actions
+          [aiDescriptionShown]="aiDescriptionShown()"
+          [class]="cn('absolute right-4 inline-flex justify-end rounded-md bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe #preview frameborder="0" class="h-full grow rounded-sm bg-[#ffff] shadow-xs" [src]="previewUrl()" (load)="onLoaded()"></iframe>
       </div>
     } @else if (previewDataResource.hasValue() === false || (previewValidationResource.hasValue() === false && previewUrl())) {
@@ -97,6 +99,12 @@ export class PreviewContentComponent {
     const { queryText } = getState(this.selectionStore);
     return queryText;
   });
+  /**
+   * Set when the iframe reveals an AI page description on its own, because the
+   * cited passage lives inside it (multimodal conversions hide those blocks by
+   * default). Forwarded to `<preview-actions>` so its toggle reflects the state.
+   */
+  protected aiDescriptionShown = signal(false);
 
   /* resources */
   public readonly previewDataResource = rxResource<PreviewData | undefined, { id: string; text: string; previewHighlights: CustomHighlights[] }>({
@@ -181,7 +189,29 @@ export class PreviewContentComponent {
       this.previewService.setIframe(iframeElement.nativeElement.contentWindow);
     });
 
+    effect(() => {
+      // A fresh document starts with its AI descriptions hidden again.
+      this.previewUrl();
+      this.aiDescriptionShown.set(false);
+    });
+
+    const controller = new AbortController();
+
+    window.addEventListener(
+      "message",
+      (event: MessageEvent) => {
+        // The iframe reveals a hidden AI description by itself when the cited passage lives
+        // inside it, and says so, so that the actions toggle does not contradict the screen.
+        if (event.data?.type === "description-visible") {
+          this.aiDescriptionShown.set(true);
+        }
+      },
+      { signal: controller.signal }
+    );
+
     this.destroyRef.onDestroy(() => {
+      controller.abort();
+
       const id = this.id();
       if (id) {
         this.previewDataResource.destroy();
