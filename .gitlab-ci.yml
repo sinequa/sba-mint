@@ -1,0 +1,39 @@
+stages:
+  - validate
+  - build
+
+jira-check:
+  stage: validate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  script:
+    - |
+      shopt -s nocasematch
+      echo "Check the content of the Merge Request title"
+      title="$CI_MERGE_REQUEST_TITLE"
+      echo "Content is: $title"
+      if [[ $title =~ ([A-Za-z]{2,6}-[0-9]+[[:space:]]+#[Dd][oO][nN][eE]) ]]; then
+        echo -e "\033[0;32mThe Merge Request Title contains a Jira ticket with a '#done'"
+        exit 0
+      elif [[ $title =~ (#noJiraCheck) ]]; then
+        echo -e "\033[0;32mCheck is disabled by #noJiraCheck"
+        exit 0
+      else
+        echo -e "\033[1;91mThe Merge Request Title does NOT contain a Jira ticket with a '#done'"
+        echo -e "\033[1;91mYou can disable this check by adding #noJiraCheck in the Merge Request Title"
+        exit 1
+      fi
+
+build:
+  stage: build
+  image: node:20
+  rules:
+    - if: >-
+        $CI_PIPELINE_SOURCE == 'merge_request_event' &&
+        ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/ ||
+         $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop")
+  variables:
+    CI: "true"
+  script:
+    - npm ci
+    - npm run build --if-present
