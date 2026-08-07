@@ -8,6 +8,8 @@
 
 # Node
 /node_modules
+# npm cache, kept inside the project dir so GitLab CI can cache it (see .gitlab-ci.yml)
+.npm/
 npm-debug.log
 yarn-error.log
 

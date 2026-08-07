@@ -1,39 +1,101 @@
+###############################################################################
+# .gitlab-ci.yml — sba-mint
+#
+# Migrated from .github/workflows/ (kept as reference: the code is also mirrored
+# on github.com, where Actions are passive — GitLab CI is the only CI that runs).
+#   jira_check.yml   → jira-check  (validate stage, every MR)
+#   pull-request.yml → build       (build stage, MR → release/* | dev/* | develop)
+#
+# Two runner facts this file depends on — both measured on the instance, not assumed:
+#   1. The shared runners expose BOTH docker and shell executors, all accepting
+#      untagged jobs. A shell runner ignores `image:` entirely and has no
+#      node/npm, so every job must pin `tags: [docker]`. Without it the very
+#      first pipeline of this project died on `npm: command not found`.
+#   2. Containers reach the internal network directly (gitlab.chapsvision.in) but
+#      have NO direct internet access and NO proxy variables of their own.
+#      Everything external must go through the Squid proxy — registry.npmjs.org,
+#      and npm.sinequa.com which the postinstall pulls @sinequa/assistant from.
+#
+# Same conventions as sba-atomic-js and sba-atomic-angular, whose pipelines pass.
+###############################################################################
+
 stages:
   - validate
   - build
 
+# Both jobs are MR-only, so no pipeline is created on push: that also prevents
+# the duplicate pipeline a push matching an open MR would otherwise produce.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+default:
+  # node:22 (Debian) ships git and curl — no package install needed, which
+  # matters because the Alpine repositories are unreachable from here.
+  image: node:22
+  # Mandatory: an untagged job can land on a shell runner that ignores `image:`.
+  tags: [docker]
+  interruptible: true
+
+# ─── templates ───────────────────────────────────────────────────────────────
+# `rules:` are deliberately NOT factored: `extends` replaces list keys instead
+# of merging them, and each job's conditions differ.
+
+# Access to anything outside the internal network.
+.egress:
+  variables:
+    http_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    https_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    no_proxy: "localhost,127.0.0.1,chapsvision.in,.chapsvision.in"
+
+# Jobs that run `npm ci`, with a lock-file-keyed npm cache. The cache path has
+# to live inside $CI_PROJECT_DIR to be cacheable, hence `.npm/` in .gitignore.
+.npm:
+  extends: .egress
+  variables:
+    npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+
+# ─── jira-check ──────────────────────────────────────────────────────────────
+# Ensures every MR title contains a Jira ticket + #done, or #noJiraCheck.
+# Talks to nothing external: no `.egress` needed.
 jira-check:
   stage: validate
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - |
-      shopt -s nocasematch
-      echo "Check the content of the Merge Request title"
       title="$CI_MERGE_REQUEST_TITLE"
-      echo "Content is: $title"
-      if [[ $title =~ ([A-Za-z]{2,6}-[0-9]+[[:space:]]+#[Dd][oO][nN][eE]) ]]; then
-        echo -e "\033[0;32mThe Merge Request Title contains a Jira ticket with a '#done'"
+      echo "Checking MR title: $title"
+      if echo "$title" | grep -qiE '[A-Za-z]{2,6}-[0-9]+ +#done'; then
+        echo "Title contains a Jira ticket with '#done' — OK"
         exit 0
-      elif [[ $title =~ (#noJiraCheck) ]]; then
-        echo -e "\033[0;32mCheck is disabled by #noJiraCheck"
+      elif echo "$title" | grep -q '#noJiraCheck'; then
+        echo "Check disabled by #noJiraCheck — OK"
         exit 0
       else
-        echo -e "\033[1;91mThe Merge Request Title does NOT contain a Jira ticket with a '#done'"
-        echo -e "\033[1;91mYou can disable this check by adding #noJiraCheck in the Merge Request Title"
+        echo "ERROR: Title does not contain a Jira ticket with '#done'."
+        echo "       Add '#noJiraCheck' to bypass this check (docs/CI MRs only)."
         exit 1
       fi
 
+# ─── build ───────────────────────────────────────────────────────────────────
+# Equivalent: .github/workflows/pull-request.yml
+# `npm ci` runs the postinstall, which pulls @sinequa/assistant (and @sinequa/agent
+# on 11.14.0) from npm.sinequa.com — reachable through the proxy above.
 build:
+  extends: .npm
   stage: build
-  image: node:20
   rules:
-    - if: >-
-        $CI_PIPELINE_SOURCE == 'merge_request_event' &&
-        ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/ ||
-         $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop")
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" &&
+          $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(release\/.*|dev\/.*|develop)$/
   variables:
     CI: "true"
   script:
     - npm ci
-    - npm run build --if-present
+    - npm run build
