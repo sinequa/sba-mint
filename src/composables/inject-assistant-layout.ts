@@ -9,6 +9,7 @@ import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/at
 import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 import { injectCurrentUrl } from "@utils/routing";
 import { filter, firstValueFrom, skip, take } from "rxjs";
+import { focusWhenReady } from "./focus-when-ready";
 import { injectUrlQueryParamsSync, UrlQueryParamInputs } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
@@ -42,6 +43,9 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
   const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;
+
+  // Cancels the pending focus attempts, so two consecutive navigations don't compete
+  let cancelFocusChatInput: (() => void) | undefined;
 
   const query = signal<Query | undefined>(undefined);
   const connectionEstablished = signal(false);
@@ -128,6 +132,18 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
       applicationService.setTitle(title);
     }
     getFirstPageQuery();
+  }
+
+  /**
+   * ES-32905: gives the focus back to the chat question input ("Ask something") when coming back
+   * on the page. The other cases are covered by the chat's own `focusAfterResponse`, but not this
+   * one: the route is "frozen" when navigating away (see `CustomReuseStrategy`), so the chat is
+   * reattached as is, without loading anything.
+   */
+  function onRouteAttached() {
+    initialize();
+    cancelFocusChatInput?.();
+    cancelFocusChatInput = focusWhenReady(() => chat()?.sqChat()?.questionInput?.nativeElement, "assistant", { destroyRef });
   }
 
   async function getFirstPageQuery() {
@@ -239,6 +255,6 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
     handleConnection,
     handleReady,
     handleLoadSavedChat,
-    onRouteAttached: initialize
+    onRouteAttached
   };
 }

@@ -20,7 +20,7 @@
     "spfx:disable": "node scripts/spfx-mode.mjs disable",
     "spfx:enable": "node scripts/spfx-mode.mjs enable",
     "spfx:status": "node scripts/spfx-mode.mjs status",
-    "t:extract": "transloco-scoped-libs",
+    "t:extract": "transloco-scoped-libs --skip-gitignore",
     "test": "ng test",
     "transloco:extract-scoped-libs": "npm run t:extract",
     "watch": "ng build --watch --configuration development",
