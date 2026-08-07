@@ -7,6 +7,37 @@ SharePoint Framework, avec authentification **Azure AD** via `AadHttpClient` / `
 > generator). Ils ne sont **pas** compilés par le build Angular de mint (ils sont hors de `src/` et
 > importent les paquets `@microsoft/sp-*`).
 
+## Mode spfx (bascule npm)
+
+`@microsoft/sp-http` n'est **pas** une dépendance déclarée de mint. Elle ne sert qu'aux builds `spfx` /
+`spfx-production`, et uniquement comme *fournisseur de types* (`import type` dans
+`src/config/spfx/spfx-context.ts`). Déclarée, elle tirait 24 paquets `@microsoft/*` dans le lockfile et
+faisait cracher des `EBADENGINE` à chaque `npm install` sous Node 24 — pour tout le monde, y compris
+ceux qui ne touchent jamais à SPFx. Elle est donc provisionnée **à la demande** :
+
+| Script | Effet |
+|---|---|
+| `npm run spfx:enable` | installe `@microsoft/sp-http` en `--no-save` (node_modules uniquement) + crée `proxy.conf.spfx.json` depuis `proxy.conf.spfx.template.json` s'il manque |
+| `npm run spfx:disable` | le retire de node_modules |
+| `npm run spfx:status` | indique le mode courant — git ne peut pas le dire, rien n'est committé |
+
+- `npm run start:spfx` et `npm run build:spfx` appellent `spfx:enable` eux-mêmes : en pratique on n'y
+  pense jamais.
+- **Rien n'est écrit dans `package.json` / `package-lock.json`.** Le mode vit dans `node_modules`
+  seulement, et `scripts/spfx-mode.mjs` restaure les deux fichiers si npm les réécrit — impossible de
+  committer le mode par erreur.
+- Un `npm install` ultérieur reprune le paquet (extraneous par construction) → relancer `spfx:enable`,
+  ou simplement passer par `start:spfx` / `build:spfx`.
+- Sans le mode activé, un build `spfx` échoue sur
+  `TS2307: Cannot find module '@microsoft/sp-http'`. C'est attendu, pas une régression.
+- Les `EBADENGINE` (engine Node 18/22 vs Node 24) n'apparaissent donc plus qu'à l'`spfx:enable`, et
+  restent cosmétiques : les paquets `@microsoft/sp-*` ne sont jamais exécutés sous Node, seulement lus
+  par TypeScript.
+- `spfx:enable` rejoue, **dans la même commande npm**, l'override `@sinequa/agent` /
+  `@sinequa/assistant` appliqué par `postinstall` (lui aussi en `--no-save`) : tout autre
+  `npm install --no-save` recalcule l'arbre et rétrograderait sinon silencieusement la lib agent vers
+  la version épinglée dans `package.json`.
+
 ## Modes d'exécution : DEV (mock) vs PROD
 
 Point fondamental : les vrais `AadHttpClient` / `AadTokenProvider` **n'existent que dans une page
@@ -23,9 +54,9 @@ d'auth Sinequa.
 |---|---|---|
 | Contexte AAD | `createMockSpfxContext()` → playground | `MintWebPart.render()` → vrai `window.__MINT_SPFX_CONTEXT__` |
 | Token | faux endpoint `/__mock/aad-token` | `login.microsoftonline.com` via le contexte SPFx |
-| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — local, git-ignored (à créer soi-même, comme `proxy.conf.insight.json`) | **inutile** (pas de `ng serve` ; appels cross-origin réels) |
+| `proxy.conf.spfx.json` | proxy → `http://localhost:5173` (route `/__mock`) — git-ignored, généré depuis `proxy.conf.spfx.template.json` par `npm run spfx:enable` | **inutile** (pas de `ng serve` ; appels cross-origin réels) |
 | Backend | mock playground | `backendUrl` réel (property pane du web part) |
-| `@sinequa/atomic` | `file:../atomic` (symlink local) | paquet publié sur le registre (cf. *Packaging — production*) |
+| `@sinequa/atomic` | paquet publié + sous-chemin `/spfx` | idem (cf. *Packaging — production*) |
 | `environment.production` | `false` (garde mock actif) | `true` (sans contexte → page 500, **pas** de mock) |
 
 ⚠️ Pour un build PROD, s'assurer que l'`environment` utilisé a `production: true` — sinon le garde de
@@ -88,12 +119,16 @@ charge le bundle. Toute l'application reste dans mint.
 
 ## Étapes
 
-### 1. Builder le bundle mint (build `spfx`)
+### 1. Builder le bundle mint (build `spfx` de production)
 ```bash
 cd mint-internal
-ng build sinequa-mint --configuration spfx
+npm run build:spfx     # = spfx:enable + ng build --configuration spfx-production
 # → dist/sinequa-mint/ (styles.css, polyfills.js, main.js, chunk-*.js, assets/…)
 ```
+Passer par le script npm plutôt qu'un `ng build` nu : il provisionne d'abord les types SPFx
+(cf. *Mode spfx*). La configuration `spfx-production` active l'optimisation, met `production: true` et
+garde `outputHashing: "none"` pour que les noms d'assets restent fixes (`main.js` / `polyfills.js` /
+`styles.css`), sur lesquels s'appuie le loader hôte (`load-mint-assets.ts`).
 
 ### 2. Héberger les assets
 Publier le **contenu** de `dist/sinequa-mint/` sur une URL publique (CDN Office 365, bibliothèque
@@ -140,6 +175,8 @@ formulaire de login.
 
 ## Packaging — production
 
-Le `package.json` de mint pointe actuellement `@sinequa/atomic` vers un build **local** (`file:`).
-Pour la prod : **publier `@sinequa/atomic-spfx`** sur le registre puis repointer l'alias
-(`"@sinequa/atomic": "npm:@sinequa/atomic-spfx@^x.y.z"`).
+Rien de spécifique à SPFx à publier. `@sinequa/atomic` (≥ 2.1.0) expose déjà le sous-chemin `/spfx`
+(`initializeAadHttpClient`, `AadHttpClientLike`) et déclare `@microsoft/sp-http` en peerDependency
+**optionnelle**, jamais bundlée. Mint consomme le paquet publié normal : pas d'alias
+`@sinequa/atomic-spfx`, pas de build local `file:`. Le seul prérequis pour un bundle de prod est
+`npm run build:spfx`, qui active le mode spfx lui-même.

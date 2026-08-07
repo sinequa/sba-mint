@@ -9,6 +9,54 @@ All notable changes to the SBA Mint project.
 
 ## [Release 11.14.0] - 2026-07-29
 
+### Changed
+
+#### Document Preview
+
+- **Advanced search is a floating panel** instead of a second column. It used to be part of the preview's grid, so opening it narrowed the iframe from the full width to two thirds — a resize of the previewed document, and therefore a reflow of it. On a large conversion that reflow costs seconds, so the panel opening alone could freeze the UI. It now slides in over the document, which keeps the iframe at its size and lays nothing out again. Same pattern as the search page's left filters drawer.
+  - **Escape closes the panel first** and leaves the preview open; it closes the preview only once the panel is already closed. Bound on `keydown` rather than `keyup`, so `preventDefault()` still cancels the default action — Escape inside the panel's search field would otherwise clear the field instead of closing the panel.
+  - The collapsed panel is `inert`: out of the tab order and hidden from assistive technology, rather than merely translated off screen.
+
+### Breaking Changes
+
+- **The preview host no longer switches column templates.** Its class was
+  `cn("w-full h-full grid …", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")`
+  and is now a static `grid h-full w-full`; `<advanced-search>` moved from a sibling of the
+  document into the floating `<aside>`. Custom CSS that targeted either the two-column layout
+  or `advanced-search` as a direct child of the preview no longer matches.
+- **Nothing on the iframe's ancestor chain may carry an `overflow`.** That is a constraint
+  rather than a change, but it is easy to break by accident: any `overflow` value there makes
+  the element a scroll container, and the converter's fragment navigation inside the preview
+  (`location.href = "#page"`, which is also how the next-page action works) scrolls it — a
+  scroll that propagates out of the iframe and moves the host window, with no scrollbar to
+  bring it back. The box that hides the collapsed panel is deliberately a *sibling* of the
+  document and uses `overflow-clip`, which forbids scrolling outright.
+
+---
+
+## [Release 11.13.0] - 2026-07-29
+
+### Added
+
+#### Document Preview
+
+- `src/assets/preview.js` and `src/assets/preview.css` are taken over wholesale from the 11.14.0 line, because the passage-frame fix below is built on top of it. Three behaviours arrive with them that this release did not have:
+  - styling for previews of converted videos (`.sq-mediav2-*`, the MediaToHtml v2 converter), including the click that enlarges a screenshot;
+  - a `current-page` outbound message, emitted while scrolling a paginated document;
+  - `description-visible`, which the fix itself needs (see below).
+
+  All three are inert without the matching converter or consumer. Extracting them was not an option: the fix calls into them.
+- The AI-description toggle now follows the iframe. When a cited passage lives inside a hidden AI page description, the preview reveals that block on its own and says so, and the toggle button reflects it instead of claiming the description is hidden.
+
+### Changed
+
+#### Document Preview
+
+- **Advanced search is a floating panel** instead of a second column. It used to be part of the preview's grid, so opening it narrowed the iframe from the full width to two thirds — a resize of the previewed document, and therefore a reflow of it. On a large conversion that reflow costs seconds, so the panel opening alone could freeze the UI. It now slides in over the document, which keeps the iframe at its size and lays nothing out again. Same pattern as the search page's left filters drawer.
+  - **Escape closes the panel** and leaves the preview open. Bound on `keydown` rather than `keyup`, so `preventDefault()` still cancels the default action — Escape inside the panel's search field would otherwise clear the field instead of closing the panel.
+  - The collapsed panel is `inert`: out of the tab order and hidden from assistive technology, rather than merely translated off screen.
+- Every change in this release is applied to **both** preview components it ships — `src/app/components/preview/` (the one the application bootstraps) and `src/components/preview/` — so the two stay in sync.
+
 ### Fixed
 
 #### Document Preview
@@ -21,6 +69,25 @@ All notable changes to the SBA Mint project.
 - **Clicking a document no longer opens a mail client or navigates away.** The PdfToHtml family turns any e-mail address or URL it finds in the text into a link. On an OCR’d conversion those links carry no visible text — the `visibility: hidden` sits on the word inside the anchor — so nothing on screen suggests they are there, and a click on what looks like blank space on the scanned image could open a mail client; an `http` link would have replaced the preview with the external site inside the iframe. Every link in the preview is now inert (`a { pointer-events: none }`), including on conversions whose links are visible. The page navigator Aspose emits is unaffected: it is hidden, and `preview.js` drives pagination by calling the document’s own `GoN()` / `SetPage()` rather than by clicking it.
 
 ### Breaking Changes
+
+#### The preview component
+
+- **The preview host no longer switches column templates.** Its class was
+  `cn("grow w-full h-full overflow-hidden grid …", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")`
+  and is now a static `grid grow h-full w-full overflow-hidden`; `<advanced-search>` moved from a
+  sibling of the document into the floating `<aside>`. Custom CSS that targeted either the two-column
+  layout or `advanced-search` as a direct child of the preview no longer matches.
+- **The preview navbar's "search in document" no longer widens the drawer.** `toggle()` used to call
+  `DrawerStackService.extend()` when the preview was rendered inside a drawer — that widening was the
+  resize this change removes. It now toggles the floating panel in every context, and the unused
+  `isExtended` computed was dropped from `PreviewNavbarComponent`.
+- **Watch out for `overflow` on the iframe's ancestor chain.** Any `overflow` value there makes the
+  element a scroll container, and the converter's fragment navigation inside the preview
+  (`location.href = "#page"`, which is also how the next-page action works) scrolls it — a scroll that
+  propagates out of the iframe and moves the host window, with no scrollbar to bring it back. The box
+  that hides the collapsed panel is therefore deliberately a *sibling* of the document and uses
+  `overflow-clip`, which forbids scrolling outright. The `overflow-hidden` already carried by the
+  preview host and its root div predates this change and is left untouched.
 
 :::danger Applies to anyone maintaining their own `src/assets/preview.js` or `src/assets/preview.css`
 Both files were substantially rewritten. If you ship a modified copy, or style the preview from
@@ -67,12 +134,12 @@ Some of those rewrites change behaviour a caller can observe, not just the imple
 
 #### What did *not* change
 
-The postMessage contract is backwards compatible: **no inbound action and no outbound message type was removed.** Two outbound types were added, `description-visible` and `get-html-results-webworker`.
+The postMessage contract is backwards compatible: **no inbound action and no outbound message type was removed.** The inbound actions this release already handled are handled identically. Three outbound types are added: `description-visible`, `get-html-results-webworker`, and `current-page`.
 
 ### Migration Notes
 
 - If you only *use* the preview, nothing to do.
-- If you style it, search your stylesheets for `sq-passage-highlighter`, for `--factor`, and for rules on the preview body's `transform`/`width`/`height`.
+- If you style it, search your stylesheets for `sq-passage-highlighter`, for `--factor`, for rules on the preview body's `transform`/`width`/`height`, and for anything targeting the preview's two-column layout or `advanced-search` as its direct child.
 - If you script against the preview document, search for geometry read on content that may be off screen.
 - If you maintain a modified `preview.js`, treat this as a rewrite rather than a merge: the zoom path, the passage overlay, the scroll handler and the extracts path all changed shape.
 

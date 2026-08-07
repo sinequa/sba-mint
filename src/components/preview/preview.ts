@@ -1,9 +1,9 @@
-import { afterNextRender, Component, computed, DOCUMENT, ElementRef, effect, inject, output, signal, viewChild } from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, DOCUMENT, ElementRef, effect, inject, output, signal, viewChild } from "@angular/core";
 import { EventManager } from "@angular/platform-browser";
-import { provideTranslocoScope } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article as A } from "@sinequa/atomic";
 import { AdvancedSearch, ApplicationService, CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
-import { cn, SheetService } from "@sinequa/ui";
+import { ButtonComponent, IconButtonComponent, SheetService, XMarkIcon } from "@sinequa/ui";
 import { PreviewHeaderComponent } from "./preview-header/preview-header";
 import { PreviewNavbarComponent } from "./preview-navbar/preview-navbar";
 import { PreviewTabsComponent } from "./preview-tabs/preview-tabs";
@@ -27,35 +27,50 @@ type Article = A & {
 @Component({
   selector: "preview, Preview",
   providers: [provideTranslocoScope({ scope: "preview" })],
-  imports: [PreviewNavbarComponent, PreviewTabsComponent, PreviewHeaderComponent, AdvancedSearch, PreviewContentComponent],
+  imports: [
+    PreviewNavbarComponent,
+    PreviewTabsComponent,
+    PreviewHeaderComponent,
+    AdvancedSearch,
+    PreviewContentComponent,
+    ButtonComponent,
+    IconButtonComponent,
+    XMarkIcon,
+    TranslocoPipe
+  ],
   templateUrl: "./preview.html",
   host: {
-    "[class]": 'cn("w-full h-full grid transition-all ease-out duration-200", extended() ? "grid-cols-[1fr_.5fr]" : "grid-cols-[auto_0fr]")',
+    // a single-column grid, so the root div keeps the `align-self: stretch` height it had when the
+    // panel was a second column — a plain block would need an `h-full` that changes how the
+    // document's ancestors resolve their height (and with it, how a scroll walks out of the iframe)
+    class: "grid h-full w-full",
     tabindex: "1"
   }
 })
 export class PreviewComponent {
-  cn = cn;
-
   protected readonly previewTabs = viewChild(PreviewTabsComponent);
 
   /* injectables */
   protected readonly selectionStore = inject(SelectionStore);
   protected readonly previewservice = inject(PreviewService);
   protected readonly applicationService = inject(ApplicationService);
+  private readonly transloco = inject(TranslocoService);
 
   onClose = output();
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());
 
-  /* used to toggle the extended view when not displayed inside the drawer */
+  /* opens the floating advanced-search panel, overlaid on top of the document (never resizes it) */
   protected readonly extended = signal(false);
 
   protected readonly article = computed(() => {
     const article = this.selectionStore.article?.();
     if (article) {
-      this.applicationService.setTitle(article.title || "Preview");
+      // Fallback for untitled documents — translated so the tab title never stays English in a
+      // French/German interface (RGAA 8.6). The service call (not `translateSignal`) resolves the
+      // key in the root namespace instead of this component's "preview" scope.
+      this.applicationService.setTitle(article.title || this.transloco.translate("pageTitle.preview"));
     }
     return article as Article;
   });
@@ -66,13 +81,25 @@ export class PreviewComponent {
   document = inject(DOCUMENT);
   sheetService = inject(SheetService);
 
-  constructor() {
+  constructor(destroyRef: DestroyRef) {
     afterNextRender(() => {
-      this.eventManager.addEventListener(this.document.body, "keyup", (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-          this.sheetService.setOpen(false);
+      // listen on the body, not on the panel: opening it from the navbar leaves the focus on the toggle button.
+      // keydown, not keyup, so preventDefault still cancels the browser default action.
+      const removeEscapeListener = this.eventManager.addEventListener(this.document.body, "keydown", (event: KeyboardEvent) => {
+        if (event.key !== "Escape") return;
+
+        // the floating advanced-search panel takes precedence: Escape closes it and keeps the preview open
+        if (this.extended()) {
+          // Escape inside the panel input[type=search] would otherwise clear the field: closing is all we want
+          event.preventDefault();
+          this.extended.set(false);
+          return;
         }
+
+        this.sheetService.setOpen(false);
       });
+
+      destroyRef.onDestroy(() => removeEscapeListener());
     });
 
     // if the scrollTo event is emitted, set the active tab to preview if the active tab is not already preview

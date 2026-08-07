@@ -55,6 +55,7 @@ import { catchError, of } from "rxjs";
         [chat]="initChat"
         [userMessageIcon]="profilePhoto() ? 'user-avatar' : ''"
         [instanceId]="instanceId()"
+        [focusAfterResponse]="true"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"
@@ -121,7 +122,10 @@ export class AssistantComponent {
   queryParamsStore = inject(QueryParamsStore);
 
   // used to cronstruct a valid query object used by the sqChat component
-  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "_query");
+  // Empty rather than `_query` when no default query is declared: no app defines a web service
+  // under that name any more. Empty, and not absent, because `_query` below feeds a `Query` input
+  // whose `name` is a required string -- and empty is what `QueryParamsStore.getQuery()` uses too.
+  defaultQueryName = computed(() => this.appStore.getDefaultQuery()?.name || "");
   _query = { name: this.defaultQueryName() };
   query = input<Query>();
 

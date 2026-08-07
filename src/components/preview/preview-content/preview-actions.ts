@@ -130,6 +130,7 @@ export class PreviewActionsComponent {
   private readonly selectionStore = inject(SelectionStore);
 
   readonly isPrimary = input<boolean>(false);
+
   /**
    * True when the iframe revealed an AI page description by itself, because the
    * cited passage lives inside it. Drives {@link showAIDescription} so the toggle

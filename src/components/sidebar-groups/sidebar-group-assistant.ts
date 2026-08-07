@@ -11,6 +11,7 @@ import { CommentIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarM
     <sidebar-menu>
       <sidebar-menu-item aria-label="Chats" class="group-data-[collapsible=icon]:items-center">
         <sidebar-menu-button
+          aria-hidden
           [tooltip]="isCollapsed() ? ('chats' | transloco) : ''" tooltip-position="right"
           class="text-lg"
           routerLink="/assistant"
@@ -20,6 +21,15 @@ import { CommentIcon, SidebarMenuButtonComponent, SidebarMenuComponent, SidebarM
           <comment-icon />
           <span class="text-sm">{{ 'chats' | transloco }}</span>
         </sidebar-menu-button>
+        <a
+          class="sr-only"
+          routerLink="/assistant"
+          routerLinkActive="active"
+          #rlaAssistant="routerLinkActive"
+          [attr.aria-label]="'chats' | transloco"
+          [attr.data-active]="rlaAssistant.isActive || null">
+          {{ 'chats' | transloco }}
+        </a>
       </sidebar-menu-item>
     </sidebar-menu>
     }
