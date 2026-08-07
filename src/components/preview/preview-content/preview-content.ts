@@ -85,6 +85,7 @@ const LOAD_SAFETY_NET_MS = 1500;
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
           [isPrimary]="!conversion() || conversion()!.primary === true"
+          [aiDescriptionShown]="aiDescriptionShown()"
           [class]="cn('absolute right-4 inline-flex justify-end rounded-md dark:text-background dark:[&_button]:hover:text-foreground dark:bg-muted/10 bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe
           #preview
@@ -174,6 +175,12 @@ export class PreviewContentComponent {
   protected passagePageNumber = signal<number | undefined>(undefined);
   protected currentPage = signal<string | undefined>(undefined); // used to go back to the last visited page when changing of conversion for a document
   protected contentReady = signal(false); // false while the iframe loads + scrolls, gating the spinner overlay
+  /**
+   * Set when the iframe reveals an AI page description on its own, because the
+   * cited passage lives inside it (multimodal conversions hide those blocks by
+   * default). Forwarded to `<preview-actions>` so its toggle reflects the state.
+   */
+  protected aiDescriptionShown = signal(false);
   protected scrollPage = computed(() =>
     this.currentPage() !== undefined ? this.currentPage() : this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined
   );
@@ -323,6 +330,8 @@ export class PreviewContentComponent {
       // not-yet-scrolled content too early.
       this.previewUrl();
       this.hideContent();
+      // A fresh document starts with its AI descriptions hidden again.
+      this.aiDescriptionShown.set(false);
     });
 
     const controller = new AbortController();
@@ -339,6 +348,10 @@ export class PreviewContentComponent {
         const message = event.data;
         if (message.type === "current-page") {
           this.currentPage.set(message.data);
+        } else if (message.type === "description-visible") {
+          // The iframe reveals a hidden AI description by itself when the cited passage lives
+          // inside it, and says so, so that the actions toggle does not contradict the screen.
+          this.aiDescriptionShown.set(true);
         } else if (message.type === "ready") {
           // The iframe has finished its layout (zoom-fit, sizing). Now it is safe to
           // scroll to the target page and then reveal the content.
