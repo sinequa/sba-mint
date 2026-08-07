@@ -15,7 +15,7 @@
     "start": "ng serve",
     "start:docs": "cd docusaurus && npm start",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
-    "t:extract": "transloco-scoped-libs",
+    "t:extract": "transloco-scoped-libs --skip-gitignore",
     "test": "ng test",
     "transloco:extract-scoped-libs": "npm run t:extract",
     "watch": "ng build --watch --configuration development",
