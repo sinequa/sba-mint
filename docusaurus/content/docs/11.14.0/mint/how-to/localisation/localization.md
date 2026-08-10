@@ -1,6 +1,8 @@
 ---
 title: Localization
 sidebar_position: 3
+overlay:
+  renamedFrom: mint/how-to/localization
 ---
 
 This documentation provides step-by-step instructions on how to configure a new localization in your Sinequa application.
