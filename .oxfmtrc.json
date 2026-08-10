@@ -20,6 +20,7 @@
   "ignorePatterns": [
     "src/assets/vendors/**/*",
     "*.html",
+    "**/package-lock.json",
     "docusaurus/content/**/*",
     "docusaurus/versioned_docs/**/*",
     "docusaurus/versioned_sidebars/**/*",
