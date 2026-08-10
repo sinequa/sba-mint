@@ -18,7 +18,12 @@ docusaurus/
 
 If you have worked on this site before, the muscle memory to unlearn is editing `docs/`. That directory
 is now build output: an edit there survives until the next build and then disappears without a trace.
-`npm run verify` catches it, and CI runs that on every merge request touching `docusaurus/`.
+
+The guard for that is **local, and can only be local**: these directories are gitignored, so a hand edit
+never reaches CI. It is caught on the machine that made it — `npm start`, `npm run build` and
+`npm run verify` all materialise, and materialising compares each file against the hash the manifest
+recorded, then reports `edited by hand, overwritten: <path>`. What CI checks is a different thing: that
+`content/` is self-consistent and that materialising it twice gives the same tree.
 
 ## Why it works this way
 

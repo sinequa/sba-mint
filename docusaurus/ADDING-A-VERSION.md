@@ -103,9 +103,15 @@ docusaurus/versions.json          ← generated
 docusaurus/.docs-overlay/         ← generated
 ```
 
-All five are gitignored, and `npm run verify` fails if any of them was edited by hand — which is the only
-protection there is, because an edit there disappears at the next build without a trace. CI runs `verify` on
-every merge request touching `docusaurus/`.
+All five are gitignored, so an edit there disappears at the next build without a trace — and, being
+gitignored, it never reaches CI either. The guard is local and can only be local: materialising compares each
+file against the hash the manifest recorded and reports `edited by hand, overwritten: <path>`, on the machine
+that made the edit. `npm start`, `npm run build` and `npm run verify` all materialise, so you get the warning
+without asking for it.
+
+CI checks a different thing, on every merge request touching `docusaurus/`: that `content/` is
+self-consistent (`npm run check`), that it builds with `onBrokenLinks: 'throw'`, and that materialising twice
+gives the same tree (`npm run verify`, which by then has nothing left to write).
 
 The one habit to break: a Docusaurus contributor edits `docs/`. Here, `docs/` is output. Edit
 `content/docs/next/`.

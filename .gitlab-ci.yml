@@ -120,14 +120,28 @@ build:
 #                    two files claiming one slug. Seconds, and it needs no
 #                    generated tree — so it runs first and fails before two
 #                    builds have been spent.
-#   both builds      onBrokenLinks is 'throw', and the two deployment targets
-#                    have different baseUrl values, so a link can break in one
-#                    and not in the other. Each materialises first, through
-#                    prebuild / prebuild-internal.
+#   npm run build    the real proof: onBrokenLinks is 'throw', so a broken
+#                    internal link fails here rather than shipping. It
+#                    materialises first, through prebuild.
 #   npm run verify   LAST, and only there, because what it asserts here is
-#                    idempotence: the builds have just materialised, so
-#                    `--check` must now find nothing to write. Any other count
-#                    would mean materialising twice produces two different trees.
+#                    idempotence: the build has just materialised, so `--check`
+#                    must now find nothing to write. Any other count would mean
+#                    materialising twice produces two different trees.
+#
+# One target, not both. The public build is what an external link points at, and
+# the internal site is the same content behind a different prefix. Building both
+# doubled a ~10 minute job on every merge request to re-verify almost the same
+# graph: `onBrokenLinks` validates against the route registry, which does not
+# depend on baseUrl, so the second build was really guarding against the two
+# configs disagreeing — and they no longer can. Both now derive everything from
+# docusaurus.config.base.js and from the materialiser's manifest, and differ only
+# in the three values they pass it.
+#
+# What that accepts, stated rather than hidden: a fault confined to
+# docusaurus.internal.config.js — those three keys, or the file failing to load
+# at all, which happened twice during the migration under jiti — now surfaces
+# when its deploy workflow runs instead of on the merge request. The file is ten
+# lines that forward three values, which is what makes the trade reasonable.
 #
 # The order is the whole point, and the first version of this job had it wrong.
 # `verify` is `materialize --check`, which answers "is the tree on disk the one
@@ -167,5 +181,4 @@ docs-validate:
     - npm ci
     - npm run check
     - npm run build
-    - npm run build-internal
     - npm run verify

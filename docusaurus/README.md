@@ -35,8 +35,10 @@ in sequence locally leaves you holding only the internal site. Neither script se
 deploy workflows upload `./docusaurus/build` either way. (`.gitignore` still lists `/build-internal`, a
 directory nothing has produced for a long time.)
 
-`onBrokenLinks` is `throw`, so a broken internal link fails the build rather than shipping. The two targets
-differ by `baseUrl`, which is why CI runs both: a link can resolve in one and break in the other.
+`onBrokenLinks` is `throw`, so a broken internal link fails the build rather than shipping. CI builds the
+public target only: `onBrokenLinks` validates against the route registry, which does not depend on
+`baseUrl`, and the two configs can no longer disagree now that both derive everything from
+`docusaurus.config.base.js`.
 
 ## Check without building
 
