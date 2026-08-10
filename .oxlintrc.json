@@ -27,5 +27,10 @@
     "builtin": true
   },
   "globals": {},
-  "ignorePatterns": []
+  "ignorePatterns": [
+    "docusaurus/content/**/*",
+    "docusaurus/versioned_docs/**/*",
+    "docusaurus/versioned_sidebars/**/*",
+    "docusaurus/.docs-overlay/**/*"
+  ]
 }

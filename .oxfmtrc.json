@@ -17,5 +17,13 @@
   "printWidth": 160,
   "endOfLine": "lf",
   "experimentalSortPackageJson": false,
-  "ignorePatterns": ["src/assets/vendors/**/*", "*.html"]
+  "ignorePatterns": [
+    "src/assets/vendors/**/*",
+    "*.html",
+    "docusaurus/content/**/*",
+    "docusaurus/versioned_docs/**/*",
+    "docusaurus/versioned_sidebars/**/*",
+    "docusaurus/versions.json",
+    "docusaurus/.docs-overlay/**/*"
+  ]
 }
