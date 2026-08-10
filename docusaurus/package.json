@@ -37,7 +37,7 @@
     "@tailwindcss/postcss": "^4.1.8",
     "baseline-browser-mapping": "^2.9.17",
     "docs-overlay-cli": "^0.2.0",
-    "docs-overlay-docusaurus": "^0.2.0"
+    "docs-overlay-docusaurus": "^0.2.1"
   },
   "overrides": {
     "uuid": ">=14.0.0",
