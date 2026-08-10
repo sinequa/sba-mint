@@ -51,6 +51,10 @@ npx docs-overlay cut 11.15.0
 `content/docs/next/` becomes `content/docs/11.15.0/`; the channel comes back empty and inherits it.
 Nothing else to update — the version list, `lastVersion` and the dropdown all follow from the folders.
 
+**Never run `docusaurus docs:version`.** It writes into paths that are now generated and gitignored, so the
+next build deletes its work and the release silently does not exist. The full procedure, what to verify, and
+what to do when the command refuses: [`ADDING-A-VERSION.md`](./ADDING-A-VERSION.md).
+
 ## Deployment
 
 Both targets deploy from GitHub Actions, triggered manually (`workflow_dispatch`):

@@ -103,6 +103,10 @@ npx docs-overlay cut 11.15.0
 everything, so `/next/` serves the new release until someone writes into it. `versions.json`,
 `lastVersion` and the version dropdown all follow from the folders, so there is nothing else to update.
 
+[`ADDING-A-VERSION.md`](../ADDING-A-VERSION.md) is the procedure in full: what to verify afterwards, the
+three cases where `cut` refuses and what each means, what to do about a release whose documentation did not
+change, and why `docusaurus docs:version` must never be run again.
+
 ## Where the content comes from
 
 `content/docs/next/atomic/` and `content/docs/next/atomic-angular/` are a **mirror**: they are
