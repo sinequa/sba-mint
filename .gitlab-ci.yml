@@ -115,16 +115,32 @@ build:
 # Now that the trees are generated from docusaurus/content/, three things need a
 # machine to check them, and each one failed at least once during the migration:
 #
-#   npm run verify   the generated tree matches the source. Catches the mistake
-#                    every Docusaurus contributor makes at least once — editing
-#                    the generated docs/ instead of content/docs/ — which would
-#                    otherwise vanish at the next build with no trace.
 #   npm run check    the content diagnostics: a directive pointing at a slug
 #                    nothing serves, an inherited sidebar naming a removed doc,
-#                    two files claiming one slug.
+#                    two files claiming one slug. Seconds, and it needs no
+#                    generated tree — so it runs first and fails before two
+#                    builds have been spent.
 #   both builds      onBrokenLinks is 'throw', and the two deployment targets
 #                    have different baseUrl values, so a link can break in one
-#                    and not in the other.
+#                    and not in the other. Each materialises first, through
+#                    prebuild / prebuild-internal.
+#   npm run verify   LAST, and only there, because what it asserts here is
+#                    idempotence: the builds have just materialised, so
+#                    `--check` must now find nothing to write. Any other count
+#                    would mean materialising twice produces two different trees.
+#
+# The order is the whole point, and the first version of this job had it wrong.
+# `verify` is `materialize --check`, which answers "is the tree on disk the one
+# content/ implies?". The generated trees are gitignored, so a fresh clone holds
+# none of them and the honest answer is "no, all of them" — the job failed with
+# `622 would change · 0 unchanged` before anything had had a chance to run.
+#
+# And worth being explicit about what this job does NOT catch, because the first
+# version of this comment claimed it did: a contributor editing the generated
+# docs/ instead of content/docs/. That edit cannot reach CI, since docs/ is
+# gitignored and never committed. It is caught on the machine that made it, by
+# `materialize` printing `edited by hand, overwritten: <path>` on the next build.
+# A local guard, and only ever a local one.
 #
 # Its own cache key: docusaurus/package-lock.json is a separate lockfile from the
 # root one, and sharing a key would thrash both caches.
@@ -149,7 +165,7 @@ docs-validate:
   script:
     - cd docusaurus
     - npm ci
-    - npm run verify
     - npm run check
     - npm run build
     - npm run build-internal
+    - npm run verify

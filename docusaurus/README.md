@@ -26,12 +26,17 @@ Materialises the doc trees from `content/`, then starts a dev server that reload
 ## Build
 
 ```bash
-npm run build            # public site      → build/
-npm run build-internal   # GitHub Enterprise → build-internal/
+npm run build            # public site
+npm run build-internal   # GitHub Enterprise
 ```
 
-Both materialise first. `onBrokenLinks` is `throw`, so a broken internal link fails the build rather
-than shipping.
+Both materialise first, and both write to **`build/`** — the second overwrites the first, so running them
+in sequence locally leaves you holding only the internal site. Neither script sets `--out-dir`, and the
+deploy workflows upload `./docusaurus/build` either way. (`.gitignore` still lists `/build-internal`, a
+directory nothing has produced for a long time.)
+
+`onBrokenLinks` is `throw`, so a broken internal link fails the build rather than shipping. The two targets
+differ by `baseUrl`, which is why CI runs both: a link can resolve in one and break in the other.
 
 ## Check without building
 
