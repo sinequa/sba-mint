@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "materialize": "docs-overlay materialize --label next=\"Next 🚧\"",
+    "verify": "docs-overlay materialize --check",
+    "check": "docs-overlay check",
+    "prebuild": "npm run materialize",
+    "prebuild-internal": "npm run materialize",
+    "prestart": "npm run materialize",
     "build": "docusaurus build",
     "build-internal": "docusaurus build --config docusaurus.internal.config.js",
     "clear": "docusaurus clear",
@@ -29,7 +35,9 @@
     "@docusaurus/module-type-aliases": "^3.10.0",
     "@docusaurus/types": "^3.10.0",
     "@tailwindcss/postcss": "^4.1.8",
-    "baseline-browser-mapping": "^2.9.17"
+    "baseline-browser-mapping": "^2.9.17",
+    "docs-overlay-cli": "^0.1.0",
+    "docs-overlay-docusaurus": "^0.1.0"
   },
   "overrides": {
     "uuid": ">=14.0.0",

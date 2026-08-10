@@ -1,0 +1,222 @@
+// @ts-check
+// Shared configuration for the two deployment targets.
+//
+// The public site and the GitHub Enterprise site differ by three keys — `url`, `baseUrl` and
+// `deploymentBranch` — and used to duplicate ~190 lines to say so. That duplication stopped being merely
+// untidy once the doc trees became generated: `lastVersion` and the `versions` block are now derived from
+// what is on disk, and two hand-written copies of a derived value are two chances to disagree with it.
+//
+// So both files call this, and the versioning half comes from the materialiser's manifest rather than
+// from either of them.
+import fs from "node:fs";
+import path from "node:path";
+import { themes as prismThemes } from "prism-react-renderer";
+
+// Docusaurus loads config files through jiti, which transpiles them to CJS and evaluates them with
+// `vm.Script`. So `import.meta` cannot appear anywhere in this file — not guarded, not in a dead branch —
+// because the failure is a SyntaxError at compile time, not a missing value at runtime. `__dirname` is
+// available in jiti's output; `process.cwd()` covers a direct `import()` of this module, which is how a
+// test or a script loads it, and Docusaurus runs from the site directory in any case.
+const HERE = typeof __dirname === "string" ? __dirname : process.cwd();
+const MANIFEST = path.join(HERE, ".docs-overlay", "manifest.json");
+
+/**
+ * The `docs` versioning options, as the materialiser last computed them.
+ *
+ * Read from the manifest instead of from `versions.json` because the manifest also carries the pieces
+ * `versions.json` cannot express — the `Next 🚧` label, the channel's URL path — so there is one source
+ * rather than one source plus two hand-maintained companions.
+ *
+ * Fails loudly when it is absent. That is the price of a generated tree: without this, `docusaurus start`
+ * run directly would fail somewhere inside the docs plugin with nothing pointing back to the real cause.
+ */
+function docsVersioning() {
+  if (!fs.existsSync(MANIFEST)) {
+    throw new Error(
+      `Missing ${path.relative(HERE, MANIFEST)}.\n\n` +
+        `The doc trees under docusaurus/ are generated from docusaurus/content/. Run:\n\n` +
+        `  npm run materialize\n\n` +
+        `or use npm run build / npm start, which do it for you via prebuild and prestart.\n`
+    );
+  }
+
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST, "utf8"));
+  const docs = manifest?.payload?.docs;
+  if (!docs) throw new Error(`${MANIFEST} carries no payload.docs — regenerate it with \`npm run materialize\`.`);
+  return docs;
+}
+
+/**
+ * @param {{ url: string, baseUrl: string, deploymentBranch?: string }} target
+ * @returns {import('@docusaurus/types').Config}
+ */
+export function createConfig(target) {
+  const { path: docsPath, sidebarPath, includeCurrentVersion, lastVersion, versions } = docsVersioning();
+
+  return {
+    title: 'Sinequa',
+    tagline: 'Connect your modern workplace and drive innovation from the inside out',
+    favicon: 'img/favicon.png',
+    staticDirectories: ['static'],
+
+    organizationName: 'sinequa',
+    projectName: 'sba-mint',
+
+    onBrokenLinks: 'throw',
+
+    trailingSlash: false,
+    i18n: {
+      defaultLocale: 'en',
+      locales: ['en']
+    },
+
+    ...target,
+
+    plugins: [
+      // Named rather than `require.resolve`d: this file is ESM and is imported by the two thin configs,
+      // so `require` is not in scope here. Docusaurus resolves a plugin name against the site directory
+      // itself, which is what `require.resolve` was standing in for.
+      'docusaurus-lunr-search',
+      function suppressVscodeLangserverWarning() {
+        return {
+          name: 'suppress-vscode-languageserver-warning',
+          configureWebpack() {
+            return {
+              module: {
+                noParse: [/vscode-languageserver-types[\\/]lib[\\/]umd[\\/]main\.js/]
+              }
+            };
+          }
+        };
+      }
+    ],
+
+    presets: [
+      [
+        'classic',
+        /** @type {import('@docusaurus/preset-classic').Options} */
+        ({
+          docs: {
+            // Generated: path, sidebarPath, includeCurrentVersion, lastVersion and versions all come
+            // from the manifest, so neither config file states them.
+            path: docsPath,
+            sidebarPath,
+            includeCurrentVersion,
+            lastVersion,
+            versions,
+            routeBasePath: '/',
+            sidebarItemsGenerator: async function ({ defaultSidebarItemsGenerator, ...args }) {
+              const sidebarItems = await defaultSidebarItemsGenerator(args);
+              return sidebarItems.map(item =>
+                item.type === 'category' ? { ...item, label: item.label.charAt(0).toUpperCase() + item.label.slice(1) } : item
+              );
+            }
+          },
+          blog: false,
+          theme: {
+            customCss: './src/css/custom.css'
+          }
+        })
+      ]
+    ],
+
+    themeConfig:
+      /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+      ({
+        image: 'img/docusaurus-social-card.jpg',
+        docs: {
+          sidebar: {
+            hideable: true,
+            autoCollapseCategories: true
+          }
+        },
+        navbar: {
+          title: '🍵 Mint',
+          logo: {
+            alt: 'Sinequa Logo',
+            src: 'img/Logo_SINEQUA_RVB-170.png'
+          },
+          items: [
+            {
+              type: 'docSidebar',
+              position: 'left',
+              sidebarId: 'atomic',
+              label: '⚛️ Atomic'
+            },
+            {
+              type: 'docSidebar',
+              position: 'left',
+              sidebarId: 'atomicAngular',
+              label: '🅰️ Atomic for Angular'
+            },
+            {
+              type: 'docsVersionDropdown',
+              position: 'right'
+            },
+            {
+              href: 'https://github.com/sinequa/sba-mint',
+              label: 'GitHub',
+              position: 'right'
+            }
+          ]
+        },
+        footer: {
+          style: 'dark',
+          links: [
+            {
+              title: 'Community',
+              items: [
+                {
+                  label: 'Twitter',
+                  href: 'https://x.com/sinequa'
+                }
+              ]
+            },
+            {
+              title: 'More',
+              items: [
+                {
+                  label: 'Website',
+                  href: 'https://sinequa.com'
+                },
+                {
+                  label: 'GitHub',
+                  href: 'https://github.com/sinequa/sba-mint'
+                }
+              ]
+            }
+          ],
+          copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.sinequa.com" aria-alt="Sinequa website">Sinequa</a>. Distributed under the terms of the <a href="https://github.com/sinequa/sba-angular/blob/master/license.txt" aria-alt="MIT license">MIT license</a>`
+        },
+        prism: {
+          theme: prismThemes.oneDark,
+          darkTheme: prismThemes.oneDark,
+          defaultLanguage: 'typescript',
+          magicComments: [
+            {
+              className: 'code-block-error-line',
+              line: 'error',
+              block: { start: 'error-start', end: 'error-end' }
+            },
+            {
+              className: 'code-block-add-line',
+              line: 'add',
+              block: { start: 'add-start', end: 'add-end' }
+            },
+            {
+              className: 'code-block-remove-line',
+              line: 'remove',
+              block: { start: 'remove-start', end: 'remove-end' }
+            }
+          ]
+        }
+      }),
+    themes: ['@docusaurus/theme-mermaid'],
+    markdown: {
+      mermaid: true,
+      hooks: {
+        onBrokenMarkdownLinks: 'warn'
+      }
+    }
+  };
+}
