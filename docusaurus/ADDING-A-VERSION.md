@@ -41,16 +41,20 @@ survive and the commit contains a rename rather than a rewrite. This matters mor
 in this tree are stored with CRLF endings, and a copy-then-`git add` would renormalise every one of them,
 turning a cut with zero bytes of content change into a full-tree diff.
 
-Then commit, and check:
+Then commit, and check — **in this order**:
 
 ```bash
-npm run check     # content diagnostics: seconds
-npm run verify    # the generated tree matches content/
-npm run build     # the real proof: onBrokenLinks is throw
+npm run check     # content diagnostics: seconds, needs no generated tree
+npm run build     # the real proof: onBrokenLinks is throw. Materialises first.
+npm run verify    # now meaningful: the build materialised, so this must find nothing to write
 ```
 
-`npm run build` is the one that would catch a sidebar naming a page the new version no longer serves, since
-that is a hard Docusaurus error rather than a warning.
+Not `verify` first. A cut has just moved the whole channel, so the generated tree on disk is stale by
+construction and `verify` would fail telling you to materialise — true, useless, and alarming right after a
+release cut. Run it last and it asserts something real instead: that materialising twice gives the same tree.
+
+`npm run build` is the step that catches a sidebar naming a page the new version no longer serves, since that
+is a hard Docusaurus error rather than a warning.
 
 ## What follows on its own, and must not be edited
 
@@ -109,9 +113,11 @@ file against the hash the manifest recorded and reports `edited by hand, overwri
 that made the edit. `npm start`, `npm run build` and `npm run verify` all materialise, so you get the warning
 without asking for it.
 
-CI checks a different thing, on every merge request touching `docusaurus/`: that `content/` is
-self-consistent (`npm run check`), that it builds with `onBrokenLinks: 'throw'`, and that materialising twice
-gives the same tree (`npm run verify`, which by then has nothing left to write).
+And CI will not catch a broken cut for you. `docs-validate` runs the same three commands — `check`, `build`,
+`verify` — but it is **manual and optional**: a play button on merge requests touching `docusaurus/`, never
+automatic, never blocking, because the build costs around four minutes on a shared runner against one minute
+locally. After a cut, press it, or run the three commands yourself. A cut is exactly the kind of structural
+change worth the minute.
 
 The one habit to break: a Docusaurus contributor edits `docs/`. Here, `docs/` is output. Edit
 `content/docs/next/`.

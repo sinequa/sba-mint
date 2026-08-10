@@ -35,10 +35,10 @@ in sequence locally leaves you holding only the internal site. Neither script se
 deploy workflows upload `./docusaurus/build` either way. (`.gitignore` still lists `/build-internal`, a
 directory nothing has produced for a long time.)
 
-`onBrokenLinks` is `throw`, so a broken internal link fails the build rather than shipping. CI builds the
-public target only: `onBrokenLinks` validates against the route registry, which does not depend on
-`baseUrl`, and the two configs can no longer disagree now that both derive everything from
-`docusaurus.config.base.js`.
+`onBrokenLinks` is `throw`, so a broken internal link fails the build rather than shipping — locally, in
+about a minute. Only the public target is worth building for validation: `onBrokenLinks` validates against
+the route registry, which does not depend on `baseUrl`, and the two configs can no longer disagree now that
+both derive everything from `docusaurus.config.base.js`.
 
 ## Check without building
 
@@ -47,7 +47,13 @@ npm run verify   # the generated tree matches content/ — fails if it is stale 
 npm run check    # content diagnostics: bad directives, sidebars naming missing docs, duplicate slugs
 ```
 
-Both run in seconds. CI runs them on every merge request touching `docusaurus/`.
+`npm run check` answers in under a second and needs no build at all, so there is no reason not to run it.
+
+**Nothing checks this for you.** The GitLab job `docs-validate` runs the same three commands, but it is
+manual and optional — a play button on merge requests that touch `docusaurus/`, never automatic and never
+blocking, because the build costs about four minutes on a shared runner against one minute here. Press it,
+or run the commands yourself, before merging anything structural: a rename, a tombstone, a release cut, a
+sidebar change.
 
 ## Cut a release
 
