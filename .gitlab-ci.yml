@@ -99,3 +99,57 @@ build:
   script:
     - npm ci
     - npm run build
+
+# ─── docs-validate ───────────────────────────────────────────────────────────
+# Validation only. This job PUBLISHES NOTHING: no artifact, no `environment`, no
+# Pages deployment. Publishing the documentation stays manual and stays on
+# github.com — deploy-public.yml and deploy-private.yml, both workflow_dispatch —
+# and this file deliberately adds no GitLab equivalent.
+#
+# What it does is check, on a merge request, what nothing was checking before. The
+# site has always been built by those two workflows, but only when someone
+# triggered them, and the GitLab pipeline ignored docusaurus/ entirely — which is
+# how the version served at the site root came to be three months behind docs/
+# with nothing reporting it.
+#
+# Now that the trees are generated from docusaurus/content/, three things need a
+# machine to check them, and each one failed at least once during the migration:
+#
+#   npm run verify   the generated tree matches the source. Catches the mistake
+#                    every Docusaurus contributor makes at least once — editing
+#                    the generated docs/ instead of content/docs/ — which would
+#                    otherwise vanish at the next build with no trace.
+#   npm run check    the content diagnostics: a directive pointing at a slug
+#                    nothing serves, an inherited sidebar naming a removed doc,
+#                    two files claiming one slug.
+#   both builds      onBrokenLinks is 'throw', and the two deployment targets
+#                    have different baseUrl values, so a link can break in one
+#                    and not in the other.
+#
+# Its own cache key: docusaurus/package-lock.json is a separate lockfile from the
+# root one, and sharing a key would thrash both caches.
+#
+# Not extending .npm, because that template keys its cache on the root lockfile.
+docs-validate:
+  extends: .egress
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - docusaurus/**/*
+        - .gitlab-ci.yml
+  variables:
+    npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  cache:
+    key:
+      files:
+        - docusaurus/package-lock.json
+    paths:
+      - .npm/
+  script:
+    - cd docusaurus
+    - npm ci
+    - npm run verify
+    - npm run check
+    - npm run build
+    - npm run build-internal
