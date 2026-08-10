@@ -1,6 +1,5 @@
 ---
 title: Utilities
-sidebar_class_name: new
 ---
 
 Small, focused helpers that show up across a Sinequa app: relative dates, query-param (de)serialization for shareable URLs, metadata extraction, and a few string/array helpers. Each is framework-agnostic; the React snippets show idiomatic wiring.

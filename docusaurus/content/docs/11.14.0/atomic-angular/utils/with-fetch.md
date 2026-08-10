@@ -1,6 +1,5 @@
 ---
 title: withFetch
-sidebar_class_name: new
 ---
 
 `withFetch` wraps an async callback in Angular's injection context and transparently handles common HTTP error responses. `401` errors redirect to the login page; `404` errors return `undefined` silently.

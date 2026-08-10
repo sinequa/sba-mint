@@ -1,6 +1,5 @@
 ---
 title: setToken
-sidebar_class_name: update
 ---
 
 Saves a CSRF token into session storage under the `sinequa-credentials` key.

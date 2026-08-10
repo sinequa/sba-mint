@@ -1,6 +1,5 @@
 ---
 title: Authentication
-sidebar_class_name: new
 ---
 
 This recipe covers the full authentication lifecycle: configuring the library, detecting an existing session, the three login flows (credentials, SSO, bearer token), logout, and wiring it all into a React context with protected routes.

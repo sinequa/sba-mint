@@ -1,6 +1,5 @@
 ---
 title: Audit
-sidebar_class_name: update
 ---
 
 The `AuditService` notifies the Sinequa server of audit events such as login, logout, document interactions, and route changes.

@@ -1,6 +1,5 @@
 ---
 title: Highlights
-sidebar_class_name: update
 ---
 
 The `HIGHLIGHTS` injection token provides an array of `PreviewHighlight` objects used to configure highlight colors in the document preview. It ships with five pre-configured highlights that can be overridden via dependency injection.

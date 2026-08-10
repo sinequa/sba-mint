@@ -1,6 +1,5 @@
 ---
 title: Change Password
-sidebar_class_name: new
 ---
 
 The Change Password module (v2 API) provides functions to change a user's password and to request a password reset by email.

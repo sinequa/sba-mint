@@ -1,6 +1,5 @@
 ---
 title: OpenArticleOnCtrlEnter
-sidebar_class_name: update
 ---
 
 The `OpenArticleOnCtrlEnterDirective` opens an article in the preview when the user presses **Ctrl+Enter** while the host element is focused.

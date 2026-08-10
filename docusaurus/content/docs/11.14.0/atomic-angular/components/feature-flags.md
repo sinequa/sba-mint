@@ -1,6 +1,5 @@
 ---
 title: Feature Flags Dialog
-sidebar_class_name: new
 ---
 
 The `FeatureFlagsDialogComponent` is a developer/QA tool that lists the application's boolean feature flags and lets an **administrator** toggle them **live**. Each toggle rewrites the effective `general.features` map on the `AppStore`, so the rest of the application — which reads features through `appStore.general()?.features` — reacts immediately, with no customization-JSON edit and no reload.

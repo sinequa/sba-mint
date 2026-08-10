@@ -1,6 +1,5 @@
 ---
 title: Introduction
-sidebar_class_name: update
 ---
 
 This library is a comprehensive toolkit for building web applications integrated with Sinequa services. It provides modular, type-safe building blocks for authentication, API communication, configuration management, and a rich set of utilities.

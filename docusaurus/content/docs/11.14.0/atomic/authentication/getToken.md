@@ -1,6 +1,5 @@
 ---
 title: getToken
-sidebar_class_name: update
 ---
 
 Retrieves the CSRF token from session storage.

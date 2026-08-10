@@ -1,7 +1,6 @@
 ---
 title: Adding Superscript Support to Markdown
 sidebar_label: Markdown Superscript
-sidebar_class_name: new
 ---
 
 Mint renders Markdown through the `markdown` pipe (`src/pipes/markdown.pipe.ts`), which delegates to a single, shared [markdown-it](https://github.com/markdown-it/markdown-it) renderer held by `MarkdownRendererService` (`src/services/markdown-renderer.service.ts`). Because the renderer instance is created once in the service and reused everywhere, extending the supported syntax is done in **one place**.

@@ -1,6 +1,5 @@
 ---
 title: ThemeProvider
-sidebar_class_name: update
 ---
 
 The `ThemeProviderDirective` applies a theme to its host element by resolving CSS variables from the `ThemeStore` for the given scope name.

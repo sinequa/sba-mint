@@ -1,6 +1,5 @@
 ---
 title: AsideFiltersComponent
-sidebar_class_name: new
 ---
 
 The `AsideFiltersComponent` displays a list of aggregations as collapsible

@@ -1,6 +1,5 @@
 ---
 title: login
-sidebar_class_name: update
 ---
 
 Logs in the user. If credentials are provided, authenticates using a JWT token request. If no credentials are given, attempts SSO, then OAuth/SAML if configured.

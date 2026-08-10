@@ -1,6 +1,5 @@
 ---
 title: Filters — from scratch to helpers
-sidebar_class_name: new
 ---
 
 `query.filters` is how you refine a search beyond the free-text query. A filter is just a **plain object** matching the `Filter` model — there is no hidden state and nothing to serialize yourself; the backend interprets the structure. This page explains that structure **by hand first** (so you understand exactly what gets sent), then shows the [`filter` helpers](../helpers/filters.md) that produce the same objects with less ceremony.

@@ -1,5 +1,4 @@
 ---
-sidebar_class_name: new
 ---
 # i18n Translation Overrides
 

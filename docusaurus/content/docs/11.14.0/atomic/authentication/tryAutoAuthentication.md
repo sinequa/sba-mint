@@ -1,6 +1,5 @@
 ---
 title: tryAutoAuthentication
-sidebar_class_name: new
 ---
 
 Probes the server for **auto-authentication** (e.g. **OIDC** with an existing IdP session) before the

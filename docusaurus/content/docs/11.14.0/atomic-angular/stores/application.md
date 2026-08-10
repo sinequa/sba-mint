@@ -1,6 +1,5 @@
 ---
 title: Application
-sidebar_class_name: update
 ---
 
 The `ApplicationStore` manages application-level flags (ready state, extracts) used by the Mint framework. It can be extended to add custom application state.

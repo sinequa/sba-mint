@@ -1,6 +1,5 @@
 ---
 title: InlineWorker
-sidebar_class_name: new
 ---
 
 `InlineWorker` creates a Web Worker inline from a plain function, without requiring a separate worker file. It serializes the function to a Blob URL and runs it in a background thread.

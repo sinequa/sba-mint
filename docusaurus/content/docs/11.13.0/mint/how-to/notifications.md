@@ -1,7 +1,6 @@
 ---
 title: Notifications in Mint
 sidebar_label: Notifications
-sidebar_class_name: new
 ---
 
 Mint uses a custom notification system that leverages the browser's native event system and the [ngx-sonner](https://github.com/emilkowalski/sonner) library to display toast notifications. This system allows any part of the application (including external scripts) to trigger notifications in a decoupled and flexible way.

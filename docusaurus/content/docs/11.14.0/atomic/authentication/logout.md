@@ -1,6 +1,5 @@
 ---
 title: logout
-sidebar_class_name: update
 ---
 
 Logs out the current user by clearing session tokens and, unless user override mode is active, deleting the web token cookie via the server.

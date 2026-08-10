@@ -1,6 +1,5 @@
 ---
 title: injectRouteNavigation
-sidebar_class_name: new
 ---
 
 `injectRouteNavigation` is a composable function that extracts route-based navigation state from the Angular router and exposes it as reactive signals. It powers both `NavbarTabsComponent` and `SidebarNavComponent`, and can be used to build any custom navigation component without duplicating logic.

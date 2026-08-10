@@ -1,6 +1,5 @@
 ---
 title: AggregationListComponent
-sidebar_class_name: update
 ---
 The `AggregationListComponent` displays a flat, scrollable list of aggregation values. Users can select one or more items and apply them as search filters.
 

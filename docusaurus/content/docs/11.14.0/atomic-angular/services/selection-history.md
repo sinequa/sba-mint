@@ -1,6 +1,5 @@
 ---
 title: Selection History
-sidebar_class_name: update
 ---
 
 The `SelectionHistoryService` maintains a navigable history of selected articles. It is used internally by the `DrawerComponent`.

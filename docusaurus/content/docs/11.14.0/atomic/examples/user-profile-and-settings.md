@@ -1,6 +1,5 @@
 ---
 title: User profile & settings
-sidebar_class_name: new
 ---
 
 Once authenticated, you typically load the current user (the **principal**), persist some **per-user settings**, and optionally read a richer **user profile**. This recipe covers the three.

@@ -1,6 +1,5 @@
 ---
 title: trySAMLAuthentication
-sidebar_class_name: update
 ---
 
 Initiates the SAML authentication flow by redirecting the user to the configured identity provider's login page. The current URL is saved to `localStorage` so the application can redirect back after authentication.

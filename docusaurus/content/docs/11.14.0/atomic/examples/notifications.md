@@ -1,6 +1,5 @@
 ---
 title: Notifications
-sidebar_class_name: new
 ---
 
 The [notification system](../features/notification.md) is a thin, framework-agnostic layer: calling `notify.success(...)` (or `info` / `warning` / `error`) dispatches a `notification` `CustomEvent` on `window`. **Your UI** listens for those events and renders them however it likes. This recipe wires that into a React toast host.

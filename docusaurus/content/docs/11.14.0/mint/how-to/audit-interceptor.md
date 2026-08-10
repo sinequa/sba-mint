@@ -1,7 +1,6 @@
 ---
 title: Intercepting Audit API Calls
 sidebar_label: Audit Interceptor
-sidebar_class_name: new
 ---
 
 Mint sends audit events to the Sinequa backend via `api/v1/audit`. You can intercept these calls to add custom logic — such as logging, analytics, enrichment, or custom error handling — without modifying the library internals.

@@ -1,6 +1,5 @@
 ---
 title: Principal
-sidebar_class_name: update
 ---
 
 Methods, and computed properties related to the principal.

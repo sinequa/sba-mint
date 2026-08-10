@@ -1,6 +1,5 @@
 ---
 title: Facets & filters
-sidebar_class_name: new
 ---
 
 A `Result` from [`fetchQuery()`](../api/query.md) carries more than documents: it also embeds **aggregations** (facets), **tabs**, and the current **sort**. This recipe shows how to display facets and refine the query with structured `filters`, tabs, sort, scope, and tree facets.

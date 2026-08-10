@@ -1,6 +1,5 @@
 ---
 title: Examples (JS & React)
-sidebar_class_name: new
 ---
 
 This section collects **task-oriented recipes** for `@sinequa/atomic`. Where the [API Reference](../intro.md) documents each function in isolation, these pages show how to **combine** them to build real features — authentication, search, facets, preview, autocomplete, and more.

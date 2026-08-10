@@ -1,6 +1,5 @@
 ---
 title: Session & token management
-sidebar_class_name: new
 ---
 
 Sinequa authentication relies on a **CSRF token** (in `sessionStorage`) plus a **session cookie**. This recipe explains how sessions extend themselves, how to react cleanly to expiry, and how to surface password expiration.

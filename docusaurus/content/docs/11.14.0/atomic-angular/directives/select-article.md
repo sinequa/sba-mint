@@ -1,6 +1,5 @@
 ---
 title: SelectArticle
-sidebar_class_name: new
 ---
 
 The `SelectArticleDirective` selects an article when the host element is clicked, using a configurable selection strategy. It supersedes the deprecated `SelectArticleOnClickDirective`.

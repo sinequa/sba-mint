@@ -1,6 +1,5 @@
 ---
 title: UserProfileService
-sidebar_class_name: new
 ---
 
 The `UserProfileService` fetches a user's profile from the backend API using Angular's `httpResource`. It returns a reactive resource that automatically re-fetches when the user ID changes.

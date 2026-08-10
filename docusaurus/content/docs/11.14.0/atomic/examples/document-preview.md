@@ -1,6 +1,5 @@
 ---
 title: Document preview
-sidebar_class_name: new
 ---
 
 This recipe opens a document preview in a side panel, renders the cached HTML in an `<iframe>`, and builds a highlight legend with per-category counters from the structured data returned by [`fetchPreview()`](../api/preview.md).

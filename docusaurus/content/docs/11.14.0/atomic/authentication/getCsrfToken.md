@@ -1,6 +1,5 @@
 ---
 title: getCsrfToken
-sidebar_class_name: update
 ---
 
 Requests a CSRF token from the backend server and stores it in session storage.

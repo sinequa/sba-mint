@@ -1,6 +1,5 @@
 ---
 title: Suggest
-sidebar_class_name: new
 ---
 
 The Suggest module provides functions to retrieve search suggestions from the backend, based on user input text. It supports suggestion queries, field-based suggestions, and filtering by kind.

@@ -1,6 +1,5 @@
 ---
 title: Query Intent
-sidebar_class_name: new
 ---
 
 The Query Intent module provides a function to analyze a query and retrieve detected intent matches from the backend. Intent detection allows applications to understand what users are searching for and to adapt the search experience accordingly.

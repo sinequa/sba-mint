@@ -1,6 +1,5 @@
 ---
 title: Query
-sidebar_class_name: update
 ---
 
 The `QueryService` handles search queries, including fetching results and navigating between pages.

@@ -1,6 +1,5 @@
 ---
 title: Application Bootstrap
-sidebar_class_name: new
 ---
 
 ## bootstrapApp()

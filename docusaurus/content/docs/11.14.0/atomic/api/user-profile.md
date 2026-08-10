@@ -1,6 +1,5 @@
 ---
 title: User Profile
-sidebar_class_name: new
 ---
 
 The User Profile module (v2 API) provides functions to manage user profiles stored on the backend. It supports full CRUD operations on profile data and individual properties.

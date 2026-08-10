@@ -1,6 +1,5 @@
 ---
 title: Search & pagination
-sidebar_class_name: new
 ---
 
 This recipe shows how to discover the query web service name from the app configuration, run a search with [`fetchQuery()`](../api/query.md), and page through the results.

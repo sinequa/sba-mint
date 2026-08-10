@@ -1,6 +1,5 @@
 ---
 title: Selection
-sidebar_class_name: update
 ---
 
 A store that manages the selection state of articles.

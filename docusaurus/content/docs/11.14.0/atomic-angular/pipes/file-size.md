@@ -1,6 +1,5 @@
 ---
 title: FileSize
-sidebar_class_name: new
 ---
 
 The `FileSizePipe` converts a raw byte count into a human-readable size object with a localization key and a numeric value (e.g. `{ key: 'fileSize.MB', value: 2.5 }`).

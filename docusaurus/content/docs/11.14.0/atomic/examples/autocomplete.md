@@ -1,6 +1,5 @@
 ---
 title: Autocomplete & suggestions
-sidebar_class_name: new
 ---
 
 This recipe builds a debounced autocomplete box backed by [`fetchSuggest()`](../api/suggest.md). It also covers cancelling stale requests so the dropdown always reflects the latest keystroke.

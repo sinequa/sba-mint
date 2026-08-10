@@ -1,6 +1,5 @@
 ---
 title: SelectionStrategy
-sidebar_class_name: new
 ---
 
 `SelectionStrategy` is a union type that defines how `SelectArticleDirective` handles article selection.

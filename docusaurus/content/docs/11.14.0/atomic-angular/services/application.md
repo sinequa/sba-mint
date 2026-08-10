@@ -1,6 +1,5 @@
 ---
 title: Application
-sidebar_class_name: update
 ---
 
 The `ApplicationService` initializes the application: fetches app config, loads the principal and user settings, and optionally creates Angular routes from the Sinequa administration configuration.

@@ -1,6 +1,5 @@
 ---
 title: Authentication
-sidebar_class_name: update
 ---
 
 ## signIn()

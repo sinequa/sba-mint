@@ -1,6 +1,5 @@
 ---
 title: ChildMarker
-sidebar_class_name: new
 ---
 
 The `ChildMarkerDirective` marks a child element so that a parent component can discover and render it dynamically via its `TemplateRef`. It exposes the template publicly for structural composition patterns.

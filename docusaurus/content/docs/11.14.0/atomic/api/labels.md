@@ -1,6 +1,5 @@
 ---
 title: Labels
-sidebar_class_name: new
 ---
 
 The Labels module provides functions to manage labels (tags) on documents. All operations are available through the `labels` namespace object. Labels can be public or private and can be applied to individual documents or in bulk via a query.

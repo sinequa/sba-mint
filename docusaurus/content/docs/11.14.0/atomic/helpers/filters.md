@@ -1,6 +1,5 @@
 ---
 title: filter
-sidebar_class_name: new
 ---
 
 The `filter` object groups small builder functions that return structured `Filter` objects for `query.filters`. They produce plain objects matching the `Filter` model — there is nothing to serialize yourself; the backend interprets the result.

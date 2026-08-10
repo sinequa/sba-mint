@@ -1,6 +1,5 @@
 ---
 title: AggregationTreeComponent
-sidebar_class_name: update
 ---
 The `AggregationTreeComponent` displays a hierarchical tree of aggregation nodes. Users can expand and collapse nodes, select multiple paths, and apply them as search filters.
 

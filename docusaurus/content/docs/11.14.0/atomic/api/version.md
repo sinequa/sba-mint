@@ -1,6 +1,5 @@
 ---
 title: Version
-sidebar_class_name: new
 ---
 
 The Version module (v2 API) provides a function to retrieve the server version and its enabled feature flags.
