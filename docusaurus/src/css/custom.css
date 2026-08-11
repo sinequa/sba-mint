@@ -578,52 +578,71 @@ kbd {
   color: hsl(19, 69%, 59%);
 }
 
-/* ===== FEATURE BADGES (new / draft / update / deprecated) ===== */
-.new,
+/* ===== SIDEBAR BULLETS =====
+ *
+ * One dot, four meanings, two sources.
+ *
+ * `overlay-added` and `overlay-changed` are **derived**: the materialiser knows which pages a version
+ * supplies itself and which slugs its predecessor never served, so it marks them and nobody maintains a
+ * list. That is what replaced the `sidebar_class_name: new` / `update` this tree used to carry in 112
+ * files, where 8 were the wrong one, 65 were missing and six of the oldest version's pages claimed to be
+ * new against no predecessor at all.
+ *
+ * `deprecated` and `draft` stay **authored** in the frontmatter, because they are editorial judgements no
+ * diff can derive. They render as bullets too, so the sidebar speaks one visual language.
+ *
+ * A dot rather than a word: at 24 categories deep the labels wrapped, and "update" told a reader less than
+ * its own colour does.
+ */
+.overlay-added,
+.overlay-changed,
 .draft,
-.update,
 .deprecated {
   position: relative;
 }
 
-.new::after,
+.overlay-added::after,
+.overlay-changed::after,
 .draft::after,
-.update::after,
 .deprecated::after {
+  content: '';
   position: absolute;
-  font-size: 10px;
-  color: white;
-  top: -2px;
-  right: 0;
-  transform: translateY(50%);
-  padding: 0 0.25rem;
-  border-radius: 4px;
+  top: 50%;
+  right: 0.5rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translateY(-50%);
 }
 
-.new::after {
-  content: 'new';
-  color: var(--ifm-color-primary);
-  border: 1px solid var(--ifm-color-primary);
-  background-color: rgb(from var(--ifm-color-primary) r g b / 0.1);
+/* A page this version added: a slug its predecessor did not serve at all. */
+.overlay-added::after {
+  background-color: var(--ifm-color-success);
 }
 
-.draft::after {
-  content: 'draft';
-  color: var(--ifm-color-warning);
-  border: 1px solid var(--ifm-color-warning);
-  background-color: rgb(from var(--ifm-color-warning) r g b / 0.1);
-}
-
-.update::after {
-  content: 'update';
-  color: var(--ifm-color-success);
-  border: 1px solid var(--ifm-color-success);
-  background-color: rgb(from var(--ifm-color-success) r g b / 0.1);
+/* A page this version supplies itself, replacing bytes its predecessor already served. */
+.overlay-changed::after {
+  background-color: var(--ifm-color-warning);
 }
 
 .deprecated::after {
-  content: 'deprecated';
-  color: var(--ifm-color-danger);
-  border: 1px solid var(--ifm-color-danger);
-  background-color: rgb(from var(--ifm-color-danger) r g b / 0.1);
+  background-color: var(--ifm-color-danger);
 }
+
+/* Hollow, because a draft is an absence of content rather than a state of it. */
+.draft::after {
+  background-color: transparent;
+  border: 1.5px solid var(--ifm-color-warning);
+}
+
+/* The two sources never combine on one entry, and the reason is worth writing down because it looks like a
+ * bug until you find it. `plugin-content-docs/lib/props.js` builds each sidebar link with
+ *
+ *     className: frontMatter.sidebar_class_name ?? item.className
+ *
+ * so a page carrying `sidebar_class_name` discards whatever class the sidebar item had — the generator's
+ * derived mark included. There is no composing the two from here.
+ *
+ * Which happens to be the precedence we want: 10 of the 11.14.0 pages that changed are also deprecated, and
+ * a reader needs to know the page is going away more than that it was edited. So no `.deprecated.overlay-*`
+ * rule exists, because that selector could never match. */

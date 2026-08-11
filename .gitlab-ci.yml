@@ -99,3 +99,111 @@ build:
   script:
     - npm ci
     - npm run build
+
+# ─── docs-validate ───────────────────────────────────────────────────────────
+# Validation only. This job PUBLISHES NOTHING: no artifact, no `environment`, no
+# Pages deployment. Publishing the documentation stays manual and stays on
+# github.com — deploy-public.yml and deploy-private.yml, both workflow_dispatch —
+# and this file deliberately adds no GitLab equivalent.
+#
+# Manual and optional: `when: manual` with `allow_failure: true`. It never runs on
+# its own and it never blocks a merge request — it appears as a play button, on
+# merge requests that touch docusaurus/, for whoever wants the answer.
+#
+# Why, with the numbers. The public build takes 226s on this runner against 65s on
+# a 12-core laptop, for work that is almost pure CPU: webpack compiles client and
+# server, then 618 pages are rendered statically, 94 of them containing mermaid,
+# for 60MB of output. A shared Docker runner has neither the cores to parallelise
+# it nor a distributed cache to skip anything — the trace says
+# `No URL provided, cache will not be downloaded from shared cache server`, so the
+# npm cache is local to whichever machine picks the job up, and cold is the normal
+# case. Four minutes on every merge request that touches a readme is not worth it.
+#
+# `allow_failure: true` is not optional here, it is the whole point: `when: manual`
+# **inside `rules`** defaults `allow_failure` to false, which would leave the
+# pipeline blocked on a job nobody started. The default is only true for a
+# job-level `when: manual`. Getting this wrong makes the job worse than before.
+#
+# What this gives up, said plainly. Nothing forced the documentation to be checked
+# before this migration either — the GitLab pipeline ignored docusaurus/ entirely,
+# which is how the version served at the site root came to be three months behind
+# docs/ with nothing reporting it. So the guard moves back to where it was, with
+# one difference that matters: it is now cheap to run where it belongs, on the
+# author's machine. `npm run check` answers in under a second and needs no build;
+# `npm run build` takes about a minute locally. Press the button before merging
+# anything structural — a rename, a tombstone, a cut, a sidebar change.
+#
+# Now that the trees are generated from docusaurus/content/, three things need a
+# machine to check them, and each one failed at least once during the migration:
+#
+#   npm run check    the content diagnostics: a directive pointing at a slug
+#                    nothing serves, an inherited sidebar naming a removed doc,
+#                    two files claiming one slug. Seconds, and it needs no
+#                    generated tree — so it runs first and fails before two
+#                    builds have been spent.
+#   npm run build    the real proof: onBrokenLinks is 'throw', so a broken
+#                    internal link fails here rather than shipping. It
+#                    materialises first, through prebuild.
+#   npm run verify   LAST, and only there, because what it asserts here is
+#                    idempotence: the build has just materialised, so `--check`
+#                    must now find nothing to write. Any other count would mean
+#                    materialising twice produces two different trees.
+#
+# One target, not both. The public build is what an external link points at, and
+# the internal site is the same content behind a different prefix. Building both
+# doubled a ~10 minute job on every merge request to re-verify almost the same
+# graph: `onBrokenLinks` validates against the route registry, which does not
+# depend on baseUrl, so the second build was really guarding against the two
+# configs disagreeing — and they no longer can. Both now derive everything from
+# docusaurus.config.base.js and from the materialiser's manifest, and differ only
+# in the three values they pass it.
+#
+# What that accepts, stated rather than hidden: a fault confined to
+# docusaurus.internal.config.js — those three keys, or the file failing to load
+# at all, which happened twice during the migration under jiti — now surfaces
+# when its deploy workflow runs instead of on the merge request. The file is ten
+# lines that forward three values, which is what makes the trade reasonable.
+#
+# The order is the whole point, and the first version of this job had it wrong.
+# `verify` is `materialize --check`, which answers "is the tree on disk the one
+# content/ implies?". The generated trees are gitignored, so a fresh clone holds
+# none of them and the honest answer is "no, all of them" — the job failed with
+# `622 would change · 0 unchanged` before anything had had a chance to run.
+#
+# And worth being explicit about what this job does NOT catch, because the first
+# version of this comment claimed it did: a contributor editing the generated
+# docs/ instead of content/docs/. That edit cannot reach CI, since docs/ is
+# gitignored and never committed. It is caught on the machine that made it, by
+# `materialize` printing `edited by hand, overwritten: <path>` on the next build.
+# A local guard, and only ever a local one.
+#
+# Its own cache key: docusaurus/package-lock.json is a separate lockfile from the
+# root one, and sharing a key would thrash both caches.
+#
+# Not extending .npm, because that template keys its cache on the root lockfile.
+docs-validate:
+  extends: .egress
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - docusaurus/**/*
+        - .gitlab-ci.yml
+      when: manual
+      # Required, not decorative: `when: manual` inside `rules` defaults this to
+      # false, which blocks the pipeline until someone presses the button.
+      allow_failure: true
+  variables:
+    npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  cache:
+    key:
+      files:
+        - docusaurus/package-lock.json
+    paths:
+      - .npm/
+  script:
+    - cd docusaurus
+    - npm ci
+    - npm run check
+    - npm run build
+    - npm run verify
