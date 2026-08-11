@@ -20,7 +20,7 @@ The `FilterButtonComponent` represents an individual filter as a button, allowin
 <img src={useBaseUrl('img/components/filter-button.png')} class="card" alt='filters bar' />
 
 :::tip
-The height of the dropdown can be adjusted using the [`--agg-max-height`](/mint/configurations/css-variables#aggregation-variables) CSS variable.
+The height of the dropdown can be adjusted using the [`--agg-max-height`](/mint/configurations/css-variables) CSS variable.
 :::
 
 ## API Reference
