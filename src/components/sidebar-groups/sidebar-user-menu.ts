@@ -6,7 +6,7 @@ import { Placement } from "@floating-ui/dom";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { AGENT_INSTANCE_ID, AgentsStore } from "@sinequa/agent";
-import { error, globalConfig, logout, setGlobalConfig } from "@sinequa/atomic";
+import { error, globalConfig, isAuthenticated, logout, setGlobalConfig } from "@sinequa/atomic";
 import { AppStore, OverrideUserDialogComponent, PrincipalStore, ResetUserSettingsDialogComponent, UserSettingsStore } from "@sinequa/atomic-angular";
 import {
   ArrowRightFromBracketIcon,
@@ -128,6 +128,13 @@ export class SidebarUserMenuComponent {
     effect(() => {
       const debug = this.debug();
       this.agentsStore.setDebugEnabled(debug);
+      // This effect fires once as soon as the component is created — mirroring `debug`'s own seed
+      // value (`isDebugMode()`) straight back to the store. Before a session exists that write is
+      // both pointless and unauthenticated: the component can mount while the app chrome renders
+      // ahead of the router settling on a chromeless route, or during an OAuth/SAML redirect,
+      // firing an unauthenticated `PATCH usersettings` (401, confirmed via a HAR capture on a slow
+      // connection). `setDebugEnabled` above (local, not network) stays unconditional.
+      if (!isAuthenticated()) return;
       untracked(() => {
         this.userSettingsStore.setDebugMode(debug).catch(err => error("set debug mode failed", err));
       });
