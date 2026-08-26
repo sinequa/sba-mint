@@ -57,7 +57,7 @@
     "@ngrx/store": "^20.1.0",
     "@sinequa/agent": "^4.0.4",
     "@sinequa/assistant": "^4.0.4",
-    "@sinequa/atomic": "^2.2.0",
+    "@sinequa/atomic": "^2.4.0",
     "@sinequa/atomic-angular": "^1.10.0",
     "@sinequa/ui": "^1.4.1",
     "@tailwindcss/postcss": "^4.1.3",
