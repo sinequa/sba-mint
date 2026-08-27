@@ -87,6 +87,11 @@ sq-chat-v3 {
      its real size once this override is in effect. Values are the 16px rotating-border spinner
      already designed for this in assistant.css, unreachable there since Angular's view
      encapsulation cannot style a child library component's own template.
+     display:block + margin-inline:auto restate the markup's own "mx-auto d-block" classes, which
+     are otherwise dead here: Tailwind only emits utility CSS for classes it finds while scanning
+     this repo's own source, never for Bootstrap classes baked into the library's precompiled HTML
+     (same reason bootstrap-to-tailwind.css exists) — without this the spinner stays inline-level
+     and left-aligned inside its container.
      !important: same view-encapsulation reason as .sq-chat-message-actions above. */
   .spinner-grow {
     width: 16px !important;
@@ -94,7 +99,8 @@ sq-chat-v3 {
     border: 3px solid var(--color-primary) !important;
     border-bottom-color: transparent !important;
     border-radius: 50% !important;
-    display: inline-block !important;
+    display: block !important;
+    margin-inline: auto !important;
     box-sizing: border-box !important;
     animation: mint-spinner-rotation 1s linear infinite !important;
   }
