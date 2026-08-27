@@ -1,0 +1,164 @@
+/*
+  Galactik Design Tokens — variante sombre.
+
+  `galactik-tokens.css` reste la source de vérité : ce fichier ne réassigne que des tokens
+  *sémantiques* (`--font-*`, `--bg-*`, `--stroke-*`, `--shadow-*`, `--scrim-*`) vers d'autres
+  primitives, jamais les primitives elles-mêmes.
+
+  Transposé de `../mint-internal/src/styles/galactik-tokens-dark.css` (branche develop) : mêmes
+  formules de réassignation (quelle primitive chaque token sémantique pointe en sombre), appliquées
+  aux primitives propres à cette branche (identiques à develop sauf la rampe `--grey-*`).
+
+  Pas de section `--layer-*` : develop ne la couvre pas non plus côté sombre — aucun composant
+  galactik ne la consomme encore visiblement, à reprendre le jour où ce sera le cas.
+
+  Aujourd'hui, la seule consommation réelle de cette couche sémantique dans `release/11.14.0` est
+  `badge-tokens.css`. Le reste du thème sombre (tokens applicatifs `--primary`, `--background`,
+  `--sidebar`, etc.) est piloté séparément par le bloc `.dark` de `chapsvision.css`, qui ne passe
+  pas par ces tokens.
+
+  `:root.dark` et non `.dark` : la classe est posée sur <html>, et la spécificité (0,2,0) garantit
+  que ces valeurs battent celles de la version claire quel que soit l'ordre d'injection.
+*/
+
+:root.dark {
+  /* ── Font ─────────────────────────────────────────────────────────────────── */
+  --font-primary-dark: var(--grey-200);
+  --font-primary-base: var(--grey-100);
+  --font-primary-muted: var(--sage-300);
+  --font-primary-hovered: var(--sage-50);
+  --font-primary-pressed: var(--absolute-pure-white);
+  --font-primary-light: var(--sage-700);
+
+  --font-secondary-base: var(--sage-200);
+  --font-secondary-hovered: var(--green-100);
+  --font-secondary-pressed: var(--almond-50);
+  --font-secondary-base-alt: var(--almond-200);
+
+  --font-accent-base: var(--pink-100);
+  --font-accent-pressed: var(--absolute-pure-white);
+  --font-accent-light: var(--pink-700);
+  --font-accent-muted: var(--pink-200);
+
+  --font-neutral-base: var(--grey-100);
+  --font-neutral-muted: var(--sage-300);
+  --font-neutral-light: var(--sage-800);
+  --font-neutral-white: var(--grey-100);
+  --font-neutral-black: var(--grey-200);
+
+  --font-warning-base: var(--orange-300);
+  --font-warning-light: var(--yellow-800);
+  --font-warning-muted: var(--yellow-400);
+  --font-info-base: var(--blue-200);
+  --font-info-light: var(--blue-700);
+  --font-info-muted: var(--blue-400);
+  --font-error-base: var(--red-200);
+  --font-error-light: var(--red-800);
+  --font-error-muted: var(--red-400);
+  --font-success-base: var(--almond-200);
+  --font-success-light: var(--green-700);
+  --font-success-muted: var(--almond-300);
+  --font-cherry-base: var(--cherry-200);
+  --font-cherry-muted: var(--cherry-300);
+  --font-indigo-base: var(--indigo-200);
+  --font-indigo-muted: var(--indigo-300);
+  --font-yellow-base: var(--yellow-200);
+  --font-yellow-muted: var(--yellow-400);
+  --font-cyan-base: var(--cyan-100);
+  --font-cyan-muted: var(--cyan-200);
+
+  /* ── Background ───────────────────────────────────────────────────────────── */
+  --bg-primary-base: var(--sage-700);
+  --bg-primary-hovered: var(--sage-600);
+  --bg-primary-pressed: var(--sage-800);
+  --bg-primary-light: var(--sage-900);
+  --bg-primary-lighter: var(--sage-950);
+  --bg-primary-lightest: var(--sage-975);
+
+  --bg-secondary-base: var(--almond-600);
+  --bg-secondary-base-alt: var(--almond-700);
+  --bg-secondary-active: var(--almond-800);
+  --bg-secondary-light: var(--almond-800);
+  --bg-secondary-lighter: var(--almond-900);
+  --bg-secondary-lightest: var(--almond-950);
+
+  --bg-accent-base: var(--pink-900);
+  --bg-accent-base-alt: var(--pink-800);
+  --bg-accent-hover: var(--pink-800);
+  --bg-accent-pressed: var(--pink-950);
+
+  --bg-neutral-base: var(--blue-900);
+  --bg-neutral-disabled: var(--sage-950);
+  --bg-neutral-white: var(--grey-950);
+  --bg-neutral-base-alt: var(--grey-100);
+  --bg-neutral-hovered: var(--grey-800);
+  --bg-neutral-muted: var(--grey-500);
+
+  --bg-warning-base: var(--yellow-700);
+  --bg-warning-base-alt: var(--orange-800);
+  --bg-warning-lightest: var(--yellow-900);
+  --bg-success-base: var(--green-700);
+  --bg-success-base-alt: var(--green-800);
+  --bg-success-lightest: var(--green-900);
+  --bg-info-base: var(--blue-700);
+  --bg-info-base-alt: var(--blue-800);
+  --bg-info-lightest: var(--blue-900);
+  --bg-error-base: var(--red-700);
+  --bg-error-base-alt: var(--red-800);
+  --bg-error-lightest: var(--red-900);
+
+  --bg-cherry-base: var(--cherry-800);
+  --bg-cherry-base-alt: var(--cherry-500);
+  --bg-indigo-base: var(--indigo-800);
+  --bg-indigo-base-alt: var(--indigo-500);
+  --bg-yellow-base: var(--yellow-800);
+  --bg-yellow-base-alt: var(--yellow-500);
+  --bg-cyan-base: var(--cyan-800);
+  --bg-cyan-base-alt: var(--cyan-500);
+
+  /* ── Stroke ───────────────────────────────────────────────────────────────── */
+  --stroke-focus: var(--pink-300);
+  --stroke-primary-base: var(--cyan-400);
+  --stroke-primary-hovered: var(--sage-300);
+  --stroke-primary-pressed: var(--almond-200);
+  --stroke-primary-light: var(--sage-700);
+  --stroke-primary-lighter: var(--sage-900);
+  --stroke-primary-muted: var(--sage-500);
+
+  --stroke-secondary-base: var(--almond-400);
+  --stroke-secondary-muted: var(--almond-500);
+  --stroke-secondary-dark: var(--almond-600);
+  --stroke-accent-base: var(--pink-300);
+  --stroke-accent-muted: var(--pink-500);
+  --stroke-yellow-base: var(--yellow-400);
+  --stroke-yellow-muted: var(--yellow-500);
+  --stroke-cherry-base: var(--cherry-400);
+  --stroke-cherry-muted: var(--cherry-500);
+  --stroke-indigo-base: var(--indigo-400);
+  --stroke-indigo-muted: var(--indigo-500);
+  --stroke-cyan-base: var(--cyan-300);
+  --stroke-cyan-muted: var(--cyan-500);
+  --stroke-warning-base: var(--orange-400);
+  --stroke-warning-muted: var(--orange-500);
+  --stroke-info-base: var(--blue-400);
+  --stroke-info-muted: var(--blue-500);
+  --stroke-success-base: var(--green-300);
+  --stroke-success-muted: var(--green-500);
+  --stroke-error-base: var(--red-300);
+  --stroke-error-muted: var(--red-500);
+
+  --stroke-neutral-disabled: var(--grey-800);
+  --stroke-neutral-dark: var(--grey-300);
+  --stroke-neutral-black: var(--grey-950);
+  --stroke-neutral-white: var(--sage-900);
+
+  /* ── Élévation et voile ───────────────────────────────────────────────────── */
+  --shadow-1: 0px 4px 6px rgba(0, 0, 0, 0.35), 0px 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0px 10px 15px rgba(0, 0, 0, 0.4), 0px 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-3: 0px 20px 25px rgba(0, 0, 0, 0.45), 0px 10px 10px rgba(0, 0, 0, 0.35);
+  --shadow-4: 0px 25px 50px rgba(0, 0, 0, 0.55);
+  --shadow-inner: inset -1px -1px 6px rgba(0, 0, 0, 0.4), inset 1px 1px 6px rgba(255, 255, 255, 0.08);
+
+  --scrim-base: rgba(0, 0, 0, 0.62);
+  --scrim-stronger: rgba(0, 0, 0, 0.82);
+}
