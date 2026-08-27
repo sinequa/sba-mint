@@ -69,7 +69,13 @@
 
 <!-- on mobile devices use sheet previewer -->
 @if (isMobile()) {
-  <div class="relative flex h-dvh gap-2">
+  <!-- max-md: h-dvh is the full device viewport, but the global fixed mobile header (below 768px
+       only — see app.component.html) reserves --mobile-header-height above this via padding-top on
+       <main>. Without subtracting it here too, this div overflows its ancestor by that much, which
+       turns into a second, whole-page scrollbar on top of the results list's own internal one. The
+       ipad range (768-1023px, still inside isMobile()) needs no compensation: that header is itself
+       md:hidden there. -->
+  <div class="relative flex h-dvh gap-2 max-md:h-[calc(100dvh-var(--mobile-header-height))]">
     @if (hasAsideFilters()) {
       <ng-container *ngTemplateOutlet="filtersDrawer" />
     }
