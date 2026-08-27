@@ -1,3 +1,14 @@
+/* The loading spinner's own selector, restated outside sq-chat-v3 because @keyframes cannot nest
+   inside a plain selector block. See the .spinner-grow rule below for why this exists. */
+@keyframes mint-spinner-rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 sq-chat-v3 {
   ul {
     scrollbar-width: thin;
@@ -65,6 +76,27 @@ sq-chat-v3 {
     & button:hover {
       transform: scale(1.25);
     }
+  }
+
+  /* The library's own precompiled CSS reads undefined --bs-spinner-* custom properties (grepped:
+     none of --bs-spinner-width/-height/-vertical-align/-animation-speed/-animation-name are
+     defined anywhere in this codebase) — every declaration that reads one is invalid at
+     computed-value time, so width/height/animation all revert to their initial value (auto/none)
+     until this rule wins. That is the glitch: on first paint the spinner briefly stretches to the
+     width of its container (auto, on an inline-block with no intrinsic size) before shrinking to
+     its real size once this override is in effect. Values are the 16px rotating-border spinner
+     already designed for this in assistant.css, unreachable there since Angular's view
+     encapsulation cannot style a child library component's own template.
+     !important: same view-encapsulation reason as .sq-chat-message-actions above. */
+  .spinner-grow {
+    width: 16px !important;
+    height: 16px !important;
+    border: 3px solid var(--color-primary) !important;
+    border-bottom-color: transparent !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    animation: mint-spinner-rotation 1s linear infinite !important;
   }
 
   @media (max-width: 48rem) {
