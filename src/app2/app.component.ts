@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from "@angular/common";
 import { Component, DestroyRef, computed, effect, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterOutlet } from "@angular/router";
@@ -8,6 +9,7 @@ import { ApplicationStore, FeatureFlagsDialogComponent, MultiSelectionToolbarCom
 import { DialogService, SidebarInsetComponent, SidebarProviderComponent, SidebarTriggerComponent } from "@sinequa/ui";
 import { QueryClient } from "@tanstack/angular-query-experimental";
 import { ExternalToast, NgxSonnerToaster, toast } from "ngx-sonner";
+import { HeaderExtrasService } from "@services/header-extras.service";
 import { MainSidebarComponent } from "./components/sidebar";
 import { injectCurrentUrl } from "../utils/routing";
 
@@ -20,7 +22,8 @@ import { injectCurrentUrl } from "../utils/routing";
     MultiSelectionToolbarComponent,
     SidebarProviderComponent,
     SidebarInsetComponent,
-    SidebarTriggerComponent
+    SidebarTriggerComponent,
+    NgTemplateOutlet
   ],
   providers: [LoggerService],
   templateUrl: "./app.component.html"
@@ -32,6 +35,7 @@ export class AppComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly queryClient = inject(QueryClient);
   private readonly dialogService = inject(DialogService);
+  protected readonly headerExtras = inject(HeaderExtrasService);
 
   private readonly currentUrl = injectCurrentUrl();
   // Active interface language. Every entry point that changes it (the two user menus and the

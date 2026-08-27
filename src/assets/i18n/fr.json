@@ -116,6 +116,8 @@
     "genericChatErrorMessage": "Désolé, une erreur s'est produite lors du traitement de votre demande… 🥺",
     "searchWarningMessage": "Vous devez effectuer une recherche en texte intégral pour récupérer des résultats.",
     "disclaimer": "Ce contenu est généré par l'IA et peut contenir des erreurs. Veuillez vérifier les citations pour leur exactitude.",
+    "panel": "Panneau",
+    "workspace": "Espace de travail",
     "saved-chats": "Discussions",
     "new-discussion": "Nouvelle discussion",
     "my-documents": "Mes Documents",

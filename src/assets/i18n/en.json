@@ -116,6 +116,8 @@
     "genericChatErrorMessage": "Sorry, an error happened while processing your request… 🥺",
     "searchWarningMessage": "You must perform a full text search to retrieve some results.",
     "disclaimer": "This content is AI-generated and may contain errors. Please verify the citations for accuracy.",
+    "panel": "Panel",
+    "workspace": "Workspace",
     "saved-chats": "Discussions",
     "new-discussion": "New discussion",
     "my-documents": "My Documents",

@@ -1,5 +1,5 @@
 import { NgComponentOutlet, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, Type, untracked } from "@angular/core";
+import { Component, computed, DestroyRef, effect, Injector, inject, input, signal, TemplateRef, Type, untracked, viewChild } from "@angular/core";
 import { SearchOverviewComponent } from "@components/assistant-overview";
 import { CardSkeleton } from "@components/cards/record/skeleton";
 import { PreviewComponent } from "@components/preview/preview";
@@ -29,10 +29,11 @@ import {
 } from "@sinequa/atomic-angular";
 import { BreakpointObserverService, ButtonComponent, cn, FilterIcon, IconButtonComponent, XMarkIcon } from "@sinequa/ui";
 import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
+import { HeaderExtrasService } from "@services/header-extras.service";
+import { injectTabletBreakpoint } from "../../../composables/inject-tablet-breakpoint";
 import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
 
-const MOBILE_BREAKPOINT = 1024; // px
 type Result = R & { nextPage?: number; previousPage?: number };
 
 @Component({
@@ -79,8 +80,7 @@ type Result = R & { nextPage?: number; previousPage?: number };
     `
   ],
   host: {
-    "(keydown.enter)": "handleKeydownEnter($event)",
-    "(window:resize)": "onResize($event)"
+    "(keydown.enter)": "handleKeydownEnter($event)"
   }
 })
 export class SearchAllComponent {
@@ -91,7 +91,10 @@ export class SearchAllComponent {
   // all injected services and stores
   protected readonly queryService = inject(QueryService);
   protected readonly selectionService = inject(SelectionService);
+  // true-mobile (768px) threshold: the global fixed header this component projects
+  // search-with-autocomplete into (via HeaderExtrasService) is itself md:hidden.
   protected readonly breakpointService = inject(BreakpointObserverService);
+  private readonly headerExtras = inject(HeaderExtrasService);
 
   protected readonly appStore = inject(AppStore);
   protected readonly appFeatures = this.appStore.general()?.features;
@@ -113,9 +116,12 @@ export class SearchAllComponent {
   protected readonly p = input<number>(); // page number
 
   // all signals used in the component
-  currentInnerWidth = signal(window.innerWidth);
-  // breakpoin mobile set in the service is 768, but we want to use the sheet previewer for tablets as well, so we set the breakpoint to 1024
-  isMobile = computed(() => this.breakpointService.isMobile() || this.currentInnerWidth() < MOBILE_BREAKPOINT);
+  // breakpoint mobile set in the service is 768, but we want to use the sheet previewer for tablets as well
+  isMobile = injectTabletBreakpoint().isTabletOrMobile;
+
+  // Projected into the global fixed mobile header (<768px) via HeaderExtrasService — experimental,
+  // rendered inline instead on the ipad range (768-1023px), where that header is itself hidden.
+  private readonly headerSearchTemplate = viewChild<TemplateRef<unknown>>("headerSearch");
 
   protected readonly result = signal<Result | undefined>(undefined);
   protected readonly queryText = signal<string>("");
@@ -278,6 +284,23 @@ export class SearchAllComponent {
       this.hideFeedback.set(false);
     });
 
+    // Project search-with-autocomplete into the global fixed mobile header (<768px) — see
+    // assistant.layout.ts for the same pattern. /search isn't route-reuse-cached, so
+    // destroyRef.onDestroy alone is enough cleanup (no detach-without-destroy case to handle).
+    effect(() => {
+      const template = this.headerSearchTemplate();
+      if (!template) return;
+      if (this.breakpointService.isMobile()) {
+        this.headerExtras.set(template);
+      } else {
+        this.headerExtras.clear(template);
+      }
+    });
+    destroyRef.onDestroy(() => {
+      const template = this.headerSearchTemplate();
+      if (template) this.headerExtras.clear(template);
+    });
+
     // Update keys to retrigger the query when relevant parameters change
     effect(() => {
       const state = getState(this.queryParamsStore);
@@ -421,9 +444,5 @@ export class SearchAllComponent {
 
   onFeedbackClose() {
     this.hideFeedback.set(true);
-  }
-
-  onResize(event: Event) {
-    this.currentInnerWidth.set((event.target as Window).innerWidth);
   }
 }

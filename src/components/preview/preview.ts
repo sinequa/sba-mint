@@ -1,4 +1,4 @@
-import { afterNextRender, Component, computed, DestroyRef, DOCUMENT, ElementRef, effect, inject, output, signal, viewChild } from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, DOCUMENT, ElementRef, effect, inject, input, output, signal, viewChild } from "@angular/core";
 import { EventManager } from "@angular/platform-browser";
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article as A } from "@sinequa/atomic";
@@ -57,6 +57,11 @@ export class PreviewComponent {
   private readonly transloco = inject(TranslocoService);
 
   onClose = output();
+
+  /** True when hosted inside a `sheet-previewer` sheet (vs. inline in a page or a resizable panel).
+   * Forwarded to `preview-navbar` so it knows a sheet already exists to swap the "expand" fallback
+   * into, instead of hiding the expand button or opening a second panel. */
+  hostedInSheet = input(false);
 
   /* models used by inner components */
   protected readonly loading = computed(() => !this.previewservice.DOMContentLoaded());

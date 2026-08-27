@@ -212,13 +212,31 @@ The button is only shown when `isPrimary` is `true` (primary document conversion
 
 ## Expanded Preview Dialog
 
-When the `expandPreview` feature flag is enabled (`AppStore.general()?.features?.expandPreview`), the navbar shows an expand button. Clicking it opens `PreviewDialogComponent`:
+When the `expandPreview` feature flag is enabled (`AppStore.general()?.features?.expandPreview`), the navbar may show an expand button — gated by `showExpandButton()`, which also factors in screen width and hosting context (ES-30542: `PreviewDialogComponent`'s tabs/chat/advanced-search layout is too cramped below 1024px):
 
 ```typescript
+// src/components/preview/preview-navbar/preview-navbar.ts
+showExpandButton = computed(() => this.expandPreview() && (!this.tabletBreakpoint.isTabletOrMobile() || this.hostedInSheet()));
+
 onExpand(): void {
-  this.previewDialog()?.open(this.article() as Article);
+  if (!this.tabletBreakpoint.isTabletOrMobile()) {
+    this.previewDialog()?.open(this.article() as Article);
+  } else if (this.hostedInSheet()) {
+    // swap the sheet already open in sheet-previewer to its simplified view, in place
+    this.previewDisplayMode.enableSimple();
+  }
+  // else: ipad/mobile width outside a sheet-previewer sheet — the button is hidden, unreachable
 }
 ```
+
+`tabletBreakpoint` comes from the shared `injectTabletBreakpoint()` composable (`src/composables/inject-tablet-breakpoint.ts` — the same 1024px-or-`BreakpointObserverService.isMobile()` threshold described above). Three outcomes, depending on width and where `<preview-navbar>` is hosted:
+
+| Width | Hosted in a `sheet-previewer` sheet (search/assistant/widgets/home) | Hosted elsewhere (e.g. `agent-preview` on `/chat`) |
+|---|---|---|
+| Desktop (≥ 1024 px) | Opens `PreviewDialogComponent` | Opens `PreviewDialogComponent` |
+| Tablet/mobile (< 1024 px) | Swaps the already-open sheet to the simplified view (`SimplePreviewContentComponent`, via `PreviewDisplayModeService`) — never stacks a second panel | Button hidden — the host already goes full-screen at this width (e.g. `/chat`'s `activeMobilePanel()` toggle, also extended to 1024px) |
+
+`PreviewComponent` forwards a `hostedInSheet` input to `preview-navbar`; only `SheetPreviewerComponent` sets it to `true` on its internal `<preview [hostedInSheet]="true" />`.
 
 `PreviewDialogComponent` (`src/components/preview/dialog/preview-dialog.ts`) is a full-screen modal dialog that renders the preview with its own set of tabs:
 
@@ -462,3 +480,5 @@ them is obvious from reading the code.
 | Desktop (≥ 1024 px) | Inline right panel, 50% width, slide-in animation | `hasPreview()` CSS toggle |
 | Tablet (768 px–1023 px) | Side sheet (full `<preview>`) from the right | `SheetPreviewerComponent` |
 | Mobile (< 768 px) | Side sheet (title + `<preview-content>` only) from the right | `SheetPreviewerComponent` |
+
+Below 1024px, the navbar's "expand" button no longer opens `PreviewDialogComponent` — see [Expanded Preview Dialog](#expanded-preview-dialog) above.

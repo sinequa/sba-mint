@@ -3,9 +3,10 @@ import { TranslocoService } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { Article as A } from "@sinequa/atomic";
 import { ApplicationService, SelectionService, SelectionStore } from "@sinequa/atomic-angular";
-import { BreakpointObserverService, cn, SheetComponent, SheetHeaderComponent, SheetService, SheetTitleComponent } from "@sinequa/ui";
+import { BreakpointObserverService, cn, SheetComponent, SheetService } from "@sinequa/ui";
+import { PreviewDisplayModeService } from "./preview-display-mode.service";
 import { PreviewComponent } from "./preview";
-import { PreviewContentComponent } from "./preview-content/preview-content";
+import { SimplePreviewContentComponent } from "./simple-preview-content/simple-preview-content";
 
 type Article = A & {
   [key: string]: string[] | undefined;
@@ -41,25 +42,19 @@ type Article = A & {
  */
 @Component({
   selector: "sheet-previewer",
-  imports: [SheetComponent, SheetHeaderComponent, SheetTitleComponent, PreviewContentComponent, PreviewComponent],
+  imports: [SheetComponent, SimplePreviewContentComponent, PreviewComponent],
   template: `
     <sheet
-      [class]="cn('max-w-full min-w-[75%]', breakpointService.isMobile() ? 'w-full' : 'p-0')"
+      [class]="cn('max-w-full min-w-[75%]', showSimple() ? 'w-full' : 'p-0')"
       [open]="!!article()"
-      [showCloseButton]="breakpointService.isMobile()"
+      [showCloseButton]="showSimple()"
       (openChange)="handleChange($event)"
       [side]="position()">
       @if (article()) {
-        @if (breakpointService.isMobile()) {
-          <sheet-header>
-            <sheet-title class="truncate overflow-hidden text-left">
-              <span class="font-bold text-primary">{{ article().title }}</span>
-            </sheet-title>
-          </sheet-header>
-
-          <preview-content class="h-full" />
+        @if (showSimple()) {
+          <simple-preview-content [article]="article()" />
         } @else {
-          <preview />
+          <preview [hostedInSheet]="true" />
         }
       }
     </sheet>
@@ -72,7 +67,14 @@ export class SheetPreviewerComponent {
   selectionStore = inject(SelectionStore);
   selectionService = inject(SelectionService);
   sheetService = inject(SheetService);
+  previewDisplayMode = inject(PreviewDisplayModeService);
   private readonly transloco = inject(TranslocoService);
+
+  /**
+   * True mobile always gets the minimal view; a tablet-width "expand" click also swaps this
+   * already-open sheet into the minimal view in place (see `PreviewNavbarComponent.onExpand()`).
+   */
+  showSimple = computed(() => this.breakpointService.isMobile() || this.previewDisplayMode.forcedSimple());
 
   position = input<"left" | "right">("right");
 
@@ -96,6 +98,8 @@ export class SheetPreviewerComponent {
       setTimeout(() => {
         this.selectionService.clearCurrentArticle();
       }, 200);
+      // Don't carry the "expand" fallback over to the next document opened in this sheet.
+      this.previewDisplayMode.reset();
     }
   }
 }

@@ -6,6 +6,7 @@
     [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
     [(extended)]="extended"
     [article]="article()"
+    [hostedInSheet]="hostedInSheet()"
     (onClose)="onClose.emit()" />
 
   <div class="@container relative mb-2 flex h-full flex-col gap-0.5">
