@@ -1,3 +1,9 @@
+<!-- projected into the global fixed mobile header via HeaderExtrasService (<768px), rendered
+     inline instead on the ipad range (768-1023px) — see search-all.ts -->
+<ng-template #headerSearch>
+  <search-with-autocomplete class="w-full" />
+</ng-template>
+
 <!-- results list template — defined once, used in both mobile and desktop branches -->
 <ng-template #resultsList>
   <!-- skeleton part -->
@@ -68,7 +74,11 @@
       <ng-container *ngTemplateOutlet="filtersDrawer" />
     }
     <div class="relative z-5 flex w-full flex-col bg-background p-4">
-      <search-with-autocomplete class="w-full pt-11 md:pt-0" />
+      @if (!breakpointService.isMobile()) {
+        <div class="pb-4">
+          <ng-container *ngTemplateOutlet="headerSearch" />
+        </div>
+      }
 
       @if (isTabSearchActive()) {
         <navbar-tabs noTruncate="true" />

@@ -52,6 +52,16 @@ sq-chat-v3 {
 
   .sq-chat-message-actions {
     --ast-size-5: 1.5rem;
+    /* Purely local: sits just above this message's own bubble/text below it, nothing else — not
+       a real app-level overlay. Library default is z-index:999, hard-coded high enough to punch
+       through every floating panel in the app (the /assistant ipad drawer at --z-drawer, and even
+       the mobile nav sidebar sheet at Tailwind z-50). None of theme.css's --z-* scale is the right
+       fit here — this never needs to compete with a real overlay, so a small literal value that
+       only beats normal in-flow content is deliberate.
+       !important: ChatMessageComponent's styles are Angular view-encapsulated — the library's own
+       compiled selector carries a [_ngcontent-*] attribute, which out-specifies a plain nested
+       selector here regardless of nesting depth. */
+    z-index: 1 !important;
     & button:hover {
       transform: scale(1.25);
     }
