@@ -19,7 +19,7 @@ import { KeyboardNavigatorOptions } from "@sinequa/ui";
       <div class="mx-2 flex flex-col gap-16">
         <div class="flex flex-col gap-4">
           <search-with-autocomplete />
-          <filters-bar class="gap-1" homepage />
+          <filters-bar class="gap-1 max-md:hidden" homepage />
         </div>
         <widgets-tabs />
       </div>
