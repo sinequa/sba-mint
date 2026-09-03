@@ -135,15 +135,22 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   }
 
   /**
-   * ES-32905: gives the focus back to the chat question input ("Ask something") when coming back
-   * on the page. The other cases are covered by the chat's own `focusAfterResponse`, but not this
-   * one: the route is "frozen" when navigating away (see `CustomReuseStrategy`), so the chat is
-   * reattached as is, without loading anything.
+   * ES-32905 / ES-33135: gives the focus back to the chat question input ("Ask something"), both
+   * when the component is first created and when coming back to a "frozen" route (see
+   * `CustomReuseStrategy`). The chat's own `focusAfterResponse` also tries this, but with a single
+   * un-retried `focus()` call: on the very first, "cold" navigation (lazy chunk load, SignalR
+   * handshake, concurrent app bootstrap work) it can fire while the textarea is still
+   * disabled/unrendered, or be overridden a moment later by another widget finishing its own load.
+   * `focusWhenReady` retries until the element is actually focusable.
    */
-  function onRouteAttached() {
-    initialize();
+  function focusChatInput() {
     cancelFocusChatInput?.();
     cancelFocusChatInput = focusWhenReady(() => chat()?.sqChat()?.questionInput?.nativeElement, "assistant", { destroyRef });
+  }
+
+  function onRouteAttached() {
+    initialize();
+    focusChatInput();
   }
 
   async function getFirstPageQuery() {
@@ -242,6 +249,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Initialize on construction ────────────────────────────────────────────
 
   initialize();
+  focusChatInput();
 
   return {
     query,
