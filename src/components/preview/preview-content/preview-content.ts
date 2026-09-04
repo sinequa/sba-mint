@@ -406,6 +406,13 @@ export class PreviewContentComponent {
       if (this.id()) {
         this.currentPage.set(undefined);
         this.passagePageNumber.set(undefined); // resetting the page number if we change of selected document
+        // A conversion picked for the PREVIOUS document otherwise survives the switch: `conversion`
+        // reads `selectedConversion() ?? defaultConversion()`, so a stale non-undefined value here
+        // wins over the new document's own default for one recompute — `previewUrlString` briefly
+        // resolves the wrong (stale) URL, then corrects itself once `<converter-select>` re-syncs
+        // to the new document's default, which is exactly the transient double `xDownload` call
+        // this component was built to avoid in the first place.
+        this.selectedConversion.set(undefined);
       }
     });
 
