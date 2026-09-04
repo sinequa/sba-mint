@@ -16,7 +16,16 @@ import {
 import { BreakpointObserverService, cn, ImageIcon, SpinnerIcon } from "@sinequa/ui";
 import { catchError, of } from "rxjs";
 import { MarkdownPipe } from "@pipes/markdown.pipe";
+import { ConverterSelectComponent } from "../converter-select/converter-select";
+import { computeConverterOptions } from "../converter-select/converter-options";
+import { FloatingToolbarComponent } from "./floating-toolbar";
 import { PreviewActionsComponent } from "./preview-actions";
+import { ZoomControlsComponent } from "./zoom-controls";
+
+// Zoom step and bounds for the Markdown branch's local zoom (CSS `zoom`, see `markdownZoom`).
+const MARKDOWN_ZOOM_STEP = 0.1;
+const MARKDOWN_ZOOM_MIN = 0.5;
+const MARKDOWN_ZOOM_MAX = 2;
 
 // Delay before revealing the iframe once a scroll has been requested: lets the iframe apply and
 // paint the scroll behind the overlay so the reposition is never visible. Kept below preview.js's
@@ -43,7 +52,17 @@ const LOAD_SAFETY_NET_MS = 1500;
  */
 @Component({
   selector: "preview-content",
-  imports: [TranslocoPipe, PreviewActionsComponent, PreviewNavigator, SpinnerIcon, ImageIcon, MarkdownPipe],
+  imports: [
+    TranslocoPipe,
+    PreviewActionsComponent,
+    ConverterSelectComponent,
+    ZoomControlsComponent,
+    FloatingToolbarComponent,
+    PreviewNavigator,
+    SpinnerIcon,
+    ImageIcon,
+    MarkdownPipe
+  ],
   template: `
     @if (previewDataResource.isLoading()) {
       <div class="flex h-full w-full items-center justify-center">
@@ -58,8 +77,23 @@ const LOAD_SAFETY_NET_MS = 1500;
           <spinner-icon class="animate-spin mb-6 text-6xl text-primary" />
         </div>
       } @else if (markdownResource.hasValue() && markdownResource.value()) {
-        <div class="h-[calc(100%-0.5rem)] overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
-          <div class="prose max-w-none dark:prose-invert" [innerHTML]="markdownResource.value() | markdown"></div>
+        <!-- Only the converter dropdown and zoom controls, not the full <preview-actions> toolbar:
+             the extracts/entities/AI-description toggles postMessage into preview.js, which never
+             runs here — markdown is rendered straight into a div, not preview.js's iframe. Zoom is
+             reimplemented locally below (the CSS zoom property, not preview.js's transform+relayout
+             dance — markdown content is far smaller than a converted document, so that
+             sophistication buys nothing here). -->
+        <div class="relative h-[calc(100%-0.5rem)]">
+          <floating-toolbar class="absolute top-4 right-4">
+            <converter-select
+              [previewData]="previewData()"
+              [activeConversion]="conversion()"
+              (onConversionSelect)="selectedConversion.set($event)" />
+            <zoom-controls (zoomFit)="zoomFitMarkdown()" (zoomIn)="zoomInMarkdown()" (zoomOut)="zoomOutMarkdown()" />
+          </floating-toolbar>
+          <div class="h-full overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
+            <div class="prose max-w-none dark:prose-invert" [style.zoom]="markdownZoom()" [innerHTML]="markdownResource.value() | markdown"></div>
+          </div>
         </div>
       } @else {
         <div class="flex h-full w-full items-center justify-center">
@@ -84,9 +118,12 @@ const LOAD_SAFETY_NET_MS = 1500;
         }
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
-          [isPrimary]="!conversion() || conversion()!.primary === true"
+          [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
           [aiDescriptionShown]="aiDescriptionShown()"
-          [class]="cn('absolute right-4 inline-flex justify-end rounded-md dark:text-background dark:[&_button]:hover:text-foreground dark:bg-muted/10 bg-muted/90', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
+          [previewData]="previewData()"
+          [activeConversion]="conversion()"
+          (onConversionSelect)="selectedConversion.set($event)"
+          [class]="cn('absolute right-4', breakpointService.isMobile() ? 'bottom-4' : 'top-4')" />
         <iframe
           #preview
           frameborder="0"
@@ -149,8 +186,44 @@ export class PreviewContentComponent {
     return this.queryParamsStore.getQuery().name || this.appStore.getDefaultQuery()?.name;
   }
 
-  conversion = input<CConverter | undefined>(undefined);
+  /**
+   * Raw pick from `<preview-actions>`'s `<converter-select>` — read through {@link conversion}
+   * (which falls back to {@link defaultConversion} before a pick has been made), never directly.
+   */
+  protected readonly selectedConversion = signal<CConverter | undefined>(undefined);
+
+  /**
+   * The converter that `<converter-select>` — nested several levels down inside `<preview-actions>`,
+   * itself inside the conditionally-rendered branch below — will auto-select once it mounts
+   * (conversions sorted defaults then primaries first, see `computeConverterOptions`). Computed here
+   * too so the rest of this component (URL resolution, `isPrimary`, `<preview-actions>`'s
+   * `activeConversion`) already resolves the right value on the very first render, instead of
+   * briefly resolving "no conversion selected" (the plain `documentCachedContentUrl` fallback) until
+   * `<converter-select>` mounts and emits its own pick a render cycle later — which used to cause an
+   * avoidable second `xDownload` request whenever the default's URL differs from that fallback.
+   */
+  private readonly defaultConversion = computed<CConverter | undefined>(() => {
+    if (!this.previewMultiConversionFlag()) return undefined;
+    return computeConverterOptions(this.previewData(), this.appStore.general()?.converters)[0];
+  });
+
+  /**
+   * The conversion currently in effect. Owned by this component — there is no `[conversion]` input:
+   * `<converter-select>` (nested inside `<preview-actions>`) is the only source of picks. Falls back
+   * to {@link defaultConversion} before anything has been explicitly picked. Forwarded outward via
+   * `onConversionSelect` purely so a parent can mirror it for its own display (e.g. a navbar's
+   * "primary format" badge) — nothing feeds it back in, breaking the parent→child→parent→child
+   * round-trip the previous (input-based) design required.
+   */
+  readonly conversion = computed(() => this.selectedConversion() ?? this.defaultConversion());
+
   onLoadedData = output<PreviewData | undefined>();
+  /** Mirrors {@link conversion} outward, so a parent can read it for its own display. */
+  onConversionSelect = output<CConverter | undefined>();
+  // Effect to emit the current conversion when it changes
+  #conversionEffect = effect(() => {
+    this.onConversionSelect.emit(this.conversion());
+  });
 
   /**
    * The article to be previewed.
@@ -181,6 +254,8 @@ export class PreviewContentComponent {
    * default). Forwarded to `<preview-actions>` so its toggle reflects the state.
    */
   protected aiDescriptionShown = signal(false);
+  /** Local zoom (CSS `zoom`) for the Markdown branch — see {@link zoomInMarkdown}. */
+  protected markdownZoom = signal(1);
   protected scrollPage = computed(() =>
     this.currentPage() !== undefined ? this.currentPage() : this.passagePageNumber() !== undefined ? `sq-page-start-${this.passagePageNumber()}` : undefined
   );
@@ -221,7 +296,16 @@ export class PreviewContentComponent {
     return undefined;
   });
 
-  readonly previewUrl = computed(() => {
+  /**
+   * Raw preview URL, resolved separately from {@link previewUrl}'s sanitizer wrapping so that
+   * `computed()`'s default equality (a plain string comparison) can catch when the resolved URL is
+   * unchanged. `bypassSecurityTrustResourceUrl` returns a new `SafeResourceUrl` object on every call
+   * even for an identical string, which would otherwise make `previewUrl` — and everything that
+   * reacts to it, like `previewValidationResource`'s HEAD re-validation and the iframe `[src]` —
+   * recompute needlessly whenever `conversion()` re-resolves to an equivalent value through a new
+   * object reference (e.g. `<converter-select>` remounting and re-picking the same conversion).
+   */
+  private readonly previewUrlString = computed(() => {
     const previewData = this.previewData();
     if (!previewData) return undefined;
 
@@ -229,13 +313,15 @@ export class PreviewContentComponent {
     this.previewService.setPreviewData(previewData);
 
     if (this.previewMultiConversionFlag()) {
-      const url = this.conversion()?.conversion?.url ?? this.documentCachedContentUrl();
-      return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
+      return this.conversion()?.conversion?.url ?? this.documentCachedContentUrl();
     } else {
-      return previewData.documentCachedContentUrl
-        ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + previewData.documentCachedContentUrl)
-        : undefined;
+      return previewData.documentCachedContentUrl;
     }
+  });
+
+  readonly previewUrl = computed(() => {
+    const url = this.previewUrlString();
+    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(window.location.origin + url) : undefined;
   });
 
   readonly isSecondary = computed(() => this.conversion()?.primary === false || this.conversion()?.conversion?.isPrimary === false);
@@ -320,6 +406,13 @@ export class PreviewContentComponent {
       if (this.id()) {
         this.currentPage.set(undefined);
         this.passagePageNumber.set(undefined); // resetting the page number if we change of selected document
+        // A conversion picked for the PREVIOUS document otherwise survives the switch: `conversion`
+        // reads `selectedConversion() ?? defaultConversion()`, so a stale non-undefined value here
+        // wins over the new document's own default for one recompute — `previewUrlString` briefly
+        // resolves the wrong (stale) URL, then corrects itself once `<converter-select>` re-syncs
+        // to the new document's default, which is exactly the transient double `xDownload` call
+        // this component was built to avoid in the first place.
+        this.selectedConversion.set(undefined);
       }
     });
 
@@ -332,6 +425,8 @@ export class PreviewContentComponent {
       this.hideContent();
       // A fresh document starts with its AI descriptions hidden again.
       this.aiDescriptionShown.set(false);
+      // ...and, in the Markdown branch, its local zoom reset too.
+      this.markdownZoom.set(1);
     });
 
     const controller = new AbortController();
@@ -382,6 +477,18 @@ export class PreviewContentComponent {
    */
   onLoaded() {
     this.revealContent(LOAD_SAFETY_NET_MS);
+  }
+
+  protected zoomInMarkdown(): void {
+    this.markdownZoom.update(zoom => Math.min(zoom + MARKDOWN_ZOOM_STEP, MARKDOWN_ZOOM_MAX));
+  }
+
+  protected zoomOutMarkdown(): void {
+    this.markdownZoom.update(zoom => Math.max(zoom - MARKDOWN_ZOOM_STEP, MARKDOWN_ZOOM_MIN));
+  }
+
+  protected zoomFitMarkdown(): void {
+    this.markdownZoom.set(1);
   }
 
   /**
