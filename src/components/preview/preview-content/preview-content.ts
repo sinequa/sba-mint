@@ -118,7 +118,7 @@ const LOAD_SAFETY_NET_MS = 1500;
         }
         <preview-navigator class="absolute top-4 left-8 inline-flex items-center rounded-md bg-muted/90 text-sm" />
         <preview-actions
-          [isPrimary]="!conversion() || conversion()!.primary === true"
+          [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
           [aiDescriptionShown]="aiDescriptionShown()"
           [previewData]="previewData()"
           [activeConversion]="conversion()"
