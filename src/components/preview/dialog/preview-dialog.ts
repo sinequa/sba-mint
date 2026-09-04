@@ -1,9 +1,8 @@
-import { Component, computed, effect, inject, model, signal, viewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, computed, effect, inject, signal, viewChild } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
-import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
-import { AdvancedSearch, AppStore, CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { Article, CCApp, Query } from "@sinequa/atomic";
+import { AdvancedSearch, AppStore, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 import {
   ButtonComponent,
   ChevronLeftIconComponent,
@@ -49,8 +48,7 @@ import { PreviewContentComponent } from "../preview-content/preview-content";
     ChevronRightIcon,
     ChevronLeftIconComponent,
     Separator,
-    TabsListComponent,
-    FormsModule
+    TabsListComponent
   ],
   providers: [PreviewService],
   templateUrl: "./preview-dialog.html",
@@ -97,59 +95,12 @@ export class PreviewDialogComponent {
   displaySummaryContent = computed(() => this.appStore.isAssistantAllowed(this.summarizeInstanceId()));
   displayChatWithDocContent = computed(() => this.appStore.isAssistantAllowed(this.chatWithDocIntanceId()));
 
-  readonly previewData = signal<PreviewData | undefined>(undefined);
-  previewMultiConversion = computed(() => this.appStore.general()?.features?.previewMultiConversion);
-
-  /** List of all available converters matching with previewData.conversions and the config defined general.converters */
-  currentConversionIndex = model<number>(-1);
-  currentConversion = computed<CConverter | undefined>(() =>
-    this.currentConversionIndex() === -1 ? undefined : this.converterOptions()[this.currentConversionIndex()]
-  );
-  converters = computed(() =>
-    !this.previewData()?.conversions?.length
-      ? undefined
-      : this.appStore
-          .general()
-          ?.converters?.filter(
-            converter =>
-              converter.display && this.previewData()?.conversions?.some(c => c.converterName === converter.converter && c.format === converter.format)
-          )
-  );
-
-  /** All options for the converters dropdown */
-  converterOptions = computed(() => {
-    // return undefined if the feature is disabled or that there are no available conversions
-    if (!this.previewMultiConversion() || !this.converters()?.length) return [];
-
-    const converters = this.converters();
-    if (converters) {
-      return (
-        converters
-          .map(converter => {
-            converter.conversion = this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format);
-            return converter;
-          })
-          // sort to have defaults first, then primaries, then others
-          .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
-      );
-    }
-    return [];
-  });
-
   constructor() {
     effect(() => {
       if (this.activeTab() === "chat" && !this.displayChatWithDocContent()) {
         this.activeTab.set(this.displaySummaryContent() ? "summary" : "find");
       } else if (this.activeTab() === "summary" && !this.displaySummaryContent()) {
         this.activeTab.set("find");
-      }
-    });
-
-    effect(() => {
-      // setting the current conversion to the first conversion
-      // (the conversions being sorted to be defaults then primaries first, the first element will always be the one to pick by default)
-      if (this.previewMultiConversion() && this.converterOptions()?.length) {
-        this.currentConversionIndex.set(0);
       }
     });
   }
