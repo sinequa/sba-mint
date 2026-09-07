@@ -6,7 +6,7 @@ import { PreviewComponent } from "@components/preview/preview";
 import { SheetPreviewerComponent } from "@components/preview/sheet-previewer";
 import { SearchWithAutocompleteComponent } from "@components/search/search-with-autocomplete";
 import { fetchServerPage } from "@config/fetch-server-page";
-import { TranslocoPipe } from "@jsverse/transloco";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 import { getComponentsForDocumentType } from "@registry/document-type-registry";
 import { MessageHandler } from "@sinequa/assistant/chat";
@@ -81,7 +81,8 @@ type Result = R & { nextPage?: number; previousPage?: number };
   ],
   host: {
     "(keydown.enter)": "handleKeydownEnter($event)"
-  }
+  },
+  providers: [provideTranslocoScope("searches")]
 })
 export class SearchAllComponent {
   cn = cn;
