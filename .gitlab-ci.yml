@@ -17,17 +17,36 @@
 #      and npm.sinequa.com which the postinstall pulls @sinequa/assistant from.
 #
 # Same conventions as sba-atomic-js and sba-atomic-angular, whose pipelines pass.
+#
+# Changesets (changelog only — see CONTRIBUTING-changesets.md):
+#   changeset-check   (validate stage, every MR targeting a release/* branch)
+#   changeset-release (release stage, on push to a release/* branch)
+#
+# Required CI/CD variable (Settings > CI/CD > Variables), same as sba-atomic-js:
+#   GITLAB_TOKEN — project/group access token with `api` + `write_repository` scopes,
+#                  role >= Developer, flagged masked + protected.
+#                  Used by changeset-release to push branches and open MRs via the
+#                  GitLab API. The `changeset-release/*` branches must NOT be
+#                  protected, otherwise the force-push is rejected.
+#
+# Enabled on release/11.14.0 only for now (see CONTRIBUTING-changesets.md) — the
+# rules below are written against a `release/*` regex, not the literal branch
+# name, so a future line (e.g. release/11.15.0) inherits the mechanism as soon as
+# it branches off 11.14.0, with no further CI change needed.
 ###############################################################################
 
 stages:
   - validate
   - build
+  - release
 
-# Both jobs are MR-only, so no pipeline is created on push: that also prevents
-# the duplicate pipeline a push matching an open MR would otherwise produce.
+# MR events, plus a push to a release/* branch (needed for changeset-release —
+# see above). A push pipeline only ever runs the release-stage job: every other
+# job keeps its own `merge_request_event`-only rule, so nothing else doubles up.
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH =~ /^release\// && $CI_PIPELINE_SOURCE == "push"
 
 default:
   # node:22 (Debian) ships git and curl — no package install needed, which
@@ -83,6 +102,50 @@ jira-check:
         echo "       Add '#noJiraCheck' to bypass this check (docs/CI MRs only)."
         exit 1
       fi
+
+# ─── changeset-check ─────────────────────────────────────────────────────────
+# Verifies that at least one .changeset/*.md file was added in this MR.
+# Bypass: add '#skip-changeset' to the MR title, then re-run the MR pipeline
+# ("Run pipeline") — GitLab evaluates `rules` at pipeline creation, so editing
+# the title does not by itself re-trigger anything and a job retry reuses the
+# frozen title. The "version packages" MR is excluded by source branch: it
+# legitimately carries no changeset (they were just consumed).
+# Scoped to release/11.14.0 only for now — see CONTRIBUTING-changesets.md.
+# Talks to gitlab.chapsvision.in only: no `.egress` needed.
+changeset-check:
+  stage: validate
+  rules:
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" &&
+        $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "release/11.14.0" &&
+        $CI_MERGE_REQUEST_TITLE !~ /#skip-changeset/ &&
+        $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME !~ /^changeset-release\//
+  variables:
+    # Full history: the three-dot diff below needs the merge-base.
+    GIT_DEPTH: "0"
+  before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+  script:
+    - |
+      set -eu
+      BRANCH="$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+
+      # Explicit refspec: the runner's fetch config does not guarantee that
+      # refs/remotes/origin/$BRANCH exists.
+      git fetch --no-tags origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+
+      # Kept separate from the grep below: a failing `git diff` must abort the
+      # job, not be mistaken for "no changeset".
+      CHANGED=$(git diff --name-only --diff-filter=A "origin/$BRANCH...HEAD" -- '.changeset/*.md')
+      ADDED=$(printf '%s\n' "$CHANGED" | grep -v 'README.md' || true)
+
+      if [ -z "$ADDED" ]; then
+        echo "ERROR: No changeset found in this MR."
+        echo "       Run 'npx changeset' to create one, or add '#skip-changeset' to the MR title (docs/CI only)."
+        exit 1
+      fi
+      echo "Changeset(s) found:"
+      echo "$ADDED"
 
 # ─── build ───────────────────────────────────────────────────────────────────
 # Equivalent: .github/workflows/pull-request.yml
@@ -207,3 +270,201 @@ docs-validate:
     - npm run check
     - npm run build
     - npm run verify
+
+# ─── changeset-release ───────────────────────────────────────────────────────
+# On push to a release/* branch: if changesets are pending, consumes them into
+# CHANGELOG.md and opens/updates a "version packages" MR
+# (branch changeset-release/<branch> → <branch>).
+#
+# Mint is an application, not a published lib — the version is not ours to set
+# (`package.json.version` is frozen, owned by product). `changeset version` is
+# still run normally (its internal semver engine needs a valid version to bump
+# from), but the bump is immediately discarded/restored: only CHANGELOG.md and
+# the `.changeset/*.md` removals are kept.
+#
+# `package.json.buildVersion` (X.Y.Z-N, a valid semver prerelease identifier) is
+# this repo's own release counter, entirely separate from `version` — never
+# hand-edited, incremented by this job only. Its X.Y.Z prefix always mirrors the
+# frozen `version`; if product bumps `version` by hand, the next run here resets
+# N to 0. It becomes the CHANGELOG.md section heading, replacing the throwaway
+# semver `changeset version` computed.
+#
+# Enabled on release/11.14.0 only for now — see CONTRIBUTING-changesets.md.
+changeset-release:
+  extends: .npm
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^release\// && $CI_PIPELINE_SOURCE == "push"
+  # Serialises concurrent runs: two close pushes to the same release branch
+  # would otherwise race on the same force-pushed branch.
+  # CI_COMMIT_REF_SLUG, not CI_COMMIT_BRANCH: resource_group names reject "/",
+  # which every release/* branch contains.
+  resource_group: changeset-release-$CI_COMMIT_REF_SLUG
+  interruptible: false
+  variables:
+    GIT_DEPTH: "0"
+  before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - git config --global user.email "gitlab-ci-bot@users.noreply.gitlab.com"
+    - git config --global user.name "gitlab-ci-bot"
+    # Depending on the runner version, the job's credentials come either from
+    # the remote URL or from this header — which would win over the token in
+    # the push URL below. Exit code 5 when absent, hence the `|| true`.
+    - git config --unset-all "http.${CI_SERVER_URL}.extraheader" || true
+  script:
+    - |
+      set -eu
+
+      # Usable token? Checked for real (presence AND rights), because a wrong
+      # scope or a variable that is not exposed on this ref would otherwise
+      # surface as an unreadable git or curl failure further down.
+      token_usable() {
+        [ -n "${GITLAB_TOKEN:-}" ] || return 1
+        code=$(curl -s -o /dev/null -w '%{http_code}' \
+          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+          "$CI_API_V4_URL/projects/$CI_PROJECT_ID")
+        [ "$code" = "200" ]
+      }
+
+      token_report() {
+        if [ -z "${GITLAB_TOKEN:-}" ]; then
+          echo "GITLAB_TOKEN is empty or not exposed on this ref."
+          echo "  CI_COMMIT_REF_PROTECTED=${CI_COMMIT_REF_PROTECTED:-unknown} — a 'protected'"
+          echo "  variable is only visible on a protected ref."
+        else
+          echo "GITLAB_TOKEN is set but the API rejected it (see HTTP code above):"
+          echo "  missing 'api' scope, insufficient role, or expired token."
+        fi
+        echo "  Required: project/group access token, scopes api + write_repository, role >= Developer."
+      }
+
+      # 1. Any pending changesets? Skip if none. This is also what stops the
+      #    loop after the release MR itself is merged.
+      if [ -z "$(ls .changeset/*.md 2>/dev/null | grep -v 'README.md' || true)" ]; then
+        echo "No pending changesets — skipping release MR."
+        if token_usable; then
+          echo "GITLAB_TOKEN check: OK — a future run will be able to push."
+        else
+          echo "WARNING: GITLAB_TOKEN check failed — the next run WITH changesets will fail."
+          token_report
+        fi
+        exit 0
+      fi
+
+      # 2. From here the token is mandatory.
+      if ! token_usable; then
+        echo "ERROR: cannot open the release MR."
+        token_report
+        exit 1
+      fi
+
+      # 3. Install deps and figure out the next buildVersion counter.
+      npm ci
+      git checkout -B "changeset-release/${CI_COMMIT_BRANCH}"
+
+      ORIGINAL_VERSION=$(node -p "require('./package.json').version")
+      CURRENT_BUILD_VERSION=$(node -p "require('./package.json').buildVersion || ''")
+
+      # Reset to -0 if the prefix no longer matches the frozen version — e.g.
+      # product bumped `version` by hand since the last run.
+      case "$CURRENT_BUILD_VERSION" in
+        "$ORIGINAL_VERSION"-*)
+          LAST_N="${CURRENT_BUILD_VERSION##*-}"
+          NEXT_N=$((LAST_N + 1))
+          ;;
+        *)
+          NEXT_N=0
+          ;;
+      esac
+      NEW_BUILD_VERSION="${ORIGINAL_VERSION}-${NEXT_N}"
+
+      # 4. Apply version bumps (into a throwaway semver value — see header note).
+      npm run changeset:version
+
+      # 5. Nothing changed after versioning? (e.g. empty changesets)
+      if [ -z "$(git status --porcelain)" ]; then
+        echo "No changes after 'changeset version' — nothing to commit."
+        exit 0
+      fi
+
+      # 6. Restore the frozen `version` and stamp the real `buildVersion`.
+      #    Regex-replace, not a JSON round-trip: leaves every other field's
+      #    formatting untouched.
+      node -e "
+        const fs = require('fs');
+        let content = fs.readFileSync('package.json', 'utf8');
+        content = content.replace(/(\"version\": \")[^\"]*(\")/, '\$1${ORIGINAL_VERSION}\$2');
+        content = content.replace(/(\"buildVersion\": \")[^\"]*(\")/, '\$1${NEW_BUILD_VERSION}\$2');
+        fs.writeFileSync('package.json', content);
+      "
+
+      # 7. Retitle the section 'changeset version' just wrote (the first
+      #    '## ...' heading — changesets prepends newest at the top) with the
+      #    real buildVersion, and append an informational (non-authoritative)
+      #    reference to the latest external ES build tag, if any.
+      ES_TAG=$(git describe --tags --match "es-${ORIGINAL_VERSION}.*" --abbrev=0 2>/dev/null || true)
+      NEW_BUILD_VERSION="$NEW_BUILD_VERSION" ES_TAG="$ES_TAG" node -e "
+        const fs = require('fs');
+        const newVersion = process.env.NEW_BUILD_VERSION;
+        const esTag = process.env.ES_TAG;
+        let content = fs.readFileSync('CHANGELOG.md', 'utf8');
+        content = content.replace(/^## .*/m, () => {
+          let heading = '## ' + newVersion;
+          if (esTag) {
+            heading += '\n\n_Dernier build ES connu à la génération : ' + esTag + ' (indicatif, non garanti pour ce commit précis)._';
+          }
+          return heading;
+        });
+        fs.writeFileSync('CHANGELOG.md', content);
+      "
+
+      # 8. Commit + force-push (throwaway branch, resynced on every run).
+      #    Pushed through an explicit URL so the token is not written into
+      #    .git/config for the whole job.
+      git add -A package.json CHANGELOG.md .changeset
+      git commit -m "chore: version packages (build ${NEW_BUILD_VERSION})"
+      git push --force "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" \
+        "HEAD:refs/heads/changeset-release/${CI_COMMIT_BRANCH}"
+
+      # 9. Open MR if none is already open; the force-push updates an existing one.
+      #    The title includes #noJiraCheck (chore MR, no Jira ticket). No
+      #    #skip-changeset needed: changeset-check excludes this source branch.
+      MR_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests"
+      ENCODED_SOURCE=$(printf '%s' "changeset-release/${CI_COMMIT_BRANCH}" | sed 's#/#%2F#g')
+      ENCODED_TARGET=$(printf '%s' "${CI_COMMIT_BRANCH}" | sed 's#/#%2F#g')
+      HTTP=$(curl -s -o /tmp/mrs.json -w '%{http_code}' \
+        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        "$MR_API?state=opened&source_branch=${ENCODED_SOURCE}&target_branch=${ENCODED_TARGET}")
+
+      # Checked explicitly: an API error body would otherwise look like
+      # "no open MR" and send us straight to the creation call.
+      if [ "$HTTP" != "200" ]; then
+        echo "ERROR: GitLab API returned HTTP $HTTP when listing merge requests."
+        cat /tmp/mrs.json
+        exit 1
+      fi
+
+      if grep -q '"iid"' /tmp/mrs.json; then
+        echo "Release MR already open — updated via branch push."
+        exit 0
+      fi
+
+      HTTP=$(curl -s -o /tmp/mr-create.json -w '%{http_code}' -X POST \
+        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        --header "Content-Type: application/json" \
+        "$MR_API" \
+        --data "{
+          \"source_branch\": \"changeset-release/${CI_COMMIT_BRANCH}\",
+          \"target_branch\": \"${CI_COMMIT_BRANCH}\",
+          \"title\": \"chore: version packages #noJiraCheck\",
+          \"description\": \"MR generated automatically by Changesets.\n\nConsumes pending changesets into CHANGELOG.md (build ${NEW_BUILD_VERSION}). package.json version stays frozen — see CONTRIBUTING-changesets.md.\"
+        }")
+
+      case "$HTTP" in
+        20*) echo "Release MR created." ;;
+        *)
+          echo "ERROR: GitLab API returned HTTP $HTTP when creating the merge request."
+          cat /tmp/mr-create.json
+          exit 1
+          ;;
+      esac

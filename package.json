@@ -1,6 +1,7 @@
 {
   "name": "sinequa-mint",
   "version": "11.14.0",
+  "buildVersion": "11.14.0-0",
   "scripts": {
     "build": "ng build",
     "build:spfx": "npm run spfx:enable && ng build --configuration spfx-production",
@@ -27,7 +28,10 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "changeset:version": "changeset version"
   },
   "lint-staged": {
     "*.{js,ts}": "npm run lint",
@@ -102,6 +106,8 @@
     "@angular/cli": "^20.3.32",
     "@angular/compiler-cli": "^20.3.27",
     "@biomejs/biome": "2.3.14",
+    "@changesets/changelog-git": "^1.0.0",
+    "@changesets/cli": "^3.0.2",
     "@jsverse/transloco-scoped-libs": "^8.4.0",
     "@shikijs/markdown-it": "^3.22.0",
     "@statelyai/inspect": "^0.4.0",
