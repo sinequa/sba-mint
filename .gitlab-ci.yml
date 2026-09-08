@@ -103,28 +103,6 @@ jira-check:
         exit 1
       fi
 
-# ─── TEMP-debug-token-check ──────────────────────────────────────────────────
-# Throwaway diagnostic — never prints the token, only whether it is present
-# and API-usable. To be removed before this MR is done.
-TEMP-debug-token-check:
-  stage: validate
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  script:
-    - |
-      if [ -z "${GITLAB_TOKEN:-}" ]; then
-        echo "GITLAB_TOKEN: NOT SET on this project/group."
-      else
-        code=$(curl -s -o /dev/null -w '%{http_code}' \
-          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-          "$CI_API_V4_URL/projects/$CI_PROJECT_ID")
-        if [ "$code" = "200" ]; then
-          echo "GITLAB_TOKEN: set and usable (API returned 200)."
-        else
-          echo "GITLAB_TOKEN: set but API check failed (HTTP $code)."
-        fi
-      fi
-
 # ─── changeset-check ─────────────────────────────────────────────────────────
 # Verifies that at least one .changeset/*.md file was added in this MR.
 # Bypass: add '#skip-changeset' to the MR title, then re-run the MR pipeline
