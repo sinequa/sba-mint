@@ -15,7 +15,7 @@ import { KeyboardNavigatorOptions } from "@sinequa/ui";
     <header>
       <img fetchpriority=high loading=lazy class="mx-auto mt-auto mb-8 w-64 content-[var(--logo-large)/var(--logo-alt-text)] md:mb-16" alt="Logo Sinequa by ChapsVision" />
     </header>
-    <div class="md:m-auto md:w-[80%]">
+    <div class="mx-auto w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl">
       <div class="mx-2 flex flex-col gap-16">
         <div class="flex flex-col gap-4">
           <search-with-autocomplete />

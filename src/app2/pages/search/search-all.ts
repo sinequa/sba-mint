@@ -30,6 +30,7 @@ import {
 import { BreakpointObserverService, ButtonComponent, cn, FilterIcon, IconButtonComponent, XMarkIcon } from "@sinequa/ui";
 import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
 import { HeaderExtrasService } from "@services/header-extras.service";
+import { injectLargeScreenBreakpoint } from "../../../composables/inject-large-screen-breakpoint";
 import { injectTabletBreakpoint } from "../../../composables/inject-tablet-breakpoint";
 import { injectUrlQueryParamsSync } from "../../../composables/url-query-params-sync";
 import { SearchActionsComponent } from "./search-actions";
@@ -76,6 +77,28 @@ type Result = R & { nextPage?: number; previousPage?: number };
         transition:
           bottom 300ms ease-in-out,
           transform 300ms ease-in-out;
+      }
+
+      /* Main results column: max-width driven by a CSS variable (rather than swapped Tailwind
+         classes) so it can animate — a plain "max-width: none/auto" swap doesn't interpolate. */
+      .main-column {
+        --main-column-max-width: 56rem;
+        max-width: var(--main-column-max-width);
+        transition: max-width 300ms ease-out;
+      }
+      @media (min-width: 80rem) {
+        .main-column {
+          --main-column-max-width: 64rem;
+        }
+      }
+      /* Shared with the AI overview column when no preview is open — both take 50%. */
+      .main-column.with-preview {
+        --main-column-max-width: 50%;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .main-column {
+          transition-duration: 1ms;
+        }
       }
     `
   ],
@@ -263,6 +286,11 @@ export class SearchAllComponent {
     const asideFilters = this.appStore.filters().filter(f => f.position === "left" || f.position === "both");
     return this.appStore.getAuthorized(asideFilters).length > 0;
   });
+
+  // Screens wide enough for the left filters drawer to become a persistent in-flow column instead
+  // of a floating overlay (see inject-large-screen-breakpoint.ts for the threshold rationale).
+  protected readonly isLargeScreen = injectLargeScreenBreakpoint().isLargeScreen;
+  protected readonly filtersPersistent = computed(() => this.isLargeScreen() && this.hasAsideFilters());
 
   conditionalMessageHandler: Map<string, MessageHandler<{ result: string }>> = new Map();
 
