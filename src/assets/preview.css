@@ -184,6 +184,14 @@ body {
   transform-origin: 0 0;
 }
 
+/* Applied to the top document's <html> for the duration of a middle-click pan (see
+   onPanStart/onPanEnd in preview.js) -- on `html` rather than the previewed body so it
+   still applies inside a frameset, where the body being dragged lives one level down. */
+html.sq-panning,
+html.sq-panning * {
+  cursor: grabbing !important;
+}
+
 /* A preview is a viewer, not a navigable document.
 
    The PdfToHtml family turns any e-mail address or URL it finds in the text into a link, and on an
