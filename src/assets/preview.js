@@ -22,6 +22,21 @@ document.addEventListener("DOMContentLoaded", function () {
   var LAYOUT_COMMIT_BUDGET_MS = 150;
   var layoutCommitTooSlow = false;
 
+  // ---- wheel zoom state ----
+  // A trackpad pinch fires dozens of wheel events per gesture; these coalesce them into
+  // one zoom() call per frame, the same way onScroll() batches scroll.
+  var wheelZoomHandle = null;
+  var wheelZoomFactorDelta = 0;
+  var wheelZoomPoint = null;
+  // Calibrated so one Windows Ctrl+wheel notch (deltaY ~100-120) moves the factor by
+  // roughly the same amount as one click of the existing +/- buttons (0.2).
+  var WHEEL_ZOOM_SENSITIVITY = 0.0015;
+
+  // ---- mouse pan state ----
+  // Middle-click drag, never the left button: the previewed content is real, selectable
+  // text (citations, entity highlights), so a left-drag pan would fight text selection.
+  var panState = null;
+
   // ---- passage highlighter state ----
   // Overlay holding one frame per contiguous block of the selected passage, plus
   // the id currently displayed so it can be recomputed on any layout change.
@@ -39,6 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // Containers whose off-screen skipping we suspended to be able to measure a passage inside
   // them -- see liftSkipAroundPassage().
   var liftedSkips = [];
+
+  // Containers whose off-screen skipping we suspended because they are on screen right now --
+  // see liftContentVisibilityNearViewport(). Tracked separately from liftedSkips: this set
+  // turns over on every scroll, while a passage's lift has to survive one.
+  var viewportLiftedContainers = new Set();
+  // Same idea as layoutCommitTooSlow, and for the same reason: on a document where a single
+  // container holds an enormous subtree, *lifting* that one container -- not measuring
+  // whether to -- is what costs 1000+ ms (measured on the 447 919-element capture, where
+  // three lifted containers turned a 33 ms scroll-sweep excess into 1171 ms). One expensive
+  // pass is how that gets found out; there is no cheaper way to know in advance.
+  var viewportLiftTooSlow = false;
 
   // ---- scroll / page tracking state ----
   var scrollHandle = null;
@@ -434,15 +460,18 @@ document.addEventListener("DOMContentLoaded", function () {
    * @param {number} value new visual scale
    * @param {boolean} [commitNow] apply the layout immediately, for a deliberate
    *   one-off action (a zoom-fit, or a citation about to be located)
+   * @param {{x: number, y: number}} [point] viewport point to keep fixed, in place of the
+   *   viewport centre -- what a cursor-anchored wheel zoom needs, so the document does not
+   *   drift out from under the pointer while zooming
    */
-  function zoom(value, commitNow) {
+  function zoom(value, commitNow, point) {
     const body = getPreviewBody();
     if (!body) return;
     const previous = currentZoomFactor(body);
     // Read the scroll *before* invalidating anything, so these reads are free. No element
     // is needed on this path: a pure scale is exact arithmetic, and elementFromPoint is a
     // hit test that would force layout on every step.
-    const anchor = readViewportAnchor(body, false);
+    const anchor = readViewportAnchor(body, false, point);
 
     currentFactor = value;
     body.style.transform = "scale(" + value + ")";
@@ -467,15 +496,17 @@ document.addEventListener("DOMContentLoaded", function () {
    * zoom-in steps from the middle of the document moved the element under the cursor
    * 6 653 px away, completely off screen.
    */
-  function readViewportAnchor(body, needElement) {
+  function readViewportAnchor(body, needElement, point) {
     const contentDocument = body.ownerDocument;
     const view = contentDocument.defaultView || window;
     const scroller = contentDocument.scrollingElement || contentDocument.documentElement;
     if (!scroller) return null;
     const width = scroller.clientWidth || view.innerWidth;
     const height = scroller.clientHeight || view.innerHeight;
-    const centreX = width / 2;
-    const centreY = height / 2;
+    // A cursor position (viewport coordinates, same space scrollLeft/Top live in) takes
+    // over from the viewport centre when one is given.
+    const centreX = point ? point.x : width / 2;
+    const centreY = point ? point.y : height / 2;
     // Only the reflow case needs the element (see commitZoomLayout): after a re-wrap,
     // arithmetic on the scroll offset no longer maps back to the same content.
     // `pointer-events: none` keeps the passage overlay out of the hit test.
@@ -579,6 +610,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (performance.now() - started > LAYOUT_COMMIT_BUDGET_MS) layoutCommitTooSlow = true;
 
+    // Only past 100%: below that the layout width already keeps content from overflowing
+    // the panel by design (see the class doc on zoom()), so there is nothing for
+    // liftContentVisibilityNearViewport() to find, and no reason to pay a full pass over
+    // body's children on every zoom-out step of an ordinary document.
+    if (currentFactor > 1) liftContentVisibilityNearViewport(body);
+
     // A displayed frame has to be measured again -- here, once, rather than per step.
     scheduleRepositionPassage();
   }
@@ -667,6 +704,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // frame of a passage that was only partly laid out. Once every fragment has been
         // measured there is nothing left to complete, so this stops costing anything.
         if (!passageComplete) scheduleRepositionPassage();
+        // liftContentVisibilityNearViewport() is deliberately NOT called from here: measured
+        // on a 447 919-element document, doing so turned a 49 ms scroll-sweep excess into
+        // 463 ms. It runs from commitZoomLayout() and onPanStart() instead -- the two
+        // deliberate, bounded gestures that can actually need it -- never from a handler
+        // that fires on every scroll frame of ordinary reading.
         returnMessage("scroll", { x: contentView.scrollX, y: contentView.scrollY });
       });
     }
@@ -704,6 +746,113 @@ document.addEventListener("DOMContentLoaded", function () {
       contentDocument.addEventListener(type, endPassageSettling, { passive: true, capture: true });
       if (contentDocument !== document) document.addEventListener(type, endPassageSettling, { passive: true, capture: true });
     });
+
+    // Ctrl/Cmd+wheel zoom and middle-click pan: bound on the content document (not just
+    // `document`) so both work inside a frameset, where the previewed content -- and
+    // therefore where these events actually fire -- lives one level down.
+    contentDocument.addEventListener("wheel", onWheel, { passive: false });
+    if (contentDocument !== document) document.addEventListener("wheel", onWheel, { passive: false });
+    contentDocument.addEventListener("mousedown", onPanStart);
+    if (contentDocument !== document) document.addEventListener("mousedown", onPanStart);
+  }
+
+  // ----------------------
+  // Wheel zoom
+  // ----------------------
+
+  /**
+   * Ctrl/Cmd+wheel zooms, anchored under the cursor; a bare wheel is left alone so normal
+   * scroll-to-read -- and the page-tracking/`scroll` message it drives -- keeps working
+   * unchanged. Ctrl is also what every browser reports for a trackpad pinch, so this
+   * covers both gestures for free.
+   */
+  function onWheel(event) {
+    if (!event.ctrlKey) return;
+    event.preventDefault();
+    // Natural direction: scrolling/pinching "up" (negative deltaY) zooms in, matching the
+    // browser's own Ctrl+wheel page zoom.
+    wheelZoomFactorDelta -= event.deltaY * WHEEL_ZOOM_SENSITIVITY;
+    wheelZoomPoint = { x: event.clientX, y: event.clientY };
+    if (wheelZoomHandle !== null) return;
+    wheelZoomHandle = requestAnimationFrame(flushWheelZoom);
+  }
+
+  function flushWheelZoom() {
+    wheelZoomHandle = null;
+    var point = wheelZoomPoint;
+    var delta = wheelZoomFactorDelta;
+    wheelZoomFactorDelta = 0;
+    var body = getPreviewBody();
+    if (!body) return;
+    var factor = currentZoomFactor(body);
+    var next = Math.min(3, Math.max(0.2, factor + factor * delta));
+    zoom(next, false, point);
+  }
+
+  // ----------------------
+  // Mouse pan
+  // ----------------------
+
+  /**
+   * Starts a middle-click drag pan by driving the native scroller directly -- not a
+   * separate `transform: translate()` -- so the drag fires the ordinary `scroll` event
+   * and everything already hanging off it (page tracking, passage repositioning, the
+   * `scroll` message to the host) keeps working with no extra code.
+   */
+  function onPanStart(event) {
+    if (event.button !== 1) return;
+    var body = getPreviewBody();
+    if (!body) return;
+    var contentDocument = body.ownerDocument;
+    var scroller = contentDocument.scrollingElement || contentDocument.documentElement;
+    if (!scroller) return;
+    // Stops the browser's own middle-click autoscroll icon from taking over the gesture.
+    event.preventDefault();
+    // Without this, panning towards content that overflows only past the fold of an
+    // on-screen container is a no-op: the browser clamps scrollLeft/scrollTop to what
+    // content-visibility left it believing is scrollable (see
+    // liftContentVisibilityNearViewport()). Below 100% there is nothing to find (see the
+    // same guard in commitZoomLayout()), so this only pays for the pass when it can matter.
+    if (currentZoomFactor(body) > 1) liftContentVisibilityNearViewport(body);
+    panState = {
+      contentDocument: contentDocument,
+      scroller: scroller,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      startLeft: scroller.scrollLeft,
+      startTop: scroller.scrollTop
+    };
+    document.documentElement.classList.add("sq-panning");
+    contentDocument.addEventListener("mousemove", onPanMove);
+    contentDocument.addEventListener("mouseup", onPanEnd);
+    contentDocument.addEventListener("mouseleave", onPanEnd);
+    if (contentDocument !== document) {
+      document.addEventListener("mousemove", onPanMove);
+      document.addEventListener("mouseup", onPanEnd);
+    }
+  }
+
+  function onPanMove(event) {
+    if (!panState) return;
+    event.preventDefault();
+    var dx = event.clientX - panState.startClientX;
+    var dy = event.clientY - panState.startClientY;
+    panState.scroller.scrollLeft = panState.startLeft - dx;
+    panState.scroller.scrollTop = panState.startTop - dy;
+  }
+
+  function onPanEnd() {
+    if (!panState) return;
+    var contentDocument = panState.contentDocument;
+    contentDocument.removeEventListener("mousemove", onPanMove);
+    contentDocument.removeEventListener("mouseup", onPanEnd);
+    contentDocument.removeEventListener("mouseleave", onPanEnd);
+    if (contentDocument !== document) {
+      document.removeEventListener("mousemove", onPanMove);
+      document.removeEventListener("mouseup", onPanEnd);
+    }
+    document.documentElement.classList.remove("sq-panning");
+    panState = null;
   }
 
   /**
@@ -1362,6 +1511,73 @@ document.addEventListener("DOMContentLoaded", function () {
         liftedSkips.push(node);
       }
     }
+  }
+
+  /**
+   * Keeps `content-visibility: auto` containers lifted while their (estimated) box is on
+   * screen, and drops the lift once it scrolls away.
+   *
+   * This exists because a container's own `content-visibility: auto` -- even while it is
+   * being painted normally, on screen, nowhere near being skipped -- keeps
+   * `document.scrollingElement.scrollWidth` from ever reflecting its real width in this
+   * quirks-mode, transform-scaled document: measured on a 2550px-wide page image in a
+   * 481px panel, `scrollWidth` stayed pinned to 481 (zero reported overflow) at every zoom
+   * level, and `scrollLeft` assignments past that were silently clamped back to 0 -- no
+   * horizontal scrollbar, and no way to pan there either. Setting the container's own
+   * `content-visibility` to `visible` is what unblocks both, exactly like
+   * liftSkipAroundPassage() already does for a cited passage; this is the same fix applied
+   * proactively to whatever is currently on screen, not only to a citation.
+   *
+   * Bounded to two levels -- body's children and their children -- matching the only two
+   * levels preview.css ever marks `content-visibility: auto` on, so the cost stays a few
+   * dozen `getBoundingClientRect()` reads (cheap once layout is already up to date) rather
+   * than a walk of the whole document.
+   */
+  function liftContentVisibilityNearViewport(body) {
+    // This document has already proven too expensive for extra passes -- either the width
+    // reflow itself, or a previous call to this function.
+    if (layoutCommitTooSlow || viewportLiftTooSlow) return;
+    var started = performance.now();
+    var contentDocument = body.ownerDocument;
+    var view = contentDocument.defaultView || window;
+    // One screen of slack above and below, so a container lifts just before it scrolls into
+    // view rather than popping in exactly at the edge.
+    var margin = view.innerHeight;
+    var top = -margin;
+    var bottom = view.innerHeight + margin;
+    var stillNear = new Set();
+
+    function consider(node) {
+      if (!node.style || node.id === "sq-passage-layer") return;
+      var alreadyLifted = viewportLiftedContainers.has(node);
+      // Once lifted, the computed value reads back "visible" (our own inline override), not
+      // "auto" -- so this check only decides whether a *fresh* node is a skip candidate at
+      // all; an already-tracked one is re-evaluated purely on whether it is still near.
+      if (!alreadyLifted && view.getComputedStyle(node).contentVisibility !== "auto") return;
+      var rect = node.getBoundingClientRect();
+      if (rect.bottom < top || rect.top > bottom) return;
+      stillNear.add(node);
+      if (!alreadyLifted) {
+        node.style.contentVisibility = "visible";
+        viewportLiftedContainers.add(node);
+      }
+    }
+
+    var level1 = body.children;
+    for (var i = 0; i < level1.length; i++) {
+      consider(level1[i]);
+      var level2 = level1[i].children;
+      for (var j = 0; j < level2.length; j++) consider(level2[j]);
+    }
+
+    viewportLiftedContainers.forEach(function (node) {
+      // Still near, or owned by a selected passage's own lift: leave it alone either way.
+      if (stillNear.has(node) || liftedSkips.indexOf(node) !== -1) return;
+      node.style.contentVisibility = "";
+      viewportLiftedContainers.delete(node);
+    });
+
+    if (performance.now() - started > LAYOUT_COMMIT_BUDGET_MS) viewportLiftTooSlow = true;
   }
 
   /**
