@@ -54,5 +54,8 @@ docusaurus/node_modules/*
 
 # Insight configuration
 proxy.conf.insight.json
-proxy.conf.spfx.json
 /src/environments/environment.insight.ts
+
+# Insiders configuration
+proxy.conf.agent.json
+proxy.conf.spfx.json
