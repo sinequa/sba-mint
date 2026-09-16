@@ -3,6 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { PreviewData } from "@sinequa/atomic";
 import { AppStore, CConverter } from "@sinequa/atomic-angular";
+import { computeConverterOptions } from "./converter-options";
 
 /**
  * Converter (multi-format) select
@@ -11,6 +12,7 @@ import { AppStore, CConverter } from "@sinequa/atomic-angular";
  * ```html
  * <converter-select
  *    [previewData]="previewData()"
+ *    [activeConversion]="conversion()"
  *    (onConversionSelect)="conversion.set($event)" />
  * ```
  *
@@ -20,8 +22,7 @@ import { AppStore, CConverter } from "@sinequa/atomic-angular";
  * and at least one matching conversion exists — otherwise the host is hidden (zero footprint), so it
  * can be dropped into any layout (a tab bar row, a toolbar, etc.) without leaving a gap.
  *
- * The selected {@link CConverter} is emitted via `onConversionSelect` and should be fed into
- * `<preview-content [conversion]="...">` so the previewed URL switches accordingly.
+ * The selected {@link CConverter} is emitted via `onConversionSelect`.
  */
 @Component({
   selector: "converter-select",
@@ -30,7 +31,7 @@ import { AppStore, CConverter } from "@sinequa/atomic-angular";
   template: `
     @if (converterOptions().length) {
       <select
-        class="h-8 rounded-md border border-foreground/10 bg-background px-2 hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
+        class="h-8 rounded-md border border-foreground/10 bg-background px-2 shadow-md hover:bg-muted hover:outline hover:outline-primary focus:bg-muted focus:outline focus:outline-primary"
         [(ngModel)]="currentConversionIndex">
         @for (option of converterOptions(); track $index) {
           <option [value]="$index">{{ option.name | transloco }}</option>
@@ -47,6 +48,17 @@ export class ConverterSelectComponent {
 
   /** Loaded preview data, whose `conversions` are matched against the configured converters. */
   previewData = input<PreviewData | undefined>(undefined);
+  /**
+   * The conversion already active upstream (the real single source of truth, owned by whichever
+   * host embeds this dropdown — e.g. `preview-content`'s own internal `conversion` signal), if any.
+   * Optional — this component still works standalone without it, defaulting to the first/primary
+   * option. When provided, it's used to re-sync this dropdown's selection on (re)mount instead of
+   * always resetting to the first option, which otherwise silently overwrites whatever was already
+   * selected upstream whenever this component gets torn down and rebuilt by an unrelated reactive
+   * change (e.g. nested inside `<preview-actions>`, itself inside `preview-content`'s own
+   * conditionally-rendered branch).
+   */
+  activeConversion = input<CConverter | undefined>(undefined);
   /** Emits the currently selected converter (or undefined when none applies). */
   onConversionSelect = output<CConverter | undefined>();
 
@@ -58,42 +70,25 @@ export class ConverterSelectComponent {
     this.currentConversionIndex() === -1 ? undefined : this.converterOptions()[this.currentConversionIndex()]
   );
 
-  /** Configured converters (display: true) that have a matching conversion in the preview data. */
-  converters = computed(() =>
-    !this.previewData()?.conversions?.length
-      ? undefined
-      : this.appStore
-          .general()
-          ?.converters?.filter(
-            converter =>
-              converter.display && this.previewData()?.conversions?.some(c => c.converterName === converter.converter && c.format === converter.format)
-          )
-  );
-
   /** All options for the converters dropdown */
   converterOptions = computed(() => {
-    // return [] if the feature is disabled or there are no available conversions
-    const converters = this.converters();
-    if (!this.previewMultiConversion() || !converters?.length) return [];
-
-    return (
-      converters
-        .map(converter => ({
-          ...converter,
-          conversion: this.previewData()?.conversions?.find(c => c.converterName === converter.converter && c.format === converter.format)
-        }))
-        // sort to have defaults first, then primaries, then others
-        .sort((a, b) => ((a.default && !b.default) || (!a.default && !b.default && a.primary && !b.primary) ? -1 : 1))
-    );
+    if (!this.previewMultiConversion()) return [];
+    return computeConverterOptions(this.previewData(), this.appStore.general()?.converters);
   });
 
   constructor() {
     effect(() => {
-      // setting the current conversion to the first conversion
-      // (the conversions being sorted to be defaults then primaries first, the first element will always be the one to pick by default)
-      if (this.previewMultiConversion() && this.converterOptions()?.length) {
-        this.currentConversionIndex.set(0);
-      }
+      const options = this.converterOptions();
+      if (!this.previewMultiConversion() || !options.length) return;
+
+      // Re-sync to the conversion already active upstream when there is one (e.g. this component
+      // just got recreated by an unrelated reactive change) — comparing by converter+format, not
+      // object identity, since converterOptions() re-maps fresh objects on every recompute. Only
+      // fall back to the first/default option (conversions are sorted defaults then primaries
+      // first) when nothing is active yet, i.e. a genuinely fresh document.
+      const active = this.activeConversion();
+      const matchedIndex = active ? options.findIndex(option => option.converter === active.converter && option.format === active.format) : -1;
+      this.currentConversionIndex.set(matchedIndex !== -1 ? matchedIndex : 0);
     });
 
     effect(() => {

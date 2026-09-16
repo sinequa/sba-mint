@@ -1,4 +1,4 @@
-import { Component, inject, input } from "@angular/core";
+import { Component, inject, input, output } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 
 import { DocumentOverviewComponent } from "@sinequa/assistant/chat";
@@ -10,7 +10,7 @@ import { UploadDialog } from "./upload.dialog";
   selector: "assistant-upload, AssistantUpload",
   imports: [TranslocoPipe, DocumentOverviewComponent, FolderOpenIcon],
   template: `
-    <section class="border-foreground/10 rounded-2xl border p-4">
+    <section class="p-4">
       <div class="text-muted-foreground flex items-center gap-2">        <FolderOpenIcon />
         <h3 class="pointer-events-none font-semibold">
           {{ 'assistant.my-documents' | transloco }}
@@ -26,7 +26,12 @@ export class AssistantUploadComponent {
 
   instanceId = input.required<string>();
 
+  /** Emitted right before the upload dialog opens — lets a host in a floating panel (e.g. the
+   * /assistant ipad drawer) close itself first, since the dialog would otherwise render underneath it. */
+  onUploadDialogOpen = output<void>();
+
   openUploadDialog() {
+    this.onUploadDialogOpen.emit();
     this.dialogService.open(UploadDialog);
   }
 }

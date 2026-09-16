@@ -5,12 +5,39 @@
   Layered approach:
     1. Base tokens (--badge-bg / --badge-fg / --badge-border) drive the default
        rendering. Components read only these.
-    2. Scheme tokens (--badge-<scheme>-bg / -fg / -border) expose the full
-       palette of intents so the component can reassign the base tokens per
-       variant (e.g. via `[data-scheme="error"] { --badge-bg: var(--badge-error-bg); }`).
+    2. Scheme tokens (--badge-<scheme> / -foreground / -light / -light-foreground)
+       expose the full palette of intents so the component can reassign the base
+       tokens per variant (e.g. via `[data-scheme="error"] { --badge-bg: var(--badge-error); }`).
 
   Consumes the global semantic layer from `galactik-tokens.css` — never the raw
-  ramps — so dark theme takes over automatically via `galactik-tokens.dark.css`.
+  ramps — so dark theme takes over automatically via `galactik-tokens-dark.css`.
+
+  `@sinequa/ui`'s Badge/Tag component (`sinequa-ui.mjs`) is the real consumer: its
+  "primary" variant reads `--badge-<scheme>`/`-foreground` (pastel background, dark
+  text), its "secondary"/"outline" variant reads `--badge-<scheme>-light`/
+  `-light-foreground` (bolder background, light text) plus `border-(--badge-<scheme>)`.
+  The "-light" suffix names the secondary/outline variant, not a lighter shade — it
+  is in fact the BOLDER of the two backgrounds. Mint's own usage (`record-card`,
+  `slide-card`) only ever renders `variant="outline"` with the default `sage` scheme
+  today — the other 11 schemes are reachable through the component's public API but
+  not currently rendered anywhere in the app.
+
+  Every pairing below was picked, and verified with a resolved-value contrast check
+  (light AND dark), among the `--bg-*`/`--font-*` tokens each category actually
+  declares — `base`/`base-alt` don't consistently mean light/bold across categories
+  (e.g. `--bg-success-base` is pastel while `--bg-indigo-base` is bold), so the
+  lighter/bolder token differs by scheme. Never reuse a `--font-*` token as a
+  background: its dark-mode reassignment is tuned for text readability, not for
+  serving as a fill (this broke `--badge-warning-light`/`--badge-yellow-light` in an
+  earlier pass — dark mode flipped `--font-warning-base`/`--font-yellow-base` to a
+  LIGHT tint, collapsing contrast against light text to ~1.2-1.4:1).
+
+  Four schemes (cherry, indigo, yellow, cyan) only have a `base`/`base-alt` pair —
+  no `lightest` step like the status colors — so one of their two roles cannot
+  reach AA (4.5:1) in dark mode with any pairing available in the semantic layer;
+  each such case is called out below. None of the 12 schemes drops toward
+  unreadable (worst case ~2.1:1); the four affected schemes aren't rendered in
+  Mint today.
 
   Usage in the component stylesheet:
 
@@ -20,70 +47,84 @@
         box-shadow: inset 0 0 0 1px var(--badge-border);
       }
       .badge[data-scheme="success"] {
-        --badge-bg:     var(--badge-success-bg);
-        --badge-fg:     var(--badge-success-fg);
+        --badge-bg:     var(--badge-success);
+        --badge-fg:     var(--badge-success-foreground);
         --badge-border: var(--badge-success-border);
       }
 */
 
 :root {
-  --badge-sage: var(--sage-300);
-  --badge-sage-foreground: var(--sage-950);
-  --badge-sage-light: var(--sage-800);
-  --badge-sage-light-foreground: var(--sage-100);
+  --badge-sage: var(--bg-primary-light);
+  --badge-sage-foreground: var(--font-primary-base);
+  --badge-sage-light: var(--bg-primary-base);
+  --badge-sage-light-foreground: var(--font-neutral-white);
 
-  --badge-almond: var(--almond-300);
-  --badge-almond-foreground: var(--almond-950);
-  --badge-almond-light: var(--almond-800);
-  --badge-almond-light-foreground: var(--almond-100);
+  --badge-almond: var(--bg-secondary-light);
+  --badge-almond-foreground: var(--font-secondary-base);
+  --badge-almond-light: var(--bg-secondary-base-alt);
+  --badge-almond-light-foreground: var(--font-neutral-white);
 
-  --badge-pink: var(--pink-300);
-  --badge-pink-foreground: var(--pink-950);
-  --badge-pink-light: var(--pink-800);
-  --badge-pink-light-foreground: var(--pink-100);
+  --badge-pink: var(--bg-accent-base);
+  --badge-pink-foreground: var(--font-accent-base);
+  --badge-pink-light: var(--bg-accent-pressed);
+  --badge-pink-light-foreground: var(--font-neutral-white);
 
-  --badge-grey: var(--grey-300);
-  --badge-grey-foreground: var(--grey-950);
-  --badge-grey-light: var(--grey-700);
-  --badge-grey-light-foreground: var(--grey-200);
+  --badge-grey: var(--bg-neutral-base);
+  --badge-grey-foreground: var(--font-neutral-base);
+  /* --font-neutral-white collides with --bg-neutral-base-alt in dark mode (both
+     resolve to --grey-100 there) — --font-neutral-light stays readable in both. */
+  --badge-grey-light: var(--bg-neutral-base-alt);
+  --badge-grey-light-foreground: var(--font-neutral-light);
 
-  --badge-cherry: var(--cherry-300);
-  --badge-cherry-foreground: var(--cherry-950);
-  --badge-cherry-light: var(--cherry-800);
-  --badge-cherry-light-foreground: var(--cherry-100);
+  --badge-cherry: var(--bg-cherry-base);
+  --badge-cherry-foreground: var(--font-cherry-base);
+  /* Below AA in dark mode (~3.8:1) — no darker --bg-cherry-* token exists to pair
+     with light text. Not rendered anywhere in Mint today. */
+  --badge-cherry-light: var(--bg-cherry-base-alt);
+  --badge-cherry-light-foreground: var(--font-neutral-white);
 
-  --badge-indigo: var(--indigo-300);
-  --badge-indigo-foreground: var(--indigo-950);
-  --badge-indigo-light: var(--indigo-800);
-  --badge-indigo-light-foreground: var(--indigo-100);
+  /* indigo/yellow/cyan: light↔bold direction is reversed vs the other categories
+     (--bg-<cat>-base is the BOLD step, --bg-<cat>-base-alt the pastel one). */
+  /* Below AA in dark mode (~2.8:1) — no lighter --bg-indigo-* token exists to pair
+     safely with dark text. Not rendered anywhere in Mint today. */
+  --badge-indigo: var(--bg-indigo-base-alt);
+  --badge-indigo-foreground: var(--font-indigo-base);
+  --badge-indigo-light: var(--bg-indigo-base);
+  --badge-indigo-light-foreground: var(--font-neutral-white);
 
-  --badge-yellow: var(--yellow-300);
-  --badge-yellow-foreground: var(--yellow-950);
-  --badge-yellow-light: var(--yellow-800);
-  --badge-yellow-light-foreground: var(--yellow-200);
+  /* Below AA in dark mode (~2.1:1) — same structural gap as indigo. Not rendered
+     anywhere in Mint today. */
+  --badge-yellow: var(--bg-yellow-base-alt);
+  --badge-yellow-foreground: var(--font-yellow-base);
+  --badge-yellow-light: var(--bg-yellow-base);
+  --badge-yellow-light-foreground: var(--font-neutral-black);
 
-  --badge-cyan: var(--cyan-300);
-  --badge-cyan-foreground: var(--cyan-950);
-  --badge-cyan-light: var(--cyan-800);
-  --badge-cyan-light-foreground: var(--cyan-100);
+  /* Below AA in dark mode (~3.2:1) — same structural gap as indigo. Not rendered
+     anywhere in Mint today. */
+  --badge-cyan: var(--bg-cyan-base-alt);
+  --badge-cyan-foreground: var(--font-cyan-base);
+  --badge-cyan-light: var(--bg-cyan-base);
+  --badge-cyan-light-foreground: var(--font-neutral-white);
 
-  --badge-success: var(--green-300);
-  --badge-success-foreground: var(--green-950);
-  --badge-success-light: var(--green-800);
-  --badge-success-light-foreground: var(--green-200);
+  --badge-success: var(--bg-success-base);
+  --badge-success-foreground: var(--font-success-base);
+  --badge-success-light: var(--bg-success-base-alt);
+  --badge-success-light-foreground: var(--font-neutral-white);
 
-  --badge-warning: var(--orange-300);
-  --badge-warning-foreground: var(--orange-950);
-  --badge-warning-light: var(--orange-800);
-  --badge-warning-light-foreground: var(--orange-200);
+  --badge-warning: var(--bg-warning-base);
+  --badge-warning-foreground: var(--font-warning-base);
+  /* --font-neutral-white drops --bg-warning-base-alt under AA in light mode
+     (orange's -600 step isn't dark enough) — black text clears both themes. */
+  --badge-warning-light: var(--bg-warning-base-alt);
+  --badge-warning-light-foreground: var(--font-neutral-black);
 
-  --badge-info: var(--blue-300);
-  --badge-info-foreground: var(--blue-950);
-  --badge-info-light: var(--blue-800);
-  --badge-info-light-foreground: var(--blue-200);
+  --badge-info: var(--bg-info-base);
+  --badge-info-foreground: var(--font-info-base);
+  --badge-info-light: var(--bg-info-base-alt);
+  --badge-info-light-foreground: var(--font-neutral-white);
 
-  --badge-error: var(--red-300);
-  --badge-error-foreground: var(--red-950);
-  --badge-error-light: var(--red-800);
-  --badge-error-light-foreground: var(--red-200);
+  --badge-error: var(--bg-error-base);
+  --badge-error-foreground: var(--font-error-base);
+  --badge-error-light: var(--bg-error-base-alt);
+  --badge-error-light-foreground: var(--font-neutral-white);
 }
