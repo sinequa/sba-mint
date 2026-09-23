@@ -17,6 +17,7 @@
     "start": "ng serve",
     "start:docs": "cd docusaurus && npm start",
     "start:local": "ng serve --ssl=true --proxy-config=proxy.conf.local.json",
+    "start:agent": "ng serve --ssl=true --proxy-config=proxy.conf.agent.json",
     "start:spfx": "npm run spfx:enable && ng serve --configuration spfx",
     "spfx:disable": "node scripts/spfx-mode.mjs disable",
     "spfx:enable": "node scripts/spfx-mode.mjs enable",
