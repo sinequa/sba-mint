@@ -36,7 +36,7 @@ import { AppSidebarComponent } from "../../components/sidebar/sidebar.component"
       [class]="
         cn(
           'mt-16 ml-18 grid h-[calc(100vh-4rem)] translate-x-0 grid-cols-1 overflow-hidden transition duration-300 ease-in-out md:grid-cols-[.65fr_1fr] lg:grid-cols-[15%_1fr]',
-          opened() && '-translate-x-[15%] md:grid-cols-[15%_50%]'
+          opened() && 'translate-x-[-15%] md:grid-cols-[15%_50%]'
         )
       ">
       <div [class]="cn('scrollbar-stable scrollbar-thin hidden h-full overflow-y-auto opacity-0 md:flex flex-col max-w-80', !opened() && 'p-4 opacity-100')">
