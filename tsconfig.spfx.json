@@ -1,14 +1,11 @@
-/* SPFx build variant: entry main.spfx.ts (the @sinequa/atomic -> atomic-spfx alias is at the npm level, see package.json). */
+/* SPFx build variant: entry main.spfx.ts. The AAD types (@microsoft/sp-http) are provisioned on
+   demand by `npm run spfx:enable` — see scripts/spfx-mode.mjs and spfx-host/README.md.
+   `paths` are inherited from tsconfig.json: do NOT redefine them here (a partial copy silently
+   breaks @pipes/* and @services/* imports in the spfx build only). */
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "skipLibCheck": true,
-    "paths": {
-      "@components/*": ["./src/components/*"],
-      "@config/*": ["./src/config/*"],
-      "@registry/*": ["./src/registry/*"],
-      "@utils/*": ["./src/utils/*"]
-    }
+    "skipLibCheck": true
   },
   "files": ["src/main.spfx.ts"]
 }

@@ -27,14 +27,16 @@
           {{ askAI }}
         </button>
       }
+      @let searchLabel = "search" | transloco;
+      @let isDisabled = !allowEmptySearch() && searchInputText().trim() === "";
       <button
         variant="icon"
         [iconOnly]="true"
         class="transition-transform duration-200 ease-in-out hover:scale-110"
-        [title]="'search' | transloco"
-        [attr.aria-label]="'search' | transloco"
-        [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
-        [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+        [title]="searchLabel"
+        [attr.aria-label]="searchLabel"
+        [attr.aria-disabled]="isDisabled"
+        [disabled]="isDisabled"
         (keydown.enter)="onSearch($event)"
         (click)="onSearch($event)">
         <SendHorizontalIcon />

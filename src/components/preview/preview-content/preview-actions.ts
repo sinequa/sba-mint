@@ -1,20 +1,13 @@
-import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, linkedSignal, output, signal } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
 
-import { PreviewService, SelectionStore } from "@sinequa/atomic-angular";
-import {
-  ArrowsMaximizeIcon,
-  ButtonComponent,
-  FlashlightIcon,
-  IconButtonComponent,
-  LightbulbIcon,
-  LightbulbSlashIcon,
-  MagnifyingGlassMinusIcon,
-  MagnifyingGlassPlusIcon,
-  SlashIcon,
-  SparklesIcon
-} from "@sinequa/ui";
+import { PreviewData } from "@sinequa/atomic";
+import { CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
+import { ButtonComponent, FlashlightIcon, LightbulbIcon, LightbulbSlashIcon, SlashIcon, SparklesIcon } from "@sinequa/ui";
+import { ConverterSelectComponent } from "../converter-select/converter-select";
+import { FloatingToolbarComponent } from "./floating-toolbar";
+import { ZoomControlsComponent } from "./zoom-controls";
 
 /**
  * Preview actions component
@@ -31,97 +24,82 @@ import {
   imports: [
     TranslocoPipe,
     ButtonComponent,
-    ArrowsMaximizeIcon,
-    MagnifyingGlassPlusIcon,
-    MagnifyingGlassMinusIcon,
     SparklesIcon,
     SlashIcon,
     FlashlightIcon,
     LightbulbIcon,
     LightbulbSlashIcon,
-    IconButtonComponent
+    ConverterSelectComponent,
+    ZoomControlsComponent,
+    FloatingToolbarComponent
   ],
   template: `
-    <button variant="none" icon-button   [attr.title]="'preview.zoomFit' | transloco" (click)="zoomFit()">
-      <arrows-maximize-icon class="shrink-0" />
-    </button>
+    <floating-toolbar>
+      <converter-select
+        [previewData]="previewData()"
+        [activeConversion]="activeConversion()"
+        (onConversionSelect)="onConversionSelect.emit($event)" />
 
-    <button variant="none" icon-button   [attr.title]="'preview.zoomIn' | transloco" (click)="zoomIn()">
-      <magnifying-glass-plus-icon class="shrink-0" />
-    </button>
+      <zoom-controls (zoomFit)="zoomFit()" (zoomIn)="zoomIn()" (zoomOut)="zoomOut()" />
 
-    <button variant="none" icon-button   [attr.title]="'preview.zoomOut' | transloco" (click)="zoomOut()">
-      <magnifying-glass-minus-icon class="shrink-0" />
-    </button>
+      @if (isPrimary()) {
+        @if (hasAIDescription()) {
+          @if (showAIDescription()) {
+            <button
+              variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+              [attr.title]="'preview.toggleAIDescription' | transloco"
+              (click)="toggleAIDescription()">
+              <sparkles-icon class="shrink-0" />
+            </button>
+          } @else {
+            <button
+              variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+              [attr.title]="'preview.toggleAIDescription' | transloco"
+              (click)="toggleAIDescription()">
+              <span class="relative shrink-0 inline-flex items-center justify-center">
+                <sparkles-icon />
+                <slash-icon class="absolute" />
+              </span>
+            </button>
+          }
+        }
 
-    @if (isPrimary()) {
-      @if (hasAIDescription()) {
-        @if (showAIDescription()) {
+        @if (extracts()) {
           <button
-            variant="none" icon-button
-
-            [attr.title]="'preview.toggleAIDescription' | transloco"
-            (click)="toggleAIDescription()">
-            <sparkles-icon class="shrink-0" />
+            variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+            [attr.title]="'preview.toggleExtracts' | transloco"
+            (click)="toggleExtracts()">
+            <flashlight-icon class="shrink-0" />
           </button>
         } @else {
           <button
-            variant="none" icon-button
-
-
-            [attr.title]="'preview.toggleAIDescription' | transloco"
-            (click)="toggleAIDescription()">
+            variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+            [attr.title]="'preview.toggleExtracts' | transloco"
+            (click)="toggleExtracts()">
             <span class="relative shrink-0 inline-flex items-center justify-center">
-              <sparkles-icon />
+              <flashlight-icon />
               <slash-icon class="absolute" />
             </span>
           </button>
         }
+
+        @if (entities()) {
+          <button
+            variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+            [attr.title]="'preview.toggleEntities' | transloco"
+            (click)="toggleEntities()">
+            <lightbulb-icon class="shrink-0" />
+          </button>
+        } @else {
+          <button
+            variant="outline" [iconOnly]="true" size="sm" class="border-foreground/10 bg-background shadow-md"
+            [attr.title]="'preview.toggleEntities' | transloco"
+            (click)="toggleEntities()">
+            <lightbulb-slash-icon class="shrink-0" />
+          </button>
+        }
       }
-
-      @if (extracts()) {
-        <button
-          variant="none" icon-button
-
-
-          [attr.title]="'preview.toggleExtracts' | transloco"
-          (click)="toggleExtracts()">
-          <flashlight-icon class="shrink-0" />
-        </button>
-      } @else {
-        <button
-          variant="none" icon-button
-
-
-          [attr.title]="'preview.toggleExtracts' | transloco"
-          (click)="toggleExtracts()">
-          <span class="relative shrink-0 inline-flex items-center justify-center">
-            <flashlight-icon />
-            <slash-icon class="absolute" />
-          </span>
-        </button>
-      }
-
-      @if (entities()) {
-        <button
-          variant="none" icon-button
-
-
-          [title]="'preview.toggleEntities' | transloco"
-          (click)="toggleEntities()">
-          <lightbulb-icon class="shrink-0" />
-        </button>
-      } @else {
-        <button
-          variant="none" icon-button
-
-
-          [attr.title]="'preview.toggleEntities' | transloco"
-          (click)="toggleEntities()">
-          <lightbulb-slash-icon class="shrink-0" />
-        </button>
-      }
-    }
+    </floating-toolbar>
   `
 })
 export class PreviewActionsComponent {
@@ -131,13 +109,28 @@ export class PreviewActionsComponent {
 
   readonly isPrimary = input<boolean>(false);
 
+  /**
+   * True when the iframe revealed an AI page description by itself, because the
+   * cited passage lives inside it. Drives {@link showAIDescription} so the toggle
+   * does not claim the description is hidden while it is on screen.
+   */
+  readonly aiDescriptionShown = input<boolean>(false);
+
+  /** Loaded preview data, forwarded to `<converter-select>`. */
+  readonly previewData = input<PreviewData | undefined>(undefined);
+  /** The conversion already active upstream, forwarded to `<converter-select>` so it can re-sync
+   *  its selection on remount instead of always resetting to the first option. */
+  readonly activeConversion = input<CConverter | undefined>(undefined);
+  /** Forwards `<converter-select>`'s selected converter to the parent. */
+  readonly onConversionSelect = output<CConverter | undefined>();
+
   protected readonly extracts = signal(true);
   protected readonly entities = signal(false);
   /**
-   * Signal to control the visibility of AI-generated descriptions.
-   * Initially set to false, indicating that the AI description is not shown.
+   * Visibility of the AI-generated descriptions. Follows `aiDescriptionShown`,
+   * and can still be toggled locally by the button.
    */
-  protected readonly showAIDescription = signal(false);
+  protected readonly showAIDescription = linkedSignal(() => this.aiDescriptionShown());
   /**
    * Computed signal that checks if the article has an AI-generated description.
    * It checks the flags of the article in the selection store to see if it includes 'ps'.

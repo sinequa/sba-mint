@@ -1,9 +1,12 @@
-<div class="flex max-w-[inherit] flex-col">
+<!-- `relative` only anchors the floating panel below. Nothing here may carry an `overflow`: see the
+     clip box comment further down. -->
+<div class="relative flex max-w-[inherit] flex-col">
   <preview-navbar
     class="block border-b border-muted-foreground/18"
     [isPrimary]="!conversion() || conversion()!.primary === true || conversion()!.conversion?.isPrimary === true"
     [(extended)]="extended"
     [article]="article()"
+    [hostedInSheet]="hostedInSheet()"
     (onClose)="onClose.emit()" />
 
   <div class="@container relative mb-2 flex h-full flex-col gap-0.5">
@@ -21,9 +24,32 @@
       <preview-content class="h-full" />
     }
   </div>
-</div>
 
-<advanced-search
-  [class]="cn('max-w-(clamp(200px,350px,100%)) h-full overflow-y-auto rounded-r-lg border-foreground/18 bg-menu', extended() && 'border-l')"
-  [article]="article()"
-  previewStrategy="replace" />
+  <!-- advanced search — floating slide-in panel, same pattern as the search page left filters drawer.
+       It overlays the document instead of taking a grid column: the iframe keeps its size when the
+       panel opens, so no reflow of the previewed document (which froze the UI on large documents).
+
+       The clip box that hides the collapsed panel is a sibling of the document, never an ancestor of
+       the iframe. An `overflow` on the iframe's ancestor chain becomes a scroll container, and the
+       converter's fragment navigation (`location.href = "#page"`, our next-page action) scrolls it —
+       a scroll that then propagates out of the iframe up to the host window (ES-31592).
+       `pointer-events-none` keeps the document clickable underneath, `clip` never scrolls. -->
+  <div class="pointer-events-none absolute inset-0 z-30 overflow-clip">
+    <aside
+      class="pointer-events-auto absolute inset-y-0 right-0 w-80 max-w-full p-3 transition-transform duration-300 ease-out"
+      [class.translate-x-full]="!extended()"
+      [inert]="!extended()">
+      <div class="flex h-full w-full flex-col rounded-3xl border border-menu-border bg-menu py-3 shadow-lg">
+        <!-- pl-6/pr-3 mirror advanced-search own side padding, so the title lines up with its input -->
+        <div class="flex items-center justify-between pr-3 pl-6">
+          <span class="font-semibold">{{ "preview.searchInDocument" | transloco }}</span>
+          <button variant="none" icon-button (click)="extended.set(false)" [attr.aria-label]="'close' | transloco">
+            <xmark-icon />
+          </button>
+        </div>
+        <!-- the single scroll container lives on the host; advanced-search brings its own side padding -->
+        <advanced-search class="block min-h-0 flex-1 scrollbar-thin overflow-y-auto" [article]="article()" previewStrategy="replace" />
+      </div>
+    </aside>
+  </div>
+</div>

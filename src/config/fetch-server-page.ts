@@ -1,8 +1,6 @@
 import { Injector, inject, runInInjectionContext } from "@angular/core";
-import { TranslocoService } from "@jsverse/transloco";
 import { Article, Query, QueryParams, Result } from "@sinequa/atomic";
-import { AppStore, QueryService, SelectionService } from "@sinequa/atomic-angular";
-import { toast } from "ngx-sonner";
+import { QueryService, SelectionService } from "@sinequa/atomic-angular";
 import { lastValueFrom, map } from "rxjs";
 
 export function fetchServerPage(
@@ -23,16 +21,6 @@ export function fetchServerPage(
   return runInInjectionContext(injector, () => {
     const queryService = inject(QueryService);
     const selectionService = inject(SelectionService);
-    const appStore = inject(AppStore);
-    const translocoService = inject(TranslocoService);
-
-    // If empty search is not allowed for this query, do not launch a query with an empty text
-    // and inform the user, as the search component does
-    const allowEmptySearch = appStore.allowEmptySearch(q?.name ?? "");
-    if (!allowEmptySearch && !q?.text?.trim()) {
-      toast.info(translocoService.translate("searchInput.allowEmptySearch"));
-      return Promise.resolve({} as Result);
-    }
 
     const query = { ...q, page: offset, tab, basket, spellingCorrectionMode } as Query;
 
