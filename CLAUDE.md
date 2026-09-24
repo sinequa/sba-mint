@@ -18,6 +18,9 @@ Running `oxfmt` on a file you're genuinely editing for the task at hand is fine,
 wasn't oxfmt-clean and the formatter ends up rewriting the whole file. No need to revert or hand-edit
 around it — `lint-staged` will do the same on commit via the pre-commit hook.
 
+See README.md's "Windows setup" section for the `core.autocrlf` prerequisite — without it, Windows
+checkouts fight the repo's LF convention and can reintroduce CRLF (ES-33695).
+
 ## Changesets
 
 Every MR into `release/11.14.0` that changes actual application behavior — not pure config/tooling/

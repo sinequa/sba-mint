@@ -45,6 +45,24 @@ A modern Angular 20+ application boilerplate for building scalable, maintainable
 
 ## 🚀 Getting Started
 
+### Windows setup — line endings
+
+This repo enforces LF line endings (`.gitattributes`, `.editorconfig`,
+oxfmt/prettier are all configured `eol: lf` / `endOfLine: "lf"`). On Windows,
+Git's own `core.autocrlf=true` default actively fights this — it rewrites LF
+files back to CRLF on checkout, which then gets re-committed as CRLF the next
+time you save, even with the pre-commit hook installed correctly. This has
+already happened once in this repo's history (`package-lock.json`, commit
+a6771c4a).
+
+Before your first commit:
+
+```sh
+git config --global core.autocrlf false
+```
+
+(or `input` if you also work on Unix-style repos elsewhere).
+
 ### Development Server
 
 ```sh
