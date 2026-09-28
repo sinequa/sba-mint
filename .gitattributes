@@ -9,6 +9,3 @@
 *.json  text=auto eol=lf
 *.html  text=auto eol=lf
 *.md    text=auto eol=lf
-
-# Git LFS for assets — kept as-is.
-src/assets/ filter=lfs diff=lfs merge=lfs -text

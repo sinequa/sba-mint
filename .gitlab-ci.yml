@@ -157,6 +157,65 @@ changeset-check:
       echo "Changeset(s) found:"
       echo "$ADDED"
 
+# ─── eol-check ───────────────────────────────────────────────────────────────
+# Blocks an MR if it introduces CRLF in a file whose extension .gitattributes
+# marks eol=lf. Needed because oxfmt/prettier (already configured lf) only run
+# via the local pre-commit hook, bypassed by a merge done from the GitLab UI,
+# a `git commit --no-verify`, or a checkout where `husky install` never ran.
+# See ES-33695.
+# Talks to nothing external: no `.egress` needed.
+eol-check:
+  stage: validate
+  # No node/npm needed (git/grep only) — overrides the docker tag from `default:`
+  # so this doesn't spin up a container on every single MR pipeline.
+  tags: [shell]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    # Full history: the three-dot diff below needs the merge-base.
+    GIT_DEPTH: "0"
+  before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+  script:
+    - |
+      set -eu
+      BRANCH="$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      # Same extension list as .gitattributes' eol=lf rules.
+      PATTERNS='*.ts *.js *.css *.scss *.json *.html *.md'
+
+      git fetch --no-tags origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+
+      CHANGED=$(git diff --diff-filter=ACMR --name-only "origin/$BRANCH...HEAD" -- $PATTERNS)
+
+      if [ -n "$CHANGED" ]; then
+        # git reads the blob directly from the object database, unlike a piped
+        # `grep`/`awk` over `git cat-file` (verified to silently swallow `\r`
+        # through Windows/MSYS text-mode pipes) — use it, not an external pipe.
+        BAD=$(git grep -I -l -e $'\r' HEAD -- $CHANGED || true)
+        if [ -n "$BAD" ]; then
+          echo "ERROR: this MR introduces CRLF line endings in file(s) marked"
+          echo "       eol=lf in .gitattributes:"
+          echo "$BAD"
+          echo ""
+          echo "Fix: run 'npx oxfmt <file>' (.ts/.js/.css/.scss/.json) or"
+          echo "     'npx prettier --config .prettierrc --write <file>' (.html/.md),"
+          echo "     then commit again."
+          echo ""
+          echo "This usually means the change bypassed the local pre-commit hook —"
+          echo "a merge commit made via the GitLab web UI, 'git commit --no-verify',"
+          echo "or a checkout where 'npm install' never ran 'husky install'. See ES-33695."
+          exit 1
+        fi
+      fi
+      echo "No CRLF regressions in files changed by this MR — OK."
+
+      echo ""
+      echo "--- informational only, does not fail the pipeline ---"
+      LEGACY=$(git grep -I -l -e $'\r' --cached -- $PATTERNS || true)
+      LEGACY_COUNT=$(printf '%s\n' "$LEGACY" | sed '/^$/d' | wc -l)
+      echo "$LEGACY_COUNT pre-existing file(s) elsewhere in the repo still contain CRLF"
+      echo "(outside this MR's diff — left untouched per the 'no bulk reformat' convention)."
+
 # ─── build ───────────────────────────────────────────────────────────────────
 # Equivalent: .github/workflows/pull-request.yml
 # `npm ci` runs the postinstall, which pulls @sinequa/assistant (and @sinequa/agent
