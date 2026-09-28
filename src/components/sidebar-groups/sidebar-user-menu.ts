@@ -32,6 +32,7 @@ import {
   UserIcon,
   UserSecretIcon
 } from "@sinequa/ui";
+import { injectTabletBreakpoint } from "../../composables/inject-tablet-breakpoint";
 import { injectCurrentUrl } from "../../utils/routing";
 
 const THEME = ["light", "dark", "system"] as const;
@@ -90,11 +91,14 @@ export class SidebarUserMenuComponent {
   private readonly appStore = inject(AppStore);
   private readonly transloco = inject(TranslocoService);
   protected readonly isMobile = inject(BreakpointObserverService).isMobile;
+  private readonly isTabletOrMobile = injectTabletBreakpoint().isTabletOrMobile;
 
   private readonly currentUrl = injectCurrentUrl();
   readonly isAgentRoute = computed(() => this.currentUrl()?.startsWith("/chat") ?? false);
   agentInstanceId = inject(AGENT_INSTANCE_ID);
   allowAgent = computed(() => this.appStore.isAgentAllowed(this.agentInstanceId) && this.isAgentRoute());
+  // ES-33420: the debug panel isn't usable on touch viewports (iPad/mobile) — hide the toggle there
+  allowAgentDebug = computed(() => this.allowAgent() && !this.isTabletOrMobile());
 
   /**
    * Determines whether password change functionality should be enabled for the current user.
@@ -127,7 +131,10 @@ export class SidebarUserMenuComponent {
     // enable agent's debug mode
     effect(() => {
       const debug = this.debug();
-      this.agentsStore.setDebugEnabled(debug);
+      // ES-33420: debug mode isn't usable on touch viewports (iPad/mobile) — force it off in the
+      // agent's runtime store regardless of the persisted preference, without overwriting that
+      // preference itself (it must come back as-is once the viewport widens again).
+      this.agentsStore.setDebugEnabled(debug && !this.isTabletOrMobile());
       // This effect fires once as soon as the component is created — mirroring `debug`'s own seed
       // value (`isDebugMode()`) straight back to the store. Before a session exists that write is
       // both pointless and unauthenticated: the component can mount while the app chrome renders
