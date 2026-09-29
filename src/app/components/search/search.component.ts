@@ -213,6 +213,9 @@ export class SearchComponent {
   }
 
   protected emitText(e: Event): void {
+    // Enter also triggers the browser's implicit form submission (a native GET that reloads the page and
+    // drops the in-memory user override): cancel it, the search is driven by `validated`.
+    e.preventDefault();
     e.stopImmediatePropagation();
     const text = this.searchInputText()?.trim() ?? "";
     if (this.allowAdvancedFilters() && text === "") {
