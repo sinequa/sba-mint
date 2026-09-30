@@ -1,9 +1,8 @@
 import { Component, computed, effect, inject, output, signal } from "@angular/core";
-import { ConverterSelectComponent } from "@components/preview/converter-select/converter-select";
 import { PreviewContentComponent } from "@components/preview/preview-content/preview-content";
 import { PreviewHeaderComponent } from "@components/preview/preview-header/preview-header";
 import { PreviewNavbarComponent } from "@components/preview/preview-navbar/preview-navbar";
-import { Article as A, PreviewData } from "@sinequa/atomic";
+import { Article as A } from "@sinequa/atomic";
 import { CConverter, PreviewService, SelectionStore } from "@sinequa/atomic-angular";
 
 type Article = A & {
@@ -12,7 +11,7 @@ type Article = A & {
 
 @Component({
   selector: "agent-preview",
-  imports: [PreviewNavbarComponent, PreviewHeaderComponent, ConverterSelectComponent, PreviewContentComponent],
+  imports: [PreviewNavbarComponent, PreviewHeaderComponent, PreviewContentComponent],
   template: `
     <div class="flex max-w-[inherit] flex-col size-full">
       <preview-navbar
@@ -32,9 +31,7 @@ type Article = A & {
               </section>
             </section>
           }
-          <!-- multiformat (converter) dropdown only — no summary/discussion tabs in the agent -->
-          <converter-select class="self-end pe-4 pt-1" [previewData]="previewData()" (onConversionSelect)="conversion.set($event)" />
-          <preview-content class="h-full" [conversion]="conversion()" (onLoadedData)="previewData.set($event)" />
+          <preview-content class="h-full" (onConversionSelect)="conversion.set($event)" />
         } @else {
           <preview-content class="h-full" />
         }
@@ -60,8 +57,7 @@ export class AgentPreview {
   // carries no article in the agent, fall back to the loaded preview record.
   article = signal<Article | undefined>(undefined);
 
-  // Loaded preview data (feeds the converter dropdown) and the currently selected converter.
-  previewData = signal<PreviewData | undefined>(undefined);
+  // Currently selected converter, fed by <preview-content>'s converter dropdown.
   conversion = signal<CConverter | undefined>(undefined);
 
   loading = computed(() => !this.previewService.DOMContentLoaded());
@@ -72,7 +68,6 @@ export class AgentPreview {
 
       if (events === "loading") {
         this.article.set(undefined);
-        this.previewData.set(undefined);
         this.conversion.set(undefined);
       }
 

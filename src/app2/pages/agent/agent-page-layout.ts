@@ -20,6 +20,7 @@ import { error } from "@sinequa/atomic";
 import { PrincipalStore, SelectionStore } from "@sinequa/atomic-angular";
 import { ResizableHandleComponent, ResizablePanelComponent, ResizablePanelGroupComponent } from "@sinequa/ui";
 import { AgentPreview } from "../../../components/preview/agent/agent-preview";
+import { injectTabletBreakpoint } from "../../../composables/inject-tablet-breakpoint";
 import { AgentDebugDirective } from "./directives/debug.directive";
 import { AgentSavedChatDirective } from "./directives/saved-chat.directive";
 
@@ -32,7 +33,7 @@ type Panel = "chat" | "preview";
   template: `
     <main class="relative flex flex-1">
       <ResizablePanelGroup>
-        <ResizablePanel [defaultSize]="100" [minSize]="25" [class.max-md:hidden]="activeMobilePanel() !== 'chat'">
+        <ResizablePanel [defaultSize]="100" [minSize]="25" [class.hidden]="tabletBreakpoint.isTabletOrMobile() && activeMobilePanel() !== 'chat'">
           <div class="flex h-full flex-col">
             <!-- agent -->
             <div class="h-[calc(100dvh-3rem)] overflow-y-auto" [style.scrollbar-width]="'none'">
@@ -49,7 +50,7 @@ type Panel = "chat" | "preview";
 
         <!-- preview -->
         <ResizableHandle [withHandle]="true" [class.hidden]="previewCollapsed()" />
-        <ResizablePanel [defaultSize]="0" [minSize]="25" [class.max-md:hidden]="activeMobilePanel() !== 'preview'">
+        <ResizablePanel [defaultSize]="0" [minSize]="25" [class.hidden]="tabletBreakpoint.isTabletOrMobile() && activeMobilePanel() !== 'preview'">
           <div class="sticky top-14 h-full me-8">
             <div class="relative h-full">
               <agent-preview class="absolute inset-4 w-full h-[calc(100%-2rem)] bg-tool-card-widget border-tool-card-border flex flex-col gap-2 rounded-2xl border" (onClose)="closePreview()" />
@@ -102,7 +103,9 @@ export class AgentPageLayoutComponent {
 
   readonly previewCollapsed = signal(true);
 
-  // On mobile, only one panel is visible at a time.
+  // On mobile/tablet (ipad), only one panel is visible at a time — the resizable split is too
+  // cramped below 1024px (ES-30542).
+  protected readonly tabletBreakpoint = injectTabletBreakpoint();
   protected readonly activeMobilePanel = computed<Panel>(() => (this.previewCollapsed() ? "chat" : "preview"));
 
   constructor() {
@@ -113,8 +116,22 @@ export class AgentPageLayoutComponent {
         if (!id || !this.previewCollapsed()) return;
         this.previewCollapsed.set(false);
         queueMicrotask(() => {
-          this.panelGroup()?.setLayout([60, 40]);
+          this.panelGroup()?.setLayout(this.previewLayout());
         });
+      });
+    });
+
+    // Re-flow between the single-panel (mobile/ipad) and split (desktop) layouts when the
+    // breakpoint is crossed while the preview is already open — e.g. rotating a tablet or resizing
+    // the window. `setLayout` only ever runs on open/close otherwise, so without this a preview
+    // opened in single-panel mode stays stuck at the desktop 40% split once the window widens (or
+    // vice versa): the resizable-panels engine tracks explicit percentages, not `display:none`
+    // siblings, so a hidden panel's reserved share is never redistributed to the visible one.
+    effect(() => {
+      const layout = this.previewLayout();
+      untracked(() => {
+        if (this.previewCollapsed()) return;
+        this.panelGroup()?.setLayout(layout);
       });
     });
 
@@ -152,6 +169,12 @@ export class AgentPageLayoutComponent {
     // Clear selection so the effect can re-trigger if the user clicks
     // the same reference again after dismissing the panel.
     this.selectionStore.clear();
+  }
+
+  /** [chat%, preview%] for the currently open preview: full-width on mobile/ipad (single panel
+   * visible at a time), the usual 60/40 split on desktop. */
+  private previewLayout(): [number, number] {
+    return this.tabletBreakpoint.isTabletOrMobile() ? [0, 100] : [60, 40];
   }
 
   /**

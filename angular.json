@@ -4,10 +4,7 @@
   "newProjectRoot": "projects",
   "cli": {
     "schematicCollections": ["@angular-eslint/schematics"],
-    "analytics": false,
-    "cache": {
-      "enabled": false
-    }
+    "analytics": false
   },
   "projects": {
     "sinequa-mint": {

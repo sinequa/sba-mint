@@ -125,9 +125,9 @@ Create a new file named `de.json` in the `src/assets/i18n` directory of your Ang
 
 ### 🔧 Update the App Configuration
 
-The Transloco configuration is centralised in `src/config/transcolo-providers.ts`. Add `'de'` to `availableLangs`:
+The Transloco configuration is centralised in `src/config/transloco/transloco-providers.ts`. Add `'de'` to `availableLangs`:
 
-```ts title="src/config/transcolo-providers.ts"
+```ts title="src/config/transloco/transloco-providers.ts"
 export function provideTranslocoProviders(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideTransloco({

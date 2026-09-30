@@ -9,6 +9,7 @@ import { CCApp, error, fetchQuery, globalConfig, Query, warn } from "@sinequa/at
 import { AggregationsStore, ApplicationService, AppStore, PrincipalStore, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 import { injectCurrentUrl } from "@utils/routing";
 import { filter, firstValueFrom, skip, take } from "rxjs";
+import { focusWhenReady } from "./focus-when-ready";
 import { injectUrlQueryParamsSync, UrlQueryParamInputs } from "./url-query-params-sync";
 
 // Minimal public API required from the assistant component
@@ -42,6 +43,9 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
 
   const STORAGE_KEY = "assistant_current_chat_id";
   const appFeatures = appStore.general()?.features;
+
+  // Cancels the pending focus attempts, so two consecutive navigations don't compete
+  let cancelFocusChatInput: (() => void) | undefined;
 
   const query = signal<Query | undefined>(undefined);
   const connectionEstablished = signal(false);
@@ -130,8 +134,28 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
     getFirstPageQuery();
   }
 
+  /**
+   * ES-32905 / ES-33135: gives the focus back to the chat question input ("Ask something"), both
+   * when the component is first created and when coming back to a "frozen" route (see
+   * `CustomReuseStrategy`). The chat's own `focusAfterResponse` also tries this, but with a single
+   * un-retried `focus()` call: on the very first, "cold" navigation (lazy chunk load, SignalR
+   * handshake, concurrent app bootstrap work) it can fire while the textarea is still
+   * disabled/unrendered, or be overridden a moment later by another widget finishing its own load.
+   * `focusWhenReady` retries until the element is actually focusable.
+   */
+  function focusChatInput() {
+    cancelFocusChatInput?.();
+    cancelFocusChatInput = focusWhenReady(() => chat()?.sqChat()?.questionInput?.nativeElement, "assistant", { destroyRef });
+  }
+
+  function onRouteAttached() {
+    initialize();
+    focusChatInput();
+  }
+
   async function getFirstPageQuery() {
-    const q = appStore.getDefaultQuery() || { name: "_default" };
+    const q = appStore.getDefaultQuery();
+    if (!q) return;
     const response = await fetchQuery({ isFirstPage: true, name: q.name });
     aggregationStore.update(response.aggregations);
   }
@@ -225,6 +249,7 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
   // ── Initialize on construction ────────────────────────────────────────────
 
   initialize();
+  focusChatInput();
 
   return {
     query,
@@ -238,6 +263,6 @@ export function injectAssistantLayout(chat: Signal<AssistantRef | undefined>, in
     handleConnection,
     handleReady,
     handleLoadSavedChat,
-    onRouteAttached: initialize
+    onRouteAttached
   };
 }

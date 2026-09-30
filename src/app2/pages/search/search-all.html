@@ -1,3 +1,9 @@
+<!-- projected into the global fixed mobile header via HeaderExtrasService (<768px), rendered
+     inline instead on the ipad range (768-1023px) — see search-all.ts -->
+<ng-template #headerSearch>
+  <search-with-autocomplete class="w-full" />
+</ng-template>
+
 <!-- results list template — defined once, used in both mobile and desktop branches -->
 <ng-template #resultsList>
   <!-- skeleton part -->
@@ -25,6 +31,8 @@
     }
 
     <feedback
+      variant="secondary"
+      [solid]="true"
       [class]="cn('fixed right-8 bottom-3 z-9 hidden lg:block', hideFeedback() && '-bottom-12')"
       [pages]="query.data()?.pages"
       (onClose)="onFeedbackClose()" />
@@ -35,20 +43,29 @@
   }
 </ng-template>
 
-<!-- left filters drawer — floating slide-in panel (non-modal), reused from the agent page pattern.
-     Hosts the `position: 'left' | 'both'` filters. Auto-closes when the pointer leaves it. -->
+<!-- left filters drawer. Below the large-screen threshold: floating slide-in panel (non-modal),
+     reused from the agent page pattern, auto-closes when the pointer leaves it. From the large-screen
+     threshold up: permanent in-flow column (mirrors the assistant page's own inline/floating split,
+     with its own, higher threshold — see inject-large-screen-breakpoint.ts), never inert, never
+     auto-closes on mouseleave. Hosts the `position: 'left' | 'both'` filters. -->
 <ng-template #filtersDrawer>
   <aside
-    class="absolute top-0 left-0 z-30 h-full w-[20rem] p-3 transition-transform duration-300 ease-out max-md:w-full"
-    [class.-translate-x-full]="filtersCollapsed()"
-    [inert]="filtersCollapsed()"
-    (mouseleave)="closeFilters()">
-    <div class="flex h-full w-full flex-col gap-2 rounded-3xl border border-menu-border bg-background px-4 py-3 shadow-lg">
+    [class]="
+      cn(
+        'top-0 left-0 z-30 h-full overflow-hidden transition-[width,transform] duration-300 ease-out',
+        filtersPersistent() ? 'relative w-80 shrink-0 p-3' : cn('absolute w-[20rem] p-3 max-md:w-full', filtersCollapsed() && '-translate-x-full')
+      )
+    "
+    [inert]="filtersCollapsed() && !filtersPersistent()"
+    (mouseleave)="!filtersPersistent() && closeFilters()">
+    <div [class]="cn('flex h-full w-full flex-col gap-2 bg-background px-4 py-3', !filtersPersistent() && 'rounded-3xl border border-menu-border shadow-lg')">
       <div class="flex items-center justify-between">
         <span class="font-semibold">{{ "filters" | transloco }}</span>
-        <button variant="none" icon-button (click)="toggleFilters()" [attr.aria-label]="'close' | transloco">
-          <xmark-icon />
-        </button>
+        @if (!filtersPersistent()) {
+          <button variant="none" icon-button (click)="toggleFilters()" [attr.aria-label]="'close' | transloco">
+            <xmark-icon />
+          </button>
+        }
       </div>
       <!-- single outer scroll lives here (scrollbar-thin); neutralize aside-filters' own
            overflow so it isn't a second, default-styled scroll container -->
@@ -61,12 +78,22 @@
 
 <!-- on mobile devices use sheet previewer -->
 @if (isMobile()) {
-  <div class="relative flex h-dvh gap-2">
+  <!-- max-md: h-dvh is the full device viewport, but the global fixed mobile header (below 768px
+       only — see app.component.html) reserves --mobile-header-height above this via padding-top on
+       <main>. Without subtracting it here too, this div overflows its ancestor by that much, which
+       turns into a second, whole-page scrollbar on top of the results list's own internal one. The
+       ipad range (768-1023px, still inside isMobile()) needs no compensation: that header is itself
+       md:hidden there. -->
+  <div class="relative flex h-dvh gap-2 max-md:h-[calc(100dvh-var(--mobile-header-height))]">
     @if (hasAsideFilters()) {
       <ng-container *ngTemplateOutlet="filtersDrawer" />
     }
     <div class="relative z-5 flex w-full flex-col bg-background p-4">
-      <search-with-autocomplete class="w-full pt-11 md:pt-0" />
+      @if (!breakpointService.isMobile()) {
+        <div class="pb-4">
+          <ng-container *ngTemplateOutlet="headerSearch" />
+        </div>
+      }
 
       @if (isTabSearchActive()) {
         <navbar-tabs noTruncate="true" />
@@ -116,62 +143,69 @@
     @if (hasAsideFilters()) {
       <ng-container *ngTemplateOutlet="filtersDrawer" />
     }
-    <!-- column 2 — main results -->
-    <div
-      [class]="cn('relative flex w-full flex-col px-2.5', !allowAI() && !hasPreview() ? 'mx-auto sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl' : 'grow sm:w-[30%]')">
-      <search-with-autocomplete class="w-full py-4" />
-
-      @if (isTabSearchActive()) {
-        <navbar-tabs noTruncate="true" />
-      }
-      <div class="flex items-center gap-2 pt-4 pb-4">
-        @if (hasAsideFilters()) {
-          <button variant="none" icon-button (click)="toggleFilters()" [title]="'filters' | transloco" [attr.aria-label]="'filters' | transloco">
-            <filter-icon />
-          </button>
-        }
-        <filters-bar class="min-w-0 flex-1" />
-      </div>
-
-      <app-search-actions
-        [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
-        [result]="result()"
-        [selectedAll]="selectedAll()"
-        (selectAll)="selectAll()" />
-
-      <div class="overflow-y-auto">
-        <ng-container *ngTemplateOutlet="resultsList" />
-      </div>
-    </div>
-
-    <!-- column 3 -->
-    @if (hasPreview() || (allowAI() && hasRowCount())) {
+    <!-- wrapper for columns 2+3 only (excludes the filters drawer): now that the drawer is a real
+         in-flow flex item on desktop, its width is subtracted from this wrapper's available space by
+         the browser, so the % widths below resolve against the space actually left over — not the
+         full row including the drawer. -->
+    <div class="relative flex w-full min-w-0 grow gap-2">
+      <!-- column 2 — main results -->
       <div
-        [class]="cn('m-4 hidden h-full grow [--height:350px] lg:block lg:w-1/4 lg:max-w-1/2', hasPreview() && 'rounded border border-aside-border lg:w-1/2')">
-        <div class="relative size-full">
-          <preview
-            [class]="
-              cn(
-                'absolute inset-0 size-full',
-                hasPreview() && 'z-0 animate-slide-in-right',
-                !hasPreview() && 'z-1 translate-x-full animate-slide-out-right opacity-0'
-              )
-            " />
+        class="main-column relative flex w-full min-w-0 flex-col px-2.5"
+        [class.mx-auto]="!hasPreview() && !(allowAI() && hasRowCount())"
+        [class.with-preview]="hasPreview() || (allowAI() && hasRowCount())">
+        <search-with-autocomplete class="w-full py-4" />
 
-          <!-- if assistant is allowed -->
-          @if (allowAI()) {
-            <app-search-overview
-              [class]="
-                cn(
-                  'absolute inset-0 hidden h-full w-full',
-                  !hasPreview() && 'z-0 animate-slide-in-right',
-                  hasPreview() && 'z-1 translate-x-full transform animate-slide-out-right opacity-0',
-                  (currentKeys()?.text?.length || 0) > 0 && 'block'
-                )
-              " />
+        @if (isTabSearchActive()) {
+          <navbar-tabs noTruncate="true" />
+        }
+        <div class="flex items-center gap-2 pt-4 pb-4">
+          @if (hasAsideFilters() && !filtersPersistent()) {
+            <button variant="none" icon-button (click)="toggleFilters()" [title]="'filters' | transloco" [attr.aria-label]="'filters' | transloco">
+              <filter-icon />
+            </button>
           }
+          <filters-bar class="min-w-0 flex-1" />
+        </div>
+
+        <app-search-actions
+          [class]="cn('@container z-1 flex flex-col gap-1 bg-background has-[+ul>li.no-records]:hidden')"
+          [result]="result()"
+          [selectedAll]="selectedAll()"
+          (selectAll)="selectAll()" />
+
+        <div class="overflow-y-auto">
+          <ng-container *ngTemplateOutlet="resultsList" />
         </div>
       </div>
-    }
+
+      <!-- column 3 -->
+      @if (hasPreview() || (allowAI() && hasRowCount())) {
+        <div [class]="cn('m-4 hidden h-full grow [--height:350px] lg:block lg:w-1/2', hasPreview() && 'rounded border border-aside-border')">
+          <div class="relative size-full">
+            <preview
+              [class]="
+                cn(
+                  'absolute inset-0 size-full',
+                  hasPreview() && 'z-0 animate-slide-in-right',
+                  !hasPreview() && 'z-1 translate-x-full animate-slide-out-right opacity-0'
+                )
+              " />
+
+            <!-- if assistant is allowed -->
+            @if (allowAI()) {
+              <app-search-overview
+                [class]="
+                  cn(
+                    'absolute inset-0 hidden h-full w-full',
+                    !hasPreview() && 'z-0 animate-slide-in-right',
+                    hasPreview() && 'z-1 translate-x-full transform animate-slide-out-right opacity-0',
+                    (currentKeys()?.text?.length || 0) > 0 && 'block'
+                  )
+                " />
+            }
+          </div>
+        </div>
+      }
+    </div>
   </div>
 }

@@ -29,6 +29,7 @@
         </button>
       }
       @let searchLabel = "search" | transloco;
+      @let isDisabled = !allowEmptySearch() && searchInputText().trim() === "";
       <button
         variant="icon"
         size="xs"
@@ -36,8 +37,8 @@
         class="transition-transform duration-200 ease-in-out hover:scale-110"
         [title]="searchLabel"
         [attr.aria-label]="searchLabel"
-        [attr.aria-disabled]="!allowEmptySearch() && this.searchInputText() === ''"
-        [disabled]="!allowEmptySearch() && this.searchInputText() === ''"
+        [attr.aria-disabled]="isDisabled"
+        [disabled]="isDisabled"
         (keydown.enter)="onSearch($event)"
         (click)="onSearch($event)">
         <SendHorizontalIcon />

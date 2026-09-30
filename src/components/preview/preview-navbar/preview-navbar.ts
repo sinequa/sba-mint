@@ -2,13 +2,7 @@ import { Location, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, Input, inject, input, model, output, signal, viewChild } from "@angular/core";
 import { TranslocoPipe, TranslocoService } from "@jsverse/transloco";
 import { Article } from "@sinequa/atomic";
-import {
-  AppStore,
-  BookmarkButtonComponent,
-  PreviewService,
-  QueryParamsStore,
-  SelectionStore
-} from "@sinequa/atomic-angular";
+import { AppStore, BookmarkButtonComponent, PreviewService, QueryParamsStore, SelectionStore } from "@sinequa/atomic-angular";
 import {
   ArrowLeftIcon,
   ArrowUpRightFromSquareIcon,
@@ -22,7 +16,9 @@ import {
   SheetCloseDirective
 } from "@sinequa/ui";
 import { toast } from "ngx-sonner";
+import { injectTabletBreakpoint } from "../../../composables/inject-tablet-breakpoint";
 import { PreviewDialogComponent } from "../dialog/preview-dialog";
+import { PreviewDisplayModeService } from "../preview-display-mode.service";
 
 export type PreviewNavbarConfig = {
   showOpenButton?: boolean;
@@ -87,6 +83,8 @@ export class PreviewNavbarComponent {
   private readonly appStore = inject(AppStore);
   private readonly selectionStore = inject(SelectionStore);
   private readonly queryParamsStore = inject(QueryParamsStore);
+  private readonly tabletBreakpoint = injectTabletBreakpoint();
+  private readonly previewDisplayMode = inject(PreviewDisplayModeService);
 
   readonly previewDialog = viewChild(PreviewDialogComponent);
 
@@ -102,6 +100,9 @@ export class PreviewNavbarComponent {
 
   public readonly article = input<Partial<Article> | undefined>();
   public readonly canBookmark = input<boolean>(true);
+
+  /** True when hosted inside a `sheet-previewer` sheet (see `PreviewComponent.hostedInSheet`). */
+  public readonly hostedInSheet = input(false);
 
   /**
    * Indicates if the converted of the article being previewed is the primary one. When true, the button "search in preview" will be displayed, allowing the user to search in the preview the same query that was used to get the article.
@@ -120,6 +121,14 @@ export class PreviewNavbarComponent {
 
   // used to open the preview inside a dialog
   expandPreview = computed(() => this.appStore.general()?.features?.expandPreview);
+
+  /**
+   * On tablet widths, `PreviewDialogComponent` (desktop tabs/chat/advanced-search) is too cramped to
+   * be usable. Outside a `sheet-previewer` sheet there's nothing to swap it for (see `onExpand()`),
+   * so the button is hidden there instead — e.g. `agent-preview` on `/chat`, whose panel already goes
+   * full-screen at that width via its own `activeMobilePanel()` toggle.
+   */
+  showExpandButton = computed(() => this.expandPreview() && (!this.tabletBreakpoint.isTabletOrMobile() || this.hostedInSheet()));
 
   public copied = signal(false);
 
@@ -153,7 +162,13 @@ export class PreviewNavbarComponent {
   }
 
   onExpand(): void {
-    this.previewDialog()?.open(this.article() as Article);
+    if (!this.tabletBreakpoint.isTabletOrMobile()) {
+      this.previewDialog()?.open(this.article() as Article);
+    } else if (this.hostedInSheet()) {
+      // swap the sheet already open in sheet-previewer to its simplified view, in place
+      this.previewDisplayMode.enableSimple();
+    }
+    // else: ipad/mobile width outside a sheet-previewer sheet — the button is hidden (showExpandButton), unreachable
   }
 
   handleClose() {

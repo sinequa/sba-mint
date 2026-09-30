@@ -64,16 +64,27 @@ export type NavbarMenu = {
                 <!-- On mobile, navigate to a dedicated route -->
                 @if (menu.name !== "alerts") {
                   <sidebar-menu-button
+                    aria-hidden
                     class="text-lg"
                     [routerLink]="menu.routerLink"
                     routerLinkActive="active"
                     #rla="routerLinkActive"
-                    [attr.data-active]="rla.isActive || null">
+                    [attr.data-active]="rla.isActive || null"
+                    [attr.aria-label]="menu.display | transloco">
                     <span [tooltip]="isCollapsed() ? (menu.display | transloco) : ''" tooltip-position="right" aria-hidden="true">
                       <ng-container *ngComponentOutlet="menu.icon" />
                     </span>
                     <span class="text-sm">{{ menu.display | transloco }}</span>
                   </sidebar-menu-button>
+                  <a 
+                    class="sr-only"
+                    [routerLink]="menu.routerLink"
+                    routerLinkActive="active"
+                    #rla="routerLinkActive"
+                    [attr.data-active]="rla.isActive || null"
+                    [attr.aria-label]="menu.display | transloco">
+                    {{ menu.display | transloco }}
+                  </a>
                 }
               } @else if (menu.name === "alerts") {
                 <Popover class="w-full rounded-lg border-neutral-300">
@@ -101,7 +112,7 @@ export type NavbarMenu = {
                 </Dropdown>
                 <sidebar-menu-action [routerLink]="menu.routerLink" routerLinkActive="active" #rla="routerLinkActive">
                   <arrow-up-right-from-square-icon />
-                  <span class="sr-only">Move to {{ menu.display | transloco }}</span>
+                  <span class="sr-only">{{ 'moveTo' | transloco: { target: menu.display | transloco } }}</span>
                 </sidebar-menu-action>
               }
             </sidebar-menu-item>

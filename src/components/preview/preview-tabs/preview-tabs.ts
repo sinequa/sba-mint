@@ -1,11 +1,10 @@
 import { Component, computed, DestroyRef, effect, inject, output, signal, viewChild } from "@angular/core";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { getState } from "@ngrx/signals";
-import { Article, CCApp, PreviewData, Query } from "@sinequa/atomic";
+import { Article, CCApp, Query } from "@sinequa/atomic";
 import { AppStore, CConverter, SelectionStore } from "@sinequa/atomic-angular";
 import { CommentsIcon, SparklesIcon, SpinnerIcon, TabComponent, TabContent, TabsComponent, TabsListComponent } from "@sinequa/ui";
 import { AssistantComponent } from "../../assistant/assistant";
-import { ConverterSelectComponent } from "../converter-select/converter-select";
 import { PreviewContentComponent } from "../preview-content/preview-content";
 
 export type PreviewTab = "summary" | "preview" | "discussion";
@@ -34,7 +33,6 @@ export type PreviewTab = "summary" | "preview" | "discussion";
     TabComponent,
     TabContent,
     AssistantComponent,
-    ConverterSelectComponent,
     PreviewContentComponent,
     SpinnerIcon,
     SparklesIcon,
@@ -67,9 +65,6 @@ export type PreviewTab = "summary" | "preview" | "discussion";
             </Tab>
           }
         }
-
-        <!-- converter options -->
-        <converter-select class="ms-auto" [previewData]="previewData()" (onConversionSelect)="onConversionChange($event)" />
       </TabsList>
       <!-- tabs content -->
       <div class="relative h-full grow overflow-auto">
@@ -94,7 +89,7 @@ export type PreviewTab = "summary" | "preview" | "discussion";
 
         <!-- Preview Tab Content -->
         <TabContent value="preview" class="absolute inset-0">
-          <preview-content class="h-[calc(100%-3rem)] pr-1" [conversion]="conversion()" (onLoadedData)="previewData.set($event)" />
+          <preview-content class="h-[calc(100%-3rem)] pr-1" (onConversionSelect)="onConversionSelect.emit($event)" />
         </TabContent>
       </div>
     </Tabs>
@@ -120,11 +115,10 @@ export class PreviewTabsComponent {
   });
 
   readonly article = signal<Article | undefined>(undefined);
-  readonly previewData = signal<PreviewData | undefined>(undefined);
   readonly miniPreviewQuery = computed(() => {
     const article = this.article();
     const query = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name,
       text: article?.title,
       filters: { field: "id", value: article?.id, operator: "eq" }
     };
@@ -134,7 +128,7 @@ export class PreviewTabsComponent {
   readonly chatWithDocQuery = computed(() => {
     const article = this.article();
     const query = {
-      name: this.appStore.getDefaultQuery()?.name || "_query",
+      name: this.appStore.getDefaultQuery()?.name,
       text: article?.title,
       filters: { field: "id", value: article?.id, operator: "eq" }
     };
@@ -175,20 +169,11 @@ export class PreviewTabsComponent {
   displaySummary = computed(() => this.showAssistants().some(assistant => assistant.name === "summary" && assistant.visible));
   displayChatWithDoc = computed(() => this.showAssistants().some(assistant => assistant.name === "discussion" && assistant.visible));
 
-  /** The converter/format currently selected in the <converter-select> dropdown. */
-  readonly conversion = signal<CConverter | undefined>(undefined);
-
   constructor() {
     effect(() => {
       const article = this.selectionStore.article?.();
       this.article.set(article as Article);
     });
-  }
-
-  /** Keep the selected conversion in sync and forward it to the parent. */
-  onConversionChange(conversion: CConverter | undefined) {
-    this.conversion.set(conversion);
-    this.onConversionSelect.emit(conversion);
   }
 
   setActiveTab(tab: PreviewTab) {

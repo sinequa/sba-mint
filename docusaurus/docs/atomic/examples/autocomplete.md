@@ -3,7 +3,7 @@ title: Autocomplete & suggestions
 sidebar_class_name: new
 ---
 
-This recipe builds a debounced autocomplete box backed by [`fetchSuggest()`](../api/suggest.md). It also covers cancelling stale requests so the dropdown always reflects the latest keystroke.
+This recipe builds a debounced autocomplete box backed by [`fetchSuggest()`](../api/suggest.mdx). It also covers cancelling stale requests so the dropdown always reflects the latest keystroke.
 
 ## The API
 
@@ -144,5 +144,5 @@ export function SearchBox({ onSelect }) {
 
 ## See also
 
-- [Suggest API](../api/suggest.md) — `fetchSuggest()`, `fetchSuggestField()` reference.
+- [Suggest API](../api/suggest.mdx) — `fetchSuggest()`, `fetchSuggestField()` reference.
 - [Search & pagination](./search-and-pagination.md) — run the actual search once a suggestion is picked.
