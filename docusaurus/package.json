@@ -38,7 +38,17 @@
     "webpack-dev-middleware": "^7.4.6",
     "sockjs": {
       "uuid": "^11.1.1"
-    }
+    },
+    "brace-expansion": "^1.1.21",
+    "compression": "^1.8.2",
+    "http-cache-semantics": "^4.3.0",
+    "proxy-addr": "^2.0.8",
+    "shell-quote": "^1.11.0",
+    "source-map-js": "^1.2.2",
+    "dompurify": "^3.4.16",
+    "katex": "^0.18.2",
+    "postcss-selector-parser": "^7.1.6",
+    "tinypool": "^2.2.0"
   },
   "browserslist": {
     "production": [
