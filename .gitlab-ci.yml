@@ -220,12 +220,19 @@ eol-check:
 # Equivalent: .github/workflows/pull-request.yml
 # `npm ci` runs the postinstall, which pulls @sinequa/assistant (and @sinequa/agent
 # on 11.14.0) from npm.sinequa.com — reachable through the proxy above.
+#
+# TEMPORARY — manual and non-blocking while the OOM kill (exit code 137 during
+# `ng build` on the shared runner) is investigated. `allow_failure: true` is
+# required: `when: manual` inside `rules` defaults it to false, which would leave
+# the merge request blocked on a job nobody started. Revert once the build is stable.
 build:
   extends: .npm
   stage: build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" &&
           $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(release\/.*|dev\/.*|develop)$/
+      when: manual
+      allow_failure: true
   variables:
     CI: "true"
   script:
