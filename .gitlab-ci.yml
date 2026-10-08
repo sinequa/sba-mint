@@ -2,6 +2,13 @@ stages:
   - validate
   - build
 
+default:
+  tags: [docker, sinequa]
+
+include:
+  # GitHub mirror of develop and release/* - see the file's header.
+  - local: .gitlab/ci/sync-github.yml
+
 jira-check:
   stage: validate
   rules:
@@ -34,6 +41,23 @@ build:
          $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop")
   variables:
     CI: "true"
+    # No direct internet access from the runners: npm (and the postinstall)
+    # reach npm.sinequa.com through the Squid proxy.
+    http_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    https_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    no_proxy: "localhost,127.0.0.1,chapsvision.in,.chapsvision.in"
+  before_script:
+    # .npmrc ships the placeholder __SINEQUA_NPM_TOKEN__ with always-auth=true:
+    # npm.sinequa.com would answer 401 to it. Inject the real token when the
+    # SINEQUA_NPM_TOKEN CI/CD variable exists, otherwise drop the auth lines
+    # and install anonymously.
+    - |
+      if [ -n "${SINEQUA_NPM_TOKEN:-}" ]; then
+        sed -i "s|__SINEQUA_NPM_TOKEN__|${SINEQUA_NPM_TOKEN}|" .npmrc
+      else
+        sed -i '/_authToken=__SINEQUA_NPM_TOKEN__/d;/^always-auth=/d' .npmrc
+      fi
+    - npm config get registry
   script:
     - npm ci
     - npm run build --if-present
