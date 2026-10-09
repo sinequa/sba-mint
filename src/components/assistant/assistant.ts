@@ -1,7 +1,9 @@
-import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, ViewEncapsulation, viewChild } from "@angular/core";
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, input, output, signal, viewChild, ViewEncapsulation } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HubConnection } from "@microsoft/signalr";
 import { getState } from "@ngrx/signals";
+import { catchError, of } from "rxjs";
+
 import {
   ChatComponent,
   ChatConfig,
@@ -12,10 +14,10 @@ import {
   RawMessage,
   SuggestedAction
 } from "@sinequa/assistant/chat";
+
 import { Article, error, Query } from "@sinequa/atomic";
 import { AppStore, DrawerStackService, PreviewHighlights, PreviewService, QueryParamsStore, SelectionStore, UserSettingsStore } from "@sinequa/atomic-angular";
 import { cn } from "@sinequa/ui";
-import { catchError, of } from "rxjs";
 
 @Component({
   selector: "assistant, Assistant",
@@ -28,6 +30,7 @@ import { catchError, of } from "rxjs";
         [query]="_query"
         [chat]="initChat"
         [instanceId]="instanceId()"
+        [focusAfterResponse]="true"
         (openPreview)="handlePreview($event)"
         (openDocument)="handleRedirect($event)"
         (config)="getChatConfig($event)"

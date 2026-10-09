@@ -4,21 +4,17 @@
 /dist
 /tmp
 /out-tsc
-/bazel-out
 
 # Node
 /node_modules
+# npm cache, kept inside the project dir so GitLab CI can cache it (see .gitlab-ci.yml)
+.npm/
 npm-debug.log
-yarn-error.log
 
 # IDEs and editors
 .idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
 *.sublime-workspace
+.history/*
 
 # Visual Studio Code
 .vscode/*
@@ -26,16 +22,10 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
 
 # Miscellaneous
 /.angular/cache
-.sass-cache/
-/connect.lock
 /coverage
-/libpeerconnection.log
-testem.log
-/typings
 
 # System files
 .DS_Store
@@ -54,6 +44,7 @@ docusaurus/node_modules/*
 # Allow-list, not deny-list: everything under src/assets/i18n/ is generated EXCEPT the
 # app-owned scopes below, so a new scope published by a lib is ignored automatically.
 # Only add an exception here when the app itself owns the translation files.
+# The extractor is run with --skip-gitignore so it stops appending its own deny-list here.
 /src/assets/i18n/*
 !/src/assets/i18n/*.json
 !/src/assets/i18n/article/
