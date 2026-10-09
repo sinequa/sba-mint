@@ -1,8 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, input, viewChild } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { SavedChatsComponent } from '@sinequa/assistant/chat';
-import { SpellingCorrectionMode } from '@sinequa/atomic';
-import { AggregationComponent } from '@sinequa/atomic-angular';
+import { ChangeDetectionStrategy, Component, inject, input, viewChild } from "@angular/core";
+import { AssistantComponent } from "@components/assistant/assistant";
+import { AssistantUploadComponent } from "@components/assistant/document-upload/assistant-upload.component";
+import { SidebarMainComponent } from "@components/sidebar/sidebar";
+import { OnRouteAttached } from "@config/custom-reuse-strategy";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { SavedChatsComponent } from "@sinequa/assistant/chat";
+import { SpellingCorrectionMode } from "@sinequa/atomic";
+import { AggregationComponent } from "@sinequa/atomic-angular";
 import {
   BreakpointObserverService,
   ButtonComponent,
@@ -16,15 +20,11 @@ import {
   SidebarProviderComponent,
   SidebarService,
   SidebarTriggerComponent
-} from '@sinequa/ui';
-import { AssistantComponent } from '@components/assistant/assistant';
-import { AssistantUploadComponent } from '@components/assistant/document-upload/assistant-upload.component';
-import { SidebarMainComponent } from '@components/sidebar/sidebar';
-import { OnRouteAttached } from '@config/custom-reuse-strategy';
-import { injectAssistantLayout } from '../../../composables/inject-assistant-layout';
+} from "@sinequa/ui";
+import { injectAssistantLayout } from "../../../composables/inject-assistant-layout";
 
 @Component({
-  selector: 'assistant-layout, AssistantLayout',
+  selector: "assistant-layout, AssistantLayout",
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslocoPipe,
@@ -42,7 +42,7 @@ import { injectAssistantLayout } from '../../../composables/inject-assistant-lay
     SidebarMenuComponent,
     SidebarMenuButtonComponent
   ],
-  providers: [SidebarService, SheetService, provideTranslocoScope('filters')],
+  providers: [SidebarService, SheetService, provideTranslocoScope("filters")],
   template: `
     <sidebar-provider [style.--sidebar-width]="'12rem'" [style.--sidebar-width-mobile]="'20rem'" [style.--sidebar-width-icon]="'3rem'">
       <main-sidebar triggerName="sidebar-assistant">

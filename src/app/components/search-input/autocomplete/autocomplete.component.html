@@ -1,0 +1,43 @@
+@if (suggestions()) {
+  <ul
+    id="search-suggestions"
+    class="z-10 max-h-80 overflow-auto overscroll-contain rounded-b-lg bg-white px-2 pb-2 text-black"
+    role="listbox"
+    aria-label="suggestions list">
+    @for (suggest of suggestions(); track $index) {
+      @if (suggest.$isDivider) {
+        <li role="presentation" class="m-2 h-[1px] bg-neutral-300"></li>
+      } @else if (suggest.$isTitle) {
+        <li role="presentation" class="sticky top-0 cursor-pointer bg-white p-2 text-xs font-semibold text-neutral-500">
+          {{ suggest.category | transloco }}
+        </li>
+      } @else {
+        <li
+          role="option"
+          class="data-list-item flex cursor-pointer items-baseline gap-2 p-2 aria-selected:bg-blue-300"
+          [id]="'search-suggestion-' + $index"
+          [attr.data-text]="suggest.display"
+          [attr.aria-label]="suggest.display">
+          <ng-container *ngComponentOutlet="getIconForCategory(suggest.category); inputs: { class: 'size-4' }"></ng-container>
+
+          <p class="line-clamp-1 text-ellipsis">
+            @for (chunk of suggest.display! | highlightWord: text() : 10; track $index) {
+              <span [class]="{ 'font-bold': chunk.match }">{{ chunk.text }}</span>
+            }
+          </p>
+        </li>
+      }
+    } @empty {
+      <span class="px-2 text-muted-foreground">
+        {{ "searchInput.noSuggestions" | transloco }}
+      </span>
+    }
+  </ul>
+}
+@if (advancedSearch()) {
+  <MenuSeparator />
+  <button variant="inverse" class="m-2 h-7 text-xs" (click)="openAdvancedSearch()">
+    <i class="fa-fw far fa-sliders"></i>
+    {{ "searchInput.advancedSearch" | transloco }}
+  </button>
+}

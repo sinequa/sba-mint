@@ -1,8 +1,8 @@
-import { effect, inject, InputSignal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { getState } from '@ngrx/signals';
-import { LegacyFilter, SpellingCorrectionMode, warn } from '@sinequa/atomic';
-import { QueryParamsStore } from '@sinequa/atomic-angular';
+import { effect, inject, InputSignal } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { getState } from "@ngrx/signals";
+import { LegacyFilter, SpellingCorrectionMode, warn } from "@sinequa/atomic";
+import { QueryParamsStore } from "@sinequa/atomic-angular";
 
 /**
  * Subset of URL query parameters that are bound to component input signals
@@ -103,7 +103,7 @@ export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: U
   // params are inherently flat strings. We parse it back to an array here.
   effect(() => {
     let filters: LegacyFilter[] = [];
-    const fRaw = inputs.f?.() ?? '';
+    const fRaw = inputs.f?.() ?? "";
     try {
       filters = fRaw ? JSON.parse(fRaw) : [];
     } catch (err) {
@@ -142,7 +142,7 @@ export function injectUrlQueryParamsSync(inputs: UrlQueryParamInputs, options: U
       const { text, filters = [], page, sort, tab, basket, name, spellingCorrectionMode } = getState(queryParamsStore);
       router.navigate([], {
         relativeTo: route,
-        queryParamsHandling: 'merge',
+        queryParamsHandling: "merge",
         queryParams: {
           // Filters are serialized back to JSON for URL storage (see Effect 1 above)
           f: filters.length > 0 ? JSON.stringify(filters) : undefined,
