@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
+import { error, isAuthenticated } from '@sinequa/atomic';
 import { ExternalToast, NgxSonnerToaster, toast } from 'ngx-sonner';
 
 import { ApplicationStore, MultiSelectionToolbarComponent, UserSettingsStore, BackdropComponent, DrawerStackComponent } from '@sinequa/atomic-angular';
@@ -55,7 +56,12 @@ export class AppComponent {
   }
 
   private setupApplicationLanguage() {
-    if (this.userSettingsStore.language?.() === undefined) this.userSettingsStore.updateLanguage('en');
+    // Persisting the 'en' default is only meaningful once a session exists: AppComponent is constructed as soon as
+    // bootstrapApp() resolves, whatever the authentication outcome, so writing here could race an OAuth/SAML redirect
+    // and fire an unauthenticated `PATCH usersettings` (401). The active Transloco language still gets a local fallback.
+    if (this.userSettingsStore.language?.() === undefined && isAuthenticated()) {
+      this.userSettingsStore.updateLanguage('en').catch(err => error('update language failed', err));
+    }
 
     this.transloco.setActiveLang(this.userSettingsStore.language?.() ?? 'en');
   }

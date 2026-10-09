@@ -9,8 +9,12 @@
 # Two runner facts this file depends on — both measured on the instance, not assumed:
 #   1. The shared runners expose BOTH docker and shell executors, all accepting
 #      untagged jobs. A shell runner ignores `image:` entirely and has no
-#      node/npm, so every job must pin `tags: [docker]`. Without it the very
-#      first pipeline of this project died on `npm: command not found`.
+#      node/npm, so any job that runs `npm` must pin `tags: [sinequa, docker]` — the
+#      `default:` below does this for everyone. Without it the very first
+#      pipeline of this project died on `npm: command not found`.
+#      jira-check, which needs neither node nor npm (grep/echo only), instead pins
+#      `tags: [sinequa, shell]`, so the job that runs on every single MR pipeline
+#      doesn't spin up a container each time.
 #   2. Containers reach the internal network directly (gitlab.chapsvision.in) but
 #      have NO direct internet access and NO proxy variables of their own.
 #      Everything external must go through the Squid proxy — registry.npmjs.org,
@@ -34,7 +38,7 @@ default:
   # matters because the Alpine repositories are unreachable from here.
   image: node:22
   # Mandatory: an untagged job can land on a shell runner that ignores `image:`.
-  tags: [docker]
+  tags: [sinequa, docker]
   interruptible: true
 
 # ─── templates ───────────────────────────────────────────────────────────────
@@ -66,6 +70,9 @@ default:
 # Talks to nothing external: no `.egress` needed.
 jira-check:
   stage: validate
+  # No node/npm needed (grep/echo only) — swaps the docker tag from `default:` for shell
+  # (no container per MR pipeline). `sinequa` is required: a bare `shell` tag can land on the old runner (runner_system_failure, pipeline 677380).
+  tags: [sinequa, shell]
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
