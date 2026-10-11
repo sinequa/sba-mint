@@ -154,6 +154,12 @@ function capitalizeCategories(items) {
 export function createConfig(target) {
   const { path: docsPath, sidebarPath, includeCurrentVersion, lastVersion, versions } = docsVersioning();
 
+  // The `next` channel is not published any more: the documentation of what comes after 11.14.0 lives in
+  // the Fumadocs site (release/11.15.0). The overlay still declares the channel (as Docusaurus's `current`
+  // version), and deleting `content/docs/next/` does not remove it, so it is left out here instead. This
+  // drops it from the build and from the version dropdown; 11.14.0 and 11.13.0 are untouched.
+  const onlyIncludeVersions = Object.keys(versions).filter(name => name !== 'current');
+
   return {
     title: 'Sinequa',
     tagline: 'Connect your modern workplace and drive innovation from the inside out',
@@ -205,6 +211,7 @@ export function createConfig(target) {
             includeCurrentVersion,
             lastVersion,
             versions,
+            onlyIncludeVersions,
             routeBasePath: '/',
             sidebarItemsGenerator: async function ({ defaultSidebarItemsGenerator, ...args }) {
               const sidebarItems = await defaultSidebarItemsGenerator(args);
