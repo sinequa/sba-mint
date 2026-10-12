@@ -27,11 +27,17 @@ stages:
   - validate
   - build
 
-# Both jobs are MR-only, so no pipeline is created on push: that also prevents
-# the duplicate pipeline a push matching an open MR would otherwise produce.
+# jira-check and build are MR-only, so a push does not create a duplicate
+# pipeline next to an open MR. The only push/web pipelines allowed are those on
+# develop and release/*, which carry nothing but the manual sync-github job.
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH =~ /^(develop|release\/.*)$/ && $CI_PIPELINE_SOURCE =~ /^(push|web)$/
+
+include:
+  # GitHub mirror of develop and release/* - see the file's header.
+  - local: .gitlab/ci/sync-github.yml
 
 default:
   # node:22 (Debian) ships git and curl — no package install needed, which
