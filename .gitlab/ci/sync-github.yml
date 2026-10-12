@@ -1,0 +1,92 @@
+###############################################################################
+# sync-github - mirror develop and release/* to GitHub
+#
+# On every push to develop or release/* (direct push or merged MR), pushes the
+# commit to the same branch of https://github.com/Chapsvision-dev/sinequa-rnd-sba-mint
+#
+# Self-contained on purpose: each branch has its own .gitlab-ci.yml (some with
+# no `default:`, no `.egress`, no `release` stage), and the pipeline config is
+# read from the pushed branch itself. Each branch to sync only needs:
+#   - this file;
+#   - `include: - local: .gitlab/ci/sync-github.yml` in its .gitlab-ci.yml;
+#   - if its .gitlab-ci.yml has a `workflow:` block, a rule letting push/web
+#     pipelines through on develop and release/*.
+#
+# HTTPS only: the runners reach github.com through the Squid proxy, which does
+# not carry SSH.
+#
+# Required CI/CD variable (Settings > CI/CD > Variables):
+#   GITHUB_TOKEN - fine-grained PAT (or GitHub App token) restricted to
+#                  Chapsvision-dev/sinequa-rnd-sba-mint, permissions
+#                  "Contents: Read and write" and "Workflows: Read and write"
+#                  (GitHub rejects any push touching .github/workflows/
+#                  without the latter). Masked + protected: develop and
+#                  release/* must be protected branches for it to be exposed.
+#
+# A branch that diverged on GitHub (commit made there directly) is NOT
+# overwritten: the push is rejected and the job fails. Set SYNC_FORCE_PUSH to
+# "true" on a manual pipeline to overwrite it.
+# Not synced: tags, branch deletions, Git LFS objects (none tracked today).
+###############################################################################
+
+sync-github:
+  # `.post` always exists, whatever the `stages:` list of the branch.
+  stage: .post
+  # Starts right away, independent from the other jobs of the pipeline.
+  needs: []
+  # node:22 (Debian) ships git. Mandatory docker tag: an untagged job can land
+  # on a shell runner that ignores `image:`.
+  image: node:22
+  tags: [docker, sinequa]
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(develop|release\/.*)$/ && $CI_PIPELINE_SOURCE =~ /^(push|web)$/
+      when: manual
+      # A manual job blocks the pipeline by default; the sync is optional.
+      allow_failure: true
+  # One push at a time per branch.
+  resource_group: sync-github-$CI_COMMIT_REF_SLUG
+  interruptible: false
+  variables:
+    GITHUB_REPO: "Chapsvision-dev/sinequa-rnd-sba-mint"
+    SYNC_FORCE_PUSH: "false"
+    # Full history: GitHub rejects a push from a shallow clone.
+    GIT_DEPTH: "0"
+    # No direct internet access from the runners.
+    http_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    https_proxy: "http://vip-squid.infra.cloud.prod.dwadm.in:3128"
+    no_proxy: "localhost,127.0.0.1,chapsvision.in,.chapsvision.in"
+  before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+  script:
+    - |
+      set -eu
+      branch="$CI_COMMIT_BRANCH"
+
+      if [ -z "${GITHUB_TOKEN:-}" ]; then
+        echo "ERROR: GITHUB_TOKEN is empty or not exposed on this ref."
+        echo "  CI_COMMIT_REF_PROTECTED=${CI_COMMIT_REF_PROTECTED:-unknown} - a 'protected'"
+        echo "  variable is only visible on a protected ref."
+        exit 1
+      fi
+
+      # Token passed as a header, never written into a URL or .git/config.
+      remote="https://github.com/${GITHUB_REPO}.git"
+      auth=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')
+      gh() { git -c "http.https://github.com/.extraheader=Authorization: Basic ${auth}" "$@"; }
+
+      # GitHub already has this commit (a newer pipeline got there first): nothing to do.
+      if gh fetch --quiet --no-tags "$remote" "refs/heads/${branch}"; then
+        if git merge-base --is-ancestor "$CI_COMMIT_SHA" FETCH_HEAD; then
+          echo "GitHub ${branch} already contains ${CI_COMMIT_SHORT_SHA} - nothing to push."
+          exit 0
+        fi
+      else
+        echo "Branch ${branch} not found on GitHub (or not readable) - pushing will create it."
+      fi
+
+      force=""
+      if [ "$SYNC_FORCE_PUSH" = "true" ]; then
+        force="--force"
+      fi
+      echo "Pushing ${CI_COMMIT_SHORT_SHA} to github.com/${GITHUB_REPO} ${branch}"
+      gh push $force "$remote" "${CI_COMMIT_SHA}:refs/heads/${branch}"

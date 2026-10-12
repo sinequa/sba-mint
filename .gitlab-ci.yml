@@ -9,12 +9,12 @@
 # Two runner facts this file depends on — both measured on the instance, not assumed:
 #   1. The shared runners expose BOTH docker and shell executors, all accepting
 #      untagged jobs. A shell runner ignores `image:` entirely and has no
-#      node/npm, so any job that runs `npm` must pin `tags: [docker]` — the
+#      node/npm, so any job that runs `npm` must pin `tags: [sinequa, docker]` — the
 #      `default:` below does this for everyone. Without it the very first
 #      pipeline of this project died on `npm: command not found`.
-#      The two jobs that need neither node nor npm (jira-check, changeset-check
-#      — grep/git only) instead pin `tags: [shell]`, so the two jobs that run
-#      on every single MR pipeline don't spin up a docker container each time.
+#      The three jobs that need neither node nor npm (jira-check, changeset-check, eol-check
+#      — grep/git only) instead pin `tags: [sinequa, shell]`, so the jobs that run
+#      on every single MR pipeline don't spin up a container each time.
 #   2. Containers reach the internal network directly (gitlab.chapsvision.in) but
 #      have NO direct internet access and NO proxy variables of their own.
 #      Everything external must go through the Squid proxy — registry.npmjs.org,
@@ -44,20 +44,25 @@ stages:
   - build
   - release
 
-# MR events, plus a push to a release/* branch (needed for changeset-release —
-# see above). A push pipeline only ever runs the release-stage job: every other
-# job keeps its own `merge_request_event`-only rule, so nothing else doubles up.
+# MR events, plus a push/web pipeline on develop and release/* (needed for
+# changeset-release — see above — and for the manual sync-github job). Such a
+# pipeline only ever runs those two jobs: every other job keeps its own
+# `merge_request_event`-only rule, so nothing else doubles up.
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH =~ /^release\// && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH =~ /^(develop|release\/.*)$/ && $CI_PIPELINE_SOURCE =~ /^(push|web)$/
+
+include:
+  # GitHub mirror of develop and release/* - see the file's header.
+  - local: .gitlab/ci/sync-github.yml
 
 default:
   # node:22 (Debian) ships git and curl — no package install needed, which
   # matters because the Alpine repositories are unreachable from here.
   image: node:22
   # Mandatory: an untagged job can land on a shell runner that ignores `image:`.
-  tags: [docker]
+  tags: [sinequa, docker]
   interruptible: true
 
 # ─── templates ───────────────────────────────────────────────────────────────
@@ -89,9 +94,9 @@ default:
 # Talks to nothing external: no `.egress` needed.
 jira-check:
   stage: validate
-  # No node/npm needed (grep/echo only) — overrides the docker tag from `default:`
-  # so this doesn't spin up a container on every single MR pipeline.
-  tags: [shell]
+  # No node/npm needed (grep/echo only) — swaps the docker tag from `default:` for shell
+  # (no container per MR pipeline). `sinequa` is required: a bare `shell` tag can land on the old runner (runner_system_failure, pipeline 677380).
+  tags: [sinequa, shell]
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
@@ -123,7 +128,7 @@ changeset-check:
   stage: validate
   # No node/npm needed (git/grep only) — overrides the docker tag from `default:`
   # so this doesn't spin up a container on every single MR pipeline.
-  tags: [shell]
+  tags: [sinequa, shell]
   rules:
     - if: >-
         $CI_PIPELINE_SOURCE == "merge_request_event" &&
@@ -168,7 +173,7 @@ eol-check:
   stage: validate
   # No node/npm needed (git/grep only) — overrides the docker tag from `default:`
   # so this doesn't spin up a container on every single MR pipeline.
-  tags: [shell]
+  tags: [sinequa, shell]
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
@@ -221,18 +226,15 @@ eol-check:
 # `npm ci` runs the postinstall, which pulls @sinequa/assistant (and @sinequa/agent
 # on 11.14.0) from npm.sinequa.com — reachable through the proxy above.
 #
-# TEMPORARY — manual and non-blocking while the OOM kill (exit code 137 during
-# `ng build` on the shared runner) is investigated. `allow_failure: true` is
-# required: `when: manual` inside `rules` defaults it to false, which would leave
-# the merge request blocked on a job nobody started. Revert once the build is stable.
+# Runs on the `sinequa` docker runners again (the former runners OOM-killed this build, exit
+# code 137 during `ng build`, which is why it had been made manual). If the job turns flaky
+# again, put back `when: manual` on the rule and `allow_failure: true` on the job.
 build:
   extends: .npm
   stage: build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" &&
           $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(release\/.*|dev\/.*|develop)$/
-      when: manual
-      allow_failure: true
   variables:
     CI: "true"
   script:
