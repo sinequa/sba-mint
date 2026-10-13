@@ -1,0 +1,172 @@
+/*
+  Galactik Dark Theme overrides.
+  Light tokens in `galactik-token.css` remain the source of truth.
+  This file only overrides token values for dark mode.
+
+  Selector extended with `.dark` to support the app's class-based dark mode
+  toggle (in addition to the original data-attribute / class selectors).
+*/
+
+:root.dark,
+:root[data-theme="dark"],
+.theme-dark,
+.app-shell--dark,
+.dark {
+  --stroke-success-rgb: 145, 179, 139;
+  --stroke-error-rgb: 255, 157, 159;
+
+  /* Every token below is declared explicitly, even where LexiQ's own dark-mode.scss has no
+     override at all for a family/tier (warning/success/info/cherry/indigo/yellow/cyan, plus
+     bg-error-base and stroke-neutral-black) — those are set to the SAME primitive as the
+     light-mode value in galactik-token.css, reproducing LexiQ's actual (non-overriding)
+     behavior while keeping every design-system token visibly present in this file. */
+  --font-primary-dark: var(--grey-200);
+  --font-primary-base: var(--grey-250);
+  --font-primary-muted: var(--sage-300);
+  --font-primary-hovered: var(--sage-50);
+  --font-primary-pressed: var(--absolute-pure-white);
+  --font-primary-light: var(--sage-700);
+  --font-secondary-base: var(--sage-200);
+  --font-secondary-hovered: var(--almond-400);
+  --font-secondary-pressed: var(--almond-300);
+  --font-secondary-base-alt: var(--almond-200);
+  --font-accent-base: var(--pink-100);
+  --font-accent-pressed: var(--absolute-pure-white);
+  --font-accent-light: var(--pink-700);
+  --font-accent-muted: var(--pink-200);
+  --font-neutral-base: var(--grey-250);
+  --font-neutral-muted: var(--sage-300);
+  --font-neutral-light: var(--sage-800);
+  --font-neutral-white: var(--grey-100);
+  --font-neutral-black: var(--grey-200);
+  --font-error-base: var(--red-300);
+  --font-error-muted: var(--red-400);
+  --font-error-light: var(--red-200);
+  --font-warning-base: var(--orange-800);
+  --font-warning-light: var(--orange-200);
+  --font-warning-muted: var(--orange-600);
+  --font-info-base: var(--blue-800);
+  --font-info-light: var(--blue-200);
+  --font-info-muted: var(--blue-600);
+  --font-success-base: var(--green-200);
+  --font-success-light: var(--green-200);
+  --font-success-muted: var(--green-600);
+  --font-cherry-base: var(--cherry-800);
+  --font-cherry-muted: var(--cherry-600);
+  --font-indigo-base: var(--indigo-800);
+  --font-indigo-muted: var(--indigo-600);
+  --font-yellow-base: var(--yellow-800);
+  --font-yellow-muted: var(--yellow-700);
+  --font-cyan-base: var(--cyan-800);
+  --font-cyan-muted: var(--cyan-600);
+
+  --bg-primary-base: var(--sage-700);
+  --bg-primary-hovered: var(--sage-600);
+  --bg-primary-pressed: var(--sage-800);
+  --bg-primary-active: var(--sage-600);
+  --bg-primary-light: var(--sage-900);
+  --bg-primary-lighter: var(--sage-950);
+  --bg-primary-lightest: var(--sage-975);
+  --bg-secondary-base: var(--almond-600);
+  --bg-secondary-base-alt: var(--almond-700);
+  --bg-secondary-active: var(--almond-800);
+  --bg-secondary-light: var(--almond-800);
+  --bg-secondary-lighter: var(--almond-900);
+  --bg-secondary-lightest: var(--almond-950);
+  --bg-accent-base: var(--pink-950);
+  --bg-accent-base-alt: var(--pink-900);
+  --bg-accent-hover: var(--pink-900);
+  --bg-accent-pressed: var(--pink-950);
+  --bg-neutral-base: var(--sage-900);
+  --bg-neutral-disabled: var(--sage-950);
+  --bg-neutral-white: var(--grey-950);
+  --bg-neutral-base-alt: var(--grey-800);
+  /* --bg-error-base is set to the same red-600 as light mode — LexiQ leaves it unset (the
+     filled danger button already reads fine with white text in both themes) — only the light
+     "well" backgrounds behind red text (base-alt/lightest) get an actual dark override below. */
+  --bg-error-base: var(--red-600);
+  --bg-error-base-alt: var(--red-900);
+  --bg-error-lightest: var(--red-950);
+  --bg-warning-base: var(--orange-700);
+  --bg-warning-base-alt: var(--orange-200);
+  --bg-warning-lightest: var(--orange-50);
+  --bg-success-base: var(--green-600);
+  --bg-success-base-alt: var(--green-200);
+  --bg-success-lightest: var(--green-50);
+  --bg-info-base: var(--blue-600);
+  --bg-info-base-alt: var(--blue-200);
+  --bg-info-lightest: var(--blue-50);
+  --bg-cherry-base: var(--cherry-600);
+  --bg-cherry-base-alt: var(--cherry-200);
+  --bg-indigo-base: var(--indigo-600);
+  --bg-indigo-base-alt: var(--indigo-200);
+  --bg-yellow-base: var(--yellow-700);
+  --bg-yellow-base-alt: var(--yellow-200);
+  --bg-cyan-base: var(--cyan-600);
+  --bg-cyan-base-alt: var(--cyan-200);
+
+  --stroke-focus: var(--pink-300);
+  --stroke-primary-base: var(--cyan-400);
+  --stroke-primary-hovered: var(--sage-300);
+  --stroke-primary-pressed: var(--almond-200);
+  --stroke-primary-light: var(--sage-700);
+  --stroke-primary-lighter: var(--sage-900);
+  --stroke-primary-muted: var(--sage-500);
+  --stroke-secondary-base: var(--almond-400);
+  --stroke-secondary-muted: var(--almond-500);
+  --stroke-secondary-dark: var(--almond-600);
+  --stroke-accent-base: var(--pink-300);
+  --stroke-accent-muted: var(--pink-500);
+  --stroke-neutral-base: var(--sage-800);
+  --stroke-neutral-disabled: var(--grey-700);
+  --stroke-neutral-dark: var(--grey-300);
+  --stroke-neutral-white: var(--sage-900);
+  /* --stroke-neutral-black is set to the same value as light mode — LexiQ has no dark-mode
+     override for it either, it stays absolute-black in both themes. */
+  --stroke-neutral-black: var(--absolute-black);
+  --stroke-error-base: var(--red-500);
+  --stroke-error-muted: var(--red-600);
+  --stroke-yellow-base: var(--yellow-800);
+  --stroke-yellow-muted: var(--yellow-700);
+  --stroke-cherry-base: var(--cherry-700);
+  --stroke-cherry-muted: var(--cherry-600);
+  --stroke-indigo-base: var(--indigo-700);
+  --stroke-indigo-muted: var(--indigo-600);
+  --stroke-cyan-base: var(--cyan-700);
+  --stroke-cyan-muted: var(--cyan-600);
+  --stroke-warning-base: var(--orange-700);
+  --stroke-warning-muted: var(--orange-600);
+  --stroke-info-base: var(--blue-700);
+  --stroke-info-muted: var(--blue-600);
+  --stroke-success-base: var(--green-700);
+  --stroke-success-muted: var(--green-600);
+
+  --shadow-1: 0px 4px 6px rgba(0, 0, 0, 0.35), 0px 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0px 10px 15px rgba(0, 0, 0, 0.4), 0px 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-3: 0px 20px 25px rgba(0, 0, 0, 0.45), 0px 10px 10px rgba(0, 0, 0, 0.35);
+  --shadow-4: 0px 25px 50px rgba(0, 0, 0, 0.55);
+  --shadow-inner: inset -1px -1px 6px rgba(0, 0, 0, 0.4), inset 1px 1px 6px rgba(255, 255, 255, 0.08);
+  --shadow-search-overlay: 0px 8px 40px rgba(0, 0, 0, 0.55), 0px 2px 8px rgba(0, 0, 0, 0.4);
+
+  --effect-frosted-cloud-bg: rgba(244, 249, 249, 0.08);
+  --effect-frosted-cloud-stroke: rgba(244, 249, 249, 0.18);
+  --effect-frosted-cloud-light-intensity: 45;
+
+  --effect-frosted-glass-bg: rgba(244, 249, 249, 0.06);
+  --effect-frosted-glass-stroke: rgba(244, 249, 249, 0.12);
+  --effect-frosted-glass-light-intensity: 60;
+
+  --effect-midnight-glass-bg: rgba(34, 45, 48, 0.52);
+  --effect-midnight-glass-stroke: rgba(168, 190, 194, 0.18);
+  --effect-midnight-glass-light-intensity: 72;
+
+  --effect-default-blur-bg: rgba(20, 31, 35, 0.3);
+  --effect-default-blur-stroke: rgba(244, 249, 249, 0.16);
+
+  --scrim-base: rgba(0, 0, 0, 0.62);
+  --scrim-strong: rgba(0, 0, 0, 0.72);
+  --scrim-stronger: rgba(0, 0, 0, 0.82);
+
+  --gradient-brand-dark: linear-gradient(to top right, var(--sage-600) 0%, var(--grey-900) 100%);
+  --gradient-ia-dark: linear-gradient(to top right, #a9cadf 0%, #dbbade 100%);
+}
