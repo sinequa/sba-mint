@@ -1,4 +1,5 @@
-@import "./galactik-tokens";
+@import "../styles/galactik-token";
+@import "../styles/galactik-token-dark";
 @import "./badge-tokens";
 
 @theme {
@@ -169,19 +170,18 @@
 
 :root {
   /* overrides primary colors from the galactik tokens */
-  --font-primary-dark:    var(--color-blue-vivid-950);
-  --font-primary-base:    var(--color-blue-vivid-800);
-  --font-primary-muted:   var(--color-blue-vivid-600);
+  --font-primary-dark: var(--color-blue-vivid-950);
+  --font-primary-base: var(--color-blue-vivid-800);
+  --font-primary-muted: var(--color-blue-vivid-600);
   --font-primary-hovered: var(--color-blue-vivid-900);
   --font-primary-pressed: var(--color-blue-vivid-950);
-  --font-primary-light:   var(--color-blue-vivid-200);
-  --bg-primary-base:       var(--color-blue-vivid-500);
-  --bg-primary-hovered:    var(--color-blue-vivid-600);
-  --bg-primary-pressed:    var(--color-blue-vivid-300);
-  --bg-primary-light:      var(--color-blue-vivid-200);
-  --bg-primary-lighter:    var(--color-blue-vivid-100);
-  --bg-primary-lightest:   var(--color-blue-vivid-50);
-
+  --font-primary-light: var(--color-blue-vivid-200);
+  --bg-primary-base: var(--color-blue-vivid-500);
+  --bg-primary-hovered: var(--color-blue-vivid-600);
+  --bg-primary-pressed: var(--color-blue-vivid-300);
+  --bg-primary-light: var(--color-blue-vivid-200);
+  --bg-primary-lighter: var(--color-blue-vivid-100);
+  --bg-primary-lightest: var(--color-blue-vivid-50);
 }
 
 :root {
@@ -269,7 +269,6 @@
   --menu: var(--background);
   --menu-bg: white;
   --menu-border: var(--color-gray-200);
-
 
   --muted: light-dark(oklch(0.967 0.001 286.375), oklch(0.274 0.006 286.033));
   --muted-foreground: light-dark(oklch(0.552 0.016 285.938), oklch(0.705 0.015 286.067));

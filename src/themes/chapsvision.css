@@ -1,5 +1,3 @@
-@import "./galactik-tokens";
-@import "./galactik-tokens-dark";
 @import "./badge-tokens";
 
 @theme {
@@ -248,7 +246,7 @@
   --disabled: var(--color-gray-200);
   --muted: var(--color-gray-200);
   /* Semantic galactik token instead of a hand-picked oklch value: flips on its own via
-     galactik-tokens-dark.css's :root.dark (no separate .dark override needed), and reads more
+     styles/galactik-token-dark.css's :root.dark (no separate .dark override needed), and reads more
      contrast in both themes (light 3.21:1 -> 5.2:1, dark was --color-gray-400 at 5.73:1 -> 7.41:1). */
   --muted-foreground: var(--font-neutral-muted);
 
@@ -329,7 +327,7 @@
   /* was var(--color-neutral-700) — no "neutral" ramp exists in this file's @theme, so this was
      invalid at computed-value time in both themes. develop's chat-v3.css uses the semantic galactik
      token for this exact purpose (var(--bg-primary-lighter)); reused here now that
-     galactik-tokens.css/-dark.css are wired in — it flips on its own via :root.dark, no separate
+     styles/galactik-token.css/-dark.css are wired in — it flips on its own via :root.dark, no separate
      dark override needed. */
   --ast-uploaded-doc-hover-background: var(--bg-primary-lighter);
   --ast-reference-expanded-hover-bg: var(--background);
