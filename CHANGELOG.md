@@ -1,5 +1,14 @@
 # sinequa-mint
 
+## 11.14.0-2
+
+_Dernier build ES connu à la génération : es-11.14.0.2169 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- d58ab56: Fix the broken visual rendering of the new Agent page by loading the Galactik design tokens in both light and dark themes.
+- 212eafd: Fix the Agent page prompt dialogs (delete saved chat, rename, like, dislike) being displayed at the top-left of the screen without a backdrop: import `@sinequa/agent/css/utilities.css` so the `agt-*` utilities are defined.
+
 ## 11.14.0-1
 
 _Dernier build ES connu à la génération : es-11.14.0.2154 (indicatif, non garanti pour ce commit précis)._
