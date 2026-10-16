@@ -40,7 +40,8 @@ sync-github:
   tags: [docker, sinequa]
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^(develop|release\/.*)$/ && $CI_PIPELINE_SOURCE =~ /^(push|web)$/
-      when: manual
+      # always run 
+      # when: manual
       # A manual job blocks the pipeline by default; the sync is optional.
       allow_failure: true
   # One push at a time per branch.
