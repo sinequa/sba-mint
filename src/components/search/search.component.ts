@@ -221,6 +221,9 @@ export class SearchComponent {
   }
 
   onSearch(e: Event) {
+    // The send button sits inside the search <form>: without this its click also runs the native form
+    // submission, which reloads the page and drops the in-memory user override.
+    e.preventDefault();
     e.stopImmediatePropagation();
     this.dropdownComponent().close();
     const text = this.searchInputText()?.trim() ?? "";
