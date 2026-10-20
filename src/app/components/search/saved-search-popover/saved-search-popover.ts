@@ -11,6 +11,7 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
     @if (!savedSearch()) {
       <Popover #popover class="flex!">
         <button
+          type="button"
           variant="icon"
           size="icon"
           class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
@@ -37,10 +38,10 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
                 (keydown.enter)="savedName().trim().length !== 0 && saveQuery($event, savedNameInput.value)" />
             </div>
             <div class="ml-auto flex justify-end gap-2">
-              <button variant="outline" [title]="'cancel' | transloco" (click)="popover.close()">
+              <button type="button" variant="outline" [title]="'cancel' | transloco" (click)="popover.close()">
                 {{ 'cancel' | transloco }}
               </button>
-              <button title="confirm | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
+              <button type="button" title="confirm | transloco" (click)="saveQuery($event, savedNameInput.value)" [disabled]="!savedName().trim()">
                 {{ 'confirm' | transloco }}
               </button>
             </div>
@@ -49,6 +50,7 @@ import { ButtonComponent, DropdownComponent, InputComponent, PopoverComponent, P
       </Popover>
     } @else {
       <button
+        type="button"
         variant="icon"
         [iconOnly]="true"
         class="transition-transform duration-200 ease-in-out peer-disabled:opacity-50 hover:scale-110"
