@@ -1,5 +1,13 @@
 # sinequa-mint
 
+## 11.14.0-3
+
+_Dernier build ES connu à la génération : es-11.14.0.2176 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- 5a18f35: Fix the user override still being lost when launching a search by clicking the send button (or the clear / saved-search buttons): the search form no longer submits natively, so the page no longer reloads after navigating to the results.
+
 ## 11.14.0-2
 
 _Dernier build ES connu à la génération : es-11.14.0.2169 (indicatif, non garanti pour ce commit précis)._
