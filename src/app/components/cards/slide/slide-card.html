@@ -1,3 +1,4 @@
+@let hasThumbnail = article().thumbnailUrl && !thumbnailFailed();
 <Card
   class="group/article group cursor-pointer flex-row gap-0 p-0 text-card-foreground"
   [class.selected]="selected()"
@@ -6,14 +7,14 @@
   (keydown.control.enter)="onCtrlEnter()"
   role="option">
   <div class="relative max-w-40 min-w-32 shrink-0">
-    @if (article().thumbnailUrl && !thumbnailFailed()) {
+    @if (hasThumbnail) {
       <img
         class="ratio-video h-full w-full rounded-s-lg object-cover"
         [src]="article().thumbnailUrl"
         (error)="thumbnailFailed.set(true)"
         alt="{{ article().title || 'Thumbnail image for the article' }}" />
     } @else {
-      <div class="flex size-full items-center justify-center rounded-s-lg bg-muted text-primary">
+      <div class="flex size-full items-center justify-center rounded-s-lg bg-muted text-4xl text-primary">
         <source [collection]="article().collection" [connector]="article().connector" />
       </div>
     }
@@ -24,9 +25,11 @@
       <input class="peer/checkbox hidden" title="{{ 'toggleDocumentSelection' | transloco }}" type="checkbox" [checked]="checked()" />
       @if (checked()) {
         <SquareCheckBig class="text-lg" />
-      } @else {
+      } @else if (hasThumbnail) {
         <SquareIcon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
         <source class="text-lg group-hover/article:hidden peer-checked/checkbox:hidden" [collection]="article().collection" [connector]="article().connector" />
+      } @else {
+        <SquareIcon class="hidden text-lg group-hover/article:block peer-checked/checkbox:hidden" />
       }
     </div>
   </div>
