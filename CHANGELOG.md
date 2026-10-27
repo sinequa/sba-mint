@@ -1,5 +1,15 @@
 # sinequa-mint
 
+## 11.14.0-4
+
+_Dernier build ES connu à la génération : es-11.14.0.2180 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- 087c96a: Send only the value in the body of user profile PATCH requests, instead of repeating the full `data`/`customData` hierarchy.
+- ac6c06a: Fix the slide card showing the source icon twice when the document has no thumbnail: the icon is now displayed only in the thumbnail placeholder, and the selection badge only shows the checkbox on hover.
+- ac6c06a: Fix custom source logos (`iconPath`) being displayed at their native size: upgrade `@sinequa/atomic-angular` to 1.18.2, which sizes them from the surrounding font size.
+
 ## 11.14.0-3
 
 _Dernier build ES connu à la génération : es-11.14.0.2176 (indicatif, non garanti pour ce commit précis)._

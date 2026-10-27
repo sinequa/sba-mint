@@ -1,7 +1,7 @@
 {
   "name": "sinequa-mint",
   "version": "11.14.0",
-  "buildVersion": "11.14.0-3",
+  "buildVersion": "11.14.0-4",
   "scripts": {
     "build": "ng build",
     "build:spfx": "npm run spfx:enable && ng build --configuration spfx-production",
