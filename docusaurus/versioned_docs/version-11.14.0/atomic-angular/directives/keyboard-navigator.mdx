@@ -1,0 +1,79 @@
+---
+title: KeyboardNavigatorDirective
+---
+
+## Overview
+
+The `KeyboardNavigatorDirective` is a powerful tool for enhancing accessibility in custom components like dropdowns, menus, or any list of items that need to be navigated using a keyboard. It attaches to an input element acting as a combobox and manages focus, selection, and keyboard events for a related listbox.
+
+### Usage
+
+To use the directive, add it to an `input` element with **both** `role="combobox"` and `aria-controls="<child_id>"` attributes. The `aria-controls` attribute must be set to the id of the listbox element that contains the navigable items.
+
+```html title="search.html"
+<input type="text" role="combobox" aria-controls="listbox-id" [navigator]="navigatorOptions" (selectedItem)="handleSelection($event)" />
+
+<ul id="listbox-id" role="listbox">
+  @for (item of [1, 2, 3, 4, 5, 6, 7]; let i = index"; track $index) {
+  <li [id]="'item-' + $index" role="option" [attr.aria-disabled]="$index % 2 ? 'true' : undefined">{{ item.label }}</li>
+  }
+</ul>
+```
+
+:::warning
+Listbox items must have an `id` attribute for the directive to function correctly.
+:::
+
+## API Reference
+
+### Inputs
+
+- `navigator: KeyboardNavigatorOptions`: Configuration object for the navigator.
+- `aria-controls: string`: The id of the listbox element.
+
+#### KeyboardNavigatorOptions
+
+| Property               | Type                                    | Default                                         | Description                                                                     |
+| ---------------------- | --------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------- |
+| `name`                 | `string`                                | `'defaultNavigator'`                            | An optional name for debugging or identification.                               |
+| `optionSelector`       | `string`                                | `'[role="option"]:not([aria-disabled="true"])'` | A CSS selector to identify the navigable items within the listbox.              |
+| `direction`            | `'horizontal' \| 'vertical' \| 'both'`  | `'vertical'`                                    | The direction of navigation.                                                    |
+| `selectOnFocus`        | `boolean`                               | `false`                                         | If `true`, the first item is automatically selected when the input gains focus. |
+| `resetSelectionOnBlur` | `boolean`                               | `false`                                         | If `true`, the selection is cleared when the input loses focus.                 |
+| `onSelectionHandlers`  | `KeyboardNavigationOnSelectionHandlers` | `{ hideListbox: true, resetSelection: true }`   | Handlers to control behavior after an item is selected.                         |
+
+#### KeyboardNavigationOnSelectionHandlers
+
+| Property         | Type      | Default | Description                                                                |
+| ---------------- | --------- | ------- | -------------------------------------------------------------------------- |
+| `hideListbox`    | `boolean` | `true`  | If `true`, the listbox is hidden after an item is selected via `Enter`.    |
+| `resetSelection` | `boolean` | `true`  | If `true`, the selection is cleared after an item is selected via `Enter`. |
+
+### Outputs
+
+- `selectedItem: HTMLElement | null`: Emits the selected item's element when an item is chosen via click or the `Enter` key.
+
+## Keyboard Interactions
+
+The directive provides the following keyboard interactions:
+
+| Key          | Action                                                                         |
+| ------------ | ------------------------------------------------------------------------------ |
+| `arrowUp`    | Moves selection to the previous item (for `vertical` and `both`).              |
+| `arrowDown`  | Moves selection to the next item (for `vertical` and `both` directions).       |
+| `arrowLeft`  | Moves selection to the previous item (for `horizontal` and `both` directions). |
+| `arrowRight` | Moves selection to the next item (for `horizontal` and `both` directions).     |
+| `home`       | Moves selection to the first item (for `horizontal` and `both` directions).    |
+| `end`        | Moves selection to the last item (for `horizontal` and `both` directions).     |
+| `pageUp`     | Moves selection to the first item (for `vertical` and `both` directions).      |
+| `pageDown`   | Moves selection to the last item (for `vertical` and `both` directions).       |
+| `enter`      | Confirms the selection and emits the `selectedItem` event.                     |
+| `escape`     | Default browser behavior.                                                      |
+
+## Example
+
+### Autocomplete Input with Search
+
+```html title="autocomplete.html"
+
+```

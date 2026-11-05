@@ -38,4 +38,3 @@ export class TranslocoHttpLoaderOverrides implements TranslocoLoader {
     ]).pipe(map(([base, override]) => deepmerge(base, override)));
   }
 }
-
