@@ -14,10 +14,12 @@ jobs:
     runs-on: Linux
     steps:
       - name : Check PR Title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           shopt -s nocasematch
           echo "Check the content of the Pull Request title"
-          title="${{ github.event.pull_request.title }}"
+          title="$PR_TITLE"
           echo "Content is: $title"
           if [[ $title =~ ([A-Za-z]{2,6}-[0-9]+[[:space:]]+#[Dd][oO][nN][eE]) ]]; then
             echo -e "\033[0;32mThe Pull Request Title contains a Jira ticket with a '#done'"

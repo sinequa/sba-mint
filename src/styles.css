@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import "../node_modules/@sinequa/agent/css/utilities.css";
 /* Application specific styles */
 @import "./themes/chapsvision.css";
 @import "./theme.css";
-
 
 @plugin "@tailwindcss/typography";
 
@@ -15,6 +15,7 @@
 
 :root {
   --mobile-header-height: 3.5rem;
+  --agt-page-bg: transparent;
 }
 
 *,
