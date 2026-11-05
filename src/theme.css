@@ -2,6 +2,8 @@
 @import "@sinequa/ui/css/datepicker/styles.css";
 @import "./styles/animations.css";
 @import "./styles/utilities.css";
+@import "./styles/galactik-token.css";
+@import "./styles/galactik-token-dark.css";
 
 /* css third-components overrides */
 @import "./css-overrides/styles.css";
@@ -365,6 +367,10 @@ summary::-webkit-details-marker {
 }
 
 @keyframes animatedTextGradient {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
 }

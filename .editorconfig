@@ -8,6 +8,10 @@ indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Mirrors the extension list in .gitattributes (eol=lf) — see ES-33695.
+[*.{ts,js,css,scss,json,html,md}]
+end_of_line = lf
+
 [*.ts]
 quote_type = single
 
