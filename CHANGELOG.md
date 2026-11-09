@@ -1,5 +1,14 @@
 # sinequa-mint
 
+## 11.14.0-5
+
+_Dernier build ES connu à la génération : es-11.14.0.2191 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- cf79653: Fix the preview entity navigation that could not reach the last occurrences of an entity value ("Unable to navigate to the next occurrence of …"). Navigation and the occurrence counter now use the occurrences actually highlighted in the document (bump `@sinequa/atomic-angular` to 1.19.3).
+- ff6a52c: Bump `@sinequa/atomic` to 2.15.0 and `@sinequa/atomic-angular` to 1.19.4. Fixes the tab counts that were lost when a tree aggregation node is opened, and the deletion/saving of custom user-profile properties that have no stored value. The JWT refresh now also refreshes the bearer token, the user profile client handles bare-value responses, and APIs served under a path prefix are supported through the new `apiPrefix` option.
+
 ## 11.14.0-4
 
 _Dernier build ES connu à la génération : es-11.14.0.2180 (indicatif, non garanti pour ce commit précis)._
