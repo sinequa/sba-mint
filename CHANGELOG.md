@@ -1,5 +1,14 @@
 # sinequa-mint
 
+## 11.14.0-6
+
+_Dernier build ES connu à la génération : es-11.14.0.2193 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- df31055: Fix the assistant's debug table being unreadable in dark mode (white text on white rows).
+- 6e41968: Fix the document preview losing the reader's page when switching to the Markdown conversion: the Markdown now opens on the page the reader was on (or the cited passage's page), and the page being read in Markdown is remembered so that switching back to an HTML conversion lands on the same page.
+
 ## 11.14.0-5
 
 _Dernier build ES connu à la génération : es-11.14.0.2191 (indicatif, non garanti pour ce commit précis)._
