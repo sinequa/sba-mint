@@ -27,6 +27,13 @@ sq-saved-chats-v3 {
   }
 }
 
+/* "Search chats" dialog (@sinequa/agent SavedChatsDialog): the chat titles and the close icon set no
+   color of their own, so they inherit the UA default of <dialog> (`color: CanvasText`, i.e. black),
+   which is unreadable on the dark menu background. Make them inherit the theme foreground instead. */
+SavedChatsDialog > dialog {
+  color: var(--color-foreground);
+}
+
 .dark {
   sq-saved-chats-v3 {
     dialog {
