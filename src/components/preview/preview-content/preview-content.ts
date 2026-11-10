@@ -1,4 +1,18 @@
-import { Component, computed, DestroyRef, ElementRef, effect, inject, input, output, resource, signal, viewChild } from "@angular/core";
+import {
+  afterRenderEffect,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  effect,
+  inject,
+  input,
+  output,
+  resource,
+  signal,
+  untracked,
+  viewChild
+} from "@angular/core";
 import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { DomSanitizer } from "@angular/platform-browser";
 import { TranslocoPipe } from "@jsverse/transloco";
@@ -91,7 +105,7 @@ const LOAD_SAFETY_NET_MS = 1500;
               (onConversionSelect)="selectedConversion.set($event)" />
             <zoom-controls (zoomFit)="zoomFitMarkdown()" (zoomIn)="zoomInMarkdown()" (zoomOut)="zoomOutMarkdown()" />
           </floating-toolbar>
-          <div class="h-full overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
+          <div #markdownScroller class="h-full overflow-auto rounded-sm bg-background px-8 py-6 shadow-xs">
             <div class="prose max-w-none dark:prose-invert" [style.zoom]="markdownZoom()" [innerHTML]="markdownResource.value() | markdown"></div>
           </div>
         </div>
@@ -147,6 +161,13 @@ const LOAD_SAFETY_NET_MS = 1500;
 export class PreviewContentComponent {
   cn = cn;
   iframe = viewChild<ElementRef<HTMLIFrameElement>>("preview");
+  /**
+   * The box that holds the rendered Markdown (there is no iframe, hence no `ready` message, in that branch). It is
+   * not necessarily the element that scrolls: depending on the host layout it can be an ancestor, so scrolling
+   * and scroll tracking never assume it.
+   */
+  private readonly markdownScroller = viewChild<ElementRef<HTMLElement>>("markdownScroller");
+  private markdownScrollFrame = 0;
 
   breakpointService = inject(BreakpointObserverService);
   protected readonly appStore = inject(AppStore);
@@ -416,6 +437,29 @@ export class PreviewContentComponent {
       }
     });
 
+    // Markdown branch: there is no iframe, so `onPreviewReady()` never runs. Once the rendered Markdown is in
+    // the DOM, scroll to the page the reader was on (or to the passage's page) — same priority as the iframe branch.
+    afterRenderEffect(() => {
+      const scroller = this.markdownScroller();
+      if (!scroller || !this.markdownResource.hasValue()) return;
+      this.markdownResource.value(); // re-run when the content changes
+      const target = untracked(() => this.scrollPage());
+      if (target !== undefined) this.scrollMarkdownTo(scroller.nativeElement, target);
+    });
+
+    // `scroll` does not bubble, but it can be captured: listening on the document catches whichever ancestor of the
+    // Markdown box is the one that scrolls.
+    effect(onCleanup => {
+      const box = this.markdownScroller()?.nativeElement;
+      if (!box) return;
+      const onScroll = (event: Event) => {
+        const scrolled = event.target instanceof Element ? event.target : document.documentElement;
+        if (scrolled.contains(box)) this.onMarkdownScroll(box, scrolled);
+      };
+      document.addEventListener("scroll", onScroll, { capture: true, passive: true });
+      onCleanup(() => document.removeEventListener("scroll", onScroll, { capture: true }));
+    });
+
     effect(() => {
       // A new conversion / preview URL is loading: hide the content behind the spinner overlay
       // until the fresh iframe has loaded and been scrolled to the right page. Cancelling any
@@ -458,6 +502,7 @@ export class PreviewContentComponent {
 
     this.destroyRef.onDestroy(() => {
       controller.abort();
+      cancelAnimationFrame(this.markdownScrollFrame);
       clearTimeout(this.revealTimer);
       const id = this.id();
       if (id) {
@@ -477,6 +522,31 @@ export class PreviewContentComponent {
    */
   onLoaded() {
     this.revealContent(LOAD_SAFETY_NET_MS);
+  }
+
+  /** Scrolls so that the page anchor `anchorId` sits at the top edge of whichever ancestor scrolls the Markdown. */
+  private scrollMarkdownTo(box: HTMLElement, anchorId: string): void {
+    box.querySelector<HTMLElement>(`[id="${anchorId}"]`)?.scrollIntoView({ block: "start", behavior: "instant" });
+  }
+
+  /**
+   * Keeps `currentPage` in sync with the page the reader is on in the Markdown branch (the iframe branch gets it
+   * from preview.js's `current-page` message), so that switching to another conversion lands on the same page.
+   * Throttled to one measure per frame.
+   */
+  private onMarkdownScroll(box: HTMLElement, scrolled: Element): void {
+    if (this.markdownScrollFrame) return;
+    this.markdownScrollFrame = requestAnimationFrame(() => {
+      this.markdownScrollFrame = 0;
+      // The root element reports the viewport's top edge through its scroll position, not its rect.
+      const top = (scrolled === document.documentElement ? 0 : scrolled.getBoundingClientRect().top) + 1;
+      let current: string | undefined;
+      for (const anchor of Array.from(box.querySelectorAll<HTMLElement>('[id^="sq-page-start"]'))) {
+        if (anchor.getBoundingClientRect().top > top) break;
+        current = anchor.id;
+      }
+      if (current !== undefined) this.currentPage.set(current);
+    });
   }
 
   protected zoomInMarkdown(): void {
