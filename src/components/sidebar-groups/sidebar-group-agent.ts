@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, viewChild } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { AGENT_INSTANCE_ID, AgentsStore, createAgentNewChatEvent, type SavedChat, SavedChatsDialogComponent } from "@sinequa/agent";
@@ -15,6 +15,11 @@ import {
   useSidebar
 } from "@sinequa/ui";
 import { injectCurrentUrl } from "../../utils/routing";
+
+/** Host tag names (as reported by `tagName`) of the @sinequa/agent Rename/Delete saved-chat prompts. */
+const SAVED_CHAT_PROMPT_TAGS = new Set(["DELETEPROMPT", "RENAMEPROMPT"]);
+/** A prompt is hidden through a `hidden` host class toggled by the library. */
+const SAVED_CHAT_PROMPT_VISIBLE_SELECTOR = "deleteprompt:not(.hidden), renameprompt:not(.hidden)";
 
 @Component({
   selector: "app-sidebar-group-agent",
@@ -53,18 +58,18 @@ import { injectCurrentUrl } from "../../utils/routing";
 
         @let searchChats = 'searchChats' | transloco;
         <sidebar-menu-item [attr.aria-label]="searchChats" class="group-data-[collapsible=icon]:items-center">
-          <sidebar-menu-button aria-hidden [tooltip]="isCollapsed() ? searchChats : ''" tooltip-position="right" class="text-lg" (click)="savedChatsDialog.open()">
+          <sidebar-menu-button aria-hidden [tooltip]="isCollapsed() ? searchChats : ''" tooltip-position="right" class="text-lg" (click)="openSavedChats(savedChatsDialog)">
             <magnifying-glass-icon />
             <span class="text-sm">{{ searchChats }}</span>
           </sidebar-menu-button>
-         <a class="sr-only" [attr.aria-label]="searchChats" (click)="savedChatsDialog.open()">{{ searchChats }}</a>
+         <a class="sr-only" [attr.aria-label]="searchChats" (click)="openSavedChats(savedChatsDialog)">{{ searchChats }}</a>
         </sidebar-menu-item>
       }
     </sidebar-menu>
 
     <!-- "Search chats" opens the library dialog; binding (chatSelected) loads the picked chat and the
          dialog closes itself — same wiring as the agent demo's app-sidebar. -->
-    <SavedChatsDialog #savedChatsDialog [instanceId]="instanceId" (chatSelected)="onChatSelected($event)" />
+    <SavedChatsDialog #savedChatsDialog [instanceId]="instanceId" (chatSelected)="onChatSelected($event)" (closed)="stopAdoptingPrompts()" />
   }
   `,
   imports: [
@@ -119,6 +124,61 @@ export class SidebarGroupAgentComponent {
       document.dispatchEvent(createAgentNewChatEvent(this.instanceId));
     } else {
       this.router.navigate(["/chat/new"]).catch(err => error("navigation to chat/new failed!", err));
+    }
+  }
+
+  private readonly savedChatsDialogHost = viewChild("savedChatsDialog", { read: ElementRef<HTMLElement> });
+  private promptObserver?: MutationObserver;
+  private dialogCancelListener?: { dialog: HTMLDialogElement; listener: (e: Event) => void };
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.stopAdoptingPrompts());
+  }
+
+  /**
+   * Opens the "Search chats" dialog and works around an @sinequa/agent stacking bug: the dialog is
+   * opened with `showModal()` (top layer + `body.inert`), while the Rename/Delete prompts of its inner
+   * saved-chat list teleport themselves to `document.body` and rely on `z-index`. Nothing outside the
+   * top layer can stack above a modal dialog, so the prompts opened hidden behind it (and inert) and
+   * only showed up once the dialog went away (e.g. on resize). While the dialog is open, any prompt
+   * appended to `<body>` is moved into the open `<dialog>`, so it shares its top layer and stays
+   * interactive. Prompts remove themselves on destroy, so nothing needs moving back.
+   * TODO: drop once @sinequa/agent renders those prompts in the top layer itself.
+   */
+  protected openSavedChats(dialog: SavedChatsDialogComponent): void {
+    dialog.open();
+
+    const dialogEl = this.savedChatsDialogHost()?.nativeElement.querySelector("dialog");
+    if (!dialogEl) return;
+
+    this.stopAdoptingPrompts();
+    this.promptObserver = new MutationObserver(mutations => {
+      for (const { addedNodes } of mutations) {
+        addedNodes.forEach(node => {
+          if (node instanceof HTMLElement && SAVED_CHAT_PROMPT_TAGS.has(node.tagName)) {
+            dialogEl.appendChild(node);
+          }
+        });
+      }
+    });
+    // The inner list (and its prompts) mounts right after open(), so observing now catches them.
+    this.promptObserver.observe(document.body, { childList: true });
+
+    // Escape would otherwise close the whole dialog (destroying the prompt mid-way): while a
+    // prompt is shown, keep the dialog open.
+    const listener = (e: Event) => {
+      if (dialogEl.querySelector(SAVED_CHAT_PROMPT_VISIBLE_SELECTOR)) e.preventDefault();
+    };
+    dialogEl.addEventListener("cancel", listener);
+    this.dialogCancelListener = { dialog: dialogEl, listener };
+  }
+
+  protected stopAdoptingPrompts(): void {
+    this.promptObserver?.disconnect();
+    this.promptObserver = undefined;
+    if (this.dialogCancelListener) {
+      this.dialogCancelListener.dialog.removeEventListener("cancel", this.dialogCancelListener.listener);
+      this.dialogCancelListener = undefined;
     }
   }
 
