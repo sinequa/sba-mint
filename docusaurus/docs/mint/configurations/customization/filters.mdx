@@ -1,0 +1,182 @@
+---
+title: Filters
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+This document explains how to customize the aggregations/filters in the Sinequa MINT application.
+
+<img src={useBaseUrl('img/configurations/json.png')} alt='authentication' />
+
+The `filters` configuration file allows you to define how various aggregations (filters) are displayed in the Sinequa MINT application.
+This includes specifying icons, display names, and whether they are searchable or hidden by default.
+
+## Filters Configuration Format
+
+The filters configuration is defined as a JSON array where each object represents a column with various properties that control
+how it's displayed and used in the interface. The configuration is stored in custom JSON configuration file `filters` in
+Sinequa Administration and it can be modified to suit your application's needs.
+
+```json
+[
+  {
+    "name": "Authors",
+    "column": "authors",
+    "icon": "far fa-user",
+    "display": "column.authors",
+    "searchable": true
+  },
+  // Additional columns...
+]
+```
+
+### Properties
+
+| Property | Purpose |
+|----------|---------|
+| `name` | Optional display name of the aggregation |
+| `column*` | The actual column/field of the aggregation (required) |
+| `icon` | Font Awesome icon to display alongside the column (uses FontAwesome naming format) |
+| `display` | Translation key for the display name (usually in format `column.fieldname`) |
+| `searchable` | Boolean indicating if this aggregation/filter can be searched directly |
+| `hidden` | Boolean indicating if this aggregation/filter should be hidden from display by default |
+
+### How to Customize
+
+1. **Add a New Column/Aggregation**:
+
+- Add a new object to the JSON array with the desired properties. For example:
+
+  ```json title="filters: json file in the Sinequa Administration"
+  # Example of a new column configuration
+  {
+    "name": "your_aggregation_name",
+    "column": "your_column_id",
+    "icon": "far fa-your-icon"
+  }
+  ```
+
+  ```json
+  # Optionally, include a custom display name:
+  {
+    "name": "your_aggregation_name",
+    "column": "your_column_id",
+    "icon": "far fa-your-icon",
+    // add
+    "display": "column.your_column_display"
+  }
+  ```
+
+2. **Modify Existing Column**:
+
+   - Change the icon: Update the `icon` property with a different Font Awesome class
+   - Change visibility: Add `"hidden": true` to hide or remove/set to `false` to show
+   - Make searchable: Add `"searchable": true` to allow direct searching
+
+3. **Reorder Columns**:
+
+   - Simply change the order of the objects in the array to change their display order
+
+### Best Practices
+
+- Use consistent naming for translation keys (`column.fieldname`)
+- Choose appropriate icons that represent the data type
+- Only mark columns as `searchable: true` if they contain valuable search criteria
+- Use the `name` property only when you need to customize aggregations with the same column name (E.g., `modified` column)
+
+### i18n
+
+:::caution
+Ensure that the translation keys used in the `display` match your i18n keys.
+:::
+
+```json
+# Example of filter configuration with i18n translation key
+# This is a column definition for the Authors aggregation
+# set in the filters configuration file in the Sinequa Administration
+{
+  "name": "Authors",
+  "column": "authors",
+  "icon": "far fa-your-icon",
+  // add
+  "display": "column.authors" 👈 translation key
+}
+
+# Example translation key for a column in your i18n files
+# This should be in your i18n JSON files, e.g., en.json
+# or any other language file
+# Ensure the key matches the one used in the display property
+{
+  "column": {
+    // add
+    "authors": "Authors", 👈 key MUST match ("column.authors")
+    "companies": "Companies"
+    // Add other translations as needed
+  }
+}
+```
+
+For each column, you can define a translation key in your i18n files to provide localized names for the columns.
+
+## Default Configuration
+
+<details>
+<summary>Click to view the default configuration</summary>
+```json
+[
+     {
+        "column": "authors",
+        "icon": "far fa-user",
+        "display": "column.authors"
+    },
+    {
+        "column": "company",
+        "icon": "far fa-buildings",
+        "display": "column.companies"
+    },
+    {
+        "column": "modified",
+        "icon": "far fa-calendar-day",
+        "display": "Date"
+    },
+    {
+        "column": "size",
+        "icon": "fa-regular fa-arrow-up-right-and-arrow-down-left-from-center",
+        "display": "column.sizes"
+    },
+    {
+        "column": "doctype",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "geo",
+        "icon": "far fa-location-dot",
+        "display": "column.geos"
+    },
+    {
+        "column": "documentlanguages",
+        "icon": "far fa-language",
+        "display": "column.documentlanguages"
+    },
+    {
+        "column": "concepts",
+        "icon": "fa-solid fa-lightbulb-on"
+    },
+    {
+        "column": "person",
+        "icon": "far fa-user",
+        "display": "column.persons"
+    },
+    {
+        "column": "docformat",
+        "icon": "far fa-file"
+    },
+    {
+        "column": "treepath",
+        "icon": "far fa-code-fork"
+    }
+]
+```
+</details>
+
+Each column definition determines how the corresponding aggregation/filter will appear in your application's interface,
+including search filters, results displays, and facets.

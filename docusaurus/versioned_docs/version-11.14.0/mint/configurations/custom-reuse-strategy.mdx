@@ -1,0 +1,120 @@
+---
+title: Custom Route Reuse Strategy
+sidebar_class_name: new
+---
+
+By default, Angular destroys a component's instance when the user navigates away from its route and re-creates it from scratch when they navigate back. This means any in-memory state (conversation history, scroll position, loaded data, etc.) is lost on every navigation.
+
+Mint ships a `CustomReuseStrategy` that overrides this behaviour for specific routes: their component instances are **detached** from the DOM and kept in memory instead of destroyed, then **re-attached** transparently when the user returns.
+
+## How it works
+
+Angular's `RouteReuseStrategy` interface exposes five hooks that are called at different points of the navigation lifecycle. `CustomReuseStrategy` implements all five:
+
+```
+Navigate away                         Navigate back
+─────────────────────────────         ─────────────────────────
+shouldDetach?  ──yes──► store()       shouldAttach?  ──yes──► retrieve()
+               ──no──►  destroy                      ──no──►  create fresh
+```
+
+| Hook | Role |
+|---|---|
+| `shouldDetach(route)` | Returns `true` when `route.data["reuse"]` is truthy. Only those routes are kept in memory. |
+| `store(route, handle)` | Saves the live component handle into an internal map keyed by `route.routeConfig.path`. |
+| `shouldAttach(route)` | Returns `true` when a saved handle exists for the route's path. |
+| `retrieve(route)` | Returns the saved handle so Angular can re-attach it. |
+| `shouldReuseRoute(future, curr)` | Standard Angular behaviour: reuses the route if the route config object is the same reference (same URL, no full reload). |
+
+### Source
+
+```typescript title="src/config/custom-reuse-strategy.ts"
+export class CustomReuseStrategy implements RouteReuseStrategy {
+  private handlers: { [key: string]: DetachedRouteHandle } = {};
+
+  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.data["reuse"];
+  }
+
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
+    if (route.routeConfig?.path) {
+      this.handlers[route.routeConfig.path] = handle;
+    }
+  }
+
+  shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.routeConfig?.path && !!this.handlers[route.routeConfig.path];
+  }
+
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+    if (!route.routeConfig?.path) return null;
+    return this.handlers[route.routeConfig.path];
+  }
+
+  shouldReuseRoute(
+    future: ActivatedRouteSnapshot,
+    curr: ActivatedRouteSnapshot,
+  ): boolean {
+    return future.routeConfig === curr.routeConfig;
+  }
+}
+```
+
+## Registration
+
+The strategy is registered as an Angular provider in `src/app/app.config.ts`, replacing Angular's default implementation globally:
+
+```typescript title="src/app/app.config.ts"
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomReuseStrategy } from '@config/custom-reuse-strategy';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ...
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
+  ],
+};
+```
+
+## Opting a route in
+
+Reuse is **opt-in per route**. Add `data: { reuse: true }` to any route definition you want to preserve:
+
+```typescript title="src/app/routes.ts"
+{
+  path: 'assistant',
+  loadComponent: () => import('./pages/assistant/assistant.layout')
+    .then(m => m.AssistantLayoutComponent),
+  canActivate: [AuthGuard()],
+  resolve: { queryName: queryNameResolver },
+  // highlight-next-line
+  data: { reuse: true }, // component instance is kept alive across navigations
+},
+```
+
+Routes **without** `data: { reuse: true }` behave exactly as they would with Angular's default strategy.
+
+:::info Why the assistant?
+The `/assistant` route is the only one currently marked for reuse. Keeping its component alive means the conversation history, streaming state, and scroll position are preserved when the user temporarily switches to another page (e.g. a search result) and then comes back.
+:::
+
+## Adding reuse to another route
+
+1. Open `src/app/routes.ts`.
+2. Add `data: { reuse: true }` to the route you want to preserve.
+
+```typescript
+{
+  path: 'my-feature',
+  loadComponent: () => import('./pages/my-feature/my-feature.component')
+    .then(m => m.MyFeatureComponent),
+  canActivate: [AuthGuard()],
+  data: { reuse: true },
+},
+```
+
+That is all — no other change is needed. The `CustomReuseStrategy` picks up the flag automatically.
+
+:::warning Memory considerations
+Preserved components stay in memory for the **entire session**. Avoid marking heavy or rarely-visited routes as reusable without a good reason, as their memory footprint accumulates over the lifetime of the session.
+:::

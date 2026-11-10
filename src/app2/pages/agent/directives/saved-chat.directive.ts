@@ -27,31 +27,28 @@ export class AgentSavedChatDirective {
   private readonly transloco = inject(TranslocoService);
 
   constructor() {
-    this.el.nativeElement.addEventListener(
-      AGENT_SAVED_CHAT_EVENT_NAME,
-      (event: CustomEvent<AgentSavedChatEvent>) => {
-        const { id, errorMessage } = event.detail;
-        switch (id) {
-          case "SAVED_CHAT_RENAMED":
-            notify.success(this.transloco.translate("agtDirectives.savedChat.renamed"));
-            break;
-          case "SAVED_CHAT_DELETED":
-            notify.success(this.transloco.translate("agtDirectives.savedChat.deleted"));
-            break;
-          case "SAVED_CHAT_LOAD_FAILED":
-            notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.loadFailed"));
-            break;
-          case "SAVED_CHAT_SAVE_FAILED":
-            notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.saveFailed"));
-            break;
-          case "SAVED_CHAT_RENAME_FAILED":
-            notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.renameFailed"));
-            break;
-          case "SAVED_CHAT_DELETE_FAILED":
-            notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.deleteFailed"));
-            break;
-        }
+    this.el.nativeElement.addEventListener(AGENT_SAVED_CHAT_EVENT_NAME, (event: CustomEvent<AgentSavedChatEvent>) => {
+      const { id, errorMessage } = event.detail;
+      switch (id) {
+        case "SAVED_CHAT_RENAMED":
+          notify.success(this.transloco.translate("agtDirectives.savedChat.renamed"));
+          break;
+        case "SAVED_CHAT_DELETED":
+          notify.success(this.transloco.translate("agtDirectives.savedChat.deleted"));
+          break;
+        case "SAVED_CHAT_LOAD_FAILED":
+          notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.loadFailed"));
+          break;
+        case "SAVED_CHAT_SAVE_FAILED":
+          notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.saveFailed"));
+          break;
+        case "SAVED_CHAT_RENAME_FAILED":
+          notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.renameFailed"));
+          break;
+        case "SAVED_CHAT_DELETE_FAILED":
+          notify.error(errorMessage ?? this.transloco.translate("agtDirectives.savedChat.deleteFailed"));
+          break;
       }
-    );
+    });
   }
 }
