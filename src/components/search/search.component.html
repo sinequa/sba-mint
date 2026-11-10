@@ -1,5 +1,5 @@
 <Dropdown class="w-full">
-  <form [formGroup]="form">
+  <form [formGroup]="form" (submit)="$event.preventDefault()">
     @let placeholder = "searchInput.placeholder" | transloco;
     <SearchInput
       class="h-9 p-0 text-foreground"
@@ -17,6 +17,7 @@
       @if (allowAI()) {
         @let askAI = "askAI" | transloco;
         <button
+          type="button"
           variant="ai"
           size="xs"
           class="hidden rounded-sm transition ease-in sm:inline-flex"
@@ -31,6 +32,7 @@
       @let searchLabel = "search" | transloco;
       @let isDisabled = !allowEmptySearch() && searchInputText().trim() === "";
       <button
+        type="button"
         variant="icon"
         size="xs"
         [iconOnly]="true"

@@ -1,5 +1,41 @@
 # sinequa-mint
 
+## 11.14.0-6
+
+_Dernier build ES connu à la génération : es-11.14.0.2193 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- df31055: Fix the assistant's debug table being unreadable in dark mode (white text on white rows).
+- 6e41968: Fix the document preview losing the reader's page when switching to the Markdown conversion: the Markdown now opens on the page the reader was on (or the cited passage's page), and the page being read in Markdown is remembered so that switching back to an HTML conversion lands on the same page.
+
+## 11.14.0-5
+
+_Dernier build ES connu à la génération : es-11.14.0.2191 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- cf79653: Fix the preview entity navigation that could not reach the last occurrences of an entity value ("Unable to navigate to the next occurrence of …"). Navigation and the occurrence counter now use the occurrences actually highlighted in the document (bump `@sinequa/atomic-angular` to 1.19.3).
+- ff6a52c: Bump `@sinequa/atomic` to 2.15.0 and `@sinequa/atomic-angular` to 1.19.4. Fixes the tab counts that were lost when a tree aggregation node is opened, and the deletion/saving of custom user-profile properties that have no stored value. The JWT refresh now also refreshes the bearer token, the user profile client handles bare-value responses, and APIs served under a path prefix are supported through the new `apiPrefix` option.
+
+## 11.14.0-4
+
+_Dernier build ES connu à la génération : es-11.14.0.2180 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- 087c96a: Send only the value in the body of user profile PATCH requests, instead of repeating the full `data`/`customData` hierarchy.
+- ac6c06a: Fix the slide card showing the source icon twice when the document has no thumbnail: the icon is now displayed only in the thumbnail placeholder, and the selection badge only shows the checkbox on hover.
+- ac6c06a: Fix custom source logos (`iconPath`) being displayed at their native size: upgrade `@sinequa/atomic-angular` to 1.18.2, which sizes them from the surrounding font size.
+
+## 11.14.0-3
+
+_Dernier build ES connu à la génération : es-11.14.0.2176 (indicatif, non garanti pour ce commit précis)._
+
+### Patch Changes
+
+- 5a18f35: Fix the user override still being lost when launching a search by clicking the send button (or the clear / saved-search buttons): the search form no longer submits natively, so the page no longer reloads after navigating to the results.
+
 ## 11.14.0-2
 
 _Dernier build ES connu à la génération : es-11.14.0.2169 (indicatif, non garanti pour ce commit précis)._
