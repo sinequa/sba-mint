@@ -201,6 +201,35 @@ code-block-reference {
       background-color: transparent !important;
     }
   }
+
+  /* The assistant's debug table (sq-debug-message / sq-debug-message-details) hardcodes light row
+     backgrounds (#fff / #f2f8fe / #f08080) and #ccc borders in its encapsulated styles, but inherits
+     the text color — so in dark mode the near-white --foreground lands on a white row. Re-point the
+     rows and borders at the theme tokens; `.dark sq-debug-message .x` (0,2,1) beats the library's
+     `.x[_ngcontent-…]` (0,2,0) without !important. */
+  sq-debug-message {
+    color: var(--foreground);
+
+    .table-root,
+    .table-row,
+    .list-name,
+    .kv-key,
+    .kv-value {
+      border-color: var(--border);
+    }
+
+    .row-even {
+      background-color: var(--background);
+    }
+
+    .row-odd {
+      background-color: var(--muted);
+    }
+
+    .row-error {
+      background-color: color-mix(in srgb, #f08080 35%, var(--background));
+    }
+  }
 }
 
 pre[class*="language-"] {
