@@ -1,0 +1,9 @@
+[
+  {
+    "context": ["/__mock", "/api", "/xdownload", "/auth/redirect", "/saml/redirect", "/r", "/endpoints", "/assets"],
+    "target": "http://localhost:5173",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true
+  }
+]
